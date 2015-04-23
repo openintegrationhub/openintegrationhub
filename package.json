@@ -1,4 +1,9 @@
 {
   "name": "sailor",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "async": "0.4.0",
+    "commons": "git+https://elasticiodev:oglPtSMnysarIqL6bZvtpjG2AC@github.com/elasticio/commons.git#master",
+    "amqplib": "0.1.3"
+  }
 }
