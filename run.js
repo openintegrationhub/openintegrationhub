@@ -10,10 +10,8 @@ var sailor = new Sailor();
 var executor = new Executor();
 
 sailor.init(function(err){
-
     sailor.on('message', function(message) {
-        console.log('Sailor message:');
-        console.log(message);
+        executor.processMessage("updateCustomer", message)
     });
 
 });
