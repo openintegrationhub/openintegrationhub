@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "async": "0.4.0",
-    "commons": "git+https://elasticiodev:oglPtSMnysarIqL6bZvtpjG2AC@github.com/elasticio/commons.git#master",
-    "amqplib": "0.1.3"
+    "amqplib": "0.1.3",
+    "mongoose": "3.5.7",
+    "debug": "2.1.3",
+    "lodash": "3.7.0"
   }
 }

@@ -3,13 +3,18 @@
 // listen incoming messages
 // and run client component
 
-var init = require('./lib/init.js').init;
+var Sailor = require('./lib/sailor.js').Sailor;
+var Executor = require('./lib/executor.js').Executor;
 
-init(function(err, connections) {
-    if (err) {
-        // @TODO how do we report errors?
-        return;
-    }
+var sailor = new Sailor();
+var executor = new Executor();
+
+sailor.init(function(err){
+
+    sailor.on('message', function(message) {
+        console.log('Sailor message:');
+        console.log(message);
+    });
 
 });
 
