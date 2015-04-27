@@ -35,20 +35,25 @@ if (!process.env.INCOMING_MESSAGES_QUEUE) {
 }
 
 var mongoConnection = new mongo.MongoConnection();
-var mongoConnected = mongoConnection.connect(process.env.MONGO_URI);
-
 var amqpConnection = new amqp.AMQPConnection();
-var amqpConnected = amqpConnection.connect(process.env.AMQP_URI);
-
 var componentReader = new ComponentReader();
-var componentFound = componentReader.init(process.env.COMPONENT_PATH);
 
-Q.all([mongoConnected, amqpConnected, componentFound])
+connect()
     .then(run)
     .fail()
     .done();
 
+function connect(){
+
+    var mongoConnected = mongoConnection.connect(process.env.MONGO_URI);
+    var amqpConnected = amqpConnection.connect(process.env.AMQP_URI);
+    var componentFound = componentReader.init(process.env.COMPONENT_PATH);
+
+    return Q.all([mongoConnected, amqpConnected, componentFound]);
+}
+
 function run(){
+    debug("Start listening %s", amqp.getIncomingMessagesQueueName());
     amqpConnection.listenQueue(amqp.getIncomingMessagesQueueName(), processMessage);
 }
 
@@ -98,8 +103,6 @@ function processMessage(message) {
 
         debug('Process message %j', message.content);
         taskExec.process(module, message, cfg);
-    }).fail(function(err) {
-        debug('Failed to find trigger or action ', step.function);
     });
 
 }
@@ -116,6 +119,7 @@ function getStepCfg(taskId, stepId){
     };
 }
 
+exports.connect = connect;
 exports.processMessage = processMessage;
 
 

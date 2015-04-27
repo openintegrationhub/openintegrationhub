@@ -1,5 +1,10 @@
 describe('Sailor', function () {
 
+    process.env.DEBUG='sailor'
+
+    var mongo = require('../lib/mongo.js');
+    var Q = require('q');
+
     it('Process message', function () {
 
         process.env.MONGO_URI = 'mongodb://test/test';
@@ -7,10 +12,15 @@ describe('Sailor', function () {
         process.env.TASK_ID = '1234567890';
         process.env.STEP_ID = 'step_1';
         process.env.STEP_INFO = '{"function":"list"}';
-        process.env.COMPONENT_PATH='spec/component'
-        process.env.DEBUG='sailor'
+        process.env.COMPONENT_PATH='/spec/component'
 
-        var payload = "";
+        spyOn(mongo, 'MongoConnection').andReturn({
+            connect: function(){
+                return Q.resolve();
+            }
+        });
+
+        var payload = "test payload of the message";
 
         var message = {
             fields: {
@@ -43,9 +53,11 @@ describe('Sailor', function () {
         };
 
         var sailor = require('../run.js');
-        sailor.processMessage(message);
 
-
+        sailor.connect().then(function(){
+            console.log('Connected!');
+            sailor.processMessage(message);
+        });
 
 
     });

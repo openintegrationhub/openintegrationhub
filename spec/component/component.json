@@ -1,0 +1,43 @@
+{
+  "title": "Client component",
+  "description": "Client component description",
+  "external": true,
+  "credentials": {
+  },
+  "triggers": {
+    "list": {
+      "main": "./triggers/list.js",
+      "title": "List Records",
+      "fields": {
+        "where": {
+          "label": "Additional filter",
+          "required": false,
+          "viewClass": "TextFieldView"
+        }
+      }
+    }
+  },
+  "actions": {
+    "update": {
+      "main": "./lib/actions/update.js",
+      "title": "Update a record",
+      "metadata": {
+        "in": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Customer id",
+              "type": "string",
+              "required": true
+            },
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "required": false
+            }
+          }
+        }
+      }
+    }
+  }
+}
