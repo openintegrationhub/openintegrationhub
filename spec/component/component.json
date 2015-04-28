@@ -5,16 +5,25 @@
   "credentials": {
   },
   "triggers": {
-    "list": {
-      "main": "./triggers/list.js",
-      "title": "List Records",
-      "fields": {
-        "where": {
-          "label": "Additional filter",
-          "required": false,
-          "viewClass": "TextFieldView"
-        }
-      }
+    "data_trigger": {
+      "main": "./triggers/data_trigger.js",
+      "title": "Get data"
+    },
+    "rebound_trigger": {
+      "main": "./triggers/rebound_trigger.js",
+      "title": "Rebound"
+    },
+    "error_trigger": {
+      "main": "./triggers/error_trigger.js",
+      "title": "Error"
+    },
+    "datas_and_errors": {
+      "main": "./triggers/datas_and_errors.js",
+      "title": "Both data and error"
+    },
+    "passthrough": {
+      "main": "./triggers/passthrough.js",
+      "title": "Emit the same message which received"
     }
   },
   "actions": {

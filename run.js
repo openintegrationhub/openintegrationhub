@@ -1,9 +1,16 @@
 var debug = require('debug')('sailor');
-var sailor = require('./lib/sailor.js');
+var Sailor = require('./lib/sailor.js').Sailor;
+
+sailor = new Sailor();
 
 sailor.connect()
-    .then(sailor.run)
-    .fail()
+    .then(function(){
+        sailor.run();
+    })
+    .fail(function(err){
+        console.log(err);
+    })
+    .done();
 
 
 

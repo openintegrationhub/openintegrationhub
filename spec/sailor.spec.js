@@ -10,8 +10,10 @@ describe('Sailor', function () {
 
     var mongo = require('../lib/mongo.js');
     var amqp = require('../lib/amqp.js');
+    var settings = require('../lib/settings.js');
+    var Sailor = require('../lib/sailor.js').Sailor;
 
-    it('Process message', function () {
+    describe('processMessage', function () {
 
         var payload = "test payload of the message";
 
@@ -45,39 +47,165 @@ describe('Sailor', function () {
             content: new Buffer(JSON.stringify(payload))
         };
 
-        var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
-        var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['connect','sendToQueue','rebound','ack','reject']);
+        xit('should send data to outgoing queue', function () {
 
-        spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
-        spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['connect','sendToQueue','rebound','ack','reject']);
 
-        var sailor = require('../lib/sailor.js');
+            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
+            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
-        var promise;
+            var sailor = new Sailor();
 
-        runs(function(){
-            promise = sailor.connect().then(function(){
-                return sailor.processMessage(message);
-            }).fail(function(err){
-                console.log(err);
-            })
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "data_trigger"
+            });
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    return sailor.processMessage(message);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendToQueue).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendToQueue.calls[0].args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
+                expect(fakeAMQPConnection.sendToQueue.calls[0].args[1]).toEqual( {items: [1,2,3,4,5,6]});
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+            });
+
+
         });
 
-        waitsFor(function(){
-            return promise.isFulfilled() || promise.isRejected();
-        }, 10000);
+        xit('should rebound message if rebound happened', function () {
 
-        runs(function(){
-            expect(promise.isFulfilled()).toBeTruthy();
-            expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-            expect(fakeAMQPConnection.sendToQueue).toHaveBeenCalled();
-            /*expect(fakeAMQPConnection.sendToQueue).toHaveBeenCalledWith(
-                settings.OUTGOING_MESSAGES_QUEUE.name,
-                jasmine.any(Object)
-            );*/
-            expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['connect','sendToQueue','rebound','ack','reject']);
+
+            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
+            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+
+            var sailor = new Sailor();
+
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "rebound_trigger"
+            });
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    return sailor.processMessage(message);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                expect(fakeAMQPConnection.rebound).toHaveBeenCalled();
+                expect(fakeAMQPConnection.rebound.calls[0].args[0]).toEqual(message);
+                expect(fakeAMQPConnection.rebound.calls[0].args[1].message).toEqual('Rebound reason');
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+            });
         });
 
+        xit('should send error if error happened', function () {
+
+            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['connect','sendToQueue','rebound','ack','reject']);
+
+            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
+            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+
+            var sailor = new Sailor();
+
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "error_trigger"
+            });
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    return sailor.processMessage(message);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendToQueue).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendToQueue.calls[0].args[0]).toEqual(settings.ERRORS_QUEUE.name);
+                expect(fakeAMQPConnection.sendToQueue.calls[0].args[1].message).toEqual('Some component error');
+                expect(fakeAMQPConnection.sendToQueue.calls[0].args[1].stack).not.toBeUndefined();
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+            });
+        });
+
+        it('should catch all data calls and all error calls', function () {
+
+            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['connect','sendToQueue','rebound','ack','reject']);
+
+            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
+            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+
+            var sailor = new Sailor();
+
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "datas_and_errors"
+            });
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    return sailor.processMessage(message);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendToQueue).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendToQueue.calls.length).toEqual(5);
+
+                expect(fakeAMQPConnection.sendToQueue.calls[0].args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
+                expect(fakeAMQPConnection.sendToQueue.calls[1].args[0]).toEqual(settings.ERRORS_QUEUE.name);
+                expect(fakeAMQPConnection.sendToQueue.calls[2].args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
+                expect(fakeAMQPConnection.sendToQueue.calls[3].args[0]).toEqual(settings.ERRORS_QUEUE.name);
+                expect(fakeAMQPConnection.sendToQueue.calls[4].args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
+                expect(fakeAMQPConnection.sendToQueue.calls[3].args[0]).toEqual(settings.ERRORS_QUEUE.name);
+            });
+        });
 
     });
 
