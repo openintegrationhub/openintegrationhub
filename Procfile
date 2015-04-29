@@ -1,1 +1,1 @@
-web: node run.js
+sail: node run.js
