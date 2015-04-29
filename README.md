@@ -19,3 +19,9 @@ REBOUNDS_QUEUE={TASK_ID}.{STEP_ID}.rebounds
 REBOUNDS_EXCHANGE={TASK_ID}.{STEP_ID}.rebounds_exchange
 REBOUNDS_ROUTING_KEY={TASK_ID}.{STEP_ID}.rebounds_routing_key
 
+(temporary solution)
+we get step data (step details) from .env var STEP_INFO
+we get account data from a message (?)
+
+
+
