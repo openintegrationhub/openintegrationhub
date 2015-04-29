@@ -11,46 +11,49 @@ describe('Sailor', function () {
     var mongo = require('../lib/mongo.js');
     var amqp = require('../lib/amqp.js');
     var settings = require('../lib/settings.js');
+    var cipher = require('../lib/cipher.js');
     var Sailor = require('../lib/sailor.js').Sailor;
+
+    var payload = {param1: "Value1"};
+
+    var message = {
+        fields: {
+            consumerTag: "abcde",
+            deliveryTag: 12345,
+            exchange: 'test',
+            routingKey: 'test.hello'
+        },
+        properties: {
+            contentType: 'application/json',
+            contentEncoding: 'utf8',
+            headers: {
+                taskId: "",
+                stepId: ""
+            },
+            deliveryMode: undefined,
+            priority: undefined,
+            correlationId: undefined,
+            replyTo: undefined,
+            expiration: undefined,
+            messageId: undefined,
+            timestamp: undefined,
+            type: undefined,
+            userId: undefined,
+            appId: undefined,
+            mandatory: true,
+            clusterId: ''
+        },
+        content: new Buffer(cipher.encryptMessageContent(payload))
+    };
 
     describe('processMessage', function () {
 
-        var payload = "test payload of the message";
-
-        var message = {
-            fields: {
-                consumerTag: "abcde",
-                deliveryTag: 12345,
-                exchange: 'test',
-                routingKey: 'test.hello'
-            },
-            properties: {
-                contentType: 'application/json',
-                contentEncoding: 'utf8',
-                headers: {
-                    taskId: "",
-                    stepId: ""
-                },
-                deliveryMode: undefined,
-                priority: undefined,
-                correlationId: undefined,
-                replyTo: undefined,
-                expiration: undefined,
-                messageId: undefined,
-                timestamp: undefined,
-                type: undefined,
-                userId: undefined,
-                appId: undefined,
-                mandatory: true,
-                clusterId: ''
-            },
-            content: new Buffer(JSON.stringify(payload))
-        };
-
-        xit('should send data to outgoing queue', function () {
+        it('should call processData() and ack() if success', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['connect','sendToQueue','rebound','ack','reject']);
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+                'connect','processData','processError','processRebound','ack','reject'
+            ]);
 
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
@@ -65,7 +68,7 @@ describe('Sailor', function () {
 
             runs(function(){
                 promise = sailor.connect().then(function(){
-                    return sailor.processMessage(message);
+                    return sailor.processMessage(payload, message);
                 }).fail(function(err){
                     console.log(err);
                 })
@@ -78,19 +81,20 @@ describe('Sailor', function () {
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
                 expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendToQueue).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendToQueue.calls[0].args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
-                expect(fakeAMQPConnection.sendToQueue.calls[0].args[1]).toEqual( {items: [1,2,3,4,5,6]});
+                expect(fakeAMQPConnection.processData).toHaveBeenCalled();
+                expect(fakeAMQPConnection.processData.calls[0].args[0]).toEqual( {items: [1,2,3,4,5,6]});
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
             });
-
-
         });
 
-        xit('should rebound message if rebound happened', function () {
+        it('should call processRebound() and ack()', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['connect','sendToQueue','rebound','ack','reject']);
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+                'connect','processData','processError','processRebound','ack','reject'
+            ]);
 
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
@@ -105,7 +109,7 @@ describe('Sailor', function () {
 
             runs(function(){
                 promise = sailor.connect().then(function(){
-                    return sailor.processMessage(message);
+                    return sailor.processMessage(payload, message);
                 }).fail(function(err){
                     console.log(err);
                 })
@@ -118,17 +122,21 @@ describe('Sailor', function () {
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
                 expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-                expect(fakeAMQPConnection.rebound).toHaveBeenCalled();
-                expect(fakeAMQPConnection.rebound.calls[0].args[0]).toEqual(message);
-                expect(fakeAMQPConnection.rebound.calls[0].args[1].message).toEqual('Rebound reason');
+                expect(fakeAMQPConnection.processRebound).toHaveBeenCalled();
+                expect(fakeAMQPConnection.processRebound.calls[0].args[0]).toEqual(message);
+                expect(fakeAMQPConnection.processRebound.calls[0].args[1].message).toEqual('Rebound reason');
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
             });
         });
 
-        xit('should send error if error happened', function () {
+        it('should send error if error happened', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['connect','sendToQueue','rebound','ack','reject']);
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+                'connect','processData','processError','processRebound','ack','reject'
+            ]);
 
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
@@ -143,7 +151,7 @@ describe('Sailor', function () {
 
             runs(function(){
                 promise = sailor.connect().then(function(){
-                    return sailor.processMessage(message);
+                    return sailor.processMessage(payload, message);
                 }).fail(function(err){
                     console.log(err);
                 })
@@ -156,18 +164,21 @@ describe('Sailor', function () {
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
                 expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendToQueue).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendToQueue.calls[0].args[0]).toEqual(settings.ERRORS_QUEUE.name);
-                expect(fakeAMQPConnection.sendToQueue.calls[0].args[1].message).toEqual('Some component error');
-                expect(fakeAMQPConnection.sendToQueue.calls[0].args[1].stack).not.toBeUndefined();
+                expect(fakeAMQPConnection.processError).toHaveBeenCalled();
+                expect(fakeAMQPConnection.processError.calls[0].args[0].message).toEqual('Some component error');
+                expect(fakeAMQPConnection.processError.calls[0].args[0].stack).not.toBeUndefined();
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
             });
         });
 
         it('should catch all data calls and all error calls', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['connect','sendToQueue','rebound','ack','reject']);
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+                'connect','processData','processError','processRebound','ack','reject'
+            ]);
 
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
@@ -182,7 +193,7 @@ describe('Sailor', function () {
 
             runs(function(){
                 promise = sailor.connect().then(function(){
-                    return sailor.processMessage(message);
+                    return sailor.processMessage(payload, message);
                 }).fail(function(err){
                     console.log(err);
                 })
@@ -195,15 +206,19 @@ describe('Sailor', function () {
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
                 expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendToQueue).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendToQueue.calls.length).toEqual(5);
 
-                expect(fakeAMQPConnection.sendToQueue.calls[0].args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
-                expect(fakeAMQPConnection.sendToQueue.calls[1].args[0]).toEqual(settings.ERRORS_QUEUE.name);
-                expect(fakeAMQPConnection.sendToQueue.calls[2].args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
-                expect(fakeAMQPConnection.sendToQueue.calls[3].args[0]).toEqual(settings.ERRORS_QUEUE.name);
-                expect(fakeAMQPConnection.sendToQueue.calls[4].args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
-                expect(fakeAMQPConnection.sendToQueue.calls[3].args[0]).toEqual(settings.ERRORS_QUEUE.name);
+                // data
+                expect(fakeAMQPConnection.processData).toHaveBeenCalled();
+                expect(fakeAMQPConnection.processData.calls.length).toEqual(3);
+
+                // error
+                expect(fakeAMQPConnection.processError).toHaveBeenCalled();
+                expect(fakeAMQPConnection.processError.calls.length).toEqual(2);
+
+                // ack
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
             });
         });
 

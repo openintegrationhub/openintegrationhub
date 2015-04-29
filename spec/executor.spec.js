@@ -19,6 +19,21 @@ describe('Executor', function () {
         expect(promise.isFulfilled).toBeTruthy();
     });
 
+    it('Should reject if module is missing', function () {
+
+        var taskexec = new TaskExec();
+        taskexec.on('error', function(){});
+        spyOn(taskexec, 'emit').andCallThrough();
+
+        var promise = taskexec.process({}, msg, cfg);
+
+        expect(taskexec.emit).toHaveBeenCalled();
+        expect(taskexec.emit.calls[0].args[0]).toEqual('error');
+        expect(taskexec.emit.calls[0].args[1].message).toEqual('Process function is not found');
+        expect(taskexec.emit.calls[1].args[0]).toEqual('end');
+        expect(promise.isFulfilled).toBeTruthy();
+    });
+
     it('Should execute rebound_trigger and emit all events - rebound, end', function () {
 
         var taskexec = new TaskExec();

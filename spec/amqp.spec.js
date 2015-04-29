@@ -6,6 +6,8 @@ describe('AMQP', function () {
     process.env.STEP_ID = 'step_1';
 
     var AMQPConnection = require('../lib/amqp.js').AMQPConnection;
+    var settings = require('../lib/settings.js');
+    var cipher = require('../lib/cipher.js');
 
     var message = {
         fields: {
@@ -18,8 +20,8 @@ describe('AMQP', function () {
             contentType: 'application/json',
             contentEncoding: 'utf8',
             headers: {
-                taskId: "",
-                stepId: ""
+                taskId: "task1234567890",
+                stepId: "step_456"
             },
             deliveryMode: undefined,
             priority: undefined,
@@ -34,7 +36,7 @@ describe('AMQP', function () {
             mandatory: true,
             clusterId: ''
         },
-        content: new Buffer(JSON.stringify({"content": "Message content"}))
+        content: cipher.encryptMessageContent({"content": "Message content"})
     };
 
     it('Should send message to outgoing channel when process data', function () {
@@ -45,6 +47,19 @@ describe('AMQP', function () {
 
         expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
+
+        var args = amqp.publishChannel.sendToQueue.calls[0].args;
+        expect(args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
+
+        var payload = cipher.decryptMessageContent(args[1].toString());
+        expect(payload).toEqual({ content : 'Message content' });
+
+        var options = args[2];
+        expect(options).toEqual({
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true
+        });
     });
 
     it('Should send message to outgoing errors when process error', function () {
@@ -52,8 +67,22 @@ describe('AMQP', function () {
         var amqp = new AMQPConnection();
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
         amqp.processError(new Error('Test error'));
+
         expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
+
+        var args = amqp.publishChannel.sendToQueue.calls[0].args;
+        expect(args[0]).toEqual(settings.ERRORS_QUEUE.name);
+
+        var payload = cipher.decryptMessageContent(args[1].toString());
+        expect(payload.message).toEqual('Test error');
+
+        var options = args[2];
+        expect(options).toEqual({
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true
+        });
     });
 
     it('Should send message to rebounds channel when process rebound', function () {
@@ -64,6 +93,17 @@ describe('AMQP', function () {
         amqp.processRebound(message, new Error("Rebound error"));
         expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
+
+        var args = amqp.publishChannel.sendToQueue.calls[0].args;
+        expect(args[0]).toEqual(settings.REBOUNDS_QUEUE.name);
+
+        var payload = cipher.decryptMessageContent(args[1].toString());
+        expect(payload).toEqual({content: 'Message content'});
+
+        var options = args[2];
+        expect(options.headers.reboundIteration).toEqual(1);
+        expect(options.headers.taskId).toEqual('task1234567890');
+        expect(options.headers.stepId).toEqual('step_456');
     });
 
     it('Should ack message when confirmed', function () {
@@ -74,6 +114,7 @@ describe('AMQP', function () {
 
         expect(amqp.subscribeChannel.ack).toHaveBeenCalled();
         expect(amqp.subscribeChannel.ack.callCount).toEqual(1);
+        expect(amqp.subscribeChannel.ack.calls[0].args[0]).toEqual(message);
     });
 
     it('Should reject message when ack is called with false', function () {
@@ -84,26 +125,33 @@ describe('AMQP', function () {
 
         expect(amqp.subscribeChannel.reject).toHaveBeenCalled();
         expect(amqp.subscribeChannel.reject.callCount).toEqual(1);
+        expect(amqp.subscribeChannel.reject.calls[0].args[0]).toEqual(message);
+        expect(amqp.subscribeChannel.reject.calls[0].args[1]).toEqual(false);
     });
 
-    it('Should listen queue and process incoming messages', function () {
+    it('Should listen queue and pass decrypted message to client function', function () {
 
         var amqp = new AMQPConnection();
-        amqp.subscribeChannel = {
-            consume: function(queueName, callback){}
-        };
-        spyOn(amqp.subscribeChannel, 'consume').andCallFake(function(queueName, callback){
+        var clientFunction = jasmine.createSpy('clientFunction');
+        amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['consume']);
+        amqp.subscribeChannel.consume.andCallFake(function(queueName, callback){
             callback(message);
         });
 
-        amqp.listenQueue('testQueue', function(originalMessage, decryptedMessage){
-            console.log('Client function called');
+        runs(function(){
+            amqp.listenQueue('testQueue', clientFunction);
         });
 
-        expect(amqp.subscribeChannel.consume).toHaveBeenCalled();
+        waitsFor(function(){
+            return clientFunction.callCount > 0;
+        });
 
+        runs(function(){
+            expect(clientFunction.callCount).toEqual(1);
+            expect(clientFunction.calls[0].args[0]).toEqual({"content": "Message content"});
+            expect(clientFunction.calls[0].args[1]).toEqual(message);
+            expect(clientFunction.calls[0].args[1].content).toEqual(cipher.encryptMessageContent({"content": "Message content"}));
+        });
     });
-
-
 
 });
