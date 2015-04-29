@@ -9,6 +9,7 @@ describe('AMQP', function () {
     var AMQPConnection = require('../lib/amqp.js').AMQPConnection;
     var settings = require('../lib/settings.js').readFrom(envVars);
     var cipher = require('../lib/cipher.js');
+    var _ = require('lodash');
 
     var message = {
         fields: {
@@ -96,6 +97,32 @@ describe('AMQP', function () {
     });
 
     it('Should send message to rebounds channel when process rebound', function () {
+
+        var clonedMessage = _.cloneDeep(message);
+        clonedMessage.properties.headers.reboundIteration = 100;
+
+        var amqp = new AMQPConnection(settings);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
+
+        amqp.processRebound(new Error("Rebound error"), clonedMessage);
+
+        expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
+        expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
+
+        var args = amqp.publishChannel.sendToQueue.calls[0].args;
+        expect(args[0]).toEqual(settings.ERRORS_QUEUE.name);
+
+        var payload = cipher.decryptMessageContent(args[1].toString());
+        expect(payload.message).toEqual('Rebound limit exceeded');
+
+        var options = args[2];
+        expect(options.headers.taskId).toEqual('task1234567890');
+        expect(options.headers.stepId).toEqual('step_456');
+    });
+
+    it('Should send message to errors channel when rebound limit exceeded', function () {
+
+
 
         var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
