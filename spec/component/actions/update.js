@@ -1,3 +1,4 @@
-exports.process = function(msg, cfg){
-    var that = this;
-};
+exports.process = processAction;
+
+function processAction(msg, cfg){
+}

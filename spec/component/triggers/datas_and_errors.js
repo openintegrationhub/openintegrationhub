@@ -1,4 +1,6 @@
-exports.process = function(msg, cfg){
+exports.process = processTrigger;
+
+function processTrigger(msg, cfg){
     var that = this;
 
     that.emit('data', {content: "Data 1"});
@@ -10,4 +12,4 @@ exports.process = function(msg, cfg){
         that.emit('data', {content: "Data 3"});
         //throw new Error('Error 4');
     }, 1000);
-};
+}
