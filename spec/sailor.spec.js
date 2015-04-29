@@ -1,16 +1,17 @@
 describe('Sailor', function () {
 
-    process.env.DEBUG='sailor';
-    process.env.MONGO_URI = 'mongodb://test/test';
-    process.env.AMQP_URI = 'amqp://test2/test2';
-    process.env.TASK_ID = '1234567890';
-    process.env.STEP_ID = 'step_1';
-    process.env.STEP_INFO = '{"function":"list"}';
-    process.env.COMPONENT_PATH='/spec/component';
+    var envVars = {};
+    envVars.DEBUG='sailor';
+    envVars.MONGO_URI = 'mongodb://test/test';
+    envVars.AMQP_URI = 'amqp://test2/test2';
+    envVars.TASK_ID = '1234567890';
+    envVars.STEP_ID = 'step_1';
+    envVars.STEP_INFO = '{"function":"list"}';
+    envVars.COMPONENT_PATH='/spec/component';
 
     var mongo = require('../lib/mongo.js');
     var amqp = require('../lib/amqp.js');
-    var settings = require('../lib/settings.js');
+    var settings = require('../lib/settings.js').readFrom(envVars);
     var cipher = require('../lib/cipher.js');
     var Sailor = require('../lib/sailor.js').Sailor;
 
@@ -58,7 +59,7 @@ describe('Sailor', function () {
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
-            var sailor = new Sailor();
+            var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "data_trigger"
@@ -81,8 +82,11 @@ describe('Sailor', function () {
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
                 expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+
                 expect(fakeAMQPConnection.processData).toHaveBeenCalled();
-                expect(fakeAMQPConnection.processData.calls[0].args[0]).toEqual( {items: [1,2,3,4,5,6]});
+                expect(fakeAMQPConnection.processData.calls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
+                expect(fakeAMQPConnection.processData.calls[0].args[1]).toEqual(message);
+
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                 expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                 expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
@@ -99,7 +103,7 @@ describe('Sailor', function () {
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
-            var sailor = new Sailor();
+            var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "rebound_trigger"
@@ -122,9 +126,11 @@ describe('Sailor', function () {
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
                 expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+
                 expect(fakeAMQPConnection.processRebound).toHaveBeenCalled();
-                expect(fakeAMQPConnection.processRebound.calls[0].args[0]).toEqual(message);
-                expect(fakeAMQPConnection.processRebound.calls[0].args[1].message).toEqual('Rebound reason');
+                expect(fakeAMQPConnection.processRebound.calls[0].args[0].message).toEqual('Rebound reason');
+                expect(fakeAMQPConnection.processRebound.calls[0].args[1]).toEqual(message);
+
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                 expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                 expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
@@ -141,7 +147,7 @@ describe('Sailor', function () {
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
-            var sailor = new Sailor();
+            var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "error_trigger"
@@ -183,7 +189,7 @@ describe('Sailor', function () {
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
-            var sailor = new Sailor();
+            var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "datas_and_errors"

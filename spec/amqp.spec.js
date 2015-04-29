@@ -1,12 +1,13 @@
 describe('AMQP', function () {
 
-    process.env.MONGO_URI = 'mongodb://test/test';
-    process.env.AMQP_URI = 'amqp://test2/test2';
-    process.env.TASK_ID = '1234567890';
-    process.env.STEP_ID = 'step_1';
+    var envVars = {};
+    envVars.MONGO_URI = 'mongodb://test/test';
+    envVars.AMQP_URI = 'amqp://test2/test2';
+    envVars.TASK_ID = '1234567890';
+    envVars.STEP_ID = 'step_1';
 
     var AMQPConnection = require('../lib/amqp.js').AMQPConnection;
-    var settings = require('../lib/settings.js');
+    var settings = require('../lib/settings.js').readFrom(envVars);
     var cipher = require('../lib/cipher.js');
 
     var message = {
@@ -41,9 +42,10 @@ describe('AMQP', function () {
 
     it('Should send message to outgoing channel when process data', function () {
 
-        var amqp = new AMQPConnection();
+        var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
-        amqp.processData({"content": "Message content"});
+
+        amqp.processData({"content": "Message content"}, message);
 
         expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
@@ -58,15 +60,19 @@ describe('AMQP', function () {
         expect(options).toEqual({
             contentType : 'application/json',
             contentEncoding : 'utf8',
-            mandatory : true
+            mandatory : true,
+            headers : {
+                taskId : 'task1234567890',
+                stepId : 'step_456'
+            }
         });
     });
 
     it('Should send message to outgoing errors when process error', function () {
 
-        var amqp = new AMQPConnection();
+        var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
-        amqp.processError(new Error('Test error'));
+        amqp.processError(new Error('Test error'), message);
 
         expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
@@ -81,16 +87,21 @@ describe('AMQP', function () {
         expect(options).toEqual({
             contentType : 'application/json',
             contentEncoding : 'utf8',
-            mandatory : true
+            mandatory : true,
+            headers : {
+                taskId : 'task1234567890',
+                stepId : 'step_456'
+            }
         });
     });
 
     it('Should send message to rebounds channel when process rebound', function () {
 
-        var amqp = new AMQPConnection();
+        var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
 
-        amqp.processRebound(message, new Error("Rebound error"));
+        amqp.processRebound(new Error("Rebound error"), message);
+
         expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
 
@@ -106,10 +117,12 @@ describe('AMQP', function () {
         expect(options.headers.stepId).toEqual('step_456');
     });
 
+
     it('Should ack message when confirmed', function () {
 
         var amqp = new AMQPConnection();
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['ack']);
+
         amqp.ack(message);
 
         expect(amqp.subscribeChannel.ack).toHaveBeenCalled();
@@ -119,7 +132,7 @@ describe('AMQP', function () {
 
     it('Should reject message when ack is called with false', function () {
 
-        var amqp = new AMQPConnection();
+        var amqp = new AMQPConnection(settings);
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['reject']);
         amqp.ack(message, false);
 
@@ -131,7 +144,7 @@ describe('AMQP', function () {
 
     it('Should listen queue and pass decrypted message to client function', function () {
 
-        var amqp = new AMQPConnection();
+        var amqp = new AMQPConnection(settings);
         var clientFunction = jasmine.createSpy('clientFunction');
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['consume']);
         amqp.subscribeChannel.consume.andCallFake(function(queueName, callback){

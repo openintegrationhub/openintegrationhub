@@ -1,15 +1,11 @@
-var debug = require('debug')('sailor');
 var Sailor = require('./lib/sailor.js').Sailor;
+var settings = require('./lib/settings.js').readFrom(process.env);
+var errorReporter = require('./lib/error_reporter.js');
 
-sailor = new Sailor();
-
+sailor = new Sailor(settings);
 sailor.connect()
-    .then(function(){
-        sailor.run();
-    })
-    .fail(function(err){
-        console.log(err);
-    })
+    .then(sailor.run.bind(sailor))
+    .fail(errorReporter.reportError)
     .done();
 
 
