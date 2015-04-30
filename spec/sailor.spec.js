@@ -93,7 +93,7 @@ describe('Sailor', function () {
             });
         });
 
-        it('should call processRebound() and ack()', function () {
+        xit('should call processRebound() and ack()', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
@@ -137,7 +137,7 @@ describe('Sailor', function () {
             });
         });
 
-        it('should send error if error happened', function () {
+        xit('should send error if error happened', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
@@ -179,7 +179,7 @@ describe('Sailor', function () {
             });
         });
 
-        it('should catch all data calls and all error calls', function () {
+        xit('should catch all data calls and all error calls', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [

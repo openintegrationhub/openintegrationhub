@@ -52,7 +52,7 @@ describe('AMQP', function () {
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
 
         var args = amqp.publishChannel.sendToQueue.calls[0].args;
-        expect(args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE.name);
+        expect(args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE);
 
         var payload = cipher.decryptMessageContent(args[1].toString());
         expect(payload).toEqual({ content : 'Message content' });
@@ -79,7 +79,7 @@ describe('AMQP', function () {
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
 
         var args = amqp.publishChannel.sendToQueue.calls[0].args;
-        expect(args[0]).toEqual(settings.ERRORS_QUEUE.name);
+        expect(args[0]).toEqual(settings.ERRORS_QUEUE);
 
         var payload = cipher.decryptMessageContent(args[1].toString());
         expect(payload.message).toEqual('Test error');
@@ -110,7 +110,7 @@ describe('AMQP', function () {
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
 
         var args = amqp.publishChannel.sendToQueue.calls[0].args;
-        expect(args[0]).toEqual(settings.ERRORS_QUEUE.name);
+        expect(args[0]).toEqual(settings.ERRORS_QUEUE);
 
         var payload = cipher.decryptMessageContent(args[1].toString());
         expect(payload.message).toEqual('Rebound limit exceeded');
@@ -133,7 +133,7 @@ describe('AMQP', function () {
         expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
 
         var args = amqp.publishChannel.sendToQueue.calls[0].args;
-        expect(args[0]).toEqual(settings.REBOUNDS_QUEUE.name);
+        expect(args[0]).toEqual(settings.REBOUNDS_QUEUE);
 
         var payload = cipher.decryptMessageContent(args[1].toString());
         expect(payload).toEqual({content: 'Message content'});
