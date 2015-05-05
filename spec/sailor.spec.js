@@ -7,6 +7,7 @@ describe('Sailor', function () {
     envVars.TASK_ID = '1234567890';
     envVars.STEP_ID = 'step_1';
     envVars.STEP_INFO = '{"function":"list"}';
+    envVars.STEP_DATA = '{"account":"1234567890"}';
     envVars.COMPONENT_PATH='/spec/component';
 
     var mongo = require('../lib/mongo.js');
@@ -46,6 +47,23 @@ describe('Sailor', function () {
         },
         content: new Buffer(cipher.encryptMessageContent(payload))
     };
+
+    describe('getStepInfo', function () {
+        it('should get step info from task.recipe.nodes', function () {
+            var sailor = new Sailor(settings);
+            var data = sailor.getStepInfo(null, "step_1");
+            expect(data).toEqual({function : 'list'});
+        });
+    });
+
+    describe('getStepConfiguration', function () {
+        it('should get step info from task.recipe.nodes', function () {
+
+            var sailor = new Sailor(settings);
+            var data = sailor.getStepConfiguration(null, "step_1");
+            expect(data).toEqual({account : '1234567890'});
+        });
+    });
 
     describe('processMessage', function () {
 

@@ -17,7 +17,7 @@ describe('Settings', function () {
         envVars.STEP_ID = 'step_1';
 
         var result = settings.readFrom(envVars);
-        expect(result.INCOMING_MESSAGES_QUEUE.name).toEqual('1234567890:step_1:incoming');
+        expect(result.INCOMING_MESSAGES_QUEUE).toEqual('1234567890:step_1:incoming');
     });
 
     it('should use INCOMING_MESSAGES_QUEUE from .env', function () {
@@ -30,7 +30,7 @@ describe('Settings', function () {
         envVars.INCOMING_MESSAGES_QUEUE = 'incoming-messages-queue-name';
         var result = settings.readFrom(envVars);
 
-        expect(result.INCOMING_MESSAGES_QUEUE.name).toEqual('incoming-messages-queue-name');
+        expect(result.INCOMING_MESSAGES_QUEUE).toEqual('incoming-messages-queue-name');
     });
 
 });
