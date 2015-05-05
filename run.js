@@ -13,6 +13,10 @@ process.on('SIGTERM', function() {
     sailor.disconnect();
 });
 
+process.on('uncaughtException', function(err) {
+    console.log('Uncaught exception: ' + err.message);
+    console.log(err.stack);
+});
 
 
 
