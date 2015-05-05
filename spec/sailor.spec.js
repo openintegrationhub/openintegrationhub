@@ -15,6 +15,7 @@ describe('Sailor', function () {
     var settings = require('../lib/settings.js').readFrom(envVars);
     var cipher = require('../lib/cipher.js');
     var Sailor = require('../lib/sailor.js').Sailor;
+    var Q = require('q');
 
     var payload = {param1: "Value1"};
 
@@ -48,6 +49,42 @@ describe('Sailor', function () {
         content: new Buffer(cipher.encryptMessageContent(payload))
     };
 
+    describe('connection', function () {
+
+        it('should disconnect Mongo and RabbitMQ, and exit process', function () {
+
+            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['disconnect']);
+            fakeMongoConnection.disconnect.andReturn(Q.resolve());
+
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['disconnect']);
+            fakeAMQPConnection.disconnect.andReturn(Q.resolve());
+
+            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
+            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+            spyOn(process, "exit").andReturn(0);
+
+            var sailor = new Sailor(settings);
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.disconnect();
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeMongoConnection.disconnect).toHaveBeenCalled();
+                expect(fakeAMQPConnection.disconnect).toHaveBeenCalled();
+            });
+
+        });
+
+    });
+
     describe('getStepInfo', function () {
         it('should get step info from task.recipe.nodes', function () {
             var sailor = new Sailor(settings);
@@ -64,6 +101,8 @@ describe('Sailor', function () {
             expect(data).toEqual({account : '1234567890'});
         });
     });
+
+
 
     describe('processMessage', function () {
 
@@ -111,7 +150,7 @@ describe('Sailor', function () {
             });
         });
 
-        xit('should call processRebound() and ack()', function () {
+        it('should call processRebound() and ack()', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
