@@ -10,7 +10,7 @@ sailor.connect()
     .done();
 
 process.on('SIGTERM', function() {
-    console.log('Got SIGTERM');
+    sailor.disconnect();
 });
 
 
