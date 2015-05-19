@@ -4,31 +4,31 @@ The official elastic.io library for bootstrapping and executing for Node.js conn
 
 Minimal .env vars required:
 
-MONGO_URI=mongodb://localhost/elasticdb
+  MONGO_URI=mongodb://localhost/elasticdb
 
-AMQP_URI=amqp://guest:guest@localhost:5672
+  AMQP_URI=amqp://guest:guest@localhost:5672
 
-TASK_ID=task123
+  TASK_ID=task123
 
-STEP_ID=step_2
+  STEP_ID=step_2
 
 Default values of .env vars:
 
-COMPONENT_PATH=../
+  COMPONENT_PATH=../
 
-INCOMING_MESSAGES_QUEUE={TASK_ID}.{STEP_ID}.incoming
+  INCOMING_MESSAGES_QUEUE={TASK_ID}.{STEP_ID}.incoming
 
-OUTGOING_MESSAGES_QUEUE={TASK_ID}.{STEP_ID}.outgoing
+  OUTGOING_MESSAGES_QUEUE={TASK_ID}.{STEP_ID}.outgoing
 
-ERRORS_QUEUE={TASK_ID}.{STEP_ID}.errors
+  ERRORS_QUEUE={TASK_ID}.{STEP_ID}.errors
 
-REBOUNDS_QUEUE={TASK_ID}.{STEP_ID}.rebounds
+  REBOUNDS_QUEUE={TASK_ID}.{STEP_ID}.rebounds
 
 Optional settings:
 
-REBOUND_INITIAL_EXPIRATION=15000
+  REBOUND_INITIAL_EXPIRATION=15000
 
-REBOUND_LIMIT=2
+  REBOUND_LIMIT=2
 
 (temporary solution)
 we get step data (step details) from .env var STEP_INFO (json-encoded step information, we need "function" only)
