@@ -26,5 +26,17 @@ Optional .env vars and their default values:
 we get step data (step details) from .env var STEP_INFO (json-encoded step information, we need "function" only)
 we should get account data from a message (?) but now just mock
 
+Information required now: <br/>
+<br/>
+execId: undefined, // @TODO where will we get it? <br/>
+taskId: headers.taskId, // from message header <br/>
+user: undefined,// @TODO where will we get it? <br/>
+app: undefined, <br/>
+partner: undefined, <br/>
+stepId: headers.stepId, // from message header <br/>
+compId: step.compId, // from step info <br/>
+'function': step.function, // from step info logFile: String, <br/>
+syncAppId: undefined<br/>
+
 
 
