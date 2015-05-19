@@ -2,7 +2,6 @@ var logging = require('./lib/logging.js');
 var Sailor = require('./lib/sailor.js').Sailor;
 var settings = require('./lib/settings.js').readFrom(process.env);
 
-
 sailor = new Sailor(settings);
 
 sailor.connect()
