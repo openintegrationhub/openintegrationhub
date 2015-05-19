@@ -1,17 +1,19 @@
 describe('Executor', function () {
 
     var TaskExec = require('../lib/executor.js').TaskExec;
-    var msg = {content: "MessageContent"};
+    var payload = {content: "MessageContent"};
+    var headers = {};
+    var stepData = {};
     var cfg = {};
 
     it('Should execute passthrough trigger and emit all events - data, end', function () {
 
-        var taskexec = new TaskExec();
+        var taskexec = new TaskExec(headers, stepData);
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/passthrough.js');
-        var promise = taskexec.process(module, msg, cfg);
+        var promise = taskexec.process(module, payload, cfg);
 
         expect(taskexec.emit).toHaveBeenCalled();
         expect(taskexec.emit.calls[0].args[0]).toEqual('data');
@@ -21,11 +23,11 @@ describe('Executor', function () {
 
     it('Should reject if module is missing', function () {
 
-        var taskexec = new TaskExec();
+        var taskexec = new TaskExec(headers, stepData);
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
-        var promise = taskexec.process({}, msg, cfg);
+        var promise = taskexec.process({}, payload, cfg);
 
         expect(taskexec.emit).toHaveBeenCalled();
         expect(taskexec.emit.calls[0].args[0]).toEqual('error');
@@ -36,12 +38,12 @@ describe('Executor', function () {
 
     it('Should execute rebound_trigger and emit all events - rebound, end', function () {
 
-        var taskexec = new TaskExec();
+        var taskexec = new TaskExec(headers, stepData);
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/rebound_trigger.js');
-        var promise = taskexec.process(module, msg, cfg);
+        var promise = taskexec.process(module, payload, cfg);
 
         expect(taskexec.emit).toHaveBeenCalled();
         expect(taskexec.emit.calls[0].args[0]).toEqual('rebound');
@@ -51,12 +53,12 @@ describe('Executor', function () {
 
     it('Should execute complex trigger, and emit all 6 events', function () {
 
-        var taskexec = new TaskExec();
+        var taskexec = new TaskExec(headers, stepData);
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/datas_and_errors.js');
-        var promise = taskexec.process(module, msg, cfg);
+        var promise = taskexec.process(module, payload, cfg);
 
         waitsFor(function(){
             return promise.isFulfilled() || promise.isRejected();
@@ -68,8 +70,8 @@ describe('Executor', function () {
             expect(taskexec.emit.calls[0].args[0]).toEqual('data');
             expect(taskexec.emit.calls[1].args[0]).toEqual('error');
             expect(taskexec.emit.calls[5].args[0]).toEqual('end');
-            expect(taskexec.dataCount).toEqual(3);
-            expect(taskexec.errorCount).toEqual(2);
+            expect(taskexec.taskStat.dataCount).toEqual(3);
+            expect(taskexec.taskStat.errorCount).toEqual(2);
             expect(promise.isFulfilled()).toEqual(true);
         });
 
