@@ -4,10 +4,13 @@ The official elastic.io library for bootstrapping and executing for Node.js conn
 
 Minimal .env vars required:
 
-  <code>MONGO_URI=mongodb://localhost/elasticdb
+  MONGO_URI=mongodb://localhost/elasticdb
+  
   AMQP_URI=amqp://guest:guest@localhost:5672
+  
   TASK_ID=task123
-  STEP_ID=step_2</code>
+  
+  STEP_ID=step_2
 
 Default values of .env vars:
 
