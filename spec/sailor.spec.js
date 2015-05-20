@@ -110,7 +110,7 @@ describe('Sailor', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','processData','processError','processRebound', 'processTaskStat', 'ack','reject'
+                'connect','processData','processError','processRebound','ack','reject'
             ]);
 
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
@@ -154,7 +154,7 @@ describe('Sailor', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','processData','processError','processRebound', 'processTaskStat','ack','reject'
+                'connect','processData','processError','processRebound','ack','reject'
             ]);
 
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
@@ -198,7 +198,7 @@ describe('Sailor', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','processData','processError','processRebound', 'processTaskStat','ack','reject'
+                'connect','processData','processError','processRebound','ack','reject'
             ]);
 
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
@@ -240,7 +240,7 @@ describe('Sailor', function () {
 
             var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','processData','processError','processRebound', 'processTaskStat','ack','reject'
+                'connect','processData','processError','processRebound','ack','reject'
             ]);
 
             spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);

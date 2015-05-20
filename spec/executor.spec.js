@@ -2,13 +2,11 @@ describe('Executor', function () {
 
     var TaskExec = require('../lib/executor.js').TaskExec;
     var payload = {content: "MessageContent"};
-    var headers = {};
-    var stepData = {};
     var cfg = {};
 
     it('Should execute passthrough trigger and emit all events - data, end', function () {
 
-        var taskexec = new TaskExec(headers, stepData);
+        var taskexec = new TaskExec();
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
@@ -23,7 +21,7 @@ describe('Executor', function () {
 
     it('Should reject if module is missing', function () {
 
-        var taskexec = new TaskExec(headers, stepData);
+        var taskexec = new TaskExec();
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
@@ -38,7 +36,7 @@ describe('Executor', function () {
 
     it('Should execute rebound_trigger and emit all events - rebound, end', function () {
 
-        var taskexec = new TaskExec(headers, stepData);
+        var taskexec = new TaskExec();
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
@@ -53,7 +51,7 @@ describe('Executor', function () {
 
     it('Should execute complex trigger, and emit all 6 events', function () {
 
-        var taskexec = new TaskExec(headers, stepData);
+        var taskexec = new TaskExec();
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
@@ -70,8 +68,8 @@ describe('Executor', function () {
             expect(taskexec.emit.calls[0].args[0]).toEqual('data');
             expect(taskexec.emit.calls[1].args[0]).toEqual('error');
             expect(taskexec.emit.calls[5].args[0]).toEqual('end');
-            expect(taskexec.taskStat.dataCount).toEqual(3);
-            expect(taskexec.taskStat.errorCount).toEqual(2);
+            expect(taskexec.dataCount).toEqual(3);
+            expect(taskexec.errorCount).toEqual(2);
             expect(promise.isFulfilled()).toEqual(true);
         });
 
