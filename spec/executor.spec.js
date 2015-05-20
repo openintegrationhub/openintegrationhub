@@ -1,7 +1,7 @@
 describe('Executor', function () {
 
     var TaskExec = require('../lib/executor.js').TaskExec;
-    var msg = {content: "MessageContent"};
+    var payload = {content: "MessageContent"};
     var cfg = {};
 
     it('Should execute passthrough trigger and emit all events - data, end', function () {
@@ -11,7 +11,7 @@ describe('Executor', function () {
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/passthrough.js');
-        var promise = taskexec.process(module, msg, cfg);
+        var promise = taskexec.process(module, payload, cfg);
 
         expect(taskexec.emit).toHaveBeenCalled();
         expect(taskexec.emit.calls[0].args[0]).toEqual('data');
@@ -25,7 +25,7 @@ describe('Executor', function () {
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
-        var promise = taskexec.process({}, msg, cfg);
+        var promise = taskexec.process({}, payload, cfg);
 
         expect(taskexec.emit).toHaveBeenCalled();
         expect(taskexec.emit.calls[0].args[0]).toEqual('error');
@@ -41,7 +41,7 @@ describe('Executor', function () {
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/rebound_trigger.js');
-        var promise = taskexec.process(module, msg, cfg);
+        var promise = taskexec.process(module, payload, cfg);
 
         expect(taskexec.emit).toHaveBeenCalled();
         expect(taskexec.emit.calls[0].args[0]).toEqual('rebound');
@@ -56,7 +56,7 @@ describe('Executor', function () {
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/datas_and_errors.js');
-        var promise = taskexec.process(module, msg, cfg);
+        var promise = taskexec.process(module, payload, cfg);
 
         waitsFor(function(){
             return promise.isFulfilled() || promise.isRejected();
