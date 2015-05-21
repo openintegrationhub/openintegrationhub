@@ -1,41 +1,107 @@
 var amqp = require('./lib/amqp.js');
 var settings = require('./lib/settings.js').readFrom(process.env);
 var Q = require('q');
+var util = require('util');
+
+var execId = "1432205514864";
+
+var task = {
+    "id" : "5559edd38968ec0736000003",
+    "user" : "5527f0ea43238e5d5f000001",
+    "data" : {
+        "step_2" : {
+            "_account" : "554b53aed5178d6540000001"
+        },
+        "step_3" : {
+            "mapper" : {
+                "data" : {
+                    "qty" : "2"
+                },
+                "product" : "Btestsku"
+            }
+        },
+        "step_1" : {
+            "interval" : "minute",
+            "_account" : "5559ed6b8968ec0736000002"
+        }
+    },
+    "recipe" : {
+        "nodes" : [
+            {
+                "first" : true,
+                "id" : "step_1",
+                "function" : "getProducts",
+                "compId" : "shopware"
+            },
+            {
+                "id" : "step_3",
+                "function" : "map",
+                "compId" : "mapper"
+            },
+            {
+                "id" : "step_2",
+                "function" : "updateInventory",
+                "compId" : "magento"
+            }
+        ],
+        "connections" : [
+            {
+                "to" : "step_3",
+                "from" : "step_1"
+            },
+            {
+                "to" : "step_2",
+                "from" : "step_3"
+            }
+        ]
+    }
+};
+
 
 var amqpConnection = new amqp.AMQPConnection(settings);
-amqpConnection.connect(settings.AMQP_URI).then(сreateQueuesAndExchanges);
+amqpConnection.connect(settings.AMQP_URI).then(function(){
+    сreateQueuesAndExchanges(execId, task, "step_1", "step_2");
+});
 
-function сreateQueuesAndExchanges(){
+function сreateQueuesAndExchanges(execId, task, stepId, nextStepId){
 
+    var EXCHANGE_NAME = 'userexchange:' + task.user;
 
-    var INCOMING_MESSAGES_QUEUE = {
-        name: settings.INCOMING_MESSAGES_QUEUE,
-        options: {
-            durable: true,
-            autoDelete: false
-        }
-    };
+    var MESSAGE_TAG = util.format('%s:%s:%s:message', task.id, stepId, execId);
+    var ERROR_TAG = util.format('%s:%s:%s:error', task.id, stepId, execId);
+    var REBOUND_TAG = util.format('%s:%s:%s:rebound', task.id, stepId, execId);
 
-    var OUTGOING_MESSAGES_QUEUE = {
-        name: settings.OUTGOING_MESSAGES_QUEUE,
-        options: {
-            durable: true,
-            autoDelete: false
-        }
-    };
+    var MESSAGES_QUEUE = util.format('%s:%s:%s:messages', task.id, stepId, execId);
+    var MESSAGES_LISTENING_QUEUE = util.format('%s:%s:%s:messages', task.id, nextStepId, execId);
+    var REBOUNDS_QEUE = util.format('%s:%s:%s:rebounds', task.id, stepId, execId);
 
-    var ERRORS_QUEUE = {
-        name: settings.ERRORS_QUEUE,
-        options: {
-            durable: true,
-            autoDelete: false
-        }
-    };
+    console.log('INCOMING_MESSAGES_QUEUE=%s', MESSAGES_QUEUE);
+    console.log('EXCHANGE_NAME=%s', EXCHANGE_NAME);
+    console.log('MESSAGE_TAG=%s', MESSAGE_TAG);
+    console.log('ERROR_TAG=%s', ERROR_TAG);
+    console.log('REBOUND_TAG=%s', REBOUND_TAG);
+    console.log('MESSAGES_QUEUE=%s', MESSAGES_QUEUE);
+    console.log('REBOUNDS_QEUE=%s', REBOUNDS_QEUE);
 
-    var REBOUNDS_EXCHANGE = {
-        name: process.env.REBOUNDS_EXCHANGE || makeQueueName('rebounds_exchange'),
+    var userExchange = {
+        name: EXCHANGE_NAME,
         type: 'direct',
-        routingKey: process.env.REBOUNDS_ROUTING_KEY || makeQueueName('rebounds_routing_key'),
+        options: {
+            durable: true,
+            autoDelete: false
+        }
+    };
+
+    var messagesQueue = {
+        name: MESSAGES_QUEUE,
+        options: {
+            durable: true,
+            autoDelete: false
+        }
+    };
+
+    var messagesListeningQueue = {
+        name: MESSAGES_LISTENING_QUEUE,
         options: {
             durable: true,
             autoDelete: false
@@ -44,26 +110,26 @@ function сreateQueuesAndExchanges(){
 
     var REBOUND_QUEUE_TTL = 10 * 60 * 1000; // 10 min
 
-    var REBOUNDS_QUEUE = {
-        name: settings.REBOUNDS_QUEUE,
+    var reboundsQueue = {
+        name: REBOUNDS_QEUE,
         options: {
             durable: true,
             autoDelete: false,
             arguments: {
                 'x-message-ttl': REBOUND_QUEUE_TTL,
-                'x-dead-letter-exchange': REBOUNDS_EXCHANGE.name,
-                'x-dead-letter-routing-key': REBOUNDS_EXCHANGE.routingKey
+                'x-dead-letter-exchange': EXCHANGE_NAME, // send dead rebounded queues back to exchange
+                'x-dead-letter-routing-key': MESSAGE_TAG // with tag as message
             }
         }
     };
 
     return Q.all([
-        assertQueue(amqpConnection.subscribeChannel, INCOMING_MESSAGES_QUEUE),
-        assertQueue(amqpConnection.publishChannel, OUTGOING_MESSAGES_QUEUE),
-        assertQueue(amqpConnection.publishChannel, ERRORS_QUEUE),
-        assertQueue(amqpConnection.publishChannel, REBOUNDS_QUEUE),
-        assertExchange(amqpConnection.publishChannel, REBOUNDS_EXCHANGE),
-        amqpConnection.publishChannel.bindQueue(INCOMING_MESSAGES_QUEUE.name, REBOUNDS_EXCHANGE.name, REBOUNDS_EXCHANGE.routingKey)
+        assertExchange(amqpConnection.publishChannel, userExchange), // check that exchange exists
+        assertQueue(amqpConnection.publishChannel, messagesQueue), // create messages queue
+        assertQueue(amqpConnection.publishChannel, messagesListeningQueue), // create messages queue
+        amqpConnection.publishChannel.bindQueue(messagesListeningQueue.name, userExchange.name, MESSAGE_TAG),
+        assertQueue(amqpConnection.publishChannel, reboundsQueue), // create rebounds queue
+        amqpConnection.publishChannel.bindQueue(reboundsQueue.name, userExchange.name, REBOUND_TAG)
     ]).then(function(){
         console.log('Successfully asserted all queues');
     }).done();
@@ -78,15 +144,5 @@ function сreateQueuesAndExchanges(){
         return channel.assertExchange(exchange.name, exchange.type, exchange.options).then(function assertExchangeSuccess() {
             console.log('Succesfully asserted exchange: ' + exchange.name);
         });
-    }
-
-    function makeQueueName(suffix) {
-        if (!process.env.TASK_ID) throwError('TASK_ID is missing');
-        if (!process.env.STEP_ID) throwError('STEP_ID is missing');
-        return process.env.TASK_ID + ':' + process.env.STEP_ID + ':' + suffix;
-    }
-
-    function throwError(message) {
-        throw new Error(message);
     }
 }

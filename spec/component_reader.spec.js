@@ -20,43 +20,43 @@ describe('Component reader', function () {
     it('Should find component trigger', function () {
 
         var reader = new ComponentReader();
-        var value;
-        var promise = reader.init('/spec/component/').then(function(){
-            return reader.findTriggerOrAction('passthrough').then(function(filename){
-                value = filename;
-            });
+        var filename, error;
+        reader.init('/spec/component/').then(function(){
+            try {
+                filename = reader.findTriggerOrAction('passthrough');
+            } catch (err) {
+                error = err;
+            }
         });
 
         waitsFor(function(){
-            return promise.isFulfilled() || promise.isRejected();
+            return filename || error;
         }, 10000);
 
         runs(function(){
-            expect(promise.isFulfilled()).toEqual(true);
             expect(reader.componentJson.title).toEqual('Client component');
-            expect(value).toContain('triggers/passthrough.js');
+            expect(filename).toContain('triggers/passthrough.js');
         });
     });
 
     it('Should return error if trigger not found', function () {
 
         var reader = new ComponentReader();
-        var value, error;
-        var promise = reader.init('/spec/component/').then(function(){
-            return reader.findTriggerOrAction('some-missing-component').then(function(filename){
-                value = filename;
-            }).fail(function(err){
+        var filename, error;
+
+        reader.init('/spec/component/').then(function(){
+            try {
+                filename = reader.findTriggerOrAction('some-missing-component');
+            } catch (err) {
                 error = err;
-                throw err;
-            })
+            }
         });
 
         waitsFor(function(){
-            return promise.isFulfilled() || promise.isRejected();
+            return filename || error;
         }, 10000);
 
         runs(function(){
-            expect(promise.isFulfilled()).toEqual(false);
             expect(error.message).toEqual('Trigger or action some-missing-component is not found in component.json!');
         });
     });
@@ -64,20 +64,19 @@ describe('Component reader', function () {
     it('Should return error if trigger not initialized', function () {
 
         var reader = new ComponentReader();
-        var value, error;
-        var promise = reader.findTriggerOrAction('some-missing-component').then(function(filename){
-            value = filename;
-        }).fail(function(err){
+        var filename, error;
+
+        try {
+            filename = reader.findTriggerOrAction('some-missing-component');
+        } catch (err) {
             error = err;
-            throw err;
-        });
+        }
 
         waitsFor(function(){
-            return promise.isFulfilled() || promise.isRejected();
+            return filename || error;
         }, 10000);
 
         runs(function(){
-            expect(promise.isFulfilled()).toEqual(false);
             expect(error.message).toEqual("Component.json was not loaded");
         });
     });

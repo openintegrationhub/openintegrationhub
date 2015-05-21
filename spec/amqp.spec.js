@@ -3,8 +3,14 @@ describe('AMQP', function () {
     var envVars = {};
     envVars.MONGO_URI = 'mongodb://test/test';
     envVars.AMQP_URI = 'amqp://test2/test2';
-    envVars.TASK_ID = '1234567890';
+    envVars.TASK = '{"id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
     envVars.STEP_ID = 'step_1';
+
+    envVars.LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
+    envVars.PUBLISH_MESSAGES_TO = 'userexchange:5527f0ea43238e5d5f000001';
+    envVars.DATA_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:message';
+    envVars.ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
+    envVars.REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
 
     var AMQPConnection = require('../lib/amqp.js').AMQPConnection;
     var settings = require('../lib/settings.js').readFrom(envVars);
@@ -44,20 +50,21 @@ describe('AMQP', function () {
     it('Should send message to outgoing channel when process data', function () {
 
         var amqp = new AMQPConnection(settings);
-        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.processData({"content": "Message content"}, message);
+        amqp.sendData({"content": "Message content"}, message);
 
-        expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
-        expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
+        expect(amqp.publishChannel.publish).toHaveBeenCalled();
+        expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var args = amqp.publishChannel.sendToQueue.calls[0].args;
-        expect(args[0]).toEqual(settings.OUTGOING_MESSAGES_QUEUE);
+        var args = amqp.publishChannel.publish.calls[0].args;
+        expect(args[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
+        expect(args[1]).toEqual(settings.DATA_ROUTING_KEY);
 
-        var payload = cipher.decryptMessageContent(args[1].toString());
+        var payload = cipher.decryptMessageContent(args[2].toString());
         expect(payload).toEqual({ content : 'Message content' });
 
-        var options = args[2];
+        var options = args[3];
         expect(options).toEqual({
             contentType : 'application/json',
             contentEncoding : 'utf8',
@@ -72,19 +79,20 @@ describe('AMQP', function () {
     it('Should send message to outgoing errors when process error', function () {
 
         var amqp = new AMQPConnection(settings);
-        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
-        amqp.processError(new Error('Test error'), message);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
+        amqp.sendError(new Error('Test error'), message);
 
-        expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
-        expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
+        expect(amqp.publishChannel.publish).toHaveBeenCalled();
+        expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var args = amqp.publishChannel.sendToQueue.calls[0].args;
-        expect(args[0]).toEqual(settings.ERRORS_QUEUE);
+        var args = amqp.publishChannel.publish.calls[0].args;
+        expect(args[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
+        expect(args[1]).toEqual(settings.ERROR_ROUTING_KEY);
 
-        var payload = cipher.decryptMessageContent(args[1].toString());
+        var payload = cipher.decryptMessageContent(args[2].toString());
         expect(payload.message).toEqual('Test error');
 
-        var options = args[2];
+        var options = args[3];
         expect(options).toEqual({
             contentType : 'application/json',
             contentEncoding : 'utf8',
@@ -102,43 +110,43 @@ describe('AMQP', function () {
         clonedMessage.properties.headers.reboundIteration = 100;
 
         var amqp = new AMQPConnection(settings);
-        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.processRebound(new Error("Rebound error"), clonedMessage);
+        amqp.sendRebound(new Error("Rebound error"), clonedMessage);
 
-        expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
-        expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
+        expect(amqp.publishChannel.publish).toHaveBeenCalled();
+        expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var args = amqp.publishChannel.sendToQueue.calls[0].args;
-        expect(args[0]).toEqual(settings.ERRORS_QUEUE);
+        var args = amqp.publishChannel.publish.calls[0].args;
+        expect(args[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
+        expect(args[1]).toEqual(settings.ERROR_ROUTING_KEY);
 
-        var payload = cipher.decryptMessageContent(args[1].toString());
+        var payload = cipher.decryptMessageContent(args[2].toString());
         expect(payload.message).toEqual('Rebound limit exceeded');
 
-        var options = args[2];
+        var options = args[3];
         expect(options.headers.taskId).toEqual('task1234567890');
         expect(options.headers.stepId).toEqual('step_456');
     });
 
     it('Should send message to errors channel when rebound limit exceeded', function () {
 
-
-
         var amqp = new AMQPConnection(settings);
-        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['sendToQueue']);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.processRebound(new Error("Rebound error"), message);
+        amqp.sendRebound(new Error("Rebound error"), message);
 
-        expect(amqp.publishChannel.sendToQueue).toHaveBeenCalled();
-        expect(amqp.publishChannel.sendToQueue.callCount).toEqual(1);
+        expect(amqp.publishChannel.publish).toHaveBeenCalled();
+        expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var args = amqp.publishChannel.sendToQueue.calls[0].args;
-        expect(args[0]).toEqual(settings.REBOUNDS_QUEUE);
+        var args = amqp.publishChannel.publish.calls[0].args;
+        expect(args[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
+        expect(args[1]).toEqual(settings.REBOUND_ROUTING_KEY);
 
-        var payload = cipher.decryptMessageContent(args[1].toString());
+        var payload = cipher.decryptMessageContent(args[2].toString());
         expect(payload).toEqual({content: 'Message content'});
 
-        var options = args[2];
+        var options = args[3];
         expect(options.headers.reboundIteration).toEqual(1);
         expect(options.headers.taskId).toEqual('task1234567890');
         expect(options.headers.stepId).toEqual('step_456');

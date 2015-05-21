@@ -13,24 +13,17 @@ describe('Settings', function () {
         var envVars = {};
         envVars.MONGO_URI = 'mongodb://test/test';
         envVars.AMQP_URI = 'amqp://test2/test2';
-        envVars.TASK_ID = '1234567890';
+        envVars.TASK = '{"id":"5559edd38968ec0736000003","data":{"step_2":{"uri":"546456456456456"}},"recipe":{"nodes":[{"id":"step_2","function":"passthrough"}]}}';
         envVars.STEP_ID = 'step_1';
 
+        envVars.LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
+        envVars.PUBLISH_MESSAGES_TO = 'userexchange:5527f0ea43238e5d5f000001';
+        envVars.DATA_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:message';
+        envVars.ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
+        envVars.REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
+
         var result = settings.readFrom(envVars);
-        expect(result.INCOMING_MESSAGES_QUEUE).toEqual('1234567890:step_1:incoming');
-    });
-
-    it('should use INCOMING_MESSAGES_QUEUE from .env', function () {
-
-        var envVars = {};
-        envVars.MONGO_URI = 'mongodb://test/test';
-        envVars.AMQP_URI = 'amqp://test2/test2';
-        envVars.TASK_ID = '1234567890';
-        envVars.STEP_ID = 'step_1';
-        envVars.INCOMING_MESSAGES_QUEUE = 'incoming-messages-queue-name';
-        var result = settings.readFrom(envVars);
-
-        expect(result.INCOMING_MESSAGES_QUEUE).toEqual('incoming-messages-queue-name');
+        expect(result.LISTEN_MESSAGES_ON).toEqual('5559edd38968ec0736000003:step_1:1432205514864:messages');
     });
 
 });
