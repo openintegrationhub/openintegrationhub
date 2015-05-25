@@ -35,8 +35,8 @@ describe('Sailor', function () {
             contentType: 'application/json',
             contentEncoding: 'utf8',
             headers: {
-                taskId: "",
-                stepId: ""
+                taskId: "5559edd38968ec0736000003",
+                execId: "exec1"
             },
             deliveryMode: undefined,
             priority: undefined,
@@ -82,7 +82,7 @@ describe('Sailor', function () {
 
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeMongoConnection.disconnect).toHaveBeenCalled();
+                //expect(fakeMongoConnection.disconnect).toHaveBeenCalled();
                 expect(fakeAMQPConnection.disconnect).toHaveBeenCalled();
             });
 
@@ -93,7 +93,7 @@ describe('Sailor', function () {
     describe('getStepInfo', function () {
         it('should get step info from task.recipe.nodes', function () {
             var sailor = new Sailor(settings);
-            var data = sailor.getStepInfo(null, "step_1");
+            var data = sailor.getStepInfo("step_1");
             expect(data).toEqual({ id : 'step_1', function : 'list'});
         });
     });
@@ -102,7 +102,7 @@ describe('Sailor', function () {
         it('should get step cfg from task.data', function () {
 
             var sailor = new Sailor(settings);
-            var data = sailor.getStepCfg(null, "step_1");
+            var data = sailor.getStepCfg("step_1");
             expect(data).toEqual({account : '1234567890'});
         });
     });
@@ -131,7 +131,6 @@ describe('Sailor', function () {
 
             runs(function(){
                 promise = sailor.connect().then(function(){
-                    console.log('processMessage');
                     return sailor.processMessage(payload, message);
                 }).fail(function(err){
                     console.log(err);

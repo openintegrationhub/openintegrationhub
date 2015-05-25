@@ -52,7 +52,10 @@ describe('AMQP', function () {
         var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.sendData({"content": "Message content"}, message);
+        amqp.sendData({"content": "Message content"}, message, {
+            taskId : 'task1234567890',
+            stepId : 'step_456'
+        });
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
@@ -80,7 +83,10 @@ describe('AMQP', function () {
 
         var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
-        amqp.sendError(new Error('Test error'), message);
+        amqp.sendError(new Error('Test error'), message, {
+            taskId : 'task1234567890',
+            stepId : 'step_456'
+        });
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
@@ -112,7 +118,10 @@ describe('AMQP', function () {
         var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.sendRebound(new Error("Rebound error"), clonedMessage);
+        amqp.sendRebound(new Error("Rebound error"), clonedMessage, {
+            taskId : 'task1234567890',
+            stepId : 'step_456'
+        });
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
