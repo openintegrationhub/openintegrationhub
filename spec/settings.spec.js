@@ -5,7 +5,7 @@ describe('Settings', function () {
     it('should throw error if no important settings provided', function () {
         expect(function(){
             settings.readFrom({});
-        }).toThrow('MONGO_URI is missing');
+        }).toThrow('AMQP_URI is missing');
     });
 
     it('should not throw error if all important settings provided', function () {
@@ -13,7 +13,7 @@ describe('Settings', function () {
         var envVars = {};
         envVars.MONGO_URI = 'mongodb://test/test';
         envVars.AMQP_URI = 'amqp://test2/test2';
-        envVars.TASK = '{"id":"5559edd38968ec0736000003","data":{"step_2":{"uri":"546456456456456"}},"recipe":{"nodes":[{"id":"step_2","function":"passthrough"}]}}';
+        envVars.TASK = '{"_id":"5559edd38968ec0736000003","data":{"step_2":{"uri":"546456456456456"}},"recipe":{"nodes":[{"id":"step_2","function":"passthrough"}]}}';
         envVars.STEP_ID = 'step_1';
 
         envVars.LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';

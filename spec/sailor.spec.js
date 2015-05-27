@@ -3,7 +3,7 @@ describe('Sailor', function () {
     var envVars = {};
     envVars.MONGO_URI = 'mongodb://test/test';
     envVars.AMQP_URI = 'amqp://test2/test2';
-    envVars.TASK = '{"id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
+    envVars.TASK = '{"_id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
     envVars.STEP_ID = 'step_1';
 
     envVars.LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
@@ -20,6 +20,7 @@ describe('Sailor', function () {
     var settings = require('../lib/settings.js').readFrom(envVars);
     var cipher = require('../lib/cipher.js');
     var Sailor = require('../lib/sailor.js').Sailor;
+    var _ = require('lodash');
     var Q = require('q');
 
     var payload = {param1: "Value1"};
@@ -238,6 +239,46 @@ describe('Sailor', function () {
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                 expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                 expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+            });
+        });
+
+        it('should not process message if taskId in header is not equal to task._id', function () {
+
+            var message2 = _.cloneDeep(message);
+            message2.properties.headers.taskId = "othertaskid";
+
+            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+                'connect','sendData','sendError','sendRebound','ack','reject'
+            ]);
+
+            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
+            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "error_trigger"
+            });
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    return sailor.processMessage(payload, message2);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.calls[0].args[1]).toEqual(false);
             });
         });
 

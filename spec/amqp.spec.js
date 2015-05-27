@@ -3,7 +3,7 @@ describe('AMQP', function () {
     var envVars = {};
     envVars.MONGO_URI = 'mongodb://test/test';
     envVars.AMQP_URI = 'amqp://test2/test2';
-    envVars.TASK = '{"id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
+    envVars.TASK = '{"_id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
     envVars.STEP_ID = 'step_1';
 
     envVars.LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
