@@ -1,7 +1,6 @@
 describe('Sailor', function () {
 
     var envVars = {};
-    envVars.MONGO_URI = 'mongodb://test/test';
     envVars.AMQP_URI = 'amqp://test2/test2';
     envVars.TASK = '{"_id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
     envVars.STEP_ID = 'step_1';
@@ -15,7 +14,6 @@ describe('Sailor', function () {
     envVars.COMPONENT_PATH='/spec/component';
     envVars.DEBUG='sailor';
 
-    var mongo = require('../lib/mongo.js');
     var amqp = require('../lib/amqp.js');
     var settings = require('../lib/settings.js').readFrom(envVars);
     var cipher = require('../lib/cipher.js');
@@ -59,13 +57,9 @@ describe('Sailor', function () {
 
         it('should disconnect Mongo and RabbitMQ, and exit process', function () {
 
-            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['disconnect']);
-            fakeMongoConnection.disconnect.andReturn(Q.resolve());
-
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['disconnect']);
             fakeAMQPConnection.disconnect.andReturn(Q.resolve());
 
-            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
             spyOn(process, "exit").andReturn(0);
 
@@ -83,7 +77,6 @@ describe('Sailor', function () {
 
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
-                //expect(fakeMongoConnection.disconnect).toHaveBeenCalled();
                 expect(fakeAMQPConnection.disconnect).toHaveBeenCalled();
             });
 
@@ -114,12 +107,10 @@ describe('Sailor', function () {
 
         it('should call sendData() and ack() if success', function () {
 
-            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
                 'connect','sendData','sendError','sendRebound','ack','reject'
             ]);
 
-            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
             var sailor = new Sailor(settings);
@@ -158,12 +149,10 @@ describe('Sailor', function () {
 
         it('should call sendRebound() and ack()', function () {
 
-            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
                 'connect','sendData','sendError','sendRebound','ack','reject'
             ]);
 
-            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
             var sailor = new Sailor(settings);
@@ -202,12 +191,10 @@ describe('Sailor', function () {
 
         it('should send error if error happened', function () {
 
-            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
                 'connect','sendData','sendError','sendRebound','ack','reject'
             ]);
 
-            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
             var sailor = new Sailor(settings);
@@ -247,12 +234,10 @@ describe('Sailor', function () {
             var message2 = _.cloneDeep(message);
             message2.properties.headers.taskId = "othertaskid";
 
-            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
                 'connect','sendData','sendError','sendRebound','ack','reject'
             ]);
 
-            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
             var sailor = new Sailor(settings);
@@ -284,12 +269,10 @@ describe('Sailor', function () {
 
         xit('should catch all data calls and all error calls', function () {
 
-            var fakeMongoConnection = jasmine.createSpyObj("MongoConnection", ['connect']);
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
                 'connect','sendData','sendError','sendRebound','ack','reject'
             ]);
 
-            spyOn(mongo, "MongoConnection").andReturn(fakeMongoConnection);
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
             var sailor = new Sailor(settings);

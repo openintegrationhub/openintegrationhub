@@ -8,7 +8,6 @@ TASK={"id":"5559edd38968ec0736000003","data":{"step_1":{"uri":"546456456456456"}
 STEP_ID=step_1<br/>
 <br/>
 AMQP_URI=amqp://guest:guest@localhost:5672<br/>
-MONGO_URI=mongodb://localhost/elasticdb<br/>
 <br/>
 LISTEN_MESSAGES_ON=5559edd38968ec0736000003:step_1:1432205514864:messages<br/>
 PUBLISH_MESSAGES_TO=userexchange:5527f0ea43238e5d5f000001<br/>

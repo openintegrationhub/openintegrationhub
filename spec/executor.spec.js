@@ -52,6 +52,7 @@ describe('Executor', function () {
     it('Should execute complex trigger, and emit all 6 events', function () {
 
         var taskexec = new TaskExec();
+        taskexec.setTimeout(2000);
         taskexec.on('error', function(){});
         spyOn(taskexec, 'emit').andCallThrough();
 
@@ -60,7 +61,7 @@ describe('Executor', function () {
 
         waitsFor(function(){
             return promise.isFulfilled() || promise.isRejected();
-        }, 10000);
+        }, 3000);
 
         runs(function(){
             expect(taskexec.emit).toHaveBeenCalled();

@@ -11,7 +11,6 @@ describe('Settings', function () {
     it('should not throw error if all important settings provided', function () {
 
         var envVars = {};
-        envVars.MONGO_URI = 'mongodb://test/test';
         envVars.AMQP_URI = 'amqp://test2/test2';
         envVars.TASK = '{"_id":"5559edd38968ec0736000003","data":{"step_2":{"uri":"546456456456456"}},"recipe":{"nodes":[{"id":"step_2","function":"passthrough"}]}}';
         envVars.STEP_ID = 'step_1';
