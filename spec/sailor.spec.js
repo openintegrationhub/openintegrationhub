@@ -139,7 +139,6 @@ describe('Sailor', function () {
 
                 expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
                 expect(fakeAMQPConnection.sendData.calls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
-                expect(fakeAMQPConnection.sendData.calls[0].args[1]).toEqual(message);
 
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                 expect(fakeAMQPConnection.ack.callCount).toEqual(1);
@@ -220,12 +219,56 @@ describe('Sailor', function () {
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
                 expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+
                 expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
                 expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Some component error');
                 expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
-                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
-                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+
+                expect(fakeAMQPConnection.reject).toHaveBeenCalled();
+                expect(fakeAMQPConnection.reject.callCount).toEqual(1);
+                expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
+            });
+        });
+
+        it('should reject message if trigger is missing', function () {
+
+            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+                'connect','sendData','sendError','sendRebound','ack','reject'
+            ]);
+
+            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "missing_trigger"
+            });
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    return sailor.processMessage(payload, message);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+
+                expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Module missing_trigger not found');
+                expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
+
+                expect(fakeAMQPConnection.reject).toHaveBeenCalled();
+                expect(fakeAMQPConnection.reject.callCount).toEqual(1);
+                expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
             });
         });
 
@@ -262,8 +305,7 @@ describe('Sailor', function () {
 
             runs(function(){
                 expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                expect(fakeAMQPConnection.ack.calls[0].args[1]).toEqual(false);
+                expect(fakeAMQPConnection.reject).toHaveBeenCalled();
             });
         });
 

@@ -24,6 +24,13 @@
     "passthrough": {
       "main": "./triggers/passthrough.js",
       "title": "Emit the same message which received"
+    },
+    "missing_trigger": {
+      "main": "./triggers/missing_trigger.js",
+      "title": "Error"
+    },
+    "invalid_trigger": {
+      "title": "Error"
     }
   },
   "actions": {

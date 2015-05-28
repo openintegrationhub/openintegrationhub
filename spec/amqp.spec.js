@@ -51,7 +51,7 @@ describe('AMQP', function () {
         var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.sendData({"content": "Message content"}, message, {
+        amqp.sendData({"content": "Message content"}, {
             taskId : 'task1234567890',
             stepId : 'step_456'
         });
@@ -59,24 +59,24 @@ describe('AMQP', function () {
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var args = amqp.publishChannel.publish.calls[0].args;
-
-        expect(args[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
-        expect(args[1]).toEqual(settings.DATA_ROUTING_KEY);
-
-        var payload = cipher.decryptMessageContent(args[2].toString());
-        expect(payload).toEqual({ content : 'Message content' });
-
-        var options = args[3];
-        expect(options).toEqual({
-            contentType : 'application/json',
-            contentEncoding : 'utf8',
-            mandatory : true,
-            headers : {
-                taskId : 'task1234567890',
-                stepId : 'step_456'
+        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        expect(publishParameters).toEqual([
+            settings.PUBLISH_MESSAGES_TO,
+            settings.DATA_ROUTING_KEY,
+            jasmine.any(Object),
+            {
+                contentType : 'application/json',
+                contentEncoding : 'utf8',
+                mandatory : true,
+                headers : {
+                    taskId : 'task1234567890',
+                    stepId : 'step_456'
+                }
             }
-        });
+        ]);
+
+        var payload = cipher.decryptMessageContent(publishParameters[2].toString());
+        expect(payload).toEqual({ content : 'Message content' });
     });
 
     it('Should send message to errors when process error', function () {
@@ -84,7 +84,7 @@ describe('AMQP', function () {
         var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.sendError(new Error('Test error'), message, {
+        amqp.sendError(new Error('Test error'), {
             taskId : 'task1234567890',
             stepId : 'step_456'
         });
@@ -92,26 +92,27 @@ describe('AMQP', function () {
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var args = amqp.publishChannel.publish.calls[0].args;
-        expect(args[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
-        expect(args[1]).toEqual(settings.ERROR_ROUTING_KEY);
+        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        expect(publishParameters).toEqual([
+            settings.PUBLISH_MESSAGES_TO,
+            settings.ERROR_ROUTING_KEY,
+            jasmine.any(Object),
+            {
+                contentType : 'application/json',
+                contentEncoding : 'utf8',
+                mandatory : true,
+                headers : {
+                    taskId : 'task1234567890',
+                    stepId : 'step_456'
+                }
+            }
+        ]);
 
-        var payload = cipher.decryptMessageContent(args[2].toString());
+        var payload = cipher.decryptMessageContent(publishParameters[2].toString());
         expect(payload).toEqual({
             name: 'Error',
             message: 'Test error',
             stack: jasmine.any(String)
-        });
-
-        var options = args[3];
-        expect(options).toEqual({
-            contentType : 'application/json',
-            contentEncoding : 'utf8',
-            mandatory : true,
-            headers : {
-                taskId : 'task1234567890',
-                stepId : 'step_456'
-            }
         });
     });
 
@@ -134,24 +135,30 @@ describe('AMQP', function () {
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var args = amqp.publishChannel.publish.calls[0].args;
-        expect(args[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
-        expect(args[1]).toEqual(settings.REBOUND_ROUTING_KEY);
+        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        expect(publishParameters).toEqual([
+            settings.PUBLISH_MESSAGES_TO,
+            settings.REBOUND_ROUTING_KEY,
+            jasmine.any(Object),
+            {
+                contentType : 'application/json',
+                contentEncoding : 'utf8',
+                mandatory : true,
+                expiration : 15000,
+                headers : {
+                    execId : 'exec1234567890',
+                    taskId : 'task1234567890',
+                    stepId : 'step_1',
+                    compId : 'comp1',
+                    function : 'list',
+                    start : '1432815685034',
+                    reboundIteration : 1
+                }
+            }
+        ]);
 
-        var payload = cipher.decryptMessageContent(args[2].toString());
+        var payload = cipher.decryptMessageContent(publishParameters[2].toString());
         expect(payload).toEqual({content: 'Message content'});
-
-        var options = args[3];
-        expect(options.headers).toEqual({
-            execId: "exec1234567890",
-            taskId: "task1234567890",
-            stepId: 'step_1',
-            compId: "comp1",
-            function: "list",
-            start: "1432815685034",
-            reboundIteration : 1
-        });
-        expect(options.expiration).toEqual(15000);
     });
 
     it('Should send message to rebounds with reboundIteration=3', function () {
@@ -176,24 +183,30 @@ describe('AMQP', function () {
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var args = amqp.publishChannel.publish.calls[0].args;
-        expect(args[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
-        expect(args[1]).toEqual(settings.REBOUND_ROUTING_KEY);
+        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        expect(publishParameters).toEqual([
+            settings.PUBLISH_MESSAGES_TO,
+            settings.REBOUND_ROUTING_KEY,
+            jasmine.any(Object),
+            {
+                contentType : 'application/json',
+                contentEncoding : 'utf8',
+                mandatory : true,
+                expiration : 60000,
+                headers : {
+                    execId : 'exec1234567890',
+                    taskId : 'task1234567890',
+                    stepId : 'step_1',
+                    compId : 'comp1',
+                    function : 'list',
+                    start : '1432815685034',
+                    reboundIteration : 3
+                }
+            }
+        ]);
 
-        var payload = cipher.decryptMessageContent(args[2].toString());
+        var payload = cipher.decryptMessageContent(publishParameters[2].toString());
         expect(payload).toEqual({content: 'Message content'});
-
-        var options = args[3];
-        expect(options.headers).toEqual({
-            execId: "exec1234567890",
-            taskId: "task1234567890",
-            stepId: 'step_1',
-            compId: "comp1",
-            function: "list",
-            start: "1432815685034",
-            reboundIteration : 3
-        });
-        expect(options.expiration).toEqual(60000);
     });
 
     it('Should send message to errors when rebound limit exceeded', function () {
@@ -218,15 +231,28 @@ describe('AMQP', function () {
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var args = amqp.publishChannel.publish.calls[0].args;
-        expect(args[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
-        expect(args[1]).toEqual(settings.ERROR_ROUTING_KEY);
+        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        expect(publishParameters).toEqual([
+            settings.PUBLISH_MESSAGES_TO,
+            settings.ERROR_ROUTING_KEY,
+            jasmine.any(Object),
+            {
+                contentType : 'application/json',
+                contentEncoding : 'utf8',
+                mandatory : true,
+                headers : {
+                    execId: "exec1234567890",
+                    taskId: "task1234567890",
+                    stepId: 'step_1',
+                    compId: "comp1",
+                    function: "list",
+                    start: "1432815685034"
+                }
+            }
+        ]);
 
-        var payload = cipher.decryptMessageContent(args[2].toString());
+        var payload = cipher.decryptMessageContent(publishParameters[2].toString());
         expect(payload.message).toEqual('Rebound limit exceeded');
-
-        var options = args[3];
-        expect(options.headers).toEqual(outgoingMessageHeaders);
     });
 
 
@@ -246,7 +272,7 @@ describe('AMQP', function () {
 
         var amqp = new AMQPConnection(settings);
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['reject']);
-        amqp.ack(message, false);
+        amqp.reject(message);
 
         expect(amqp.subscribeChannel.reject).toHaveBeenCalled();
         expect(amqp.subscribeChannel.reject.callCount).toEqual(1);
