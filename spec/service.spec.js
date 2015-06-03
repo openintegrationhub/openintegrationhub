@@ -4,10 +4,15 @@ describe('Service', function(){
     var service = require('../lib/service');
 
     describe('execService', function(){
-        it('verifyCredentials', function(){
-            var onSuccess = jasmine.createSpy('success');
-            var onError = jasmine.createSpy('error');
+        var onSuccess;
+        var onError;
 
+        beforeEach(function(){
+            onSuccess = jasmine.createSpy('success');
+            onError = jasmine.createSpy('error');
+        });
+
+        it('verifyCredentials', function(){
             runs(function(){
                 Q.fcall(function(){
                     return service.execService('verifyCredentials', {}, {})
@@ -27,9 +32,6 @@ describe('Service', function(){
         });
 
         it('getMetaModel', function(){
-            var onSuccess = jasmine.createSpy('success');
-            var onError = jasmine.createSpy('error');
-
             runs(function(){
                 Q.fcall(function(){
                     return service.execService('getMetaModel', {}, {triggerOrAction: 'update'})
