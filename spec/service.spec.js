@@ -51,9 +51,6 @@ describe('Service', function(){
         });
 
         it('selectModel', function(){
-            var onSuccess = jasmine.createSpy('success');
-            var onError = jasmine.createSpy('error');
-
             runs(function(){
                 Q.fcall(function(){
                     return service.execService('selectModel', {}, {triggerOrAction: 'update', getModelMethod: 'getModel'});
@@ -73,9 +70,6 @@ describe('Service', function(){
         });
 
         it('should throw an error when there is no such service method', function(){
-            var onSuccess = jasmine.createSpy('success');
-            var onError = jasmine.createSpy('error');
-
             runs(function(){
                 Q.fcall(function(){
                     return service.execService('unknownMethod', {}, {});
@@ -95,9 +89,6 @@ describe('Service', function(){
         });
 
         it('should throw an error when there is no metaModel method', function(){
-            var onSuccess = jasmine.createSpy('success');
-            var onError = jasmine.createSpy('error');
-
             runs(function(){
                 Q.fcall(function(){
                     return service.execService('getMetaMethod', {}, {triggerOrAction: 'unknown'});
@@ -117,9 +108,6 @@ describe('Service', function(){
         });
 
         it('should throw an error when there is no getModel method', function(){
-            var onSuccess = jasmine.createSpy('success');
-            var onError = jasmine.createSpy('error');
-
             runs(function(){
                 Q.fcall(function(){
                     return service.execService('selectModel', {}, {triggerOrAction: 'update', getModelMethod: 'unknown'});
