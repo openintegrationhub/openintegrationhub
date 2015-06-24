@@ -87,7 +87,7 @@ describe('AMQP', function () {
         amqp.sendError(new Error('Test error'), {
             taskId : 'task1234567890',
             stepId : 'step_456'
-        });
+        }, message.content);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
@@ -108,11 +108,19 @@ describe('AMQP', function () {
             }
         ]);
 
-        var payload = cipher.decryptMessageContent(publishParameters[2].toString());
+        var payload = JSON.parse(publishParameters[2].toString());
+        payload.error = cipher.decryptMessageContent(payload.error);
+        payload.errorInput = cipher.decryptMessageContent(payload.errorInput);
+
         expect(payload).toEqual({
-            name: 'Error',
-            message: 'Test error',
-            stack: jasmine.any(String)
+            error: {
+                name: 'Error',
+                message: 'Test error',
+                stack: jasmine.any(String)
+            },
+            errorInput : {
+                "content": "Message content"
+            }
         });
     });
 
@@ -251,8 +259,13 @@ describe('AMQP', function () {
             }
         ]);
 
-        var payload = cipher.decryptMessageContent(publishParameters[2].toString());
-        expect(payload.message).toEqual('Rebound limit exceeded');
+        var payload = JSON.parse(publishParameters[2].toString());
+        console.log(payload);
+        payload.error = cipher.decryptMessageContent(payload.error);
+        payload.errorInput = cipher.decryptMessageContent(payload.errorInput);
+
+        expect(payload.error.message).toEqual('Rebound limit exceeded');
+        expect(payload.errorInput).toEqual({content : 'Message content'});
     });
 
 
