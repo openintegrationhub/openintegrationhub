@@ -1,5 +1,7 @@
 describe('Sailor', function () {
 
+    process.env.DEBUG='*';
+
     var envVars = {};
     envVars.AMQP_URI = 'amqp://test2/test2';
     envVars.TASK = '{"_id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
@@ -35,7 +37,8 @@ describe('Sailor', function () {
             contentEncoding: 'utf8',
             headers: {
                 taskId: "5559edd38968ec0736000003",
-                execId: "exec1"
+                execId: "exec1",
+                userId: "5559edd38968ec0736000002"
             },
             deliveryMode: undefined,
             priority: undefined,
@@ -265,6 +268,7 @@ describe('Sailor', function () {
                 expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
                 expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Module missing_trigger not found');
                 expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
+                expect(fakeAMQPConnection.sendError.calls[0].args[2]).toEqual(message.content);
 
                 expect(fakeAMQPConnection.reject).toHaveBeenCalled();
                 expect(fakeAMQPConnection.reject.callCount).toEqual(1);
