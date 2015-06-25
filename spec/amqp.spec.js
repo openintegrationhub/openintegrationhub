@@ -124,6 +124,60 @@ describe('AMQP', function () {
         });
     });
 
+    it('Should not provide errorInput if errorInput was empty', function () {
+
+        var amqp = new AMQPConnection(settings);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
+
+        amqp.sendError(new Error('Test error'), {
+            taskId : 'task1234567890',
+            stepId : 'step_456'
+        }, '');
+
+        expect(amqp.publishChannel.publish).toHaveBeenCalled();
+        expect(amqp.publishChannel.publish.callCount).toEqual(1);
+
+        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        var payload = JSON.parse(publishParameters[2].toString());
+        payload.error = cipher.decryptMessageContent(payload.error);
+
+        expect(payload).toEqual({
+            error: {
+                name: 'Error',
+                message: 'Test error',
+                stack: jasmine.any(String)
+            }
+            // no errorInput should be here
+        });
+    });
+
+    it('Should not provide errorInput if errorInput was null', function () {
+
+        var amqp = new AMQPConnection(settings);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
+
+        amqp.sendError(new Error('Test error'), {
+            taskId : 'task1234567890',
+            stepId : 'step_456'
+        }, null);
+
+        expect(amqp.publishChannel.publish).toHaveBeenCalled();
+        expect(amqp.publishChannel.publish.callCount).toEqual(1);
+
+        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        var payload = JSON.parse(publishParameters[2].toString());
+        payload.error = cipher.decryptMessageContent(payload.error);
+
+        expect(payload).toEqual({
+            error: {
+                name: 'Error',
+                message: 'Test error',
+                stack: jasmine.any(String)
+            }
+            // no errorInput should be here
+        });
+    });
+
     it('Should send message to rebounds when rebound happened', function () {
 
         var amqp = new AMQPConnection(settings);
