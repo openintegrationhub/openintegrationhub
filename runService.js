@@ -36,6 +36,7 @@ function sendResponse(result) {
     var opts = {
         url: POST_RESULT_URL,
         json: true,
+        rejectUnauthorized: false,
         body: result
     };
     return Q.ninvoke(request, 'post', opts);
