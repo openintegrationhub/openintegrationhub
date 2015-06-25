@@ -226,6 +226,7 @@ describe('Sailor', function () {
                 expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
                 expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Some component error');
                 expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
+                expect(fakeAMQPConnection.sendError.calls[0].args[2]).toEqual(message.content);
 
                 expect(fakeAMQPConnection.reject).toHaveBeenCalled();
                 expect(fakeAMQPConnection.reject.callCount).toEqual(1);
