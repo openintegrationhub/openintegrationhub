@@ -10,6 +10,7 @@ describe('AMQP', function () {
     envVars.DATA_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:message';
     envVars.ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
     envVars.REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
+    envVars.SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
 
     var AMQPConnection = require('../lib/amqp.js').AMQPConnection;
     var settings = require('../lib/settings.js').readFrom(envVars);

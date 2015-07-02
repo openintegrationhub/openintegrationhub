@@ -20,6 +20,7 @@ describe('Settings', function () {
         envVars.DATA_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:message';
         envVars.ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
         envVars.REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
+        envVars.SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
 
         var result = settings.readFrom(envVars);
         expect(result.LISTEN_MESSAGES_ON).toEqual('5559edd38968ec0736000003:step_1:1432205514864:messages');

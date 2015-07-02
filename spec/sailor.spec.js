@@ -4,7 +4,12 @@ describe('Sailor', function () {
 
     var envVars = {};
     envVars.AMQP_URI = 'amqp://test2/test2';
-    envVars.TASK = '{"_id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
+    envVars.TASK = JSON.stringify({
+        "_id" : "5559edd38968ec0736000003",
+        "data" : {"step_1" : {"account" : "1234567890"}},
+        "recipe" : {"nodes" : [{"id" : "step_1", "function" : "list"}]},
+        "snapshot": {"step_1": {"someId": "someData"}}
+    });
     envVars.STEP_ID = 'step_1';
 
     envVars.LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
@@ -12,6 +17,7 @@ describe('Sailor', function () {
     envVars.DATA_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:message';
     envVars.ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
     envVars.REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
+    envVars.SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
 
     envVars.COMPONENT_PATH='/spec/component';
     envVars.DEBUG='sailor';
@@ -104,18 +110,34 @@ describe('Sailor', function () {
         });
     });
 
+    describe('getStepSnapshot', function () {
+        it('should get step snapshot from task.snapshot', function () {
+            var sailor = new Sailor(settings);
+            var data = sailor.getStepSnapshot("step_1");
+            expect(data).toEqual({someId : 'someData'});
+        });
 
+        it('should return empty object if there is no snapshot yet for current step', function () {
+            var sailor = new Sailor(settings);
+            var data = sailor.getStepSnapshot("step_2");
+            expect(data).toEqual({});
+        });
+    });
 
     describe('processMessage', function () {
+        var fakeAMQPConnection;
 
-        it('should call sendData() and ack() if success', function () {
-
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','sendData','sendError','sendRebound','ack','reject'
+        beforeEach(function(){
+            fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+                'connect','sendData','sendError','sendRebound','ack','reject',
+                'sendSnapshot'
             ]);
 
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+        });
 
+
+        it('should call sendData() and ack() if success', function () {
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
@@ -150,13 +172,6 @@ describe('Sailor', function () {
         });
 
         it('should call sendRebound() and ack()', function () {
-
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','sendData','sendError','sendRebound','ack','reject'
-            ]);
-
-            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
-
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
@@ -191,14 +206,45 @@ describe('Sailor', function () {
             });
         });
 
+        it('should call sendSnapshot() and ack()', function () {
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "update"
+            });
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    return sailor.processMessage(payload, message);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+
+                expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(2);
+                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual({someId: 'someData', blabla:'blablabla'});
+                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1].snapshotEvent).toEqual('snapshot');
+                expect(fakeAMQPConnection.sendSnapshot.calls[1].args[0]).toEqual({some: 'updatedValue'});
+                expect(fakeAMQPConnection.sendSnapshot.calls[1].args[1].snapshotEvent).toEqual('updateSnapshot');
+
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+            });
+        });
+
+
         it('should send error if error happened', function () {
-
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','sendData','sendError','sendRebound','ack','reject'
-            ]);
-
-            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
-
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
@@ -235,13 +281,6 @@ describe('Sailor', function () {
         });
 
         it('should reject message if trigger is missing', function () {
-
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','sendData','sendError','sendRebound','ack','reject'
-            ]);
-
-            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
-
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
@@ -282,12 +321,6 @@ describe('Sailor', function () {
             var message2 = _.cloneDeep(message);
             message2.properties.headers.taskId = "othertaskid";
 
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','sendData','sendError','sendRebound','ack','reject'
-            ]);
-
-            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
-
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
@@ -315,12 +348,6 @@ describe('Sailor', function () {
         });
 
         xit('should catch all data calls and all error calls', function () {
-
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
-                'connect','sendData','sendError','sendRebound','ack','reject'
-            ]);
-
-            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
 
             var sailor = new Sailor(settings);
 
