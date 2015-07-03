@@ -1,12 +1,17 @@
+var _ = require('lodash');
+
 exports.process = processAction;
 exports.getMetaModel = getMetaModel;
 exports.getModel = getModel;
 
 function processAction(msg, cfg, next, snapshot){
-    snapshot.blabla = 'blablabla';
-    this.emit('snapshot', snapshot);
-    this.emit('updateSnapshot', {some: 'updatedValue'});
-    this.emit('end', msg);
+    if (msg.snapshot) {
+        this.emit('snapshot', msg.snapshot);
+    }
+    if (msg.updateSnapshot) {
+        this.emit('updateSnapshot', msg.updateSnapshot);
+    }
+    this.emit('end');
 }
 
 function getMetaModel(cfg, cb) {
