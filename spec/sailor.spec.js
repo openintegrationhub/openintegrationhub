@@ -23,7 +23,8 @@ describe('Sailor', function () {
     envVars.DEBUG='sailor';
 
     var amqp = require('../lib/amqp.js');
-    var settings = require('../lib/settings.js').readFrom(envVars);
+    //var settings = require('../lib/settings.js').readFrom(envVars);
+    var settings;
     var cipher = require('../lib/cipher.js');
     var Sailor = require('../lib/sailor.js').Sailor;
     var _ = require('lodash');
@@ -61,6 +62,10 @@ describe('Sailor', function () {
         },
         content: new Buffer(cipher.encryptMessageContent(payload))
     };
+
+    beforeEach(function(){
+        settings = require('../lib/settings.js').readFrom(envVars);
+    })
 
     describe('connection', function () {
 
@@ -115,12 +120,6 @@ describe('Sailor', function () {
             var sailor = new Sailor(settings);
             var data = sailor.getStepSnapshot("step_1");
             expect(data).toEqual({someId : 'someData'});
-        });
-
-        it('should return empty object if there is no snapshot yet for current step', function () {
-            var sailor = new Sailor(settings);
-            var data = sailor.getStepSnapshot("step_2");
-            expect(data).toEqual({});
         });
     });
 
@@ -206,7 +205,7 @@ describe('Sailor', function () {
             });
         });
 
-        it('should call sendSnapshot() and ack()', function () {
+        it('should call sendSnapshot() and ack() after a `snapshot` event', function () {
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
@@ -217,6 +216,9 @@ describe('Sailor', function () {
 
             runs(function(){
                 promise = sailor.connect().then(function(){
+                    var payload = {
+                        snapshot : {blabla : 'blablabla'}
+                    };
                     return sailor.processMessage(payload, message);
                 }).fail(function(err){
                     console.log(err);
@@ -228,21 +230,59 @@ describe('Sailor', function () {
             }, 10000);
 
             runs(function(){
+                var expectedSnapshot = {blabla:'blablabla'};
                 expect(promise.isFulfilled()).toBeTruthy();
                 expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-                expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(2);
-                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual({someId: 'someData', blabla:'blablabla'});
+                expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
+                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual(expectedSnapshot);
                 expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1].snapshotEvent).toEqual('snapshot');
-                expect(fakeAMQPConnection.sendSnapshot.calls[1].args[0]).toEqual({some: 'updatedValue'});
-                expect(fakeAMQPConnection.sendSnapshot.calls[1].args[1].snapshotEvent).toEqual('updateSnapshot');
-
+                expect(sailor.snapshot).toEqual(expectedSnapshot);
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                 expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                 expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
             });
         });
 
+        it('should call sendSnapshot() and ack() after an `updateSnapshot` event', function () {
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "update"
+            });
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    var payload = {
+                        updateSnapshot : {updated : 'value'}
+                    };
+                    return sailor.processMessage(payload, message);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                var expectedSnapshot = {someId: 'someData', updated: 'value'};
+
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+
+                expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
+                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual({updated: 'value'});
+                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1].snapshotEvent).toEqual('updateSnapshot');
+                expect(sailor.snapshot).toEqual(expectedSnapshot);
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+            });
+        });
 
         it('should send error if error happened', function () {
             var sailor = new Sailor(settings);
