@@ -44,13 +44,11 @@ describe('Cipher', function () {
     });
 
     it('should be compatible with Java-Sailor', function () {
-        process.env.MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
         var result = cipher.encryptMessageContent({"someKey":"someValue"});
         expect(result).toEqual('MhcbHNshDRy6RNubmFJ+u4tcKKTKT6H50uYMyBXhws1xjvVKRtEC0hEg0/R2Zecy');
     });
 
     it('should be compatible with Java-Sailor', function () {
-        process.env.MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
         var result = cipher.decryptMessageContent('MhcbHNshDRy6RNubmFJ+u4tcKKTKT6H50uYMyBXhws1xjvVKRtEC0hEg0/R2Zecy');
         expect(result).toEqual({"someKey":"someValue"});
     });
