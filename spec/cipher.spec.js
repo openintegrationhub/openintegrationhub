@@ -1,5 +1,6 @@
 describe('Cipher', function () {
 
+    process.env.MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
     var cipher = require('../lib/cipher.js');
 
     it('should encrypt & decrypt strings', function () {
@@ -33,8 +34,24 @@ describe('Cipher', function () {
     });
 
     it('should throw error if failed to decrypt', function () {
-        expect(function(){
+        var error;
+        try {
             cipher.decryptMessageContent("dsdasdsad");
-        }).toThrow('Failed to decrypt message: Unexpected token d');
+        } catch (err) {
+            error = err;
+        }
+        expect(error.message).toMatch('Failed to decrypt message');
+    });
+
+    it('should be compatible with Java-Sailor', function () {
+        process.env.MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
+        var result = cipher.encryptMessageContent({"someKey":"someValue"});
+        expect(result).toEqual('MhcbHNshDRy6RNubmFJ+u4tcKKTKT6H50uYMyBXhws1xjvVKRtEC0hEg0/R2Zecy');
+    });
+
+    it('should be compatible with Java-Sailor', function () {
+        process.env.MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
+        var result = cipher.decryptMessageContent('MhcbHNshDRy6RNubmFJ+u4tcKKTKT6H50uYMyBXhws1xjvVKRtEC0hEg0/R2Zecy');
+        expect(result).toEqual({"someKey":"someValue"});
     });
 });
