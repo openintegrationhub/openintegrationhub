@@ -65,7 +65,7 @@ describe('Sailor', function () {
 
     beforeEach(function(){
         settings = require('../lib/settings.js').readFrom(envVars);
-    })
+    });
 
     describe('connection', function () {
 
