@@ -1,5 +1,8 @@
 describe('AMQP', function () {
 
+    process.env.MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
+    process.env.MESSAGE_CRYPTO_IV = 'iv=any16_symbols';
+
     var envVars = {};
     envVars.AMQP_URI = 'amqp://test2/test2';
     envVars.TASK = '{"_id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
