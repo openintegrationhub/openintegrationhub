@@ -1,8 +1,6 @@
 describe('Cipher', function () {
 
     process.env.MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
-    process.env.MESSAGE_CRYPTO_IV = 'iv=any16_symbols';
-
     var cipher = require('../lib/cipher.js');
 
     it('should encrypt & decrypt strings', function () {
@@ -45,23 +43,13 @@ describe('Cipher', function () {
         expect(error.message).toMatch('Failed to decrypt message');
     });
 
-    it('should be compatible with Java-Sailor', function(){
+    it('should be compatible with Java-Sailor', function () {
+        var result = cipher.encryptMessageContent({"someKey":"someValue"});
+        expect(result).toEqual('MhcbHNshDRy6RNubmFJ+u4tcKKTKT6H50uYMyBXhws1xjvVKRtEC0hEg0/R2Zecy');
+    });
 
-        var javaResult = "TOxRVfC2S4QDUzw6tzpoVNzi5ldNj+qGGrx2bMJLTn+0mgv3+xZNxMPHI5HdsTq+pBF3oXzgNmaFkXWGou0rPkyhSdpk/" +
-            "ZjI6YciJrFhtOk9Bgh5ScAO/cZYChDertRLGjGNtm4/XTVdYCw5LBdyYDSoGfYt2K+09NtzoOGrK4KGAKhZm4BaEfCFTeGU" +
-            "vXpSCaiUxaHxro7OpxvO1Y5EA/ZBJIXWjhTMyc8E0WF12+wCq1eByfl5WXvEOqksfk1FGOIjqxCn9UEo995Y2f0YMA==";
-
-        var data = {
-            "body": {
-                "incomingProperty1": "incomingValue1",
-                "incomingProperty2": "incomingValue2"
-            },
-            "attachments": {
-                "incomingAttachment2": "incomingAttachment2Content",
-                "incomingAttachment1": "incomingAttachment1Content"
-            }
-        };
-
-        expect(cipher.decryptMessageContent(javaResult)).toEqual(data);
+    it('should be compatible with Java-Sailor', function () {
+        var result = cipher.decryptMessageContent('MhcbHNshDRy6RNubmFJ+u4tcKKTKT6H50uYMyBXhws1xjvVKRtEC0hEg0/R2Zecy');
+        expect(result).toEqual({"someKey":"someValue"});
     });
 });
