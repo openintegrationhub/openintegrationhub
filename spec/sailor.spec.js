@@ -25,7 +25,7 @@ describe('Sailor', function () {
     var amqp = require('../lib/amqp.js');
     //var settings = require('../lib/settings.js').readFrom(envVars);
     var settings;
-    var cipher = require('../lib/cipher.js');
+    var encryptor = require('../lib/encryptor.js');
     var Sailor = require('../lib/sailor.js').Sailor;
     var _ = require('lodash');
     var Q = require('q');
@@ -60,12 +60,12 @@ describe('Sailor', function () {
             mandatory: true,
             clusterId: ''
         },
-        content: new Buffer(cipher.encryptMessageContent(payload))
+        content: new Buffer(encryptor.encryptMessageContent(payload))
     };
 
     beforeEach(function(){
         settings = require('../lib/settings.js').readFrom(envVars);
-    })
+    });
 
     describe('connection', function () {
 
