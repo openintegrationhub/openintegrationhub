@@ -18,36 +18,6 @@ describe('Executor', function () {
         expect(taskexec.emit.calls[1].args[0]).toEqual('end');
     });
 
-    it('Should execute action which uses next() callback without error', function () {
-        var taskexec = new TaskExec();
-        taskexec.on('error', function(){});
-        spyOn(taskexec, 'emit').andCallThrough();
-
-        var module = require('./component/actions/next_callback.js');
-        taskexec.process(module, payload, cfg, {snapshot: 'data'});
-
-        expect(taskexec.emit).toHaveBeenCalled();
-        expect(taskexec.emit.calls[0].args[0]).toEqual('data');
-        expect(taskexec.emit.calls[0].args[1]).toEqual({some: 'data'});
-        expect(taskexec.emit.calls[1].args[0]).toEqual('snapshot');
-        expect(taskexec.emit.calls[1].args[1]).toEqual({snapshot: 'data'});
-        expect(taskexec.emit.calls[2].args[0]).toEqual('end');
-    });
-
-    it('Should execute action which uses next() callback with error', function () {
-        var taskexec = new TaskExec();
-        taskexec.on('error', function(){});
-        spyOn(taskexec, 'emit').andCallThrough();
-
-        var module = require('./component/actions/next_callback.js');
-        taskexec.process(module, {error: true}, cfg, {snapshot: 'data'});
-
-        expect(taskexec.emit).toHaveBeenCalled();
-        expect(taskexec.emit.calls[0].args[0]).toEqual('error');
-        expect(taskexec.emit.calls[0].args[1].toString()).toMatch('tmp error');
-        expect(taskexec.emit.calls[1].args[0]).toEqual('end');
-    });
-
     it('Should reject if module is missing', function () {
         var taskexec = new TaskExec();
         taskexec.on('error', function(){});

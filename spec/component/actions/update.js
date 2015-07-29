@@ -4,7 +4,7 @@ exports.process = processAction;
 exports.getMetaModel = getMetaModel;
 exports.getModel = getModel;
 
-function processAction(msg, cfg, next, snapshot){
+function processAction(msg, cfg, snapshot){
     if (msg.snapshot) {
         this.emit('snapshot', msg.snapshot);
     }
