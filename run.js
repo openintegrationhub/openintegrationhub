@@ -1,10 +1,3 @@
-// 'info' should be enabled always
-if (!process.env.DEBUG) {
-    process.env.DEBUG = 'info';
-} else {
-    process.env.DEBUG += ',info';
-}
-
 var logging = require('./lib/logging.js');
 var Sailor = require('./lib/sailor.js').Sailor;
 var settings = require('./lib/settings.js').readFrom(process.env);
@@ -21,6 +14,3 @@ process.on('SIGTERM', function() {
 });
 
 process.on('uncaughtException', logging.criticalError);
-
-
-

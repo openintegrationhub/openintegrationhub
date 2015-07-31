@@ -13,7 +13,7 @@ var serviceMethod = process.argv[2];
 Q.fcall(init)
     .spread(execService)
     .then(sendResponse)
-    .catch(logging.criticalError)
+    .catch(error)
     .done();
 
 function init() {
@@ -32,6 +32,11 @@ function init() {
     return [serviceMethod, cfg, params];
 }
 
+function error(err) {
+    console.error(err.stack);
+    return sendResponse({error: err.message || 'Unknown error'});
+}
+
 function sendResponse(result) {
     var opts = {
         url: POST_RESULT_URL,
@@ -41,3 +46,9 @@ function sendResponse(result) {
     };
     return Q.ninvoke(request, 'post', opts);
 }
+
+function onUncaughtException(err) {
+    return error(err).then(logging.criticalError.bind(null, err)).done();
+}
+
+process.on('uncaughtException', onUncaughtException);
