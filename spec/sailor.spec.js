@@ -108,10 +108,15 @@ describe('Sailor', function () {
 
     describe('getStepCfg', function () {
         it('should get step cfg from task.data', function () {
-
             var sailor = new Sailor(settings);
             var data = sailor.getStepCfg("step_1");
             expect(data).toEqual({account : '1234567890'});
+        });
+
+        it('should get empty object as cfg when there is no config for a step', function () {
+            var sailor = new Sailor(settings);
+            var data = sailor.getStepCfg("step_2");
+            expect(data).toEqual({});
         });
     });
 
