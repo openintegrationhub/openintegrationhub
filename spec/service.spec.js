@@ -116,6 +116,19 @@ describe('Service', function(){
                 }
             });
 
+            it('should throw an error when GET_MODEL_METHOD is not provided', function(done){
+
+                service.processService('selectModel', makeEnv({ACTION_OR_TRIGGER: 'update'}))
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('error');
+                    expect(result.data.message).toEqual('GET_MODEL_METHOD is not provided');
+                    done();
+                }
+            });
+
             it('should throw an error when GET_MODEL_METHOD is not found', function(done){
 
                 service.processService('selectModel', makeEnv({ACTION_OR_TRIGGER: 'update', GET_MODEL_METHOD: 'unknown'}))
