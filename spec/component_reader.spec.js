@@ -57,7 +57,7 @@ describe('Component reader', function () {
         }, 10000);
 
         runs(function(){
-            expect(error.message).toEqual('Trigger or action some-missing-component is not found in component.json!');
+            expect(error.message).toEqual('Trigger or action "some-missing-component" is not found in component.json!');
         });
     });
 

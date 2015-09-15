@@ -1,129 +1,177 @@
 process.env.COMPONENT_PATH = '/spec/component';
 describe('Service', function(){
     var Q = require('q');
+    var request = require('request');
     var service = require('../lib/service');
+    var nock = require('nock');
 
     describe('execService', function(){
         var onSuccess;
         var onError;
 
+        function makeEnv(env) {
+            env.CFG = '{}';
+            env.COMPONENT_PATH = '/spec/component';
+            env.POST_RESULT_URL = 'http://test.com/123/456';
+            return env;
+        }
+
         beforeEach(function(){
             onSuccess = jasmine.createSpy('success');
             onError = jasmine.createSpy('error');
+            nock('http://test.com:80')
+                .post('/123/456')
+                .reply(200, "OK");
         });
 
-        it('verifyCredentials', function(){
-            runs(function(){
-                Q.fcall(function(){
-                    return service.execService('verifyCredentials', {}, {})
-                })
-                .then(onSuccess, onError)
-                .done();
+        describe('error cases', function(){
+
+            it('should fail if no POST_RESULT_URL provided', function(done){
+
+                service.processService('verifyCredentials', {})
+                    .catch(checkError)
+                    .done();
+
+                function checkError(err){
+                    expect(err.message).toEqual('POST_RESULT_URL is not provided');
+                    done();
+                }
             });
 
-            waitsFor(function(){
-                return onSuccess.calls.length || onError.calls.length;
+            it('should throw an error when there is no such service method', function(done){
+
+                service.processService('unknownMethod', makeEnv({}))
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('error');
+                    expect(result.data.message).toEqual('Unknown service method "unknownMethod"');
+                    done();
+                }
             });
 
-            runs(function(){
-                expect(onSuccess).toHaveBeenCalledWith({verified: true});
-                expect(onError).not.toHaveBeenCalled();
+            it('should send error response if no CFG provided', function(done){
+
+                service.processService('verifyCredentials', {'POST_RESULT_URL':'http://test.com/123/456'})
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('error');
+                    expect(result.data.message).toEqual('CFG is not provided');
+                    done();
+                }
             });
+
+            it('should send error response if failed to parse CFG', function(done){
+
+                service.processService('verifyCredentials', {'POST_RESULT_URL':'http://test.com/123/456', CFG: 'test'})
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('error');
+                    expect(result.data.message).toEqual('Unable to parse CFG');
+                    done();
+                }
+            });
+
+            it('should send error response if component is not found', function(done){
+
+                service.processService('verifyCredentials', {'POST_RESULT_URL':'http://test.com/123/456', CFG: '{"param1":"param2"}'})
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('error');
+                    expect(result.data.message).toMatch('Failed to load component.json');
+                    done();
+                }
+            });
+
+            it('should throw an error when ACTION_OR_TRIGGER is not provided', function(done){
+
+                service.processService('getMetaModel', makeEnv({}))
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('error');
+                    expect(result.data.message).toEqual('ACTION_OR_TRIGGER is not provided');
+                    done();
+                }
+            });
+
+            it('should throw an error when ACTION_OR_TRIGGER is not found', function(done){
+
+                service.processService('getMetaModel', makeEnv({ACTION_OR_TRIGGER: 'unknown'}))
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('error');
+                    expect(result.data.message).toEqual('Trigger or action "unknown" is not found in component.json!');
+                    done();
+                }
+            });
+
+            it('should throw an error when GET_MODEL_METHOD is not found', function(done){
+
+                service.processService('selectModel', makeEnv({ACTION_OR_TRIGGER: 'update', GET_MODEL_METHOD: 'unknown'}))
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('error');
+                    expect(result.data.message).toEqual('Method "unknown" is not found in "update" action or trigger');
+                    done();
+                }
+            });
+
         });
 
-        it('getMetaModel', function(){
-            runs(function(){
-                Q.fcall(function(){
-                    return service.execService('getMetaModel', {}, {triggerOrAction: 'update'})
-                })
-                .then(onSuccess, onError)
-                .done();
+        describe('success cases', function(){
+
+            it('verifyCredentials', function(done){
+
+                service.processService('verifyCredentials', makeEnv({}))
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('success');
+                    expect(result.data).toEqual({verified: true});
+                    done();
+                }
             });
 
-            waitsFor(function(){
-                return onSuccess.calls.length || onError.calls.length;
+            it('getMetaModel', function(done){
+
+                service.processService('getMetaModel', makeEnv({ACTION_OR_TRIGGER: 'update'}))
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('success');
+                    expect(result.data).toEqual('metamodel');
+                    done();
+                }
             });
 
-            runs(function(){
-                expect(onSuccess).toHaveBeenCalledWith('metamodel');
-                expect(onError).not.toHaveBeenCalled();
-            });
-        });
+            it('selectModel', function(done){
 
-        it('selectModel', function(){
-            runs(function(){
-                Q.fcall(function(){
-                    return service.execService('selectModel', {}, {triggerOrAction: 'update', getModelMethod: 'getModel'});
-                })
-                .then(onSuccess, onError)
-                .done();
+                service.processService('selectModel', makeEnv({ACTION_OR_TRIGGER: 'update', GET_MODEL_METHOD: 'getModel'}))
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(result.status).toEqual('success');
+                    expect(result.data).toEqual('model');
+                    done();
+                }
             });
 
-            waitsFor(function(){
-                return onSuccess.calls.length || onError.calls.length;
-            });
-
-            runs(function(){
-                expect(onSuccess).toHaveBeenCalledWith('model');
-                expect(onError).not.toHaveBeenCalled();
-            });
-        });
-
-        it('should throw an error when there is no such service method', function(){
-            runs(function(){
-                Q.fcall(function(){
-                    return service.execService('unknownMethod', {}, {});
-                })
-                .then(onSuccess, onError)
-                .done();
-            });
-
-            waitsFor(function(){
-                return onSuccess.calls.length || onError.calls.length;
-            });
-
-            runs(function(){
-                expect(onError).toHaveBeenCalled();
-                expect(onSuccess).not.toHaveBeenCalled();
-            });
-        });
-
-        it('should throw an error when there is no metaModel method', function(){
-            runs(function(){
-                Q.fcall(function(){
-                    return service.execService('getMetaMethod', {}, {triggerOrAction: 'unknown'});
-                })
-                .then(onSuccess, onError)
-                .done();
-            });
-
-            waitsFor(function(){
-                return onSuccess.calls.length || onError.calls.length;
-            });
-
-            runs(function(){
-                expect(onError).toHaveBeenCalled();
-                expect(onSuccess).not.toHaveBeenCalled();
-            });
-        });
-
-        it('should throw an error when there is no getModel method', function(){
-            runs(function(){
-                Q.fcall(function(){
-                    return service.execService('selectModel', {}, {triggerOrAction: 'update', getModelMethod: 'unknown'});
-                })
-                .then(onSuccess, onError)
-                .done();
-            });
-
-            waitsFor(function(){
-                return onSuccess.calls.length || onError.calls.length;
-            });
-
-            runs(function(){
-                expect(onError).toHaveBeenCalled();
-                expect(onSuccess).not.toHaveBeenCalled();
-            });
         });
     });
 });
