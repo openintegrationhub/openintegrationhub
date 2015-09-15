@@ -6,25 +6,21 @@ describe('Service', function(){
     var nock = require('nock');
 
     describe('execService', function(){
-        var onSuccess;
-        var onError;
 
         function makeEnv(env) {
             env.CFG = '{}';
             env.COMPONENT_PATH = '/spec/component';
-            env.POST_RESULT_URL = 'http://test.com/123/456';
+            env.POST_RESULT_URL = env.POST_RESULT_URL || 'http://test.com/123/456';
             return env;
         }
 
-        beforeEach(function(){
-            onSuccess = jasmine.createSpy('success');
-            onError = jasmine.createSpy('error');
-            nock('http://test.com:80')
-                .post('/123/456')
-                .reply(200, "OK");
-        });
-
         describe('error cases', function(){
+
+            beforeEach(function(){
+                nock('http://test.com:80')
+                    .post('/123/456')
+                    .reply(200, "OK");
+            });
 
             it('should fail if no POST_RESULT_URL provided', function(done){
 
@@ -146,6 +142,12 @@ describe('Service', function(){
 
         describe('success cases', function(){
 
+            beforeEach(function(){
+                nock('http://test.com:80')
+                    .post('/123/456')
+                    .reply(200, "OK");
+            });
+
             it('verifyCredentials', function(done){
 
                 service.processService('verifyCredentials', makeEnv({}))
@@ -181,6 +183,28 @@ describe('Service', function(){
                 function checkResult(result){
                     expect(result.status).toEqual('success');
                     expect(result.data).toEqual('model');
+                    done();
+                }
+            });
+
+        });
+
+        describe('sending error', function(){
+
+            beforeEach(function(){
+                nock('http://test.com:80')
+                    .post('/111/222')
+                    .reply(404, "Page not found");
+            });
+
+            it('verifyCredentials', function(done){
+
+                service.processService('verifyCredentials', makeEnv({POST_RESULT_URL: 'http://test.com/111/222'}))
+                    .catch(checkError)
+                    .done();
+
+                function checkError(err){
+                    expect(err.message).toEqual('Failed to POST data to http://test.com/111/222 (404, Page not found)');
                     done();
                 }
             });
