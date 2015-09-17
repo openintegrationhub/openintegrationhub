@@ -1,9 +1,8 @@
 describe('API client', function () {
 
-    process.env.API_URI = 'http://user:pass@test.com';
-
-    var client = require('../lib/apiClient.js');
+    var ApiClient = require('../lib/apiClient.js');
     var nock = require('nock');
+    var client = new ApiClient('http://test.com').auth('user', 'pass');
 
     var keys = {
         "oauth": {
@@ -15,7 +14,7 @@ describe('API client', function () {
     it('should send PUT request to API server', function (done) {
 
         var nockScope = nock('http://test.com:80')
-            .put('/v1/accounts/553e4aecbe9de24859000002', {"keys":keys})
+            .put('/v1/accounts/553e4aecbe9de24859000002', {"keys": keys})
             .reply(200, "Success");
 
         client.updateKeys('553e4aecbe9de24859000002', keys).then(function checkResult() {
@@ -44,7 +43,4 @@ describe('API client', function () {
             done();
         });
     });
-
-
-
 });
