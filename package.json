@@ -1,12 +1,8 @@
 {
   "name": "sailor-nodejs",
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "run.js",
-  "engines": {
-    "node": "0.10.12",
-    "npm": "1.2.30"
-  },
   "scripts": {
     "test": "gulp test"
   },
