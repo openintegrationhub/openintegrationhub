@@ -13,6 +13,10 @@
       "main": "./triggers/rebound_trigger.js",
       "title": "Rebound"
     },
+    "keys_trigger": {
+      "main": "./triggers/keys_trigger.js",
+      "title": "Error"
+    },
     "error_trigger": {
       "main": "./triggers/error_trigger.js",
       "title": "Error"
