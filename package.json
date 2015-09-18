@@ -4,7 +4,7 @@
   "version": "0.0.4",
   "main": "run.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "./node_modules/gulp/bin/gulp.js test"
   },
   "dependencies": {
     "async": "0.4.0",
