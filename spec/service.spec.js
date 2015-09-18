@@ -11,6 +11,9 @@ describe('Service', function(){
             env.CFG = env.CFG || '{}';
             env.COMPONENT_PATH = '/spec/component';
             env.POST_RESULT_URL = env.POST_RESULT_URL || 'http://test.com/123/456';
+            env.API_URI = 'http://apihost.com';
+            env.API_USERNAME = 'test@test.com';
+            env.API_KEY = '5559edd';
             return env;
         }
 

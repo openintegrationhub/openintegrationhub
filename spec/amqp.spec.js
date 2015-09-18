@@ -15,6 +15,10 @@ describe('AMQP', function () {
     envVars.REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
     envVars.SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
 
+    envVars.API_URI = 'http://apihost.com';
+    envVars.API_USERNAME = 'test@test.com';
+    envVars.API_KEY = '5559edd';
+
     var AMQPConnection = require('../lib/amqp.js').AMQPConnection;
     var settings = require('../lib/settings.js').readFrom(envVars);
     var encryptor = require('../lib/encryptor.js');
