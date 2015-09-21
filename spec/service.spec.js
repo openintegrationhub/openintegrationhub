@@ -217,7 +217,7 @@ describe('Service', function(){
                 }
             });
 
-            xit('selectModel with failed updateKeys event', function(done){
+            it('selectModel with failed updateKeys event should return result anyway', function(done){
 
                 var env = makeEnv({
                     ACTION_OR_TRIGGER: 'update',
