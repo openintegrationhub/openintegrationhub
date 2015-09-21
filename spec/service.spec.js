@@ -8,9 +8,12 @@ describe('Service', function(){
     describe('execService', function(){
 
         function makeEnv(env) {
-            env.CFG = '{}';
+            env.CFG = env.CFG || '{}';
             env.COMPONENT_PATH = '/spec/component';
             env.POST_RESULT_URL = env.POST_RESULT_URL || 'http://test.com/123/456';
+            env.API_URI = 'http://apihost.com';
+            env.API_USERNAME = 'test@test.com';
+            env.API_KEY = '5559edd';
             return env;
         }
 
@@ -183,6 +186,60 @@ describe('Service', function(){
                 function checkResult(result){
                     expect(result.status).toEqual('success');
                     expect(result.data).toEqual('model');
+                    done();
+                }
+            });
+
+            it('selectModel with updateKeys event', function(done){
+
+                var env = makeEnv({
+                    ACTION_OR_TRIGGER: 'update',
+                    GET_MODEL_METHOD: 'getModelWithKeysUpdate',
+                    CFG: '{"_account":"1234567890"}',
+                    API_URI: 'http://apihost.com',
+                    API_USERNAME: 'test@test.com',
+                    API_KEY: '5559edd'
+                });
+
+                var nockScope = nock('http://apihost.com:80')
+                    .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
+                    .reply(200, "Success");
+
+                service.processService('selectModel', env)
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(nockScope.isDone()).toEqual(true);
+                    expect(result.status).toEqual('success');
+                    expect(result.data).toEqual('model2');
+                    done();
+                }
+            });
+
+            it('selectModel with failed updateKeys event should return result anyway', function(done){
+
+                var env = makeEnv({
+                    ACTION_OR_TRIGGER: 'update',
+                    GET_MODEL_METHOD: 'getModelWithKeysUpdate',
+                    CFG: '{"_account":"1234567890"}',
+                    API_URI: 'http://apihost.com',
+                    API_USERNAME: 'test@test.com',
+                    API_KEY: '5559edd'
+                });
+
+                var nockScope = nock('http://apihost.com:80')
+                    .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
+                    .reply(400, "Success");
+
+                service.processService('selectModel', env)
+                    .then(checkResult)
+                    .done();
+
+                function checkResult(result){
+                    expect(nockScope.isDone()).toEqual(true);
+                    expect(result.status).toEqual('success');
+                    expect(result.data).toEqual('model2');
                     done();
                 }
             });

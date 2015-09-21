@@ -6,9 +6,19 @@ describe('Sailor', function () {
     envVars.AMQP_URI = 'amqp://test2/test2';
     envVars.TASK = JSON.stringify({
         "_id" : "5559edd38968ec0736000003",
-        "data" : {"step_1" : {"account" : "1234567890"}},
-        "recipe" : {"nodes" : [{"id" : "step_1", "function" : "list"}]},
-        "snapshot": {"step_1": {"someId": "someData"}}
+        "data" : {
+            "step_1" : {
+                "_account" : "1234567890"
+            }
+        },
+        "recipe" : {
+            "nodes" : [{
+                "id" : "step_1",
+                "function" : "list"
+            }]},
+        "snapshot": {
+            "step_1": {"someId": "someData"}
+        }
     });
     envVars.STEP_ID = 'step_1';
 
@@ -22,6 +32,12 @@ describe('Sailor', function () {
     envVars.COMPONENT_PATH='/spec/component';
     envVars.DEBUG='sailor';
 
+    envVars.API_URI = 'http://apihost.com';
+    envVars.API_USERNAME = 'test@test.com';
+    envVars.API_KEY = '5559edd';
+
+    process.env.TIMEOUT = 3000;
+
     var amqp = require('../lib/amqp.js');
     //var settings = require('../lib/settings.js').readFrom(envVars);
     var settings;
@@ -29,6 +45,7 @@ describe('Sailor', function () {
     var Sailor = require('../lib/sailor.js').Sailor;
     var _ = require('lodash');
     var Q = require('q');
+    var nock = require('nock');
 
     var payload = {param1: "Value1"};
 
@@ -110,7 +127,7 @@ describe('Sailor', function () {
         it('should get step cfg from task.data', function () {
             var sailor = new Sailor(settings);
             var data = sailor.getStepCfg("step_1");
-            expect(data).toEqual({account : '1234567890'});
+            expect(data).toEqual({_account : '1234567890'});
         });
 
         it('should get empty object as cfg when there is no config for a step', function () {
@@ -168,6 +185,88 @@ describe('Sailor', function () {
 
                 expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
                 expect(fakeAMQPConnection.sendData.calls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
+
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+            });
+        });
+
+        it('should send request to API server to update keys', function () {
+
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "keys_trigger"
+            });
+
+            var nockScope = nock('http://apihost.com:80')
+                .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
+                .reply(200, "Success");
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    return sailor.processMessage(payload, message);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                console.log('Check');
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+
+                // check that PUT request was sent
+                expect(nockScope.isDone()).toBeTruthy();
+
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+            });
+        });
+
+        it('should emit error if failed to update keys', function () {
+
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor, "getStepInfo").andReturn({
+                function: "keys_trigger"
+            });
+
+            var nockScope = nock('http://apihost.com:80')
+                .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
+                .reply(400, "Failed");
+
+            var promise;
+
+            runs(function(){
+                promise = sailor.connect().then(function(){
+                    return sailor.processMessage(payload, message);
+                }).fail(function(err){
+                    console.log(err);
+                })
+            });
+
+            waitsFor(function(){
+                return promise.isFulfilled() || promise.isRejected();
+            }, 10000);
+
+            runs(function(){
+                console.log('Check');
+                expect(promise.isFulfilled()).toBeTruthy();
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+
+                // check that PUT request was sent
+                expect(nockScope.isDone()).toBeTruthy();
+                expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Failed to update keys: API server replied with status 400 ("Failed")');
 
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                 expect(fakeAMQPConnection.ack.callCount).toEqual(1);
@@ -392,7 +491,7 @@ describe('Sailor', function () {
             });
         });
 
-        xit('should catch all data calls and all error calls', function () {
+        it('should catch all data calls and all error calls', function () {
 
             var sailor = new Sailor(settings);
 
@@ -427,9 +526,9 @@ describe('Sailor', function () {
                 expect(fakeAMQPConnection.sendError.calls.length).toEqual(2);
 
                 // ack
-                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
-                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+                expect(fakeAMQPConnection.reject).toHaveBeenCalled();
+                expect(fakeAMQPConnection.reject.callCount).toEqual(1);
+                expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
             });
         });
 

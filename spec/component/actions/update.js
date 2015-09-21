@@ -3,6 +3,7 @@ var _ = require('lodash');
 exports.process = processAction;
 exports.getMetaModel = getMetaModel;
 exports.getModel = getModel;
+exports.getModelWithKeysUpdate = getModelWithKeysUpdate;
 
 function processAction(msg, cfg, snapshot){
     if (msg.snapshot) {
@@ -20,4 +21,9 @@ function getMetaModel(cfg, cb) {
 
 function getModel(cfg, cb) {
     return cb(null, 'model')
+}
+
+function getModelWithKeysUpdate(cfg, cb) {
+    this.emit('updateKeys', {oauth: {access_token: 'newAccessToken'}});
+    return cb(null, 'model2')
 }
