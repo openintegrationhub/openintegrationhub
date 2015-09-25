@@ -1,7 +1,7 @@
 {
   "name": "sailor-nodejs",
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "main": "run.js",
   "scripts": {
     "test": "./node_modules/gulp/bin/gulp.js test"
