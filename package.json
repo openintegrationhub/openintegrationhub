@@ -1,5 +1,5 @@
 {
-  "name": "sailor-nodejs",
+  "name": "elasticio-sailor-nodejs",
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
   "version": "1.0.0",
   "main": "run.js",
