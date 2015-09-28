@@ -77,8 +77,10 @@ describe('Component reader', function () {
         runs(function(){
             expect(promise.isRejected()).toEqual(true);
             var err = promise.inspect().reason;
-            expect(err.message).toEqual("Trigger or action 'missing_trigger' is not found. " +
-            "Please check if path you specified in component.json ('./triggers/missing_trigger.js') is valid.");
+            expect(err.message).toEqual(
+                "Trigger or action 'missing_trigger' is not found. " +
+                "Please check if the path you specified in component.json ('./triggers/missing_trigger.js') is valid."
+            );
         });
     });
 
