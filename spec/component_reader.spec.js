@@ -61,6 +61,29 @@ describe('Component reader', function () {
         });
     });
 
+    it('Should return error if trigger file is missing', function () {
+
+        var reader = new ComponentReader();
+        var filename, error;
+
+        var promise = reader.init('/spec/component/').then(function(){
+            return reader.loadTriggerOrAction('missing_trigger');
+        });
+
+        waitsFor(function(){
+            return promise.isFulfilled() || promise.isRejected();
+        }, 10000);
+
+        runs(function(){
+            expect(promise.isRejected()).toEqual(true);
+            var err = promise.inspect().reason;
+            expect(err.message).toEqual(
+                "Trigger or action 'missing_trigger' is not found. " +
+                "Please check if the path you specified in component.json ('./triggers/missing_trigger.js') is valid."
+            );
+        });
+    });
+
     it('Should return error if trigger not initialized', function () {
 
         var reader = new ComponentReader();
