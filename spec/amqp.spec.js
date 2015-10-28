@@ -359,7 +359,7 @@ describe('AMQP', function () {
 
         var amqp = new AMQPConnection(settings);
         var clientFunction = jasmine.createSpy('clientFunction');
-        amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['consume']);
+        amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['consume', 'prefetch']);
         amqp.subscribeChannel.consume.andCallFake(function(queueName, callback){
             callback(message);
         });
@@ -373,6 +373,7 @@ describe('AMQP', function () {
         });
 
         runs(function(){
+            expect(amqp.subscribeChannel.prefetch).toHaveBeenCalledWith(1);
             expect(clientFunction.callCount).toEqual(1);
             expect(clientFunction.calls[0].args[0]).toEqual({"content": "Message content"});
             expect(clientFunction.calls[0].args[1]).toEqual(message);
