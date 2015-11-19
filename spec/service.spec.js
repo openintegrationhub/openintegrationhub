@@ -8,12 +8,12 @@ describe('Service', function(){
     describe('execService', function(){
 
         function makeEnv(env) {
-            env.CFG = env.CFG || '{}';
-            env.COMPONENT_PATH = '/spec/component';
-            env.POST_RESULT_URL = env.POST_RESULT_URL || 'http://test.com/123/456';
-            env.API_URI = 'http://apihost.com';
-            env.API_USERNAME = 'test@test.com';
-            env.API_KEY = '5559edd';
+            env.ELASTICIO_CFG = env.ELASTICIO_CFG || '{}';
+            env.ELASTICIO_COMPONENT_PATH = '/spec/component';
+            env.ELASTICIO_POST_RESULT_URL = env.ELASTICIO_POST_RESULT_URL || 'http://test.com/123/456';
+            env.ELASTICIO_API_URI = 'http://apihost.com';
+            env.ELASTICIO_API_USERNAME = 'test@test.com';
+            env.ELASTICIO_API_KEY = '5559edd';
             return env;
         }
 
@@ -25,14 +25,14 @@ describe('Service', function(){
                     .reply(200, "OK");
             });
 
-            it('should fail if no POST_RESULT_URL provided', function(done){
+            it('should fail if no ELASTICIO_POST_RESULT_URL provided', function(done){
 
                 service.processService('verifyCredentials', {})
                     .catch(checkError)
                     .done();
 
                 function checkError(err){
-                    expect(err.message).toEqual('POST_RESULT_URL is not provided');
+                    expect(err.message).toEqual('ELASTICIO_POST_RESULT_URL is not provided');
                     done();
                 }
             });
@@ -50,22 +50,22 @@ describe('Service', function(){
                 }
             });
 
-            it('should send error response if no CFG provided', function(done){
+            it('should send error response if no ELASTICIO_CFG provided', function(done){
 
-                service.processService('verifyCredentials', {'POST_RESULT_URL':'http://test.com/123/456'})
+                service.processService('verifyCredentials', {'ELASTICIO_POST_RESULT_URL':'http://test.com/123/456'})
                     .then(checkResult)
                     .done();
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
-                    expect(result.data.message).toEqual('CFG is not provided');
+                    expect(result.data.message).toEqual('ELASTICIO_CFG is not provided');
                     done();
                 }
             });
 
-            it('should send error response if failed to parse CFG', function(done){
+            it('should send error response if failed to parse ELASTICIO_CFG', function(done){
 
-                service.processService('verifyCredentials', {'POST_RESULT_URL':'http://test.com/123/456', CFG: 'test'})
+                service.processService('verifyCredentials', {'ELASTICIO_POST_RESULT_URL':'http://test.com/123/456', ELASTICIO_CFG: 'test'})
                     .then(checkResult)
                     .done();
 
@@ -78,7 +78,7 @@ describe('Service', function(){
 
             it('should send error response if component is not found', function(done){
 
-                service.processService('verifyCredentials', {'POST_RESULT_URL':'http://test.com/123/456', CFG: '{"param1":"param2"}'})
+                service.processService('verifyCredentials', {'ELASTICIO_POST_RESULT_URL':'http://test.com/123/456', ELASTICIO_CFG: '{"param1":"param2"}'})
                     .then(checkResult)
                     .done();
 
@@ -89,7 +89,7 @@ describe('Service', function(){
                 }
             });
 
-            it('should throw an error when ACTION_OR_TRIGGER is not provided', function(done){
+            it('should throw an error when ELASTICIO_ACTION_OR_TRIGGER is not provided', function(done){
 
                 service.processService('getMetaModel', makeEnv({}))
                     .then(checkResult)
@@ -97,14 +97,14 @@ describe('Service', function(){
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
-                    expect(result.data.message).toEqual('ACTION_OR_TRIGGER is not provided');
+                    expect(result.data.message).toEqual('ELASTICIO_ACTION_OR_TRIGGER is not provided');
                     done();
                 }
             });
 
-            it('should throw an error when ACTION_OR_TRIGGER is not found', function(done){
+            it('should throw an error when ELASTICIO_ACTION_OR_TRIGGER is not found', function(done){
 
-                service.processService('getMetaModel', makeEnv({ACTION_OR_TRIGGER: 'unknown'}))
+                service.processService('getMetaModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'unknown'}))
                     .then(checkResult)
                     .done();
 
@@ -115,22 +115,22 @@ describe('Service', function(){
                 }
             });
 
-            it('should throw an error when GET_MODEL_METHOD is not provided', function(done){
+            it('should throw an error when ELASTICIO_GET_MODEL_METHOD is not provided', function(done){
 
-                service.processService('selectModel', makeEnv({ACTION_OR_TRIGGER: 'update'}))
+                service.processService('selectModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update'}))
                     .then(checkResult)
                     .done();
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
-                    expect(result.data.message).toEqual('GET_MODEL_METHOD is not provided');
+                    expect(result.data.message).toEqual('ELASTICIO_GET_MODEL_METHOD is not provided');
                     done();
                 }
             });
 
-            it('should throw an error when GET_MODEL_METHOD is not found', function(done){
+            it('should throw an error when ELASTICIO_GET_MODEL_METHOD is not found', function(done){
 
-                service.processService('selectModel', makeEnv({ACTION_OR_TRIGGER: 'update', GET_MODEL_METHOD: 'unknown'}))
+                service.processService('selectModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update', ELASTICIO_GET_MODEL_METHOD: 'unknown'}))
                     .then(checkResult)
                     .done();
 
@@ -166,7 +166,7 @@ describe('Service', function(){
 
             it('getMetaModel', function(done){
 
-                service.processService('getMetaModel', makeEnv({ACTION_OR_TRIGGER: 'update'}))
+                service.processService('getMetaModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update'}))
                     .then(checkResult)
                     .done();
 
@@ -179,7 +179,7 @@ describe('Service', function(){
 
             it('selectModel', function(done){
 
-                service.processService('selectModel', makeEnv({ACTION_OR_TRIGGER: 'update', GET_MODEL_METHOD: 'getModel'}))
+                service.processService('selectModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update', ELASTICIO_GET_MODEL_METHOD: 'getModel'}))
                     .then(checkResult)
                     .done();
 
@@ -193,12 +193,12 @@ describe('Service', function(){
             it('selectModel with updateKeys event', function(done){
 
                 var env = makeEnv({
-                    ACTION_OR_TRIGGER: 'update',
-                    GET_MODEL_METHOD: 'getModelWithKeysUpdate',
-                    CFG: '{"_account":"1234567890"}',
-                    API_URI: 'http://apihost.com',
-                    API_USERNAME: 'test@test.com',
-                    API_KEY: '5559edd'
+                    ELASTICIO_ACTION_OR_TRIGGER: 'update',
+                    ELASTICIO_GET_MODEL_METHOD: 'getModelWithKeysUpdate',
+                    ELASTICIO_CFG: '{"_account":"1234567890"}',
+                    ELASTICIO_API_URI: 'http://apihost.com',
+                    ELASTICIO_API_USERNAME: 'test@test.com',
+                    ELASTICIO_API_KEY: '5559edd'
                 });
 
                 var nockScope = nock('http://apihost.com:80')
@@ -220,12 +220,12 @@ describe('Service', function(){
             it('selectModel with failed updateKeys event should return result anyway', function(done){
 
                 var env = makeEnv({
-                    ACTION_OR_TRIGGER: 'update',
-                    GET_MODEL_METHOD: 'getModelWithKeysUpdate',
-                    CFG: '{"_account":"1234567890"}',
-                    API_URI: 'http://apihost.com',
-                    API_USERNAME: 'test@test.com',
-                    API_KEY: '5559edd'
+                    ELASTICIO_ACTION_OR_TRIGGER: 'update',
+                    ELASTICIO_GET_MODEL_METHOD: 'getModelWithKeysUpdate',
+                    ELASTICIO_CFG: '{"_account":"1234567890"}',
+                    ELASTICIO_API_URI: 'http://apihost.com',
+                    ELASTICIO_API_USERNAME: 'test@test.com',
+                    ELASTICIO_API_KEY: '5559edd'
                 });
 
                 var nockScope = nock('http://apihost.com:80')
@@ -256,7 +256,7 @@ describe('Service', function(){
 
             it('verifyCredentials', function(done){
 
-                service.processService('verifyCredentials', makeEnv({POST_RESULT_URL: 'http://test.com/111/222'}))
+                service.processService('verifyCredentials', makeEnv({ELASTICIO_POST_RESULT_URL: 'http://test.com/111/222'}))
                     .catch(checkError)
                     .done();
 
