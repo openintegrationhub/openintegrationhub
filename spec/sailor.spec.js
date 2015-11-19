@@ -3,8 +3,8 @@ describe('Sailor', function () {
     process.env.DEBUG='*';
 
     var envVars = {};
-    envVars.AMQP_URI = 'amqp://test2/test2';
-    envVars.TASK = JSON.stringify({
+    envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
+    envVars.ELASTICIO_TASK = JSON.stringify({
         "_id" : "5559edd38968ec0736000003",
         "data" : {
             "step_1" : {
@@ -20,23 +20,23 @@ describe('Sailor', function () {
             "step_1": {"someId": "someData"}
         }
     });
-    envVars.STEP_ID = 'step_1';
+    envVars.ELASTICIO_STEP_ID = 'step_1';
 
-    envVars.LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
-    envVars.PUBLISH_MESSAGES_TO = 'userexchange:5527f0ea43238e5d5f000001';
-    envVars.DATA_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:message';
-    envVars.ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
-    envVars.REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
-    envVars.SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
+    envVars.ELASTICIO_LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
+    envVars.ELASTICIO_PUBLISH_MESSAGES_TO = 'userexchange:5527f0ea43238e5d5f000001';
+    envVars.ELASTICIO_DATA_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:message';
+    envVars.ELASTICIO_ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
+    envVars.ELASTICIO_REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
+    envVars.ELASTICIO_SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
 
-    envVars.COMPONENT_PATH='/spec/component';
-    envVars.DEBUG='sailor';
+    envVars.ELASTICIO_COMPONENT_PATH='/spec/component';
+    envVars.ELASTICIO_DEBUG='sailor';
 
-    envVars.API_URI = 'http://apihost.com';
-    envVars.API_USERNAME = 'test@test.com';
-    envVars.API_KEY = '5559edd';
+    envVars.ELASTICIO_API_URI = 'http://apihost.com';
+    envVars.ELASTICIO_API_USERNAME = 'test@test.com';
+    envVars.ELASTICIO_API_KEY = '5559edd';
 
-    process.env.TIMEOUT = 3000;
+    process.env.ELASTICIO_TIMEOUT = 3000;
 
     var amqp = require('../lib/amqp.js');
     //var settings = require('../lib/settings.js').readFrom(envVars);

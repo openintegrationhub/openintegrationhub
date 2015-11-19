@@ -1,7 +1,7 @@
 describe('Cipher', function () {
 
-    process.env.MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
-    process.env.MESSAGE_CRYPTO_IV = 'iv=any16_symbols';
+    process.env.ELASTICIO_MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
+    process.env.ELASTICIO_MESSAGE_CRYPTO_IV = 'iv=any16_symbols';
 
     var cipher = require('../lib/encryptor.js');
 
