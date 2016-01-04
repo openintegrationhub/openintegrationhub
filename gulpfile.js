@@ -15,7 +15,7 @@ gulp.task('clean:coverage', function (cb) {
 });
 
 gulp.task('test', function () {
-    gulp
+    return gulp
         .src(paths.spec)
         .pipe(jasmine({
             includeStackTrace: true,
