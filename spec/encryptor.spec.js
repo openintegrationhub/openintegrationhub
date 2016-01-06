@@ -7,6 +7,7 @@ describe('Cipher', function () {
 
     beforeEach(function() {
         spyOn(global, 'decodeURIComponent').andCallThrough();
+        spyOn(global, 'encodeURIComponent').andCallThrough();
     });
 
     it('should encrypt & decrypt strings', function () {
@@ -73,6 +74,7 @@ describe('Cipher', function () {
         var decryptedResult = cipher.decryptMessageContent(result);
         expect(decryptedResult.toString()).toEqual(content.toString());
         expect(global.decodeURIComponent).toHaveBeenCalled();
+        expect(global.encodeURIComponent).not.toHaveBeenCalled();
     });
 
     it('should NOT do decodeURIComponent', function () {
@@ -83,5 +85,6 @@ describe('Cipher', function () {
         });
         expect(decryptedResult.toString()).toEqual(content.toString());
         expect(global.decodeURIComponent).not.toHaveBeenCalled();
+        expect(global.encodeURIComponent).not.toHaveBeenCalled();
     });
 });
