@@ -56,7 +56,7 @@ describe('Executor', function () {
         });
 
         waitsFor(function(){
-            return taskexec.emit.callCount === 5;
+            return taskexec.emit.callCount >= 5;
         });
 
         runs(function(){

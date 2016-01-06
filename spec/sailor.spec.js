@@ -1,7 +1,4 @@
 describe('Sailor', function () {
-
-    process.env.DEBUG='*';
-
     var envVars = {};
     envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
     envVars.ELASTICIO_TASK = JSON.stringify({
@@ -184,7 +181,23 @@ describe('Sailor', function () {
                 expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                 expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendData.calls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
+
+                var sendDataCalls = fakeAMQPConnection.sendData.calls;
+
+                expect(sendDataCalls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
+                expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
+                expect(sendDataCalls[0].args[1]).toEqual({
+                    execId: 'exec1',
+                    taskId: '5559edd38968ec0736000003',
+                    userId: '5559edd38968ec0736000002',
+                    stepId: 'step_1',
+                    compId: undefined,
+                    function: 'data_trigger',
+                    start: jasmine.any(Number),
+                    cid: 1,
+                    elasticio_feature_flag_skip_message_url_decoding: '1',
+                    end: jasmine.any(Number)
+                });
 
                 expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                 expect(fakeAMQPConnection.ack.callCount).toEqual(1);
