@@ -5,6 +5,10 @@ describe('Cipher', function () {
 
     var cipher = require('../lib/encryptor.js');
 
+    beforeEach(function() {
+        spyOn(global, 'decodeURIComponent').andCallThrough();
+    });
+
     it('should encrypt & decrypt strings', function () {
         var content = 'Hello world';
         var result = cipher.encryptMessageContent(content);
@@ -61,5 +65,23 @@ describe('Cipher', function () {
         };
 
         expect(cipher.decryptMessageContent(javaResult)).toEqual(data);
+    });
+
+    it('should do decodeURIComponent', function () {
+        var content = 'Hello world';
+        var result = cipher.encryptMessageContent(content);
+        var decryptedResult = cipher.decryptMessageContent(result);
+        expect(decryptedResult.toString()).toEqual(content.toString());
+        expect(global.decodeURIComponent).toHaveBeenCalled();
+    });
+
+    it('should NOT do decodeURIComponent', function () {
+        var content = 'Hello world';
+        var result = cipher.encryptMessageContent(content);
+        var decryptedResult = cipher.decryptMessageContent(result, {
+            elasticio_feature_flag_skip_message_url_decoding: 'whatever'
+        });
+        expect(decryptedResult.toString()).toEqual(content.toString());
+        expect(global.decodeURIComponent).not.toHaveBeenCalled();
     });
 });

@@ -54,6 +54,10 @@ describe('AMQP', function () {
         content: encryptor.encryptMessageContent({"content": "Message content"})
     };
 
+    beforeEach(function() {
+        spyOn(encryptor, 'decryptMessageContent').andCallThrough();
+    });
+
     it('Should send message to outgoing channel when process data', function () {
 
         var amqp = new AMQPConnection(settings);
@@ -378,6 +382,8 @@ describe('AMQP', function () {
             expect(clientFunction.calls[0].args[0]).toEqual({"content": "Message content"});
             expect(clientFunction.calls[0].args[1]).toEqual(message);
             expect(clientFunction.calls[0].args[1].content).toEqual(encryptor.encryptMessageContent({"content": "Message content"}));
+
+            expect(encryptor.decryptMessageContent).toHaveBeenCalledWith(message.content, message.properties.headers);
         });
     });
 
