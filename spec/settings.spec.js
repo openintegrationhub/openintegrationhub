@@ -27,7 +27,7 @@ describe('Settings', function () {
         envVars.ELASTICIO_API_KEY = '5559edd';
 
         var result = settings.readFrom(envVars);
-        expect(result.LISTEN_MESSAGES_ON).toEqual('5559edd38968ec0736000003:step_1:1432205514864:messages');
+        expect(result.LISTEN_MESSAGES_ON).toEqual('5559edd38968ec0736000003:step_1:1432205514864:messages1');
     });
 
 });

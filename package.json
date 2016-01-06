@@ -4,7 +4,7 @@
   "version": "1.0.4",
   "main": "run.js",
   "scripts": {
-    "test": "./node_modules/gulp/bin/gulp.js test"
+    "test": "./node_modules/.bin/grunt"
   },
   "dependencies": {
     "amqplib": "0.4.0",
@@ -15,10 +15,12 @@
     "request": "2.57.0"
   },
   "devDependencies": {
-    "gulp": "~3.8.11",
-    "gulp-jasmine": "0.2.0",
-    "gulp-istanbul": "~0.8.1",
     "del": "~1.2.0",
+    "grunt": "^0.4.5",
+    "grunt-jasmine-node": "^0.3.1",
+    "gulp": "3.9.0",
+    "gulp-istanbul": "~0.8.1",
+    "gulp-jasmine": "0.2.0",
     "nock": "1.9.0"
   }
 }
