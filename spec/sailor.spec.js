@@ -36,7 +36,6 @@ describe('Sailor', function () {
     process.env.ELASTICIO_TIMEOUT = 3000;
 
     var amqp = require('../lib/amqp.js');
-    //var settings = require('../lib/settings.js').readFrom(envVars);
     var settings;
     var encryptor = require('../lib/encryptor.js');
     var Sailor = require('../lib/sailor.js').Sailor;
@@ -81,10 +80,8 @@ describe('Sailor', function () {
         settings = require('../lib/settings.js').readFrom(envVars);
     });
 
-    describe('connection', function () {
-
-        it('should disconnect Mongo and RabbitMQ, and exit process', function () {
-
+    describe('connection', function (done) {
+        it('should disconnect Mongo and RabbitMQ, and exit process', function (done) {
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['disconnect']);
             fakeAMQPConnection.disconnect.andReturn(Q.resolve());
 
@@ -93,23 +90,12 @@ describe('Sailor', function () {
 
             var sailor = new Sailor(settings);
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.disconnect();
-            });
-
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
-
-            runs(function(){
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.disconnect).toHaveBeenCalled();
-            });
-
+            sailor.disconnect()
+                .then(function(){
+                    expect(fakeAMQPConnection.disconnect).toHaveBeenCalled();
+                })
+                .done(done, done.fail);
         });
-
     });
 
     describe('getStepInfo', function () {
@@ -154,58 +140,46 @@ describe('Sailor', function () {
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
         });
 
-
-        it('should call sendData() and ack() if success', function () {
+        it('should call sendData() and ack() if success', function (done) {
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "data_trigger"
             });
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function(){
                     return sailor.processMessage(payload, message);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
+                .then(function(){
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
+                    expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
 
-            runs(function(){
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                    var sendDataCalls = fakeAMQPConnection.sendData.calls;
 
-                expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
+                    expect(sendDataCalls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
+                    expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
+                    expect(sendDataCalls[0].args[1]).toEqual({
+                        execId: 'exec1',
+                        taskId: '5559edd38968ec0736000003',
+                        userId: '5559edd38968ec0736000002',
+                        stepId: 'step_1',
+                        compId: undefined,
+                        function: 'data_trigger',
+                        start: jasmine.any(Number),
+                        cid: 1,
+                        end: jasmine.any(Number)
+                    });
 
-                var sendDataCalls = fakeAMQPConnection.sendData.calls;
-
-                expect(sendDataCalls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
-                expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
-                expect(sendDataCalls[0].args[1]).toEqual({
-                    execId: 'exec1',
-                    taskId: '5559edd38968ec0736000003',
-                    userId: '5559edd38968ec0736000002',
-                    stepId: 'step_1',
-                    compId: undefined,
-                    function: 'data_trigger',
-                    start: jasmine.any(Number),
-                    cid: 1,
-                    elasticio_feature_flag_skip_message_url_decoding: '1',
-                    end: jasmine.any(Number)
-                });
-
-                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
-                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
-            });
+                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+                })
+                .done(done, done.fail);
         });
 
-        it('should send request to API server to update keys', function () {
+        it('should send request to API server to update keys', function (done) {
 
             var sailor = new Sailor(settings);
 
@@ -217,36 +191,24 @@ describe('Sailor', function () {
                 .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
                 .reply(200, "Success");
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function(){
                     return sailor.processMessage(payload, message);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
+                .then(function(){
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
+                    // check that PUT request was sent
+                    expect(nockScope.isDone()).toBeTruthy();
 
-            runs(function(){
-                console.log('Check');
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
-                // check that PUT request was sent
-                expect(nockScope.isDone()).toBeTruthy();
-
-                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
-                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
-            });
+                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+                })
+                .done(done, done.fail);
         });
 
-        it('should emit error if failed to update keys', function () {
-
+        it('should emit error if failed to update keys', function (done) {
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
@@ -257,226 +219,164 @@ describe('Sailor', function () {
                 .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
                 .reply(400, "Failed");
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function(){
                     return sailor.processMessage(payload, message);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
+                .then(function() {
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
+                    // check that PUT request was sent
+                    expect(nockScope.isDone()).toBeTruthy();
+                    expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Failed to update keys: API server replied with status 400 ("Failed")');
 
-            runs(function(){
-                console.log('Check');
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
-                // check that PUT request was sent
-                expect(nockScope.isDone()).toBeTruthy();
-                expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Failed to update keys: API server replied with status 400 ("Failed")');
-
-                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
-                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
-            });
+                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+                })
+                .done(done, done.fail);
         });
 
-        it('should call sendRebound() and ack()', function () {
+        it('should call sendRebound() and ack()', function (done) {
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "rebound_trigger"
             });
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function() {
                     return sailor.processMessage(payload, message);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
+                .then(function() {
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
+                    expect(fakeAMQPConnection.sendRebound).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendRebound.calls[0].args[0].message).toEqual('Rebound reason');
+                    expect(fakeAMQPConnection.sendRebound.calls[0].args[1]).toEqual(message);
 
-            runs(function(){
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
-                expect(fakeAMQPConnection.sendRebound).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendRebound.calls[0].args[0].message).toEqual('Rebound reason');
-                expect(fakeAMQPConnection.sendRebound.calls[0].args[1]).toEqual(message);
-
-                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
-                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
-            });
+                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+                })
+                .done(done, done.fail);
         });
 
-        it('should call sendSnapshot() and ack() after a `snapshot` event', function () {
+        it('should call sendSnapshot() and ack() after a `snapshot` event', function (done) {
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "update"
             });
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function(){
                     var payload = {
                         snapshot : {blabla : 'blablabla'}
                     };
                     return sailor.processMessage(payload, message);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
+                .then(function() {
+                    var expectedSnapshot = {blabla:'blablabla'};
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
-
-            runs(function(){
-                var expectedSnapshot = {blabla:'blablabla'};
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
-                expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
-                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual(expectedSnapshot);
-                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1].snapshotEvent).toEqual('snapshot');
-                expect(sailor.snapshot).toEqual(expectedSnapshot);
-                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
-                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
-            });
+                    expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
+                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual(expectedSnapshot);
+                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1].snapshotEvent).toEqual('snapshot');
+                    expect(sailor.snapshot).toEqual(expectedSnapshot);
+                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+                })
+                .done(done, done.fail);
         });
 
-        it('should call sendSnapshot() and ack() after an `updateSnapshot` event', function () {
+        it('should call sendSnapshot() and ack() after an `updateSnapshot` event', function (done) {
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "update"
             });
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function(){
                     var payload = {
                         updateSnapshot : {updated : 'value'}
                     };
                     return sailor.processMessage(payload, message);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
+                .then(function() {
+                    var expectedSnapshot = {someId: 'someData', updated: 'value'};
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
-
-            runs(function(){
-                var expectedSnapshot = {someId: 'someData', updated: 'value'};
-
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
-                expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
-                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual({updated: 'value'});
-                expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1].snapshotEvent).toEqual('updateSnapshot');
-                expect(sailor.snapshot).toEqual(expectedSnapshot);
-                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
-                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
-            });
+                    expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
+                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual({updated: 'value'});
+                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1].snapshotEvent).toEqual('updateSnapshot');
+                    expect(sailor.snapshot).toEqual(expectedSnapshot);
+                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+                })
+                .done(done, done.fail);
         });
 
-        it('should send error if error happened', function () {
+        it('should send error if error happened', function (done) {
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "error_trigger"
             });
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function(){
                     return sailor.processMessage(payload, message);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
+                .then(function() {
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
+                    expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Some component error');
+                    expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
+                    expect(fakeAMQPConnection.sendError.calls[0].args[2]).toEqual(message.content);
 
-            runs(function(){
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
-                expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Some component error');
-                expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
-                expect(fakeAMQPConnection.sendError.calls[0].args[2]).toEqual(message.content);
-
-                expect(fakeAMQPConnection.reject).toHaveBeenCalled();
-                expect(fakeAMQPConnection.reject.callCount).toEqual(1);
-                expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
-            });
+                    expect(fakeAMQPConnection.reject).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.reject.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
+                })
+                .done(done, done.fail);
         });
 
-        it('should reject message if trigger is missing', function () {
+        it('should reject message if trigger is missing', function (done) {
             var sailor = new Sailor(settings);
 
             spyOn(sailor, "getStepInfo").andReturn({
                 function: "missing_trigger"
             });
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function(){
                     return sailor.processMessage(payload, message);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
+                .then(function() {
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
+                    expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual(
+                        "Trigger or action 'missing_trigger' is not found. " +
+                        "Please check if the path you specified in component.json ('./triggers/missing_trigger.js') is valid."
+                    );
+                    expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
+                    expect(fakeAMQPConnection.sendError.calls[0].args[2]).toEqual(message.content);
 
-            runs(function(){
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
-                expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual(
-                    "Trigger or action 'missing_trigger' is not found. " +
-                    "Please check if the path you specified in component.json ('./triggers/missing_trigger.js') is valid."
-                );
-                expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
-                expect(fakeAMQPConnection.sendError.calls[0].args[2]).toEqual(message.content);
-
-                expect(fakeAMQPConnection.reject).toHaveBeenCalled();
-                expect(fakeAMQPConnection.reject.callCount).toEqual(1);
-                expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
-            });
+                    expect(fakeAMQPConnection.reject).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.reject.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
+                })
+                .done(done, done.fail);
         });
 
-        it('should not process message if taskId in header is not equal to task._id', function () {
+        it('should not process message if taskId in header is not equal to task._id', function (done) {
 
             var message2 = _.cloneDeep(message);
             message2.properties.headers.taskId = "othertaskid";
@@ -487,27 +387,17 @@ describe('Sailor', function () {
                 function: "error_trigger"
             });
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function(){
                     return sailor.processMessage(payload, message2);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
-
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
-
-            runs(function(){
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.reject).toHaveBeenCalled();
-            });
+                .then(function() {
+                    expect(fakeAMQPConnection.reject).toHaveBeenCalled();
+                })
+                .done(done, done.fail);
         });
 
-        it('should catch all data calls and all error calls', function () {
+        it('should catch all data calls and all error calls', function (done) {
 
             var sailor = new Sailor(settings);
 
@@ -515,39 +405,27 @@ describe('Sailor', function () {
                 function: "datas_and_errors"
             });
 
-            var promise;
-
-            runs(function(){
-                promise = sailor.connect().then(function(){
+            sailor.connect()
+                .then(function(){
                     return sailor.processMessage(payload, message);
-                }).fail(function(err){
-                    console.log(err);
                 })
-            });
+                .then(function() {
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
-            waitsFor(function(){
-                return promise.isFulfilled() || promise.isRejected();
-            }, 10000);
+                    // data
+                    expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendData.calls.length).toEqual(3);
 
-            runs(function(){
-                expect(promise.isFulfilled()).toBeTruthy();
-                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                    // error
+                    expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendError.calls.length).toEqual(2);
 
-                // data
-                expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendData.calls.length).toEqual(3);
-
-                // error
-                expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
-                expect(fakeAMQPConnection.sendError.calls.length).toEqual(2);
-
-                // ack
-                expect(fakeAMQPConnection.reject).toHaveBeenCalled();
-                expect(fakeAMQPConnection.reject.callCount).toEqual(1);
-                expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
-            });
+                    // ack
+                    expect(fakeAMQPConnection.reject).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.reject.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
+                })
+                .done(done, done.fail);
         });
-
     });
-
 });
