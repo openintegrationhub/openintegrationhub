@@ -11,7 +11,7 @@ describe('Cipher', function () {
     });
 
     it('should encrypt & decrypt strings', function () {
-        var content = 'Hello world';
+        var content = 'B2B_L größere Firmenkunden 25% Rabatt';
         var result = cipher.encryptMessageContent(content);
         var decryptedResult = cipher.decryptMessageContent(result);
         expect(decryptedResult.toString()).toEqual(content.toString());
