@@ -1,7 +1,7 @@
 {
   "name": "elasticio-sailor-nodejs",
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "main": "run.js",
   "scripts": {
     "test": "./node_modules/.bin/grunt"
