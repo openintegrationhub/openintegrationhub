@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function gruntConfig(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jasmine_node: {
@@ -10,10 +10,15 @@ module.exports = function(grunt) {
                 specNameMatcher: 'spec'
             },
             all: ['spec/']
+        },
+        jscs: {
+            src: 'lib/**/*.js'
         }
     });
 
     grunt.loadNpmTasks('grunt-jasmine-node');
+    grunt.loadNpmTasks('grunt-jscs');
 
-    grunt.registerTask('default', ['jasmine_node']);
+    grunt.registerTask('test', ['jasmine_node']);
+    grunt.registerTask('default', ['test']);
 };
