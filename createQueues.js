@@ -73,7 +73,7 @@ function сreateQueuesAndExchanges(execId, task, stepId, nextStepId){
 
     var MESSAGES_QUEUE = util.format('%s:%s:%s:messages', task.id, stepId, execId);
     var MESSAGES_LISTENING_QUEUE = util.format('%s:%s:%s:messages', task.id, nextStepId, execId);
-    var REBOUNDS_QEUE = util.format('%s:%s:%s:rebounds', task.id, stepId, execId);
+    var REBOUNDS_QUEUE = util.format('%s:%s:%s:rebounds', task.id, stepId, execId);
 
     console.log('INCOMING_MESSAGES_QUEUE=%s', MESSAGES_QUEUE);
     console.log('EXCHANGE_NAME=%s', EXCHANGE_NAME);
@@ -81,7 +81,7 @@ function сreateQueuesAndExchanges(execId, task, stepId, nextStepId){
     console.log('ERROR_TAG=%s', ERROR_TAG);
     console.log('REBOUND_TAG=%s', REBOUND_TAG);
     console.log('MESSAGES_QUEUE=%s', MESSAGES_QUEUE);
-    console.log('REBOUNDS_QEUE=%s', REBOUNDS_QEUE);
+    console.log('REBOUNDS_QUEUE=%s', REBOUNDS_QUEUE);
 
     var userExchange = {
         name: EXCHANGE_NAME,
@@ -111,7 +111,7 @@ function сreateQueuesAndExchanges(execId, task, stepId, nextStepId){
     var REBOUND_QUEUE_TTL = 10 * 60 * 1000; // 10 min
 
     var reboundsQueue = {
-        name: REBOUNDS_QEUE,
+        name: REBOUNDS_QUEUE,
         options: {
             durable: true,
             autoDelete: false,
