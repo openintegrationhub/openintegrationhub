@@ -5,8 +5,13 @@ describe('AMQP', function () {
 
     var envVars = {};
     envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
-    envVars.ELASTICIO_TASK = '{"_id":"5559edd38968ec0736000003","data":{"step_1":{"account":"1234567890"}},"recipe":{"nodes":[{"id":"step_1","function":"list"}]}}';
+    envVars.ELASTICIO_TASK_ID = '5559edd38968ec0736000003';
     envVars.ELASTICIO_STEP_ID = 'step_1';
+    envVars.ELASTICIO_EXEC_ID = 'some-exec-id';
+
+    envVars.ELASTICIO_USER_ID = '5559edd38968ec0736000002';
+    envVars.ELASTICIO_COMP_ID = '5559edd38968ec0736000456';
+    envVars.ELASTICIO_FUNCTION = 'list';
 
     envVars.ELASTICIO_LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
     envVars.ELASTICIO_PUBLISH_MESSAGES_TO = 'userexchange:5527f0ea43238e5d5f000001';

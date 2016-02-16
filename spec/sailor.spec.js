@@ -1,23 +1,13 @@
 describe('Sailor', function () {
     var envVars = {};
     envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
-    envVars.ELASTICIO_TASK = JSON.stringify({
-        "_id" : "5559edd38968ec0736000003",
-        "data" : {
-            "step_1" : {
-                "_account" : "1234567890"
-            }
-        },
-        "recipe" : {
-            "nodes" : [{
-                "id" : "step_1",
-                "function" : "list"
-            }]},
-        "snapshot": {
-            "step_1": {"someId": "someData"}
-        }
-    });
+    envVars.ELASTICIO_TASK_ID = '5559edd38968ec0736000003';
     envVars.ELASTICIO_STEP_ID = 'step_1';
+    envVars.ELASTICIO_EXEC_ID = 'some-exec-id';
+
+    envVars.ELASTICIO_USER_ID = '5559edd38968ec0736000002';
+    envVars.ELASTICIO_COMP_ID = '5559edd38968ec0736000456';
+    envVars.ELASTICIO_FUNCTION = 'list';
 
     envVars.ELASTICIO_LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
     envVars.ELASTICIO_PUBLISH_MESSAGES_TO = 'userexchange:5527f0ea43238e5d5f000001';
@@ -41,7 +31,6 @@ describe('Sailor', function () {
     var Sailor = require('../lib/sailor.js').Sailor;
     var _ = require('lodash');
     var Q = require('q');
-    var nock = require('nock');
 
     var payload = {param1: "Value1"};
 
@@ -77,10 +66,42 @@ describe('Sailor', function () {
     };
 
     beforeEach(function(){
-        settings = require('../lib/settings.js').readFrom(envVars);
+        settings = require('../lib/settings').readFrom(envVars);
     });
 
-    describe('connection', function (done) {
+    describe('connect', function() {
+        var fakeAMQPConnection;
+
+        beforeEach(function(){
+            fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+                'connect','sendData','sendError','sendRebound','ack','reject',
+                'sendSnapshot'
+            ]);
+
+            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+        });
+
+        it('should fail if unable to retrieve step info', function(done) {
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q.reject(new Error('Cant find step info'));
+            });
+
+            sailor.connect()
+                .then(function() {
+                    throw new Error('Error is expected');
+                })
+                .catch(function(err) {
+                    expect(err.message).toEqual('Cant find step info');
+                })
+                .done(done, done);
+        });
+    });
+
+    describe('disconnection', function() {
         it('should disconnect Mongo and RabbitMQ, and exit process', function (done) {
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['disconnect']);
             fakeAMQPConnection.disconnect.andReturn(Q.resolve());
@@ -94,37 +115,7 @@ describe('Sailor', function () {
                 .then(function(){
                     expect(fakeAMQPConnection.disconnect).toHaveBeenCalled();
                 })
-                .done(done, done.fail);
-        });
-    });
-
-    describe('getStepInfo', function () {
-        it('should get step info from task.recipe.nodes', function () {
-            var sailor = new Sailor(settings);
-            var data = sailor.getStepInfo("step_1");
-            expect(data).toEqual({ id : 'step_1', function : 'list'});
-        });
-    });
-
-    describe('getStepCfg', function () {
-        it('should get step cfg from task.data', function () {
-            var sailor = new Sailor(settings);
-            var data = sailor.getStepCfg("step_1");
-            expect(data).toEqual({_account : '1234567890'});
-        });
-
-        it('should get empty object as cfg when there is no config for a step', function () {
-            var sailor = new Sailor(settings);
-            var data = sailor.getStepCfg("step_2");
-            expect(data).toEqual({});
-        });
-    });
-
-    describe('getStepSnapshot', function () {
-        it('should get step snapshot from task.snapshot', function () {
-            var sailor = new Sailor(settings);
-            var data = sailor.getStepSnapshot("step_1");
-            expect(data).toEqual({someId : 'someData'});
+                .done(done, done);
         });
     });
 
@@ -141,19 +132,22 @@ describe('Sailor', function () {
         });
 
         it('should call sendData() and ack() if success', function (done) {
+            settings.FUNCTION = 'data_trigger';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "data_trigger"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
             });
 
             sailor.connect()
-                .then(function(){
+                .then(function() {
                     return sailor.processMessage(payload, message);
                 })
-                .then(function(){
+                .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
                     expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
 
                     var sendDataCalls = fakeAMQPConnection.sendData.calls;
@@ -165,7 +159,7 @@ describe('Sailor', function () {
                         taskId: '5559edd38968ec0736000003',
                         userId: '5559edd38968ec0736000002',
                         stepId: 'step_1',
-                        compId: undefined,
+                        compId: '5559edd38968ec0736000456',
                         function: 'data_trigger',
                         start: jasmine.any(Number),
                         cid: 1,
@@ -176,73 +170,91 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                     expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
                 })
-                .done(done, done.fail);
+                .done(done, done); //todo: use done.fail after migration to Jasmine 2.x
         });
 
         it('should send request to API server to update keys', function (done) {
-
+            settings.FUNCTION = 'keys_trigger';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "keys_trigger"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({
+                    config: {
+                        _account: '1234567890'
+                    }
+                });
             });
 
-            var nockScope = nock('http://apihost.com:80')
-                .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
-                .reply(200, "Success");
+            spyOn(sailor.apiClient.accounts, 'update').andCallFake(function(accountId, keys) {
+                expect(accountId).toEqual('1234567890');
+                expect(keys).toEqual({keys: {oauth: {access_token: 'newAccessToken'}}});
+                return Q();
+            });
 
             sailor.connect()
                 .then(function(){
                     return sailor.processMessage(payload, message);
                 })
                 .then(function(){
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+                    expect(sailor.apiClient.accounts.update).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
-                    // check that PUT request was sent
-                    expect(nockScope.isDone()).toBeTruthy();
-
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                     expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
                 })
-                .done(done, done.fail);
+                .done(done, done); //todo: use done.fail after migration to Jasmine 2.x
         });
 
         it('should emit error if failed to update keys', function (done) {
+            settings.FUNCTION = 'keys_trigger';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "keys_trigger"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({
+                    config: {
+                        _account: '1234567890'
+                    }
+                });
             });
 
-            var nockScope = nock('http://apihost.com:80')
-                .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
-                .reply(400, "Failed");
+            spyOn(sailor.apiClient.accounts, 'update').andCallFake(function(accountId, keys) {
+                expect(accountId).toEqual('1234567890');
+                expect(keys).toEqual({keys: {oauth: {access_token: 'newAccessToken'}}});
+                return Q.reject(new Error('Update keys error'));
+            });
 
             sailor.connect()
                 .then(function(){
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+                    expect(sailor.apiClient.accounts.update).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-
-                    // check that PUT request was sent
-                    expect(nockScope.isDone()).toBeTruthy();
                     expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
-                    expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Failed to update keys: API server replied with status 400 ("Failed")');
-
+                    expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Update keys error');
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                     expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
                 })
-                .done(done, done.fail);
+                .done(done, done);
         });
 
         it('should call sendRebound() and ack()', function (done) {
+            settings.FUNCTION = 'rebound_trigger';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "rebound_trigger"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
             });
 
             sailor.connect()
@@ -250,6 +262,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendRebound).toHaveBeenCalled();
@@ -260,14 +274,17 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                     expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
                 })
-                .done(done, done.fail);
+                .done(done, done);
         });
 
         it('should call sendSnapshot() and ack() after a `snapshot` event', function (done) {
+            settings.FUNCTION = 'update';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "update"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
             });
 
             sailor.connect()
@@ -278,6 +295,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     var expectedSnapshot = {blabla:'blablabla'};
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
@@ -289,14 +308,21 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                     expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
                 })
-                .done(done, done.fail);
+                .done(done, done);
         });
 
         it('should call sendSnapshot() and ack() after an `updateSnapshot` event', function (done) {
+            settings.FUNCTION = 'update';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "update"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({
+                    snapshot: {
+                        someId: 'someData'
+                    }
+                });
             });
 
             sailor.connect()
@@ -307,6 +333,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     var expectedSnapshot = {someId: 'someData', updated: 'value'};
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
@@ -318,14 +346,17 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                     expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
                 })
-                .done(done, done.fail);
+                .done(done, done);
         });
 
         it('should send error if error happened', function (done) {
+            settings.FUNCTION = 'error_trigger';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "error_trigger"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
             });
 
             sailor.connect()
@@ -333,6 +364,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
@@ -344,14 +377,17 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.reject.callCount).toEqual(1);
                     expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
                 })
-                .done(done, done.fail);
+                .done(done, done);
         });
 
         it('should reject message if trigger is missing', function (done) {
+            settings.FUNCTION = 'missing_trigger';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "missing_trigger"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
             });
 
             sailor.connect()
@@ -359,6 +395,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
@@ -373,7 +411,7 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.reject.callCount).toEqual(1);
                     expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
                 })
-                .done(done, done.fail);
+                .done(done, done);
         });
 
         it('should not process message if taskId in header is not equal to task._id', function (done) {
@@ -381,10 +419,13 @@ describe('Sailor', function () {
             var message2 = _.cloneDeep(message);
             message2.properties.headers.taskId = "othertaskid";
 
+            settings.FUNCTION = 'error_trigger';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "error_trigger"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
             });
 
             sailor.connect()
@@ -392,17 +433,20 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message2);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
                     expect(fakeAMQPConnection.reject).toHaveBeenCalled();
                 })
-                .done(done, done.fail);
+                .done(done, done);
         });
 
         it('should catch all data calls and all error calls', function (done) {
-
+            settings.FUNCTION = 'datas_and_errors';
             var sailor = new Sailor(settings);
 
-            spyOn(sailor, "getStepInfo").andReturn({
-                function: "datas_and_errors"
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
             });
 
             sailor.connect()
@@ -410,6 +454,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     // data
@@ -425,7 +471,7 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.reject.callCount).toEqual(1);
                     expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
                 })
-                .done(done, done.fail);
+                .done(done, done);
         });
     });
 });
