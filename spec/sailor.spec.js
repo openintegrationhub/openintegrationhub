@@ -104,15 +104,11 @@ describe('Sailor', function () {
             settings.FUNCTION = 'data_trigger';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({});
-                    }
-                }
-            };
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
 
             sailor.connect()
                 .then(function() {
@@ -149,26 +145,21 @@ describe('Sailor', function () {
             settings.FUNCTION = 'keys_trigger';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({
-                            config: {
-                                _account: '1234567890'
-                            }
-                        });
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({
+                    config: {
+                        _account: '1234567890'
                     }
-                },
-                accounts: {
-                    update: function(accountId, keys) {
-                        expect(accountId).toEqual('1234567890');
-                        expect(keys).toEqual({keys: {oauth: {access_token: 'newAccessToken'}}});
-                        return Q();
-                    }
-                }
-            };
+                });
+            });
+
+            spyOn(sailor.apiClient.accounts, 'update').andCallFake(function(accountId, keys) {
+                expect(accountId).toEqual('1234567890');
+                expect(keys).toEqual({keys: {oauth: {access_token: 'newAccessToken'}}});
+                return Q();
+            });
 
             sailor.connect()
                 .then(function(){
@@ -187,26 +178,21 @@ describe('Sailor', function () {
             settings.FUNCTION = 'keys_trigger';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({
-                            config: {
-                                _account: '1234567890'
-                            }
-                        });
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({
+                    config: {
+                        _account: '1234567890'
                     }
-                },
-                accounts: {
-                    update: function(accountId, keys) {
-                        expect(accountId).toEqual('1234567890');
-                        expect(keys).toEqual({keys: {oauth: {access_token: 'newAccessToken'}}});
-                        return Q.reject(new Error('Update keys error'));
-                    }
-                }
-            };
+                });
+            });
+
+            spyOn(sailor.apiClient.accounts, 'update').andCallFake(function(accountId, keys) {
+                expect(accountId).toEqual('1234567890');
+                expect(keys).toEqual({keys: {oauth: {access_token: 'newAccessToken'}}});
+                return Q.reject(new Error('Update keys error'));
+            });
 
             sailor.connect()
                 .then(function(){
@@ -227,16 +213,11 @@ describe('Sailor', function () {
             settings.FUNCTION = 'rebound_trigger';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({});
-                    }
-                }
-            };
-
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
 
             sailor.connect()
                 .then(function() {
@@ -260,15 +241,11 @@ describe('Sailor', function () {
             settings.FUNCTION = 'update';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({});
-                    }
-                }
-            };
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
 
             sailor.connect()
                 .then(function(){
@@ -296,19 +273,15 @@ describe('Sailor', function () {
             settings.FUNCTION = 'update';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({
-                            snapshot: {
-                                someId: 'someData'
-                            }
-                        });
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({
+                    snapshot: {
+                        someId: 'someData'
                     }
-                }
-            };
+                });
+            });
 
             sailor.connect()
                 .then(function(){
@@ -336,15 +309,11 @@ describe('Sailor', function () {
             settings.FUNCTION = 'error_trigger';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({});
-                    }
-                }
-            };
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
 
             sailor.connect()
                 .then(function(){
@@ -369,15 +338,11 @@ describe('Sailor', function () {
             settings.FUNCTION = 'missing_trigger';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({});
-                    }
-                }
-            };
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
 
             sailor.connect()
                 .then(function(){
@@ -409,15 +374,11 @@ describe('Sailor', function () {
             settings.FUNCTION = 'error_trigger';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({});
-                    }
-                }
-            };
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
 
             sailor.connect()
                 .then(function(){
@@ -433,15 +394,11 @@ describe('Sailor', function () {
             settings.FUNCTION = 'datas_and_errors';
             var sailor = new Sailor(settings);
 
-            sailor.apiClient = {
-                tasks: {
-                    retrieveStep: function(taskId, stepId) {
-                        expect(taskId).toEqual('5559edd38968ec0736000003');
-                        expect(stepId).toEqual('step_1');
-                        return Q({});
-                    }
-                }
-            };
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
 
             sailor.connect()
                 .then(function(){
