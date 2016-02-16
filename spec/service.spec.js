@@ -1,11 +1,17 @@
 process.env.COMPONENT_PATH = '/spec/component';
 describe('Service', function(){
-    var Q = require('q');
-    var request = require('request');
     var service = require('../lib/service');
     var nock = require('nock');
 
     describe('execService', function(){
+
+        beforeEach(function() {
+            process.env.ELASTICIO_API_URI = 'http://apihost.com';
+        });
+
+        afterEach(function() {
+            delete process.env.ELASTICIO_API_URI;
+        });
 
         function makeEnv(env) {
             env.ELASTICIO_CFG = env.ELASTICIO_CFG || '{}';
@@ -29,7 +35,7 @@ describe('Service', function(){
 
                 service.processService('verifyCredentials', {})
                     .catch(checkError)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkError(err){
                     expect(err.message).toEqual('ELASTICIO_POST_RESULT_URL is not provided');
@@ -40,7 +46,7 @@ describe('Service', function(){
 
                 service.processService('unknownMethod', makeEnv({}))
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
@@ -52,7 +58,7 @@ describe('Service', function(){
 
                 service.processService('verifyCredentials', {'ELASTICIO_POST_RESULT_URL':'http://test.com/123/456'})
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
@@ -68,7 +74,7 @@ describe('Service', function(){
 
                 }))
                 .then(checkResult)
-                .done(done, done.fail);
+                .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
@@ -86,7 +92,7 @@ describe('Service', function(){
                     ELASTICIO_API_KEY: 'key'
                 })
                 .then(checkResult)
-                .done(done, done.fail);
+                .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
@@ -98,7 +104,7 @@ describe('Service', function(){
 
                 service.processService('getMetaModel', makeEnv({}))
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
@@ -110,7 +116,7 @@ describe('Service', function(){
 
                 service.processService('getMetaModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'unknown'}))
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
@@ -122,7 +128,7 @@ describe('Service', function(){
 
                 service.processService('selectModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update'}))
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
@@ -134,7 +140,7 @@ describe('Service', function(){
 
                 service.processService('selectModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update', ELASTICIO_GET_MODEL_METHOD: 'unknown'}))
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('error');
@@ -156,7 +162,7 @@ describe('Service', function(){
 
                 service.processService('verifyCredentials', makeEnv({}))
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('success');
@@ -168,7 +174,7 @@ describe('Service', function(){
 
                 service.processService('getMetaModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update'}))
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('success');
@@ -180,7 +186,7 @@ describe('Service', function(){
 
                 service.processService('selectModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update', ELASTICIO_GET_MODEL_METHOD: 'getModel'}))
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(result.status).toEqual('success');
@@ -205,7 +211,7 @@ describe('Service', function(){
 
                 service.processService('selectModel', env)
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkResult(result){
                     expect(nockScope.isDone()).toEqual(true);
@@ -231,9 +237,9 @@ describe('Service', function(){
 
                 service.processService('selectModel', env)
                     .then(checkResult)
-                    .done(done, done.fail);
+                    .done(done, done);
 
-                function checkResult(result){
+                function checkResult(result) {
                     expect(nockScope.isDone()).toEqual(true);
                     expect(result.status).toEqual('success');
                     expect(result.data).toEqual('model2');
@@ -254,7 +260,7 @@ describe('Service', function(){
 
                 service.processService('verifyCredentials', makeEnv({ELASTICIO_POST_RESULT_URL: 'http://test.com/111/222'}))
                     .catch(checkError)
-                    .done(done, done.fail);
+                    .done(done, done);
 
                 function checkError(err){
                     expect(err.message).toEqual('Failed to POST data to http://test.com/111/222 (404, Page not found)');
