@@ -31,7 +31,6 @@ describe('Sailor', function () {
     var Sailor = require('../lib/sailor.js').Sailor;
     var _ = require('lodash');
     var Q = require('q');
-    var nock = require('nock');
 
     var payload = {param1: "Value1"};
 
@@ -70,7 +69,39 @@ describe('Sailor', function () {
         settings = require('../lib/settings').readFrom(envVars);
     });
 
-    describe('connection', function (done) {
+    describe('connect', function() {
+        var fakeAMQPConnection;
+
+        beforeEach(function(){
+            fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+                'connect','sendData','sendError','sendRebound','ack','reject',
+                'sendSnapshot'
+            ]);
+
+            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+        });
+
+        it('should fail if unable to retrieve step info', function(done) {
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q.reject(new Error('Cant find step info'));
+            });
+
+            sailor.connect()
+                .then(function() {
+                    throw new Error('Error is expected');
+                })
+                .catch(function(err) {
+                    expect(err.message).toEqual('Cant find step info');
+                })
+                .done(done, done);
+        });
+    });
+
+    describe('disconnection', function() {
         it('should disconnect Mongo and RabbitMQ, and exit process', function (done) {
             var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['disconnect']);
             fakeAMQPConnection.disconnect.andReturn(Q.resolve());
@@ -115,6 +146,7 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
                     expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
 
@@ -166,6 +198,9 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function(){
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+                    expect(sailor.apiClient.accounts.update).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
@@ -199,6 +234,9 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+                    expect(sailor.apiClient.accounts.update).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
                     expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
                     expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Update keys error');
@@ -224,6 +262,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendRebound).toHaveBeenCalled();
@@ -255,6 +295,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     var expectedSnapshot = {blabla:'blablabla'};
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
@@ -291,6 +333,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     var expectedSnapshot = {someId: 'someData', updated: 'value'};
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
@@ -320,6 +364,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
@@ -349,6 +395,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
@@ -385,6 +433,7 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message2);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
                     expect(fakeAMQPConnection.reject).toHaveBeenCalled();
                 })
                 .done(done, done);
@@ -405,6 +454,8 @@ describe('Sailor', function () {
                     return sailor.processMessage(payload, message);
                 })
                 .then(function() {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     // data
