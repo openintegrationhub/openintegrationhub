@@ -9,8 +9,34 @@ sailor.connect()
     .fail(logging.criticalError)
     .done();
 
-process.on('SIGTERM', function() {
-    sailor.disconnect();
+process.on('SIGTERM', function onSigterm() {
+    console.log('Received SIGTERM');
+    disconnect();
+});
+
+process.on('SIGINT', function onSigint() {
+    console.log('Received SIGINT');
+    disconnect();
 });
 
 process.on('uncaughtException', logging.criticalError);
+
+function disconnect() {
+    sailor.disconnect()
+        .then(onSuccess)
+        .catch(onError)
+        .finally(exit)
+        .done();
+
+    function onSuccess() {
+        console.log('Successfully disconnected');
+    }
+
+    function onError(err) {
+        console.error('Unable to disconnect', err.stack);
+    }
+
+    function exit() {
+        process.exit();
+    }
+}
