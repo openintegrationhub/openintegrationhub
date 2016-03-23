@@ -2,7 +2,7 @@ describe('Component reader', function () {
 
     var ComponentReader = require('../lib/component_reader.js').ComponentReader;
 
-    it('Should find component located on the path', function () {
+    it('Should find component located on the path', function() {
 
         var reader = new ComponentReader();
         var promise = reader.init('/spec/component/');
@@ -17,7 +17,7 @@ describe('Component reader', function () {
         });
     });
 
-    it('Should find component trigger', function () {
+    it('Should find component trigger', function() {
 
         var reader = new ComponentReader();
         var filename, error;
@@ -39,7 +39,7 @@ describe('Component reader', function () {
         });
     });
 
-    it('Should return error if trigger not found', function () {
+    it('Should return error if trigger not found', function() {
 
         var reader = new ComponentReader();
         var filename, error;
@@ -61,10 +61,9 @@ describe('Component reader', function () {
         });
     });
 
-    it('Should return error if trigger file is missing', function () {
+    it('Should return appropriate error if trigger file is missing', function() {
 
         var reader = new ComponentReader();
-        var filename, error;
 
         var promise = reader.init('/spec/component/').then(function(){
             return reader.loadTriggerOrAction('missing_trigger');
@@ -81,10 +80,33 @@ describe('Component reader', function () {
                 "Trigger or action 'missing_trigger' is not found. " +
                 "Please check if the path you specified in component.json ('./triggers/missing_trigger.js') is valid."
             );
+            expect(err.code).toEqual('MODULE_NOT_FOUND');
         });
     });
 
-    it('Should return error if trigger not initialized', function () {
+    it('Should return appropriate error if trigger file is presented, but contains syntax error', function() {
+
+        var reader = new ComponentReader();
+
+        var promise = reader.init('/spec/component/').then(function() {
+            return reader.loadTriggerOrAction('syntax_error_trigger');
+        });
+
+        waitsFor(function() {
+            return promise.isFulfilled() || promise.isRejected();
+        }, 10000);
+
+        runs(function() {
+            expect(promise.isRejected()).toEqual(true);
+            var err = promise.inspect().reason;
+            expect(err.message).toEqual(
+                "Trigger or action 'syntax_error_trigger' is found, but can not be loaded. " +
+                "Please check if the file './triggers/syntax_error_trigger.js' is correct."
+            );
+        });
+    });
+
+    it('Should return error if trigger not initialized', function() {
 
         var reader = new ComponentReader();
         var filename, error;
