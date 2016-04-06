@@ -28,4 +28,3 @@ ELASTICIO_REBOUND_LIMIT=2 <br/>
 [travis-url]: https://travis-ci.org/elasticio/sailor-nodejs
 [daviddm-image]: https://david-dm.org/elasticio/sailor-nodejs.svg?theme=shields.io
 [daviddm-url]: https://david-dm.org/elasticio/sailor-nodejs
-[fury-image]: 
