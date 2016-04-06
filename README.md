@@ -1,4 +1,6 @@
-# sailor-nodejs
+# sailor-nodejs [![Dependency Status][daviddm-image]][daviddm-url]
+
+> elastic.io node.js SDK library to develop your node.js component
 
 The official elastic.io library for bootstrapping and executing for Node.js connectors.
 
@@ -22,4 +24,5 @@ ELASTICIO_COMPONENT_PATH=../ <br/>
 ELASTICIO_REBOUND_INITIAL_EXPIRATION=15000 <br/>
 ELASTICIO_REBOUND_LIMIT=2 <br/>
 
-
+[daviddm-image]: https://david-dm.org/elasticio/postgresql-component.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/elasticio/postgresql-component
