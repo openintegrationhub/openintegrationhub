@@ -1,4 +1,4 @@
-# sailor-nodejs [![Build Status][travisci-image]][travisci-url] [![Dependency Status][daviddm-image]][daviddm-url]
+# sailor-nodejs [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 
 > elastic.io node.js SDK library to develop your node.js component
 
