@@ -1,4 +1,4 @@
-# sailor-nodejs [![Dependency Status][daviddm-image]][daviddm-url]
+# sailor-nodejs [![Build Status][travisci-image]][travisci-url] [![Dependency Status][daviddm-image]][daviddm-url]
 
 > elastic.io node.js SDK library to develop your node.js component
 
@@ -24,5 +24,7 @@ ELASTICIO_COMPONENT_PATH=../ <br/>
 ELASTICIO_REBOUND_INITIAL_EXPIRATION=15000 <br/>
 ELASTICIO_REBOUND_LIMIT=2 <br/>
 
+[travis-image]: https://travis-ci.org/elasticio/sailor-nodejs.svg?branch=master
+[travis-url]: https://travis-ci.org/elasticio/sailor-nodejs
 [daviddm-image]: https://david-dm.org/elasticio/sailor-nodejs.svg?theme=shields.io
 [daviddm-url]: https://david-dm.org/elasticio/sailor-nodejs
