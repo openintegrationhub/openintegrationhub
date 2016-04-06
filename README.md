@@ -1,10 +1,8 @@
 # sailor-nodejs [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 
+> The official elastic.io library for bootstrapping and executing for Node.js connectors.
+
 [![NPM](https://nodei.co/npm/elasticio-sailor-nodejs.png?downloads=true)](https://nodei.co/npm/elasticio-sailor-nodejs/)
-
-> elastic.io node.js SDK library to develop your node.js component
-
-The official elastic.io library for bootstrapping and executing for Node.js connectors.
 
 Minimal .env vars required:
 
