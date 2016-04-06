@@ -24,5 +24,5 @@ ELASTICIO_COMPONENT_PATH=../ <br/>
 ELASTICIO_REBOUND_INITIAL_EXPIRATION=15000 <br/>
 ELASTICIO_REBOUND_LIMIT=2 <br/>
 
-[daviddm-image]: https://david-dm.org/elasticio/postgresql-component.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/elasticio/postgresql-component
+[daviddm-image]: https://david-dm.org/elasticio/sailor-nodejs.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/elasticio/sailor-nodejs
