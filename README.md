@@ -1,5 +1,7 @@
 # sailor-nodejs [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 
+[![NPM](https://nodei.co/npm/elasticio-sailor-nodejs.png?downloads=true)](https://nodei.co/npm/elasticio-sailor-nodejs/)
+
 > elastic.io node.js SDK library to develop your node.js component
 
 The official elastic.io library for bootstrapping and executing for Node.js connectors.
@@ -28,3 +30,4 @@ ELASTICIO_REBOUND_LIMIT=2 <br/>
 [travis-url]: https://travis-ci.org/elasticio/sailor-nodejs
 [daviddm-image]: https://david-dm.org/elasticio/sailor-nodejs.svg?theme=shields.io
 [daviddm-url]: https://david-dm.org/elasticio/sailor-nodejs
+[fury-image]: 
