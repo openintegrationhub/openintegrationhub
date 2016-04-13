@@ -9,8 +9,8 @@ This is a required dependency for all components build for [elastic.io platform]
 ```json
     "dependencies": {
         "q": "^1.4.1",
-        "elasticio-sailor-nodejs": "1.1.0",
-        "elasticio-node": "0.0.5"
+        "elasticio-sailor-nodejs": "^1.1.0",
+        "elasticio-node": "^0.0.5"
     }
 ```
 
