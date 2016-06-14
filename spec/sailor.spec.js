@@ -400,9 +400,8 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
-                    expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual(
-                        "Trigger or action 'missing_trigger' is not found. " +
-                        "Please check if the path you specified in component.json ('./triggers/missing_trigger.js') is valid."
+                    expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toMatch(
+                        /Failed to load file \'.\/triggers\/missing_trigger.js\': Cannot find module.+missing_trigger\.js/
                     );
                     expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
                     expect(fakeAMQPConnection.sendError.calls[0].args[2]).toEqual(message.content);

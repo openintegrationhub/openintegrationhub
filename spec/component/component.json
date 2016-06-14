@@ -33,6 +33,10 @@
       "main": "./triggers/missing_trigger.js",
       "title": "Error"
     },
+    "trigger_with_wrong_dependency": {
+      "main": "./triggers/trigger_with_wrong_dependency.js",
+      "title": "Trigger with wrong dependency"
+    },
     "syntax_error_trigger": {
       "main": "./triggers/syntax_error_trigger.js",
       "title": "Trigger with syntax error in file"

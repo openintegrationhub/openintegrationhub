@@ -76,9 +76,31 @@ describe('Component reader', function () {
         runs(function(){
             expect(promise.isRejected()).toEqual(true);
             var err = promise.inspect().reason;
+            expect(err.message).toMatch(
+                /Failed to load file \'.\/triggers\/missing_trigger.js\': Cannot find module.+missing_trigger\.js/
+            );
+            expect(err.code).toEqual('MODULE_NOT_FOUND');
+        });
+    });
+
+    it('Should return appropriate error if missing dependency is required by module', function() {
+
+        var reader = new ComponentReader();
+
+        var promise = reader.init('/spec/component/').then(function(){
+            return reader.loadTriggerOrAction('trigger_with_wrong_dependency');
+        });
+
+        waitsFor(function(){
+            return promise.isFulfilled() || promise.isRejected();
+        }, 10000);
+
+        runs(function(){
+            expect(promise.isRejected()).toEqual(true);
+            var err = promise.inspect().reason;
             expect(err.message).toEqual(
-                "Trigger or action 'missing_trigger' is not found. " +
-                "Please check if the path you specified in component.json ('./triggers/missing_trigger.js') is valid."
+                'Failed to load file \'./triggers/trigger_with_wrong_dependency.js\': '
+                + 'Cannot find module \'../not-found-dependency\''
             );
             expect(err.code).toEqual('MODULE_NOT_FOUND');
         });
