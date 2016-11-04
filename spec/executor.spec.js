@@ -85,7 +85,15 @@ describe('Executor', function () {
             expect(taskexec.emit).toHaveBeenCalled();
             expect(taskexec.emit.callCount).toEqual(5);
             expect(taskexec.emit.calls[0].args[0]).toEqual('data');
+            expect(taskexec.emit.calls[0].args[1]).toEqual({content: "Data 1"});
             expect(taskexec.emit.calls[1].args[0]).toEqual('error');
+            expect(taskexec.emit.calls[1].args[1].message).toEqual('Error 1');
+            expect(taskexec.emit.calls[2].args[0]).toEqual('data');
+            expect(taskexec.emit.calls[2].args[1]).toEqual({content: "Data 2"});
+            expect(taskexec.emit.calls[3].args[0]).toEqual('error');
+            expect(taskexec.emit.calls[3].args[1].message).toEqual('Error 2');
+            expect(taskexec.emit.calls[4].args[0]).toEqual('data');
+            expect(taskexec.emit.calls[4].args[1]).toEqual({content: "Data 3"});
         });
     });
 
