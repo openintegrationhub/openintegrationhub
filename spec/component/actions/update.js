@@ -1,9 +1,13 @@
-var _ = require('lodash');
+const Q = require('q');
+const request = require('request');
 
 exports.process = processAction;
 exports.getMetaModel = getMetaModel;
 exports.getModel = getModel;
 exports.getModelWithKeysUpdate = getModelWithKeysUpdate;
+exports.promiseSelectModel = promiseSelectModel;
+exports.promiseRequestSelectModel = promiseRequestSelectModel;
+exports.promiseSelectModelRejected = promiseSelectModelRejected;
 
 function processAction(msg, cfg, snapshot){
     if (msg.snapshot) {
@@ -43,4 +47,25 @@ function getModelWithKeysUpdate(cfg, cb) {
         0: 'Mr',
         1: 'Mrs'
     });
+}
+
+function promiseSelectModel(cfg) {
+    return Promise.resolve({
+        de: 'de_DE',
+        at: 'de_AT'
+    });
+}
+
+function promiseRequestSelectModel(cfg) {
+    const options = {
+        uri: 'http://promise_target_url:80/selectmodel',
+        json: true
+    };
+
+    return Q.ninvoke(request, 'get', options)
+        .spread((req, body) => body);
+}
+
+function promiseSelectModelRejected(cfg) {
+    return Promise.reject(new Error('Ouch. This promise is rejected'));
 }

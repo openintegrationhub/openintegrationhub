@@ -66,6 +66,14 @@
           }
         }
       }
+    },
+    "update1": {
+      "main": "./actions/update1.js",
+      "title": "Update a record"
+    },
+    "update2": {
+      "main": "./actions/update2.js",
+      "title": "Update a record"
     }
   }
 }
