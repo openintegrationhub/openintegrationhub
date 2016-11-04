@@ -16,14 +16,31 @@ function processAction(msg, cfg, snapshot){
 }
 
 function getMetaModel(cfg, cb) {
-    return cb(null, 'metamodel');
+    return cb(null, {
+        'in': {
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    title: 'Name'
+                }
+            }
+        }
+    });
 }
 
 function getModel(cfg, cb) {
-    return cb(null, 'model')
+    return cb(null, {
+        de: 'Germany',
+        us: 'USA',
+        ua: 'Ukraine'
+    });
 }
 
 function getModelWithKeysUpdate(cfg, cb) {
     this.emit('updateKeys', {oauth: {access_token: 'newAccessToken'}});
-    return cb(null, 'model2')
+    return cb(null, {
+        0: 'Mr',
+        1: 'Mrs'
+    });
 }

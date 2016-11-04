@@ -178,7 +178,17 @@ describe('Service', function(){
 
                 function checkResult(result){
                     expect(result.status).toEqual('success');
-                    expect(result.data).toEqual('metamodel');
+                    expect(result.data).toEqual({
+                        in : {
+                            type : 'object',
+                            properties : {
+                                name : {
+                                    type : 'string',
+                                    title: 'Name'
+                                }
+                            }
+                        }
+                    });
                 }
             });
 
@@ -190,7 +200,11 @@ describe('Service', function(){
 
                 function checkResult(result){
                     expect(result.status).toEqual('success');
-                    expect(result.data).toEqual('model');
+                    expect(result.data).toEqual({
+                        de: 'Germany',
+                        us: 'USA',
+                        ua: 'Ukraine'
+                    });
                 }
             });
 
@@ -216,7 +230,10 @@ describe('Service', function(){
                 function checkResult(result){
                     expect(nockScope.isDone()).toEqual(true);
                     expect(result.status).toEqual('success');
-                    expect(result.data).toEqual('model2');
+                    expect(result.data).toEqual({
+                        0: 'Mr',
+                        1: 'Mrs'
+                    });
                 }
             });
 
@@ -242,7 +259,10 @@ describe('Service', function(){
                 function checkResult(result) {
                     expect(nockScope.isDone()).toEqual(true);
                     expect(result.status).toEqual('success');
-                    expect(result.data).toEqual('model2');
+                    expect(result.data).toEqual({
+                        0: 'Mr',
+                        1: 'Mrs'
+                    });
                 }
             });
 
