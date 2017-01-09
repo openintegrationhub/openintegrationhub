@@ -13,7 +13,8 @@
     "elasticio-rest-node": "1.0.1",
     "lodash": "3.7.0",
     "q": "1.2.0",
-    "request": "2.57.0"
+    "request": "2.57.0",
+    "co": "4.6.0"
   },
   "devDependencies": {
     "code-quality-js": "^1.0.2",
