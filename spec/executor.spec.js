@@ -130,57 +130,59 @@ describe('Executor', function () {
     });
 
 
+    describe('Promises', () => {
 
-    it('Should execute a Promise trigger and emit all events - data, end', function () {
-        var taskexec = new TaskExec();
+        it('Should execute a Promise trigger and emit all events - data, end', () => {
+            var taskexec = new TaskExec();
 
-        taskexec.on('error', function(){});
-        spyOn(taskexec, 'emit').andCallThrough();
+            taskexec.on('error', function(){});
+            spyOn(taskexec, 'emit').andCallThrough();
 
-        var module = require('./component/triggers/promise_trigger.js');
+            var module = require('./component/triggers/promise_trigger.js');
 
-        runs(() => {
-            taskexec.process(module, payload, cfg);
-        });
-
-        waitsFor(() => taskexec.emit.callCount > 1, 5000);
-
-        runs(() => {
-            expect(taskexec.emit).toHaveBeenCalled();
-            expect(taskexec.emit.callCount).toEqual(2);
-            expect(taskexec.emit.calls[0].args[0]).toEqual('data');
-            expect(taskexec.emit.calls[0].args[1]).toEqual({
-                body: 'I am a simple promise'
+            runs(() => {
+                taskexec.process(module, payload, cfg);
             });
-            expect(taskexec.emit.calls[1].args[0]).toEqual('end');
+
+            waitsFor(() => taskexec.emit.callCount > 1, 5000);
+
+            runs(() => {
+                expect(taskexec.emit).toHaveBeenCalled();
+                expect(taskexec.emit.callCount).toEqual(2);
+                expect(taskexec.emit.calls[0].args[0]).toEqual('data');
+                expect(taskexec.emit.calls[0].args[1]).toEqual({
+                    body: 'I am a simple promise'
+                });
+                expect(taskexec.emit.calls[1].args[0]).toEqual('end');
+            });
+        });
+
+        it('Should execute a Promise.resolve() trigger and emit end', () => {
+            var taskexec = new TaskExec();
+
+            taskexec.on('error', function(){});
+            spyOn(taskexec, 'emit').andCallThrough();
+
+            var module = require('./component/triggers/promise_resolve_no_data.js');
+
+            runs(() => {
+                taskexec.process(module, payload, cfg);
+            });
+
+            waitsFor(() => taskexec.emit.callCount > 0, 5000);
+
+            runs(() => {
+                expect(taskexec.emit).toHaveBeenCalled();
+                expect(taskexec.emit.callCount).toEqual(1);
+                expect(taskexec.emit.calls[0].args[0]).toEqual('end');
+            });
         });
     });
 
-    it('Should execute a Promise.resolve() trigger and emit end', function () {
-        var taskexec = new TaskExec();
 
-        taskexec.on('error', function(){});
-        spyOn(taskexec, 'emit').andCallThrough();
+    describe('Request Promise', () => {
 
-        var module = require('./component/triggers/promise_resolve_no_data.js');
-
-        runs(() => {
-            taskexec.process(module, payload, cfg);
-        });
-
-        waitsFor(() => taskexec.emit.callCount > 0, 5000);
-
-        runs(() => {
-            expect(taskexec.emit).toHaveBeenCalled();
-            expect(taskexec.emit.callCount).toEqual(1);
-            expect(taskexec.emit.calls[0].args[0]).toEqual('end');
-        });
-    });
-
-
-    describe('Request Promise', function () {
-
-        beforeEach(function(){
+        beforeEach(() => {
             nock('http://promise_target_url:80')
                 .get('/foo/bar')
                 .reply(200, {
@@ -188,12 +190,12 @@ describe('Executor', function () {
                 });
         });
 
-        it('Should execute a Promise trigger and emit all events - data, end', function () {
+        it('Should execute a Promise trigger and emit all events - data, end', () => {
 
 
             var taskexec = new TaskExec();
 
-            taskexec.on('error', function(){});
+            taskexec.on('error', () => {});
             spyOn(taskexec, 'emit').andCallThrough();
 
             var module = require('./component/triggers/promise_request_trigger.js');
@@ -218,9 +220,9 @@ describe('Executor', function () {
         });
     });
 
-    describe('Request Generators', function () {
+    describe('Request Generators', () => {
 
-        beforeEach(function(){
+        beforeEach(() => {
             nock('http://promise_target_url:80')
                 .get('/foo/bar')
                 .reply(200, {
@@ -228,12 +230,12 @@ describe('Executor', function () {
                 });
         });
 
-        it('Should execute a Promise trigger and emit all events - data, end', function () {
+        it('Should execute a Promise trigger and emit all events - data, end', () => {
 
 
             var taskexec = new TaskExec();
 
-            taskexec.on('error', function(){});
+            taskexec.on('error', () => {});
             spyOn(taskexec, 'emit').andCallThrough();
 
             var module = require('./component/triggers/generator_request_trigger.js');
