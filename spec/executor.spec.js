@@ -222,15 +222,13 @@ describe('Executor', function () {
 
     describe('Request Generators', () => {
 
-        beforeEach(() => {
+        it('Should execute a Promise trigger and emit all events - data, end', () => {
+
             nock('http://promise_target_url:80')
                 .get('/foo/bar')
                 .reply(200, {
                     message: 'Life is good with generators'
                 });
-        });
-
-        it('Should execute a Promise trigger and emit all events - data, end', () => {
 
 
             var taskexec = new TaskExec();
@@ -256,6 +254,68 @@ describe('Executor', function () {
                     }
                 });
                 expect(taskexec.emit.calls[1].args[0]).toEqual('end');
+            });
+        });
+
+        it('Should execute a Promise trigger and emit all events - data, end', () => {
+
+            nock('https://login.acme')
+                .post('/oauth2/v2.0/token', {
+                    client_id: 'admin',
+                    client_secret: 'secret'
+                })
+                .reply(200, {
+                    access_token: 'new_access_token'
+                })
+                .get('/oauth2/v2.0/contacts')
+                .reply(200, {
+                    result: [
+                        {
+                            email: 'homer.simpson@acme.org'
+                        },
+                        {
+                            email: 'marge.simpson@acme.org'
+                        }
+                    ]
+                });
+
+
+            var taskexec = new TaskExec();
+
+            taskexec.on('error', () => {});
+            spyOn(taskexec, 'emit').andCallThrough();
+
+            var module = require('./component/triggers/promise_emitting_events.js');
+
+            runs(() => {
+                taskexec.process(module, payload, cfg);
+            });
+
+            waitsFor(() => taskexec.emit.callCount > 1, 5000);
+
+            runs(() => {
+                expect(taskexec.emit).toHaveBeenCalled();
+                expect(taskexec.emit.callCount).toEqual(3);
+                expect(taskexec.emit.calls[0].args[0]).toEqual('updateKeys');
+                expect(taskexec.emit.calls[0].args[1]).toEqual({
+                    oauth: {
+                        access_token: 'new_access_token'
+                    }
+                });
+                expect(taskexec.emit.calls[1].args[0]).toEqual('data');
+                expect(taskexec.emit.calls[1].args[1]).toEqual({
+                    body:{
+                        result: [
+                            {
+                                email: 'homer.simpson@acme.org'
+                            },
+                            {
+                                email: 'marge.simpson@acme.org'
+                            }
+                        ]
+                    }
+                });
+                expect(taskexec.emit.calls[2].args[0]).toEqual('end');
             });
         });
     });
