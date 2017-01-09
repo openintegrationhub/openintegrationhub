@@ -147,11 +147,33 @@ describe('Executor', function () {
 
         runs(() => {
             expect(taskexec.emit).toHaveBeenCalled();
+            expect(taskexec.emit.callCount).toEqual(2);
             expect(taskexec.emit.calls[0].args[0]).toEqual('data');
             expect(taskexec.emit.calls[0].args[1]).toEqual({
                 body: 'I am a simple promise'
             });
             expect(taskexec.emit.calls[1].args[0]).toEqual('end');
+        });
+    });
+
+    it('Should execute a Promise.resolve() trigger and emit end', function () {
+        var taskexec = new TaskExec();
+
+        taskexec.on('error', function(){});
+        spyOn(taskexec, 'emit').andCallThrough();
+
+        var module = require('./component/triggers/promise_resolve_no_data.js');
+
+        runs(() => {
+            taskexec.process(module, payload, cfg);
+        });
+
+        waitsFor(() => taskexec.emit.callCount > 0, 5000);
+
+        runs(() => {
+            expect(taskexec.emit).toHaveBeenCalled();
+            expect(taskexec.emit.callCount).toEqual(1);
+            expect(taskexec.emit.calls[0].args[0]).toEqual('end');
         });
     });
 
@@ -184,6 +206,7 @@ describe('Executor', function () {
 
             runs(() => {
                 expect(taskexec.emit).toHaveBeenCalled();
+                expect(taskexec.emit.callCount).toEqual(2);
                 expect(taskexec.emit.calls[0].args[0]).toEqual('data');
                 expect(taskexec.emit.calls[0].args[1]).toEqual({
                     body:{
