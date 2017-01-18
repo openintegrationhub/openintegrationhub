@@ -3,7 +3,7 @@
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
   "version": "2.0.0-dev.3",
   "main": "run.js",
-  "scripts": {g
+  "scripts": {
     "test": "NODE_ENV=test jasmine-node spec && NODE_ENV=test mocha mocha_spec/*"
   },
   "dependencies": {
