@@ -5,7 +5,7 @@ exports.onFlowStart = onFlowStart;
 exports.init = initTrigger;
 exports.process = processTrigger;
 
-const stepStones = {};
+const subscription = {};
 
 function onFlowStart(cfg) {
     const options = {
@@ -23,9 +23,19 @@ function onFlowStart(cfg) {
 }
 
 function initTrigger(cfg) {
-    stepStones.init = {
-        cfg
+    const options = {
+        uri: 'https://api.acme.com/subscribe',
+        json: true,
+        body: {
+            event: 'Opened'
+        }
     };
+
+    Q.ninvoke(request, 'post', options)
+        .spread((req, body) => {
+            subscription.id = body.id;
+            subscription.cfg = cfg;
+        });
 }
 
 function processTrigger(msg, cfg) {
@@ -43,7 +53,7 @@ function processTrigger(msg, cfg) {
                 body: {
                     originalMsg: msg,
                     customers: data,
-                    stepStones: stepStones
+                    subscription: subscription
                 }
             });
             that.emit('end');

@@ -114,22 +114,24 @@ describe('Integration Test', () => {
 
         nock('https://api.acme.com')
             .log(console.log)
+            .post('/subscribe')
+            .reply(200, {
+                id: 'subscription_12345'
+            })
             .get('/customers')
             .reply(200, customers);
 
         publishChannel.consume('integration_test_queue', (message) => {
             const emittedMessage = JSON.parse(message.content.toString());
-            console.log("%j",emittedMessage);
             publishChannel.ack(message);
 
             expect(emittedMessage.body).to.deep.equal({
                 originalMsg: inputMessage,
                 customers: customers,
-                stepStones: {
-                    init: {
-                        cfg: {
-                            apiKey: 'secret'
-                        }
+                subscription: {
+                    id: 'subscription_12345',
+                    cfg: {
+                        apiKey: 'secret'
                     }
                 }
             });
