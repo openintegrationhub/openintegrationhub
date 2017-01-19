@@ -1,16 +1,15 @@
 const logging = require('./lib/logging.js');
 const Sailor = require('./lib/sailor.js').Sailor;
+const settings = require('./lib/settings.js').readFrom(process.env);
 const co = require('co');
 
 let sailor;
 
 co(function* putOutToSea() {
-    const settings = require('./lib/settings.js').readFrom(process.env);
     sailor = new Sailor(settings);
     yield sailor.prepare();
     if (settings.INVOKE === 'onFlowStart') {
         yield sailor.onFlowStart();
-        return;
     }
     yield sailor.connect();
     yield sailor.init();
