@@ -83,7 +83,7 @@ describe('Integration Test', () => {
     });
 
     afterEach(() => {
-       delete process.env.ELASTICIO_INVOKE;
+       delete process.env.STARTUP_REQUIRED;
     });
 
     it('should run sailor successfully', (done) => {
@@ -141,9 +141,9 @@ describe('Integration Test', () => {
         requireRun();
     });
 
-    it('should execute onFlowStart successfully', (done) => {
+    it('should execute startup successfully', (done) => {
 
-        process.env.ELASTICIO_INVOKE = 'onFlowStart';
+        process.env.ELASTICIO_STARTUP_REQUIRED = '1';
 
         const app = express();
         const port = 8080;

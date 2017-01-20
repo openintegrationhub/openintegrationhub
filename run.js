@@ -8,8 +8,8 @@ let sailor;
 co(function* putOutToSea() {
     sailor = new Sailor(settings);
     yield sailor.prepare();
-    if (settings.INVOKE === 'onFlowStart') {
-        yield sailor.onFlowStart();
+    if (!!settings.STARTUP_REQUIRED) {
+        yield sailor.startup();
     }
     yield sailor.connect();
     yield sailor.init();
@@ -32,6 +32,7 @@ function disconnect() {
     co(function* putIn() {
         yield sailor.disconnect();
         console.log('Successfully disconnected');
+        yield sailor.shutdown();
         process.exit();
     }).catch((err) => {
         console.error('Unable to disconnect', err.stack);

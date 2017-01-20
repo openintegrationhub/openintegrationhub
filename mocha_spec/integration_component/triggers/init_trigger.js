@@ -1,13 +1,13 @@
 const Q = require('q');
 const request = require('request');
 
-exports.onFlowStart = onFlowStart;
+exports.startup = startup;
 exports.init = initTrigger;
 exports.process = processTrigger;
 
 const subscription = {};
 
-function onFlowStart(cfg) {
+function startup(cfg) {
     const options = {
         uri: 'http://localhost:8080/webhooks',
         json: true,
