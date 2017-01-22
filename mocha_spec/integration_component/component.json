@@ -1,0 +1,12 @@
+{
+  "title": "Client component",
+  "description": "Client component description",
+  "credentials": {
+  },
+  "triggers": {
+    "init_trigger": {
+      "main": "./triggers/init_trigger.js",
+      "title": "Get data"
+    }
+  }
+}
