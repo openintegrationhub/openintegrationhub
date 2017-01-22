@@ -28,6 +28,7 @@ describe('Integration Test', () => {
     process.env.ELASTICIO_API_URI = 'https://apidotelasticidotio';
     process.env.ELASTICIO_API_USERNAME = 'test@test.com';
     process.env.ELASTICIO_API_KEY = '5559edd';
+    process.env.ELASTICIO_FLOW_WEBHOOK_URI = 'https://in.elastic.io/hooks/' + process.env.ELASTICIO_TASK_ID;
 
     process.env.DEBUG = 'sailor';
 

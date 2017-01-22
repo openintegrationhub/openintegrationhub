@@ -12,7 +12,7 @@ function startup(cfg) {
         uri: 'http://localhost:8080/webhooks',
         json: true,
         body: {
-            url: 'https://in.elastic.io/hooks/' + process.env.ELASTICIO_TASK_ID
+            url: process.env.ELASTICIO_FLOW_WEBHOOK_URI
         }
     };
 
