@@ -69,6 +69,58 @@ describe('Sailor', function () {
         settings = require('../lib/settings').readFrom(envVars);
     });
 
+    describe('init', function() {
+
+        it('should init properly if developer returned a plain string in init', function(done) {
+            settings.FUNCTION = 'init_trigger_returns_string';
+
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Promise.resolve({
+                    config: {
+                        _account: '1234567890'
+                    }
+                });
+            });
+
+            sailor.prepare()
+                .then(() => sailor.init({}))
+                .then((result) =>{
+                    expect(result).toEqual('this_is_a_string');
+                    done();
+                })
+                .catch(done);
+        });
+        it('should init properly if developer returned a promise', function(done) {
+            settings.FUNCTION = 'init_trigger';
+
+            var sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Promise.resolve({
+                    config: {
+                        _account: '1234567890'
+                    }
+                });
+            });
+
+            sailor.prepare()
+                .then(() => sailor.init({}))
+                .then((result) =>{
+                    expect(result).toEqual({
+                        subscriptionId : '_subscription_123'
+                    });
+                    done();
+                })
+                .catch(done);
+        });
+    });
+
     describe('prepare', function() {
 
         it('should fail if unable to retrieve step info', function(done) {
