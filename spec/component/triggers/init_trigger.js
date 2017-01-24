@@ -3,7 +3,7 @@ exports.process = processTrigger;
 
 function initTrigger(cfg) {
     return Promise.resolve({
-        subscriptionId : '_subscription_123'
+        subscriptionId: '_subscription_123'
     });
 }
 

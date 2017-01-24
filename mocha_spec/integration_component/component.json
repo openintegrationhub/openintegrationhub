@@ -7,6 +7,10 @@
     "init_trigger": {
       "main": "./triggers/init_trigger.js",
       "title": "Get data"
+    },
+    "fails_to_init": {
+      "main": "./triggers/fails_to_init.js",
+      "title": "Fails to init"
     }
   }
 }

@@ -7,14 +7,19 @@ let sailor;
 
 co(function* putOutToSea() {
     sailor = new Sailor(settings);
+    yield sailor.connect();
     yield sailor.prepare();
     if (!!settings.STARTUP_REQUIRED) {
         yield sailor.startup();
     }
-    yield sailor.connect();
     yield sailor.init();
     yield sailor.run();
-}).catch(logging.criticalError);
+}).catch((e) => {
+    if (sailor) {
+        sailor.reportError(e);
+    }
+    logging.criticalError(e);
+});
 
 process.on('SIGTERM', function onSigterm() {
     console.log('Received SIGTERM');
@@ -32,7 +37,6 @@ function disconnect() {
     co(function* putIn() {
         yield sailor.disconnect();
         console.log('Successfully disconnected');
-        yield sailor.shutdown();
         process.exit();
     }).catch((err) => {
         console.error('Unable to disconnect', err.stack);

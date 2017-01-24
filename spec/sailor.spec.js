@@ -184,8 +184,8 @@ describe('Sailor', function () {
                 return Q({});
             });
 
-            sailor.prepare()
-                .then(() => sailor.connect())
+            sailor.connect()
+                .then(() => sailor.prepare())
                 .then(() => sailor.processMessage(payload, message))
                 .then(() => {
                     expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
