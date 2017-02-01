@@ -12,7 +12,7 @@ describe('Settings', function () {
 
         var envVars = {};
         envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
-        envVars.ELASTICIO_TASK_ID = '5559edd38968ec0736000003';
+        envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
         envVars.ELASTICIO_EXEC_ID = 'some-exec-id';
         envVars.ELASTICIO_STEP_ID = 'step_1';
 
@@ -39,7 +39,7 @@ describe('Settings', function () {
 
         var envVars = {};
         envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
-        envVars.ELASTICIO_TASK_ID = '5559edd38968ec0736000003';
+        envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
         envVars.ELASTICIO_EXEC_ID = 'some-exec-id';
         envVars.ELASTICIO_STEP_ID = 'step_1';
 

@@ -10,7 +10,7 @@ const logging = require('../lib/logging.js');
 describe('Integration Test', () => {
     process.env.ELASTICIO_AMQP_URI = 'amqp://guest:guest@localhost:5672';
     process.env.ELASTICIO_RABBITMQ_PREFETCH_SAILOR = '10';
-    process.env.ELASTICIO_TASK_ID = '5559edd38968ec0736000003';
+    process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
     process.env.ELASTICIO_STEP_ID = 'step_1';
     process.env.ELASTICIO_EXEC_ID = 'some-exec-id';
 
@@ -29,7 +29,7 @@ describe('Integration Test', () => {
     process.env.ELASTICIO_API_URI = 'https://apidotelasticidotio';
     process.env.ELASTICIO_API_USERNAME = 'test@test.com';
     process.env.ELASTICIO_API_KEY = '5559edd';
-    process.env.ELASTICIO_FLOW_WEBHOOK_URI = 'https://in.elastic.io/hooks/' + process.env.ELASTICIO_TASK_ID;
+    process.env.ELASTICIO_FLOW_WEBHOOK_URI = 'https://in.elastic.io/hooks/' + process.env.ELASTICIO_FLOW_ID;
 
     process.env.DEBUG = 'sailor:debug';
 
@@ -104,7 +104,7 @@ describe('Integration Test', () => {
             {
                 headers: {
                     execId: process.env.ELASTICIO_EXEC_ID,
-                    taskId: process.env.ELASTICIO_TASK_ID,
+                    taskId: process.env.ELASTICIO_FLOW_ID,
                     userId: process.env.ELASTICIO_USER_ID
                 }
             });
@@ -141,7 +141,7 @@ describe('Integration Test', () => {
 
             expect(message.properties.headers).to.eql({
                 execId: process.env.ELASTICIO_EXEC_ID,
-                taskId: process.env.ELASTICIO_TASK_ID,
+                taskId: process.env.ELASTICIO_FLOW_ID,
                 userId: process.env.ELASTICIO_USER_ID,
                 stepId: process.env.ELASTICIO_STEP_ID,
                 compId: process.env.ELASTICIO_COMP_ID,
@@ -226,7 +226,7 @@ describe('Integration Test', () => {
 
             expect(message.properties.headers).to.eql({
                 execId: process.env.ELASTICIO_EXEC_ID,
-                taskId: process.env.ELASTICIO_TASK_ID,
+                taskId: process.env.ELASTICIO_FLOW_ID,
                 userId: process.env.ELASTICIO_USER_ID
             });
 
