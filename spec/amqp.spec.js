@@ -113,7 +113,7 @@ describe('AMQP', function () {
         amqp.sendHttpReply(msg, {
             taskId : 'task1234567890',
             stepId : 'step_456',
-            'X-EIO-Routing-Key': 'my-special-routing-key'
+            'reply_to': 'my-special-routing-key'
         });
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
@@ -130,7 +130,7 @@ describe('AMQP', function () {
             headers : {
                 taskId : 'task1234567890',
                 stepId : 'step_456',
-                'X-EIO-Routing-Key': 'my-special-routing-key'
+                'reply_to': 'my-special-routing-key'
             }
         });
 
@@ -138,7 +138,7 @@ describe('AMQP', function () {
         expect(payload).toEqual(msg);
     });
 
-    it('Should throw errro in sendHttpReply if x-eio-routing-key header not found', function () {
+    it('Should throw errro in sendHttpReply if reply_to header not found', function () {
 
         var amqp = new AMQPConnection(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
@@ -157,7 +157,7 @@ describe('AMQP', function () {
                 stepId : 'step_456'
             });
 
-        }).toThrow('Component emitted \'httpReply\' event but x-eio-routing-key was not found in AMQP headers');
+        }).toThrow('Component emitted \'httpReply\' event but \'reply_to\' was not found in AMQP headers');
 
 
         expect(amqp.publishChannel.publish).not.toHaveBeenCalled();
