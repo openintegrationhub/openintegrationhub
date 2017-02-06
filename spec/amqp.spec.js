@@ -97,6 +97,72 @@ describe('AMQP', function () {
         expect(payload).toEqual({ content : 'Message content' });
     });
 
+    it('Should sendHttpReply to outgoing channel using routing key from headers when process data', function () {
+
+        var amqp = new AMQPConnection(settings);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
+
+        var msg = {
+            statusCode: 200,
+            headers: {
+              'content-type': 'text/plain'
+            },
+            body: 'OK'
+        };
+
+        amqp.sendHttpReply(msg, {
+            taskId : 'task1234567890',
+            stepId : 'step_456',
+            'X-EIO-Routing-Key': 'my-special-routing-key'
+        });
+
+        expect(amqp.publishChannel.publish).toHaveBeenCalled();
+        expect(amqp.publishChannel.publish.callCount).toEqual(1);
+
+        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        expect(publishParameters[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
+        expect(publishParameters[1]).toEqual('my-special-routing-key');
+        expect(publishParameters[2].toString()).toEqual(encryptor.encryptMessageContent(msg));
+        expect(publishParameters[3]).toEqual({
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true,
+            headers : {
+                taskId : 'task1234567890',
+                stepId : 'step_456',
+                'X-EIO-Routing-Key': 'my-special-routing-key'
+            }
+        });
+
+        var payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+        expect(payload).toEqual(msg);
+    });
+
+    it('Should throw errro in sendHttpReply if x-eio-routing-key header not found', function () {
+
+        var amqp = new AMQPConnection(settings);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
+
+        var msg = {
+            statusCode: 200,
+            headers: {
+              'content-type': 'text/plain'
+            },
+            body: 'OK'
+        };
+
+        expect(() => {
+            amqp.sendHttpReply(msg, {
+                taskId : 'task1234567890',
+                stepId : 'step_456'
+            });
+
+        }).toThrow('Component emitted \'httpReply\' event but x-eio-routing-key was not found in AMQP headers');
+
+
+        expect(amqp.publishChannel.publish).not.toHaveBeenCalled();
+    });
+
     it('Should send message to outgoing channel using routing key from headers when process data', function () {
 
         var amqp = new AMQPConnection(settings);
