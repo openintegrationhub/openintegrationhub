@@ -82,6 +82,10 @@
     "update2": {
       "main": "./actions/update2.js",
       "title": "Update a record"
+    },
+    "http_reply": {
+      "main": "./actions/httpReply.js",
+      "title": "Http Reply"
     }
   }
 }

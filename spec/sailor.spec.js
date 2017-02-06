@@ -168,7 +168,7 @@ describe('Sailor', function () {
         beforeEach(function(){
             fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
                 'connect','sendData','sendError','sendRebound','ack','reject',
-                'sendSnapshot'
+                'sendSnapshot', 'sendHttpReply'
             ]);
 
             spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
@@ -518,6 +518,132 @@ describe('Sailor', function () {
                     done();
                 })
                 .catch(done);
+        });
+
+        it('should handle errors in httpReply properly', function (done) {
+            settings.FUNCTION = 'http_reply';
+            const sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => Promise.resolve({}));
+
+            sailor.connect()
+                .then(() => sailor.prepare())
+                .then(() => sailor.processMessage(payload, message))
+                .then(() => {
+                    expect(sailor.apiClient.tasks.retrieveStep)
+                        .toHaveBeenCalledWith('5559edd38968ec0736000003', 'step_1');
+
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendHttpReply).toHaveBeenCalled();
+
+                    const sendHttpReplyCalls = fakeAMQPConnection.sendHttpReply.calls;
+
+                    expect(sendHttpReplyCalls[0].args[0]).toEqual({
+                        statusCode: 200,
+                        body: 'Ok',
+                        headers: {
+                            'content-type': 'text/plain'
+                        }
+                    });
+                    expect(sendHttpReplyCalls[0].args[1]).toEqual(jasmine.any(Object));
+                    expect(sendHttpReplyCalls[0].args[1]).toEqual({
+                        execId: 'exec1',
+                        taskId: '5559edd38968ec0736000003',
+                        userId: '5559edd38968ec0736000002',
+                        stepId: 'step_1',
+                        compId: '5559edd38968ec0736000456',
+                        function: 'http_reply',
+                        start: jasmine.any(Number),
+                        cid: 1
+                    });
+
+                    expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
+
+                    const sendDataCalls = fakeAMQPConnection.sendData.calls;
+
+                    expect(sendDataCalls[0].args[0]).toEqual({
+                        body: {}
+                    });
+                    expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
+                    expect(sendDataCalls[0].args[1]).toEqual({
+                        execId: 'exec1',
+                        taskId: '5559edd38968ec0736000003',
+                        userId: '5559edd38968ec0736000002',
+                        stepId: 'step_1',
+                        compId: '5559edd38968ec0736000456',
+                        function: 'http_reply',
+                        start: jasmine.any(Number),
+                        cid: 1,
+                        end: jasmine.any(Number)
+                    });
+
+                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+
+                    done();
+                })
+                .catch(done); //todo: use done.fail after migration to Jasmine 2.x
+        });
+
+        it('should handle errors in httpReply properly', function (done) {
+            settings.FUNCTION = 'http_reply';
+            const sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => Promise.resolve({}));
+
+            fakeAMQPConnection.sendHttpReply.andCallFake(() => {
+                throw new Error('Failed to send HTTP reply');
+            });
+
+            sailor.connect()
+                .then(() => sailor.prepare())
+                .then(() => sailor.processMessage(payload, message))
+                .then(() => {
+                    expect(sailor.apiClient.tasks.retrieveStep)
+                        .toHaveBeenCalledWith('5559edd38968ec0736000003', 'step_1');
+
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendHttpReply).toHaveBeenCalled();
+
+                    const sendHttpReplyCalls = fakeAMQPConnection.sendHttpReply.calls;
+
+                    expect(sendHttpReplyCalls[0].args[0]).toEqual({
+                        statusCode: 200,
+                        body: 'Ok',
+                        headers: {
+                            'content-type': 'text/plain'
+                        }
+                    });
+                    expect(sendHttpReplyCalls[0].args[1]).toEqual(jasmine.any(Object));
+                    expect(sendHttpReplyCalls[0].args[1]).toEqual({
+                        execId: 'exec1',
+                        taskId: '5559edd38968ec0736000003',
+                        userId: '5559edd38968ec0736000002',
+                        stepId: 'step_1',
+                        compId: '5559edd38968ec0736000456',
+                        function: 'http_reply',
+                        start: jasmine.any(Number),
+                        cid: 1
+                    });
+
+                    expect(fakeAMQPConnection.sendData).not.toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack).not.toHaveBeenCalled();
+
+                    // error
+                    expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
+
+                    const sendErrorCalls = fakeAMQPConnection.sendError.calls;
+                    expect(sendErrorCalls[0].args[0].message).toEqual('Failed to send HTTP reply');
+
+                    // ack
+                    expect(fakeAMQPConnection.reject).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.reject.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
+
+                    done();
+                })
+                .catch(done); //todo: use done.fail after migration to Jasmine 2.x
         });
     });
 });
