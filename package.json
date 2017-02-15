@@ -6,6 +6,9 @@
   "scripts": {
     "test": "NODE_ENV=test gulp && NODE_ENV=test mocha mocha_spec/*"
   },
+  "engines": {
+    "node": ">=5.11.x"
+  },
   "dependencies": {
     "amqplib": "0.4.0",
     "debug": "2.1.3",
