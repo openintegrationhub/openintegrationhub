@@ -3,6 +3,8 @@ const Sailor = require('./lib/sailor.js').Sailor;
 const settings = require('./lib/settings.js').readFrom(process.env);
 const co = require('co');
 
+exports.disconnect = disconnect;
+
 let sailor;
 
 co(function* putOutToSea() {
@@ -23,19 +25,26 @@ co(function* putOutToSea() {
 
 process.on('SIGTERM', function onSigterm() {
     console.log('Received SIGTERM');
-    disconnect();
+    disconnectAndExit();
 });
 
 process.on('SIGINT', function onSigint() {
     console.log('Received SIGINT');
-    disconnect();
+    disconnectAndExit();
 });
 
 process.on('uncaughtException', logging.criticalError);
 
 function disconnect() {
+    return co(function* putIn() {
+        console.log("Disconnecting");
+        return yield sailor.disconnect();
+    });
+}
+
+function disconnectAndExit() {
     co(function* putIn() {
-        yield sailor.disconnect();
+        yield disconnect();
         console.log('Successfully disconnected');
         process.exit();
     }).catch((err) => {

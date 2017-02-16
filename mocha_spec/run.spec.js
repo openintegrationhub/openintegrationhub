@@ -7,6 +7,8 @@ const bodyParser = require('body-parser');
 const sinon = require('sinon');
 const logging = require('../lib/logging.js');
 
+const PREFIX = 'sailor_nodejs_integration_test';
+
 describe('Integration Test', () => {
     process.env.ELASTICIO_AMQP_URI = 'amqp://guest:guest@localhost:5672';
     process.env.ELASTICIO_RABBITMQ_PREFETCH_SAILOR = '10';
@@ -17,12 +19,12 @@ describe('Integration Test', () => {
     process.env.ELASTICIO_USER_ID = '5559edd38968ec0736000002';
     process.env.ELASTICIO_COMP_ID = '5559edd38968ec0736000456';
 
-    process.env.ELASTICIO_LISTEN_MESSAGES_ON = 'integration_test:messages';
-    process.env.ELASTICIO_PUBLISH_MESSAGES_TO = 'integration_test:exchange';
-    process.env.ELASTICIO_DATA_ROUTING_KEY = 'integration_test:routing_key:message';
-    process.env.ELASTICIO_ERROR_ROUTING_KEY = 'integration_test:routing_key:error';
-    process.env.ELASTICIO_REBOUND_ROUTING_KEY = 'integration_test:routing_key:rebound';
-    process.env.ELASTICIO_SNAPSHOT_ROUTING_KEY = 'integration_test:routing_key:snapshot';
+    process.env.ELASTICIO_LISTEN_MESSAGES_ON = PREFIX + ':messages';
+    process.env.ELASTICIO_PUBLISH_MESSAGES_TO = PREFIX + ':exchange';
+    process.env.ELASTICIO_DATA_ROUTING_KEY = PREFIX + ':routing_key:message';
+    process.env.ELASTICIO_ERROR_ROUTING_KEY = PREFIX + ':routing_key:error';
+    process.env.ELASTICIO_REBOUND_ROUTING_KEY = PREFIX + ':routing_key:rebound';
+    process.env.ELASTICIO_SNAPSHOT_ROUTING_KEY = PREFIX + ':routing_key:snapshot';
 
     process.env.ELASTICIO_COMPONENT_PATH = '/mocha_spec/integration_component';
 
@@ -52,6 +54,13 @@ describe('Integration Test', () => {
         }
     };
 
+    const httpReplyQueueName = PREFIX + 'request_reply_queue';
+    const httpReplyQueueRoutingKey = PREFIX + 'request_reply_routing_key';
+    const nextStepQueue = PREFIX + '_next_step_queue';
+    const nextStepErrorQueue = PREFIX + '_next_step_queue_errors';
+
+    let run;
+
     beforeEach((done) => {
 
         process.env.ELASTICIO_FUNCTION = 'init_trigger';
@@ -62,8 +71,8 @@ describe('Integration Test', () => {
             publishChannel = yield amqp.createChannel();
 
             yield subscriptionChannel.assertQueue(process.env.ELASTICIO_LISTEN_MESSAGES_ON);
-            yield publishChannel.assertQueue('integration_test_queue');
-            yield publishChannel.assertQueue('integration_test_queue_errors');
+            yield publishChannel.assertQueue(nextStepQueue);
+            yield publishChannel.assertQueue(nextStepErrorQueue);
 
             const exchangeOptions = {
                 durable: true,
@@ -78,21 +87,36 @@ describe('Integration Test', () => {
                 process.env.ELASTICIO_DATA_ROUTING_KEY);
 
             yield publishChannel.bindQueue(
-                'integration_test_queue',
+                nextStepQueue,
                 process.env.ELASTICIO_PUBLISH_MESSAGES_TO,
                 process.env.ELASTICIO_DATA_ROUTING_KEY);
 
             yield publishChannel.bindQueue(
-                'integration_test_queue_errors',
+                nextStepErrorQueue,
                 process.env.ELASTICIO_PUBLISH_MESSAGES_TO,
                 process.env.ELASTICIO_ERROR_ROUTING_KEY);
+
+            yield publishChannel.assertQueue(httpReplyQueueName);
+            yield publishChannel.bindQueue(
+                httpReplyQueueName,
+                process.env.ELASTICIO_PUBLISH_MESSAGES_TO,
+                httpReplyQueueRoutingKey);
+
+            yield publishChannel.purgeQueue(nextStepQueue);
+            yield publishChannel.purgeQueue(nextStepErrorQueue);
+            yield publishChannel.purgeQueue(process.env.ELASTICIO_LISTEN_MESSAGES_ON);
             done();
         }).catch(done);
     });
 
-    afterEach(() => {
+    afterEach((done) => {
         delete process.env.STARTUP_REQUIRED;
         delete process.env.ELASTICIO_FUNCTION;
+
+        co(function* gen() {
+            yield run.disconnect();
+            done();
+        }).catch(done);
     });
 
     it('should run sailor successfully', (done) => {
@@ -130,37 +154,44 @@ describe('Integration Test', () => {
             .get('/customers')
             .reply(200, customers);
 
-        publishChannel.consume('integration_test_queue', (message) => {
-            publishChannel.ack(message);
+        publishChannel.consume(nextStepQueue, (message) => {
+                publishChannel.ack(message);
 
-            const emittedMessage = JSON.parse(message.content.toString());
+                const emittedMessage = JSON.parse(message.content.toString());
 
-            delete message.properties.headers.start;
-            delete message.properties.headers.end;
-            delete message.properties.headers.cid;
+                delete message.properties.headers.start;
+                delete message.properties.headers.end;
+                delete message.properties.headers.cid;
 
-            expect(message.properties.headers).to.eql({
-                execId: process.env.ELASTICIO_EXEC_ID,
-                taskId: process.env.ELASTICIO_FLOW_ID,
-                userId: process.env.ELASTICIO_USER_ID,
-                stepId: process.env.ELASTICIO_STEP_ID,
-                compId: process.env.ELASTICIO_COMP_ID,
-                function: process.env.ELASTICIO_FUNCTION
-            });
-            expect(emittedMessage.body).to.deep.equal({
-                originalMsg: inputMessage,
-                customers: customers,
-                subscription: {
-                    id: 'subscription_12345',
-                    cfg: {
-                        apiKey: 'secret'
+                console.log(message.properties.headers);
+
+                expect(message.properties.headers).to.eql({
+                    execId: process.env.ELASTICIO_EXEC_ID,
+                    taskId: process.env.ELASTICIO_FLOW_ID,
+                    userId: process.env.ELASTICIO_USER_ID,
+                    stepId: process.env.ELASTICIO_STEP_ID,
+                    compId: process.env.ELASTICIO_COMP_ID,
+                    function: process.env.ELASTICIO_FUNCTION
+                });
+                expect(emittedMessage.body).to.deep.equal({
+                    originalMsg: inputMessage,
+                    customers: customers,
+                    subscription: {
+                        id: 'subscription_12345',
+                        cfg: {
+                            apiKey: 'secret'
+                        }
                     }
-                }
-            });
+                });
 
-            done();
-        });
-        requireRun();
+                publishChannel.cancel('sailor_nodejs');
+
+                done();
+            },
+            {
+                consumerTag: 'sailor_nodejs'
+            });
+        run = requireRun();
     });
 
     it('should execute startup successfully', (done) => {
@@ -179,7 +210,6 @@ describe('Integration Test', () => {
             res.json({
                 id: 'webhook_123'
             });
-            done();
         });
 
         nock('https://apidotelasticidotio')
@@ -193,15 +223,152 @@ describe('Integration Test', () => {
                     lastModifiedDate: 123456789
                 }
             });
+
+        nock('https://api.acme.com')
+            .log(console.log)
+            .post('/subscribe')
+            .reply(200, {
+                id: 'subscription_12345'
+            })
+            .get('/customers')
+            .reply(200, customers);
+
         nock.enableNetConnect('localhost');
 
         app.listen(port, () => {
             console.log('Express listening on port', port);
-            requireRun();
+
+
+            subscriptionChannel.publish(
+                process.env.ELASTICIO_LISTEN_MESSAGES_ON,
+                process.env.ELASTICIO_DATA_ROUTING_KEY,
+                new Buffer(JSON.stringify(inputMessage)),
+                {
+                    headers: {
+                        execId: process.env.ELASTICIO_EXEC_ID,
+                        taskId: process.env.ELASTICIO_FLOW_ID,
+                        userId: process.env.ELASTICIO_USER_ID
+                    }
+                });
+
+            publishChannel.consume(nextStepQueue, (message) => {
+                    publishChannel.ack(message);
+
+                    const emittedMessage = JSON.parse(message.content.toString());
+
+                    delete message.properties.headers.start;
+                    delete message.properties.headers.end;
+                    delete message.properties.headers.cid;
+
+                    console.log(message.properties.headers);
+
+                    expect(message.properties.headers).to.eql({
+                        execId: process.env.ELASTICIO_EXEC_ID,
+                        taskId: process.env.ELASTICIO_FLOW_ID,
+                        userId: process.env.ELASTICIO_USER_ID,
+                        stepId: process.env.ELASTICIO_STEP_ID,
+                        compId: process.env.ELASTICIO_COMP_ID,
+                        function: process.env.ELASTICIO_FUNCTION
+                    });
+                    expect(emittedMessage.body).to.deep.equal({
+                        originalMsg: inputMessage,
+                        customers: customers,
+                        subscription: {
+                            id: 'subscription_12345',
+                            cfg: {
+                                apiKey: 'secret'
+                            }
+                        }
+                    });
+
+                    publishChannel.cancel('sailor_nodejs');
+
+                    done();
+                },
+                {
+                    consumerTag: 'sailor_nodejs'
+                });
+            run = requireRun();
         });
     });
 
-    it('should pulish init errors to RabbitMQ', (done) => {
+    it('should send http reply successfully', (done) => {
+
+        process.env.ELASTICIO_FUNCTION = 'http_reply_action';
+
+        subscriptionChannel.publish(
+            process.env.ELASTICIO_LISTEN_MESSAGES_ON,
+            process.env.ELASTICIO_DATA_ROUTING_KEY,
+            new Buffer(JSON.stringify(inputMessage)),
+            {
+                headers: {
+                    execId: process.env.ELASTICIO_EXEC_ID,
+                    taskId: process.env.ELASTICIO_FLOW_ID,
+                    userId: process.env.ELASTICIO_USER_ID,
+                    reply_to: httpReplyQueueRoutingKey
+                }
+            });
+
+        nock('https://apidotelasticidotio')
+            .log(console.log)
+            .get('/v1/tasks/5559edd38968ec0736000003/steps/step_1')
+            .reply(200, {
+                config: {
+                    apiKey: 'secret'
+                },
+                snapshot: {
+                    lastModifiedDate: 123456789
+                }
+            });
+
+        nock('https://api.acme.com')
+            .log(console.log)
+            .post('/subscribe')
+            .reply(200, {
+                id: 'subscription_12345'
+            })
+            .get('/customers')
+            .reply(200, customers);
+
+        publishChannel.consume(httpReplyQueueName, (message) => {
+                publishChannel.ack(message);
+
+                const emittedMessage = JSON.parse(message.content.toString());
+                console.log(emittedMessage);
+
+                delete message.properties.headers.start;
+                delete message.properties.headers.end;
+                delete message.properties.headers.cid;
+
+                expect(message.properties.headers).to.eql({
+                    execId: process.env.ELASTICIO_EXEC_ID,
+                    taskId: process.env.ELASTICIO_FLOW_ID,
+                    userId: process.env.ELASTICIO_USER_ID,
+                    stepId: process.env.ELASTICIO_STEP_ID,
+                    compId: process.env.ELASTICIO_COMP_ID,
+                    function: process.env.ELASTICIO_FUNCTION,
+                    reply_to: httpReplyQueueRoutingKey
+                });
+                expect(emittedMessage).to.eql({
+                    headers: {
+                        'content-type': 'text/plain'
+                    },
+                    body: 'Ok',
+                    statusCode: 200
+                });
+
+                publishChannel.cancel('sailor_nodejs');
+
+                done();
+            },
+            {
+                consumerTag: 'sailor_nodejs'
+            });
+
+        run = requireRun();
+    });
+
+    it('should publish init errors to RabbitMQ', (done) => {
 
         const logCriticalErrorStub = sinon.stub(logging, 'criticalError');
 
@@ -219,21 +386,24 @@ describe('Integration Test', () => {
                 }
             });
 
-        publishChannel.consume('integration_test_queue_errors', (message) => {
-            publishChannel.ack(message);
-            const error = JSON.parse(message.content.toString());
-            expect(JSON.parse(error.error).message).to.equal('OMG. I cannot init');
+        publishChannel.consume(nextStepErrorQueue, (message) => {
+                publishChannel.ack(message);
+                const error = JSON.parse(message.content.toString());
+                expect(JSON.parse(error.error).message).to.equal('OMG. I cannot init');
 
-            expect(message.properties.headers).to.eql({
-                execId: process.env.ELASTICIO_EXEC_ID,
-                taskId: process.env.ELASTICIO_FLOW_ID,
-                userId: process.env.ELASTICIO_USER_ID
+                expect(message.properties.headers).to.eql({
+                    execId: process.env.ELASTICIO_EXEC_ID,
+                    taskId: process.env.ELASTICIO_FLOW_ID,
+                    userId: process.env.ELASTICIO_USER_ID
+                });
+
+                done();
+            },
+            {
+                consumerTag: 'sailor_nodejs'
             });
 
-            done();
-        });
-
-        requireRun();
+        run = requireRun();
     });
 });
 
@@ -241,5 +411,5 @@ function requireRun() {
     const path = '../run.js';
     var resolved = require.resolve(path);
     delete require.cache[resolved];
-    require(path);
+    return require(path);
 }

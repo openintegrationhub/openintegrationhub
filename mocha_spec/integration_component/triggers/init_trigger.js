@@ -16,9 +16,9 @@ function startup(cfg) {
         }
     };
 
-    Q.ninvoke(request, 'post', options)
+    return Q.ninvoke(request, 'post', options)
         .spread((req, body) => {
-            console.log(body);
+            return body;
         });
 }
 

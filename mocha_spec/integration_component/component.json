@@ -12,5 +12,11 @@
       "main": "./triggers/fails_to_init.js",
       "title": "Fails to init"
     }
+  },
+  "actions": {
+    "http_reply_action": {
+      "main": "./actions/http_reply_action.js",
+      "title": "Http Reply Action"
+    }
   }
 }
