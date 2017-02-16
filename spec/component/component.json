@@ -9,6 +9,14 @@
       "main": "./triggers/data_trigger.js",
       "title": "Get data"
     },
+    "init_trigger": {
+      "main": "./triggers/init_trigger.js",
+      "title": "Init data"
+    },
+    "init_trigger_returns_string": {
+      "main": "./triggers/init_trigger_returns_string.js",
+      "title": "Init data"
+    },
     "rebound_trigger": {
       "main": "./triggers/rebound_trigger.js",
       "title": "Rebound"
@@ -66,6 +74,18 @@
           }
         }
       }
+    },
+    "update1": {
+      "main": "./actions/update1.js",
+      "title": "Update a record"
+    },
+    "update2": {
+      "main": "./actions/update2.js",
+      "title": "Update a record"
+    },
+    "http_reply": {
+      "main": "./actions/httpReply.js",
+      "title": "Http Reply"
     }
   }
 }

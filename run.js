@@ -1,42 +1,54 @@
-var logging = require('./lib/logging.js');
-var Sailor = require('./lib/sailor.js').Sailor;
-var settings = require('./lib/settings.js').readFrom(process.env);
+const logging = require('./lib/logging.js');
+const Sailor = require('./lib/sailor.js').Sailor;
+const settings = require('./lib/settings.js').readFrom(process.env);
+const co = require('co');
 
-var sailor = new Sailor(settings);
+exports.disconnect = disconnect;
 
-sailor.connect()
-    .then(sailor.run.bind(sailor))
-    .fail(logging.criticalError)
-    .done();
+let sailor;
+
+co(function* putOutToSea() {
+    sailor = new Sailor(settings);
+    yield sailor.connect();
+    yield sailor.prepare();
+    if (!!settings.STARTUP_REQUIRED) {
+        yield sailor.startup();
+    }
+    yield sailor.init();
+    yield sailor.run();
+}).catch((e) => {
+    if (sailor) {
+        sailor.reportError(e);
+    }
+    logging.criticalError(e);
+});
 
 process.on('SIGTERM', function onSigterm() {
     console.log('Received SIGTERM');
-    disconnect();
+    disconnectAndExit();
 });
 
 process.on('SIGINT', function onSigint() {
     console.log('Received SIGINT');
-    disconnect();
+    disconnectAndExit();
 });
 
 process.on('uncaughtException', logging.criticalError);
 
 function disconnect() {
-    sailor.disconnect()
-        .then(onSuccess)
-        .catch(onError)
-        .finally(exit)
-        .done();
+    return co(function* putIn() {
+        console.log("Disconnecting");
+        return yield sailor.disconnect();
+    });
+}
 
-    function onSuccess() {
+function disconnectAndExit() {
+    co(function* putIn() {
+        yield disconnect();
         console.log('Successfully disconnected');
-    }
-
-    function onError(err) {
-        console.error('Unable to disconnect', err.stack);
-    }
-
-    function exit() {
         process.exit();
-    }
+    }).catch((err) => {
+        console.error('Unable to disconnect', err.stack);
+        process.exit(-1);
+    });
 }

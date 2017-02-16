@@ -1,4 +1,3 @@
-process.env.COMPONENT_PATH = '/spec/component';
 describe('Service', function(){
     var service = require('../lib/service');
     var nock = require('nock');
@@ -15,7 +14,7 @@ describe('Service', function(){
 
         function makeEnv(env) {
             env.ELASTICIO_CFG = env.ELASTICIO_CFG || '{}';
-            env.ELASTICIO_COMPONENT_PATH = '/spec/component';
+            env.ELASTICIO_COMPONENT_PATH = env.ELASTICIO_COMPONENT_PATH || '/spec/component';
             env.ELASTICIO_POST_RESULT_URL = env.ELASTICIO_POST_RESULT_URL || 'http://test.com/123/456';
             env.ELASTICIO_API_URI = 'http://apihost.com';
             env.ELASTICIO_API_USERNAME = 'test@test.com';
@@ -158,92 +157,298 @@ describe('Service', function(){
                     .reply(200, "OK");
             });
 
-            it('verifyCredentials', function(done){
+            describe('verifyCredentials', function() {
 
-                service.processService('verifyCredentials', makeEnv({}))
-                    .then(checkResult)
-                    .done(done, done);
+                it('should verify successfully when verifyCredentials.js is not available', function(done){
 
-                function checkResult(result){
-                    expect(result.status).toEqual('success');
-                    expect(result.data).toEqual({verified: true});
-                }
-            });
+                    service.processService('verifyCredentials', makeEnv({}))
+                        .then(checkResult)
+                        .done(done, done);
 
-            it('getMetaModel', function(done){
-
-                service.processService('getMetaModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update'}))
-                    .then(checkResult)
-                    .done(done, done);
-
-                function checkResult(result){
-                    expect(result.status).toEqual('success');
-                    expect(result.data).toEqual('metamodel');
-                }
-            });
-
-            it('selectModel', function(done){
-
-                service.processService('selectModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update', ELASTICIO_GET_MODEL_METHOD: 'getModel'}))
-                    .then(checkResult)
-                    .done(done, done);
-
-                function checkResult(result){
-                    expect(result.status).toEqual('success');
-                    expect(result.data).toEqual('model');
-                }
-            });
-
-            it('selectModel with updateKeys event', function(done){
-
-                var env = makeEnv({
-                    ELASTICIO_ACTION_OR_TRIGGER: 'update',
-                    ELASTICIO_GET_MODEL_METHOD: 'getModelWithKeysUpdate',
-                    ELASTICIO_CFG: '{"_account":"1234567890"}',
-                    ELASTICIO_API_URI: 'http://apihost.com',
-                    ELASTICIO_API_USERNAME: 'test@test.com',
-                    ELASTICIO_API_KEY: '5559edd'
+                    function checkResult(result){
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({verified: true});
+                    }
                 });
 
-                var nockScope = nock('http://apihost.com:80')
-                    .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
-                    .reply(200, "Success");
+                it('should verify successfully when callback verified', function(done){
 
-                service.processService('selectModel', env)
-                    .then(checkResult)
-                    .done(done, done);
+                    service.processService('verifyCredentials', makeEnv({ELASTICIO_COMPONENT_PATH: '/spec/component2'}))
+                        .then(checkResult)
+                        .done(done, done);
 
-                function checkResult(result){
-                    expect(nockScope.isDone()).toEqual(true);
-                    expect(result.status).toEqual('success');
-                    expect(result.data).toEqual('model2');
-                }
-            });
-
-            it('selectModel with failed updateKeys event should return result anyway', function(done){
-
-                var env = makeEnv({
-                    ELASTICIO_ACTION_OR_TRIGGER: 'update',
-                    ELASTICIO_GET_MODEL_METHOD: 'getModelWithKeysUpdate',
-                    ELASTICIO_CFG: '{"_account":"1234567890"}',
-                    ELASTICIO_API_URI: 'http://apihost.com',
-                    ELASTICIO_API_USERNAME: 'test@test.com',
-                    ELASTICIO_API_KEY: '5559edd'
+                    function checkResult(result){
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({verified: true});
+                    }
                 });
 
-                var nockScope = nock('http://apihost.com:80')
-                    .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
-                    .reply(400, "Success");
+                it('should NOT verify successfully when callback did not verify', function(done){
 
-                service.processService('selectModel', env)
-                    .then(checkResult)
-                    .done(done, done);
+                    service.processService('verifyCredentials', makeEnv({ELASTICIO_COMPONENT_PATH: '/spec/component3'}))
+                        .then(checkResult)
+                        .done(done, done);
 
-                function checkResult(result) {
-                    expect(nockScope.isDone()).toEqual(true);
-                    expect(result.status).toEqual('success');
-                    expect(result.data).toEqual('model2');
-                }
+                    function checkResult(result){
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({verified: false});
+                    }
+                });
+
+                it('should verify successfully when promise resolves', function(done){
+
+                    service.processService('verifyCredentials', makeEnv({ELASTICIO_COMPONENT_PATH: '/spec/component4'}))
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result){
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({verified: true});
+                    }
+                });
+
+                it('should NOT verify successfully when promise rejects', function(done){
+
+                    service.processService('verifyCredentials', makeEnv({ELASTICIO_COMPONENT_PATH: '/spec/component5'}))
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result){
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({
+                            verified : false,
+                            reason : 'Your API key is invalid'
+                        });
+                    }
+                });
+
+                it('should NOT verify successfully when error thrown synchronously', function(done){
+
+                    service.processService('verifyCredentials', makeEnv({ELASTICIO_COMPONENT_PATH: '/spec/component6'}))
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result){
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({
+                            verified : false,
+                            reason : 'Ouch. This occurred during verification.'
+                        });
+                    }
+                });
+
+            });
+
+            describe('getMetaModel', function() {
+                it('should return callback based model successfully', function(done){
+
+                    service.processService('getMetaModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update'}))
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result){
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({
+                            in : {
+                                type : 'object',
+                                properties : {
+                                    name : {
+                                        type : 'string',
+                                        title: 'Name'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+                it('should return promise based model successfully', function(done){
+
+                    service.processService('getMetaModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update1'}))
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result){
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({
+                            in : {
+                                type : 'object',
+                                properties : {
+                                    email : {
+                                        type : 'string',
+                                        title: 'E-Mail'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+                it('should return error when promise rejects', function(done){
+
+                    service.processService('getMetaModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update2'}))
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result){
+                        expect(result.status).toEqual('error');
+                        expect(result.data).toEqual({
+                            message: 'Today no metamodels. Sorry!'
+                        });
+                    }
+                });
+            });
+
+            describe('selectModel', function(){
+
+                it('selectModel', function(done){
+
+                    service.processService('selectModel', makeEnv({ELASTICIO_ACTION_OR_TRIGGER: 'update', ELASTICIO_GET_MODEL_METHOD: 'getModel'}))
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result){
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({
+                            de: 'Germany',
+                            us: 'USA',
+                            ua: 'Ukraine'
+                        });
+                    }
+                });
+
+                it('selectModel with updateKeys event', function(done){
+
+                    var env = makeEnv({
+                        ELASTICIO_ACTION_OR_TRIGGER: 'update',
+                        ELASTICIO_GET_MODEL_METHOD: 'getModelWithKeysUpdate',
+                        ELASTICIO_CFG: '{"_account":"1234567890"}',
+                        ELASTICIO_API_URI: 'http://apihost.com',
+                        ELASTICIO_API_USERNAME: 'test@test.com',
+                        ELASTICIO_API_KEY: '5559edd'
+                    });
+
+                    var nockScope = nock('http://apihost.com:80')
+                        .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
+                        .reply(200, "Success");
+
+                    service.processService('selectModel', env)
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result){
+                        expect(nockScope.isDone()).toEqual(true);
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({
+                            0: 'Mr',
+                            1: 'Mrs'
+                        });
+                    }
+                });
+
+                it('selectModel with failed updateKeys event should return result anyway', function(done){
+
+                    var env = makeEnv({
+                        ELASTICIO_ACTION_OR_TRIGGER: 'update',
+                        ELASTICIO_GET_MODEL_METHOD: 'getModelWithKeysUpdate',
+                        ELASTICIO_CFG: '{"_account":"1234567890"}',
+                        ELASTICIO_API_URI: 'http://apihost.com',
+                        ELASTICIO_API_USERNAME: 'test@test.com',
+                        ELASTICIO_API_KEY: '5559edd'
+                    });
+
+                    var nockScope = nock('http://apihost.com:80')
+                        .put('/v1/accounts/1234567890', {keys: {oauth: {access_token: 'newAccessToken'}}})
+                        .reply(400, "Success");
+
+                    service.processService('selectModel', env)
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result) {
+                        expect(nockScope.isDone()).toEqual(true);
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({
+                            0: 'Mr',
+                            1: 'Mrs'
+                        });
+                    }
+                });
+
+                it('selectModel returns a promise that resolves successfully', function(done){
+
+                    var env = makeEnv({
+                        ELASTICIO_ACTION_OR_TRIGGER: 'update',
+                        ELASTICIO_GET_MODEL_METHOD: 'promiseSelectModel',
+                        ELASTICIO_CFG: '{"_account":"1234567890"}',
+                        ELASTICIO_API_URI: 'http://apihost.com',
+                        ELASTICIO_API_USERNAME: 'test@test.com',
+                        ELASTICIO_API_KEY: '5559edd'
+                    });
+
+                    service.processService('selectModel', env)
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result) {
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({
+                            de : 'de_DE',
+                            at : 'de_AT'
+                        });
+                    }
+                });
+
+                it('selectModel returns a promise that sends a request', function(done){
+
+                    var env = makeEnv({
+                        ELASTICIO_ACTION_OR_TRIGGER: 'update',
+                        ELASTICIO_GET_MODEL_METHOD: 'promiseRequestSelectModel',
+                        ELASTICIO_CFG: '{"_account":"1234567890"}',
+                        ELASTICIO_API_URI: 'http://apihost.com',
+                        ELASTICIO_API_USERNAME: 'test@test.com',
+                        ELASTICIO_API_KEY: '5559edd'
+                    });
+
+                    var nockScope = nock('http://promise_target_url:80')
+                        .get('/selectmodel')
+                        .reply(200, {
+                            a: 'x',
+                            b: 'y'
+                        });
+
+                    service.processService('selectModel', env)
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result) {
+                        expect(nockScope.isDone()).toEqual(true);
+                        expect(result.status).toEqual('success');
+                        expect(result.data).toEqual({
+                            a: 'x',
+                            b: 'y'
+                        });
+                    }
+                });
+
+                it('selectModel returns a promise that rejects', function(done){
+
+                    var env = makeEnv({
+                        ELASTICIO_ACTION_OR_TRIGGER: 'update',
+                        ELASTICIO_GET_MODEL_METHOD: 'promiseSelectModelRejected',
+                        ELASTICIO_CFG: '{"_account":"1234567890"}',
+                        ELASTICIO_API_URI: 'http://apihost.com',
+                        ELASTICIO_API_USERNAME: 'test@test.com',
+                        ELASTICIO_API_KEY: '5559edd'
+                    });
+
+                    service.processService('selectModel', env)
+                        .then(checkResult)
+                        .done(done, done);
+
+                    function checkResult(result) {
+                        expect(result.status).toEqual('error');
+                        expect(result.data.message).toEqual('Ouch. This promise is rejected');
+                    }
+                });
             });
 
         });
