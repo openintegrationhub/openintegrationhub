@@ -210,7 +210,8 @@ describe('Sailor', function () {
                             start: jasmine.any(Number),
                             cid: 1,
                             end: jasmine.any(Number)
-                        }
+                        },
+                        messageId: jasmine.any(String)
                     });
 
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -365,7 +366,8 @@ describe('Sailor', function () {
                             start: jasmine.any(Number),
                             cid: 1,
                             snapshotEvent : 'snapshot'
-                        }
+                        },
+                        messageId: jasmine.any(String)
                     });
                     expect(sailor.snapshot).toEqual(expectedSnapshot);
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -420,7 +422,8 @@ describe('Sailor', function () {
                             start: jasmine.any(Number),
                             cid: 1,
                             snapshotEvent : 'updateSnapshot'
-                        }
+                        },
+                        messageId: jasmine.any(String)
                     });
                     expect(sailor.snapshot).toEqual(expectedSnapshot);
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -594,7 +597,8 @@ describe('Sailor', function () {
                             function: 'http_reply',
                             start: jasmine.any(Number),
                             cid: 1
-                        }
+                        },
+                        messageId: jasmine.any(String)
                     });
 
                     expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
@@ -619,7 +623,8 @@ describe('Sailor', function () {
                             start: jasmine.any(Number),
                             cid: 1,
                             end: jasmine.any(Number)
-                        }
+                        },
+                        messageId: jasmine.any(String)
                     });
 
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -674,7 +679,8 @@ describe('Sailor', function () {
                             function: 'http_reply',
                             start: jasmine.any(Number),
                             cid: 1
-                        }
+                        },
+                        messageId: jasmine.any(String)
                     });
 
                     expect(fakeAMQPConnection.sendData).not.toHaveBeenCalled();
@@ -779,6 +785,28 @@ describe('Sailor', function () {
 
             const result = sailor.readIncomingMessageHeaders({
                 properties: {
+                    headers
+                }
+            });
+
+            expect(result).toEqual(headers);
+        });
+
+        it('should copy standard headers and parentMessageId', () => {
+            const sailor = new Sailor(settings);
+
+            const messageId = 'parent_message_1234';
+
+            const headers = {
+                execId: 'my_exec_123',
+                taskId: settings.FLOW_ID,
+                userId: 'my_user_123',
+                parentMessageId: messageId
+            };
+
+            const result = sailor.readIncomingMessageHeaders({
+                properties: {
+                    messageId,
                     headers
                 }
             });

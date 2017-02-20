@@ -122,12 +122,15 @@ describe('Integration Test', () => {
 
     it('should run sailor successfully', (done) => {
 
+        const messageId = 'parent_message_1234567890';
+
         subscriptionChannel.publish(
             process.env.ELASTICIO_LISTEN_MESSAGES_ON,
             process.env.ELASTICIO_DATA_ROUTING_KEY,
             new Buffer(JSON.stringify(inputMessage)),
             {
                 correlationId,
+                messageId,
                 headers: {
                     execId: process.env.ELASTICIO_EXEC_ID,
                     taskId: process.env.ELASTICIO_FLOW_ID,
@@ -180,14 +183,15 @@ describe('Integration Test', () => {
                         stepId: process.env.ELASTICIO_STEP_ID,
                         compId: process.env.ELASTICIO_COMP_ID,
                         function: process.env.ELASTICIO_FUNCTION,
-                        'x-eio-meta-flow-id': process.env.ELASTICIO_FLOW_ID
+                        'x-eio-meta-flow-id': process.env.ELASTICIO_FLOW_ID,
+                        parentMessageId: messageId
                     },
                     deliveryMode: undefined,
                     priority: undefined,
                     correlationId,
                     replyTo: undefined,
                     expiration: undefined,
-                    messageId: undefined,
+                    messageId: 'f45be600-f770-11e6-b42d-b187bfbf19fd',
                     timestamp: undefined,
                     type: undefined,
                     userId: undefined,
