@@ -1,5 +1,5 @@
 describe('Sailor', function () {
-    var envVars = {};
+    const envVars = {};
     envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
     envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
     envVars.ELASTICIO_STEP_ID = 'step_1';
@@ -25,16 +25,16 @@ describe('Sailor', function () {
 
     process.env.ELASTICIO_TIMEOUT = 3000;
 
-    var amqp = require('../lib/amqp.js');
+    const amqp = require('../lib/amqp.js');
     var settings;
-    var encryptor = require('../lib/encryptor.js');
-    var Sailor = require('../lib/sailor.js').Sailor;
-    var _ = require('lodash');
-    var Q = require('q');
+    const encryptor = require('../lib/encryptor.js');
+    const Sailor = require('../lib/sailor.js').Sailor;
+    const _ = require('lodash');
+    const Q = require('q');
 
-    var payload = {param1: "Value1"};
+    const payload = {param1: "Value1"};
 
-    var message = {
+    const message = {
         fields: {
             consumerTag: "abcde",
             deliveryTag: 12345,
@@ -197,15 +197,20 @@ describe('Sailor', function () {
                     expect(sendDataCalls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
                     expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
                     expect(sendDataCalls[0].args[1]).toEqual({
-                        execId: 'exec1',
-                        taskId: '5559edd38968ec0736000003',
-                        userId: '5559edd38968ec0736000002',
-                        stepId: 'step_1',
-                        compId: '5559edd38968ec0736000456',
-                        function: 'data_trigger',
-                        start: jasmine.any(Number),
-                        cid: 1,
-                        end: jasmine.any(Number)
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            execId: 'exec1',
+                            taskId: '5559edd38968ec0736000003',
+                            userId: '5559edd38968ec0736000002',
+                            stepId: 'step_1',
+                            compId: '5559edd38968ec0736000456',
+                            function: 'data_trigger',
+                            start: jasmine.any(Number),
+                            cid: 1,
+                            end: jasmine.any(Number)
+                        }
                     });
 
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -346,7 +351,22 @@ describe('Sailor', function () {
 
                     expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
                     expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual(expectedSnapshot);
-                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1].snapshotEvent).toEqual('snapshot');
+                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1]).toEqual({
+                        contentType : 'application/json',
+                        contentEncoding : 'utf8',
+                        mandatory : true,
+                        headers : {
+                            taskId: '5559edd38968ec0736000003',
+                            execId: 'exec1',
+                            userId : '5559edd38968ec0736000002',
+                            stepId: 'step_1',
+                            compId : '5559edd38968ec0736000456',
+                            function : 'update',
+                            start: jasmine.any(Number),
+                            cid: 1,
+                            snapshotEvent : 'snapshot'
+                        }
+                    });
                     expect(sailor.snapshot).toEqual(expectedSnapshot);
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
@@ -386,7 +406,22 @@ describe('Sailor', function () {
 
                     expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
                     expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual({updated: 'value'});
-                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1].snapshotEvent).toEqual('updateSnapshot');
+                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1]).toEqual({
+                        contentType : 'application/json',
+                        contentEncoding : 'utf8',
+                        mandatory : true,
+                        headers : {
+                            taskId: '5559edd38968ec0736000003',
+                            execId: 'exec1',
+                            userId : '5559edd38968ec0736000002',
+                            stepId: 'step_1',
+                            compId : '5559edd38968ec0736000456',
+                            function : 'update',
+                            start: jasmine.any(Number),
+                            cid: 1,
+                            snapshotEvent : 'updateSnapshot'
+                        }
+                    });
                     expect(sailor.snapshot).toEqual(expectedSnapshot);
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
@@ -547,14 +582,19 @@ describe('Sailor', function () {
                     });
                     expect(sendHttpReplyCalls[0].args[1]).toEqual(jasmine.any(Object));
                     expect(sendHttpReplyCalls[0].args[1]).toEqual({
-                        execId: 'exec1',
-                        taskId: '5559edd38968ec0736000003',
-                        userId: '5559edd38968ec0736000002',
-                        stepId: 'step_1',
-                        compId: '5559edd38968ec0736000456',
-                        function: 'http_reply',
-                        start: jasmine.any(Number),
-                        cid: 1
+                        contentType : 'application/json',
+                        contentEncoding : 'utf8',
+                        mandatory : true,
+                        headers : {
+                            execId: 'exec1',
+                            taskId: '5559edd38968ec0736000003',
+                            userId: '5559edd38968ec0736000002',
+                            stepId: 'step_1',
+                            compId: '5559edd38968ec0736000456',
+                            function: 'http_reply',
+                            start: jasmine.any(Number),
+                            cid: 1
+                        }
                     });
 
                     expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
@@ -566,15 +606,20 @@ describe('Sailor', function () {
                     });
                     expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
                     expect(sendDataCalls[0].args[1]).toEqual({
-                        execId: 'exec1',
-                        taskId: '5559edd38968ec0736000003',
-                        userId: '5559edd38968ec0736000002',
-                        stepId: 'step_1',
-                        compId: '5559edd38968ec0736000456',
-                        function: 'http_reply',
-                        start: jasmine.any(Number),
-                        cid: 1,
-                        end: jasmine.any(Number)
+                        contentType : 'application/json',
+                        contentEncoding : 'utf8',
+                        mandatory : true,
+                        headers : {
+                            execId: 'exec1',
+                            taskId: '5559edd38968ec0736000003',
+                            userId: '5559edd38968ec0736000002',
+                            stepId: 'step_1',
+                            compId: '5559edd38968ec0736000456',
+                            function: 'http_reply',
+                            start: jasmine.any(Number),
+                            cid: 1,
+                            end: jasmine.any(Number)
+                        }
                     });
 
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -617,14 +662,19 @@ describe('Sailor', function () {
                     });
                     expect(sendHttpReplyCalls[0].args[1]).toEqual(jasmine.any(Object));
                     expect(sendHttpReplyCalls[0].args[1]).toEqual({
-                        execId: 'exec1',
-                        taskId: '5559edd38968ec0736000003',
-                        userId: '5559edd38968ec0736000002',
-                        stepId: 'step_1',
-                        compId: '5559edd38968ec0736000456',
-                        function: 'http_reply',
-                        start: jasmine.any(Number),
-                        cid: 1
+                        contentType : 'application/json',
+                        contentEncoding : 'utf8',
+                        mandatory : true,
+                        headers : {
+                            execId: 'exec1',
+                            taskId: '5559edd38968ec0736000003',
+                            userId: '5559edd38968ec0736000002',
+                            stepId: 'step_1',
+                            compId: '5559edd38968ec0736000456',
+                            function: 'http_reply',
+                            start: jasmine.any(Number),
+                            cid: 1
+                        }
                     });
 
                     expect(fakeAMQPConnection.sendData).not.toHaveBeenCalled();
@@ -644,6 +694,143 @@ describe('Sailor', function () {
                     done();
                 })
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
+        });
+    });
+
+    describe('readIncomingMessageHeaders', () => {
+
+        it('execId missing', () => {
+            const sailor = new Sailor(settings);
+
+            try {
+                sailor.readIncomingMessageHeaders({
+                    properties: {
+                        headers: {}
+                    }
+                });
+                throw new Error('Must not be reached');
+            } catch(e) {
+                expect(e.message).toEqual('ExecId is missing in message header');
+            }
+        });
+
+        it('taskId missing', () => {
+            const sailor = new Sailor(settings);
+
+            try {
+                sailor.readIncomingMessageHeaders({
+                    properties: {
+                        headers: {
+                            execId: 'my_exec_123'
+                        }
+                    }
+                });
+                throw new Error('Must not be reached');
+            } catch(e) {
+                expect(e.message).toEqual('TaskId is missing in message header');
+            }
+        });
+
+        it('userId missing', () => {
+            const sailor = new Sailor(settings);
+
+            try {
+                sailor.readIncomingMessageHeaders({
+                    properties: {
+                        headers: {
+                            execId: 'my_exec_123',
+                            taskId: 'my_task_123'
+                        }
+                    }
+                });
+                throw new Error('Must not be reached');
+            } catch(e) {
+                expect(e.message).toEqual('UserId is missing in message header');
+            }
+        });
+
+        it('Message with wrong taskID arrived to the sailor', () => {
+            const sailor = new Sailor(settings);
+
+            try {
+                sailor.readIncomingMessageHeaders({
+                    properties: {
+                        headers: {
+                            execId: 'my_exec_123',
+                            taskId: 'my_task_123',
+                            userId: 'my_user_123'
+                        }
+                    }
+                });
+                throw new Error('Must not be reached');
+            } catch(e) {
+                expect(e.message).toEqual('Message with wrong taskID arrived to the sailor');
+            }
+        });
+
+        it('should copy standard headers', () => {
+            const sailor = new Sailor(settings);
+
+            const headers = {
+                execId: 'my_exec_123',
+                taskId: settings.FLOW_ID,
+                userId: 'my_user_123'
+            };
+
+            const result = sailor.readIncomingMessageHeaders({
+                properties: {
+                    headers
+                }
+            });
+
+            expect(result).toEqual(headers);
+        });
+
+        it('should copy standard headers and reply_to', () => {
+            const sailor = new Sailor(settings);
+
+            const headers = {
+                execId: 'my_exec_123',
+                taskId: settings.FLOW_ID,
+                userId: 'my_user_123',
+                reply_to: 'my_reply_to_exchange'
+            };
+
+            const result = sailor.readIncomingMessageHeaders({
+                properties: {
+                    headers
+                }
+            });
+
+            expect(result).toEqual(headers);
+        });
+
+        it('should copy standard headers, reply_to and x-eio headers', () => {
+            const sailor = new Sailor(settings);
+
+            const headers = {
+                execId: 'my_exec_123',
+                taskId: settings.FLOW_ID,
+                userId: 'my_user_123',
+                reply_to: 'my_reply_to_exchange',
+                'x-eio-meta-lowercase': 'I am lowercase',
+                'X-eio-meta-miXeDcAse': 'Eventually to become lowercase'
+            };
+
+            const result = sailor.readIncomingMessageHeaders({
+                properties: {
+                    headers
+                }
+            });
+
+            expect(result).toEqual({
+                execId: 'my_exec_123',
+                taskId: settings.FLOW_ID,
+                userId: 'my_user_123',
+                reply_to: 'my_reply_to_exchange',
+                'x-eio-meta-lowercase': 'I am lowercase',
+                'x-eio-meta-mixedcase': 'Eventually to become lowercase'
+            });
         });
     });
 });
