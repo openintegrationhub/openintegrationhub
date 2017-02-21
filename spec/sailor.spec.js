@@ -209,9 +209,9 @@ describe('Sailor', function () {
                             function: 'data_trigger',
                             start: jasmine.any(Number),
                             cid: 1,
-                            end: jasmine.any(Number)
-                        },
-                        messageId: jasmine.any(String)
+                            end: jasmine.any(Number),
+                            messageId: jasmine.any(String)
+                        }
                     });
 
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -365,9 +365,9 @@ describe('Sailor', function () {
                             function : 'update',
                             start: jasmine.any(Number),
                             cid: 1,
-                            snapshotEvent : 'snapshot'
-                        },
-                        messageId: jasmine.any(String)
+                            snapshotEvent : 'snapshot',
+                            messageId: jasmine.any(String)
+                        }
                     });
                     expect(sailor.snapshot).toEqual(expectedSnapshot);
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -421,9 +421,9 @@ describe('Sailor', function () {
                             function : 'update',
                             start: jasmine.any(Number),
                             cid: 1,
-                            snapshotEvent : 'updateSnapshot'
-                        },
-                        messageId: jasmine.any(String)
+                            snapshotEvent : 'updateSnapshot',
+                            messageId: jasmine.any(String)
+                        }
                     });
                     expect(sailor.snapshot).toEqual(expectedSnapshot);
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -596,9 +596,9 @@ describe('Sailor', function () {
                             compId: '5559edd38968ec0736000456',
                             function: 'http_reply',
                             start: jasmine.any(Number),
-                            cid: 1
-                        },
-                        messageId: jasmine.any(String)
+                            cid: 1,
+                            messageId: jasmine.any(String)
+                        }
                     });
 
                     expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
@@ -622,9 +622,9 @@ describe('Sailor', function () {
                             function: 'http_reply',
                             start: jasmine.any(Number),
                             cid: 1,
-                            end: jasmine.any(Number)
-                        },
-                        messageId: jasmine.any(String)
+                            end: jasmine.any(Number),
+                            messageId: jasmine.any(String)
+                        }
                     });
 
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
@@ -678,9 +678,9 @@ describe('Sailor', function () {
                             compId: '5559edd38968ec0736000456',
                             function: 'http_reply',
                             start: jasmine.any(Number),
-                            cid: 1
-                        },
-                        messageId: jasmine.any(String)
+                            cid: 1,
+                            messageId: jasmine.any(String)
+                        }
                     });
 
                     expect(fakeAMQPConnection.sendData).not.toHaveBeenCalled();
@@ -801,17 +801,21 @@ describe('Sailor', function () {
                 execId: 'my_exec_123',
                 taskId: settings.FLOW_ID,
                 userId: 'my_user_123',
-                parentMessageId: messageId
+                messageId
             };
 
             const result = sailor.readIncomingMessageHeaders({
                 properties: {
-                    messageId,
                     headers
                 }
             });
 
-            expect(result).toEqual(headers);
+            expect(result).toEqual({
+                execId: 'my_exec_123',
+                taskId: settings.FLOW_ID,
+                userId: 'my_user_123',
+                parentMessageId: messageId
+            });
         });
 
         it('should copy standard headers and reply_to', () => {

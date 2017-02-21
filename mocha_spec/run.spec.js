@@ -58,7 +58,8 @@ describe('Integration Test', () => {
     const httpReplyQueueRoutingKey = PREFIX + 'request_reply_routing_key';
     const nextStepQueue = PREFIX + '_next_step_queue';
     const nextStepErrorQueue = PREFIX + '_next_step_queue_errors';
-    const correlationId = PREFIX + '_correlation_id_123456';
+    const trxId = PREFIX + '_trx_id_123456';
+    const emittedMessageId = 'f45be600-f770-11e6-b42d-b187bfbf19fd';
 
     let run;
 
@@ -122,20 +123,19 @@ describe('Integration Test', () => {
 
     it('should run sailor successfully', (done) => {
 
-        const messageId = 'parent_message_1234567890';
+        const parentMessageId = 'parent_message_1234567890';
 
         subscriptionChannel.publish(
             process.env.ELASTICIO_LISTEN_MESSAGES_ON,
             process.env.ELASTICIO_DATA_ROUTING_KEY,
             new Buffer(JSON.stringify(inputMessage)),
             {
-                correlationId,
-                messageId,
                 headers: {
                     execId: process.env.ELASTICIO_EXEC_ID,
                     taskId: process.env.ELASTICIO_FLOW_ID,
                     userId: process.env.ELASTICIO_USER_ID,
-                    'x-eio-meta-flow-id': process.env.ELASTICIO_FLOW_ID
+                    messageId: parentMessageId,
+                    'x-eio-meta-trx-id': trxId
                 }
             });
 
@@ -171,8 +171,6 @@ describe('Integration Test', () => {
 
                 console.log(message.properties);
 
-                expect(message.properties.correlationId).to.eql(correlationId);
-
                 expect(message.properties).to.eql({
                     contentType: 'application/json',
                     contentEncoding: 'utf8',
@@ -183,15 +181,16 @@ describe('Integration Test', () => {
                         stepId: process.env.ELASTICIO_STEP_ID,
                         compId: process.env.ELASTICIO_COMP_ID,
                         function: process.env.ELASTICIO_FUNCTION,
-                        'x-eio-meta-flow-id': process.env.ELASTICIO_FLOW_ID,
-                        parentMessageId: messageId
+                        'x-eio-meta-trx-id': trxId,
+                        parentMessageId: parentMessageId,
+                        messageId: emittedMessageId
                     },
                     deliveryMode: undefined,
                     priority: undefined,
-                    correlationId,
+                    correlationId: undefined,
                     replyTo: undefined,
                     expiration: undefined,
-                    messageId: 'f45be600-f770-11e6-b42d-b187bfbf19fd',
+                    messageId: undefined,
                     timestamp: undefined,
                     type: undefined,
                     userId: undefined,
@@ -293,7 +292,8 @@ describe('Integration Test', () => {
                         userId: process.env.ELASTICIO_USER_ID,
                         stepId: process.env.ELASTICIO_STEP_ID,
                         compId: process.env.ELASTICIO_COMP_ID,
-                        function: process.env.ELASTICIO_FUNCTION
+                        function: process.env.ELASTICIO_FUNCTION,
+                        messageId: emittedMessageId
                     });
                     expect(emittedMessage.body).to.deep.equal({
                         originalMsg: inputMessage,
@@ -364,6 +364,9 @@ describe('Integration Test', () => {
                 delete message.properties.headers.start;
                 delete message.properties.headers.end;
                 delete message.properties.headers.cid;
+
+                expect(message.properties.headers.messageId).to.be.a('string');
+                delete message.properties.headers.messageId;
 
                 expect(message.properties.headers).to.eql({
                     execId: process.env.ELASTICIO_EXEC_ID,
