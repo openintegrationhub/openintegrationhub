@@ -58,6 +58,8 @@ describe('Integration Test', () => {
     const httpReplyQueueRoutingKey = PREFIX + 'request_reply_routing_key';
     const nextStepQueue = PREFIX + '_next_step_queue';
     const nextStepErrorQueue = PREFIX + '_next_step_queue_errors';
+    const traceId = PREFIX + '_trace_id_123456';
+    const emittedMessageId = 'f45be600-f770-11e6-b42d-b187bfbf19fd';
 
     let run;
 
@@ -121,6 +123,8 @@ describe('Integration Test', () => {
 
     it('should run sailor successfully', (done) => {
 
+        const parentMessageId = 'parent_message_1234567890';
+
         subscriptionChannel.publish(
             process.env.ELASTICIO_LISTEN_MESSAGES_ON,
             process.env.ELASTICIO_DATA_ROUTING_KEY,
@@ -129,7 +133,9 @@ describe('Integration Test', () => {
                 headers: {
                     execId: process.env.ELASTICIO_EXEC_ID,
                     taskId: process.env.ELASTICIO_FLOW_ID,
-                    userId: process.env.ELASTICIO_USER_ID
+                    userId: process.env.ELASTICIO_USER_ID,
+                    messageId: parentMessageId,
+                    'x-eio-meta-trace-id': traceId
                 }
             });
 
@@ -163,15 +169,33 @@ describe('Integration Test', () => {
                 delete message.properties.headers.end;
                 delete message.properties.headers.cid;
 
-                console.log(message.properties.headers);
+                console.log(message.properties);
 
-                expect(message.properties.headers).to.eql({
-                    execId: process.env.ELASTICIO_EXEC_ID,
-                    taskId: process.env.ELASTICIO_FLOW_ID,
-                    userId: process.env.ELASTICIO_USER_ID,
-                    stepId: process.env.ELASTICIO_STEP_ID,
-                    compId: process.env.ELASTICIO_COMP_ID,
-                    function: process.env.ELASTICIO_FUNCTION
+                expect(message.properties).to.eql({
+                    contentType: 'application/json',
+                    contentEncoding: 'utf8',
+                    headers: {
+                        execId: process.env.ELASTICIO_EXEC_ID,
+                        taskId: process.env.ELASTICIO_FLOW_ID,
+                        userId: process.env.ELASTICIO_USER_ID,
+                        stepId: process.env.ELASTICIO_STEP_ID,
+                        compId: process.env.ELASTICIO_COMP_ID,
+                        function: process.env.ELASTICIO_FUNCTION,
+                        'x-eio-meta-trace-id': traceId,
+                        parentMessageId: parentMessageId,
+                        messageId: emittedMessageId
+                    },
+                    deliveryMode: undefined,
+                    priority: undefined,
+                    correlationId: undefined,
+                    replyTo: undefined,
+                    expiration: undefined,
+                    messageId: undefined,
+                    timestamp: undefined,
+                    type: undefined,
+                    userId: undefined,
+                    appId: undefined,
+                    clusterId: undefined,
                 });
                 expect(emittedMessage.body).to.deep.equal({
                     originalMsg: inputMessage,
@@ -268,7 +292,8 @@ describe('Integration Test', () => {
                         userId: process.env.ELASTICIO_USER_ID,
                         stepId: process.env.ELASTICIO_STEP_ID,
                         compId: process.env.ELASTICIO_COMP_ID,
-                        function: process.env.ELASTICIO_FUNCTION
+                        function: process.env.ELASTICIO_FUNCTION,
+                        messageId: emittedMessageId
                     });
                     expect(emittedMessage.body).to.deep.equal({
                         originalMsg: inputMessage,
@@ -339,6 +364,9 @@ describe('Integration Test', () => {
                 delete message.properties.headers.start;
                 delete message.properties.headers.end;
                 delete message.properties.headers.cid;
+
+                expect(message.properties.headers.messageId).to.be.a('string');
+                delete message.properties.headers.messageId;
 
                 expect(message.properties.headers).to.eql({
                     execId: process.env.ELASTICIO_EXEC_ID,

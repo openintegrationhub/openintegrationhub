@@ -3,7 +3,7 @@ describe('AMQP', function () {
     process.env.ELASTICIO_MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
     process.env.ELASTICIO_MESSAGE_CRYPTO_IV = 'iv=any16_symbols';
 
-    var envVars = {};
+    const envVars = {};
     envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
     envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
     envVars.ELASTICIO_STEP_ID = 'step_1';
@@ -24,12 +24,12 @@ describe('AMQP', function () {
     envVars.ELASTICIO_API_USERNAME = 'test@test.com';
     envVars.ELASTICIO_API_KEY = '5559edd';
 
-    var AMQPConnection = require('../lib/amqp.js').AMQPConnection;
-    var settings = require('../lib/settings.js').readFrom(envVars);
-    var encryptor = require('../lib/encryptor.js');
-    var _ = require('lodash');
+    const Amqp = require('../lib/amqp.js').Amqp;
+    const settings = require('../lib/settings.js').readFrom(envVars);
+    const encryptor = require('../lib/encryptor.js');
+    const _ = require('lodash');
 
-    var message = {
+    const message = {
         fields: {
             consumerTag: "abcde",
             deliveryTag: 12345,
@@ -66,43 +66,42 @@ describe('AMQP', function () {
 
     it('Should send message to outgoing channel when process data', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.sendData({"content": "Message content"}, {
-            taskId : 'task1234567890',
-            stepId : 'step_456'
-        });
+        const props = {
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true,
+            headers : {
+                taskId : 'task1234567890',
+                stepId : 'step_456'
+            }
+        };
+
+        amqp.sendData({"content": "Message content"}, props);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        const publishParameters = amqp.publishChannel.publish.calls[0].args;
         expect(publishParameters).toEqual([
             settings.PUBLISH_MESSAGES_TO,
             settings.DATA_ROUTING_KEY,
             jasmine.any(Object),
-            {
-                contentType : 'application/json',
-                contentEncoding : 'utf8',
-                mandatory : true,
-                headers : {
-                    taskId : 'task1234567890',
-                    stepId : 'step_456'
-                }
-            }
+            props
         ]);
 
-        var payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+        const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
         expect(payload).toEqual({ content : 'Message content' });
     });
 
     it('Should sendHttpReply to outgoing channel using routing key from headers when process data', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        var msg = {
+        const msg = {
             statusCode: 200,
             headers: {
               'content-type': 'text/plain'
@@ -110,40 +109,37 @@ describe('AMQP', function () {
             body: 'OK'
         };
 
-        amqp.sendHttpReply(msg, {
-            taskId : 'task1234567890',
-            stepId : 'step_456',
-            'reply_to': 'my-special-routing-key'
-        });
-
-        expect(amqp.publishChannel.publish).toHaveBeenCalled();
-        expect(amqp.publishChannel.publish.callCount).toEqual(1);
-
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
-        expect(publishParameters[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
-        expect(publishParameters[1]).toEqual('my-special-routing-key');
-        expect(publishParameters[2].toString()).toEqual(encryptor.encryptMessageContent(msg));
-        expect(publishParameters[3]).toEqual({
+        const props = {
             contentType : 'application/json',
             contentEncoding : 'utf8',
             mandatory : true,
-            headers : {
+            headers: {
                 taskId : 'task1234567890',
                 stepId : 'step_456',
                 'reply_to': 'my-special-routing-key'
             }
-        });
+        };
+        amqp.sendHttpReply(msg, props);
 
-        var payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+        expect(amqp.publishChannel.publish).toHaveBeenCalled();
+        expect(amqp.publishChannel.publish.callCount).toEqual(1);
+
+        const publishParameters = amqp.publishChannel.publish.calls[0].args;
+        expect(publishParameters[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
+        expect(publishParameters[1]).toEqual('my-special-routing-key');
+        expect(publishParameters[2].toString()).toEqual(encryptor.encryptMessageContent(msg));
+        expect(publishParameters[3]).toEqual(props);
+
+        const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
         expect(payload).toEqual(msg);
     });
 
-    it('Should throw errro in sendHttpReply if reply_to header not found', function () {
+    it('Should throw error in sendHttpReply if reply_to header not found', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        var msg = {
+        const msg = {
             statusCode: 200,
             headers: {
               'content-type': 'text/plain'
@@ -153,8 +149,13 @@ describe('AMQP', function () {
 
         expect(() => {
             amqp.sendHttpReply(msg, {
-                taskId : 'task1234567890',
-                stepId : 'step_456'
+                contentType : 'application/json',
+                contentEncoding : 'utf8',
+                mandatory : true,
+                headers: {
+                    taskId : 'task1234567890',
+                    stepId : 'step_456'
+                }
             });
 
         }).toThrow('Component emitted \'httpReply\' event but \'reply_to\' was not found in AMQP headers');
@@ -165,10 +166,10 @@ describe('AMQP', function () {
 
     it('Should send message to outgoing channel using routing key from headers when process data', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        var msg = {
+        const msg = {
             headers: {
                 'X-EIO-Routing-Key': 'my-special-routing-key'
             },
@@ -177,64 +178,62 @@ describe('AMQP', function () {
             }
         };
 
-        amqp.sendData(msg, {
-            taskId : 'task1234567890',
-            stepId : 'step_456'
-        });
+        const props = {
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true,
+            headers : {
+                taskId : 'task1234567890',
+                stepId : 'step_456'
+            }
+        };
+
+        amqp.sendData(msg, props);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        const publishParameters = amqp.publishChannel.publish.calls[0].args;
         expect(publishParameters).toEqual([
             settings.PUBLISH_MESSAGES_TO,
             'my-special-routing-key',
             jasmine.any(Object),
-            {
-                contentType : 'application/json',
-                contentEncoding : 'utf8',
-                mandatory : true,
-                headers : {
-                    taskId : 'task1234567890',
-                    stepId : 'step_456'
-                }
-            }
+            props
         ]);
 
-        var payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+        const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
         expect(payload).toEqual(msg);
     });
 
     it('Should send message to errors when process error', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.sendError(new Error('Test error'), {
-            taskId : 'task1234567890',
-            stepId : 'step_456'
-        }, message.content);
+        const props = {
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true,
+            headers : {
+                taskId : 'task1234567890',
+                stepId : 'step_456'
+            }
+        };
+
+        amqp.sendError(new Error('Test error'), props, message.content);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        const publishParameters = amqp.publishChannel.publish.calls[0].args;
         expect(publishParameters).toEqual([
             settings.PUBLISH_MESSAGES_TO,
             settings.ERROR_ROUTING_KEY,
             jasmine.any(Object),
-            {
-                contentType : 'application/json',
-                contentEncoding : 'utf8',
-                mandatory : true,
-                headers : {
-                    taskId : 'task1234567890',
-                    stepId : 'step_456'
-                }
-            }
+            props
         ]);
 
-        var payload = JSON.parse(publishParameters[2].toString());
+        const payload = JSON.parse(publishParameters[2].toString());
         payload.error = encryptor.decryptMessageContent(payload.error);
         payload.errorInput = encryptor.decryptMessageContent(payload.errorInput);
 
@@ -252,7 +251,7 @@ describe('AMQP', function () {
 
     it('Should send message to errors using routing key from headers when process error', function () {
 
-        var expectedErrorPayload = {
+        const expectedErrorPayload = {
             error: {
                 name: 'Error',
                 message: 'Test error',
@@ -263,23 +262,10 @@ describe('AMQP', function () {
             }
         };
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.sendError(new Error('Test error'), {
-            taskId : 'task1234567890',
-            stepId : 'step_456',
-            'reply_to': 'my-special-routing-key'
-        }, message.content);
-
-        expect(amqp.publishChannel.publish).toHaveBeenCalled();
-        expect(amqp.publishChannel.publish.callCount).toEqual(2);
-
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
-        expect(publishParameters.length).toEqual(4);
-        expect(publishParameters[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
-        expect(publishParameters[1]).toEqual('5559edd38968ec0736000003:step_1:1432205514864:error');
-        expect(publishParameters[3]).toEqual({
+        const props = {
             contentType : 'application/json',
             contentEncoding : 'utf8',
             mandatory : true,
@@ -288,9 +274,20 @@ describe('AMQP', function () {
                 stepId : 'step_456',
                 'reply_to': 'my-special-routing-key'
             }
-        });
+        };
 
-        var payload = JSON.parse(publishParameters[2].toString());
+        amqp.sendError(new Error('Test error'), props, message.content);
+
+        expect(amqp.publishChannel.publish).toHaveBeenCalled();
+        expect(amqp.publishChannel.publish.callCount).toEqual(2);
+
+        let publishParameters = amqp.publishChannel.publish.calls[0].args;
+        expect(publishParameters.length).toEqual(4);
+        expect(publishParameters[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
+        expect(publishParameters[1]).toEqual('5559edd38968ec0736000003:step_1:1432205514864:error');
+        expect(publishParameters[3]).toEqual(props);
+
+        let payload = JSON.parse(publishParameters[2].toString());
         payload.error = encryptor.decryptMessageContent(payload.error);
         payload.errorInput = encryptor.decryptMessageContent(payload.errorInput);
 
@@ -313,7 +310,7 @@ describe('AMQP', function () {
             }
         });
 
-        console.log('AND BACK')
+        console.log('AND BACK');
         console.log(encryptor.decryptMessageContent("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"));
 
         payload = encryptor.decryptMessageContent(publishParameters[2].toString());
@@ -323,19 +320,29 @@ describe('AMQP', function () {
 
     it('Should not provide errorInput if errorInput was empty', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.sendError(new Error('Test error'), {
-            taskId : 'task1234567890',
-            stepId : 'step_456'
-        }, '');
+        const props = {
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true,
+            headers : {
+                taskId: 'task1234567890',
+                stepId: 'step_456'
+            }
+        };
+
+        amqp.sendError(new Error('Test error'), props, '');
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
-        var payload = JSON.parse(publishParameters[2].toString());
+        const publishParameters = amqp.publishChannel.publish.calls[0].args;
+        expect(publishParameters[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
+        expect(publishParameters[1]).toEqual('5559edd38968ec0736000003:step_1:1432205514864:error');
+
+        const payload = JSON.parse(publishParameters[2].toString());
         payload.error = encryptor.decryptMessageContent(payload.error);
 
         expect(payload).toEqual({
@@ -346,23 +353,36 @@ describe('AMQP', function () {
             }
             // no errorInput should be here
         });
+
+        expect(publishParameters[3]).toEqual(props);
     });
 
     it('Should not provide errorInput if errorInput was null', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        amqp.sendError(new Error('Test error'), {
-            taskId : 'task1234567890',
-            stepId : 'step_456'
-        }, null);
+        const props = {
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true,
+            headers : {
+                taskId: 'task1234567890',
+                stepId: 'step_456'
+            }
+        };
+
+        amqp.sendError(new Error('Test error'), props, null);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
-        var payload = JSON.parse(publishParameters[2].toString());
+        const publishParameters = amqp.publishChannel.publish.calls[0].args;
+
+        expect(publishParameters[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
+        expect(publishParameters[1]).toEqual('5559edd38968ec0736000003:step_1:1432205514864:error');
+
+        const payload = JSON.parse(publishParameters[2].toString());
         payload.error = encryptor.decryptMessageContent(payload.error);
 
         expect(payload).toEqual({
@@ -373,28 +393,35 @@ describe('AMQP', function () {
             }
             // no errorInput should be here
         });
+
+        expect(publishParameters[3]).toEqual(props);
     });
 
     it('Should send message to rebounds when rebound happened', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        var outgoingMessageHeaders = {
-            execId: "exec1234567890",
-            taskId: "task1234567890",
-            stepId: 'step_1',
-            compId: "comp1",
-            function: "list",
-            start: "1432815685034"
+        const props = {
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true,
+            headers : {
+                execId : 'exec1234567890',
+                taskId : 'task1234567890',
+                stepId : 'step_1',
+                compId : 'comp1',
+                function : 'list',
+                start : '1432815685034'
+            }
         };
 
-        amqp.sendRebound(new Error("Rebound error"), message, outgoingMessageHeaders);
+        amqp.sendRebound(new Error("Rebound error"), message, props);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        const publishParameters = amqp.publishChannel.publish.calls[0].args;
         expect(publishParameters).toEqual([
             settings.PUBLISH_MESSAGES_TO,
             settings.REBOUND_ROUTING_KEY,
@@ -416,33 +443,38 @@ describe('AMQP', function () {
             }
         ]);
 
-        var payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+        const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
         expect(payload).toEqual({content: 'Message content'});
     });
 
     it('Should send message to rebounds with reboundIteration=3', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        var outgoingMessageHeaders = {
-            execId: "exec1234567890",
-            taskId: "task1234567890",
-            stepId: 'step_1',
-            compId: "comp1",
-            function: "list",
-            start: "1432815685034"
+        const props = {
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true,
+            headers : {
+                execId : 'exec1234567890',
+                taskId : 'task1234567890',
+                stepId : 'step_1',
+                compId : 'comp1',
+                function : 'list',
+                start : '1432815685034'
+            }
         };
 
-        var clonedMessage = _.cloneDeep(message);
+        const clonedMessage = _.cloneDeep(message);
         clonedMessage.properties.headers.reboundIteration = 2;
 
-        amqp.sendRebound(new Error("Rebound error"), clonedMessage, outgoingMessageHeaders);
+        amqp.sendRebound(new Error("Rebound error"), clonedMessage, props);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        const publishParameters = amqp.publishChannel.publish.calls[0].args;
         expect(publishParameters).toEqual([
             settings.PUBLISH_MESSAGES_TO,
             settings.REBOUND_ROUTING_KEY,
@@ -464,53 +496,46 @@ describe('AMQP', function () {
             }
         ]);
 
-        var payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+        const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
         expect(payload).toEqual({content: 'Message content'});
     });
 
     it('Should send message to errors when rebound limit exceeded', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        var outgoingMessageHeaders = {
-            execId: "exec1234567890",
-            taskId: "task1234567890",
-            stepId: 'step_1',
-            compId: "comp1",
-            function: "list",
-            start: "1432815685034"
+        const props = {
+            contentType : 'application/json',
+            contentEncoding : 'utf8',
+            mandatory : true,
+            headers : {
+                execId: 'exec1234567890',
+                taskId: 'task1234567890',
+                stepId: 'step_1',
+                compId: 'comp1',
+                function: 'list',
+                start: '1432815685034'
+            }
         };
 
-        var clonedMessage = _.cloneDeep(message);
+        const clonedMessage = _.cloneDeep(message);
         clonedMessage.properties.headers.reboundIteration = 100;
 
-        amqp.sendRebound(new Error("Rebound error"), clonedMessage, outgoingMessageHeaders);
+        amqp.sendRebound(new Error("Rebound error"), clonedMessage, props);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
 
-        var publishParameters = amqp.publishChannel.publish.calls[0].args;
+        const publishParameters = amqp.publishChannel.publish.calls[0].args;
         expect(publishParameters).toEqual([
             settings.PUBLISH_MESSAGES_TO,
             settings.ERROR_ROUTING_KEY,
             jasmine.any(Object),
-            {
-                contentType : 'application/json',
-                contentEncoding : 'utf8',
-                mandatory : true,
-                headers : {
-                    execId: "exec1234567890",
-                    taskId: "task1234567890",
-                    stepId: 'step_1',
-                    compId: "comp1",
-                    function: "list",
-                    start: "1432815685034"
-                }
-            }
+            props
         ]);
 
-        var payload = JSON.parse(publishParameters[2].toString());
+        const payload = JSON.parse(publishParameters[2].toString());
         console.log(payload);
         payload.error = encryptor.decryptMessageContent(payload.error);
         payload.errorInput = encryptor.decryptMessageContent(payload.errorInput);
@@ -522,7 +547,7 @@ describe('AMQP', function () {
 
     it('Should ack message when confirmed', function () {
 
-        var amqp = new AMQPConnection();
+        const amqp = new Amqp();
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['ack']);
 
         amqp.ack(message);
@@ -534,7 +559,7 @@ describe('AMQP', function () {
 
     it('Should reject message when ack is called with false', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['reject']);
         amqp.reject(message);
 
@@ -546,8 +571,8 @@ describe('AMQP', function () {
 
     it('Should listen queue and pass decrypted message to client function', function () {
 
-        var amqp = new AMQPConnection(settings);
-        var clientFunction = jasmine.createSpy('clientFunction');
+        const amqp = new Amqp(settings);
+        const clientFunction = jasmine.createSpy('clientFunction');
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['consume', 'prefetch']);
         amqp.subscribeChannel.consume.andCallFake(function(queueName, callback){
             callback(message);
@@ -581,7 +606,7 @@ describe('AMQP', function () {
 
     it('Should disconnect from all channels and connection', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['close']);
         amqp.publishChannel = jasmine.createSpyObj('subscribeChannel', ['close']);
         amqp.amqp = jasmine.createSpyObj('amqp', ['close']);
