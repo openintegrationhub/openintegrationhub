@@ -26,7 +26,7 @@ describe('Sailor', function () {
     process.env.ELASTICIO_TIMEOUT = 3000;
 
     const amqp = require('../lib/amqp.js');
-    var settings;
+    let settings;
     const encryptor = require('../lib/encryptor.js');
     const Sailor = require('../lib/sailor.js').Sailor;
     const _ = require('lodash');
@@ -74,7 +74,7 @@ describe('Sailor', function () {
         it('should init properly if developer returned a plain string in init', function(done) {
             settings.FUNCTION = 'init_trigger_returns_string';
 
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -97,7 +97,7 @@ describe('Sailor', function () {
         it('should init properly if developer returned a promise', function(done) {
             settings.FUNCTION = 'init_trigger';
 
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -124,7 +124,7 @@ describe('Sailor', function () {
     describe('prepare', function() {
 
         it('should fail if unable to retrieve step info', function(done) {
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -145,13 +145,13 @@ describe('Sailor', function () {
 
     describe('disconnection', function() {
         it('should disconnect Mongo and RabbitMQ, and exit process', function (done) {
-            var fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['disconnect']);
+            const fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['disconnect']);
             fakeAMQPConnection.disconnect.andReturn(Q.resolve());
 
-            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+            spyOn(amqp, "Amqp").andReturn(fakeAMQPConnection);
             spyOn(process, "exit").andReturn(0);
 
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             sailor.disconnect()
                 .then(function(){
@@ -163,7 +163,7 @@ describe('Sailor', function () {
     });
 
     describe('processMessage', function () {
-        var fakeAMQPConnection;
+        let fakeAMQPConnection;
 
         beforeEach(function(){
             fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
@@ -171,12 +171,12 @@ describe('Sailor', function () {
                 'sendSnapshot', 'sendHttpReply'
             ]);
 
-            spyOn(amqp, "AMQPConnection").andReturn(fakeAMQPConnection);
+            spyOn(amqp, "Amqp").andReturn(fakeAMQPConnection);
         });
 
         it('should call sendData() and ack() if success', function (done) {
             settings.FUNCTION = 'data_trigger';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -192,7 +192,7 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
                     expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
 
-                    var sendDataCalls = fakeAMQPConnection.sendData.calls;
+                    const sendDataCalls = fakeAMQPConnection.sendData.calls;
 
                     expect(sendDataCalls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
                     expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
@@ -224,7 +224,7 @@ describe('Sailor', function () {
 
         it('should send request to API server to update keys', function (done) {
             settings.FUNCTION = 'keys_trigger';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -260,7 +260,7 @@ describe('Sailor', function () {
 
         it('should emit error if failed to update keys', function (done) {
             settings.FUNCTION = 'keys_trigger';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -298,7 +298,7 @@ describe('Sailor', function () {
 
         it('should call sendRebound() and ack()', function (done) {
             settings.FUNCTION = 'rebound_trigger';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -328,7 +328,7 @@ describe('Sailor', function () {
 
         it('should call sendSnapshot() and ack() after a `snapshot` event', function (done) {
             settings.FUNCTION = 'update';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -347,7 +347,7 @@ describe('Sailor', function () {
                 .then(() => {
                     expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
 
-                    var expectedSnapshot = {blabla:'blablabla'};
+                    const expectedSnapshot = {blabla:'blablabla'};
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
@@ -380,7 +380,7 @@ describe('Sailor', function () {
 
         it('should call sendSnapshot() and ack() after an `updateSnapshot` event', function (done) {
             settings.FUNCTION = 'update';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -403,7 +403,7 @@ describe('Sailor', function () {
                 .then(function() {
                     expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
 
-                    var expectedSnapshot = {someId: 'someData', updated: 'value'};
+                    const expectedSnapshot = {someId: 'someData', updated: 'value'};
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
@@ -436,7 +436,7 @@ describe('Sailor', function () {
 
         it('should send error if error happened', function (done) {
             settings.FUNCTION = 'error_trigger';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -467,7 +467,7 @@ describe('Sailor', function () {
 
         it('should reject message if trigger is missing', function (done) {
             settings.FUNCTION = 'missing_trigger';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -500,11 +500,11 @@ describe('Sailor', function () {
 
         it('should not process message if taskId in header is not equal to task._id', function (done) {
 
-            var message2 = _.cloneDeep(message);
+            const message2 = _.cloneDeep(message);
             message2.properties.headers.taskId = "othertaskid";
 
             settings.FUNCTION = 'error_trigger';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
@@ -525,7 +525,7 @@ describe('Sailor', function () {
 
         it('should catch all data calls and all error calls', function (done) {
             settings.FUNCTION = 'datas_and_errors';
-            var sailor = new Sailor(settings);
+            const sailor = new Sailor(settings);
 
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
                 expect(taskId).toEqual('5559edd38968ec0736000003');

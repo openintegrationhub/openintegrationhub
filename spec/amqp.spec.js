@@ -3,7 +3,7 @@ describe('AMQP', function () {
     process.env.ELASTICIO_MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
     process.env.ELASTICIO_MESSAGE_CRYPTO_IV = 'iv=any16_symbols';
 
-    var envVars = {};
+    const envVars = {};
     envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
     envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
     envVars.ELASTICIO_STEP_ID = 'step_1';
@@ -24,12 +24,12 @@ describe('AMQP', function () {
     envVars.ELASTICIO_API_USERNAME = 'test@test.com';
     envVars.ELASTICIO_API_KEY = '5559edd';
 
-    var AMQPConnection = require('../lib/amqp.js').AMQPConnection;
-    var settings = require('../lib/settings.js').readFrom(envVars);
-    var encryptor = require('../lib/encryptor.js');
-    var _ = require('lodash');
+    const Amqp = require('../lib/amqp.js').Amqp;
+    const settings = require('../lib/settings.js').readFrom(envVars);
+    const encryptor = require('../lib/encryptor.js');
+    const _ = require('lodash');
 
-    var message = {
+    const message = {
         fields: {
             consumerTag: "abcde",
             deliveryTag: 12345,
@@ -66,7 +66,7 @@ describe('AMQP', function () {
 
     it('Should send message to outgoing channel when process data', function () {
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const props = {
@@ -98,7 +98,7 @@ describe('AMQP', function () {
 
     it('Should sendHttpReply to outgoing channel using routing key from headers when process data', function () {
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const msg = {
@@ -136,10 +136,10 @@ describe('AMQP', function () {
 
     it('Should throw error in sendHttpReply if reply_to header not found', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
-        var msg = {
+        const msg = {
             statusCode: 200,
             headers: {
               'content-type': 'text/plain'
@@ -166,7 +166,7 @@ describe('AMQP', function () {
 
     it('Should send message to outgoing channel using routing key from headers when process data', function () {
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const msg = {
@@ -207,7 +207,7 @@ describe('AMQP', function () {
 
     it('Should send message to errors when process error', function () {
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const props = {
@@ -262,7 +262,7 @@ describe('AMQP', function () {
             }
         };
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const props = {
@@ -320,7 +320,7 @@ describe('AMQP', function () {
 
     it('Should not provide errorInput if errorInput was empty', function () {
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const props = {
@@ -359,7 +359,7 @@ describe('AMQP', function () {
 
     it('Should not provide errorInput if errorInput was null', function () {
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const props = {
@@ -399,7 +399,7 @@ describe('AMQP', function () {
 
     it('Should send message to rebounds when rebound happened', function () {
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const props = {
@@ -449,7 +449,7 @@ describe('AMQP', function () {
 
     it('Should send message to rebounds with reboundIteration=3', function () {
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const props = {
@@ -502,7 +502,7 @@ describe('AMQP', function () {
 
     it('Should send message to errors when rebound limit exceeded', function () {
 
-        const amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
         const props = {
@@ -547,7 +547,7 @@ describe('AMQP', function () {
 
     it('Should ack message when confirmed', function () {
 
-        var amqp = new AMQPConnection();
+        const amqp = new Amqp();
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['ack']);
 
         amqp.ack(message);
@@ -559,7 +559,7 @@ describe('AMQP', function () {
 
     it('Should reject message when ack is called with false', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['reject']);
         amqp.reject(message);
 
@@ -571,8 +571,8 @@ describe('AMQP', function () {
 
     it('Should listen queue and pass decrypted message to client function', function () {
 
-        var amqp = new AMQPConnection(settings);
-        var clientFunction = jasmine.createSpy('clientFunction');
+        const amqp = new Amqp(settings);
+        const clientFunction = jasmine.createSpy('clientFunction');
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['consume', 'prefetch']);
         amqp.subscribeChannel.consume.andCallFake(function(queueName, callback){
             callback(message);
@@ -606,7 +606,7 @@ describe('AMQP', function () {
 
     it('Should disconnect from all channels and connection', function () {
 
-        var amqp = new AMQPConnection(settings);
+        const amqp = new Amqp(settings);
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['close']);
         amqp.publishChannel = jasmine.createSpyObj('subscribeChannel', ['close']);
         amqp.amqp = jasmine.createSpyObj('amqp', ['close']);
