@@ -1,3 +1,5 @@
+'use strict';
+
 const nock = require('nock');
 const expect = require('chai').expect;
 const amqplib = require('amqplib');
@@ -424,6 +426,125 @@ describe('Integration Test', () => {
                     taskId: process.env.ELASTICIO_FLOW_ID,
                     userId: process.env.ELASTICIO_USER_ID
                 });
+
+                done();
+            },
+            {
+                consumerTag: 'sailor_nodejs'
+            });
+
+        run = requireRun();
+    });
+
+    it('should augment passthrough property with data', done => {
+        process.env.ELASTICIO_STEP_ID = 'step_2';
+        process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
+        process.env.ELASTICIO_FUNCTION = 'emit_data';
+
+        nock('https://apidotelasticidotio')
+            .get('/v1/tasks/5559edd38968ec0736000003/steps/step_2')
+            .reply(200, {
+                config: {
+                    apiKey: 'secret'
+                },
+                snapshot: {
+                    lastModifiedDate: 123456789
+                },
+                is_passthrough: true
+            });
+
+
+        const psMsg = Object.assign(inputMessage, {
+            passthrough: {
+                step_1: {
+                    id: '34',
+                    body: {},
+                    attachments: {}
+                }
+            }
+        });
+        subscriptionChannel.publish(
+            process.env.ELASTICIO_LISTEN_MESSAGES_ON,
+            process.env.ELASTICIO_DATA_ROUTING_KEY,
+            new Buffer(JSON.stringify(psMsg)),
+            {
+                headers: {
+                    execId: process.env.ELASTICIO_EXEC_ID,
+                    taskId: process.env.ELASTICIO_FLOW_ID,
+                    userId: process.env.ELASTICIO_USER_ID,
+                    'x-eio-meta-trace-id': traceId
+                }
+            });
+
+        publishChannel.consume(nextStepQueue, (message) => {
+                publishChannel.ack(message);
+                const emittedMessage = JSON.parse(message.content.toString());
+
+                expect(emittedMessage.passthrough).to.deep.eql({
+                    step_1: {
+                        id: '34',
+                        body: {},
+                        attachments: {}
+                    },
+                    step_2: {
+                        id: 'someId',
+                        body: {
+                            id: 'someId',
+                            hai: 'there'
+                        },
+                        headers: {
+                            taskId: process.env.ELASTICIO_FLOW_ID,
+                            execId: process.env.ELASTICIO_EXEC_ID,
+                            userId: process.env.ELASTICIO_USER_ID,
+                            'x-eio-meta-trace-id': traceId,
+                            stepId: process.env.ELASTICIO_STEP_ID,
+                            compId: process.env.ELASTICIO_COMP_ID,
+                            function: process.env.ELASTICIO_FUNCTION,
+                            start: message.properties.headers.start,
+                            end: message.properties.headers.end,
+                            cid: message.properties.headers.cid,
+                            messageId: 'someId'
+
+                        },
+                        attachments: {}
+                    }
+                });
+
+                delete message.properties.headers.start;
+                delete message.properties.headers.end;
+                delete message.properties.headers.cid;
+
+                expect(message.properties.headers).to.deep.equal({
+                    execId: process.env.ELASTICIO_EXEC_ID,
+                    taskId: process.env.ELASTICIO_FLOW_ID,
+                    userId: process.env.ELASTICIO_USER_ID,
+                    stepId: process.env.ELASTICIO_STEP_ID,
+                    compId: process.env.ELASTICIO_COMP_ID,
+                    function: process.env.ELASTICIO_FUNCTION,
+                    'x-eio-meta-trace-id': traceId,
+                    messageId: 'someId'
+                });
+
+
+                delete message.properties.headers;
+
+                expect(message.properties).to.deep.eql({
+                    contentType: 'application/json',
+                    contentEncoding: 'utf8',
+                    deliveryMode: undefined,
+                    priority: undefined,
+                    correlationId: undefined,
+                    replyTo: undefined,
+                    expiration: undefined,
+                    messageId: undefined,
+                    timestamp: undefined,
+                    type: undefined,
+                    userId: undefined,
+                    appId: undefined,
+                    clusterId: undefined,
+                });
+
+                publishChannel.cancel('sailor_nodejs');
 
                 done();
             },

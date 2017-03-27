@@ -11,6 +11,10 @@
     "fails_to_init": {
       "main": "./triggers/fails_to_init.js",
       "title": "Fails to init"
+    },
+    "emit_data": {
+      "main": "./triggers/emit_data.js",
+      "title": "emits data"
     }
   },
   "actions": {
