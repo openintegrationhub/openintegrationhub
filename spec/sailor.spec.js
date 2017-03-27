@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Sailor', function () {
     const envVars = {};
     envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
@@ -221,6 +223,92 @@ describe('Sailor', function () {
                 })
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
         });
+
+        it('should augment emitted message with passthrough data', function (done) {
+            settings.FUNCTION = 'passthrough';
+            const sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({is_passthrough: true});
+            });
+
+            const psPayload = {
+                body: payload,
+                passthrough: {
+                    step_0: {
+                        body: {key: 'value'}
+                    }
+                }
+            };
+
+            sailor.connect()
+                .then(() => sailor.prepare())
+                .then(() => sailor.processMessage(psPayload, message))
+                .then(() => {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
+
+                    const sendDataCalls = fakeAMQPConnection.sendData.calls;
+
+                    expect(sendDataCalls[0].args[0]).toEqual({
+                        body: {
+                            param1: 'Value1'
+                        },
+                        passthrough: {
+                            step_0: {
+                                body: {
+                                    key: 'value'
+                                }
+                            },
+                            step_1: {
+                                id: jasmine.any(String),
+                                body: {param1: 'Value1'},
+                                attachments: {},
+                                headers: {
+                                    taskId: '5559edd38968ec0736000003',
+                                    execId: 'exec1',
+                                    userId: '5559edd38968ec0736000002',
+                                    stepId: 'step_1',
+                                    compId: '5559edd38968ec0736000456',
+                                    function: 'passthrough',
+                                    start: jasmine.any(Number),
+                                    cid: 1,
+                                    end: jasmine.any(Number),
+                                    messageId: jasmine.any(String)
+                                }
+                            }
+                        }
+                    });
+                    expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
+                    expect(sendDataCalls[0].args[1]).toEqual({
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            execId: 'exec1',
+                            taskId: '5559edd38968ec0736000003',
+                            userId: '5559edd38968ec0736000002',
+                            stepId: 'step_1',
+                            compId: '5559edd38968ec0736000456',
+                            function: 'passthrough',
+                            start: jasmine.any(Number),
+                            cid: 1,
+                            end: jasmine.any(Number),
+                            messageId: jasmine.any(String)
+                        }
+                    });
+
+                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                    expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+                    done();
+                })
+                .catch(done); //todo: use done.fail after migration to Jasmine 2.x
+        });
+
 
         it('should send request to API server to update keys', function (done) {
             settings.FUNCTION = 'keys_trigger';
