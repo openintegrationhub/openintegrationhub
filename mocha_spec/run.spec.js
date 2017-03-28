@@ -487,42 +487,31 @@ describe('Integration Test', () => {
                         attachments: {}
                     },
                     step_2: {
-                        id: 'someId',
+                        id: emittedMessageId,
+                        headers: {
+                            'x-custom-component-header': '123_abc'
+                        },
                         body: {
                             id: 'someId',
                             hai: 'there'
-                        },
-                        headers: {
-                            taskId: process.env.ELASTICIO_FLOW_ID,
-                            execId: process.env.ELASTICIO_EXEC_ID,
-                            userId: process.env.ELASTICIO_USER_ID,
-                            'x-eio-meta-trace-id': traceId,
-                            stepId: process.env.ELASTICIO_STEP_ID,
-                            compId: process.env.ELASTICIO_COMP_ID,
-                            function: process.env.ELASTICIO_FUNCTION,
-                            start: message.properties.headers.start,
-                            end: message.properties.headers.end,
-                            cid: message.properties.headers.cid,
-                            messageId: 'someId'
-
-                        },
-                        attachments: {}
+                        }
                     }
                 });
 
                 delete message.properties.headers.start;
                 delete message.properties.headers.end;
                 delete message.properties.headers.cid;
+                console.log(message.properties.headers);
 
                 expect(message.properties.headers).to.deep.equal({
-                    execId: process.env.ELASTICIO_EXEC_ID,
                     taskId: process.env.ELASTICIO_FLOW_ID,
+                    execId: process.env.ELASTICIO_EXEC_ID,
                     userId: process.env.ELASTICIO_USER_ID,
+                    'x-eio-meta-trace-id': traceId,
                     stepId: process.env.ELASTICIO_STEP_ID,
                     compId: process.env.ELASTICIO_COMP_ID,
                     function: process.env.ELASTICIO_FUNCTION,
-                    'x-eio-meta-trace-id': traceId,
-                    messageId: 'someId'
+                    messageId:emittedMessageId
                 });
 
 

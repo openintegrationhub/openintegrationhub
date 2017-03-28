@@ -264,21 +264,7 @@ describe('Sailor', function () {
                                 }
                             },
                             step_1: {
-                                id: jasmine.any(String),
-                                body: {param1: 'Value1'},
-                                attachments: {},
-                                headers: {
-                                    taskId: '5559edd38968ec0736000003',
-                                    execId: 'exec1',
-                                    userId: '5559edd38968ec0736000002',
-                                    stepId: 'step_1',
-                                    compId: '5559edd38968ec0736000456',
-                                    function: 'passthrough',
-                                    start: jasmine.any(Number),
-                                    cid: 1,
-                                    end: jasmine.any(Number),
-                                    messageId: jasmine.any(String)
-                                }
+                                body: {param1: 'Value1'}
                             }
                         }
                     });
