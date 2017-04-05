@@ -1,18 +1,36 @@
 const Q = require('q');
 const request = require('request');
 
-exports.startup = startup;
 exports.init = initTrigger;
+exports.startup = startup;
+exports.shutdown = shutdown;
 exports.process = processTrigger;
 
 const subscription = {};
 
 function startup(cfg) {
     const options = {
-        uri: 'http://localhost:8080/webhooks',
+        uri: 'http://localhost:8080/webhooks/enable',
         json: true,
         body: {
             url: process.env.ELASTICIO_FLOW_WEBHOOK_URI
+        }
+    };
+
+    return Q.ninvoke(request, 'post', options)
+        .spread((req, body) => {
+            return body;
+        });
+}
+
+function shutdown(cfg, startupData) {
+    console.log('\n\nshutdown:\n', cfg, startupData);
+    const options = {
+        uri: 'http://localhost:8081/webhooks/disable',
+        json: true,
+        body: {
+            startupData,
+            cfg
         }
     };
 

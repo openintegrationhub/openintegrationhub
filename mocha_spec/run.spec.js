@@ -121,6 +121,8 @@ describe('Integration Test', () => {
             yield run.disconnect();
             done();
         }).catch(done);
+
+        nock.cleanAll();
     });
 
     it('should run sailor successfully', (done) => {
@@ -232,7 +234,8 @@ describe('Integration Test', () => {
         const subsriptionResponse = {
             id: 'webhook_123'
         };
-        app.post('/webhooks', (req, res) => {
+        // response for a subscription request, which performed inside of startup method
+        app.post('/webhooks/enable', (req, res) => {
             expect(req.body).to.eql({
                 url: 'https://in.elastic.io/hooks/5559edd38968ec0736000003'
             });
@@ -258,7 +261,7 @@ describe('Integration Test', () => {
             .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', subsriptionResponse)
             .reply(201, (uri, requestBody) => requestBody);
 
-        // response for a subscription request, which performed inside of startup method
+        // response for a subscription request, which performed inside of init method
         nock('https://api.acme.com')
             .log(console.log)
             .post('/subscribe')
@@ -327,6 +330,63 @@ describe('Integration Test', () => {
                 {
                     consumerTag: 'sailor_nodejs'
                 });
+            run = requireRun();
+        });
+    });
+
+    it('should execute shutdown successfully', (done) => {
+
+        process.env.ELASTICIO_HOOK_SHUTDOWN = '1';
+        process.env.HOOK_SHUTDOWN = '1';
+
+        //@todo how about to use one more nock instead of localhost app?
+        const app = express();
+        const port = 8081;
+
+        app.use(bodyParser.json());
+
+        const subsriptionResponse = {
+            id: 'webhook_124'
+        };
+
+        // response for a subscription request, which performed inside of shutdown method
+        app.post('/webhooks/disable', (req, res) => {
+            console.log('\n\n /webhooks/disable \n', req.body, '\n\n')
+            expect(req.body).to.eql({
+                cfg: '',
+                startupData: subsriptionResponse
+            });
+            res.end();
+        });
+
+        // sailor retrieves startup data via sailor-support API
+        const hooksDataNock = nock('https://apidotelasticidotio')
+            .log(console.log)
+            .get('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
+            .reply(200, subsriptionResponse);
+
+        // sailor retrieves info about current step from API
+        nock('https://apidotelasticidotio')
+            .log(console.log)
+            .get('/v1/tasks/5559edd38968ec0736000003/steps/step_1')
+            .reply(200, {
+                config: {
+                    apiKey: 'secret'
+                },
+                snapshot: {
+                    lastModifiedDate: 123456789
+                }
+            });
+
+        nock.enableNetConnect('localhost');
+
+        app.listen(port, () => {
+            console.log('Express listening on port', port);
+
+            setTimeout(() => {
+                expect(hooksDataNock.isDone()).to.be.ok;
+                done();
+            }, 2900);
             run = requireRun();
         });
     });

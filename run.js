@@ -9,11 +9,24 @@ let sailor;
 
 co(function* putOutToSea() {
     sailor = new Sailor(settings);
+
+    if (!!settings.HOOK_SHUTDOWN) {
+        sailor.reportError = () => {
+        }
+        console.log('HOOK_SHUTDOWN')
+        yield sailor.prepare();
+        console.log('prepared')
+        yield sailor.shutdown();
+        return;
+    }
+
     yield sailor.connect();
     yield sailor.prepare();
+
     if (!!settings.STARTUP_REQUIRED) {
         yield sailor.startup();
     }
+
     yield sailor.init();
     yield sailor.run();
 }).catch((e) => {
