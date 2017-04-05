@@ -229,15 +229,17 @@ describe('Integration Test', () => {
 
         app.use(bodyParser.json());
 
+        const subsriptionResponse = {
+            id: 'webhook_123'
+        };
         app.post('/webhooks', (req, res) => {
             expect(req.body).to.eql({
                 url: 'https://in.elastic.io/hooks/5559edd38968ec0736000003'
             });
-            res.json({
-                id: 'webhook_123'
-            });
+            res.json(subsriptionResponse);
         });
 
+        // sailor retrievs info about current step from API
         nock('https://apidotelasticidotio')
             .log(console.log)
             .get('/v1/tasks/5559edd38968ec0736000003/steps/step_1')
@@ -250,6 +252,13 @@ describe('Integration Test', () => {
                 }
             });
 
+        // sailor persists startup data via sailor-support API
+        const hooksDataNock = nock('https://apidotelasticidotio')
+            .log(console.log)
+            .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', subsriptionResponse)
+            .reply(201, (uri, requestBody) => requestBody);
+
+        // response for a subscription request, which performed inside of startup method
         nock('https://api.acme.com')
             .log(console.log)
             .post('/subscribe')
@@ -297,6 +306,7 @@ describe('Integration Test', () => {
                         function: process.env.ELASTICIO_FUNCTION,
                         messageId: emittedMessageId
                     });
+
                     expect(emittedMessage.body).to.deep.equal({
                         originalMsg: inputMessage,
                         customers: customers,
@@ -307,6 +317,8 @@ describe('Integration Test', () => {
                             }
                         }
                     });
+
+                    expect(hooksDataNock.isDone()).to.be.ok;
 
                     publishChannel.cancel('sailor_nodejs');
 
