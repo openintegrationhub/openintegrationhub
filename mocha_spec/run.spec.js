@@ -116,6 +116,8 @@ describe('Integration Test', () => {
     afterEach((done) => {
         delete process.env.STARTUP_REQUIRED;
         delete process.env.ELASTICIO_FUNCTION;
+        delete process.env.HOOK_SHUTDOWN;
+        delete process.env.ELASTICIO_HOOK_SHUTDOWN;
 
         co(function* gen() {
             yield run.disconnect();
