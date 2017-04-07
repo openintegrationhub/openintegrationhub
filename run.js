@@ -11,10 +11,12 @@ let disconnectRequired;
 co(function* putOutToSea() {
     sailor = new Sailor(settings);
 
+    console.log('\n\n\nENV:\n', process.env, '\n\n')
+
     if (!!settings.HOOK_SHUTDOWN) {
         disconnectRequired = false;
         sailor.reportError = () => {
-        }
+        };
         console.log('HOOK_SHUTDOWN')
         yield sailor.prepare();
         console.log('prepared')
@@ -59,7 +61,7 @@ function disconnect() {
 }
 
 function disconnectAndExit() {
-    if (disconnectRequired) {
+    if (!disconnectRequired) {
         return;
     }
     co(function* putIn() {

@@ -388,7 +388,7 @@ describe('Integration Test', () => {
             setTimeout(() => {
                 expect(hooksDataNock.isDone()).to.be.ok;
                 done();
-            }, 2900);
+            }, 1900);
             run = requireRun();
         });
     });
