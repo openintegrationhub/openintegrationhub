@@ -11,7 +11,6 @@ let disconnectRequired;
 co(function* putOutToSea() {
     sailor = new Sailor(settings);
 
-    console.log('\n\n\nENV:\n', process.env, '\n\n')
 
     if (!!settings.HOOK_SHUTDOWN) {
         disconnectRequired = false;

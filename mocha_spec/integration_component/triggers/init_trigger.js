@@ -10,10 +10,10 @@ const subscription = {};
 
 function startup(cfg) {
     const options = {
-        uri: 'http://localhost:8080/webhooks/enable',
+        uri: 'http://example.com/subscriptions/enable',
         json: true,
         body: {
-            url: process.env.ELASTICIO_FLOW_WEBHOOK_URI
+            data: 'startup'
         }
     };
 
@@ -24,13 +24,12 @@ function startup(cfg) {
 }
 
 function shutdown(cfg, startupData) {
-    console.log('\n\nshutdown:\n', cfg, startupData);
     const options = {
-        uri: 'http://localhost:8081/webhooks/disable',
+        uri: 'http://example.com/subscriptions/disable',
         json: true,
         body: {
-            startupData,
-            cfg
+            cfg,
+            startupData
         }
     };
 
