@@ -1,5 +1,6 @@
-const Q = require('q');
-const request = require('request');
+'use strict';
+
+const rp = require('request-promise-native');
 
 exports.init = initTrigger;
 exports.startup = startup;
@@ -8,7 +9,7 @@ exports.process = processTrigger;
 
 const subscription = {};
 
-function startup(cfg) {
+function startup() {
     const options = {
         uri: 'http://example.com/subscriptions/enable',
         json: true,
@@ -17,8 +18,8 @@ function startup(cfg) {
         }
     };
 
-    return Q.ninvoke(request, 'post', options)
-        .spread((req, body) => {
+    return rp.post(options)
+        .then((body) => {
             return { subscriptionResult: body };
         });
 }
@@ -33,10 +34,7 @@ function shutdown(cfg, startupData) {
         }
     };
 
-    return Q.ninvoke(request, 'post', options)
-        .spread((req, body) => {
-            return body;
-        });
+    return rp.post(options);
 }
 
 function initTrigger(cfg) {
@@ -48,8 +46,8 @@ function initTrigger(cfg) {
         }
     };
 
-    Q.ninvoke(request, 'post', options)
-        .spread((req, body) => {
+    return rp.post(options)
+        .then((body) => {
             subscription.id = body.id;
             subscription.cfg = cfg;
         });
@@ -63,18 +61,16 @@ function processTrigger(msg, cfg) {
         json: true
     };
 
-    Q.ninvoke(request, 'get', options)
-        .spread((req, body) => body)
-        .then((data) => {
-            that.emit('data', {
-                id: 'f45be600-f770-11e6-b42d-b187bfbf19fd',
-                body: {
-                    originalMsg: msg,
-                    customers: data,
-                    subscription: subscription
-                }
-            });
-            that.emit('end');
+    rp.get(options).then((data) => {
+        that.emit('data', {
+            id: 'f45be600-f770-11e6-b42d-b187bfbf19fd',
+            body: {
+                originalMsg: msg,
+                customers: data,
+                subscription: subscription
+            }
         });
+        that.emit('end');
+    });
 
 }

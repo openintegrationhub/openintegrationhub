@@ -1,5 +1,4 @@
-const Q = require('q');
-const request = require('request');
+'use strict';
 
 exports.process = processAction;
 
