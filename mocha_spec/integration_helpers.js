@@ -50,7 +50,6 @@ class AmqpHelper extends EventEmitter {
     }
 
     *prepareQueues() {
-        console.log('prepareQueues begin')
         const amqp = yield amqplib.connect(env.ELASTICIO_AMQP_URI);
         const subscriptionChannel = yield amqp.createChannel();
         const publishChannel = yield amqp.createChannel();
@@ -93,7 +92,6 @@ class AmqpHelper extends EventEmitter {
 
         this.subscriptionChannel = subscriptionChannel;
         this.publishChannel = publishChannel;
-        console.log('prepareQueues end');
     }
 
     cleanUp() {
@@ -193,13 +191,8 @@ function mockApiTaskStepResponse(response) {
     };
 
     nock(env.ELASTICIO_API_URI)
-    // .log(console.log)
         .get(`/v1/tasks/${env.ELASTICIO_FLOW_ID}/steps/${env.ELASTICIO_STEP_ID}`)
         .reply(200, Object.assign(defaultResponse, response));
-}
-
-function run() {
-
 }
 
 exports.PREFIX = PREFIX;

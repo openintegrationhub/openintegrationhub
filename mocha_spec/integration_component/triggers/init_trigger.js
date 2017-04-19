@@ -19,7 +19,7 @@ function startup(cfg) {
 
     return Q.ninvoke(request, 'post', options)
         .spread((req, body) => {
-            return body;
+            return { subscriptionResult: body };
         });
 }
 

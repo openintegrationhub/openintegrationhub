@@ -16,9 +16,7 @@ co(function* putOutToSea() {
         disconnectRequired = false;
         sailor.reportError = () => {
         };
-        console.log('HOOK_SHUTDOWN')
         yield sailor.prepare();
-        console.log('prepared')
         yield sailor.shutdown();
         return;
     }

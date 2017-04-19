@@ -3,7 +3,7 @@
 const nock = require('nock');
 const expect = require('chai').expect;
 const co = require('co');
-const sinon = require('sinon');
+const sinonjs = require('sinon');
 const logging = require('../lib/logging.js');
 const helpers = require('./integration_helpers');
 
@@ -34,9 +34,8 @@ describe('Integration Test', () => {
     });
 
     afterEach((done) => {
-        delete env.STARTUP_REQUIRED;
+        delete env.ELASTICIO_STARTUP_REQUIRED;
         delete env.ELASTICIO_FUNCTION;
-        delete env.HOOK_SHUTDOWN;
         delete env.ELASTICIO_HOOK_SHUTDOWN;
 
         co(function* gen() {
@@ -45,6 +44,14 @@ describe('Integration Test', () => {
         }).catch(done);
 
         nock.cleanAll();
+    });
+
+    let sinon;
+    beforeEach(function() {
+        sinon = sinonjs.sandbox.create();
+    });
+    afterEach(function() {
+        sinon.restore();
     });
 
     describe('when sailor is being invoked for message processing', () => {
@@ -62,7 +69,6 @@ describe('Integration Test', () => {
             helpers.mockApiTaskStepResponse();
 
             nock('https://api.acme.com')
-            // .log(console.log)
                 .post('/subscribe')
                 .reply(200, {
                     id: 'subscription_12345'
@@ -78,18 +84,6 @@ describe('Integration Test', () => {
                 delete properties.headers.end;
                 delete properties.headers.cid;
 
-                console.log(JSON.stringify(properties.headers, null, 2))
-                console.log(JSON.stringify({
-                    execId: env.ELASTICIO_EXEC_ID,
-                    taskId: env.ELASTICIO_FLOW_ID,
-                    userId: env.ELASTICIO_USER_ID,
-                    stepId: env.ELASTICIO_STEP_ID,
-                    compId: env.ELASTICIO_COMP_ID,
-                    function: env.ELASTICIO_FUNCTION,
-                    'x-eio-meta-trace-id': traceId,
-                    parentMessageId: parentMessageId,
-                    messageId
-                }, null, 2));
                 expect(properties.headers).to.deep.equal({
                     execId: env.ELASTICIO_EXEC_ID,
                     taskId: env.ELASTICIO_FLOW_ID,
@@ -241,84 +235,195 @@ describe('Integration Test', () => {
             beforeEach(() => {
                 env.ELASTICIO_STARTUP_REQUIRED = '1';
             });
-            afterEach(() => {
-                delete env.ELASTICIO_STARTUP_REQUIRED;
-            });
-
-            it('should execute startup successfully', (done) => {
-
-                    let startupRequstrationRequest;
-                    const startupRegistrationNock = nock('http://example.com/')
-                        .post('/subscriptions/enable')
-                        .reply(200, (uri, requestBody) => {
-                            startupRequstrationRequest = requestBody;
-                            return {
-                                status: 'ok'
-                            }
-                        });
-
-                    helpers.mockApiTaskStepResponse();
-
-                    // sailor persists startup data via sailor-support API
-                    const hooksDataNock = nock('https://apidotelasticidotio')
-                    // .log(console.log)
-                        .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
-                        .reply(201, (uri, requestBody) => requestBody);
-
-                    // response for a subscription request, which performed inside of init method
-                    nock('https://api.acme.com')
-                    // .log(console.log)
-                        .post('/subscribe')
-                        .reply(200, {
-                            id: 'subscription_12345'
-                        })
-                        .get('/customers')
-                        .reply(200, customers);
-
-
-                    amqpHelper.on('data', ({ properties, body }, queueName) => {
-
-                        expect(queueName).to.eql(amqpHelper.nextStepQueue);
-
-                        expect(startupRequstrationRequest).to.deep.equal({
-                            data: 'startup'
-                        });
-                        expect(startupRegistrationNock.isDone()).to.be.ok;
-
-                        expect(hooksDataNock.isDone()).to.be.ok;
-
-
-                        delete properties.headers.start;
-                        delete properties.headers.end;
-                        delete properties.headers.cid;
-
-                        expect(properties.headers).to.eql({
-                            execId: env.ELASTICIO_EXEC_ID,
-                            taskId: env.ELASTICIO_FLOW_ID,
-                            userId: env.ELASTICIO_USER_ID,
-                            stepId: env.ELASTICIO_STEP_ID,
-                            compId: env.ELASTICIO_COMP_ID,
-                            function: env.ELASTICIO_FUNCTION,
-                            messageId
-                        });
-
-                        expect(body).to.deep.equal({
-                            originalMsg: inputMessage,
-                            customers: customers,
-                            subscription: {
-                                id: 'subscription_12345',
-                                cfg: {
-                                    apiKey: 'secret'
+            describe('when hooks data for the task is not created yet', () => {
+                it('should execute startup successfully', (done) => {
+                        let startupRegistrationRequest;
+                        const startupRegistrationNock = nock('http://example.com/')
+                            .post('/subscriptions/enable')
+                            .reply(200, (uri, requestBody) => {
+                                startupRegistrationRequest = requestBody;
+                                return {
+                                    status: 'ok'
                                 }
-                            }
-                        });
-                        done();
-                    });
-                    run = requireRun();
+                            });
 
-                    amqpHelper.publishMessage(inputMessage);
-                }
-            );
+                        helpers.mockApiTaskStepResponse();
+
+                        // sailor persists startup data via sailor-support API
+                        let hooksDataRequest;
+                        const hooksDataNock = nock('https://apidotelasticidotio')
+                            .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
+                            .reply(201, (uri, requestBody) => {
+                                hooksDataRequest = requestBody;
+                                return requestBody;
+                            });
+
+                        // response for a subscription request, which performed inside of init method
+                        nock('https://api.acme.com')
+                            .post('/subscribe')
+                            .reply(200, {
+                                id: 'subscription_12345'
+                            })
+                            .get('/customers')
+                            .reply(200, customers);
+
+
+                        amqpHelper.on('data', ({ properties, body }, queueName) => {
+
+                            expect(queueName).to.eql(amqpHelper.nextStepQueue);
+
+                            expect(startupRegistrationRequest).to.deep.equal({
+                                data: 'startup'
+                            });
+                            expect(hooksDataRequest).to.deep.equal({
+                                subscriptionResult: {
+                                    status: 'ok'
+                                }
+                            });
+                            expect(startupRegistrationNock.isDone()).to.be.ok;
+
+                            expect(hooksDataNock.isDone()).to.be.ok;
+
+
+                            delete properties.headers.start;
+                            delete properties.headers.end;
+                            delete properties.headers.cid;
+
+                            expect(properties.headers).to.eql({
+                                execId: env.ELASTICIO_EXEC_ID,
+                                taskId: env.ELASTICIO_FLOW_ID,
+                                userId: env.ELASTICIO_USER_ID,
+                                stepId: env.ELASTICIO_STEP_ID,
+                                compId: env.ELASTICIO_COMP_ID,
+                                function: env.ELASTICIO_FUNCTION,
+                                messageId
+                            });
+
+                            expect(body).to.deep.equal({
+                                originalMsg: inputMessage,
+                                customers: customers,
+                                subscription: {
+                                    id: 'subscription_12345',
+                                    cfg: {
+                                        apiKey: 'secret'
+                                    }
+                                }
+                            });
+                            done();
+                        });
+                        run = requireRun();
+
+                        amqpHelper.publishMessage(inputMessage);
+                    }
+                );
+            });
+            describe('when hooks data already exists', () => {
+                it('should delete previous data and execute startup successfully', (done) => {
+                        let startupRegistrationRequest;
+                        const startupRegistrationNock = nock('http://example.com/')
+                            .post('/subscriptions/enable')
+                            .reply(200, (uri, requestBody) => {
+                                startupRegistrationRequest = requestBody;
+                                return {
+                                    status: 'ok'
+                                }
+                            });
+
+                        helpers.mockApiTaskStepResponse();
+
+                        let hooksDataRequest1;
+                        let hooksDataRequest2;
+                        // sailor persists startup data via sailor-support API
+                        const hooksDataNock1 = nock('https://apidotelasticidotio')
+                            .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
+                            .reply(409, (uri, requestBody) => {
+                                hooksDataRequest1 = requestBody;
+                                return {
+                                    error: 'Hooks data for the task already exist. Delete previous data first.',
+                                    status: 409,
+                                    'title': 'ConflictError'
+                                };
+                            });
+                        // sailor removes data in order to resolve conflict
+                        const hooksDataDeleteNock = nock('https://apidotelasticidotio')
+                            .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
+                            .reply(204);
+                        // sailor persists startup data via sailor-support API
+
+                        const hooksDataNock2 = nock('https://apidotelasticidotio')
+                            .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
+                            .reply(201, (uri, requestBody) => {
+                                hooksDataRequest2 = requestBody;
+                                return requestBody;
+                            });
+
+                        // response for a subscription request, which performed inside of init method
+                        nock('https://api.acme.com')
+                            .post('/subscribe')
+                            .reply(200, {
+                                id: 'subscription_12345'
+                            })
+                            .get('/customers')
+                            .reply(200, customers);
+
+
+                        amqpHelper.on('data', ({ properties, body }, queueName) => {
+
+                            expect(queueName).to.eql(amqpHelper.nextStepQueue);
+
+                            expect(startupRegistrationRequest).to.deep.equal({
+                                data: 'startup'
+                            });
+                            expect(startupRegistrationNock.isDone()).to.be.ok;
+
+                            expect(hooksDataNock1.isDone()).to.be.ok;
+                            expect(hooksDataNock2.isDone()).to.be.ok;
+                            expect(hooksDataDeleteNock.isDone()).to.be.ok;
+
+                            expect(hooksDataRequest1).to.deep.equal({
+                                subscriptionResult: {
+                                    status: 'ok'
+                                }
+                            });
+                            expect(hooksDataRequest2).to.deep.equal({
+                                subscriptionResult: {
+                                    status: 'ok'
+                                }
+                            });
+
+
+                            delete properties.headers.start;
+                            delete properties.headers.end;
+                            delete properties.headers.cid;
+
+                            expect(properties.headers).to.eql({
+                                execId: env.ELASTICIO_EXEC_ID,
+                                taskId: env.ELASTICIO_FLOW_ID,
+                                userId: env.ELASTICIO_USER_ID,
+                                stepId: env.ELASTICIO_STEP_ID,
+                                compId: env.ELASTICIO_COMP_ID,
+                                function: env.ELASTICIO_FUNCTION,
+                                messageId
+                            });
+
+                            expect(body).to.deep.equal({
+                                originalMsg: inputMessage,
+                                customers: customers,
+                                subscription: {
+                                    id: 'subscription_12345',
+                                    cfg: {
+                                        apiKey: 'secret'
+                                    }
+                                }
+                            });
+                            done();
+                        });
+                        run = requireRun();
+
+                        amqpHelper.publishMessage(inputMessage);
+                    }
+                );
+            });
         });
 
         describe('when reply_to header is set', () => {
@@ -329,7 +434,6 @@ describe('Integration Test', () => {
                 helpers.mockApiTaskStepResponse();
 
                 nock('https://api.acme.com')
-                // .log(console.log)
                     .post('/subscribe')
                     .reply(200, {
                         id: 'subscription_12345'
@@ -404,49 +508,90 @@ describe('Integration Test', () => {
     });
 
     describe('when sailor is being invoked for shutdown', () => {
-        it('should execute shutdown successfully', (done) => {
+        describe('when hooksdata is found', () => {
+            it('should execute shutdown successfully', (done) => {
 
-            env.ELASTICIO_HOOK_SHUTDOWN = '1';
+                env.ELASTICIO_HOOK_SHUTDOWN = '1';
 
-            const subsriptionResponse = {
-                subId: '507'
-            };
+                const subsriptionResponse = {
+                    subId: '507'
+                };
 
-            let requestFromShutdownHook;
-            const requestFromShutdownNock = nock('http://example.com/')
-                .post('/subscriptions/disable')
-                .reply(200, (uri, requestBody) => {
-                    requestFromShutdownHook = requestBody;
-                    return {
-                        status: 'ok'
-                    }
-                });
+                let requestFromShutdownHook;
+                const requestFromShutdownNock = nock('http://example.com/')
+                    .post('/subscriptions/disable')
+                    .reply(200, (uri, requestBody) => {
+                        requestFromShutdownHook = requestBody;
+                        return {
+                            status: 'ok'
+                        }
+                    });
 
-            // sailor retrieves startup data via sailor-support API
-            const hooksDataNock = nock('https://apidotelasticidotio')
-            // .log(console.log)
-                .get('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
-                .reply(200, subsriptionResponse);
+                // sailor retrieves startup data via sailor-support API
+                const hooksDataGetNock = nock('https://apidotelasticidotio')
+                    .get('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
+                    .reply(200, subsriptionResponse);
 
-            helpers.mockApiTaskStepResponse();
+                // sailor removes startup data via sailor-support API
+                const hooksDataDeleteNock = nock('https://apidotelasticidotio')
+                    .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
+                    .reply(204);
 
-            nock.enableNetConnect('localhost');
+                helpers.mockApiTaskStepResponse();
 
+                hooksDataDeleteNock.on('replied', () => setTimeout(checkResult, 50));
 
-            setTimeout(() => {
-                expect(hooksDataNock.isDone()).to.be.ok;
+                function checkResult() {
 
-                expect(requestFromShutdownHook).to.deep.equal({
-                    cfg: {
-                        apiKey: 'secret'
-                    },
-                    startupData: subsriptionResponse
-                });
-                expect(requestFromShutdownNock.isDone()).to.be.ok;
+                    expect(hooksDataGetNock.isDone()).to.be.ok;
 
-                done();
-            }, 1900);
-            run = requireRun();
+                    expect(requestFromShutdownHook).to.deep.equal({
+                        cfg: {
+                            apiKey: 'secret'
+                        },
+                        startupData: subsriptionResponse
+                    });
+                    expect(requestFromShutdownNock.isDone()).to.be.ok;
+                    expect(hooksDataDeleteNock.isDone()).to.be.ok;
+
+                    done();
+                }
+
+                run = requireRun();
+            });
+        });
+
+        describe('when hooksdata is not found', () => {
+            it('should not execute shutdown', (done) => {
+
+                env.ELASTICIO_HOOK_SHUTDOWN = '1';
+
+                const subsriptionResponse = {
+                    subId: '507'
+                };
+
+                // nock just in order to check that this was not requested
+                const requestFromShutdownNock = nock('http://example.com/')
+                    .post('/subscriptions/disable')
+                    .reply(500);
+
+                // sailor retrieves startup data via sailor-support API
+                const hooksDataGetNock = nock('https://apidotelasticidotio')
+                    .get('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
+                    .reply(404);
+
+                helpers.mockApiTaskStepResponse();
+
+                function checkResult() {
+                    expect(hooksDataGetNock.isDone()).to.be.ok;
+                    expect(requestFromShutdownNock.isDone()).to.not.be.ok;
+                    done();
+                }
+
+                const logCriticalErrorStub = sinon.stub(logging, 'criticalError').callsFake(checkResult);
+
+                run = requireRun();
+            });
         });
     });
 });
