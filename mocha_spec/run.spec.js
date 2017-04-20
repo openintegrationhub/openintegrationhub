@@ -428,7 +428,7 @@ describe('Integration Test', () => {
                 it('should delete previous data and execute trigger successfully', (done) => {
                         let startupRegistrationRequest;
 
-                    env.ELASTICIO_FUNCTION = 'startup_with_empty_data';
+                        env.ELASTICIO_FUNCTION = 'startup_with_empty_data';
 
                         const startupRegistrationNock = nock('http://example.com/')
                             .post('/subscriptions/enable')
@@ -509,42 +509,42 @@ describe('Integration Test', () => {
             describe('when startup method does not exist', () => {
                 it('should run trigger successfully', (done) => {
 
-                    env.ELASTICIO_FUNCTION = 'trigger_with_no_hooks';
+                        env.ELASTICIO_FUNCTION = 'trigger_with_no_hooks';
 
-                    helpers.mockApiTaskStepResponse();
-
-
-                    // response for a subscription request, which performed inside of init method
-                    nock('https://api.acme.com')
-                        .get('/customers')
-                        .reply(200, customers);
+                        helpers.mockApiTaskStepResponse();
 
 
-                    amqpHelper.on('data', ({ properties, body }, queueName) => {
+                        // response for a subscription request, which performed inside of init method
+                        nock('https://api.acme.com')
+                            .get('/customers')
+                            .reply(200, customers);
 
-                        expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
-                        delete properties.headers.start;
-                        delete properties.headers.end;
-                        delete properties.headers.cid;
+                        amqpHelper.on('data', ({ properties, body }, queueName) => {
 
-                        expect(properties.headers).to.eql({
-                            execId: env.ELASTICIO_EXEC_ID,
-                            taskId: env.ELASTICIO_FLOW_ID,
-                            userId: env.ELASTICIO_USER_ID,
-                            stepId: env.ELASTICIO_STEP_ID,
-                            compId: env.ELASTICIO_COMP_ID,
-                            function: env.ELASTICIO_FUNCTION,
-                            messageId
+                            expect(queueName).to.eql(amqpHelper.nextStepQueue);
+
+                            delete properties.headers.start;
+                            delete properties.headers.end;
+                            delete properties.headers.cid;
+
+                            expect(properties.headers).to.eql({
+                                execId: env.ELASTICIO_EXEC_ID,
+                                taskId: env.ELASTICIO_FLOW_ID,
+                                userId: env.ELASTICIO_USER_ID,
+                                stepId: env.ELASTICIO_STEP_ID,
+                                compId: env.ELASTICIO_COMP_ID,
+                                function: env.ELASTICIO_FUNCTION,
+                                messageId
+                            });
+
+                            expect(body).to.deep.equal({
+                                originalMsg: inputMessage,
+                                customers: customers
+                            });
+                            done();
                         });
-
-                        expect(body).to.deep.equal({
-                            originalMsg: inputMessage,
-                            customers: customers
-                        });
-                        done();
-                    });
-                    run = requireRun();
+                        run = requireRun();
 
                         amqpHelper.publishMessage(inputMessage);
                     }
