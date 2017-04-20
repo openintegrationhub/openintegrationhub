@@ -8,6 +8,10 @@
       "main": "./triggers/init_trigger.js",
       "title": "Get data"
     },
+    "startup_with_empty_data": {
+      "main": "./triggers/startup_with_empty_data.js",
+      "title": "Startup hooks returns empty result. No shutdown hook at all."
+    },
     "fails_to_init": {
       "main": "./triggers/fails_to_init.js",
       "title": "Fails to init"
