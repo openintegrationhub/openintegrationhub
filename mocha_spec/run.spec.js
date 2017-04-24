@@ -687,66 +687,19 @@ describe('Integration Test', () => {
             });
         });
 
-        describe('when hooksdata is not found', () => {
-            it('should execute shutdown anyway', (done) => {
-
-                env.ELASTICIO_HOOK_SHUTDOWN = '1';
-
-                let requestFromShutdownHook;
-                const requestFromShutdownNock = nock('http://example.com/')
-                    .post('/subscriptions/disable')
-                    .reply(200, (uri, requestBody) => {
-                        requestFromShutdownHook = requestBody;
-                        return {
-                            status: 'ok'
-                        }
-                    });
-
-                // sailor retrieves startup data via sailor-support API
-                const hooksDataGetNock = nock('https://apidotelasticidotio')
-                    .get('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
-                    .reply(404, {
-                        error: 'The data entity is not found.',
-                        status: 404,
-                        title: 'NotFoundError'
-                    });
-
-                // sailor removes startup data via sailor-support API
-                const hooksDataDeleteNock = nock('https://apidotelasticidotio')
-                    .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
-                    .reply(204);
-
-                helpers.mockApiTaskStepResponse();
-
-                hooksDataGetNock.on('replied', () => setTimeout(checkResult, 50));
-
-                function checkResult() {
-
-                    expect(hooksDataGetNock.isDone()).to.be.ok;
-
-                    expect(requestFromShutdownHook).to.deep.equal({
-                        cfg: {
-                            apiKey: 'secret'
-                        },
-                        startupData: {}
-                    });
-                    expect(requestFromShutdownNock.isDone()).to.be.ok;
-                    expect(hooksDataDeleteNock.isDone()).to.not.be.ok;
-
-                    done();
-                }
-
-                run = requireRun();
-            });
+        describe('when request for hooksdata is failed with an error', () => {
+            // @todo
+            it('should not execute shutdown');
         });
         describe('when shutdown hook method is not found', () => {
-            // it seems quite complicated to test this
+            // @todo
             it('should not thrown error and just finish process');
         });
     });
 });
 
 function requireRun() {
+    //@todo it would be great to use something like this https://github.com/jveski/shelltest
     const path = '../run.js';
     var resolved = require.resolve(path);
     delete require.cache[resolved];
