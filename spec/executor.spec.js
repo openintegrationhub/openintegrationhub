@@ -320,4 +320,30 @@ describe('Executor', function () {
         });
     });
 
+    describe('async process function', () => {
+        it('should work', () => {
+            const taskexec = new TaskExec();
+
+            taskexec.on('error', () => {});
+            spyOn(taskexec, 'emit').andCallThrough();
+
+            const module = require('./component/triggers/async_process_function');
+
+            runs(() => {
+                taskexec.process(module, payload, cfg);
+            });
+
+            waitsFor(() => taskexec.emit.callCount > 1);
+
+            runs(() => {
+                expect(taskexec.emit).toHaveBeenCalled();
+                expect(taskexec.emit.callCount).toEqual(2);
+                expect(taskexec.emit.calls[0].args[0]).toEqual('data');
+                expect(taskexec.emit.calls[0].args[1]).toEqual({
+                    some: 'data'
+                });
+                expect(taskexec.emit.calls[1].args[0]).toEqual('end');
+            });
+        });
+    });
 });

@@ -1,10 +1,12 @@
 {
   "name": "elasticio-sailor-nodejs",
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "main": "run.js",
   "scripts": {
-    "test": "NODE_ENV=test gulp && NODE_ENV=test mocha mocha_spec/*"
+    "test": "npm run test:jasmine && npm run test:mocha",
+    "test:jasmine": "NODE_ENV=test jasmine-node spec",
+    "test:mocha": "NODE_ENV=test mocha mocha_spec/*"
   },
   "engines": {
     "node": ">=5.11.x"
@@ -13,7 +15,7 @@
     "amqplib": "0.5.1",
     "debug": "2.6.1",
     "elasticio-rest-node": "1.0.2",
-    "lodash": "3.10.1",
+    "lodash": "4.17.4",
     "q": "1.4.1",
     "request": "2.79.0",
     "co": "4.6.0",
@@ -28,8 +30,9 @@
     "gulp": "3.9.1",
     "gulp-istanbul": "1.1.1",
     "gulp-jasmine": "0.2.0",
-    "mocha": "3.2.0",
-    "nock": "9.0.6",
+    "jasmine-node": "^1.14.5",
+    "mocha": "3.3.0",
+    "nock": "9.0.13",
     "sinon": "^1.17.7"
   }
 }

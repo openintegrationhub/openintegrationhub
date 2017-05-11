@@ -14,15 +14,6 @@ gulp.task('clean:coverage', function (cb) {
     del([paths.coverage], cb);
 });
 
-gulp.task('test', function () {
-    return gulp
-        .src(paths.spec)
-        .pipe(jasmine({
-            includeStackTrace: true,
-            verbose: true
-        }));
-});
-
 gulp.task('istanbul', function (cb) {
     gulp
         .src(paths.code)
@@ -37,5 +28,4 @@ gulp.task('istanbul', function (cb) {
         });
 });
 
-gulp.task('default', ['test']);
 gulp.task('coverage', ['clean:coverage', 'istanbul']);
