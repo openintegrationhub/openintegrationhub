@@ -9,6 +9,14 @@
       "main": "./triggers/data_trigger.js",
       "title": "Get data"
     },
+    "end_after_data_twice": {
+      "main": "./triggers/end_after_data_twice.js",
+      "title": "Emitting end twice after data"
+    },
+    "end_after_error_twice": {
+      "main": "./triggers/end_after_error_twice.js",
+      "title": "Emitting end twice after error"
+    },
     "init_trigger": {
       "main": "./triggers/init_trigger.js",
       "title": "Init data"

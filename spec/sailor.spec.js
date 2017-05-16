@@ -224,6 +224,34 @@ describe('Sailor', function () {
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
         });
 
+        it('should call sendData() and ack() only once', function (done) {
+            settings.FUNCTION = 'end_after_data_twice';
+            const sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
+
+            sailor.connect()
+                .then(() => sailor.prepare())
+                .then(() => sailor.processMessage(payload, message))
+                .then(() => {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
+
+                    expect(fakeAMQPConnection.sendData.callCount).toEqual(1);
+
+                    expect(fakeAMQPConnection.reject).not.toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                    done();
+                })
+                .catch(done); //todo: use done.fail after migration to Jasmine 2.x
+        });
+
         it('should augment emitted message with passthrough data', function (done) {
             settings.FUNCTION = 'passthrough';
             const sailor = new Sailor(settings);
@@ -534,6 +562,35 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.reject).toHaveBeenCalled();
                     expect(fakeAMQPConnection.reject.callCount).toEqual(1);
                     expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should send error and reject only once()', function (done) {
+            settings.FUNCTION = 'end_after_error_twice';
+            const sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
+
+            sailor.prepare()
+                .then(() => sailor.connect())
+                .then(() => sailor.processMessage(payload, message))
+                .then(() => {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+
+                    expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendError.callCount).toEqual(1);
+
+                    expect(fakeAMQPConnection.ack).not.toHaveBeenCalled();
+                    expect(fakeAMQPConnection.reject).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.reject.callCount).toEqual(1);
                     done();
                 })
                 .catch(done);
