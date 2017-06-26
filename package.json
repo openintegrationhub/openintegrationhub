@@ -1,7 +1,7 @@
 {
   "name": "elasticio-sailor-nodejs",
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "main": "run.js",
   "scripts": {
     "test": "npm run test:jasmine && npm run test:mocha",
