@@ -65,7 +65,6 @@ describe('AMQP', function () {
     });
 
     it('Should send message to outgoing channel when process data', function () {
-
         const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
@@ -79,7 +78,12 @@ describe('AMQP', function () {
             }
         };
 
-        amqp.sendData({"content": "Message content"}, props);
+        amqp.sendData({
+            headers: {
+                'some-other-header': 'headerValue'
+            },
+            body: 'Message content'
+        }, props);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(1);
@@ -93,7 +97,12 @@ describe('AMQP', function () {
         ]);
 
         const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
-        expect(payload).toEqual({ content : 'Message content' });
+        expect(payload).toEqual({
+            headers: {
+                'some-other-header': 'headerValue'
+            },
+            body: 'Message content'
+        });
     });
 
     it('Should sendHttpReply to outgoing channel using routing key from headers when process data', function () {
@@ -165,7 +174,6 @@ describe('AMQP', function () {
     });
 
     it('Should send message to outgoing channel using routing key from headers when process data', function () {
-
         const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
@@ -174,17 +182,17 @@ describe('AMQP', function () {
                 'X-EIO-Routing-Key': 'my-special-routing-key'
             },
             body: {
-                "content": "Message content"
+                content: 'Message content'
             }
         };
 
         const props = {
-            contentType : 'application/json',
-            contentEncoding : 'utf8',
-            mandatory : true,
-            headers : {
-                taskId : 'task1234567890',
-                stepId : 'step_456'
+            contentType: 'application/json',
+            contentEncoding: 'utf8',
+            mandatory: true,
+            headers: {
+                taskId: 'task1234567890',
+                stepId: 'step_456'
             }
         };
 
@@ -202,7 +210,12 @@ describe('AMQP', function () {
         ]);
 
         const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
-        expect(payload).toEqual(msg);
+        expect(payload).toEqual({
+            headers: {},
+            body: {
+                content: 'Message content'
+            }
+        });
     });
 
     it('Should send message to errors when process error', function () {
