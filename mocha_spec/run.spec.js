@@ -425,7 +425,7 @@ describe('Integration Test', () => {
                 );
             });
             describe('when startup method returns empty data', () => {
-                it('should delete previous data and execute trigger successfully', (done) => {
+                it('should store an empty object as data and execute trigger successfully', (done) => {
                         let startupRegistrationRequest;
 
                         env.ELASTICIO_FUNCTION = 'startup_with_empty_data';
@@ -448,7 +448,7 @@ describe('Integration Test', () => {
                         // sailor removes data in order to resolve conflict
                         const hooksDataDeleteNock = nock('https://apidotelasticidotio')
                             .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
-                            .reply(204);
+                            .reply(400);
 
 
                         // response for a subscription request, which performed inside of init method
@@ -470,8 +470,8 @@ describe('Integration Test', () => {
                             });
                             expect(startupRegistrationNock.isDone()).to.be.ok;
 
-                            expect(hooksDataNock.isDone()).to.not.be.ok;
-                            expect(hooksDataDeleteNock.isDone()).to.be.ok;
+                            expect(hooksDataNock.isDone()).to.be.ok;
+                            expect(hooksDataDeleteNock.isDone()).to.not.be.ok;
 
 
                             delete properties.headers.start;
