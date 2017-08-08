@@ -507,12 +507,17 @@ describe('Integration Test', () => {
                 );
             });
             describe('when startup method does not exist', () => {
-                it('should run trigger successfully', (done) => {
+                it('should store an empty hooks data and run trigger successfully', (done) => {
 
                         env.ELASTICIO_FUNCTION = 'trigger_with_no_hooks';
 
                         helpers.mockApiTaskStepResponse();
 
+
+                    // sailor persists startup data via sailor-support API
+                    const hooksDataNock = nock('https://apidotelasticidotio')
+                        .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
+                        .reply(201);
 
                         // response for a subscription request, which performed inside of init method
                         nock('https://api.acme.com')
@@ -542,6 +547,8 @@ describe('Integration Test', () => {
                                 originalMsg: inputMessage,
                                 customers: customers
                             });
+
+                            expect(hooksDataNock.isDone()).to.be.ok;
                             done();
                         });
                         run = requireRun();
