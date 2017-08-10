@@ -4,7 +4,6 @@ const rp = require('request-promise-native');
 
 exports.init = initTrigger;
 exports.startup = startup;
-exports.shutdown = shutdown;
 exports.process = processTrigger;
 
 const subscription = {};
@@ -19,8 +18,9 @@ function startup() {
     };
 
     return rp.post(options)
-        .then((body) => {
-            return { subscriptionResult: body };
+        .then(() => {
+            //returns empty data
+            return null;
         });
 }
 

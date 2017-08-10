@@ -6,14 +6,29 @@ const co = require('co');
 exports.disconnect = disconnect;
 
 let sailor;
+let disconnectRequired;
 
 co(function* putOutToSea() {
     sailor = new Sailor(settings);
+
+
+    if (!!settings.HOOK_SHUTDOWN) {
+        disconnectRequired = false;
+        sailor.reportError = () => {
+        };
+        yield sailor.prepare();
+        yield sailor.shutdown();
+        return;
+    }
+
+    disconnectRequired = true;
     yield sailor.connect();
     yield sailor.prepare();
+
     if (!!settings.STARTUP_REQUIRED) {
         yield sailor.startup();
     }
+
     yield sailor.init();
     yield sailor.run();
 }).catch((e) => {
@@ -43,6 +58,9 @@ function disconnect() {
 }
 
 function disconnectAndExit() {
+    if (!disconnectRequired) {
+        return;
+    }
     co(function* putIn() {
         yield disconnect();
         console.log('Successfully disconnected');
