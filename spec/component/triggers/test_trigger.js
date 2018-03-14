@@ -1,10 +1,10 @@
 exports.process = processTrigger;
 
-function processTrigger(msg, cfg){
+function processTrigger(msg, cfg) {
     var that = this;
 
     that.emit('data', 'Data 1');
-    that.emit('data', {content: "Data 2"});
+    that.emit('data', { content: 'Data 2' });
     that.emit('data');
 
 

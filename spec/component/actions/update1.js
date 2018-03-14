@@ -5,7 +5,7 @@ exports.getMetaModel = getMetaModel;
 
 function getMetaModel(cfg) {
     return Promise.resolve({
-        'in': {
+        in: {
             type: 'object',
             properties: {
                 email: {

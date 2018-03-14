@@ -18,10 +18,10 @@ function startup() {
     };
 
     return rp.post(options)
-        .then(() => {
+        .then(() =>
             //returns empty data
-            return null;
-        });
+            null
+        );
 }
 
 function shutdown(cfg, startupData) {
@@ -55,6 +55,7 @@ function initTrigger(cfg) {
 
 function processTrigger(msg, cfg) {
 
+    //eslint-disable-next-line no-invalid-this
     const that = this;
     const options = {
         uri: 'https://api.acme.com/customers',

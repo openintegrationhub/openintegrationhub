@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Sailor', function () {
+describe('Sailor', () => {
     const envVars = {};
     envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
     envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
@@ -18,8 +18,8 @@ describe('Sailor', function () {
     envVars.ELASTICIO_REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
     envVars.ELASTICIO_SNAPSHOT_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:snapshot';
 
-    envVars.ELASTICIO_COMPONENT_PATH='/spec/component';
-    envVars.ELASTICIO_DEBUG='sailor';
+    envVars.ELASTICIO_COMPONENT_PATH = '/spec/component';
+    envVars.ELASTICIO_DEBUG = 'sailor';
 
     envVars.ELASTICIO_API_URI = 'http://apihost.com';
     envVars.ELASTICIO_API_USERNAME = 'test@test.com';
@@ -34,11 +34,11 @@ describe('Sailor', function () {
     const _ = require('lodash');
     const Q = require('q');
 
-    const payload = {param1: "Value1"};
+    const payload = { param1: 'Value1' };
 
     const message = {
         fields: {
-            consumerTag: "abcde",
+            consumerTag: 'abcde',
             deliveryTag: 12345,
             exchange: 'test',
             routingKey: 'test.hello'
@@ -47,9 +47,9 @@ describe('Sailor', function () {
             contentType: 'application/json',
             contentEncoding: 'utf8',
             headers: {
-                taskId: "5559edd38968ec0736000003",
-                execId: "exec1",
-                userId: "5559edd38968ec0736000002"
+                taskId: '5559edd38968ec0736000003',
+                execId: 'exec1',
+                userId: '5559edd38968ec0736000002'
             },
             deliveryMode: undefined,
             priority: undefined,
@@ -67,13 +67,13 @@ describe('Sailor', function () {
         content: new Buffer(encryptor.encryptMessageContent(payload))
     };
 
-    beforeEach(function(){
+    beforeEach(() => {
         settings = require('../lib/settings').readFrom(envVars);
     });
 
-    describe('init', function() {
+    describe('init', () => {
 
-        it('should init properly if developer returned a plain string in init', function(done) {
+        it('should init properly if developer returned a plain string in init', done => {
             settings.FUNCTION = 'init_trigger_returns_string';
 
             const sailor = new Sailor(settings);
@@ -96,7 +96,7 @@ describe('Sailor', function () {
                 })
                 .catch(done);
         });
-        it('should init properly if developer returned a promise', function(done) {
+        it('should init properly if developer returned a promise', done => {
             settings.FUNCTION = 'init_trigger';
 
             const sailor = new Sailor(settings);
@@ -115,7 +115,7 @@ describe('Sailor', function () {
                 .then(() => sailor.init({}))
                 .then((result) =>{
                     expect(result).toEqual({
-                        subscriptionId : '_subscription_123'
+                        subscriptionId: '_subscription_123'
                     });
                     done();
                 })
@@ -123,40 +123,40 @@ describe('Sailor', function () {
         });
     });
 
-    describe('prepare', function() {
+    describe('prepare', () => {
 
-        it('should fail if unable to retrieve step info', function(done) {
+        it('should fail if unable to retrieve step info', done => {
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q.reject(new Error('Cant find step info'));
             });
 
             sailor.prepare()
-                .then(function() {
+                .then(() => {
                     throw new Error('Error is expected');
                 })
-                .catch(function(err) {
+                .catch(err => {
                     expect(err.message).toEqual('Cant find step info');
                     done();
                 });
         });
     });
 
-    describe('disconnection', function() {
-        it('should disconnect Mongo and RabbitMQ, and exit process', function (done) {
-            const fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", ['disconnect']);
+    describe('disconnection', () => {
+        it('should disconnect Mongo and RabbitMQ, and exit process', done => {
+            const fakeAMQPConnection = jasmine.createSpyObj('AMQPConnection', ['disconnect']);
             fakeAMQPConnection.disconnect.andReturn(Q.resolve());
 
-            spyOn(amqp, "Amqp").andReturn(fakeAMQPConnection);
-            spyOn(process, "exit").andReturn(0);
+            spyOn(amqp, 'Amqp').andReturn(fakeAMQPConnection);
+            spyOn(process, 'exit').andReturn(0);
 
             const sailor = new Sailor(settings);
 
             sailor.disconnect()
-                .then(function(){
+                .then(() => {
                     expect(fakeAMQPConnection.disconnect).toHaveBeenCalled();
                     done();
                 })
@@ -164,23 +164,23 @@ describe('Sailor', function () {
         });
     });
 
-    describe('processMessage', function () {
+    describe('processMessage', () => {
         let fakeAMQPConnection;
 
-        beforeEach(function(){
-            fakeAMQPConnection = jasmine.createSpyObj("AMQPConnection", [
+        beforeEach(() => {
+            fakeAMQPConnection = jasmine.createSpyObj('AMQPConnection', [
                 'connect','sendData','sendError','sendRebound','ack','reject',
                 'sendSnapshot', 'sendHttpReply'
             ]);
 
-            spyOn(amqp, "Amqp").andReturn(fakeAMQPConnection);
+            spyOn(amqp, 'Amqp').andReturn(fakeAMQPConnection);
         });
 
-        it('should call sendData() and ack() if success', function (done) {
+        it('should call sendData() and ack() if success', done => {
             settings.FUNCTION = 'data_trigger';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({});
@@ -196,7 +196,7 @@ describe('Sailor', function () {
 
                     const sendDataCalls = fakeAMQPConnection.sendData.calls;
 
-                    expect(sendDataCalls[0].args[0]).toEqual({items: [1,2,3,4,5,6]});
+                    expect(sendDataCalls[0].args[0]).toEqual({ items: [1,2,3,4,5,6] });
                     expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
                     expect(sendDataCalls[0].args[1]).toEqual({
                         contentType: 'application/json',
@@ -224,11 +224,11 @@ describe('Sailor', function () {
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
         });
 
-        it('should call sendData() and ack() only once', function (done) {
+        it('should call sendData() and ack() only once', done => {
             settings.FUNCTION = 'end_after_data_twice';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({});
@@ -252,21 +252,21 @@ describe('Sailor', function () {
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
         });
 
-        it('should augment emitted message with passthrough data', function (done) {
+        it('should augment emitted message with passthrough data', done => {
             settings.FUNCTION = 'passthrough';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
-                return Q({is_passthrough: true});
+                return Q({ is_passthrough: true });
             });
 
             const psPayload = {
                 body: payload,
                 passthrough: {
                     step_0: {
-                        body: {key: 'value'}
+                        body: { key: 'value' }
                     }
                 }
             };
@@ -292,7 +292,7 @@ describe('Sailor', function () {
                                 }
                             },
                             step_1: {
-                                body: {param1: 'Value1'}
+                                body: { param1: 'Value1' }
                             }
                         }
                     });
@@ -324,11 +324,11 @@ describe('Sailor', function () {
         });
 
 
-        it('should send request to API server to update keys', function (done) {
+        it('should send request to API server to update keys', done => {
             settings.FUNCTION = 'keys_trigger';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({
@@ -338,9 +338,9 @@ describe('Sailor', function () {
                 });
             });
 
-            spyOn(sailor.apiClient.accounts, 'update').andCallFake(function(accountId, keys) {
+            spyOn(sailor.apiClient.accounts, 'update').andCallFake((accountId, keys) => {
                 expect(accountId).toEqual('1234567890');
-                expect(keys).toEqual({keys: {oauth: {access_token: 'newAccessToken'}}});
+                expect(keys).toEqual({ keys: { oauth: { access_token: 'newAccessToken' } } });
                 return Q();
             });
 
@@ -360,11 +360,11 @@ describe('Sailor', function () {
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
         });
 
-        it('should emit error if failed to update keys', function (done) {
+        it('should emit error if failed to update keys', done => {
             settings.FUNCTION = 'keys_trigger';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({
@@ -374,9 +374,9 @@ describe('Sailor', function () {
                 });
             });
 
-            spyOn(sailor.apiClient.accounts, 'update').andCallFake(function(accountId, keys) {
+            spyOn(sailor.apiClient.accounts, 'update').andCallFake((accountId, keys) => {
                 expect(accountId).toEqual('1234567890');
-                expect(keys).toEqual({keys: {oauth: {access_token: 'newAccessToken'}}});
+                expect(keys).toEqual({ keys: { oauth: { access_token: 'newAccessToken' } } });
                 return Q.reject(new Error('Update keys error'));
             });
 
@@ -398,11 +398,11 @@ describe('Sailor', function () {
                 .catch(done);
         });
 
-        it('should call sendRebound() and ack()', function (done) {
+        it('should call sendRebound() and ack()', done => {
             settings.FUNCTION = 'rebound_trigger';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({});
@@ -428,11 +428,11 @@ describe('Sailor', function () {
                 .catch(done);
         });
 
-        it('should call sendSnapshot() and ack() after a `snapshot` event', function (done) {
+        it('should call sendSnapshot() and ack() after a `snapshot` event', done => {
             settings.FUNCTION = 'update';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({});
@@ -442,32 +442,32 @@ describe('Sailor', function () {
                 .then(() => sailor.connect())
                 .then(() => {
                     const payload = {
-                        snapshot : {blabla : 'blablabla'}
+                        snapshot: { blabla: 'blablabla' }
                     };
                     return sailor.processMessage(payload, message);
                 })
                 .then(() => {
                     expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
 
-                    const expectedSnapshot = {blabla:'blablabla'};
+                    const expectedSnapshot = { blabla: 'blablabla' };
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
                     expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual(expectedSnapshot);
                     expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1]).toEqual({
-                        contentType : 'application/json',
-                        contentEncoding : 'utf8',
-                        mandatory : true,
-                        headers : {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
                             taskId: '5559edd38968ec0736000003',
                             execId: 'exec1',
-                            userId : '5559edd38968ec0736000002',
+                            userId: '5559edd38968ec0736000002',
                             stepId: 'step_1',
-                            compId : '5559edd38968ec0736000456',
-                            function : 'update',
+                            compId: '5559edd38968ec0736000456',
+                            function: 'update',
                             start: jasmine.any(Number),
                             cid: 1,
-                            snapshotEvent : 'snapshot',
+                            snapshotEvent: 'snapshot',
                             messageId: jasmine.any(String)
                         }
                     });
@@ -480,11 +480,11 @@ describe('Sailor', function () {
                 .catch(done);
         });
 
-        it('should call sendSnapshot() and ack() after an `updateSnapshot` event', function (done) {
+        it('should call sendSnapshot() and ack() after an `updateSnapshot` event', done => {
             settings.FUNCTION = 'update';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({
@@ -498,32 +498,32 @@ describe('Sailor', function () {
                 .then(() => sailor.connect())
                 .then(() => {
                     const payload = {
-                        updateSnapshot : {updated : 'value'}
+                        updateSnapshot: { updated: 'value' }
                     };
                     return sailor.processMessage(payload, message);
                 })
-                .then(function() {
+                .then(() => {
                     expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
 
-                    const expectedSnapshot = {someId: 'someData', updated: 'value'};
+                    const expectedSnapshot = { someId: 'someData', updated: 'value' };
                     expect(fakeAMQPConnection.connect).toHaveBeenCalled();
 
                     expect(fakeAMQPConnection.sendSnapshot.callCount).toBe(1);
-                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual({updated: 'value'});
+                    expect(fakeAMQPConnection.sendSnapshot.calls[0].args[0]).toEqual({ updated: 'value' });
                     expect(fakeAMQPConnection.sendSnapshot.calls[0].args[1]).toEqual({
-                        contentType : 'application/json',
-                        contentEncoding : 'utf8',
-                        mandatory : true,
-                        headers : {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
                             taskId: '5559edd38968ec0736000003',
                             execId: 'exec1',
-                            userId : '5559edd38968ec0736000002',
+                            userId: '5559edd38968ec0736000002',
                             stepId: 'step_1',
-                            compId : '5559edd38968ec0736000456',
-                            function : 'update',
+                            compId: '5559edd38968ec0736000456',
+                            function: 'update',
                             start: jasmine.any(Number),
                             cid: 1,
-                            snapshotEvent : 'updateSnapshot',
+                            snapshotEvent: 'updateSnapshot',
                             messageId: jasmine.any(String)
                         }
                     });
@@ -536,11 +536,11 @@ describe('Sailor', function () {
                 .catch(done);
         });
 
-        it('should send error if error happened', function (done) {
+        it('should send error if error happened', done => {
             settings.FUNCTION = 'error_trigger';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({});
@@ -567,11 +567,11 @@ describe('Sailor', function () {
                 .catch(done);
         });
 
-        it('should send error and reject only once()', function (done) {
+        it('should send error and reject only once()', done => {
             settings.FUNCTION = 'end_after_error_twice';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({});
@@ -596,11 +596,11 @@ describe('Sailor', function () {
                 .catch(done);
         });
 
-        it('should reject message if trigger is missing', function (done) {
+        it('should reject message if trigger is missing', done => {
             settings.FUNCTION = 'missing_trigger';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({});
@@ -616,7 +616,9 @@ describe('Sailor', function () {
 
                     expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
                     expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toMatch(
+                        /* eslint-disable */
                         /Failed to load file \'.\/triggers\/missing_trigger.js\': Cannot find module.+missing_trigger\.js/
+                        /* eslint-enable */
                     );
                     expect(fakeAMQPConnection.sendError.calls[0].args[0].stack).not.toBeUndefined();
                     expect(fakeAMQPConnection.sendError.calls[0].args[2]).toEqual(message.content);
@@ -624,20 +626,20 @@ describe('Sailor', function () {
                     expect(fakeAMQPConnection.reject).toHaveBeenCalled();
                     expect(fakeAMQPConnection.reject.callCount).toEqual(1);
                     expect(fakeAMQPConnection.reject.calls[0].args[0]).toEqual(message);
-                    done()
+                    done();
                 })
                 .catch(done);
         });
 
-        it('should not process message if taskId in header is not equal to task._id', function (done) {
+        it('should not process message if taskId in header is not equal to task._id', done => {
 
             const message2 = _.cloneDeep(message);
-            message2.properties.headers.taskId = "othertaskid";
+            message2.properties.headers.taskId = 'othertaskid';
 
             settings.FUNCTION = 'error_trigger';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({});
@@ -654,11 +656,11 @@ describe('Sailor', function () {
                 .catch(done);
         });
 
-        it('should catch all data calls and all error calls', function (done) {
+        it('should catch all data calls and all error calls', done => {
             settings.FUNCTION = 'datas_and_errors';
             const sailor = new Sailor(settings);
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake(function(taskId, stepId) {
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
                 return Q({});
@@ -689,7 +691,7 @@ describe('Sailor', function () {
                 .catch(done);
         });
 
-        it('should handle errors in httpReply properly', function (done) {
+        it('should handle errors in httpReply properly', done => {
             settings.FUNCTION = 'http_reply';
             const sailor = new Sailor(settings);
 
@@ -716,10 +718,10 @@ describe('Sailor', function () {
                     });
                     expect(sendHttpReplyCalls[0].args[1]).toEqual(jasmine.any(Object));
                     expect(sendHttpReplyCalls[0].args[1]).toEqual({
-                        contentType : 'application/json',
-                        contentEncoding : 'utf8',
-                        mandatory : true,
-                        headers : {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
                             execId: 'exec1',
                             taskId: '5559edd38968ec0736000003',
                             userId: '5559edd38968ec0736000002',
@@ -741,10 +743,10 @@ describe('Sailor', function () {
                     });
                     expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
                     expect(sendDataCalls[0].args[1]).toEqual({
-                        contentType : 'application/json',
-                        contentEncoding : 'utf8',
-                        mandatory : true,
-                        headers : {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
                             execId: 'exec1',
                             taskId: '5559edd38968ec0736000003',
                             userId: '5559edd38968ec0736000002',
@@ -767,7 +769,7 @@ describe('Sailor', function () {
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
         });
 
-        it('should handle errors in httpReply properly', function (done) {
+        it('should handle errors in httpReply properly', done => {
             settings.FUNCTION = 'http_reply';
             const sailor = new Sailor(settings);
 
@@ -798,10 +800,10 @@ describe('Sailor', function () {
                     });
                     expect(sendHttpReplyCalls[0].args[1]).toEqual(jasmine.any(Object));
                     expect(sendHttpReplyCalls[0].args[1]).toEqual({
-                        contentType : 'application/json',
-                        contentEncoding : 'utf8',
-                        mandatory : true,
-                        headers : {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
                             execId: 'exec1',
                             taskId: '5559edd38968ec0736000003',
                             userId: '5559edd38968ec0736000002',
@@ -846,7 +848,7 @@ describe('Sailor', function () {
                     }
                 });
                 throw new Error('Must not be reached');
-            } catch(e) {
+            } catch (e) {
                 expect(e.message).toEqual('ExecId is missing in message header');
             }
         });
@@ -863,7 +865,7 @@ describe('Sailor', function () {
                     }
                 });
                 throw new Error('Must not be reached');
-            } catch(e) {
+            } catch (e) {
                 expect(e.message).toEqual('TaskId is missing in message header');
             }
         });
@@ -881,7 +883,7 @@ describe('Sailor', function () {
                     }
                 });
                 throw new Error('Must not be reached');
-            } catch(e) {
+            } catch (e) {
                 expect(e.message).toEqual('UserId is missing in message header');
             }
         });
@@ -900,7 +902,7 @@ describe('Sailor', function () {
                     }
                 });
                 throw new Error('Must not be reached');
-            } catch(e) {
+            } catch (e) {
                 expect(e.message).toEqual('Message with wrong taskID arrived to the sailor');
             }
         });
@@ -972,10 +974,10 @@ describe('Sailor', function () {
             const sailor = new Sailor(settings);
 
             const headers = {
-                execId: 'my_exec_123',
-                taskId: settings.FLOW_ID,
-                userId: 'my_user_123',
-                reply_to: 'my_reply_to_exchange',
+                'execId': 'my_exec_123',
+                'taskId': settings.FLOW_ID,
+                'userId': 'my_user_123',
+                'reply_to': 'my_reply_to_exchange',
                 'x-eio-meta-lowercase': 'I am lowercase',
                 'X-eio-meta-miXeDcAse': 'Eventually to become lowercase'
             };
@@ -987,10 +989,10 @@ describe('Sailor', function () {
             });
 
             expect(result).toEqual({
-                execId: 'my_exec_123',
-                taskId: settings.FLOW_ID,
-                userId: 'my_user_123',
-                reply_to: 'my_reply_to_exchange',
+                'execId': 'my_exec_123',
+                'taskId': settings.FLOW_ID,
+                'userId': 'my_user_123',
+                'reply_to': 'my_reply_to_exchange',
                 'x-eio-meta-lowercase': 'I am lowercase',
                 'x-eio-meta-mixedcase': 'Eventually to become lowercase'
             });

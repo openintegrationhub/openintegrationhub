@@ -1,15 +1,16 @@
-describe('Executor', function () {
+describe('Executor', () => {
 
     const nock = require('nock');
 
     var TaskExec = require('../lib/executor.js').TaskExec;
-    var payload = {content: "MessageContent"};
+    var payload = { content: 'MessageContent' };
     var cfg = {};
 
-    it('Should execute passthrough trigger and emit all events - data, end', function () {
+    it('Should execute passthrough trigger and emit all events - data, end', () => {
         var taskexec = new TaskExec();
 
-        taskexec.on('error', function(){});
+        //eslint-disable-next-line no-empty-function
+        taskexec.on('error', () => {});
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/passthrough.js');
@@ -27,9 +28,10 @@ describe('Executor', function () {
         });
     });
 
-    it('Should reject if module is missing', function () {
+    it('Should reject if module is missing', () => {
         var taskexec = new TaskExec();
-        taskexec.on('error', function(){});
+        //eslint-disable-next-line no-empty-function
+        taskexec.on('error', () => {});
         spyOn(taskexec, 'emit').andCallThrough();
 
         runs(() => {
@@ -46,9 +48,10 @@ describe('Executor', function () {
         });
     });
 
-    it('Should execute rebound_trigger and emit all events - rebound, end', function () {
+    it('Should execute rebound_trigger and emit all events - rebound, end', () => {
         var taskexec = new TaskExec();
-        taskexec.on('error', function(){});
+        //eslint-disable-next-line no-empty-function
+        taskexec.on('error', () => {});
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/rebound_trigger.js');
@@ -66,40 +69,40 @@ describe('Executor', function () {
         });
     });
 
-    it('Should execute complex trigger, and emit all 6 events', function () {
+    it('Should execute complex trigger, and emit all 6 events', () => {
         var taskexec = new TaskExec();
-        taskexec.on('error', function(){});
+        //eslint-disable-next-line no-empty-function
+        taskexec.on('error', () => {});
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/datas_and_errors.js');
 
-        runs(function(){
+        runs(() => {
             taskexec.process(module, payload, cfg);
         });
 
-        waitsFor(function(){
-            return taskexec.emit.callCount >= 5;
-        });
+        waitsFor(() => taskexec.emit.callCount >= 5);
 
-        runs(function(){
+        runs(() => {
             expect(taskexec.emit).toHaveBeenCalled();
             expect(taskexec.emit.callCount).toEqual(5);
             expect(taskexec.emit.calls[0].args[0]).toEqual('data');
-            expect(taskexec.emit.calls[0].args[1]).toEqual({content: "Data 1"});
+            expect(taskexec.emit.calls[0].args[1]).toEqual({ content: 'Data 1' });
             expect(taskexec.emit.calls[1].args[0]).toEqual('error');
             expect(taskexec.emit.calls[1].args[1].message).toEqual('Error 1');
             expect(taskexec.emit.calls[2].args[0]).toEqual('data');
-            expect(taskexec.emit.calls[2].args[1]).toEqual({content: "Data 2"});
+            expect(taskexec.emit.calls[2].args[1]).toEqual({ content: 'Data 2' });
             expect(taskexec.emit.calls[3].args[0]).toEqual('error');
             expect(taskexec.emit.calls[3].args[1].message).toEqual('Error 2');
             expect(taskexec.emit.calls[4].args[0]).toEqual('data');
-            expect(taskexec.emit.calls[4].args[1]).toEqual({content: "Data 3"});
+            expect(taskexec.emit.calls[4].args[1]).toEqual({ content: 'Data 3' });
         });
     });
 
-    it('Should execute test_trigger and emit all events - 3 data events, 3 errors, 3 rebounds, 1 end', function () {
+    it('Should execute test_trigger and emit all events - 3 data events, 3 errors, 3 rebounds, 1 end', () => {
         var taskexec = new TaskExec();
-        taskexec.on('error', function(){});
+        //eslint-disable-next-line no-empty-function
+        taskexec.on('error', () => {});
         spyOn(taskexec, 'emit').andCallThrough();
 
         var module = require('./component/triggers/test_trigger.js');
@@ -107,14 +110,14 @@ describe('Executor', function () {
 
         waitsFor(() => taskexec.emit.callCount >= 9, 5000);
 
-        runs(function(){
+        runs(() => {
 
             expect(taskexec.emit).toHaveBeenCalled();
 
             var calls = taskexec.emit.calls;
 
             expect(calls[0].args).toEqual(['data', 'Data 1']);
-            expect(calls[1].args).toEqual(['data', {content:'Data 2'}]);
+            expect(calls[1].args).toEqual(['data', { content: 'Data 2' }]);
             expect(calls[2].args).toEqual(['data']);
 
             expect(calls[3].args).toEqual(['error', 'Error 1']);
@@ -135,7 +138,8 @@ describe('Executor', function () {
         it('Should execute a Promise trigger and emit all events - data, end', () => {
             var taskexec = new TaskExec();
 
-            taskexec.on('error', function(){});
+            //eslint-disable-next-line no-empty-function
+            taskexec.on('error', () => {});
             spyOn(taskexec, 'emit').andCallThrough();
 
             var module = require('./component/triggers/promise_trigger.js');
@@ -160,7 +164,8 @@ describe('Executor', function () {
         it('Should execute a Promise.resolve() trigger and emit end', () => {
             var taskexec = new TaskExec();
 
-            taskexec.on('error', function(){});
+            //eslint-disable-next-line no-empty-function
+            taskexec.on('error', () => {});
             spyOn(taskexec, 'emit').andCallThrough();
 
             var module = require('./component/triggers/promise_resolve_no_data.js');
@@ -195,6 +200,7 @@ describe('Executor', function () {
 
             var taskexec = new TaskExec();
 
+            //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
             spyOn(taskexec, 'emit').andCallThrough();
 
@@ -211,8 +217,8 @@ describe('Executor', function () {
                 expect(taskexec.emit.callCount).toEqual(2);
                 expect(taskexec.emit.calls[0].args[0]).toEqual('data');
                 expect(taskexec.emit.calls[0].args[1]).toEqual({
-                    body:{
-                        message : 'Life is good with promises'
+                    body: {
+                        message: 'Life is good with promises'
                     }
                 });
                 expect(taskexec.emit.calls[1].args[0]).toEqual('end');
@@ -233,6 +239,7 @@ describe('Executor', function () {
 
             var taskexec = new TaskExec();
 
+            //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
             spyOn(taskexec, 'emit').andCallThrough();
 
@@ -249,8 +256,8 @@ describe('Executor', function () {
                 expect(taskexec.emit.callCount).toEqual(2);
                 expect(taskexec.emit.calls[0].args[0]).toEqual('data');
                 expect(taskexec.emit.calls[0].args[1]).toEqual({
-                    body:{
-                        message : 'Life is good with generators'
+                    body: {
+                        message: 'Life is good with generators'
                     }
                 });
                 expect(taskexec.emit.calls[1].args[0]).toEqual('end');
@@ -282,6 +289,7 @@ describe('Executor', function () {
 
             var taskexec = new TaskExec();
 
+            //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
             spyOn(taskexec, 'emit').andCallThrough();
 
@@ -304,7 +312,7 @@ describe('Executor', function () {
                 });
                 expect(taskexec.emit.calls[1].args[0]).toEqual('data');
                 expect(taskexec.emit.calls[1].args[1]).toEqual({
-                    body:{
+                    body: {
                         result: [
                             {
                                 email: 'homer.simpson@acme.org'
@@ -324,6 +332,7 @@ describe('Executor', function () {
         it('should work', () => {
             const taskexec = new TaskExec();
 
+            //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
             spyOn(taskexec, 'emit').andCallThrough();
 

@@ -1,27 +1,26 @@
-describe('Component reader', function () {
+describe('Component reader', () => {
 
     var ComponentReader = require('../lib/component_reader.js').ComponentReader;
 
-    it('Should find component located on the path', function() {
+    it('Should find component located on the path', () => {
 
         var reader = new ComponentReader();
         var promise = reader.init('/spec/component/');
 
-        waitsFor(function(){
-            return promise.isFulfilled() || promise.isRejected();
-        }, 10000);
+        waitsFor(() => promise.isFulfilled() || promise.isRejected(), 10000);
 
-        runs(function(){
+        runs(() => {
             expect(promise.isFulfilled()).toEqual(true);
             expect(reader.componentJson.title).toEqual('Client component');
         });
     });
 
-    it('Should find component trigger', function() {
+    it('Should find component trigger', () => {
 
         var reader = new ComponentReader();
-        var filename, error;
-        reader.init('/spec/component/').then(function(){
+        var filename;
+        var error;
+        reader.init('/spec/component/').then(() => {
             try {
                 filename = reader.findTriggerOrAction('passthrough');
             } catch (err) {
@@ -29,22 +28,21 @@ describe('Component reader', function () {
             }
         });
 
-        waitsFor(function(){
-            return filename || error;
-        }, 10000);
+        waitsFor(() => filename || error, 10000);
 
-        runs(function(){
+        runs(() => {
             expect(reader.componentJson.title).toEqual('Client component');
             expect(filename).toContain('triggers/passthrough.js');
         });
     });
 
-    it('Should return error if trigger not found', function() {
+    it('Should return error if trigger not found', () => {
 
         var reader = new ComponentReader();
-        var filename, error;
+        var filename;
+        var error;
 
-        reader.init('/spec/component/').then(function(){
+        reader.init('/spec/component/').then(() => {
             try {
                 filename = reader.findTriggerOrAction('some-missing-component');
             } catch (err) {
@@ -52,50 +50,43 @@ describe('Component reader', function () {
             }
         });
 
-        waitsFor(function(){
-            return filename || error;
-        }, 10000);
+        waitsFor(() => filename || error, 10000);
 
-        runs(function(){
+        runs(() => {
             expect(error.message).toEqual('Trigger or action "some-missing-component" is not found in component.json!');
         });
     });
 
-    it('Should return appropriate error if trigger file is missing', function() {
+    it('Should return appropriate error if trigger file is missing', () => {
 
         var reader = new ComponentReader();
 
-        var promise = reader.init('/spec/component/').then(function(){
-            return reader.loadTriggerOrAction('missing_trigger');
-        });
+        var promise = reader.init('/spec/component/')
+            .then(() => reader.loadTriggerOrAction('missing_trigger'));
 
-        waitsFor(function(){
-            return promise.isFulfilled() || promise.isRejected();
-        }, 10000);
+        waitsFor(() => promise.isFulfilled() || promise.isRejected(), 10000);
 
-        runs(function(){
+        runs(() => {
             expect(promise.isRejected()).toEqual(true);
             var err = promise.inspect().reason;
             expect(err.message).toMatch(
+                //eslint-disable-next-line no-useless-escape
                 /Failed to load file \'.\/triggers\/missing_trigger.js\': Cannot find module.+missing_trigger\.js/
             );
             expect(err.code).toEqual('MODULE_NOT_FOUND');
         });
     });
 
-    it('Should return appropriate error if missing dependency is required by module', function() {
+    it('Should return appropriate error if missing dependency is required by module', () => {
 
         var reader = new ComponentReader();
 
-        var promise = reader.init('/spec/component/').then(function(){
-            return reader.loadTriggerOrAction('trigger_with_wrong_dependency');
-        });
+        var promise = reader.init('/spec/component/')
+            .then(() => reader.loadTriggerOrAction('trigger_with_wrong_dependency'));
 
-        waitsFor(function(){
-            return promise.isFulfilled() || promise.isRejected();
-        }, 10000);
+        waitsFor(() => promise.isFulfilled() || promise.isRejected(), 10000);
 
-        runs(function(){
+        runs(() => {
             expect(promise.isRejected()).toEqual(true);
             var err = promise.inspect().reason;
             expect(err.message).toEqual(
@@ -106,32 +97,30 @@ describe('Component reader', function () {
         });
     });
 
-    it('Should return appropriate error if trigger file is presented, but contains syntax error', function() {
+    it('Should return appropriate error if trigger file is presented, but contains syntax error', () => {
 
         var reader = new ComponentReader();
 
-        var promise = reader.init('/spec/component/').then(function() {
-            return reader.loadTriggerOrAction('syntax_error_trigger');
-        });
+        var promise = reader.init('/spec/component/')
+            .then(() => reader.loadTriggerOrAction('syntax_error_trigger'));
 
-        waitsFor(function() {
-            return promise.isFulfilled() || promise.isRejected();
-        }, 10000);
+        waitsFor(() => promise.isFulfilled() || promise.isRejected(), 10000);
 
-        runs(function() {
+        runs(() => {
             expect(promise.isRejected()).toEqual(true);
             var err = promise.inspect().reason;
             expect(err.message).toEqual(
-                "Trigger or action 'syntax_error_trigger' is found, but can not be loaded. " +
-                "Please check if the file './triggers/syntax_error_trigger.js' is correct."
+                "Trigger or action 'syntax_error_trigger' is found, but can not be loaded. "
+                + "Please check if the file './triggers/syntax_error_trigger.js' is correct."
             );
         });
     });
 
-    it('Should return error if trigger not initialized', function() {
+    it('Should return error if trigger not initialized', () => {
 
         var reader = new ComponentReader();
-        var filename, error;
+        var filename;
+        var error;
 
         try {
             filename = reader.findTriggerOrAction('some-missing-component');
@@ -139,12 +128,10 @@ describe('Component reader', function () {
             error = err;
         }
 
-        waitsFor(function(){
-            return filename || error;
-        }, 10000);
+        waitsFor(() => filename || error, 10000);
 
-        runs(function(){
-            expect(error.message).toEqual("Component.json was not loaded");
+        runs(() => {
+            expect(error.message).toEqual('Component.json was not loaded');
         });
     });
 

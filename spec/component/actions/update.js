@@ -9,7 +9,7 @@ exports.promiseSelectModel = promiseSelectModel;
 exports.promiseRequestSelectModel = promiseRequestSelectModel;
 exports.promiseSelectModelRejected = promiseSelectModelRejected;
 
-function processAction(msg, cfg, snapshot){
+function processAction(msg, cfg, snapshot) {
     if (msg.snapshot) {
         this.emit('snapshot', msg.snapshot);
     }
@@ -21,7 +21,7 @@ function processAction(msg, cfg, snapshot){
 
 function getMetaModel(cfg, cb) {
     return cb(null, {
-        'in': {
+        in: {
             type: 'object',
             properties: {
                 name: {
@@ -42,7 +42,7 @@ function getModel(cfg, cb) {
 }
 
 function getModelWithKeysUpdate(cfg, cb) {
-    this.emit('updateKeys', {oauth: {access_token: 'newAccessToken'}});
+    this.emit('updateKeys', { oauth: { access_token: 'newAccessToken' } });
     return cb(null, {
         0: 'Mr',
         1: 'Mrs'

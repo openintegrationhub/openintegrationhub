@@ -12,8 +12,10 @@ co(function* putOutToSea() {
     sailor = new Sailor(settings);
 
 
+    //eslint-disable-next-line no-extra-boolean-cast
     if (!!settings.HOOK_SHUTDOWN) {
         disconnectRequired = false;
+        //eslint-disable-next-line no-empty-function
         sailor.reportError = () => {
         };
         yield sailor.prepare();
@@ -25,6 +27,7 @@ co(function* putOutToSea() {
     yield sailor.connect();
     yield sailor.prepare();
 
+    //eslint-disable-next-line no-extra-boolean-cast
     if (!!settings.STARTUP_REQUIRED) {
         yield sailor.startup();
     }
@@ -52,7 +55,7 @@ process.on('uncaughtException', logging.criticalError);
 
 function disconnect() {
     return co(function* putIn() {
-        console.log("Disconnecting");
+        console.log('Disconnecting');
         return yield sailor.disconnect();
     });
 }

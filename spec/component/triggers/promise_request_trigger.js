@@ -13,9 +13,7 @@ function processTrigger(msg, cfg) {
 
     return Q.ninvoke(request, 'get', options)
         .spread((req, body) => body)
-        .then((data) => {
-            return {
-                body: data
-            };
-        });
+        .then((data) => ({
+            body: data
+        }));
 }

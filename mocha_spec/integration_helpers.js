@@ -40,11 +40,11 @@ class AmqpHelper extends EventEmitter {
             new Buffer(JSON.stringify(message)),
             {
                 headers: Object.assign({
-                    execId: env.ELASTICIO_EXEC_ID,
-                    taskId: env.ELASTICIO_FLOW_ID,
-                    userId: env.ELASTICIO_USER_ID,
+                    'execId': env.ELASTICIO_EXEC_ID,
+                    'taskId': env.ELASTICIO_FLOW_ID,
+                    'userId': env.ELASTICIO_USER_ID,
                     'x-eio-meta-trace-id': traceId,
-                    messageId: parentMessageId
+                    'messageId': parentMessageId
                 }, headers)
             });
     }
@@ -99,7 +99,7 @@ class AmqpHelper extends EventEmitter {
         return Promise.all([
             this.publishChannel.cancel('sailor_nodejs_1'),
             this.publishChannel.cancel('sailor_nodejs_2'),
-            this.publishChannel.cancel('sailor_nodejs_3'),
+            this.publishChannel.cancel('sailor_nodejs_3')
         ]);
     }
 
@@ -151,6 +151,7 @@ class AmqpHelper extends EventEmitter {
 function amqp() {
 
     const handle = {
+        //eslint-disable-next-line no-empty-function
         getMessages() {
 
         }

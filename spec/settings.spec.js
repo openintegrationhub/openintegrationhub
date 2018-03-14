@@ -1,14 +1,14 @@
-describe('Settings', function () {
+describe('Settings', () => {
 
     var settings = require('../lib/settings.js');
 
-    it('should throw error if no important settings provided', function () {
-        expect(function(){
+    it('should throw error if no important settings provided', () => {
+        expect(() => {
             settings.readFrom({});
         }).toThrow('ELASTICIO_FLOW_ID is missing');
     });
 
-    it('should not throw error if all important settings provided', function () {
+    it('should not throw error if all important settings provided', () => {
 
         var envVars = {};
         envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
@@ -35,7 +35,7 @@ describe('Settings', function () {
         expect(result.LISTEN_MESSAGES_ON).toEqual('5559edd38968ec0736000003:step_1:1432205514864:messages');
     });
 
-    it('should support also numbers as a settings parameter', function () {
+    it('should support also numbers as a settings parameter', () => {
 
         var envVars = {};
         envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
@@ -58,7 +58,7 @@ describe('Settings', function () {
         envVars.ELASTICIO_API_USERNAME = 'test@test.com';
         envVars.ELASTICIO_API_KEY = '5559edd';
 
-        envVars.ELASTICIO_RABBITMQ_PREFETCH_SAILOR = "20";
+        envVars.ELASTICIO_RABBITMQ_PREFETCH_SAILOR = '20';
 
         var result = settings.readFrom(envVars);
         expect(result.LISTEN_MESSAGES_ON).toEqual('5559edd38968ec0736000003:step_1:1432205514864:messages');
