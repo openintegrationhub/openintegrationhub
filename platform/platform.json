@@ -1,0 +1,557 @@
+{
+    "apiVersion": "v1",
+    "kind": "List",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "name": "platform"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "name": "flows"
+            }
+        },
+        {
+            "apiVersion": "apiextensions.k8s.io/v1beta1",
+            "kind": "CustomResourceDefinition",
+            "metadata": {
+                "name": "flows.elastic.io",
+                "namespace": "flows"
+            },
+            "spec": {
+                "group": "elastic.io",
+                "names": {
+                    "kind": "Flow",
+                    "listKind": "FlowList",
+                    "plural": "flows",
+                    "shortNames": [],
+                    "singular": "flow"
+                },
+                "scope": "Namespaced",
+                "version": "v1"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ServiceAccount",
+            "metadata": {
+                "name": "flows-operator-account",
+                "namespace": "platform"
+            }
+        },
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "Role",
+            "metadata": {
+                "name": "flows-operator-role",
+                "namespace": "flows"
+            },
+            "rules": [
+                {
+                    "apiGroups": [
+                        "batch"
+                    ],
+                    "resources": [
+                        "jobs",
+                        "cronjobs"
+                    ],
+                    "verbs": [
+                        "create",
+                        "delete",
+                        "deletecollection",
+                        "get",
+                        "list",
+                        "patch",
+                        "update",
+                        "watch"
+                    ]
+                },
+                {
+                    "apiGroups": [
+                        ""
+                    ],
+                    "resources": [
+                        "configmaps"
+                    ],
+                    "verbs": [
+                        "get",
+                        "list"
+                    ]
+                },
+                {
+                    "apiGroups": [
+                        "apiextensions.k8s.io"
+                    ],
+                    "resources": [
+                        "customresourcedefinitions"
+                    ],
+                    "verbs": [
+                        "create",
+                        "delete",
+                        "deletecollection",
+                        "get",
+                        "list",
+                        "patch",
+                        "update",
+                        "watch"
+                    ]
+                },
+                {
+                    "apiGroups": [
+                        "elastic.io"
+                    ],
+                    "resources": [
+                        "flows"
+                    ],
+                    "verbs": [
+                        "create",
+                        "delete",
+                        "deletecollection",
+                        "get",
+                        "list",
+                        "patch",
+                        "update",
+                        "watch"
+                    ]
+                }
+            ]
+        },
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "ClusterRole",
+            "metadata": {
+                "name": "flows-operator-clusterrole"
+            },
+            "rules": [
+                {
+                    "apiGroups": [
+                        "apiextensions.k8s.io"
+                    ],
+                    "resources": [
+                        "customresourcedefinitions"
+                    ],
+                    "verbs": [
+                        "create",
+                        "delete",
+                        "deletecollection",
+                        "get",
+                        "list",
+                        "patch",
+                        "update",
+                        "watch"
+                    ]
+                }
+            ]
+        },
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "flows-operator-rolebinding",
+                "namespace": "flows"
+            },
+            "roleRef": {
+                "apiGroup": "rbac.authorization.k8s.io",
+                "kind": "Role",
+                "name": "flows-operator-role"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "flows-operator-account",
+                    "namespace": "platform"
+                }
+            ]
+        },
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "ClusterRoleBinding",
+            "metadata": {
+                "name": "flows-operator-clusterrolebinding"
+            },
+            "roleRef": {
+                "apiGroup": "rbac.authorization.k8s.io",
+                "kind": "ClusterRole",
+                "name": "flows-operator-clusterrole"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "flows-operator-account",
+                    "namespace": "platform"
+                }
+            ]
+        },
+        {
+            "kind": "Deployment",
+            "apiVersion": "apps/v1",
+            "metadata": {
+                "name": "flows-operator",
+                "namespace": "platform",
+                "labels": {
+                    "app": "flows-operator"
+                }
+            },
+            "spec": {
+                "replicas": 1,
+                "selector": {
+                    "matchLabels": {
+                        "app": "flows-operator"
+                    }
+                },
+                "template": {
+                    "metadata": {
+                        "name": "flows-operator",
+                        "labels": {
+                            "app": "flows-operator"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "flows-operator",
+                                "image": "openintegrationhub/flows-operator:latest",
+                                "env": [
+                                    {
+                                        "name": "LISTEN_PORT",
+                                        "value": "1234"
+                                    },
+                                    {
+                                        "name": "RABBITMQ_URI",
+                                        "value": "amqp://guest:guest@rabbitmq-service.platform.svc.cluster.local"
+                                    },
+                                    {
+                                        "name": "SELF_URL",
+                                        "value": "http://api-service.platform.svc.cluster.local"
+                                    }
+                                ],
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File",
+                                "imagePullPolicy": "Always",
+                                "securityContext": {
+                                    "privileged": false
+                                },
+                                "livenessProbe": {
+                                    "httpGet": {
+                                        "path": "/healthcheck",
+                                        "port": 1234
+                                    }
+                                },
+                                "readinessProbe": {
+                                    "httpGet": {
+                                        "path": "/healthcheck",
+                                        "port": 1234
+                                    }
+                                }
+                            }
+                        ],
+                        "serviceAccountName": "flows-operator-account",
+                        "restartPolicy": "Always",
+                        "terminationGracePeriodSeconds": 30
+                    }
+                },
+                "strategy": {
+                    "type": "RollingUpdate",
+                    "rollingUpdate": {
+                        "maxUnavailable": 1,
+                        "maxSurge": 1
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "labels": {
+                    "app": "api-service"
+                },
+                "name": "api-service",
+                "namespace": "platform"
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "1234",
+                        "port": 1234,
+                        "protocol": "TCP",
+                        "targetPort": 1234
+                    }
+                ],
+                "selector": {
+                    "app": "flows-operator"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            }
+        },
+        {
+            "kind": "Deployment",
+            "apiVersion": "apps/v1",
+            "metadata": {
+                "name": "scheduler",
+                "namespace": "platform",
+                "labels": {
+                    "app": "scheduler"
+                }
+            },
+            "spec": {
+                "replicas": 1,
+                "selector": {
+                    "matchLabels": {
+                        "app": "scheduler"
+                    }
+                },
+                "template": {
+                    "metadata": {
+                        "name": "scheduler",
+                        "labels": {
+                            "app": "scheduler"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "scheduler",
+                                "image": "openintegrationhub/scheduler:latest",
+                                "env": [
+                                    {
+                                        "name": "RABBITMQ_URI",
+                                        "value": "amqp://guest:guest@rabbitmq-service.platform.svc.cluster.local"
+                                    },
+                                    {
+                                        "name": "LISTEN_PORT",
+                                        "value": "1234"
+                                    }
+                                ],
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File",
+                                "imagePullPolicy": "Always",
+                                "livenessProbe": {
+                                    "httpGet": {
+                                        "path": "/healthcheck",
+                                        "port": 1234
+                                    }
+                                },
+                                "readinessProbe": {
+                                    "httpGet": {
+                                        "path": "/healthcheck",
+                                        "port": 1234
+                                    }
+                                },
+                                "securityContext": {
+                                    "privileged": false
+                                }
+                            }
+                        ],
+                        "serviceAccountName": "flows-operator-account",
+                        "restartPolicy": "Always",
+                        "terminationGracePeriodSeconds": 30
+                    }
+                },
+                "strategy": {
+                    "type": "RollingUpdate",
+                    "rollingUpdate": {
+                        "maxUnavailable": 1,
+                        "maxSurge": 1
+                    }
+                }
+            }
+        },
+        {
+            "kind": "Deployment",
+            "apiVersion": "apps/v1",
+            "metadata": {
+                "name": "communication-router",
+                "namespace": "platform",
+                "labels": {
+                    "app": "communication-router"
+                }
+            },
+            "spec": {
+                "replicas": 1,
+                "selector": {
+                    "matchLabels": {
+                        "app": "communication-router"
+                    }
+                },
+                "template": {
+                    "metadata": {
+                        "name": "communication-router",
+                        "labels": {
+                            "app": "communication-router"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "communication-router",
+                                "image": "openintegrationhub/communication-router:latest",
+                                "env": [
+                                    {
+                                        "name": "RABBITMQ_URI",
+                                        "value": "amqp://guest:guest@rabbitmq-service.platform.svc.cluster.local"
+                                    },
+                                    {
+                                        "name": "LISTEN_PORT",
+                                        "value": "1234"
+                                    },
+                                    {
+                                        "name": "LOG_LEVEL",
+                                        "value": "trace"
+                                    }
+                                ],
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File",
+                                "imagePullPolicy": "Always",
+                                "livenessProbe": {
+                                    "httpGet": {
+                                        "path": "/healthcheck",
+                                        "port": 1234
+                                    }
+                                },
+                                "readinessProbe": {
+                                    "httpGet": {
+                                        "path": "/healthcheck",
+                                        "port": 1234
+                                    }
+                                },
+                                "securityContext": {
+                                    "privileged": false
+                                }
+                            }
+                        ],
+                        "serviceAccountName": "flows-operator-account",
+                        "restartPolicy": "Always",
+                        "terminationGracePeriodSeconds": 30
+                    }
+                },
+                "strategy": {
+                    "type": "RollingUpdate",
+                    "rollingUpdate": {
+                        "maxUnavailable": 1,
+                        "maxSurge": 1
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "labels": {
+                    "app": "communication-router-service"
+                },
+                "name": "communication-router-service",
+                "namespace": "platform"
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "1234",
+                        "port": 1234,
+                        "protocol": "TCP",
+                        "targetPort": 1234
+                    }
+                ],
+                "selector": {
+                    "app": "communication-router"
+                },
+                "type": "NodePort"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "labels": {
+                    "app": "rabbitmq-service"
+                },
+                "name": "rabbitmq-service",
+                "namespace": "platform"
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "5672",
+                        "port": 5672,
+                        "protocol": "TCP",
+                        "targetPort": 5672
+                    },
+                    {
+                        "name": "15672",
+                        "port": 15672,
+                        "protocol": "TCP",
+                        "targetPort": 15672
+                    }
+                ],
+                "selector": {
+                    "app": "rabbitmq"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            }
+        },
+        {
+            "kind": "Deployment",
+            "apiVersion": "apps/v1",
+            "metadata": {
+                "name": "rabbitmq",
+                "namespace": "platform",
+                "labels": {
+                    "app": "rabbitmq"
+                }
+            },
+            "spec": {
+                "replicas": 1,
+                "selector": {
+                    "matchLabels": {
+                        "app": "rabbitmq"
+                    }
+                },
+                "template": {
+                    "metadata": {
+                        "name": "rabbitmq",
+                        "labels": {
+                            "app": "rabbitmq"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "rabbitmq",
+                                "image": "rabbitmq:management",
+                                "envFrom": [],
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File",
+                                "imagePullPolicy": "Always",
+                                "securityContext": {
+                                    "privileged": false
+                                },
+                                "livenessProbe": {
+                                    "tcpSocket": {
+                                        "port": 5672
+                                    }
+                                }
+                            }
+                        ],
+                        "restartPolicy": "Always",
+                        "terminationGracePeriodSeconds": 30
+                    }
+                },
+                "strategy": {
+                    "type": "RollingUpdate",
+                    "rollingUpdate": {
+                        "maxUnavailable": 1,
+                        "maxSurge": 1
+                    }
+                }
+            }
+        }
+    ]
+}
