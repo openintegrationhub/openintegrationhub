@@ -1,0 +1,423 @@
+swagger: '2.0'
+info:
+  description: |
+    This is the API for the Open Integration Hub Microservice "Integration Content Repository"
+    [http://openintegrationhub.de](http://openintegrationhub.de)
+  version: 0.0.1
+  title: Integration Content Repository
+  termsOfService: http://openintegrationhub.de/terms/
+  contact:
+    email: hschmidt@wice.de
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: localhost:3001
+basePath: /api
+tags:
+- name: flows
+  description: Operations about flows
+  externalDocs:
+    description: Find out more
+    url: http://openintegrationhub.de
+# schemes:
+# - http
+paths:
+  /flow:
+    get:
+      x-swagger-router-controller: flow
+      tags:
+      - flows
+      summary: Get the flows from the repository
+      operationId: getFlows
+      produces:
+      - application/json
+      responses:
+        200:
+          description: List of Flows
+          schema:
+            $ref: '#/definitions/FlowResponse'
+        404:
+          description: No flows found
+    post:
+      x-swagger-router-controller: flow
+      tags:
+      - flows
+      summary: Add a new flow to the repository
+      operationId: addFlow
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Flow object that needs to be added to the repository
+        required: true
+        schema:
+          $ref: '#/definitions/FlowRequest'
+      responses:
+        200:
+          description: The new Flow
+          schema:
+            $ref: '#/definitions/FlowResponse'
+        405:
+          description: Invalid input
+    put:
+      x-swagger-router-controller: flow
+      tags:
+      - flows
+      summary: Update an existing flow
+      operationId: updateFlow
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Flow object that needs to be updated in the repository
+        required: true
+        schema:
+          $ref: '#/definitions/FlowRequest'
+      responses:
+        200:
+          description: The updated Flow
+          schema:
+            $ref: '#/definitions/FlowResponse'
+        404:
+          description: Flow not found
+
+  /flow/{oihid}:
+    get:
+      x-swagger-router-controller: flow
+      tags:
+      - flows
+      summary: Find flow by ID
+      description: Returns a single flow
+      operationId: getFlowById
+      produces:
+      - application/json
+      parameters:
+      - name: oihid
+        in: path
+        description: ID of flow to return
+        required: true
+        type: string
+        format: string
+      responses:
+        200:
+          description: Returns the flow
+          schema:
+            $ref: '#/definitions/FlowResponse'
+        404:
+          description: flow not found
+    post:
+      x-swagger-router-controller: flow
+      tags:
+      - flows
+      summary: Updates a flow with form data
+      operationId: updateFlowWithForm
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: oihid
+        in: path
+        description: ID of flow that needs to be updated
+        required: true
+        type: string
+        format: string
+      - name: flow
+        in: formData
+        description: Updated ID of the flow
+        type: string
+        format: string
+      - name: name
+        in: formData
+        description: Updated name of the flow
+        required: false
+        type: string
+        format: string
+      - name: status
+        in: formData
+        type: string
+        description: Updated status of the flow
+      - name: current_status
+        in: formData
+        type: string
+        description: New current status of the flow
+      responses:
+        200:
+          description: The updated Flow
+          schema:
+            $ref: '#/definitions/FlowResponse'
+        405:
+          description: Invalid input
+    delete:
+      x-swagger-router-controller: flow
+      tags:
+      - flows
+      summary: Deletes a flow
+      operationId: deleteFlow
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: oihid
+        in: path
+        description: Flow id to delete
+        required: true
+        type: string
+        format: string
+      responses:
+        200:
+          description: The deleted Flow
+          schema:
+            $ref: '#/definitions/FlowResponse'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Flow not found
+
+definitions:
+  FlowRequest:
+    type: object
+    required:
+    - name
+    properties:
+      type:
+        type: string
+        example: flow
+      oihid:
+        type: string
+        example: "123456"
+      name:
+        type: string
+        example: WiceToSnazzy
+      status:
+        type: string
+        example: active
+      current_status:
+        type: string
+        example: active
+      default_mapper_type:
+        type: string
+        example: jsonata
+      description:
+        type: string
+        example: A description
+
+  FlowResponse:
+    type: object
+    properties:
+      type:
+        type: string
+        example: flow
+      oihid:
+        type: integer
+        format: int64
+        example: 123456
+      links:
+        type: object
+        properties:
+          self:
+            type: string
+            example: "/v1/flows/123456"
+      attributes:
+        $ref: "#/definitions/attributes"
+
+  attributes:
+    type: object
+    properties:
+      name:
+        type: string
+        example: WiceToSnazzy
+      status:
+        type: string
+        example: inactive
+      type:
+        type: string
+        example: ordinary
+      created_at:
+        type: string
+        example: '2018-06-11T15:39:02.825Z'
+      current_status:
+        type: string
+        example: inactive
+      default_mapper_type:
+        type: string
+        example: jsonata
+      description:
+        type: string
+        example: ''
+      updated_at:
+        type: string
+        example: '2018-06-11T15:39:02.825Z'
+
+  graph:
+        type: object
+        properties:
+          nodes:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: step_1
+                command:
+                  type: string
+                  example: oih/timer:timer
+                name:
+                  type: string
+                  example: ''
+                description:
+                  type: string
+                  example: ''
+                fields:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      interval:
+                        type: string
+                        example: minute
+          edges:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: mapper:step_1:step_2
+                config:
+                  type: object
+                  properties:
+                    mapper_type:
+                      type: string
+                      example: jsonata
+                    condition:
+                      type: string
+                      example: ''
+                    mapper:
+                      type: object
+                      properties:
+                        to:
+                          type: string
+                          example: '"test@example.com"'
+                        subject:
+                          type: string
+                          example: '"StrongMapper"'
+                        textBody:
+                          type: string
+                          example: Address.Street
+                    source:
+                      type: string
+                      example: step_1
+                    target:
+                      type: string
+                      example: step_2
+
+  relationships:
+        type: object
+        properties:
+          user:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: user
+                  id:
+                    type: integer
+                    format: int64
+                    example: 12345
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/v1/users/12345"
+          organization:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: organization
+                  id:
+                    type: integer
+                    format: int64
+                    example: 12345
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/v1/organizations/12345"
+          versions:
+            type: object
+            properties:
+              links:
+                type: object
+                properties:
+                  related:
+                    type: string
+                    example: "/v1/flows/123456/versions"
+          latest_version:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    example: 12345
+                  type:
+                    type: string
+                    example: flow-version
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/v1/flows/123456/versions/12345"
+                      related:
+                        type: string
+                        example: "/v1/flows/123456/versions/12345"
+
+  meta:
+    type: object
+    properties:
+      page:
+        type: integer
+        format: int64
+        example: 1
+      per_page:
+        type: integer
+        format: int64
+        example: 10
+      total_pages:
+        type: integer
+        format: int64
+        example: 1
+      links:
+        type: object
+        properties:
+          self:
+            type: string
+            example: "v1/flows"
+
+
+externalDocs:
+  description: Find out more about the Integration Content Repository
+  url: https://github.com/openintegrationhub

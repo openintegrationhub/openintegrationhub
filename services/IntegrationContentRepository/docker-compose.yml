@@ -1,0 +1,54 @@
+# Docker Compose for Integration Content Repository Microservice
+version: '3'
+
+services:
+  # This is our base OS
+  ubuntubase:
+    container_name: ubuntu-base # you can call the container by its name
+    build: ./ubuntu-base # path to dockerfile
+    image: icr_ubuntubase    
+  # This is our reverse proxy
+  nginxreverseproxy:
+    container_name: nginx-reverse-proxy
+    build: ./nginx-reverse-proxy
+    ports:
+      - "8084:8084" #expose ports - HOST:CONTAINER
+      - "3001:3001"
+    depends_on:
+      - nginxserver
+    restart: always
+    volumes:
+      - ./logs/:/var/log/nginx/ # we want the logs on the host
+  # This our webservice for the API
+  nginxserver:
+    #depends_on:
+    #  - nginxreverseproxy
+    container_name: nginxserver
+    build: ./nginx-server
+    restart: always
+    # mounting icr-files inside nginxserver
+    volumes:
+      - ./icr-api/html/:/usr/share/nginx/html/
+      - ./logs/:/var/log/nginx/
+  # This is our nodeJS API
+  icrapi:
+    container_name: icrapi
+    build: ./icr-api
+    command: nodemon server.js # overrides CMD in Dockerfile
+    volumes:
+      # We want our code to be accessible, so we mount it in the container
+      - ./icr-api/app/:/usr/src/app/
+      # anonymous volume: this prevents node_modules to be overridden by the previous step
+      - /usr/src/app/node_modules
+    links:
+      - nginxserver
+      - mongo
+  # This is our MongoDB
+  mongo:
+    container_name: mongo
+    build: ./mongo
+    volumes:
+      - ./logs/:/var/log/mongodb
+      - ./mongo/data/:/data/db
+    ports:
+      - "27017:27017"
