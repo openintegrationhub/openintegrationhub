@@ -12,14 +12,14 @@
     "postpublish": "./postpublish.js"
   },
   "engines": {
-    "node": ">=5.11.x"
+    "node": "8.1.0"
   },
   "dependencies": {
     "amqplib": "0.5.1",
     "bunyan": "^1.8.10",
     "co": "4.6.0",
     "debug": "3.1.0",
-    "elasticio-rest-node": "1.0.2",
+    "elasticio-rest-node": "1.2.0",
     "lodash": "4.17.4",
     "q": "1.4.1",
     "request-promise-native": "^1.0.3",
