@@ -1,0 +1,29 @@
+{
+  "restartable": "rs",
+  "verbose": true,
+  "execMap": {
+    "js": "node --harmony"
+  },
+  "events": {
+    "restart": ""
+  },
+  "watch": [
+    "src/**"
+  ],
+  "env": {
+    "IAM_BASEURL": "https://127.0.0.1:3099",
+    "IAM_SERVICE_CLIENT_ID": "5f927389-1d8f-417b-b552-3ae78d708bb5",
+    "IAM_SERVICE_CLIENT_SECRET": "YOUR_SECRET",
+    "IAM_ACC_SERVICEACCOUNT_USERNAME":"service-heimdal@example.com",
+    "IAM_ACC_SERVICEACCOUNT_PASSWORD":"abcDEF1$",
+    "IAM_ACC_ADMIN_USERNAME": "admin@example.com",
+    "IAM_ACC_ADMIN_PASSWORD": "admin",
+    "IAM_AUTH_TYPE": "oidc",
+    "NODE_ENV": "development",
+    "IAM_PORT": 3099,
+    "IAM_JWTSECRET": "s0me_r4nodm-String!",
+    "IAM_USE_SSL": "true",
+    "IAM_DEBUG": "true"
+  },
+  "ext": "js json pug css"
+}

@@ -1,0 +1,43 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+
+# testing
+coverage
+
+# production
+build
+
+# misc
+.DS_Store
+.env
+.idea
+npm-debug.log
+nodemon.json
+*.store
+/uploads/*
+/assets
+
+/logs/*
+
+/src/**/*.css
+/src/conf/conf.json
+
+*error.log
+**/*.gv
+
+jest_*
+
+mockgoose*
+
+# environment settings
+.env
+.gccreds
+.nodemon-env
+keystore.json
+
+clients.json
+
+/src/app/dev/*.pem
+/src/app/dev/*.pem

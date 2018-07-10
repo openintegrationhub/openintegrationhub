@@ -1,0 +1,87 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: oih-iam
+  namespace: oih-dev-ns
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: oih-iam
+    spec:
+      containers:
+      - name: oih-iam
+        image: dockerhub.com/oih/oih-iam:latest
+        env:
+        - name: IAM_MONGODB_CONNECTION
+          valueFrom:
+            secretKeyRef:
+              name: mongosecret-oih-iam
+              key: url
+        - name: IAM_AUTH_TYPE
+          value: oidc
+        - name: IAM_BASEURL
+          value: 'https://127.0.0.1:3099'
+        - name: IAM_ORIGINWHITELIST
+          value: 'localhost,example.com'
+        - name: NODE_ENV
+          value: "production"
+        - name: IAM_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: oidc-oih-iam-dev
+              key: 'jwtsecret'
+        - name: IAM_JWT_AUDIENCE
+          value: example.com
+        - name: IAM_JWT_COOKIENAME
+          value: oih-iam
+        - name: IAM_ACC_ADMIN_USERNAME
+          value: admin@example.com
+        - name: IAM_ACC_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: oidc-oih-iam-dev
+              key: 'ADMIN_PASSWORD'
+        - name: IAM_ACC_SERVICE_ACCOUNT_USERNAME
+          value: service-oih-iam@example.com
+        - name: IAM_ACC_SERVICE_ACCOUNT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: oidc-oih-iam-dev
+              key: serviceaccpass
+        - name: IAM_SERVICE_CLIENT_ID
+          value: 8ce00058-5f75-435f-9026-ad952480e15a
+        - name: IAM_SERVICE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: oidc-oih-iam-dev
+              key: 'client-secret'
+        ports:
+        - containerPort: 3099
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3099
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3099
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        volumeMounts:
+          - name: oidc-certs
+            mountPath: /usr/src/app/keystore
+            readOnly: true
+      volumes:
+          - name: oidc-certs
+            secret:
+              secretName: oidc-keystore 

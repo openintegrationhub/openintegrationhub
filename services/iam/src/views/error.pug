@@ -1,0 +1,22 @@
+extends layout.pug
+
+block title
+  title OIH IAM
+block content
+  div.wrapper
+    div.signInView
+      h1 Login failed :-(
+      div.error
+        h2 An error occurred
+        span #{message}
+      a(onclick="goBack()") Back to previous page
+      script.
+        var status="#{status}";
+
+        if (status === "500") {
+            window.location.href = '/';
+        }
+        
+        function goBack() {
+            window.history.back();
+        }

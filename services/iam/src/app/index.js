@@ -1,0 +1,189 @@
+
+const cookieParser = require('cookie-parser');
+const path = require('path');
+
+const passport = require('passport');
+// const cors = require('cors');
+const Promise = require('bluebird');
+
+const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./../../doc/openapi.json');
+const Logger = require('@basaas/node-logger');
+
+const CONSTANTS = require('../constants');
+const conf = require('../conf');
+const { createOIDCProvider, addOIDCRoutes } = require('./../oidc');
+const registerModels = require('./../models/registerModels');
+const Account = require('./../models/account');
+
+const FORCE_SSL = conf.general.useHttps === 'true';
+
+const log = Logger.getLogger(`${conf.general.loggingNameSpace}/app`, {
+    level: 'debug',
+});
+
+/** passport config */
+
+passport.use(Account.createStrategy());
+passport.serializeUser(Account.serializeUser());
+passport.deserializeUser(Account.deserializeUser());
+
+const checkProto = (req, res, next) => {
+    if (req.get('x-forwarded-proto') === 'http' && FORCE_SSL) {
+        res.redirect(`https://${req.headers.host}${req.url}`);
+    } else {
+        next();
+    }
+};
+
+class App {
+
+    constructor() {
+        this.server = null;
+        this.app = express();
+        this.app.set('port', conf.general.port);
+        this.app.disable('x-powered-by');
+    }
+
+    async setup(mongoose) {
+
+        mongoose.Promise = Promise;
+
+        mongoose.connect(conf.general.mongodb_url, {
+            poolSize: 50,
+            socketTimeoutMS: 60000,
+            connectTimeoutMS: 30000,
+            keepAlive: 120,
+        });
+
+        registerModels();
+        this.setupCors();
+        this.setupMiddleware();
+
+        if (conf.general.authType === 'oidc') {
+            await this.setupOidcProvider();
+        }
+
+        this.setupRoutes();
+        await App.createMasterAccount();
+
+    }
+
+    setupCors() {
+
+        this.corsOptions = {
+            credentials: true,
+            origin(origin, callback) {
+                if (conf.general.originWhitelist.find(elem => origin.indexOf(elem) >= 0)) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
+            },
+        };
+
+        this.app.use((req, res, next) => {
+            req.headers.origin = req.headers.origin || req.headers.host; 
+            next(); 
+        });
+
+    }
+
+    setupMiddleware() {
+        this.app.use(cookieParser());
+        this.app.use(passport.initialize());
+        
+    }
+
+    async setupOidcProvider() {
+        this.provider = await createOIDCProvider();
+        addOIDCRoutes(this.app, this.provider, this.corsOptions);
+    }
+
+    setupRoutes() {
+
+        // access log
+        this.app.use(require('./../log/access')); // eslint-disable-line global-require
+
+        this.app.get('/healthcheck', (req, res) => {
+            res.sendStatus(200);
+        });
+
+        this.app.use(checkProto);
+        this.app.use('/', require('./../routes/general')); // eslint-disable-line global-require
+        
+        // setup SwaggerUI
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
+
+        const apiBase = express.Router();
+        apiBase.use('/users', require('./../routes/users')); // eslint-disable-line global-require
+        apiBase.use('/tenants', require('./../routes/tenants')); // eslint-disable-line global-require
+
+        // TODO: if the client is not a browser, no origin or host will be provided
+        this.app.use(`/${conf.general.apiBase}`, apiBase);
+
+        // static files
+        this.app.use('/static', express.static(path.join(__dirname, '../../static')));
+
+        // 404 log
+        this.app.use(require('./../log/404')); // eslint-disable-line global-require
+                
+        // error log
+        this.app.use(require('./../log/error')); // eslint-disable-line global-require
+
+        // error handling
+        this.app.use(require('./../routes/error').default); // eslint-disable-line global-require
+        
+    }
+    
+    static async createMasterAccount() {   
+        if (!await Account.count()) {                       
+            const admin = new Account({
+                username: conf.accounts.admin.username,
+                firstname: conf.accounts.admin.firstname,
+                lastname: conf.accounts.admin.lastname,
+                role: CONSTANTS.ROLES.ADMIN,
+                status: CONSTANTS.STATUS.ACTIVE,
+            });
+
+            await admin.setPassword(conf.accounts.admin.password);
+            await admin.save();
+
+            const serviceaccount = new Account({
+                username: conf.accounts.serviceAccount.username,
+                firstname: conf.accounts.serviceAccount.firstname,
+                lastname: conf.accounts.serviceAccount.lastname,
+                role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
+                status: CONSTANTS.STATUS.ACTIVE,
+            });
+            await serviceaccount.setPassword(conf.accounts.serviceAccount.password);
+            await serviceaccount.save();
+            log.info('Initial db setup done');
+        } 
+    }
+
+    async start() {
+        this.server = await this.app.listen(this.app.get('port'));
+    } 
+
+    async startSecure() {
+        const fs = require('fs'); // eslint-disable-line global-require
+        const https = require('https'); // eslint-disable-line global-require
+        const privateKey = fs.readFileSync(`${__dirname}/dev/dev.key.pem`, 'utf8');
+        const certificate = fs.readFileSync(`${__dirname}/dev/dev.cert.pem`, 'utf8');
+        
+        const credentials = { key: privateKey, cert: certificate };
+        const httpsServer = https.createServer(credentials, this.app);
+
+        this.server = await httpsServer.listen(this.app.get('port'));
+    }
+
+    stop() {
+        if (this.server) {
+            this.server.close();
+        }
+    } 
+}
+
+module.exports = App;

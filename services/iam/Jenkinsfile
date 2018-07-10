@@ -1,0 +1,58 @@
+pipeline {
+  agent {
+    node {
+      label 'master'
+      customWorkspace "/var/jenkins_home/workspace/oih-iam${env.BRANCH_NAME}"
+    }
+    
+  }
+  stages {
+    stage('Build CSS') {
+      steps {
+        checkout scm
+        script {
+          def matcher =  readJSON file: './package.json'
+          buildNumber = matcher.version + '-' + new Date().format("yyyyMMddHHmmss", TimeZone.getTimeZone('UTC'))
+          containerName = "${JOB_NAME}-${buildNumber}".replace("/", "-")
+        }
+
+        sh """
+        # INFO: The path passed as -v argument must exists and be accessible by Jenkins
+        docker run --user 1000 --rm --name ${containerName} -v /PATH/TO/PROJECT/WORKSPACE/oih-iam${env.BRANCH_NAME}/:/usr/src/app/ node:${NODE_VERSION} /bin/bash -c \'cd /usr/src/app/  && npm install -s && npm run build-css\'"""
+      }
+    }
+    stage('run Tests') {
+      steps {
+        
+        sh """
+        # INFO: The path passed as -v argument must exists and be accessible by Jenkins
+        docker run --user 1000 --rm --name ${containerName} -v /PATH/TO/PROJECT/WORKSPACE/oih-iam${env.BRANCH_NAME}/:/usr/src/app/ node:${NODE_VERSION} /bin/bash -c \'cd /usr/src/app/  && npm install -s && npm run coverage\'"""
+      }
+    }
+    stage('Build Image') {
+      steps {
+        sh """
+          sed -i 's/"version":.*/"version": "${buildNumber}",/g' package.json
+          docker build -t oih-iam .
+        """
+      }
+    }
+    stage('DEV Deployment') {
+      steps {
+        echo 'Deploy Image to K8S'
+        sh """
+          cd k8s
+          kubectl set image deployment oih-iam oih-iam=PATH_TO_YOUR_DOCKER_REGISTRY/oih-iam:${buildNumber} -n oih-dev
+          kubectl rollout status deployment oih-iam -n oih-dev
+        """
+      }
+    }
+  }
+  environment {
+    buildNumber = '000'
+    containerName = 'oih-iam'
+  }
+  triggers {
+    pollSCM('*/5 * * * *')
+  }
+}

@@ -1,0 +1,24 @@
+extends layout.pug
+
+block title
+  title Login
+block content
+  div.wrapper
+    div.signInView
+      form(autocomplete='off', action=`/${conf.oidc.base}/interaction/${details.uuid}/login`, method='post')
+        h1 Login
+        span.label Username
+        input(type='hidden', name='uuid', value=details.uuid)
+        input.formControl(autocomplete='email' required='', type='text', name='username', placeholder='mail@domain.com')
+        span.label Password
+        input.formControl(autocomplete='current-password' required='', type='password', name='password', placeholder='******')
+        input.checkbox(type='checkbox', name='remember', value='yes', checked='yes')
+        | Remember me
+        button.login.login-submit(type='submit') Login
+
+      if client.clientName && client.clientUri
+      div.buttonContainer
+        div.registerButton
+          a(href=`${client.clientUri}/register`) Register
+        div.passwordRecovery
+          a(href=`${client.clientUri}/account-service/recover-password`) Recover password

@@ -1,0 +1,904 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is a the API documentation for the OHI IAM system",
+    "version": "0.0.2",
+    "title": "IAM Api for OIH",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "info@openintegrationhub.de"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags": [
+    {
+      "name": "authentication",
+      "description": "Authentication routes to handle Login/Logout"
+    },
+    {
+      "name": "user",
+      "description": "user routes and definitions"
+    },
+    {
+      "name": "tenant",
+      "description": "tenant routes and definitions"
+    },
+    {
+      "name": "misc",
+      "description": "Health check & co"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "misc"
+        ],
+        "summary": "Service Info",
+        "description": "",
+        "operationId": "getServiceInfo",
+        "responses": {
+          "200": {
+            "description": "Detailed service information"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Login route",
+        "description": "",
+        "operationId": "performLogin",
+        "requestBody": {
+          "description": "Login with credentials",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessToken"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request; Missing mandatory body"
+          },
+          "403": {
+            "description": "Cannot login user. Account is either disabled or a precondition is missing."
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Logout route",
+        "description": "",
+        "operationId": "preformLogout",
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          },
+          "401": {
+            "description": "User is not logged in."
+          }
+        }
+      }
+    },
+    "/token/refresh": {
+      "get": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Returns a fresh JWT token. Works only with x-auth-type 'basic'",
+        "description": "",
+        "operationId": "refreshToken",
+        "responses": {
+          "200": {
+            "description": "New Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessToken"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Current token either expired or client is not logged in"
+          },
+          "403": {
+            "description": "Cannot login user. Account is either disabled or a precondition is missing."
+          }
+        }
+      }
+    },
+    "/healthcheck": {
+      "get": {
+        "tags": [
+          "misc"
+        ],
+        "summary": "Cluster tools",
+        "description": "",
+        "operationId": "performHealthCheck",
+        "responses": {
+          "200": {
+            "description": "Service is healthy"
+          }
+        }
+      }
+    },
+    "/tenants": {
+      "get": {
+        "tags": [
+          "tenant"
+        ],
+        "summary": "Get all tenants",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "getTenants",
+        "responses": {
+          "200": {
+            "description": "List of all tenants",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfTenants"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "tenant"
+        ],
+        "summary": "Create a tenant",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "createTenant",
+        "requestBody": {
+          "description": "Create a tenant",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/tenants/:id": {
+      "get": {
+        "tags": [
+          "tenant"
+        ],
+        "summary": "get the tenant by id",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "getTenantById",
+        "responses": {
+          "200": {
+            "description": "List of all users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Tenant id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "tenant"
+        ],
+        "summary": "Modify the tenant",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "modifyTenantById",
+        "requestBody": {
+          "description": "Replaces tenant data completely with the given payload",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Tenant id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "tenant"
+        ],
+        "summary": "Delete tenant",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "deleteTenant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Tenant id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/tenants/:id/user": {
+      "get": {
+        "tags": [
+          "tenant"
+        ],
+        "summary": "get all users assigned to the given tenant",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "getTenantUsers",
+        "responses": {
+          "200": {
+            "description": "List of all users who are members of the given organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfUserTenantContext"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Tenant id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "tenant"
+        ],
+        "summary": "Add a user to the tenant",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "addUserToTenant",
+        "requestBody": {
+          "description": "Optional description in *Markdown*",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Tenant id, to which the user should be added",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "tenant"
+        ],
+        "summary": "Remove user from tenant",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "removeUserFromTenant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Tenant Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "get all users",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "List all users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfUsers"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Create user",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "createUser",
+        "requestBody": {
+          "description": "Create a new user",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Id of created user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "delete user",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of user to use",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/users/:id": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "get a user by id",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "getUserById",
+        "responses": {
+          "200": {
+            "description": "User data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of user to use",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Modify a user by id",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "modifyUserByIdPut",
+        "requestBody": {
+          "description": "Overwrite all user properties with the given data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of user to use",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Modify a user by id",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "modifyUserByIdPatch",
+        "requestBody": {
+          "description": "Partially update the user with given data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of user to use",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "delete user",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of user to use",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "get current user",
+        "description": "User must have a valid session.",
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "current users data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/:id/tenant/:tenantId": {
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Un-assign user from tenant and remove the membership",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "deleteUserFromTenant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of user to use",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          },
+          {
+            "name": "tenantId",
+            "in": "path",
+            "description": "ID of tenant",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Status": {
+        "type": "string",
+        "enum": [
+          "active",
+          "pending",
+          "disabled"
+        ]
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "instanceAdmin",
+          "tenantAdmin",
+          "tenantIntegrator",
+          "tenantDeveloper",
+          "tenantGuest"
+        ]
+      },
+      "Login": {
+        "title": "Login data",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "TenantRequest": {
+        "title": "Tenant Schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "name of tenant organization"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "description": "true, if the confirmation link/email has been triggered"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "TenantResponse": {
+        "title": "Tenant Schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id of tenant organization"
+          },
+          "name": {
+            "type": "string",
+            "description": "name of tenant organization"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "description": "true, if the confirmation link/email has been triggered"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UserBody": {
+        "title": "User body",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Username as an email address"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role assigned to this user"
+          }
+        }
+      },
+      "UserId": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id of created user"
+          }
+        }
+      },
+      "AccessToken": {
+        "title": "Access token object",
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Auth token"
+          }
+        }
+      },
+      "UserTenantContext": {
+        "title": "User tenant membership",
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "User Id"
+          },
+          "tenant": {
+            "type": "string",
+            "description": "Tenant Id"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role assigned to this user"
+          }
+        }
+      },
+      "UserResponse": {
+        "title": "User information",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User Id"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username as an email address"
+          },
+          "firstname": {
+            "type": "string",
+            "description": "firstname"
+          },
+          "lastname": {
+            "type": "string",
+            "description": "lastname"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "description": "true, if the confirmation link/email has been triggered"
+          },
+          "img": {
+            "type": "string",
+            "description": "url to user image"
+          }
+        },
+        "required": [
+          "username",
+          "firstname",
+          "lastname",
+          "role"
+        ]
+      },
+      "UserRequest": {
+        "title": "User information",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Username as an email address"
+          },
+          "password": {
+            "type": "string",
+            "description": "password"
+          },
+          "firstname": {
+            "type": "string",
+            "description": "firstname"
+          },
+          "lastname": {
+            "type": "string",
+            "description": "lastname"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "description": "true, if the confirmation link/email has been triggered"
+          },
+          "img": {
+            "type": "string",
+            "description": "url to user image"
+          }
+        },
+        "required": [
+          "username",
+          "firstname",
+          "lastname",
+          "role"
+        ]
+      },
+      "ArrayOfTenants": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/TenantResponse"
+        }
+      },
+      "resetPassword": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "password"
+          }
+        }
+      },
+      "ArrayOfUsers": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UserResponse"
+        }
+      },
+      "ArrayOfUserTenantContext": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UserTenantContext"
+        }
+      }
+    }
+  }
+}
