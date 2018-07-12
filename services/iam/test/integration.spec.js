@@ -212,7 +212,7 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(200);
 
-            const fetchNewTokenResp = await request.get('/token/refresh')
+            const fetchNewTokenResp = await request.get('/token')
                 .set('Accept', /application\/json/)
                 .set('Authorization', `Bearer ${userToken}`);
 
@@ -276,6 +276,17 @@ describe('routes', () => {
                 .expect(401);
         });
 
+        test('request with an invalid authorization header fails', async () => {
+
+            const resp = await request.get('/api/v1/tenants')
+                .set('Authorization', 'SomeToken')
+                .set('Accept', /application\/json/)
+                .expect(401);
+
+            expect(resp.body.message).toBe(CONSTANTS.ERROR_CODES.INVALID_HEADER);
+
+        });
+
         test('get all tenants with unknown x-auth-type fails', async () => {
             await request.get('/api/v1/tenants')
                 .set('Accept', /application\/json/)
@@ -284,6 +295,155 @@ describe('routes', () => {
                 .expect(400);
         });
 
+    });
+
+    describe('Token and session management', () => {
+
+        const testUserData = {
+            'username': 'blubb33@basaas.com',
+            'firstname': 'blubb',
+            'lastname': 'blubb',
+            'status': 'ACTIVE',
+            'password': 'blubb',
+            'role': CONSTANTS.ROLES.USER,
+        };
+
+        test('get token fails if user is logged out', async () => {
+
+            /* Create new user */
+
+            const createUserResponse = await request.post('/api/v1/users')
+                .send(testUserData)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+            const testUserId = createUserResponse.body.id;
+
+            /* Log in as the new user */
+            const response = await request.post('/login')
+                .send({
+                    username: testUserData.username,
+                    password: testUserData.password,
+                })
+                .set('Accept', /application\/json/)
+                .expect(200);
+            const userToken = `Bearer ${response.body.token}`;
+            const userCookie = response.headers['set-cookie'].pop().split(';')[0];
+
+            /* Refresh token success */
+            await request.get('/token')
+                .set('Cookie', userCookie)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            /* Logout */
+            await request.post('/logout')
+                .set('Cookie', userCookie)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            /* Refresh token fails */
+            await request.get('/token')
+                .set('Cookie', userCookie)
+                .set('Accept', /application\/json/)
+                .expect(401);
+
+            /* Refresh token success with user token */
+            await request.get('/token')
+                .set('Authorization', userToken)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            /* Admin disables user */
+            await request.patch(`/api/v1/users/${testUserId}`)
+                .send({ status: CONSTANTS.STATUS.DISABLED })
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            /* Refresh token fails with user token */
+            await request.get('/token')
+                .set('Authorization', userToken)
+                .set('Accept', /application\/json/)
+                .expect(403);
+
+        });
+
+    });
+
+});
+
+describe('RSA Signing', () => {
+
+    let app = null;
+    let tokenAdmin;
+
+    beforeAll(async (done) => {
+
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
+        process.env.IAM_AUTH_TYPE = 'basic';
+        process.env.IAM_JWT_ALGORITHM_TYPE = CONSTANTS.JWT_ALGORITHMS.RSA;
+        process.env.IAM_BASEURL = 'http://localhost';
+
+        conf = require('./../src/conf/index');
+        conf.jwt.algorithmType = process.env.IAM_JWT_ALGORITHM_TYPE;
+        conf.jwt.algorithm = 'RS256';
+        const App = require('../src/app');
+        app = new App();
+        await mockgoose.prepareStorage();
+        await app.setup(mongoose);
+        await app.start();
+        done();
+    });
+
+    afterAll(() => {
+        app.stop();
+    });
+
+    describe('General Routes', () => {
+
+        test('well-known endpoint provides jwks', async () => {
+            const response = await request.get('/.well-known/jwks.json')
+                .set('Accept', /application\/json/)
+                .expect(200);
+            expect(response.body.keys.length).toBeGreaterThan(1);
+        });
+
+        test('login successful', async () => {
+            const jsonPayload = {
+                username: conf.accounts.admin.username,
+                password: conf.accounts.admin.password,
+            };
+            const response = await request.post('/login')
+                .send(jsonPayload)
+                .set('Accept', /application\/json/)
+                .expect(200);
+            tokenAdmin = `Bearer ${response.body.token}`;
+
+        });
+
+        test('token verification is successful', async () => {
+
+            await request.get('/token')
+                .set('Accept', /application\/json/)
+                .set('Authorization', tokenAdmin)
+                .expect(200);
+
+        });
+    });
+
+    describe('Keystore', () => {
+
+        test('keystore is generated if it do not exist', async () => {
+
+            const keystore = require('./../src/util/keystore');
+            await keystore.deleteKeystore();
+
+            const response = await request.get('/.well-known/jwks.json')
+                .set('Accept', /application\/json/)
+                .expect(200);
+            expect(response.body.keys.length).toBeGreaterThan(1);
+        });
     });
 
 });

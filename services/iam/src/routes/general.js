@@ -1,6 +1,7 @@
 const express = require('express');
 const pug = require('pug');
 const path = require('path');
+const jose = require('node-jose');
 
 const router = express.Router();
 const bodyParser = require('body-parser');
@@ -12,6 +13,7 @@ const CONSTANTS = require('./../constants/index');
 const auth = require('./../util/auth');
 const jwtUtils = require('./../util/jwt');
 const AccountDAO = require('./../dao/users');
+const keystore = require('./../util/keystore');
 
 router.get('/', (req, res) => {
 
@@ -24,10 +26,22 @@ router.get('/', (req, res) => {
         );
 });
 
-router.post('/login', jsonParser, 
+router.get('/.well-known/jwks.json', async (req, res) => {
+
+    const jwks = await keystore.getKeystoreAsJSON();
+
+    if (conf.jwt.algorithmType === CONSTANTS.JWT_ALGORITHMS.RSA) {
+        return res.send(jwks);
+    } else {
+        return res.status(423).send({ message: 'RSA algorithm is not activated' });
+    }
+
+});
+
+router.post('/login', jsonParser,
     authMiddleware.authenticate,
-    authMiddleware.userIsEnabled, 
-    (req, res, next) => {
+    authMiddleware.userIsEnabled,
+    async (req, res, next) => {
 
         if (!req.user) {
             return next({ status: 401, message: CONSTANTS.ERROR_CODES.NOT_LOGGED_IN });
@@ -41,18 +55,27 @@ router.post('/login', jsonParser,
             memberships: req.user.memberships,
         };
 
-        const token = jwtUtils.basic.sign(jwtpayload, conf.jwt.jwtsecret, {
-            issuer: conf.jwt.issuer,
-            audience: conf.jwt.audience,
-            algorithm: conf.jwt.algorithm,
-            expiresIn: conf.jwt.expiresIn,
-        });
+        const token = await jwtUtils.basic.sign(jwtpayload);
         req.headers.authorization = `Bearer ${token}`;
         res.status(200).send({ token });
-        
+
     });
 
-router.get('/token/refresh', auth.validateAuthentication, async (req, res) => {
+// router.get('/verify', jsonParser,
+//     authMiddleware.userIsEnabled,
+//     async (req, res, next) => {
+//
+//         if (!req.user) {
+//             return next({ status: 401, message: CONSTANTS.ERROR_CODES.NOT_LOGGED_IN });
+//         }
+//
+//         const token = req.query.token;
+//         const decrypted = await jwtUtils.basic.verify(token);
+//         res.status(200).send({ decrypted });
+//
+//     });
+
+router.get('/token', auth.validateAuthentication, async (req, res) => {
 
     const account = await AccountDAO.findOne({ _id: req.__HEIMDAL__.userid, status: CONSTANTS.STATUS.ACTIVE });
 
@@ -61,10 +84,10 @@ router.get('/token/refresh', auth.validateAuthentication, async (req, res) => {
         return res.status(403).send({ message: CONSTANTS.ERROR_CODES.FORBIDDEN });
     }
 
-    const { sub, username, role, memberships } = account;
+    const { _id, username, role, memberships } = account;
 
-    const token = jwtUtils.basic.sign({
-        sub,
+    const token = await jwtUtils.basic.sign({
+        sub: _id,
         username,
         role,
         memberships,

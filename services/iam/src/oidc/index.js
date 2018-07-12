@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const Logger = require('@basaas/node-logger');
 const path = require('path');
 const fs = require('fs');
-const { getKeystore } = require('./util/generate-keystore');
+const { getKeystoreFile } = require('../util/keystore');
 
 const passwordGrant = require('./custom-grants/password');
 const conf = require('../conf');
@@ -43,11 +43,11 @@ module.exports.createOIDCProvider = async () => {
     // service client
     clients.push(conf.oidc.serviceClient);
 
-    const keystoreFile = await getKeystore();
+    const keystoreFile = await getKeystoreFile();
 
     await provider.initialize({
         adapter: require('./adapters/mongodb'), // eslint-disable-line global-require
-        keystore: keystoreFile, // eslint-disable-line global-require    // TODO eslint fails, because the file does not exist yet
+        keystore: keystoreFile, // eslint-disable-line global-require
         clients,
     });
 

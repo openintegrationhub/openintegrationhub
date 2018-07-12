@@ -6,6 +6,12 @@ const passport = require('passport');
 // const cors = require('cors');
 const Promise = require('bluebird');
 
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+
+// eslint-disable-next-line
+const LocalStrategy = require('passport-local').Strategy;
+
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./../../doc/openapi.json');
@@ -48,6 +54,7 @@ class App {
 
     async setup(mongoose) {
 
+        this.mongoose = mongoose;
         mongoose.Promise = Promise;
 
         mongoose.connect(conf.general.mongodb_url, {
@@ -92,7 +99,28 @@ class App {
 
     setupMiddleware() {
         this.app.use(cookieParser());
+
+        const mongoSession = session({
+            secret: process.env.IAM_SESSION_COOKIE_SECRET || 'Thi5Secret1sSoloelyForTestingOnly$',
+            name: 'basaas-iam',
+            store: new MongoStore({
+                mongooseConnection: this.mongoose.connection,
+                touchAfter: 4 * 3600,
+                autoRemove: 'native',
+                autoRemoveInterval: 60 * 4, // Minutes!
+                ttl: 3 * 24 * 60 * 60,
+            }),
+            saveUninitialized: false,
+            resave: false,
+        });
+
+        this.app.use(mongoSession);
         this.app.use(passport.initialize());
+        this.app.use(passport.session());
+
+        passport.use(new LocalStrategy(Account.authenticate()));
+        passport.serializeUser(Account.serializeUser());
+        passport.deserializeUser(Account.deserializeUser());
         
     }
 

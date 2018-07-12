@@ -2,6 +2,10 @@ const pkg = require('../../package.json');
 const serviceClient = require('../oidc/util/clients/service-client');
 const { optional } = require('../util/check-env');
 
+const CONSTANTS = require('./../constants');
+
+const path = require('path');
+
 const port = optional('IAM_PORT', 3099);
 const baseurl = optional('IAM_BASEURL', 'https://127.0.0.1:3099');
 const apiBase = optional('IAM_APIBASE', 'api/v1');
@@ -9,15 +13,9 @@ const oidcBase = optional('IAM_OIDCBASE', 'op');
 const originwhitelist = optional('IAM_ORIGINWHITELIST') ? optional('IAM_ORIGINWHITELIST').split(',') : [];
 const config = {
 
-    getBaseUrl: () => {
-        return `${baseurl}`;
-    },
-    getApiBaseUrl: () => {
-        return `${baseurl}/${apiBase}`;
-    },
-    getOidcBaseUrl: () => {
-        return `${baseurl}/${oidcBase}`;
-    },
+    getBaseUrl: () => `${baseurl}`,
+    getApiBaseUrl: () => `${baseurl}/${apiBase}`,
+    getOidcBaseUrl: () => `${baseurl}/${oidcBase}`,
     general: {
         authType: optional('IAM_AUTH_TYPE', 'oidc'),
         debug: optional('IAM_DEBUG') === 'true',
@@ -37,6 +35,8 @@ const config = {
             'localhost',
         ] : [
         ]),
+
+        keystoreFile: optional('IAM_OIDC_KEYSTORE_PATH') || path.join(__dirname, '../../', 'keystore/keystore.json'),
     },
     accounts: {
         admin: {
@@ -53,9 +53,10 @@ const config = {
         },
     },
     jwt: {
-        issuer: optional('IAM_ACC_SERVICEACCOUNT_USERNAME', 'service-iam@example.com'),
+        issuer: optional('IAM_BASEURL', 'https://www.example.com'),
         audience: optional('IAM_JWT_AUDIENCE', 'example.com'),
-        algorithm: optional('IAM_JWT_ALGORITHM', 'HS512'),
+        algorithm: optional('IAM_JWT_ALGORITHM', 'HS256'),
+        algorithmType: optional('IAM_JWT_ALGORITHM_TYPE', CONSTANTS.JWT_ALGORITHMS.HMAC),
         expiresIn: optional('IAM_JWT_EXPIRES', '3h'),
         jwtsecret: optional('IAM_JWT_SECRET', 'example'),
         cookieName: optional('IAM_JWT_COOKIENAME', 'cookiename'),

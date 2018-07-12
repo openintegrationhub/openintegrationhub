@@ -1,6 +1,11 @@
 
 module.exports = {
 
+    JWT_ALGORITHMS: {
+        HMAC: 'HMAC',
+        RSA: 'RSA',
+    },
+
     STATUS: {
         ACTIVE: 'ACTIVE',
         PENDING: 'PENDING',
@@ -43,6 +48,7 @@ module.exports = {
         ENTITY_DISABLED: 'ENTITY_DISABLED',
         FORBIDDEN: 'FORBIDDEN',
         SESSION_EXPIRED: 'SESSION_EXPIRED',
+        INVALID_HEADER: 'INVALID_HEADER',
         INVALID_TOKEN: 'INVALID_TOKEN',
         DEFAULT: 'UNKNOWN_ERROR',
     },

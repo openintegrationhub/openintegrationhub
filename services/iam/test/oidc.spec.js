@@ -28,7 +28,7 @@ describe('basic OIDC test Suite', () => {
             encodeURIComponent(process.env.IAM_SERVICE_CLIENT_ID)}:${encodeURIComponent(process.env.IAM_SERVICE_CLIENT_SECRET)}`)
             }`;
 
-        const { generateFile } = require('./../src/oidc/util/generate-keystore');
+        const { generateFile } = require('../src/util/keystore');
 
         // const pathToKeystore = path.join(__dirname, '../keystore/keystore.json');
         // console.log('Keystore path:', pathToKeystore);
@@ -130,7 +130,7 @@ describe('basic OIDC test Suite', () => {
 
     test('generate Keystore successful', async () => {
         const pathToKeystore = path.join(__dirname, '../keystore/keystore.json');
-        const { generateFile } = require('../src/oidc/util/generate-keystore');
+        const { generateFile } = require('../src/util/keystore');
 
         await fs.unlink(pathToKeystore);
         await generateFile();

@@ -46,12 +46,27 @@ module.exports = {
             if (!user) { return next({ status: 401, message: CONSTANTS.ERROR_CODES.DEFAULT }); }
             
             req.logIn(user, (err) => {
-                if (err) { 
-                    log.error(err);
+                if (err) {
+                    log.error('Failed to login user', err);
                     return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
                 }
 
-                return next();
+                if (req.body['remember-me']) {
+                    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
+                } else {
+                    req.session.cookie.expires = false; // Cookie expires at end of session
+                }
+
+                req.session.save((err) => {
+                    if (err) {
+                        log.error('Error saving session', err);
+                        return next(err);
+                    }
+
+                    return next();
+
+                });
+
             });
             
         })(req, res, next);
@@ -62,8 +77,16 @@ module.exports = {
         let payload = null;
         let authType = null;
         let client = null;
+
+        /** User has a valid cookie */
+        if (req.user) {
+            req.__HEIMDAL__ = req.user;
+            req.__HEIMDAL__.userid = req.user._id;
+            return next();
+        }
+
         if (!req.headers.authorization) {
-            return next({ status: 401, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
+            return next({ status: 401 });
         }
 
         authType = req.headers['x-auth-type'] ? req.headers['x-auth-type'] : conf.general.authType;
@@ -114,8 +137,12 @@ module.exports = {
             case 'basic':
                 try {
                     const header = req.headers.authorization.split(' ');
+                    if (!header || header.length < 2) {
+                        log.debug('Authorization header length is incorrect');
+                        return next({ status: 401, message: CONSTANTS.ERROR_CODES.INVALID_HEADER });
+                    }
                     const token = header[1];
-                    payload = jwtUtils.basic.verify(token);
+                    payload = await jwtUtils.basic.verify(token);
                 } catch (err) {
                     log.warn('Failed to parse token', err);
                     return next({ status: 401, message: CONSTANTS.ERROR_CODES.SESSION_EXPIRED });
@@ -142,7 +169,7 @@ module.exports = {
     },
 
     isAdmin: (req, res, next) => {
-        
+
         if (isAdminRole(req.__HEIMDAL__.role)) {
             return next();
         } 
