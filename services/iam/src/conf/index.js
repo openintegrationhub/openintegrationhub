@@ -1,10 +1,8 @@
+const path = require('path');
+
 const pkg = require('../../package.json');
 const serviceClient = require('../oidc/util/clients/service-client');
 const { optional } = require('../util/check-env');
-
-const CONSTANTS = require('./../constants');
-
-const path = require('path');
 
 const port = optional('IAM_PORT', 3099);
 const baseurl = optional('IAM_BASEURL', 'https://127.0.0.1:3099');
@@ -18,25 +16,23 @@ const config = {
     getOidcBaseUrl: () => `${baseurl}/${oidcBase}`,
     general: {
         authType: optional('IAM_AUTH_TYPE', 'oidc'),
-        debug: optional('IAM_DEBUG') === 'true',
+        debug: optional('IAM_DEBUG', 'false') === 'true',
 
-        useHttps: optional('IAM_USE_SSL') && optional('IAM_USE_SSL') === 'true',
+        useHttps: optional('IAM_USE_SSL', 'false') === 'true',
 
         loggingNameSpace: 'accounts',
 
         apiBase,
         port,
 
-        mongodb_url: optional('IAM_MONGODB_CONNECTION', 'mongodb://localhost/accounts'),
+        mongodb_url: optional('IAM_MONGODB_CONNECTION', 'mongodb://localhost:27017/accounts'),
 
-        originWhitelist: originwhitelist.concat(optional('NODE_ENV') !== 'production' ? [
+        originWhitelist: originwhitelist.concat(optional('NODE_ENV', 'development') !== 'production' ? [
             // development only
             '127.0.0.1',
             'localhost',
         ] : [
         ]),
-
-        keystoreFile: optional('IAM_OIDC_KEYSTORE_PATH') || path.join(__dirname, '../../', 'keystore/keystore.json'),
     },
     accounts: {
         admin: {
@@ -53,10 +49,9 @@ const config = {
         },
     },
     jwt: {
-        issuer: optional('IAM_BASEURL', 'https://www.example.com'),
+        issuer: optional('IAM_ACC_SERVICEACCOUNT_USERNAME', 'service-iam@example.com'),
         audience: optional('IAM_JWT_AUDIENCE', 'example.com'),
-        algorithm: optional('IAM_JWT_ALGORITHM', 'HS256'),
-        algorithmType: optional('IAM_JWT_ALGORITHM_TYPE', CONSTANTS.JWT_ALGORITHMS.HMAC),
+        algorithm: optional('IAM_JWT_ALGORITHM', 'HS512'),
         expiresIn: optional('IAM_JWT_EXPIRES', '3h'),
         jwtsecret: optional('IAM_JWT_SECRET', 'example'),
         cookieName: optional('IAM_JWT_COOKIENAME', 'cookiename'),
@@ -64,12 +59,12 @@ const config = {
     oidc: {
         serviceClient,
         base: oidcBase,
-        keystorePath: optional('IAM_OIDC_KEYSTORE_PATH'),
+        keystorePath: optional('IAM_OIDC_KEYSTORE_PATH', path.resolve(__dirname, '../../', 'keystore/keystore.json')),
         dbPrefix: optional('IAM_OIDC_DBPREFIX', 'oidc'),
         acrValues: ['session', 'urn:mace:incommon:iap:bronze'],
         issuer: baseurl,
         cookies: {
-            long: { signed: true, maxAge: parseInt(optional('IAM_OIDC_MAXAGE'), 10) * 1000 || ((1 * 24 * 60 * 60) * 1000) }, // 1 day in ms
+            long: { signed: true, maxAge: parseInt(optional('IAM_OIDC_MAXAGE', (1 * 24 * 60 * 60) * 1000), 10) }, // 1 day in ms
             short: { signed: true },
             keys: [`${optional('IAM_JWT_SECRET', 'example')}`],
             thirdPartyCheckUrl: `${baseurl}/static/oidc/start.html`,
@@ -199,6 +194,8 @@ const config = {
         },
     },
 };
+
+// Accept self signed certificates. Use with caution!
 
 if (config.general.useHttps) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';

@@ -1,6 +1,6 @@
 
 const jwt = require('jsonwebtoken');
-const jose = require('node-jose');
+
 const uuid = require('uuid');
 
 const conf = require('./../conf');

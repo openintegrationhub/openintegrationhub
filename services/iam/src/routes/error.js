@@ -2,7 +2,7 @@ const pug = require('pug');
 const path = require('path');
 const ERROR_MESSAGES = require('../constants/error-messages');
 
-const defaultErrorHandlder = (err, req, res, next) => {
+const defaultErrorHandlder = (err, req, res, next) => { // eslint-disable-line no-unused-vars
     const status = err.status || 500;
     let message = err.message || '';
 

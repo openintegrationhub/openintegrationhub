@@ -3,8 +3,6 @@ const path = require('path');
 /* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
 const forge = require('node-forge');
 
-const { rsa, privateKeyToPem, publicKeyToPem, createCertificate, certificateToPem } = forge.pki;
-
 const CERTIFICATES = {
     'public': 'dev.cert.pem',
     'private': 'dev.key.pem',

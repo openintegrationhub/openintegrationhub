@@ -1,7 +1,6 @@
 const express = require('express');
 const pug = require('pug');
 const path = require('path');
-const jose = require('node-jose');
 
 const router = express.Router();
 const bodyParser = require('body-parser');

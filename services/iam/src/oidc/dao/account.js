@@ -20,7 +20,7 @@ class Account {
         return claims; 
     }
 
-    static async findById(ctx, id, token) {
+    static async findById(ctx, id) {
         const data = await AccountModel.findOne({ _id: id });
         return new Account(data);
     }

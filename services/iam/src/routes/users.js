@@ -11,7 +11,7 @@ const UserDAO = require('./../dao/users');
 
 const Logger = require('@basaas/node-logger');
 
-const log = Logger.getLogger(`${CONF.loggingNameSpace}/user`, {
+const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/user`, {
     level: 'debug',
 });
 
