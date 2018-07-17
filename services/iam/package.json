@@ -49,6 +49,7 @@
     "passport-local-mongoose": "5.0.0",
     "pug": "2.0.3",
     "querystring": "0.2.0",
+    "request": "^2.87.0",
     "request-promise": "4.2.2",
     "swagger-ui-express": "3.0.10",
     "uuid": "^3.3.2"
