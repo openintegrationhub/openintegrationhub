@@ -14,7 +14,7 @@ RUN if [ "$local" == "true" ]; \
     fi 
 WORKDIR /usr/src/app
 ADD . /usr/src/app
-RUN ln -s /tmp/node_modules /usr/src/app/
+RUN ln -s /tmp/node_modules /usr/src/app/ && chown -R 1000:1000 /usr/src/app
 # just for start
 USER node
 
