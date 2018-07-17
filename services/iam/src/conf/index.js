@@ -5,8 +5,10 @@ const pkg = require('../../package.json');
 const serviceClient = require('../oidc/util/clients/service-client');
 const { optional } = require('../util/check-env');
 
+const useHttps = optional('IAM_USE_SSL', 'false') === 'true';
 const port = optional('IAM_PORT', 3099);
-const baseurl = optional('IAM_BASEURL', 'https://127.0.0.1:3099');
+const baseurl = optional('IAM_BASEURL', `${useHttps ? 'https' : 'http'}://127.0.0.1:3099`);
+
 const apiBase = optional('IAM_APIBASE', 'api/v1');
 const oidcBase = optional('IAM_OIDCBASE', 'op');
 const originwhitelist = optional('IAM_ORIGINWHITELIST') ? optional('IAM_ORIGINWHITELIST').split(',') : [];
@@ -19,10 +21,9 @@ const config = {
         authType: optional('IAM_AUTH_TYPE', 'basic'),
         debug: optional('IAM_DEBUG', 'false') === 'true',
 
-        useHttps: optional('IAM_USE_SSL', 'false') === 'true',
-
         loggingNameSpace: 'accounts',
 
+        useHttps,
         apiBase,
         port,
 
@@ -48,7 +49,7 @@ const config = {
             firstname: 'sa',
             lastname: 'sa',
         },
-        keystoreFile: optional('IAM_OIDC_KEYSTORE_PATH') || path.join(__dirname, '../../', 'keystore/keystore.json'),
+        keystoreFile: optional('IAM_OIDC_KEYSTORE_PATH', path.join(__dirname, '../../', 'keystore/keystore.json')),
 
     },
     jwt: {
@@ -63,7 +64,6 @@ const config = {
     oidc: {
         serviceClient,
         base: oidcBase,
-        // keystorePath: optional('IAM_OIDC_KEYSTORE_PATH', path.resolve(__dirname, '../../', 'keystore/keystore.json')),
         dbPrefix: optional('IAM_OIDC_DBPREFIX', 'oidc'),
         acrValues: ['session', 'urn:mace:incommon:iap:bronze'],
         issuer: baseurl,
