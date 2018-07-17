@@ -6,6 +6,7 @@ const mockgoose = new Mockgoose(mongoose);
 const request = require('supertest')('http://localhost:3099');
 
 const CONSTANTS = require('./../src/constants');
+
 let conf = null;
 
 describe('Tenant Routes', () => {
@@ -15,7 +16,6 @@ describe('Tenant Routes', () => {
     let app = null;
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-        process.env.IAM_AUTH_TYPE = 'basic';
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 
         app = new App();

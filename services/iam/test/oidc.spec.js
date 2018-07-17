@@ -22,11 +22,12 @@ describe('basic OIDC test Suite', () => {
         process.env.IAM_BASEURL = 'http://127.0.0.1:3099';
         process.env.IAM_ACC_SERVICEACCOUNT_USERNAME = 'testuser@basaas.de';
         process.env.IAM_ACC_SERVICEACCOUNT_PASSWORD = 'testpass';
+        process.env.IAM_AUTH_TYPE = 'oidc';
         process.env.IAM_DEBUG = 'true';
 
         getHeader = `Basic ${encode(`${
             encodeURIComponent(process.env.IAM_SERVICE_CLIENT_ID)}:${encodeURIComponent(process.env.IAM_SERVICE_CLIENT_SECRET)}`)
-            }`;
+        }`;
 
         const { generateFile } = require('../src/util/keystore');
 

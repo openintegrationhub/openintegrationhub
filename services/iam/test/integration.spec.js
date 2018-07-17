@@ -14,7 +14,6 @@ describe('routes', () => {
     let app = null;
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-        process.env.IAM_AUTH_TYPE = 'basic';
         process.env.IAM_BASEURL = 'http://localhost';
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 
@@ -83,10 +82,10 @@ describe('routes', () => {
         });
 
         test('healthcheck', async () => {
-            const response = await request.get('/healthcheck')
+            await request.get('/healthcheck')
                 .set('Accept', /application\/json/)
                 .expect(200);
-                // expect(response.body).toBe(0);
+            // expect(response.body).toBe(0);
     
         });
     });
