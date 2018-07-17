@@ -62,6 +62,7 @@ class App {
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
             keepAlive: 120,
+            useNewUrlParser: true,
         });
 
         registerModels();
@@ -166,7 +167,7 @@ class App {
     }
     
     static async createMasterAccount() {   
-        if (!await Account.count()) {                       
+        if (!await Account.countDocuments()) {                       
             const admin = new Account({
                 username: conf.accounts.admin.username,
                 firstname: conf.accounts.admin.firstname,

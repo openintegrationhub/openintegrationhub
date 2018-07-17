@@ -1,5 +1,6 @@
 const path = require('path');
 
+const CONSTANTS = require('./../constants');
 const pkg = require('../../package.json');
 const serviceClient = require('../oidc/util/clients/service-client');
 const { optional } = require('../util/check-env');
@@ -15,7 +16,7 @@ const config = {
     getApiBaseUrl: () => `${baseurl}/${apiBase}`,
     getOidcBaseUrl: () => `${baseurl}/${oidcBase}`,
     general: {
-        authType: optional('IAM_AUTH_TYPE', 'oidc'),
+        authType: optional('IAM_AUTH_TYPE', 'basic'),
         debug: optional('IAM_DEBUG', 'false') === 'true',
 
         useHttps: optional('IAM_USE_SSL', 'false') === 'true',
@@ -47,11 +48,14 @@ const config = {
             firstname: 'sa',
             lastname: 'sa',
         },
+        keystoreFile: optional('IAM_OIDC_KEYSTORE_PATH') || path.join(__dirname, '../../', 'keystore/keystore.json'),
+
     },
     jwt: {
-        issuer: optional('IAM_ACC_SERVICEACCOUNT_USERNAME', 'service-iam@example.com'),
-        audience: optional('IAM_JWT_AUDIENCE', 'example.com'),
-        algorithm: optional('IAM_JWT_ALGORITHM', 'HS512'),
+        issuer: optional('IAM_BASEURL', 'https://www.example.com'),
+        audience: optional('IAM_JWT_AUDIENCE', 'service.example.com'),
+        algorithm: optional('IAM_JWT_ALGORITHM', 'HS256'),
+        algorithmType: optional('IAM_JWT_ALGORITHM_TYPE', CONSTANTS.JWT_ALGORITHMS.HMAC),
         expiresIn: optional('IAM_JWT_EXPIRES', '3h'),
         jwtsecret: optional('IAM_JWT_SECRET', 'example'),
         cookieName: optional('IAM_JWT_COOKIENAME', 'cookiename'),
@@ -59,7 +63,7 @@ const config = {
     oidc: {
         serviceClient,
         base: oidcBase,
-        keystorePath: optional('IAM_OIDC_KEYSTORE_PATH', path.resolve(__dirname, '../../', 'keystore/keystore.json')),
+        // keystorePath: optional('IAM_OIDC_KEYSTORE_PATH', path.resolve(__dirname, '../../', 'keystore/keystore.json')),
         dbPrefix: optional('IAM_OIDC_DBPREFIX', 'oidc'),
         acrValues: ['session', 'urn:mace:incommon:iap:bronze'],
         issuer: baseurl,

@@ -151,7 +151,6 @@ module.exports = {
             default: 
                 return next({ status: 400 });
         }
-
         if (payload) {
             req.__HEIMDAL__ = req.__HEIMDAL__ || {};
             req.__HEIMDAL__.token = req.headers.authorization;
