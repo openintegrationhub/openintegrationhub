@@ -8,8 +8,3 @@ Further description:
 - [ ] Criteria 1
 - [ ] Criteria 2
 - [ ] Criteria N
-
-**Definition of Done:**
-- [ ] All acceptance criteria has been fulfilled
-- [ ] All QA steps have been completed 
-- [ ] Code has been Open Sourced under [github.com/openintegrationhub](github.com/openintegrationhub)
