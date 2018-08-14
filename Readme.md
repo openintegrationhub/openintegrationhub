@@ -4,7 +4,18 @@ Standalone platform that runs flows build from [elastic.io](https://www.elastic.
 ## Platform requirements: 
 * Any kubernetes cluster (GCP/minikube/bare-metal cluster/whatwever). The only requirement is network access to docker hub registry.
 * kubectl command installed and configured to work with kubernetes cluster.
+* It is necessary to bind the clusterrole to the cluster-admin, otherwise starting the platform will result in authentification-problems since the created role does not have full permissions to run the declared verbs
+as the cluster-admin(operations@openintegrationhub.com) has, to do so, copy the following command: <br>
+```
+kubectl create clusterrolebinding flows-operator-clusterrolebinding --clusterrole=cluster-admin --user=operations@openintegrationhub.com
+```
+and
 
+```
+kubectl create clusterrolebinding flows-operator-rolebinding --clusterrole=cluster-admin --user=operations@openintegrationhub.com
+```
+
+* In general: all new rolebindings need to be binded to the cluster-admin
 ## Installation
 The whole platform is described as one json file with a set of kubernetes descriptors. To install (reinstall) platform:
 1. Clean out previous installation if required
