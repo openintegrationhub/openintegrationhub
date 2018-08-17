@@ -37,8 +37,8 @@ spec:
         - name: IAM_SESSION_COOKIE_SECRET
           valueFrom:
             secretKeyRef:
-              name: cookiesecrets
-              key: 'iam'
+              name: oidc-oih-iam-dev
+              key: 'cookiesecrets'
         - name: IAM_JWT_AUDIENCE
           value: example.com
         - name: IAM_JWT_COOKIENAME
