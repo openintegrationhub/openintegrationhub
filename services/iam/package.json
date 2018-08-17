@@ -38,7 +38,6 @@
     "express-session": "1.15.6",
     "jsonwebtoken": "8.2.2",
     "lodash": "4.17.10",
-    "memwatch-next": "0.3.0",
     "moment": "2.22.2",
     "mongodb": "3.1.1",
     "mongoose": "5.2.4",
