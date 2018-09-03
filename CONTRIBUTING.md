@@ -1,5 +1,4 @@
-# Contributing to Node.js
-
+# Contributing to Open Integration Hub
 Contributions to the Open Integration Hub including code, documentation for all types of Open Integration Hub
 contributors.
 
