@@ -11,16 +11,17 @@ This guide explains the process for contributing to the Node.js project's core
 
 ## [Code of Conduct](./CODE_OF_CONDUCT.md)
 
-The Open Integration Hub project has a [**code of conduct**](https://github.com/openintegrationhub/openintegrationhub/blob/master/CODE_OF_CONDUCT.md) that follows the `Contributor Covenant Code of Conduct`. 
+The Open Integration Hub project has a [**code of conduct**](https://github.com/openintegrationhub/openintegrationhub/blob/master/CODE_OF_CONDUCT.md) that follows the `Contributor Covenant Code of Conduct`.
 All contributors are expected to follow this code of conduct.
 
 
 ## Issues
 
-Issues in `openintegrationhub/openintegrationhub` are categorized in two types:  
+Issues in `openintegrationhub/openintegrationhub` are categorized in two types:
 
 1. Bug Reports: To report a bug, please click on **New Issue**, select the **bug report** template and complete it
-2. Open Tasks: To report an open task or feature request please click on **New Issue**, select the **Custom Issue Template** and complete it
+2. Open Tasks: To report an open task or feature request, please click on **New Issue**, select the **Custom Issue Template** and complete it
+3. Discussions/Open Questions: To start a new discussion or to flag an open question that needs answering, please click on **New Issue**, select the **Discussion/Open Question Template** and complete it
 
 ### Definition Of Done
 
@@ -35,6 +36,6 @@ Pull Requests are the way concrete changes are made to the repository.
 
 - Assign all development leads or the appropiate team lead to the pull request ([@drobiazko](https://github.com/drobiazko), [@sachmerz](https://github.com/drobiazko), [@hschmidthh](https://github.com/hschmidthh), [@philecs](https://github.com/hschmidthh))
 - If you don't know whom to assign, choose: [@philecs](https://github.com/hschmidthh)
-- Select an appropriate label (choose the dependent `service` and/or `framework`(e.g. Smart Data Framework) or if no current label fits choose `general`) 
+- Select an appropriate label (choose the dependent `service` and/or `framework`(e.g. Smart Data Framework) or if no current label fits choose `general`)
 
 <a id="developers-certificate-of-origin"></a>
