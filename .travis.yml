@@ -5,4 +5,4 @@ before_script:
   - cd services
   - cd iam
   - cd test
-script: nodejs integration.spec.js
+script: integration.spec.js
