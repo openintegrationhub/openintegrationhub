@@ -1,3 +1,8 @@
 language: node_js
 node_js:
   - "stable"
+before_script: 
+  - cd services
+  - cd iam
+  - cd test
+script: node_js integration.spec.js
