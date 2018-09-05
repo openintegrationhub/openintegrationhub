@@ -25,7 +25,7 @@ services:
     #  - nginxreverseproxy
     container_name: nginxserver
     build: ./nginx-server
-    restart: restart: unless-stopped
+    restart: unless-stopped
     # mounting icr-files inside nginxserver
     volumes:
       - ./icr-api/html/:/usr/share/nginx/html/
