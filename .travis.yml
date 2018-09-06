@@ -8,9 +8,4 @@ install:
 cache:
   directories:
     - "node_modules"
-before_script: 
-  - cd services
-  - cd iam
-  - cd test
-script: 
-  - node_js integration.spec.js
+script: node_js testing.js
