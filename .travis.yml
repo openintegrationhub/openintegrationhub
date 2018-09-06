@@ -1,8 +1,13 @@
 language: node_js
 node_js:
   - "stable"
+before_install:
+  - npm i -g npm@latest
 install:
   - npm install
+cache:
+  directories:
+    - "node_modules"
 before_script: 
   - cd services
   - cd iam
