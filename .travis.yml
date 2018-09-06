@@ -8,4 +8,4 @@ install:
 cache:
   directories:
     - "node_modules"
-script: node_js testing.js
+script: node_js Testing.js
