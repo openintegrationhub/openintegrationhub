@@ -1,8 +1,10 @@
 language: node_js
+sudo: enabled
 node_js:
   - "stable"
 before_install:
   - npm i -g npm@latest
 install:
   - npm install
+sudo apt install npm
 script: nodejs Testing.js
