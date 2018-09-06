@@ -1,7 +1,7 @@
 language: node_js
-sudo: enabled
 node_js:
   - "iojs"
+  - "7"
 install:
   - npm install
 script: nodejs Testing.js
