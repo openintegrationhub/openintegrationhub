@@ -1,14 +1,8 @@
 language: node_js
-sudo: enabled
 node_js:
   - "stable"
 before_install:
   - npm i -g npm@latest
-  - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-  - sudo apt-get install -y nodejs
 install:
   - npm install
-cache:
-  directories:
-    - "node_modules"
 script: nodejs Testing.js
