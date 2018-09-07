@@ -1,7 +1,20 @@
 language: node_js
 node_js:
-  - "iojs"
-  - "7"
-install:
-  - npm install
-script: node Testing.js
+  - "node"
+before_install:
+  - git diff --name-only $TRAVIS_COMMIT_RANGE) > gitchanges.txt 
+  - yarn
+  - node ./scripts/getChanges.js
+  
+jobs:
+  include:
+    - stage: test
+      script: echo "test somthing"
+    - stage: deploy
+      script: echo "deloy somthing"
+    - stage: clean
+      script: rm gitchanges.txt
+
+branches:
+  only:
+  - master

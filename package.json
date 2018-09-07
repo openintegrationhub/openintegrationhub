@@ -1,0 +1,25 @@
+{
+	"private": true,
+	"scripts": {
+		"bootstrap": "lerna bootstrap",
+		"test": "lerna run test",
+		"prepare": "lerna run prepare",
+		"clean": "rimraf packages/**/lib",
+		"watch:basaasapp": "cd packages/basaas-app; yarn watch",
+		"watch:workplaceapi": "cd packages/workplace-api; yarn watch",
+		"watch:workplace": "cd packages/workplace; yarn watch"
+	},
+	"devDependencies": {
+		"@types/node": "^8.0.28",
+		"ava": "^0.22.0",
+		"lerna": "^2.11.0",
+		"rimraf": "^2.6.2",
+		"typescript": "^2.8.1"
+	},
+	"workspaces": [
+		"services/*"
+	],
+	"dependencies": {
+		"child_process": "^1.0.2"
+	}
+}
