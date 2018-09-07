@@ -4,4 +4,4 @@ node_js:
   - "7"
 install:
   - npm install
-script: nodejs Testing.js
+script: node Testing.js
