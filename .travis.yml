@@ -16,11 +16,13 @@ jobs:
       - node ./scripts/getChanges.js
       script: 
       - cat ./gitchanges.txt
+      - cat ./scripts/toBuild.json
       - ls -la ./scripts
     - stage: Deploy
       script: 
       - echo "Deploy to Kubernetes"
-      - ls -la
+      - ls -la ./scripts
+      - cat ./scripts/toBuild.json
 branches:
   only:
   - master
