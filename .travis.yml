@@ -9,7 +9,7 @@ before_install:
 jobs:
   include:
     - stage: Test
-      script: echo "test somthing"
+      script: yarn test
     - stage: Build-Upload
       before_script:
       - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
