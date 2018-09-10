@@ -3,11 +3,7 @@
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
 		"test": "lerna run test",
-		"prepare": "lerna run prepare",
-		"clean": "rimraf packages/**/lib",
-		"watch:basaasapp": "cd packages/basaas-app; yarn watch",
-		"watch:workplaceapi": "cd packages/workplace-api; yarn watch",
-		"watch:workplace": "cd packages/workplace; yarn watch"
+		"prepare": "lerna run prepare"
 	},
 	"devDependencies": {
 		"@types/node": "^8.0.28",
