@@ -5,3 +5,4 @@ node_modules
 .idea
 scripts/toBuild.json
 gitchanges.txt
+lerna*.log

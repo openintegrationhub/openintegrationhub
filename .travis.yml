@@ -1,20 +1,26 @@
+sudo: true
+dist: trusty
 language: node_js
 node_js:
   - "8"
 before_install:
-  - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
   - yarn
-  - node ./scripts/getChanges.js
   
 jobs:
   include:
-    - stage: test
+    - stage: Test
       script: echo "test somthing"
-    - stage: deploy
-      script: echo "deloy somthing"
-    - stage: clean
-      script: rm gitchanges.txt
-
+    - stage: Build-Upload
+      before_script:
+      - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
+      - node ./scripts/getChanges.js
+      script: 
+      - cat ./gitchanges.txt
+      - ls -la ./scripts
+    - stage: Deploy
+      script: 
+      - echo "Deploy to Kubernetes"
+      - ls -la
 branches:
   only:
   - master
