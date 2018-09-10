@@ -1,5 +1,5 @@
 {
-  "name": "oih-iam-service",
+  "name": "iam-service",
   "version": "1.0.0",
   "description": "Identity and Access Management Service",
   "main": "index.js",
