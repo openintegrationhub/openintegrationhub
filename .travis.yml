@@ -21,8 +21,7 @@ jobs:
     - stage: Deploy
       script: 
       - echo "Deploy to Kubernetes"
-      - ls -la ./scripts
-      - cat ./scripts/toBuild.json
+      - echo $TRAVIS_BUILD_ID $TRAVIS_BUILD_NUMBER $TRAVIS_JOB_ID $TRAVIS_JOB_NUMBER
 branches:
   only:
   - master
