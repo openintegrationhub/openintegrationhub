@@ -17,11 +17,11 @@ jobs:
       script: 
       - cat ./gitchanges.txt
       - cat ./scripts/toBuild.json
-      - ls -la ./scripts
+      - node ./scripts/build.js
     - stage: Deploy
       script: 
       - echo "Deploy to Kubernetes"
-      - echo $TRAVIS_BUILD_ID $TRAVIS_BUILD_NUMBER $TRAVIS_JOB_ID $TRAVIS_JOB_NUMBER
+      - echo $TRAVIS_BUILD_NUMBER 
 branches:
   only:
   - master

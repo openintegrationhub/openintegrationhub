@@ -1,7 +1,4 @@
 const fs = require('fs');
-const moment = require('moment');
-
-const timestamp = moment().format('YYYYMMDDHHmm');
 const data = fs.readFileSync(`${__dirname}/../gitchanges.txt`).toString('utf8');
 const readjson = fs.readdirSync(`${__dirname}/../services`);
 const result = [];
@@ -17,8 +14,6 @@ readjson.forEach((service) => {
 
         result.push({
             name: service,
-            build: true,
-            buildversion: `${temp.version}-${timestamp}`,
         });
     }
 });
