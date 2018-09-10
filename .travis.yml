@@ -5,12 +5,17 @@ node_js:
   - "8"
 before_install:
   - yarn
-  
+stages:
+  - test
+  - name: build
+    if: branch = master
+  - name: deploy
+    if: branch = master  
 jobs:
   include:
-    - stage: Test
+    - stage: test
       script: yarn test
-    - stage: Build-Upload
+    - stage: build
       before_script:
       - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
       - node ./scripts/getChanges.js
@@ -18,10 +23,7 @@ jobs:
       - cat ./gitchanges.txt
       - cat ./scripts/toBuild.json
       - node ./scripts/build.js
-    - stage: Deploy
+    - stage: deploy
       script: 
       - echo "Deploy to Kubernetes"
       - echo $TRAVIS_BUILD_NUMBER 
-branches:
-  only:
-  - master
