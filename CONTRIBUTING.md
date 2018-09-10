@@ -33,8 +33,8 @@ The definition of done for each issue:
 
 Pull Requests are the way concrete changes are made to the repository.
 
-- Assign all development leads or the appropiate team lead to the pull request ([@drobiazko](https://github.com/drobiazko), [@sachmerz](https://github.com/drobiazko), [@hschmidthh](https://github.com/hschmidthh), [@philecs](https://github.com/hschmidthh))
-- If you don't know whom to assign, choose: [@philecs](https://github.com/hschmidthh)
+- Assign all development leads or the appropiate team lead to the pull request ([@drobiazko](https://github.com/drobiazko), [@sachmerz](https://github.com/sachmerz), [@hschmidthh](https://github.com/hschmidthh), [@philecs](https://github.com/philecs))
+- If you don't know whom to assign, choose: [@philecs](https://github.com/philecs)
 - Select an appropriate label (choose the dependent `service` and/or `framework`(e.g. Smart Data Framework) or if no current label fits choose `general`) 
 
 <a id="developers-certificate-of-origin"></a>
