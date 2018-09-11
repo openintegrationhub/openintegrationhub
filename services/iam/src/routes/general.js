@@ -16,13 +16,14 @@ const keystore = require('./../util/keystore');
 
 router.get('/', (req, res) => {
 
-    res
-        .send(
-            pug.renderFile(
-                path.join(__dirname, '../views/home.pug'), {
-                },
-            ),
-        );
+    res.sendStatus(200);
+    // res
+    //     .send(
+    //         pug.renderFile(
+    //             path.join(__dirname, '../views/home.pug'), {
+    //             },
+    //         ),
+    //     );
 });
 
 router.get('/.well-known/jwks.json', async (req, res) => {
