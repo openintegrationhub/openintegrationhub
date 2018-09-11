@@ -15,21 +15,14 @@ const AccountDAO = require('./../dao/users');
 const keystore = require('./../util/keystore');
 
 router.get('/', (req, res) => {
-    try {
-        console.log('TestPUG: ', pug.renderFile(path.join(__dirname, '../views/home.pug'), {}));
-    } catch (error) {
-        console.log('PUG : ', error);
-    }   
-
-    res.sendStatus(200);
     
-    // res
-    //     .send(
-    //         pug.renderFile(
-    //             path.join(__dirname, '../views/home.pug'), {
-    //             },
-    //         ),
-    //     );
+    res
+        .send(
+            pug.renderFile(
+                path.join(__dirname, '../views/home.pug'), {
+                },
+            ),
+        );
 });
 
 router.get('/.well-known/jwks.json', async (req, res) => {

@@ -4,8 +4,8 @@
   "description": "Identity and Access Management Service",
   "main": "index.js",
   "scripts": {
-    "watch": "npm run watch-scss & nodemon src/index.js --watch ./ ",
-    "watch-scss": "npm run build-css -- --watch",
+    "watch": "yarn watch-scss & nodemon src/index.js --watch ./ ",
+    "watch-scss": "yarn build-css -- --watch",
     "watch-test": "jest --watch --runInBand",
     "start": "node src/index.js",
     "build-css": "node-sass-chokidar ./src/views/style -o ./src/views/style",
@@ -13,7 +13,7 @@
     "task": "node",
     "generate-keystore": "node -e 'require(\"./src/oidc/util/generate-keystore\").generateFile()'",
     "generate-nodemon-env": "node -e 'require(\"./src/util/nodemon-env\").saveToFile()'",
-    "test": "npm run lint && jest --silent=false --runInBand --forceExit",
+    "test": "yarn build-css && yarn lint && jest --silent=false --runInBand --forceExit",
     "coverage": "jest --runInBand --coverage --forceExit",
     "postinstall": "node ./src/app/dev/generateKeys.js"
   },
