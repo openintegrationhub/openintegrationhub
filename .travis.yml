@@ -26,6 +26,9 @@ jobs:
       - cat ./scripts/toBuild.json
       - node ./scripts/build.js
     - stage: deploy
+      before_script:
+      - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
+      - node ./scripts/getChanges.js
       script: 
       - echo "Deploy to Kubernetes"
       - echo $TRAVIS_BUILD_NUMBER 

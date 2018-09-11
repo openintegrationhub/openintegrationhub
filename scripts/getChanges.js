@@ -14,6 +14,7 @@ readjson.forEach((service) => {
 
         result.push({
             name: service,
+            version: `${temp.version}_${process.env.TRAVIS_BUILD_NUMBER ? process.env.TRAVIS_BUILD_NUMBER : 'dev'}`
         });
     }
 });
