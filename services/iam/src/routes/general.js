@@ -19,6 +19,7 @@ router.get('/', (req, res) => {
     res.sendStatus(200);
     console.log('TestPUG: ', pug.renderFile(
         path.join(__dirname, '../views/home.pug'), {}));
+    console.log('PATHJOIN:', path.join(__dirname, '../views/home.pug'));
     console.log('PATH:', __dirname);
     // res
     //     .send(
