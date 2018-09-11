@@ -17,6 +17,7 @@ const keystore = require('./../util/keystore');
 router.get('/', (req, res) => {
 
     res.sendStatus(200);
+    console.log('TestPUG: ', path.join(__dirname, '../views/home.pug'));
     // res
     //     .send(
     //         pug.renderFile(

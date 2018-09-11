@@ -6,7 +6,7 @@ if (services && services.length > 0) {
 
 
     services.forEach((service)=>{
-        const version = require(`../service/${service.name}/package.json`);
+        const version = require(`${__dirname}/../service/${service.name}/package.json`);
         console.log(service.name);
         // command for build needs to be defined
         execSync(`cd ${__dirname}/../services/${service.name}/ && echo $PWD`, { stdio: [0, 1, 2] });
