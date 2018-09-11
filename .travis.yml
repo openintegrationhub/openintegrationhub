@@ -15,7 +15,7 @@ stages:
 jobs:
   include:
     - stage: test
-      script: for D in `ls services/`; do cd ./services/$D && yarn test && cd ../..; done
+      script:  yarn test
     - stage: build
       before_script:
       - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
