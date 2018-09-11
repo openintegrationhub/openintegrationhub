@@ -15,10 +15,12 @@ const AccountDAO = require('./../dao/users');
 const keystore = require('./../util/keystore');
 
 router.get('/', (req, res) => {
-//     console.log('TestPUG: ', pug.renderFile(
-//         path.join(__dirname, '../views/home.pug'), {}));
-    console.log('PATHJOIN:', path.join(__dirname, '../views/home.pug'));
-    console.log('PATH:', __dirname);
+    try {
+        console.log('TestPUG: ', pug.renderFile(path.join(__dirname, '../views/home.pug'), {}));
+    } catch (error) {
+        console.log('PUG : ', error);
+    }   
+
     res.sendStatus(200);
     
     // res
