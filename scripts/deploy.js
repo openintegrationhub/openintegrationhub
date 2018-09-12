@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+const exec = require('child_process').exec;
 const services = require(`${__dirname}/toBuild.json`);
 
 if (services && services.length > 0) {
