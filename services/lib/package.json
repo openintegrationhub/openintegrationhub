@@ -1,19 +1,17 @@
 {
-  "name": "webhooks",
+  "name": "lib",
   "version": "1.0.0",
-  "description": "Standalone version of elastic.io platform",
+  "description": "Common part for all services",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\"",
-    "start": "node index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "elastic.io",
   "license": "APL-2.0",
   "dependencies": {
-    "body-parser": "1.18.3",
-    "express": "4.16.3",
-    "node-uuid": "1.4.7",
-    "lib": "file:../lib"
+    "amqplib": "0.5.2",
+    "bunyan": "1.8.12",
+    "kubernetes-client": "6.1.0"
   },
   "devDependencies": {
     "eslint": "4.5.0",

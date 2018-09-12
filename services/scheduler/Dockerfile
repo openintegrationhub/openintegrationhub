@@ -1,6 +1,7 @@
 FROM node:8-alpine AS base
 WORKDIR /usr/src/scheduler
-COPY package.json package-lock.json index.js QueueCreator.js ./
+COPY lib ../lib
+COPY scheduler/package.json scheduler/package-lock.json scheduler/index.js ./
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package

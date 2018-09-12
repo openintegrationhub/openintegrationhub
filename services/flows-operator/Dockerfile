@@ -1,6 +1,7 @@
 FROM node:8-alpine AS base
 WORKDIR /usr/src/flows-operator
-COPY package.json package-lock.json index.js QueueCreator.js ./
+COPY lib ../lib
+COPY flows-operator/package.json flows-operator/package-lock.json flows-operator/index.js ./ 
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package

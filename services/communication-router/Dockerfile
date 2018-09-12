@@ -1,6 +1,7 @@
 FROM node:8-alpine AS base
 WORKDIR /usr/src/communication-router
-COPY package.json package-lock.json QueueCreator.js index.js ./
+COPY lib ../lib
+COPY communication-router/package.json communication-router/package-lock.json communication-router/index.js ./
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package

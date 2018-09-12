@@ -189,13 +189,13 @@ Flow definition consists of flow id and actually flow definition. Flow id, as al
 ## build
 To build platform just run next commands
 ```shell
-docker build -t openintegrationhub/flows-operator:latest services/flows-operator
+docker build -t openintegrationhub/flows-operator:latest  -f ./services/flows-operator/Dockerfile  ./services/
 docker push openintegrationhub/flows-operator:latest
 
-docker build -t openintegrationhub/scheduler:latest services/scheduler
+docker build -t openintegrationhub/scheduler:latest  -f ./services/scheduler/Dockerfile  ./services/
 docker push openintegrationhub/scheduler:latest
 
-docker build -t openintegrationhub/communication-router:latest services/communication-router
+docker build -t openintegrationhub/communication-router:latest  -f ./services/communication-router/Dockerfile  ./services/
 docker push openintegrationhub/communication-router:latest
 ```
 
