@@ -1,4 +1,3 @@
-sudo: true
 dist: trusty
 language: node_js
 node_js:
@@ -18,17 +17,15 @@ jobs:
     - stage: test
       script:  yarn test
     - stage: build
+      services: docker
       before_script:
       - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
       - node ./scripts/getChanges.js
       script: 
-      - cat ./gitchanges.txt
-      - cat ./scripts/toBuild.json
       - node ./scripts/build.js
     - stage: deploy
       before_script:
       - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
       - node ./scripts/getChanges.js
       script: 
-      - echo "Deploy to Kubernetes"
-      - echo $TRAVIS_BUILD_NUMBER 
+      - node ./scripts/deploy.js
