@@ -5,6 +5,8 @@ node_js:
 cache: yarn
 before_install:
   - yarn
+  - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
+  - node ./scripts/getChanges.js
 install: true
 stages:
   - test
@@ -18,14 +20,8 @@ jobs:
       script:  yarn test
     - stage: build
       services: docker
-      before_script:
-      - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
-      - node ./scripts/getChanges.js
       script: 
       - node ./scripts/build.js
     - stage: deploy
-      before_script:
-      - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
-      - node ./scripts/getChanges.js
       script: 
       - node ./scripts/deploy.js
