@@ -9,11 +9,11 @@ if (services && services.length > 0) {
 
         execSync(`cd ${__dirname}/../services/${service.name}/ && yarn build`, { stdio: [0, 1, 2] });
         execSync('echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin', { stdio: [0, 1, 2] });
-        execSync(`cd ${__dirname}/../services/${service.name}/ && docker build -t $DOCKER_USERNAME/${service.name}:${service.version} .`, { stdio: [0, 1, 2] });
-        execSync(`docker tag $DOCKER_USERNAME/${service.name}:${service.version} $DOCKER_USERNAME/${service.name}:latest`, { stdio: [0, 1, 2] });
+        execSync(`cd ${__dirname}/../services/${service.name}/ && docker build -t openintegrationhub/${service.name}:${service.version} .`, { stdio: [0, 1, 2] });
+        execSync(`docker tag openintegrationhub/${service.name}:${service.version} openintegrationhub/${service.name}:latest`, { stdio: [0, 1, 2] });
 
-        execSync(`docker push $DOCKER_USERNAME/${service.name}:${service.version}`, { stdio: [0, 1, 2] });
-        execSync(`docker push $DOCKER_USERNAME/${service.name}:latest`, { stdio: [0, 1, 2] });
+        execSync(`docker push openintegrationhub/${service.name}:${service.version}`, { stdio: [0, 1, 2] });
+        execSync(`docker push openintegrationhub/${service.name}:latest`, { stdio: [0, 1, 2] });
     });
 } else {
     console.log('No Changes to Services!')
