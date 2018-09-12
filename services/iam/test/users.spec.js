@@ -254,4 +254,3 @@ describe('User Routes', () => {
         expect(response.statusCode).toBe(500);
     });
 });
-
