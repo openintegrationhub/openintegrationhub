@@ -28,6 +28,7 @@ The definition of done for each issue:
 
 - Workgroup consensus about output (has to be accepted)
 - Output published on GitHub under github.com/openintegrationhub
+- All acceptance criteria have vben fulfilled
 
 #### DoD Documents
 
@@ -37,6 +38,13 @@ In addition to the previously defined definition of done some rules only apply f
 - Services are described in a common form using the [microservice template](https://github.com/openintegrationhub/Microservices/blob/master/MicroserviceDescriptionTemplate.md)
 - All predefined section of the template are filled
 - All concepts must include information about the creator, last modifier and last modification date
+
+#### DoD Code
+
+In addition to the previously defined definition of done some rules only apply for outputs of type document:
+
+- Code is compliant with [styleguide](https://github.com/openintegrationhub/openintegrationhub/blob/DevOps-Guideline/Guidelines/styleGuide.md) and [devops/operations guidelines](https://github.com/openintegrationhub/openintegrationhub/blob/DevOps-Guideline/Guidelines/serviceOperations.md)
+- Documentation have been updated
 
 ## Pull Requests
 
