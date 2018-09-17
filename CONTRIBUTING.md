@@ -26,9 +26,9 @@ Issues in `openintegrationhub/openintegrationhub` are categorized in two types:
 
 The definition of done for each issue:
 
-- Workgroup consensus about output (has to be accepted)
+- Workgroup consensus about output (has to be accepted) i.e. each teamlead approved the pull request
+- All acceptance criteria have been fulfilled
 - Output published on GitHub under github.com/openintegrationhub
-- All acceptance criteria have vben fulfilled
 
 #### DoD Documents
 
@@ -43,8 +43,11 @@ In addition to the previously defined definition of done some rules only apply f
 
 In addition to the previously defined definition of done some rules only apply for outputs of type document:
 
-- Code is compliant with [styleguide](https://github.com/openintegrationhub/openintegrationhub/blob/DevOps-Guideline/Guidelines/styleGuide.md) and [devops/operations guidelines](https://github.com/openintegrationhub/openintegrationhub/blob/DevOps-Guideline/Guidelines/serviceOperations.md)
+- Code is compliant with [styleguide](Guidelines/styleGuide.md) and [devops/operations guidelines](Guidelines/serviceOperations.md)
 - Documentation have been updated
+- New modules are defined in package.json
+- All new features are tested in development mode
+- Tests are written for all new features (for all acceptance criteria)
 
 ## Pull Requests
 
