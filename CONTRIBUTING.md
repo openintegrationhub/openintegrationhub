@@ -29,6 +29,15 @@ The definition of done for each issue:
 - Workgroup consensus about output (has to be accepted)
 - Output published on GitHub under github.com/openintegrationhub
 
+#### DoD Documents
+
+In addition to the previously defined definition of done some rules only apply for outputs of type document:
+
+- (Microservice)concept have been published under github.com/openintegrationhub/microservices
+- Services are described in a common form using the [microservice template](https://github.com/openintegrationhub/Microservices/blob/master/MicroserviceDescriptionTemplate.md)
+- All predefined section of the template are filled
+- All concepts must include information about the creator, last modifier and last modification date
+
 ## Pull Requests
 
 Pull Requests are the way concrete changes are made to the repository.
