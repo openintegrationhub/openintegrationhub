@@ -46,8 +46,9 @@ In addition to the previously defined definition of done some rules only apply f
 - Code is compliant with [styleguide](Guidelines/styleGuide.md) and [devops/operations guidelines](Guidelines/serviceOperations.md)
 - Documentation have been updated
 - New modules are defined in package.json
-- All new features are tested in development mode
+- All new features are tested in development mode (unit and functional tests)
 - Tests are written for all new features (for all acceptance criteria)
+- No critical `bugs` are open
 
 ## Pull Requests
 
