@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
+    "build": "echo \"No Build defined\"",
     "start": "node app.js"
   },
   "dependencies": {
