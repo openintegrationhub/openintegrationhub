@@ -1,3 +1,4 @@
+const EventEmitter = require('events').EventEmitter;
 const express = require('express');
 const uuid = require('node-uuid');
 
@@ -56,6 +57,43 @@ class HttpApi {
     }
 }
 
+class Indexer {
+    constructor() {
+        this._index = new Map();
+        this._queue = [];
+    }
+    addUpdate(item) {
+    }
+    remove(item) {
+    }
+    confirm(item) {
+    }
+    pop(item) {
+    }
+   
+}
+
+class Informer extends EventEmitter {
+    constructor(app) {
+        super();
+    }
+    run() {
+    }
+    _attachToEventStream() {
+    }
+    _detachEventStream() {
+    }
+    _handleEvent() {
+    }
+    _loop() {
+        //FIXME per loop timeout;
+    }
+    _loadList() {
+    }
+    _handleItem () {
+    }
+}
+
 async function loop (body, logger, loopInterval) {
     logger.info('loop TICK');
     try {
@@ -75,6 +113,9 @@ class FlowOperator {
         this._batchClient = app.getK8s().getBatchClient();
         this._queueCreator = app.getQueueCreator();
         this._Config = app.getConfig();
+        this._informer = new Informer(app);
+        await this._informer.run();
+        this._informer.on('flow', this._handleFlow.bind(this));
         loop(this._loopBody.bind(this), this._logger, 5000);
     }
     _getFlowIdFromJob(job) {
@@ -84,17 +125,70 @@ class FlowOperator {
         return job.spec.template.spec.containers[0].env.find((pair) => pair.name == 'ELASTICIO_STEP_ID').value;
     }
 
-    async _loopBody() {
-        const allJobs = (await this._batchClient.jobs.get()).body.items;
-        const jobsIndex = allJobs.reduce((index, job) => {
+    _buildJobIndex(allJobs) {
+        return allJobs.reduce((index, job) => {
             const flowId = this._getFlowIdFromJob(job);
             const stepId = this._getStepIdFromJob(job);
             index[flowId] = index[flowId] || {};
             index[flowId][stepId] = job;
             return index;
         }, {});
-        const flows = (await this._crdClient.flows.get()).body.items;
-        const flowsIndex = flows.reduce((index, flow) => {
+    }
+
+    async _handleFlow (flow, jobsIndex) {
+        //if revision has been changed then -- then undeploy everything, and redeploy again
+        //if marked as deleted -- kill them all
+        //if there are not enough running jobs -- start missing. 
+        //"deletionGracePeriodSeconds": 0,               
+        //"deletionTimestamp": "2018-09-13T09:54:10Z",   
+        if (only starting) {
+            try {
+                flow.metadata.finalizers.push('finalizer.flows.elastic.io'); 
+                flow.save();
+                //start everything
+                flow.status = {
+                    conditions: [{
+                        Running: true,
+                        date: new Date()
+                    }]
+                }
+            
+            } catch (e) {
+                flow.status = {
+                    conditions: [{
+                        error: e,
+                        date: new Date()
+                    }]  
+                }
+            }
+        }
+        if (flow.metadata.deletionTimestamp) {
+            try {
+                flow.metadata.finalizers = flow.metadata.finalizers.filter(finalizer => finalizer !== 'finalizer.flows.elastic.io');
+                flow.status = {
+                    deleted: true 
+                };
+            } catch (e) {
+                flow.status = {
+                    conditions: [{
+                        error: e
+                        date: new Date()
+                    }] 
+                };
+            }
+        }
+        const queues =  await this._queueCreator.makeQueuesForTheTask(flow.flowModel);
+        const flowId = flow.flowModel.id;
+            for (let step of flow.flowModel.nodes) {
+                if (!jobsIndex[flowId] || !jobsIndex[flowId][step.id]) {
+                    await this._deployStep(flow.flowModel, step, queues);
+                }
+            }
+
+    }
+
+    _buildFlowsIndex(allFlows) {
+        return allFlows.reduce((index, flow) => {
             flow.flowModel = new Flow(flow);
             const flowId = flow.flowModel.id;
             (flow.flowModel.nodes || []).forEach((step) => {
@@ -103,15 +197,11 @@ class FlowOperator {
             });
             return index;
         }, {});
-        for (let flow of flows) {
-            const queues =  await this._queueCreator.makeQueuesForTheTask(flow.flowModel);
-            const flowId = flow.flowModel.id;
-            for (let step of flow.flowModel.nodes) {
-                if (!jobsIndex[flowId] || !jobsIndex[flowId][step.id]) {
-                    await this._deployStep(flow.flowModel, step, queues);
-                }
-            }
-        }
+
+    }
+
+    async _removeLostJobs(allJobs, allFlows) {
+        const flowsIndex = this._buildFlowsIndex(allFlows);
         for (let job of allJobs) {
             const flowId = this._getFlowIdFromJob(job);
             const stepId = this._getStepIdFromJob(job);
@@ -119,6 +209,18 @@ class FlowOperator {
                 await this._undeployJob(job);    
             }        
         }
+    }
+
+    async _loopBody() {
+        //TODO any step here blocks all the job, that's shit. Tiemouts, multiple execution threads with limits for 
+        //paralel jobs not to destroy backend;
+        const allJobs = (await this._batchClient.jobs.get()).body.items;
+        const jobIndex = this._buildJobIndex(allJobs);
+        const flows = (await this._crdClient.flows.get()).body.items;
+        for (let flow of flows) {
+            await this._handleFlow(flow, jobIndex);
+        }
+        await this._removeLostJobs();
     }
 
     async _undeployJob(job) {
