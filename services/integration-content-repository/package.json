@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\"",
     "start": "node app.js"
   },
   "dependencies": {
