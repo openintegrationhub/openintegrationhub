@@ -49,5 +49,6 @@ In order to be able to build each service independently from each other, the fol
   
 ### BMPN model: Continuous integration & deployment process with integrated backlog(CES)
 
+  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/DennisCES-Documentation-Build-Process/CI/CD/Assets/BuildProcess.svg" alt="mm"/>
 
 
