@@ -18,6 +18,7 @@
 ### Introduction
 
 To make sure all committe it seamlessly and independent from each other onto Github, we need a general-accepted build and deploy process. At the end of this file a BPMN model describing the whole process can be found. <br>
+For further information regarding different docker build, pipelines, kubernetes service defintions, monitoring or scaling, please have a look at our [devOps guidelines](https://github.com/openintegrationhub/openintegrationhub/blob/DevOps-Guideline/Guidelines/serviceOperations.md).   
 
 
 ### Requirements for mono-repo
@@ -41,7 +42,7 @@ In order to be able to build each service independently from each other, the fol
   - Build script (js)
   - Deploy as Container (js)
   - Integration into kubernetes cluster
-* Each build needs to be tagged with the service name and version number (link to dev-guide: command for tagging with name and version"-t...")
+* Each docker build needs to be tagged with the service name and version number as it can be seen here: [devOps guidelines](https://github.com/openintegrationhub/openintegrationhub/blob/DevOps-Guideline/Guidelines/serviceOperations.md)
   
   
 ### CI/CD process with integrated backlog
