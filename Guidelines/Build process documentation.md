@@ -32,6 +32,8 @@ In order to be able to build each service independently from each other, the fol
 * Existing "eslintrc.json"-file
 * Existing "yarn.lock" in the root folder(openintegrationhub)
 
+For a better understanding, you can check out our ["Identity and Access Management"-microservice](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/iam)
+
 
 ### Rules for committing 
 
