@@ -11,5 +11,6 @@ module.exports = {
     Flow,
     App,
     AMQPService,
-    K8sService
+    K8sService,
+    Config
 };

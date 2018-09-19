@@ -1,4 +1,4 @@
-const EventEmitter = require('events').EventEmitter;
+const _ = require('lodash');
 const express = require('express');
 const uuid = require('node-uuid');
 
@@ -10,8 +10,10 @@ const {
     K8sService,
     AMQPService
 } = Lib;
+const ServiceConfig = require('./Config.js');
 
 const SELF_URL= process.env.API_URI || 'http://api-service.platform.svc.cluster.local:1234';
+const FINALIZER_NAME = 'finalizer.flows.elastic.io';
 
 class HttpApi {
     constructor(app) {
@@ -57,42 +59,6 @@ class HttpApi {
     }
 }
 
-class Indexer {
-    constructor() {
-        this._index = new Map();
-        this._queue = [];
-    }
-    addUpdate(item) {
-    }
-    remove(item) {
-    }
-    confirm(item) {
-    }
-    pop(item) {
-    }
-   
-}
-
-class Informer extends EventEmitter {
-    constructor(app) {
-        super();
-    }
-    run() {
-    }
-    _attachToEventStream() {
-    }
-    _detachEventStream() {
-    }
-    _handleEvent() {
-    }
-    _loop() {
-        //FIXME per loop timeout;
-    }
-    _loadList() {
-    }
-    _handleItem () {
-    }
-}
 
 async function loop (body, logger, loopInterval) {
     logger.info('loop TICK');
@@ -112,10 +78,7 @@ class FlowOperator {
         this._crdClient = app.getK8s().getCRDClient();
         this._batchClient = app.getK8s().getBatchClient();
         this._queueCreator = app.getQueueCreator();
-        this._Config = app.getConfig();
-        this._informer = new Informer(app);
-        await this._informer.run();
-        this._informer.on('flow', this._handleFlow.bind(this));
+        this._config = app.getConfig();
         loop(this._loopBody.bind(this), this._logger, 5000);
     }
     _getFlowIdFromJob(job) {
@@ -136,55 +99,60 @@ class FlowOperator {
     }
 
     async _handleFlow (flow, jobsIndex) {
+        const flowModel = new Flow(flow);
         //if revision has been changed then -- then undeploy everything, and redeploy again
         //if marked as deleted -- kill them all
         //if there are not enough running jobs -- start missing. 
         //"deletionGracePeriodSeconds": 0,               
         //"deletionTimestamp": "2018-09-13T09:54:10Z",   
-        if (only starting) {
-            try {
-                flow.metadata.finalizers.push('finalizer.flows.elastic.io'); 
-                flow.save();
-                //start everything
-                flow.status = {
-                    conditions: [{
-                        Running: true,
-                        date: new Date()
-                    }]
-                }
-            
-            } catch (e) {
-                flow.status = {
-                    conditions: [{
-                        error: e,
-                        date: new Date()
-                    }]  
-                }
-            }
-        }
         if (flow.metadata.deletionTimestamp) {
-            try {
-                flow.metadata.finalizers = flow.metadata.finalizers.filter(finalizer => finalizer !== 'finalizer.flows.elastic.io');
-                flow.status = {
-                    deleted: true 
-                };
-            } catch (e) {
-                flow.status = {
-                    conditions: [{
-                        error: e
-                        date: new Date()
-                    }] 
-                };
+            for (let step of flowModel.nodes) {
+                console.log('going to un deploy', flowModel.id, step.id);
+                await this._undeployJob({
+                    metadata: {
+                        name: (flowModel.id + '.' + step.id).toLowerCase().replace(/[^0-9a-z]/g, '')
+                    } 
+                });                  
             }
-        }
-        const queues =  await this._queueCreator.makeQueuesForTheTask(flow.flowModel);
-        const flowId = flow.flowModel.id;
-            for (let step of flow.flowModel.nodes) {
-                if (!jobsIndex[flowId] || !jobsIndex[flowId][step.id]) {
-                    await this._deployStep(flow.flowModel, step, queues);
+            await this._queueCreator.destroyQueuesForTask(flowModel);
+            //FIXME remove unknown jobs
+
+            flow.metadata.finalizers = (flow.metadata.finalizers || []).filter(finalizer => finalizer !== FINALIZER_NAME);
+            //FIXME make sure 409 works. So non-sequential updates should go into next iteration
+            //possibly handle revision field
+            await this._crdClient.flow(flowModel.id).put({
+                body: flow 
+            });
+        } else {
+            if (!(flow.metadata.finalizers || []).includes(FINALIZER_NAME)) {
+                flow.metadata.finalizers = (flow.metadata.finalizers || []).concat(FINALIZER_NAME);
+                //FIXME make sure 409 works. So non-sequential updates should go into next iteration
+                //possibly handle revision field
+                await this._crdClient.flow(flowModel.id).put({
+                    body: flowModel.toCRD()
+                });
+            }
+            //FIXME patch exchanges/queues
+            const queues =  await this._queueCreator.makeQueuesForTheTask(flowModel);
+            const flowId = flowModel.id;
+            for (let step of flowModel.nodes) {
+                const job = jobsIndex[flowId] && jobsIndex[flowId][step.id];
+                if (!job) {
+                    console.log('going to deploy', flowModel.id, step.id);
+                    await this._deployStep(flowModel, step, queues);
+                } else if (!this._isEqualDescriptors(flowModel, step, queues, job)) {
+                    console.log('going to un deploy for patch', flowModel.id, step.id);
+                    await this._undeployJob({
+                        metadata: {
+                            name: (flowModel.id + '.' + step.id).toLowerCase().replace(/[^0-9a-z]/g, '')
+                        } 
+                    });                  
+                    console.log('going to deploy for patch', flowModel.id, step.id);
+                    await this._deployStep(flowModel, step, queues);
                 }
             }
-
+            //FIXME remove unknown jobs
+        }
     }
 
     _buildFlowsIndex(allFlows) {
@@ -197,7 +165,6 @@ class FlowOperator {
             });
             return index;
         }, {});
-
     }
 
     async _removeLostJobs(allJobs, allFlows) {
@@ -220,7 +187,7 @@ class FlowOperator {
         for (let flow of flows) {
             await this._handleFlow(flow, jobIndex);
         }
-        await this._removeLostJobs();
+        await this._removeLostJobs(allJobs, flows);
     }
 
     async _undeployJob(job) {
@@ -239,12 +206,30 @@ class FlowOperator {
         }
     }
 
+    _isEqualDescriptors(flow, step, queues, descriptor) {
+        const newDescriptor = this._buildDescriptor(flow, step, queues);  
+
+        return newDescriptor.metadata.name === descriptor.metadata.name
+            && newDescriptor.metadata.namespace === descriptor.metadata.namespace
+            && _.isEqual(
+                newDescriptor.spec.template.spec.containers[0].env.filter(({name, value}) => name !== 'ELASTICIO_EXEC_ID'),
+                descriptor.spec.template.spec.containers[0].env.filter(({name, value}) => name !== 'ELASTICIO_EXEC_ID')
+            )
+            && _.isEqual(newDescriptor.spec.template.spec.containers[0].image, descriptor.spec.template.spec.containers[0].image)
+    }
+
+    _buildDescriptor(flow, step, queues) {
+        let jobName = flow.id +'.'+ step.id;
+        jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
+        const env = this._prepareEnvVars(flow, step, queues[step.id]);
+        return this._generateAppDefinition(jobName, env, step);
+    }
+
     async _deployStep(flow, step, queues) {
         let jobName = flow.id +'.'+ step.id;
         jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
         this._logger.info({jobName}, 'going to deploy job from k8s');
-        let env = this._prepareEnvVars(flow, step, queues[step.id]);
-        const descriptor = this._generateAppDefinition(jobName, env, step);
+        const descriptor = this._buildDescriptor(flow, step, queues); 
         this._logger.trace(descriptor, 'going to deploy job from k8s');
         try {
             await this._batchClient.jobs.post({body: descriptor});
@@ -252,6 +237,7 @@ class FlowOperator {
             this._logger.error(e, 'failed to deploy job'); 
         }
     }
+    
 
     _generateAppDefinition(appId, envVars, step) {
         return {
@@ -302,9 +288,14 @@ class FlowOperator {
         }, {});
         return Object.assign(envVars, step.env);
     }
+
 }
 
 class FlowOperatorApp extends App {
+    constructor() {
+        super(...arguments);
+        this._config = new ServiceConfig();
+    }
     async _run() {
         this._amqp = new AMQPService(this);
         this._k8s = new K8sService(this);

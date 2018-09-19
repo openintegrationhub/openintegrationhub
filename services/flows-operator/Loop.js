@@ -1,9 +1,8 @@
-const logger = require('./logger.js');
 class Loop {
-    constructor() {
+    constructor(app) {
         this._isRunning = false;
         this._tickTimer = null;
-        this._logger = logger;
+        this._logger = app.getLogger();
     }
     start() {
         this._isRunning = true;
