@@ -8,18 +8,16 @@
 
 ---
 
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
-
 - [Introduction](#introduction)
-- [Requirements for the mono-repo](#requirements-for-the-mono-repo)
-- [Requirements for committs](#requirements-for-committs)
-- [BPMN Model](#bpmn-model)
+- [Requirements for mono-repo](#requirements-for-mono-repo)
+- [Rules for committing](#rules-for-committing)
+- [Build process model](#cicd-process-with-integrated-backlog)
 
-<!-- /TOC -->
+
 
 ### Introduction
 
-To make sure all commiter are able to committ seamlessly and independent from each other onto Github, we need a general-accepted build and deploy process. At the end of this file a BPMN model describing the whole process can be found. <br>
+To make sure all committe it seamlessly and independent from each other onto Github, we need a general-accepted build and deploy process. At the end of this file a BPMN model describing the whole process can be found. <br>
 
 
 ### Requirements for mono-repo
@@ -37,7 +35,6 @@ In order to be able to build each service independently from each other, the fol
 ### Rules for committing 
 
 * Each committer needs to push her/his code into a new branch
-* Each committer needs to create this branch in the corresponding "services" subfolder
 * Each committer needs to fulfill the pre-defined stages as:
   - Install dependencies
   - Test script (yarn)
@@ -47,8 +44,8 @@ In order to be able to build each service independently from each other, the fol
 * Each build needs to be tagged with the service name and version number (link to dev-guide: command for tagging with name and version"-t...")
   
   
-### BMPN model: Continuous integration & deployment process with integrated backlog(CES)
+### CI/CD process with integrated backlog
 
-  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/DennisCES-Documentation-Build-Process/CI/CD/Assets/BuildProcess.svg" alt="mm"/>
+![BuildProcess](https://github.com/openintegrationhub/openintegrationhub/blob/DennisCES-Documentation-Build-Process/CI/CD/Assets/BuildProcess.svg)
 
 
