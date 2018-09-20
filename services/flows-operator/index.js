@@ -1,6 +1,10 @@
-const _ = require('lodash');
+/*eslint no-console: 0*/
+//@see https://github.com/kubernetes/community/blob/master/contributors/devel/api-conventions.md
 const express = require('express');
 const uuid = require('node-uuid');
+const _ = require('lodash');
+const RabbitmqManagement = require('rabbitmq-stats');
+const url = require('url');
 
 const Lib = require('lib');
 const { 
@@ -14,6 +18,32 @@ const ServiceConfig = require('./Config.js');
 
 const SELF_URL= process.env.API_URI || 'http://api-service.platform.svc.cluster.local:1234';
 const FINALIZER_NAME = 'finalizer.flows.elastic.io';
+const ANNOTATION_KEY = 'annotation.flows.elastic.io';
+
+class RabbitMQManagementService {
+    constructor(app) {
+        this._app = app; 
+    }
+    async start() {
+        const managementUri = this._app.getConfig().get('RABBITMQ_MANAGEMENT_URI');
+        const parsedUrl = new url.URL(managementUri);
+        const {username, password } = parsedUrl;
+        this._vhost = parsedUrl.pathname.replace(/^\//, '');
+        parsedUrl.username = '';
+        parsedUrl.password = '';
+        this._client = new RabbitmqManagement(parsedUrl.toString(), username, password);
+    }
+
+    async getQueues() {
+        return this._client.getVhostQueues(this._vhost); 
+    } 
+    async getExchanges() {
+        return this._client.getVhostExchanges(this._vhost); 
+    }
+    async getBindings() {
+        return this._client.getVhostBindings(this._vhost); 
+    }
+}
 
 class HttpApi {
     constructor(app) {
@@ -78,7 +108,9 @@ class FlowOperator {
         this._crdClient = app.getK8s().getCRDClient();
         this._batchClient = app.getK8s().getBatchClient();
         this._queueCreator = app.getQueueCreator();
+        this._rabbitmqManagement = app.getRabbitmqManagement();
         this._config = app.getConfig();
+        this._channelPromise = app.getAmqp().getConnection().createChannel();
         loop(this._loopBody.bind(this), this._logger, 5000);
     }
     _getFlowIdFromJob(job) {
@@ -98,24 +130,34 @@ class FlowOperator {
         }, {});
     }
 
-    async _handleFlow (flow, jobsIndex) {
+    async _handleFlow (flow, jobsIndex, queuesStructure) {
         const flowModel = new Flow(flow);
+        const flowId = flowModel.id;
         //if revision has been changed then -- then undeploy everything, and redeploy again
         //if marked as deleted -- kill them all
         //if there are not enough running jobs -- start missing. 
         //"deletionGracePeriodSeconds": 0,               
         //"deletionTimestamp": "2018-09-13T09:54:10Z",   
         if (flow.metadata.deletionTimestamp) {
-            for (let step of flowModel.nodes) {
-                console.log('going to un deploy', flowModel.id, step.id);
+            console.log('destroy flow');
+            for (let step of Object.values(jobsIndex[flowId] || {})) {
+                console.log('going to un deploy for total replace', step.metadata.name);
                 await this._undeployJob({
                     metadata: {
-                        name: (flowModel.id + '.' + step.id).toLowerCase().replace(/[^0-9a-z]/g, '')
+                        name: step.metadata.name
                     } 
-                });                  
+                });  
             }
+            if (queuesStructure[flowId]) {
+                const channel = await this._channelPromise;
+                for (let queue of queuesStructure[flowId].queues) {
+                    await channel.deleteQueue(queue);
+                }
+                for (let exchange of queuesStructure[flowId].exchanges) {
+                    await channel.deleteExchange(exchange); 
+                }
+            } 
             await this._queueCreator.destroyQueuesForTask(flowModel);
-            //FIXME remove unknown jobs
 
             flow.metadata.finalizers = (flow.metadata.finalizers || []).filter(finalizer => finalizer !== FINALIZER_NAME);
             //FIXME make sure 409 works. So non-sequential updates should go into next iteration
@@ -132,26 +174,50 @@ class FlowOperator {
                     body: flowModel.toCRD()
                 });
             }
-            //FIXME patch exchanges/queues
-            const queues =  await this._queueCreator.makeQueuesForTheTask(flowModel);
-            const flowId = flowModel.id;
-            for (let step of flowModel.nodes) {
-                const job = jobsIndex[flowId] && jobsIndex[flowId][step.id];
-                if (!job) {
-                    console.log('going to deploy', flowModel.id, step.id);
-                    await this._deployStep(flowModel, step, queues);
-                } else if (!this._isEqualDescriptors(flowModel, step, queues, job)) {
-                    console.log('going to un deploy for patch', flowModel.id, step.id);
+            let totalRedeploy = Object.keys(flowModel.nodes).some((stepId) => {
+                const job = jobsIndex[flowId] && jobsIndex[flowId][stepId];
+                return job && (flowModel.metadata.resourceVersion !== job.metadata.annotations[ANNOTATION_KEY]);
+             });
+
+            console.log('version mismatch redeploy', totalRedeploy);
+            totalRedeploy = totalRedeploy || _.difference(Object.keys(jobsIndex[flowId] || {}), (flowModel.nodes || []).map(node=>node.id)).length > 0;
+            console.log('structure mismatch redeply', totalRedeploy);
+
+            if (totalRedeploy) {
+                console.log('total redeploy');
+                for (let step of Object.values(jobsIndex[flowId] || {})) {
+                    console.log('going to un deploy for total replace', flowId.id, step.id);
                     await this._undeployJob({
                         metadata: {
-                            name: (flowModel.id + '.' + step.id).toLowerCase().replace(/[^0-9a-z]/g, '')
+                            name: step.metadata.name
                         } 
-                    });                  
-                    console.log('going to deploy for patch', flowModel.id, step.id);
+                    });  
+                }
+                if (queuesStructure[flowId]) {
+                    const channel = await this._channelPromise;
+                    for (let queue of queuesStructure[flowId].queues) {
+                        await channel.deleteQueue(queue);
+                    }
+                    for (let exchange of queuesStructure[flowId].exchanges) {
+                        await channel.deleteExchange(exchange); 
+                    }
+                } 
+                const queues =  await this._queueCreator.makeQueuesForTheTask(flowModel);
+                for (let step of flowModel.nodes) {
+                    console.log('going to deploy', flowModel.id, step.id);
                     await this._deployStep(flowModel, step, queues);
                 }
+            } else {
+                console.log('ensure flow/queues');
+                //FIXME ensure queues/exchanges. Use QueuesStructure table
+                const queues =  await this._queueCreator.makeQueuesForTheTask(flowModel);
+                for (let step of flowModel.nodes) {
+                    if (!jobsIndex[flowId] || !jobsIndex[flowId][step.id]) {
+                        console.log('going to deploy', flowModel.id, step.id);
+                        await this._deployStep(flowModel, step, queues);
+                    }
+                }
             }
-            //FIXME remove unknown jobs
         }
     }
 
@@ -178,16 +244,42 @@ class FlowOperator {
         }
     }
 
+    _mqIndex(queues, exchanges, bindings) {
+        const index = {};
+        for (let queue of queues) {
+            const name = queue.name;
+            const flowId = name.split(':')[0];
+            index[flowId] = index[flowId] || {queues: [], exchanges: [], bindings: []};
+            index[flowId].queues.push(name);
+        }
+        for (let exchange of exchanges) {
+            const flowId = exchange.name;
+            index[flowId] = index[flowId] || {queues: [], exchanges: [], bindings: []};
+            index[flowId].exchanges.push(exchange.name);
+        }
+        for (let binding of bindings) {
+            const queueName = binding.destination;
+            const flowId = queueName.split(':')[0];
+            index[flowId] = index[flowId] || {queues: [], exchanges: [], bindings: []};
+            index[flowId].bindings.push(binding);
+        }
+        return index;
+    }
+
     async _loopBody() {
         //TODO any step here blocks all the job, that's shit. Tiemouts, multiple execution threads with limits for 
         //paralel jobs not to destroy backend;
         const allJobs = (await this._batchClient.jobs.get()).body.items;
         const jobIndex = this._buildJobIndex(allJobs);
+        const queues = await this._rabbitmqManagement.getQueues();
+        const exchanges = await this._rabbitmqManagement.getExchanges();
+        const bindings = await this._rabbitmqManagement.getBindings();
+        const queuesStructure = this._mqIndex(queues, exchanges, bindings);
         const flows = (await this._crdClient.flows.get()).body.items;
         for (let flow of flows) {
-            await this._handleFlow(flow, jobIndex);
+            await this._handleFlow(flow, jobIndex, queuesStructure);
         }
-        await this._removeLostJobs(allJobs, flows);
+        //await this._removeLostJobs(allJobs, flows);
     }
 
     async _undeployJob(job) {
@@ -205,24 +297,12 @@ class FlowOperator {
             this._logger.error(e, 'failed to undeploy job'); 
         }
     }
-
-    _isEqualDescriptors(flow, step, queues, descriptor) {
-        const newDescriptor = this._buildDescriptor(flow, step, queues);  
-
-        return newDescriptor.metadata.name === descriptor.metadata.name
-            && newDescriptor.metadata.namespace === descriptor.metadata.namespace
-            && _.isEqual(
-                newDescriptor.spec.template.spec.containers[0].env.filter(({name, value}) => name !== 'ELASTICIO_EXEC_ID'),
-                descriptor.spec.template.spec.containers[0].env.filter(({name, value}) => name !== 'ELASTICIO_EXEC_ID')
-            )
-            && _.isEqual(newDescriptor.spec.template.spec.containers[0].image, descriptor.spec.template.spec.containers[0].image)
-    }
-
+    
     _buildDescriptor(flow, step, queues) {
         let jobName = flow.id +'.'+ step.id;
         jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
         const env = this._prepareEnvVars(flow, step, queues[step.id]);
-        return this._generateAppDefinition(jobName, env, step);
+        return this._generateAppDefinition(flow, jobName, env, step);
     }
 
     async _deployStep(flow, step, queues) {
@@ -237,15 +317,26 @@ class FlowOperator {
             this._logger.error(e, 'failed to deploy job'); 
         }
     }
-    
 
-    _generateAppDefinition(appId, envVars, step) {
+    _generateAppDefinition(flowModel, appId, envVars, step) {
         return {
             apiVersion: "batch/v1",
             kind: 'Job',
             metadata: {
                 name: appId,
-                namespace: "flows"
+                namespace: "flows",
+                annotations: {
+                    [ANNOTATION_KEY]: flowModel.metadata.resourceVersion  
+                },
+                ownerReferences: [
+                    {
+                        apiVersion: "elastic.io/v1",                                     
+                        kind: "Flow",
+                        controller: true,
+                        name: flowModel.metadata.name,
+                        uid: flowModel.metadata.uid
+                    }
+                ]
             },
             spec: {
                 template: {
@@ -298,6 +389,8 @@ class FlowOperatorApp extends App {
     }
     async _run() {
         this._amqp = new AMQPService(this);
+        this._rabbitmqManagement = new RabbitMQManagementService(this);
+        await this._rabbitmqManagement.start();
         this._k8s = new K8sService(this);
         await this._amqp.start();
         await this._k8s.start();
@@ -314,6 +407,14 @@ class FlowOperatorApp extends App {
 
     getQueueCreator() {
         return this._queueCreator;
+    }
+
+    getRabbitmqManagement() {
+        return this._rabbitmqManagement;
+    }
+
+    getAmqp() {
+        return this._amqp;
     }
 
     static get NAME() {
