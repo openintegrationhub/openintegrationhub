@@ -49,6 +49,10 @@ For a better understanding, you can check out our ["Identity and Access Manageme
   
 ### CI/CD process with integrated backlog
 
+The continuous integration- and deployment process starts with the commit from each of the developers, selecting current issues to fix, followed by the local unit testing on those. After successful local tests and as declared in the requirements for committing, a new branch is always necessary for committing in the openintegrationhub repository. 
+TravisCI will be triggered automatically by active changes in these branches and the services subfolder. It will start the scripts from the yaml-file, installing the dependencies and packages for all stages: test-, build-, deploy- and integration. Whenever a stage fails the error log will be created automatically and the CES team adds, assignes and prioritize those logs as new issues in the backlog for the developers.
+
+
 ![BuildProcess](https://github.com/openintegrationhub/openintegrationhub/blob/DennisCES-Documentation-Build-Process/CI/CD/Assets/BuildProcess.svg)
 
 
