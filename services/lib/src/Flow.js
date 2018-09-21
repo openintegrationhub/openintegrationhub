@@ -4,12 +4,15 @@ class Flow {
         this.metadata = crd.metadata;
         Object.assign(this, crd.spec); 
     }
+
     getFirstNode() {
         return this.nodes.find((step) => step.first);
     }
+
     getRecipeNodeByStepId(stepId) {
         return this.nodes.find((step) => step.id === stepId);
     }
+
     toCRD() {
         const spec = Object.assign({}, this);
         delete spec.id;

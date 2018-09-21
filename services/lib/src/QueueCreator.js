@@ -299,16 +299,6 @@ class QueueCreator {
         };
     }
 
-    async destroyQueuesForTask(task) {
-        await Promise.all(task.nodes.map( async node => {
-            const stepConfig = this.getAmqpStepConfig(task, node.id);
-
-            await this.deleteQueue(stepConfig.messagesQueue);
-            await this.deleteQueue(stepConfig.reboundsQueue);
-        }));
-        const taskExchange = getTaskExchange(task);
-        await this.channel.deleteExchange(taskExchange); 
-    }
 }
 
 module.exports = QueueCreator;

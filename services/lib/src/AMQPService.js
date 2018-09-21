@@ -1,4 +1,5 @@
 const amqp = require('amqplib');
+
 class AMQPService {
     constructor (app) {
         this._app = app;

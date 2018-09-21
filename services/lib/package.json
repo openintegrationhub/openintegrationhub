@@ -4,14 +4,16 @@
   "description": "Common part for all services",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint ./index.js ./src",
+    "test": "npm run lint"
   },
   "author": "elastic.io",
   "license": "APL-2.0",
   "dependencies": {
     "amqplib": "0.5.2",
     "bunyan": "1.8.12",
-    "kubernetes-client": "6.1.0"
+    "kubernetes-client": "6.1.0",
+    "nconf": "0.10.0"
   },
   "devDependencies": {
     "eslint": "4.5.0",

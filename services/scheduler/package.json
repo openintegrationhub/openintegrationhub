@@ -4,7 +4,8 @@
   "description": "Standalone version of elastic.io platform",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\"",
+    "lint": "eslint ./index.js ./src",
+    "test": "npm run lint",
     "start": "node index.js"
   },
   "author": "elastic.io",

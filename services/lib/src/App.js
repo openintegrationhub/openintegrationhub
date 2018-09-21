@@ -1,13 +1,10 @@
 const bunyan = require('bunyan');
-const Config = require('./Config.js');
+const ConfigFabric = require('./ConfigFabric.js');
 
 class App {
     constructor() {
-        this._config = new Config();
-        this._logger = bunyan({
-            name: this.constructor.NAME,
-            level: this._config.get('LOG_LEVEL')
-        });
+        this._config = this._createConfig();
+        this._logger = this._createLogger();
     }
     async start() {
         this.getLogger().info('Starting');
@@ -19,20 +16,33 @@ class App {
             throw e;
         }
     }
+
     async stop() {
     }
-    async _run () {
-        throw new Error('implement me'); 
-    }
+
     getLogger() {
         return this._logger;
     }
+
     getConfig() {
         return this._config;
     }
-    getService(name) {
-        return this._dependencies[name]; 
+
+    _createConfig() {
+        return ConfigFabric.createConfig();
     }
+
+    _createLogger() {
+        return bunyan({
+            name: this.constructor.NAME,
+            level: this.getConfig().get('LOG_LEVEL')
+        });
+    }
+
+    async _run () {
+        throw new Error('implement me'); 
+    }
+
     static get NAME () {
         throw new Error('implement me'); 
     }
