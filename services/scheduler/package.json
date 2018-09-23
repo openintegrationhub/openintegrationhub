@@ -6,14 +6,16 @@
   "scripts": {
     "lint": "eslint ./index.js ./src",
     "test": "npm run lint",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "echo \"No Build defined\"",
+    "build:docker": "docker build -t openintegrationhub/scheduler:${VERSION} -f Dockerfile ../../"
   },
   "author": "elastic.io",
   "license": "APL-2.0",
   "dependencies": {
     "express": "4.16.3",
     "node-uuid": "1.4.7",
-    "lib": "file:../lib"
+    "lib": "file:../../src/lib"
   },
   "devDependencies": {
     "eslint": "4.5.0",

@@ -15,7 +15,8 @@
     "generate-nodemon-env": "node -e 'require(\"./src/util/nodemon-env\").saveToFile()'",
     "test": "yarn build && yarn lint && jest --silent=false --runInBand --forceExit",
     "coverage": "jest --runInBand --coverage --forceExit",
-    "postinstall": "node ./src/app/dev/generateKeys.js"
+    "postinstall": "node ./src/app/dev/generateKeys.js",
+    "build:docker": "docker build -t openintegrationhub/iam:${VERSION} -f Dockerfile ."
   },
   "keywords": [
     "OIDC",
