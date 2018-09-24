@@ -9,8 +9,8 @@
 ---
 
 - [Introduction](#introduction)
-- [Requirements for mono-repo](#requirements-for-mono-repo)
-- [Rules for committing](#rules-for-committing)
+- [Requirements for Build and Deploy process](#requirements-for-a-successful-build-and-deploy-process)
+- [Requirements for Services](#requirements-for-services)
 - [Build process model](#cicd-process-with-integrated-backlog)
 
 
@@ -21,36 +21,40 @@ To make sure all commits are seamlessly and independent from each other onto Git
 For further information regarding different docker builds, pipelines, kubernetes service defintions, monitoring or scaling, please have a look at our [devOps guidelines](https://github.com/openintegrationhub/openintegrationhub/blob/DevOps-Guideline/Guidelines/serviceOperations.md).   
 
 
-### Requirements for mono-repo
+### Requirements for a successful build and deploy process
 
-In order to be able to build each service independently from each other, the following requirements need to be fulfilled:
+In order to be able to test, build and deploy each service independently from each other, the following requirements need to be fulfilled:
 
-* One Travis.yaml file in the root folder(openintegrationhub) for all services
-* No mongoDB or other tools, those are integrated as docker images in the docker file and will be loaded from the docker page
-* Existing "docker-compose."-file
-* Existing "package.json"-file (will be automatically created and updated for dependencies after "NPM install")
-* Existing "eslintrc.json"-file
-* Existing "yarn.lock" in the root folder(openintegrationhub)
+#### Pipeline set up
+* We are using:
+  - Yarn as secure dependency management with lerna for managing packages 
+  - TravisCI for continiouos integration / testing, includes the "travis.yml" file in the mono-repositorys root folder
+  - Google Cloud Platform / Kubernetes integrated for deploying services
 
-For a better understanding, you can check out our ["Identity and Access Management"-microservice](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/iam) which is our most current development
+As an example, you can check out our ["Identity and Access Management"-microservice](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/iam) which is our most advanced repository, exemplifying our clean repo-structure
+
+#### Pipeline tasks:
+* checks for changes in each service folder
+* installs all dependencies for the complete monorepo on each run (yarn-call)
+* depending on detected changes(true): 
+  - calls the respective yarn test from that changed service subfolder
+  - calls the build script - if existing, tags it with the travis build number and current package.json
+* deploys the service
 
 
-### Rules for committing 
+#### Requirements for services:  
+The following scripts are necessary and will be called in the package.json:
+* a test script 
+* a build script 
+* kubernetes integration needs a folder "k8s" in the service subfolder, including these 2 files:
+  - deployment.yml
+  - service.yml
 
-* Each committer needs to push her/his code into a new branch
-* Each committer needs to fulfill the pre-defined stages as:
-  - Install dependencies
-  - Test script (yarn)
-  - Build script (js)
-  - Deploy as Container (js)
-  - Integration into kubernetes cluster
-* Each docker build needs to be tagged with the service name and version number as it can be seen here: [devOps guidelines](https://github.com/openintegrationhub/openintegrationhub/blob/DevOps-Guideline/Guidelines/serviceOperations.md)
-  
-  
+
 ### CI/CD process with integrated backlog
 
 The continuous integration- and deployment process starts with the commit from each of the developers, selecting current issues to fix, followed by the local unit testing on those. After successful local tests and as declared in the requirements for committing, a new branch is always necessary for committing in the openintegrationhub repository. 
-TravisCI will be triggered automatically by active changes in those services subfolders. It will start the scripts from the yaml-file, installing the dependencies and packages for all stages: test-, build-, deploy- and integration. Whenever a stage fails the error log will be created automatically and the CES team adds, assignes and prioritizes those logs as new issues in the backlog for the developers.
+TravisCI will be triggered automatically by active changes in those services subfolders. It will start the scripts from the yaml-file, installing the dependencies and packages for all stages: test-, build-, deploy- and integration. Whenever a stage fails the error log will be created automatically and the CES team adds, assignes and prioritizes those logs as new issues in the backlog for the developers. Therefore, the continiouos integration and deploy process/circle is complete.
 
 
 ![BuildProcess](https://github.com/openintegrationhub/openintegrationhub/blob/DennisCES-Documentation-Build-Process/CI/CD/Assets/BuildProcess.svg)
