@@ -57,6 +57,6 @@ The continuous integration- and deployment process starts with the commit from e
 TravisCI will be triggered automatically by active changes in those services subfolders. It will start the scripts from the yaml-file, installing the dependencies and packages for all stages: test-, build-, deploy- and integration. Whenever a stage fails the error log will be created automatically and the CES team adds, assignes and prioritizes those logs as new issues in the backlog for the developers. Therefore, the continiouos integration and deploy process/circle is complete.
 
 
-![BuildProcess](https://github.com/openintegrationhub/openintegrationhub/blob/DennisCES-Documentation-Build-Process/CI/CD/Assets/BuildProcess.svg)
+![BuildProcess](https://github.com/openintegrationhub/openintegrationhub/blob/DennisCES-Documentation-Build-Process/CI/CD/Assets/BuildProcess.png)
 
 
