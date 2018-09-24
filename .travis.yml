@@ -12,8 +12,10 @@ stages:
   - test
   - name: build
     if: branch = master
+        fork = false
   - name: deploy
     if: branch = master  
+        fork = false
 jobs:
   include:
     - stage: test
