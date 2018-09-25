@@ -12,6 +12,10 @@ spec:
       isPolling: true
       data:
         interval: minute
+      resources:
+        requests:
+          cpu: 200m
+          memory: 300Mi
     - image: 'elasticio/email:5772ae1780f912e4f098de5718511b57b279766f'
       id: step_2
       function: send
@@ -32,4 +36,11 @@ spec:
       to: 'mapper:step_1:step_2'
     - from: 'mapper:step_1:step_2'
       to: step_2
+  resources:
+    requests:
+      cpu: 150m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 512Mi
 
