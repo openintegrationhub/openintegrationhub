@@ -1,0 +1,35 @@
+apiVersion: elastic.io/v1
+kind: Flow
+metadata:
+  name: example-flow
+  namespace: flows
+spec:
+  nodes:
+    - image: 'elasticio/timer:ca9a6fea391ffa8f7c8593bd2a04143212ab63f6'
+      id: step_1
+      function: timer
+      first: true
+      isPolling: true
+      data:
+        interval: minute
+    - image: 'elasticio/email:5772ae1780f912e4f098de5718511b57b279766f'
+      id: step_2
+      function: send
+      env:
+        MANDRILL_API_KEY: PLACE_YOUR_KEY_HERE
+    - image: 'elasticio/mapper:c9e011cf7866a2e82771b62cfd96cd75868f5b90'
+      id: 'mapper:step_1:step_2'
+      function: jsonataMap
+      data:
+        mapper:
+          to: '"igor@elastic.io"'
+          subject: '"Test from e.io at: " & $.fireTime'
+          textBody: |-
+            "Body is: \n" &
+            $string($$)
+  connections:
+    - from: step_1
+      to: 'mapper:step_1:step_2'
+    - from: 'mapper:step_1:step_2'
+      to: step_2
+

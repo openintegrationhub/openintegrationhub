@@ -298,6 +298,7 @@ class QueueCreator {
             DATA_ROUTING_KEY: dataRoutingKey
         };
     }
+
 }
 
 module.exports = QueueCreator;

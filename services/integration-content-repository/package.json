@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "build": "echo \"No Build defined\"",
-    "start": "node app.js"
+    "start": "node app.js",
+    "build:docker": "docker build -t openintegrationhub/integration-content-repository:${VERSION} -f Dockerfile ."
   },
   "dependencies": {
     "body-parser": "^1.18.2",

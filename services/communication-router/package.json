@@ -1,21 +1,22 @@
 {
-  "name": "webhooks",
+  "name": "communication-router",
   "version": "1.0.0",
   "description": "Standalone version of elastic.io platform",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\"",
-    "start": "node index.js"
+    "lint": "eslint ./index.js ./src",
+    "test": "npm run lint",
+    "start": "node index.js",
+    "build": "echo \"No Build defined\"",
+    "build:docker": "docker build -t openintegrationhub/communication-router:${VERSION} -f Dockerfile ../../"
   },
   "author": "elastic.io",
   "license": "APL-2.0",
   "dependencies": {
-    "amqplib": "0.4.0",
     "body-parser": "1.18.3",
-    "bunyan": "1.8.12",
     "express": "4.16.3",
-    "kubernetes-client": "5.3.0",
-    "node-uuid": "1.4.7"
+    "node-uuid": "1.4.7",
+    "backendCommonsLib": "*"
   },
   "devDependencies": {
     "eslint": "4.5.0",
