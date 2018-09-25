@@ -1,0 +1,3 @@
+[submodule "./app/iam-utils"]
+	path = ./app/iam-utils
+	url = https://github.com/openintegrationhub/iam-utils.git
