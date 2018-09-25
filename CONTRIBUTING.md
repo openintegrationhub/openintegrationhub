@@ -41,7 +41,7 @@ In addition to the previously defined definition of done some rules only apply f
 
 #### DoD Code
 
-In addition to the previously defined definition of done some rules only apply for outputs of type document:
+In addition to the previously defined definition of done some rules only apply for outputs of type code:
 
 - Code is compliant with [styleguide](Guidelines/styleGuide.md) and [devops/operations guidelines](Guidelines/serviceOperations.md)
 - Documentation have been updated
