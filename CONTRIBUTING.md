@@ -47,6 +47,7 @@ In addition to the previously defined definition of done some rules only apply f
 - Code is compliant with [styleguide](Guidelines/styleGuide.md) and [devops/operations guidelines](Guidelines/serviceOperations.md)
 - Documentation have been updated
 - New modules are defined in package.json
+- All new features are tested in development mode (unit tests)
 - Once we have integration tests:
   - Integration tests were successful applied
   - Dependencies between software modules are documented  
