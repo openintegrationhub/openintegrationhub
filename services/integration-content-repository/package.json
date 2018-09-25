@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node app/index.js",
     "test": "nyc --reporter=html --reporter=text mocha --exit",
-    "test_jenkins": "jenkins-mocha test/* --exit"
+    "test_jenkins": "jenkins-mocha test/* --exit",
+    "build": "echo \"No Build defined\""
   },
   "dependencies": {
     "body-parser": "^1.18.2",
