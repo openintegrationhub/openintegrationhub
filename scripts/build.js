@@ -1,13 +1,13 @@
 const { execSync } = require('child_process');
 const services = require(`${__dirname}/toBuild.json`);
+
 if (services && services.length > 0) {
 
     services.forEach((service)=>{
-
+        const serviceData = require(`${__dirname}/../services/${service.name}/package.json`);
         console.log('We going to Build Service: ',service.name);
         console.log('The Service Version: ',service.version);
-
-        execSync(`cd ${__dirname}/../services/${service.name}/ && yarn build`, { stdio: [0, 1, 2] });
+        if (serviceData.scripts.build) execSync(`cd ${__dirname}/../services/${service.name}/ && yarn build`, { stdio: [0, 1, 2] });
         execSync('echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin', { stdio: [0, 1, 2] });
         execSync(`cd ${__dirname}/../services/${service.name}/ && docker build -t openintegrationhub/${service.name}:${service.version} .`, { stdio: [0, 1, 2] });
         execSync(`docker tag openintegrationhub/${service.name}:${service.version} openintegrationhub/${service.name}:latest`, { stdio: [0, 1, 2] });
