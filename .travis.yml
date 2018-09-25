@@ -11,11 +11,9 @@ install: true
 stages:
   - test
   - name: build
-    if: branch = master
-        fork = false
+    if: branch = master AND fork = false
   - name: deploy
-    if: branch = master  
-        fork = false
+    if: branch = master AND fork = false 
 jobs:
   include:
     - stage: test
