@@ -2,7 +2,7 @@
 const uuid = require('node-uuid');
 const _ = require('lodash');
 
-const Lib = require('lib');
+const Lib = require('backendCommonsLib');
 const { Flow } = Lib;
 
 const FLOW_FINALIZER_NAME = 'finalizer.flows.elastic.io';
@@ -21,7 +21,7 @@ async function loop (body, logger, loopInterval) {
 }
 class FlowOperator {
     constructor(app) {
-        this._logger = app.getLogger().child({service: "FlowOperator"});
+        this._logger = app.getLogger().child({service: 'FlowOperator'});
         this._crdClient = app.getK8s().getCRDClient();
         this._batchClient = app.getK8s().getBatchClient();
         this._queueCreator = app.getQueueCreator();
@@ -33,16 +33,16 @@ class FlowOperator {
     _getFlowIdFromJob(job) {
         return job.spec.template.spec.containers[0].env.find((pair) => pair.name == 'ELASTICIO_FLOW_ID').value;
     }
-    _getStepIdFromJob(job) {
+    _getNodeIdFromJob(job) {
         return job.spec.template.spec.containers[0].env.find((pair) => pair.name == 'ELASTICIO_STEP_ID').value;
     }
 
     _buildJobIndex(allJobs) {
         return allJobs.reduce((index, job) => {
             const flowId = this._getFlowIdFromJob(job);
-            const stepId = this._getStepIdFromJob(job);
+            const nodeId = this._getNodeIdFromJob(job);
             index[flowId] = index[flowId] || {};
-            index[flowId][stepId] = job;
+            index[flowId][nodeId] = job;
             return index;
         }, {});
     }
@@ -53,11 +53,11 @@ class FlowOperator {
 
         if (flow.metadata.deletionTimestamp) {
             this._logger.trace({name: flow.metadata.name}, 'Going to delete flow');
-            for (let step of Object.values(jobsIndex[flowId] || {})) {
-                this._logger.trace({flow: flow.metadata.name, step: step.metadata.name}, 'Going to delete flow step');
+            for (let node of Object.values(jobsIndex[flowId] || {})) {
+                this._logger.trace({flow: flow.metadata.name, node: node.metadata.name}, 'Going to delete flow node');
                 await this._undeployJob({
                     metadata: {
-                        name: step.metadata.name
+                        name: node.metadata.name
                     } 
                 });  
             }
@@ -86,19 +86,19 @@ class FlowOperator {
                     body: flowModel.toCRD()
                 });
             }
-            let totalRedeploy = Object.keys(flowModel.nodes).some((stepId) => {
-                const job = jobsIndex[flowId] && jobsIndex[flowId][stepId];
+            let totalRedeploy = Object.keys(flowModel.nodes).some((nodeId) => {
+                const job = jobsIndex[flowId] && jobsIndex[flowId][nodeId];
                 return job && (flowModel.metadata.resourceVersion !== job.metadata.annotations[ANNOTATION_KEY]);
              });
             totalRedeploy = totalRedeploy || _.difference(Object.keys(jobsIndex[flowId] || {}), (flowModel.nodes || []).map(node=>node.id)).length > 0; 
 
             if (totalRedeploy) {
                 this._logger.trace({name: flow.metadata.name}, 'Flow changed. Redeploy');
-                for (let step of Object.values(jobsIndex[flowId] || {})) {
-                    this._logger.trace({flow: flow.metadata.name, step: step.metadata.name}, 'Going to delete flow step');
+                for (let node of Object.values(jobsIndex[flowId] || {})) {
+                    this._logger.trace({flow: flow.metadata.name, node: node.metadata.name}, 'Going to delete flow node');
                     await this._undeployJob({
                         metadata: {
-                            name: step.metadata.name
+                            name: node.metadata.name
                         } 
                     });  
                 }
@@ -112,18 +112,18 @@ class FlowOperator {
                     }
                 } 
                 const queues =  await this._queueCreator.makeQueuesForTheTask(flowModel);
-                for (let step of flowModel.nodes) {
-                    this._logger.trace({flow: flow.metadata.name, step: step.id}, 'Going to create flow step');
-                    await this._deployStep(flowModel, step, queues);
+                for (let node of flowModel.nodes) {
+                    this._logger.trace({flow: flow.metadata.name, node: node.id}, 'Going to create flow node');
+                    await this._deployNode(flowModel, node, queues);
                 }
             } else {
-                this._logger.trace({name: flow.metadata.name}, 'Nothing changed. Ensure steps and queues exists');
+                this._logger.trace({name: flow.metadata.name}, 'Nothing changed. Ensure nodes and queues exists');
                 //TODO ensure queues/exchanges. Use QueuesStructure table
                 const queues =  await this._queueCreator.makeQueuesForTheTask(flowModel);
-                for (let step of flowModel.nodes) {
-                    if (!jobsIndex[flowId] || !jobsIndex[flowId][step.id]) {
-                        this._logger.trace({flow: flow.metadata.name, step: step.id}, 'Going to create flow step');
-                        await this._deployStep(flowModel, step, queues);
+                for (let node of flowModel.nodes) {
+                    if (!jobsIndex[flowId] || !jobsIndex[flowId][node.id]) {
+                        this._logger.trace({flow: flow.metadata.name, node: node.id}, 'Going to create flow node');
+                        await this._deployNode(flowModel, node, queues);
                     }
                 }
             }
@@ -134,9 +134,9 @@ class FlowOperator {
         return allFlows.reduce((index, flow) => {
             flow.flowModel = new Flow(flow);
             const flowId = flow.flowModel.id;
-            (flow.flowModel.nodes || []).forEach((step) => {
+            (flow.flowModel.nodes || []).forEach((node) => {
                 index[flowId] = index[flowId] || {};
-                index[flowId][step.id] = step;
+                index[flowId][node.id] = node;
             });
             return index;
         }, {});
@@ -146,8 +146,8 @@ class FlowOperator {
         const flowsIndex = this._buildFlowsIndex(allFlows);
         for (let job of allJobs) {
             const flowId = this._getFlowIdFromJob(job);
-            const stepId = this._getStepIdFromJob(job);
-            if (!flowsIndex[flowId] || !flowsIndex[flowId][stepId]) {
+            const nodeId = this._getNodeIdFromJob(job);
+            if (!flowsIndex[flowId] || !flowsIndex[flowId][nodeId]) {
                 await this._undeployJob(job);    
             }        
         }
@@ -208,18 +208,18 @@ class FlowOperator {
         }
     }
     
-    _buildDescriptor(flow, step, queues) {
-        let jobName = flow.id +'.'+ step.id;
+    _buildDescriptor(flow, node, queues) {
+        let jobName = flow.id +'.'+ node.id;
         jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
-        const env = this._prepareEnvVars(flow, step, queues[step.id]);
-        return this._generateAppDefinition(flow, jobName, env, step);
+        const env = this._prepareEnvVars(flow, node, queues[node.id]);
+        return this._generateAppDefinition(flow, jobName, env, node);
     }
 
-    async _deployStep(flow, step, queues) {
-        let jobName = flow.id +'.'+ step.id;
+    async _deployNode(flow, node, queues) {
+        let jobName = flow.id +'.'+ node.id;
         jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
         this._logger.info({jobName}, 'going to deploy job from k8s');
-        const descriptor = this._buildDescriptor(flow, step, queues); 
+        const descriptor = this._buildDescriptor(flow, node, queues); 
         this._logger.trace(descriptor, 'going to deploy job from k8s');
         try {
             await this._batchClient.jobs.post({body: descriptor});
@@ -228,20 +228,20 @@ class FlowOperator {
         }
     }
 
-    _generateAppDefinition(flowModel, appId, envVars, step) {
+    _generateAppDefinition(flowModel, appId, envVars, node) {
         return {
-            apiVersion: "batch/v1",
+            apiVersion: 'batch/v1',
             kind: 'Job',
             metadata: {
                 name: appId,
-                namespace: "flows",
+                namespace: this._config.get('NAMESPACE'),
                 annotations: {
                     [ANNOTATION_KEY]: flowModel.metadata.resourceVersion  
                 },
                 ownerReferences: [
                     {
-                        apiVersion: "elastic.io/v1",                                     
-                        kind: "Flow",
+                        apiVersion: 'elastic.io/v1',                                     
+                        kind: 'Flow',
                         controller: true,
                         name: flowModel.metadata.name,
                         uid: flowModel.metadata.uid
@@ -256,7 +256,7 @@ class FlowOperator {
                     spec: {
                         restartPolicy: 'Never',
                         containers: [{
-                            image: step.image,
+                            image: node.image,
                             name: 'apprunner',
                             imagePullPolicy: 'Always',
                             env: Object.keys(envVars).map(key => ({
@@ -270,24 +270,24 @@ class FlowOperator {
         };
     }
 
-    _prepareEnvVars(flow, step, stepQueues) {
-        let envVars = Object.assign({}, stepQueues);
+    _prepareEnvVars(flow, node, nodeQueues) {
+        let envVars = Object.assign({}, nodeQueues);
         envVars.EXEC_ID = uuid().replace(/-/g, '')
-        envVars.STEP_ID = step.id;
+        envVars.STEP_ID = node.id;
         envVars.FLOW_ID = flow.id;
         envVars.USER_ID = 'FIXME hardcode smth here';
         envVars.COMP_ID = 'does not matter';
-        envVars.FUNCTION = step.function;
+        envVars.FUNCTION = node.function;
         envVars.AMQP_URI = this._config.get('RABBITMQ_URI');
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
     
-        envVars.API_USERNAME = "does not matter";
-        envVars.API_KEY = "does not matter";
+        envVars.API_USERNAME = 'does not matter';
+        envVars.API_KEY = 'does not matter';
         envVars = Object.entries(envVars).reduce((env, [k, v]) => {
             env['ELASTICIO_' + k] = v;
             return env;
         }, {});
-        return Object.assign(envVars, step.env);
+        return Object.assign(envVars, node.env);
     }
 }
 module.exports = FlowOperator;

@@ -1,7 +1,9 @@
 const uuid = require('node-uuid');
 
-const Lib = require('lib');
+const Lib = require('backendCommonsLib');
 const { Flow } = Lib;
+
+const TICK_INTERVAL_MINUTES = 3;
 
 async function loop (body, logger, loopInterval) {
     logger.info('loop TICK');
@@ -17,7 +19,7 @@ async function loop (body, logger, loopInterval) {
 
 class Scheduler {
     constructor(app) {
-        this._logger = app.getLogger().child({service: "Scheduler"});
+        this._logger = app.getLogger().child({service: 'Scheduler'});
         this._crdClient = app.getK8s().getCRDClient();
         this._channel = app.getAmqpChannel();
         this._queueCreator = app.getQueueCreator();
@@ -30,7 +32,7 @@ class Scheduler {
         const scheduleRecord = {
             'taskId': flow.id,
             'execId': uuid().replace(/-/g, ''),
-            'userId': "DOES NOT MATTER"
+            'userId': 'DOES NOT MATTER'
         };
         const msg = {
             id: uuid.v1(),
@@ -63,12 +65,12 @@ class Scheduler {
         const now = new Date();
         for (let flow of flows) {
             const flowModel = new Flow(flow);
-            const firstStep = flowModel.getFirstNode();
+            const firstNode = flowModel.getFirstNode();
             if (flowModel.metadata.deletionTimestamp) {
                 this._logger.trace({flowId: flowModel.id}, 'flow is deleting now, skip');
                 continue; 
             }
-            if (!firstStep || !firstStep.isPolling) {
+            if (!firstNode || !firstNode.isPolling) {
                 this._logger.trace({flowId: flowModel.id}, 'flow is not polling, skip');
                 const schedulerRecord = schedulerRecordsIndex[flowModel.id];
                 if (schedulerRecord) { 
@@ -81,22 +83,22 @@ class Scheduler {
                 continue;
             }
             const schedulerRecord = schedulerRecordsIndex[flowModel.id] || {
-                "apiVersion": "elastic.io/v1",
-                "kind": "SchedulerRecord",
-                "metadata": {
-                    "name": flowModel.id,
-                    "namespace": this._config.get('NAMESPACE'),
+                'apiVersion': 'elastic.io/v1',
+                'kind': 'SchedulerRecord',
+                'metadata': {
+                    'name': flowModel.id,
+                    'namespace': this._config.get('NAMESPACE'),
                     ownerReferences: [
                         {
-                            apiVersion: "elastic.io/v1",                                     
-                            kind: "Flow",
+                            apiVersion: 'elastic.io/v1',                                     
+                            kind: 'Flow',
                             controller: true,
                             name: flowModel.metadata.name,
                             uid: flowModel.metadata.uid
                         }
                     ]
                 },
-                "spec": {
+                'spec': {
                 }
             };
             delete schedulerRecordsIndex[flowModel.id];
@@ -105,7 +107,7 @@ class Scheduler {
                     await this._scheduleOne(flowModel);
 
                     const newDueExecution = new Date();
-                    newDueExecution.setMinutes(newDueExecution.getMinutes() + 3);
+                    newDueExecution.setMinutes(newDueExecution.getMinutes() + TICK_INTERVAL_MINUTES);
                     this._logger.trace({flowId: flowModel.id, dueExecution: newDueExecution}, 'schedule next flow tick');
                     schedulerRecord.spec.dueExecution = newDueExecution;
                     if (!schedulerRecord.metadata.uid) {

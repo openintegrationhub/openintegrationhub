@@ -1,10 +1,11 @@
 FROM node:8.12-alpine AS base
 WORKDIR /usr/src/scheduler
 
-COPY src/lib ../../src/lib
-COPY services/scheduler/package.json services/scheduler/package-lock.json services/scheduler/index.js ./
-COPY services/scheduler/src ./src
-COPY services/scheduler/config/default.json ./config/default.json
+COPY package.json yarn.lock ./
+COPY src/backendCommonsLib src/backendCommonsLib
+COPY services/scheduler/package.json services/scheduler/index.js ./services/scheduler/
+COPY services/scheduler/src ./services/scheduler/src
+COPY services/scheduler/config/default.json services/scheduler/config/default.json
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package
@@ -12,12 +13,10 @@ COPY services/scheduler/config/default.json ./config/default.json
 # that's not required in runtime
 FROM base AS dependencies
 RUN apk add --no-cache make gcc g++ python
-RUN npm ci --production --quiet
-RUN cd ../../src/lib && npm install --production --quiet
+RUN yarn install --production
 
 FROM base AS release
 COPY --from=dependencies /usr/src/scheduler/node_modules ./node_modules
-COPY --from=dependencies /usr/src/lib/node_modules ../../src/lib/node_modules
-RUN rm -rf package-lock.json
-CMD ["npm", "start"]
+RUN rm yarn.lock
+CMD ["yarn", "--cwd", "services/scheduler", "start"]
 

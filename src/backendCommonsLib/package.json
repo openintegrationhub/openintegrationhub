@@ -1,5 +1,5 @@
 {
-  "name": "lib",
+  "name": "backendCommonsLib",
   "version": "1.0.0",
   "description": "Common part for all services",
   "main": "index.js",

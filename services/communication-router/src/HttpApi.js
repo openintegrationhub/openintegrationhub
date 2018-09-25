@@ -2,12 +2,12 @@ const uuid = require('node-uuid');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const Lib = require('lib');
-const { Flow } = Lib;
+const Lib = require('backendCommonsLib');
+const { Flow, errors } = Lib;
 
 class HttpApi {
     constructor(app) {
-        this._logger = app.getLogger().child({service: "HttpApi"});
+        this._logger = app.getLogger().child({service: 'HttpApi'});
         this._crdClient = app.getK8s().getCRDClient();
         this._queueCreator = app.getQueueCreator();
         this._channel = app.getAmqpChannel();
@@ -35,17 +35,17 @@ class HttpApi {
         try {
             const flow = await this._crdClient.flows(req.params.flowId).get();
             if (!flow) {
-                throw new Error('404');
+                throw new errors.ResourceNotFoundError('Flow is not found');
             }
             const flowModel = new Flow(flow.body);
             const step = flowModel.getFirstNode();
             if (!step) {
-                throw new Error('404');
+                throw new errors.ResourceNotFoundError('Flow has no input step node');
             }
             const scheduleRecord = {
                 'taskId': flowModel.id,
                 'execId': uuid().replace(/-/g, ''),
-                'userId': "DOES NOT MATTER"
+                'userId': 'DOES NOT MATTER'
             };
             const msg = this._getRequestData(flowModel.id, req);
             const queue = this._queueCreator.getAmqpStepConfig(flowModel, step.id).messagesQueue;
@@ -60,11 +60,11 @@ class HttpApi {
 
             res.status(200);
             res.set('Content-Type', 'application/json');
-            res.end(JSON.stringify({status: 'OK'}));
+            res.json({status: 'OK'});
         } catch (e) {
-            this._logger.error(e, req.params, 'hook request');
+            this._logger.error(e, req.params, 'hook request failed');
             res.status(500);
-            res.end();
+            res.end(e.message);
             return;
         }
     }

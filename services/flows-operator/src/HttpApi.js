@@ -1,11 +1,11 @@
 const express = require('express');
 
-const Lib = require('lib');
-const { Flow } = Lib;
+const Lib = require('backendCommonsLib');
+const { Flow, errors } = Lib;
 
 class HttpApi {
     constructor(app) {
-        this._logger = app.getLogger().child({service: "HttpApi"});
+        this._logger = app.getLogger().child({service: 'HttpApi'});
         this._crdClient = app.getK8s().getCRDClient();
         this._app = express();
         this._app.get('/v1/tasks/:taskId/steps/:stepId', this._getStepInfo.bind(this));
@@ -16,28 +16,27 @@ class HttpApi {
         this._app.listen(listenPort);
     }
     async _getStepInfo(req, res) {
-        this._logger.trace(req.params, 'Step info request');
+        this._logger.trace(req.params, 'Node info request');
         try {
             const flow = await this._crdClient.flows(req.params.taskId).get();
             if (!flow) {
-                throw new Error('404');
+                throw new errors.ResourceNotFoundError('Flow is not found');
             }
             const flowModel = new Flow(flow.body);
-            const step = flowModel.getRecipeNodeByStepId(req.params.stepId);
-            if (!step) {
-                throw new Error('404');
+            const node = flowModel.getRecipeNodeByStepId(req.params.stepId);
+            if (!node) {
+                throw new errors.ResourceNotFoundError('Node is not found');
             }
             res.status(200);
-            res.set('Content-Type', 'application/json');
-            res.end(JSON.stringify({
-                id: req.params.stepId,
-                function: step.function,
-                config: step.data || {}
-            }));
+            res.json({
+                id: node.id,
+                function: node.function,
+                config: node.data || {}
+            });
         } catch (e) {
-            this._logger.error(req.params, 'Step info request');
+            this._logger.error(e, req.params, 'Node info request falied');
             res.status(500);
-            res.end();
+            res.end(e.message);
             return;
         }
     }

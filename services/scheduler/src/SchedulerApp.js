@@ -1,6 +1,6 @@
 const express = require('express');
 
-const Lib = require('lib');
+const Lib = require('backendCommonsLib');
 const { 
     QueueCreator,
     App,
