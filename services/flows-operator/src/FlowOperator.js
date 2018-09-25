@@ -256,14 +256,14 @@ class FlowOperator {
                     spec: {
                         restartPolicy: 'Never',
                         containers: [{
-                          image: node.image,
-                          name: 'apprunner',
-                          imagePullPolicy: 'Always',
-                          env: Object.keys(envVars).map(key => ({
-                            name: key,
-                            value: envVars[key]
-                          })),
-                          resources: this._prepareResourcesDefinition(flowModel, node)
+                            image: node.image,
+                            name: 'apprunner',
+                            imagePullPolicy: 'Always',
+                            env: Object.keys(envVars).map(key => ({
+                                name: key,
+                                value: envVars[key]
+                            })),
+                            resources: this._prepareResourcesDefinition(flowModel, node)
                         }]
                     }
                 }
@@ -272,10 +272,15 @@ class FlowOperator {
     }
 
     _prepareResourcesDefinition(flow, node) {
-        const cpuLimit = node.cpuLimit || flow.cpuLimit || this._config.get('DEFAULT_CPU_LIMIT');
-        const memLimit = node.memLimit || flow.memLimit || this._config.get('DEFAULT_MEM_LIMIT');
-        const cpuRequest = node.cpuRequest || flow.cpuRequest || this._config.get('DEFAULT_CPU_REQUEST');
-        const memRequest = node.memRequest || flow.memRequest || this._config.get('DEFAULT_MEM_REQUEST');
+        const lc = 'resources.limits.cpu';
+        const lm = 'resources.limits.memory';
+        const rc = 'resources.requests.cpu';
+        const rm = 'resources.requests.memory';
+
+        const cpuLimit = _.get(node, lc) || _.get(flow, lc) || this._config.get('DEFAULT_CPU_LIMIT');
+        const memLimit = _.get(node, lm) || _.get(flow, lm) || this._config.get('DEFAULT_MEM_LIMIT');
+        const cpuRequest = _.get(node, rc) || _.get(flow, rc) || this._config.get('DEFAULT_CPU_REQUEST');
+        const memRequest = _.get(node, rm) || _.get(flow, rm) || this._config.get('DEFAULT_MEM_REQUEST');
 
         return {
             limits: {
@@ -309,4 +314,5 @@ class FlowOperator {
         return Object.assign(envVars, node.env);
     }
 }
+
 module.exports = FlowOperator;
