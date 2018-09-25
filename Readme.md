@@ -1,3 +1,11 @@
+<p align="center">
+  <img src="https://github.com/openintegrationhub/Microservices/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
+</p>
+
+The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
+
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
+
 # OIH microservices
 Standalone platform that runs flows build from [elastic.io](https://www.elastic.io/) components on kuberntes. Components are build around [nodejs library](https://github.com/elasticio/sailor-nodejs) or [java library](https://github.com/elasticio/sailor-jvm). Generally components may be build with any other language and technology that can work with amqp protocol, send http requests, has access to process's env variables and may be packed into docker container. 
 
@@ -181,13 +189,13 @@ Flow definition consists of flow id and actually flow definition. Flow id, as al
 ## build
 To build platform just run next commands
 ```shell
-docker build -t openintegrationhub/flows-operator:latest services/flows-operator
+docker build -t openintegrationhub/flows-operator:latest  -f ./services/flows-operator/Dockerfile  ./services/
 docker push openintegrationhub/flows-operator:latest
 
-docker build -t openintegrationhub/scheduler:latest services/scheduler
+docker build -t openintegrationhub/scheduler:latest  -f ./services/scheduler/Dockerfile  ./services/
 docker push openintegrationhub/scheduler:latest
 
-docker build -t openintegrationhub/communication-router:latest services/communication-router
+docker build -t openintegrationhub/communication-router:latest  -f ./services/communication-router/Dockerfile  ./services/
 docker push openintegrationhub/communication-router:latest
 ```
 

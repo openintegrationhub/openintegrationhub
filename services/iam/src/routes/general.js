@@ -15,7 +15,7 @@ const AccountDAO = require('./../dao/users');
 const keystore = require('./../util/keystore');
 
 router.get('/', (req, res) => {
-
+    
     res
         .send(
             pug.renderFile(

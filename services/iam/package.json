@@ -1,21 +1,22 @@
 {
-  "name": "oih-iam-service",
+  "name": "iam-service",
   "version": "1.0.0",
   "description": "Identity and Access Management Service",
   "main": "index.js",
   "scripts": {
-    "watch": "npm run watch-scss & nodemon src/index.js --watch ./ ",
-    "watch-scss": "npm run build-css -- --watch",
+    "watch": "yarn watch-scss & nodemon src/index.js --watch ./ ",
+    "watch-scss": "yarn build-css -- --watch",
     "watch-test": "jest --watch --runInBand",
     "start": "node src/index.js",
-    "build-css": "node-sass-chokidar ./src/views/style -o ./src/views/style",
+    "build": "node-sass-chokidar ./src/views/style -o ./src/views/style",
     "lint": "eslint src/ test/",
     "task": "node",
     "generate-keystore": "node -e 'require(\"./src/oidc/util/generate-keystore\").generateFile()'",
     "generate-nodemon-env": "node -e 'require(\"./src/util/nodemon-env\").saveToFile()'",
-    "test": "npm run lint && jest --runInBand --forceExit",
+    "test": "yarn build && yarn lint && jest --silent=false --runInBand --forceExit",
     "coverage": "jest --runInBand --coverage --forceExit",
-    "postinstall": "node ./src/app/dev/generateKeys.js"
+    "postinstall": "node ./src/app/dev/generateKeys.js",
+    "build:docker": "docker build -t openintegrationhub/iam:${VERSION} -f Dockerfile ."
   },
   "keywords": [
     "OIDC",
@@ -38,7 +39,6 @@
     "express-session": "1.15.6",
     "jsonwebtoken": "8.2.2",
     "lodash": "4.17.10",
-    "memwatch-next": "0.3.0",
     "moment": "2.22.2",
     "mongodb": "3.1.1",
     "mongoose": "5.2.4",

@@ -78,6 +78,7 @@ describe('routes', () => {
 
         test('get redirect for error call', async () => {
             await request.get('/')
+                .set('Accept', /\*\/*/)
                 .expect(200);
         });
 

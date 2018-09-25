@@ -142,6 +142,33 @@ It is planed to make roles more generic and extensible, which would allow this s
 
 
 ## Operations
-* In theory, this service can run in a replica set
+* This service can run in a replica set
 * All sessions are stored in the database, which should allow a HA setup
+* we provide a basic Configuration for Kubernetes under /k8s
+
+The Kubernetes YAML's (deployment and Service) relay on Secrets which need to created first and we RECOMMEND to use HASHES for the Secret Strings and   
+policy proved Passwords for the Admin and Service Account.
+
+1. mongosecret-oih-iam  
+  1.1  
+  key/value  
+  url = 'mongodb://USERNAME:PASSWORD@MONGOSERVER1:27017,MONGOSERVER2:27017,MONGOSERVER3:27017/accounts?ssl=true&replicaSet=NAME&authSource=admin'
+
+2. oidc-oih-iam-dev  
+  2.1  
+  key/value
+  jwtsecret = 'somestring'  
+  cookiesecrets = 'somestring'  
+  ADMIN_PASSWORD = 'somestring'  
+  serviceaccpass = 'somestring'  
+  client-secret = 'somestring'  
+
+3. oidc-certs
+  3.1  
+  Filename: keystore.json  
+  that file needs to be generated ```node -e 'require("./src/util/keystore").generateFile()'``` which will place a file ```./keystore/keystore.json```
+  the generated file should be used to create the kubernetes Secret
+
+
+
 
