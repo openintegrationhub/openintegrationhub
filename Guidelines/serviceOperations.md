@@ -83,3 +83,8 @@ Some rules to take care of:
 * keep an eye on the resources. Services with high RAM or CPU usage are not easy to spread in a cluster ENV.
 * The service should be able to run multiple times on a single node (if for a good reason that is not possible the cluster should care of the affinity)
 
+# Reliability
+
+In Production Environments the service should be scaled at a min of 3. That will improve the availability and reliability in case of Errors or Deployments.
+
+In Case of Statefull Sets please be aware to implement a Failover mechanism to keep Service Stable.

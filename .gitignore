@@ -1,4 +1,7 @@
 services/*/node_modules
+toBuild.json
+gitchanges.txt
+node_modules
 .*.sw[op]
 .DS_Store
 .idea
