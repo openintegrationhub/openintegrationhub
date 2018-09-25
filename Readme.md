@@ -140,13 +140,13 @@ Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concep
                     "interval": "minute"
                 },
                 "resources": {
-                    limits: {
-                        cpu: "100m",
-                        memory: "256Mi"
+                    "limits": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
                     },
-                    requests: {
-                        cpu: "100m",
-                        memory: "256Mi"
+                    "requests": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
                     }
                 }
             },
@@ -158,13 +158,13 @@ Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concep
                     "MANDRILL_API_KEY": "PLACE_YOUR_KEY_HERE"
                 },
                 "resources": {
-                    limits: {
-                        cpu: "100m",
-                        memory: "256Mi"
+                    "limits": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
                     },
-                    requests: {
-                        cpu: "100m",
-                        memory: "256Mi"
+                    "requests": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
                     }
                 }
             },
@@ -180,13 +180,13 @@ Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concep
                     }
                 },
                 "resources": {
-                    limits: {
-                        cpu: "100m",
-                        memory: "256Mi"
+                    "limits": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
                     },
-                    requests: {
-                        cpu: "100m",
-                        memory: "256Mi"
+                    "requests": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
                     }
                 }
             }
@@ -202,13 +202,13 @@ Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concep
             }
         ],
         "resources": {
-            limits: {
-                cpu: "100m",
-                memory: "256Mi"
+            "limits": {
+                "cpu": "100m",
+                "memory": "256Mi"
             },
-            requests: {
-                cpu: "100m",
-                memory: "256Mi"
+            "requests": {
+                "cpu": "100m",
+                "memory": "256Mi"
             }
         }
     }
@@ -233,13 +233,13 @@ It is possible to specify how much resources each of the flow containers consume
 The format is the following:
 ```
 "resources": {
-    limits: {
-        cpu: "100m",
-        memory: "256Mi"
+    "limits": {
+        "cpu": "100m",
+        "memory": "256Mi"
     },
-    requests: {
-        cpu: "100m",
-        memory: "256Mi"
+    "requests": {
+        "cpu": "100m",
+        "memory": "256Mi"
     }
 }
 ```
