@@ -1,6 +1,7 @@
 //@see https://github.com/kubernetes/community/blob/master/contributors/devel/api-conventions.md
 const uuid = require('node-uuid');
 const _ = require('lodash');
+const { URL } = require('url');
 
 const Lib = require('backendCommonsLib');
 const { Flow } = Lib;
@@ -69,6 +70,7 @@ class FlowOperator {
                 for (let exchange of queuesStructure[flowId].exchanges) {
                     await channel.deleteExchange(exchange);
                 }
+                await this._deleteAmqpCredentials(flowModel.getAmqpCredentials());
             }
 
             flow.metadata.finalizers = (flow.metadata.finalizers || []).filter(finalizer => finalizer !== FLOW_FINALIZER_NAME);
@@ -86,6 +88,14 @@ class FlowOperator {
                     body: flowModel.toCRD()
                 });
             }
+
+            if (!flowModel.getAmqpCredentials()) {
+                flowModel.setAmqpCredentials(await this._createAmqpCredentials(flowModel));
+                await this._crdClient.flow(flowModel.id).put({
+                    body: flowModel.toCRD()
+                });
+            }
+
             let totalRedeploy = Object.keys(flowModel.nodes).some((nodeId) => {
                 const job = jobsIndex[flowId] && jobsIndex[flowId][nodeId];
                 return job && (flowModel.metadata.resourceVersion !== job.metadata.annotations[ANNOTATION_KEY]);
@@ -111,7 +121,7 @@ class FlowOperator {
                         await channel.deleteExchange(exchange);
                     }
                 }
-                const queues =  await this._queueCreator.makeQueuesForTheTask(flowModel);
+                const queues =  await this._queueCreator.makeQueuesForTheFlow(flowModel);
                 for (let node of flowModel.nodes) {
                     this._logger.trace({flow: flow.metadata.name, node: node.id}, 'Going to create flow node');
                     await this._deployNode(flowModel, node, queues);
@@ -119,7 +129,7 @@ class FlowOperator {
             } else {
                 this._logger.trace({name: flow.metadata.name}, 'Nothing changed. Ensure nodes and queues exists');
                 //TODO ensure queues/exchanges. Use QueuesStructure table
-                const queues =  await this._queueCreator.makeQueuesForTheTask(flowModel);
+                const queues =  await this._queueCreator.makeQueuesForTheFlow(flowModel);
                 for (let node of flowModel.nodes) {
                     if (!jobsIndex[flowId] || !jobsIndex[flowId][node.id]) {
                         this._logger.trace({flow: flow.metadata.name, node: node.id}, 'Going to create flow node');
@@ -176,8 +186,8 @@ class FlowOperator {
     }
 
     async _loopBody() {
-        //TODO any step here blocks all the job, that's shit. Tiemouts, multiple execution threads with limits for
-        //paralel jobs not to destroy backend;
+        //TODO any step here blocks all the job, that's shit. Timeouts, multiple execution threads with limits for
+        //parallel jobs not to destroy backend;
         const allJobs = (await this._batchClient.jobs.get()).body.items;
         const jobIndex = this._buildJobIndex(allJobs);
         const queues = await this._rabbitmqManagement.getQueues();
@@ -296,13 +306,13 @@ class FlowOperator {
 
     _prepareEnvVars(flow, node, nodeQueues) {
         let envVars = Object.assign({}, nodeQueues);
-        envVars.EXEC_ID = uuid().replace(/-/g, '')
+        envVars.EXEC_ID = uuid().replace(/-/g, '');
         envVars.STEP_ID = node.id;
         envVars.FLOW_ID = flow.id;
         envVars.USER_ID = 'FIXME hardcode smth here';
         envVars.COMP_ID = 'does not matter';
         envVars.FUNCTION = node.function;
-        envVars.AMQP_URI = this._config.get('RABBITMQ_URI');
+        envVars.AMQP_URI = this._prepareAmqpUri(flow);
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
 
         envVars.API_USERNAME = 'does not matter';
@@ -312,6 +322,37 @@ class FlowOperator {
             return env;
         }, {});
         return Object.assign(envVars, node.env);
+    }
+
+    _prepareAmqpUri(flow) {
+        const creds = flow.getAmqpCredentials();
+        assert(_.isPlainObject(creds), 'Missing amqp credentials if flow');
+
+        const baseUri = new URL(this._config.get('RABBITMQ_URI'));
+        baseUri.username = creds.username;
+        baseUri.password = creds.password;
+
+        return baseUri.toString();
+    }
+
+    async _createAmqpCredentials(flow) {
+        const username = uuid.v4();
+        const password = uuid.v4();
+
+        await this._rabbitmqManagement.createUser({
+            username,
+            password,
+            flow
+        });
+
+        return {
+            username,
+            password
+        };
+    }
+
+    async _deleteAmqpCredentials(credentials) {
+        await this._rabbitmqManagement.deleteUser(credentials);
     }
 }
 

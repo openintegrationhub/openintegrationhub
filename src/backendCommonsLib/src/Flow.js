@@ -2,7 +2,7 @@ class Flow {
     constructor(crd) {
         this.id = crd.metadata.name;
         this.metadata = crd.metadata;
-        Object.assign(this, crd.spec); 
+        Object.assign(this, crd.spec);
     }
 
     getFirstNode() {
@@ -22,7 +22,18 @@ class Flow {
             kind: "Flow",
             metadata: this.metadata,
             spec: spec
-        };    
+        };
+    }
+
+    getAmqpCredentials() {
+        return this.amqp;
+    }
+
+    setAmqpCredentials({username, password}) {
+        this.amqp = {
+            username,
+            password
+        };
     }
 }
 module.exports = Flow;
