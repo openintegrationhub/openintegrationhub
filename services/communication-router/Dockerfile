@@ -1,6 +1,11 @@
-FROM node:8-alpine AS base
+FROM node:8.12-alpine AS base
 WORKDIR /usr/src/communication-router
-COPY package.json package-lock.json QueueCreator.js index.js ./
+
+COPY package.json yarn.lock ./
+COPY src/backendCommonsLib src/backendCommonsLib
+COPY services/communication-router/package.json  services/communication-router/index.js ./services/communication-router/
+COPY services/communication-router/src services/communication-router/src
+COPY services/communication-router/config/default.json services/communication-router/config/default.json
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package
@@ -8,10 +13,10 @@ COPY package.json package-lock.json QueueCreator.js index.js ./
 # that's not required in runtime
 FROM base AS dependencies
 RUN apk add --no-cache make gcc g++ python
-RUN npm install --production --quiet
+RUN yarn install --production
 
 FROM base AS release
 COPY --from=dependencies /usr/src/communication-router/node_modules ./node_modules
-RUN rm -rf package-lock.json
-CMD ["npm", "start"]
+RUN rm yarn.lock
+CMD ["yarn", "--cwd", "services/communication-router", "start"]
 

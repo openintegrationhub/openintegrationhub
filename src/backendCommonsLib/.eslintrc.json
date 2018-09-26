@@ -1,0 +1,9 @@
+{
+    "plugins": ["node", "mocha"],
+    "extends": ["eslint:recommended", "plugin:node/recommended"],
+    "rules": {
+        "no-process-exit": "off",
+        "mocha/no-exclusive-tests": "error",
+        "mocha/no-skipped-tests": "error"
+    }
+}

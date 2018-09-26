@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: oih-iam
+  name: iam
   namespace: oih-dev-ns
 spec:
   replicas: 1
@@ -10,11 +10,11 @@ spec:
   template:
     metadata:
       labels:
-        app: oih-iam
+        app: iam
     spec:
       containers:
-      - name: oih-iam
-        image: dockerhub.com/oih/oih-iam:latest
+      - name: iam
+        image: openintegrationhub/iam:latest
         env:
         - name: IAM_MONGODB_CONNECTION
           valueFrom:
@@ -78,6 +78,12 @@ spec:
             port: 3099
           initialDelaySeconds: 10
           timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: '0.1'
+            memory: 1000Mi
+          requests:
+            memory: 1000Mi
         volumeMounts:
           - name: oidc-certs
             mountPath: /usr/src/app/keystore

@@ -1,0 +1,27 @@
+dist: trusty
+language: node_js
+node_js:
+  - "8"
+cache: yarn
+before_install:
+  - yarn
+  - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
+  - node ./scripts/getChanges.js
+install: true
+stages:
+  - test
+  - name: build
+    if: branch = master AND fork = false
+  - name: deploy
+    if: branch = master AND fork = false 
+jobs:
+  include:
+    - stage: test
+      script:  yarn test
+    - stage: build
+      services: docker
+      script: 
+      - node ./scripts/build.js
+    - stage: deploy
+      script: 
+      - node ./scripts/deploy.js
