@@ -17,7 +17,7 @@ async function loop (body, logger, loopInterval) {
     }
     setTimeout(async () => {
         loop(body, logger, loopInterval);
-    }, loopInterval);    
+    }, loopInterval);
 }
 class FlowOperator {
     constructor(app) {
@@ -58,8 +58,8 @@ class FlowOperator {
                 await this._undeployJob({
                     metadata: {
                         name: node.metadata.name
-                    } 
-                });  
+                    }
+                });
             }
             if (queuesStructure[flowId]) {
                 const channel = await this._channelPromise;
@@ -67,15 +67,15 @@ class FlowOperator {
                     await channel.deleteQueue(queue);
                 }
                 for (let exchange of queuesStructure[flowId].exchanges) {
-                    await channel.deleteExchange(exchange); 
+                    await channel.deleteExchange(exchange);
                 }
-            } 
+            }
 
             flow.metadata.finalizers = (flow.metadata.finalizers || []).filter(finalizer => finalizer !== FLOW_FINALIZER_NAME);
             //FIXME make sure 409 works. So non-sequential updates should go into next iteration
             //possibly handle revision field
             await this._crdClient.flow(flowModel.id).put({
-                body: flow 
+                body: flow
             });
         } else {
             if (!(flow.metadata.finalizers || []).includes(FLOW_FINALIZER_NAME)) {
@@ -90,7 +90,7 @@ class FlowOperator {
                 const job = jobsIndex[flowId] && jobsIndex[flowId][nodeId];
                 return job && (flowModel.metadata.resourceVersion !== job.metadata.annotations[ANNOTATION_KEY]);
              });
-            totalRedeploy = totalRedeploy || _.difference(Object.keys(jobsIndex[flowId] || {}), (flowModel.nodes || []).map(node=>node.id)).length > 0; 
+            totalRedeploy = totalRedeploy || _.difference(Object.keys(jobsIndex[flowId] || {}), (flowModel.nodes || []).map(node=>node.id)).length > 0;
 
             if (totalRedeploy) {
                 this._logger.trace({name: flow.metadata.name}, 'Flow changed. Redeploy');
@@ -99,8 +99,8 @@ class FlowOperator {
                     await this._undeployJob({
                         metadata: {
                             name: node.metadata.name
-                        } 
-                    });  
+                        }
+                    });
                 }
                 if (queuesStructure[flowId]) {
                     const channel = await this._channelPromise;
@@ -108,9 +108,9 @@ class FlowOperator {
                         await channel.deleteQueue(queue);
                     }
                     for (let exchange of queuesStructure[flowId].exchanges) {
-                        await channel.deleteExchange(exchange); 
+                        await channel.deleteExchange(exchange);
                     }
-                } 
+                }
                 const queues =  await this._queueCreator.makeQueuesForTheTask(flowModel);
                 for (let node of flowModel.nodes) {
                     this._logger.trace({flow: flow.metadata.name, node: node.id}, 'Going to create flow node');
@@ -148,8 +148,8 @@ class FlowOperator {
             const flowId = this._getFlowIdFromJob(job);
             const nodeId = this._getNodeIdFromJob(job);
             if (!flowsIndex[flowId] || !flowsIndex[flowId][nodeId]) {
-                await this._undeployJob(job);    
-            }        
+                await this._undeployJob(job);
+            }
         }
     }
 
@@ -176,7 +176,7 @@ class FlowOperator {
     }
 
     async _loopBody() {
-        //TODO any step here blocks all the job, that's shit. Tiemouts, multiple execution threads with limits for 
+        //TODO any step here blocks all the job, that's shit. Tiemouts, multiple execution threads with limits for
         //paralel jobs not to destroy backend;
         const allJobs = (await this._batchClient.jobs.get()).body.items;
         const jobIndex = this._buildJobIndex(allJobs);
@@ -204,10 +204,10 @@ class FlowOperator {
                 }
             });
         } catch (e) {
-            this._logger.error(e, 'failed to undeploy job'); 
+            this._logger.error(e, 'failed to undeploy job');
         }
     }
-    
+
     _buildDescriptor(flow, node, queues) {
         let jobName = flow.id +'.'+ node.id;
         jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
@@ -219,12 +219,12 @@ class FlowOperator {
         let jobName = flow.id +'.'+ node.id;
         jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
         this._logger.info({jobName}, 'going to deploy job from k8s');
-        const descriptor = this._buildDescriptor(flow, node, queues); 
+        const descriptor = this._buildDescriptor(flow, node, queues);
         this._logger.trace(descriptor, 'going to deploy job from k8s');
         try {
             await this._batchClient.jobs.post({body: descriptor});
         } catch (e) {
-            this._logger.error(e, 'failed to deploy job'); 
+            this._logger.error(e, 'failed to deploy job');
         }
     }
 
@@ -236,11 +236,11 @@ class FlowOperator {
                 name: appId,
                 namespace: this._config.get('NAMESPACE'),
                 annotations: {
-                    [ANNOTATION_KEY]: flowModel.metadata.resourceVersion  
+                    [ANNOTATION_KEY]: flowModel.metadata.resourceVersion
                 },
                 ownerReferences: [
                     {
-                        apiVersion: 'elastic.io/v1',                                     
+                        apiVersion: 'elastic.io/v1',
                         kind: 'Flow',
                         controller: true,
                         name: flowModel.metadata.name,
@@ -280,7 +280,7 @@ class FlowOperator {
         envVars.FUNCTION = node.function;
         envVars.AMQP_URI = this._config.get('RABBITMQ_URI');
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
-    
+
         envVars.API_USERNAME = 'does not matter';
         envVars.API_KEY = 'does not matter';
         envVars = Object.entries(envVars).reduce((env, [k, v]) => {
@@ -290,4 +290,5 @@ class FlowOperator {
         return Object.assign(envVars, node.env);
     }
 }
+
 module.exports = FlowOperator;
