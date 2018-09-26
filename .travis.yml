@@ -5,23 +5,23 @@ node_js:
 cache: yarn
 before_install:
   - yarn
-  - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt 
+  - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt
   - node ./scripts/getChanges.js
 install: true
 stages:
   - test
   - name: build
-    if: branch = master AND fork = false
+    if: branch = master AND fork = false AND pull_request = false
   - name: deploy
-    if: branch = master AND fork = false 
+    if: branch = master AND fork = false AND pull_request = false
 jobs:
   include:
     - stage: test
       script:  yarn test
     - stage: build
       services: docker
-      script: 
+      script:
       - node ./scripts/build.js
     - stage: deploy
-      script: 
+      script:
       - node ./scripts/deploy.js
