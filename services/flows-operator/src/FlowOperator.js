@@ -63,6 +63,7 @@ class FlowOperator {
                     }
                 });
             }
+
             if (queuesStructure[flowId]) {
                 const channel = await this._channelPromise;
                 for (let queue of queuesStructure[flowId].queues) {
@@ -71,14 +72,15 @@ class FlowOperator {
                 for (let exchange of queuesStructure[flowId].exchanges) {
                     await channel.deleteExchange(exchange);
                 }
-                await this._deleteFlowSecret(flow);
             }
+
+            await this._deleteFlowSecret(flow);
 
             flow.metadata.finalizers = (flow.metadata.finalizers || []).filter(finalizer => finalizer !== FLOW_FINALIZER_NAME);
             //FIXME make sure 409 works. So non-sequential updates should go into next iteration
             //possibly handle revision field
             await this._crdClient.flow(flow.id).put({
-                body: flow
+                body: flow.toCRD()
             });
         } else {
             if (!(flow.metadata.finalizers || []).includes(FLOW_FINALIZER_NAME)) {
