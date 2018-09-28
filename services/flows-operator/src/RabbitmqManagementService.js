@@ -6,13 +6,14 @@ class RabbitmqManagementService {
 
     constructor(app) {
         this._app = app;
+        this._logger = app.getLogger().child({service: 'RabbitmqManagement'});
     }
 
     async start() {
         const managementUri = this._app.getConfig().get('RABBITMQ_MANAGEMENT_URI');
         const parsedUrl = new url.URL(managementUri);
         const {username, password } = parsedUrl;
-        this._vhost = parsedUrl.pathname.replace(/^\//, '');
+        this._vhost = parsedUrl.pathname.replace(/^\//, '') || '/';
         parsedUrl.username = '';
         parsedUrl.password = '';
         this._client = new RabbitmqManagement(parsedUrl.toString(), username, password);
@@ -30,17 +31,18 @@ class RabbitmqManagementService {
         return this._client.getVhostBindings(this._vhost);
     }
 
-    async createUser({ username, password, flow }) {
+    async createFlowUser({ username, password, flow }) {
         const userBody = {
             //@todo it would be great to pass a password_hash instead of a password
             // http://www.rabbitmq.com/passwords.html#computing-password-hash
-            password
+            password,
+            tags: 'flow-user'
         };
 
         await this._client.putUser(username, userBody);
 
-        const readRegex = `^${flow.id}:`; //@todo call queue creator method
-        const writeRegex = `^${flow.id}$`; //@todo call queue creator method
+        const readRegex = `^${flow.id}:`;
+        const writeRegex = `^${flow.id}$`;
         const permissionsBody = {
             // https://www.rabbitmq.com/access-control.html
             // The regular expression '^$', i.e. matching nothing but the empty string,
@@ -50,6 +52,7 @@ class RabbitmqManagementService {
             write: writeRegex,
             read: readRegex
         };
+
         await this._client.setUserPermissions(username, this._vhost, permissionsBody);
     }
 

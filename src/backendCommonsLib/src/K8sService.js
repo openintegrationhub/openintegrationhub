@@ -32,7 +32,11 @@ class K8sService{
 
         this._crdClient = client.apis[apiGroup].v1.namespaces(namespace);
         this._batchClient = client.apis.batch.v1.namespaces(namespace);
+        this._coreClient = client.api.v1.namespaces(namespace);
+    }
 
+    getCoreClient() {
+        return this._coreClient;
     }
 
     getBatchClient() {
@@ -40,7 +44,7 @@ class K8sService{
     }
 
     getCRDClient() {
-        return this._crdClient; 
+        return this._crdClient;
     }
 
     async stop() {
@@ -48,11 +52,11 @@ class K8sService{
     }
 
     async _installFlowCRD(client) {
-        await this._installCRD(client, FlowCRD); 
+        await this._installCRD(client, FlowCRD);
     }
 
     async _installSchedulerCRD(client) {
-        await this._installCRD(client, SchedulerCRD); 
+        await this._installCRD(client, SchedulerCRD);
     }
 
     async _installCRD(client, CRDdefinition) {

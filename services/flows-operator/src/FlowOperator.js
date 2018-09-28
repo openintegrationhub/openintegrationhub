@@ -4,7 +4,7 @@ const _ = require('lodash');
 const { URL } = require('url');
 
 const Lib = require('backendCommonsLib');
-const { Flow } = Lib;
+const { Flow, FlowSecret } = Lib;
 
 const FLOW_FINALIZER_NAME = 'finalizer.flows.elastic.io';
 const ANNOTATION_KEY = 'annotation.flows.elastic.io';
@@ -25,6 +25,7 @@ class FlowOperator {
         this._logger = app.getLogger().child({service: 'FlowOperator'});
         this._crdClient = app.getK8s().getCRDClient();
         this._batchClient = app.getK8s().getBatchClient();
+        this._coreClient = app.getK8s().getCoreClient();
         this._queueCreator = app.getQueueCreator();
         this._rabbitmqManagement = app.getRabbitmqManagement();
         this._config = app.getConfig();
@@ -48,9 +49,9 @@ class FlowOperator {
         }, {});
     }
 
-    async _handleFlow(flow, jobsIndex, queuesStructure) {
-        const flowModel = new Flow(flow);
-        const flowId = flowModel.id;
+    async _handleFlow(flowCrd, jobsIndex, queuesStructure) {
+        const flow = new Flow(flowCrd);
+        const flowId = flow.id;
 
         if (flow.metadata.deletionTimestamp) {
             this._logger.trace({name: flow.metadata.name}, 'Going to delete flow');
@@ -70,13 +71,13 @@ class FlowOperator {
                 for (let exchange of queuesStructure[flowId].exchanges) {
                     await channel.deleteExchange(exchange);
                 }
-                await this._deleteAmqpCredentials(flowModel.getAmqpCredentials());
+                await this._deleteFlowSecret(flow);
             }
 
             flow.metadata.finalizers = (flow.metadata.finalizers || []).filter(finalizer => finalizer !== FLOW_FINALIZER_NAME);
             //FIXME make sure 409 works. So non-sequential updates should go into next iteration
             //possibly handle revision field
-            await this._crdClient.flow(flowModel.id).put({
+            await this._crdClient.flow(flow.id).put({
                 body: flow
             });
         } else {
@@ -84,23 +85,16 @@ class FlowOperator {
                 flow.metadata.finalizers = (flow.metadata.finalizers || []).concat(FLOW_FINALIZER_NAME);
                 //FIXME make sure 409 works. So non-sequential updates should go into next iteration
                 //possibly handle revision field
-                await this._crdClient.flow(flowModel.id).put({
-                    body: flowModel.toCRD()
+                await this._crdClient.flow(flow.id).put({
+                    body: flow.toCRD()
                 });
             }
 
-            if (!flowModel.getAmqpCredentials()) {
-                flowModel.setAmqpCredentials(await this._createAmqpCredentials(flowModel));
-                await this._crdClient.flow(flowModel.id).put({
-                    body: flowModel.toCRD()
-                });
-            }
-
-            let totalRedeploy = Object.keys(flowModel.nodes).some((nodeId) => {
+            let totalRedeploy = Object.keys(flow.nodes).some((nodeId) => {
                 const job = jobsIndex[flowId] && jobsIndex[flowId][nodeId];
-                return job && (flowModel.metadata.resourceVersion !== job.metadata.annotations[ANNOTATION_KEY]);
+                return job && (flow.metadata.resourceVersion !== job.metadata.annotations[ANNOTATION_KEY]);
              });
-            totalRedeploy = totalRedeploy || _.difference(Object.keys(jobsIndex[flowId] || {}), (flowModel.nodes || []).map(node=>node.id)).length > 0;
+            totalRedeploy = totalRedeploy || _.difference(Object.keys(jobsIndex[flowId] || {}), (flow.nodes || []).map(node=>node.id)).length > 0;
 
             if (totalRedeploy) {
                 this._logger.trace({name: flow.metadata.name}, 'Flow changed. Redeploy');
@@ -121,19 +115,29 @@ class FlowOperator {
                         await channel.deleteExchange(exchange);
                     }
                 }
-                const queues =  await this._queueCreator.makeQueuesForTheFlow(flowModel);
-                for (let node of flowModel.nodes) {
+                const queues =  await this._queueCreator.makeQueuesForTheFlow(flow);
+                for (let node of flow.nodes) {
                     this._logger.trace({flow: flow.metadata.name, node: node.id}, 'Going to create flow node');
-                    await this._deployNode(flowModel, node, queues);
+                    await this._deployNode(flow, node, queues);
                 }
             } else {
                 this._logger.trace({name: flow.metadata.name}, 'Nothing changed. Ensure nodes and queues exists');
+
+                if (!jobsIndex[flowId]) {
+                    const flowSecret = await this._getFlowSecret(flow);
+                    if (!flowSecret) {
+                        await this._createFlowSecret(flow);
+                    } else {
+                        this._logger.debug('Found flow secret ID', flowSecret.id);
+                    }
+                }
+
                 //TODO ensure queues/exchanges. Use QueuesStructure table
-                const queues =  await this._queueCreator.makeQueuesForTheFlow(flowModel);
-                for (let node of flowModel.nodes) {
+                const queues =  await this._queueCreator.makeQueuesForTheFlow(flow);
+                for (let node of flow.nodes) {
                     if (!jobsIndex[flowId] || !jobsIndex[flowId][node.id]) {
                         this._logger.trace({flow: flow.metadata.name, node: node.id}, 'Going to create flow node');
-                        await this._deployNode(flowModel, node, queues);
+                        await this._deployNode(flow, node, queues);
                     }
                 }
             }
@@ -228,17 +232,32 @@ class FlowOperator {
     async _deployNode(flow, node, queues) {
         let jobName = flow.id +'.'+ node.id;
         jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
-        this._logger.info({jobName}, 'going to deploy job from k8s');
+        this._logger.info({jobName}, 'Going to deploy job to k8s');
         const descriptor = this._buildDescriptor(flow, node, queues);
-        this._logger.trace(descriptor, 'going to deploy job from k8s');
+        this._logger.trace(descriptor, 'going to deploy a job to k8s');
         try {
             await this._batchClient.jobs.post({body: descriptor});
         } catch (e) {
-            this._logger.error(e, 'failed to deploy job');
+            this._logger.error(e, 'Failed to deploy the job');
         }
     }
 
     _generateAppDefinition(flowModel, appId, envVars, node) {
+        const env = Object.keys(envVars).map(key => ({
+            name: key,
+            value: envVars[key]
+        }));
+
+        env.push({
+            name: 'ELASTICIO_AMQP_URI',
+            valueFrom: {
+                secretKeyRef: {
+                    name: flowModel.id,
+                    key: 'AMQP_URI'
+                }
+            }
+        });
+
         return {
             apiVersion: 'batch/v1',
             kind: 'Job',
@@ -269,10 +288,7 @@ class FlowOperator {
                             image: node.image,
                             name: 'apprunner',
                             imagePullPolicy: 'Always',
-                            env: Object.keys(envVars).map(key => ({
-                                name: key,
-                                value: envVars[key]
-                            })),
+                            env,
                             resources: this._prepareResourcesDefinition(flowModel, node)
                         }]
                     }
@@ -312,7 +328,6 @@ class FlowOperator {
         envVars.USER_ID = 'FIXME hardcode smth here';
         envVars.COMP_ID = 'does not matter';
         envVars.FUNCTION = node.function;
-        envVars.AMQP_URI = this._prepareAmqpUri(flow);
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
 
         envVars.API_USERNAME = 'does not matter';
@@ -324,26 +339,70 @@ class FlowOperator {
         return Object.assign(envVars, node.env);
     }
 
-    _prepareAmqpUri(flow) {
-        const creds = flow.getAmqpCredentials();
-        assert(_.isPlainObject(creds), 'Missing amqp credentials if flow');
+    async _createFlowSecret(flow) {
+        this._logger.debug('About to create a secret');
+        const credentials = await this._createAmqpCredentials(flow);
 
-        const baseUri = new URL(this._config.get('RABBITMQ_URI'));
-        baseUri.username = creds.username;
-        baseUri.password = creds.password;
+        const flowSecret = new FlowSecret({
+            metadata: {
+                name: flow.id,
+                namespace: this._config.get('NAMESPACE')
+            },
+            data: {
+                AMQP_URI: this._prepareAmqpUri(credentials)
+            }
+        });
+
+        await this._coreClient.secrets.post({
+            body: flowSecret.toDescriptor()
+        });
+
+        this._logger.debug('Secret has been created');
+    }
+
+    async _deleteFlowSecret(flow) {
+        this._logger.debug('About to delete a secret');
+        const secret = await this._getFlowSecret(flow);
+        if (!secret) {
+            return;
+        }
+
+        const username = secret.amqpUsername;
+        await this._deleteAmqpCredentials({ username });
+        this._logger.trace('Removed AMQP credentials');
+
+        await this._coreClient.secrets(secret.id).delete();
+        this._logger.debug('Secret has been deleted');
+    }
+
+    async _getFlowSecret(flow) {
+        try {
+            const result = await this._coreClient.secrets(flow.id).get();
+            return FlowSecret.fromDescriptor(result.body);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    _prepareAmqpUri({ username, password }) {
+        const baseUri = new URL(this._config.get('RABBITMQ_URI_FLOWS'));
+        baseUri.username = username;
+        baseUri.password = password;
 
         return baseUri.toString();
     }
 
     async _createAmqpCredentials(flow) {
-        const username = uuid.v4();
+        const username = uuid.v4(); //@todo: use flow.id as a username?
         const password = uuid.v4();
 
-        await this._rabbitmqManagement.createUser({
+        this._logger.trace('About to create RabbitMQ user');
+        await this._rabbitmqManagement.createFlowUser({
             username,
             password,
             flow
         });
+        this._logger.trace('Created RabbitMQ user');
 
         return {
             username,

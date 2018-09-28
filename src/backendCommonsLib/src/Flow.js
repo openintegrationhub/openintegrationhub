@@ -24,16 +24,5 @@ class Flow {
             spec: spec
         };
     }
-
-    getAmqpCredentials() {
-        return this.amqp;
-    }
-
-    setAmqpCredentials({username, password}) {
-        this.amqp = {
-            username,
-            password
-        };
-    }
 }
 module.exports = Flow;
