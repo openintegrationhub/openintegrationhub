@@ -388,7 +388,10 @@ class FlowOperator {
             const result = await this._coreClient.secrets(flow.id).get();
             return FlowSecret.fromDescriptor(result.body);
         } catch (e) {
-            return null;
+            if (e.statusCode === 404) {
+                return null;
+            }
+            throw e;
         }
     }
 
