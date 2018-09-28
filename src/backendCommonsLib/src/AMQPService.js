@@ -27,11 +27,11 @@ class AMQPService {
         throw new Error('can not connect to rabbitmq');
     }
     async stop() {
-        throw new Error('implement me'); 
+        throw new Error('implement me');
     }
 
     getConnection () {
-        return this._conn; 
+        return this._conn;
     }
 
 }

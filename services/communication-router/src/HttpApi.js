@@ -101,10 +101,10 @@ class HttpApi {
         msg.taskId = flowId;
         return msg;
     }
-    
+
     async _healthcheck(req, res) {
         this._logger.trace('Healthcheck request');
-        res.status(200).end(); 
+        res.status(200).end();
     }
 }
 module.exports = HttpApi;

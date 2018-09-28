@@ -18,8 +18,8 @@ class Flow {
         delete spec.id;
         delete spec.metadata;
         return {
-            apiVersion: "elastic.io/v1",
-            kind: "Flow",
+            apiVersion: 'elastic.io/v1',
+            kind: 'Flow',
             metadata: this.metadata,
             spec: spec
         };

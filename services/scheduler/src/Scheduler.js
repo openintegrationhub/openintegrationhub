@@ -14,7 +14,7 @@ async function loop (body, logger, loopInterval) {
     }
     setTimeout(async () => {
         loop(body, logger, loopInterval);
-    }, loopInterval);    
+    }, loopInterval);
 }
 
 class Scheduler {
@@ -28,7 +28,7 @@ class Scheduler {
     }
     async _scheduleOne(flow) {
         this._logger.trace({flowId: flow.id}, 'schedule flow tick');
-         
+
         const scheduleRecord = {
             'taskId': flow.id,
             'execId': uuid().replace(/-/g, ''),
@@ -60,7 +60,7 @@ class Scheduler {
         const schedulerRecords = (await this._crdClient.schedulerrecords.get()).body.items;
         const schedulerRecordsIndex = schedulerRecords.reduce((index, record) => {
             index[record.metadata.name] = record;
-            return index; 
+            return index;
         }, {});
         const now = new Date();
         for (let flow of flows) {
@@ -68,12 +68,12 @@ class Scheduler {
             const firstNode = flowModel.getFirstNode();
             if (flowModel.metadata.deletionTimestamp) {
                 this._logger.trace({flowId: flowModel.id}, 'flow is deleting now, skip');
-                continue; 
+                continue;
             }
             if (!firstNode || !firstNode.isPolling) {
                 this._logger.trace({flowId: flowModel.id}, 'flow is not polling, skip');
                 const schedulerRecord = schedulerRecordsIndex[flowModel.id];
-                if (schedulerRecord) { 
+                if (schedulerRecord) {
                     this._logger.trace({
                         name: schedulerRecord.metadata.name,
                         dueExecution: schedulerRecord.spec.dueExecution
@@ -90,7 +90,7 @@ class Scheduler {
                     'namespace': this._config.get('NAMESPACE'),
                     ownerReferences: [
                         {
-                            apiVersion: 'elastic.io/v1',                                     
+                            apiVersion: 'elastic.io/v1',
                             kind: 'Flow',
                             controller: true,
                             name: flowModel.metadata.name,
@@ -102,7 +102,7 @@ class Scheduler {
                 }
             };
             delete schedulerRecordsIndex[flowModel.id];
-            if (!schedulerRecord.spec.dueExecution || now >= new Date(schedulerRecord.spec.dueExecution)) { 
+            if (!schedulerRecord.spec.dueExecution || now >= new Date(schedulerRecord.spec.dueExecution)) {
                 try {
                     await this._scheduleOne(flowModel);
 
