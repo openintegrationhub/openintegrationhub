@@ -395,7 +395,7 @@ class FlowOperator {
     }
 
     async _createAmqpCredentials(flow) {
-        const username = uuid.v4(); //@todo: use flow.id as a username?
+        const username = flow.id;
         const password = uuid.v4();
 
         this._logger.trace('About to create RabbitMQ user');
