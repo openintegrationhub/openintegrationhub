@@ -92,6 +92,12 @@ class FlowOperator {
                 });
             }
 
+            //@todo: optimise it in the future
+            const flowSecret = await this._getFlowSecret(flow);
+            if (!flowSecret) {
+                await this._createFlowSecret(flow);
+            }
+
             let totalRedeploy = Object.keys(flow.nodes).some((nodeId) => {
                 const job = jobsIndex[flowId] && jobsIndex[flowId][nodeId];
                 return job && (flow.metadata.resourceVersion !== job.metadata.annotations[ANNOTATION_KEY]);
@@ -124,15 +130,6 @@ class FlowOperator {
                 }
             } else {
                 this._logger.trace({name: flow.metadata.name}, 'Nothing changed. Ensure nodes and queues exists');
-
-                if (!jobsIndex[flowId]) {
-                    const flowSecret = await this._getFlowSecret(flow);
-                    if (!flowSecret) {
-                        await this._createFlowSecret(flow);
-                    } else {
-                        this._logger.debug('Found flow secret ID', flowSecret.id);
-                    }
-                }
 
                 //TODO ensure queues/exchanges. Use QueuesStructure table
                 const queues =  await this._queueCreator.makeQueuesForTheFlow(flow);
@@ -348,7 +345,16 @@ class FlowOperator {
         const flowSecret = new FlowSecret({
             metadata: {
                 name: flow.id,
-                namespace: this._config.get('NAMESPACE')
+                namespace: this._config.get('NAMESPACE'),
+                ownerReferences: [
+                    {
+                        apiVersion: 'elastic.io/v1',
+                        kind: 'Flow',
+                        controller: true,
+                        name: flow.metadata.name,
+                        uid: flow.metadata.uid
+                    }
+                ]
             },
             data: {
                 AMQP_URI: this._prepareAmqpUri(credentials)
