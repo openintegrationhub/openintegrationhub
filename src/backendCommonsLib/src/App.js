@@ -40,11 +40,11 @@ class App {
     }
 
     async _run () {
-        throw new Error('implement me'); 
+        throw new Error('implement me');
     }
 
     static get NAME () {
-        throw new Error('implement me'); 
+        throw new Error('implement me');
     }
 }
 module.exports = App;

@@ -167,11 +167,16 @@ items:
                 - name: RABBITMQ_URI
                   value: >-
                     amqp://guest:guest@rabbitmq-service.platform.svc.cluster.local
+                - name: RABBITMQ_URI_FLOWS
+                  value: >-
+                    amqp://rabbitmq-service.platform.svc.cluster.local
                 - name: RABBITMQ_MANAGEMENT_URI
                   value: >-
                     http://guest:guest@rabbitmq-service.platform.svc.cluster.local:15672/
                 - name: SELF_URL
                   value: 'http://api-service.platform.svc.cluster.local'
+                - name: LOG_LEVEL
+                  value: debug
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               imagePullPolicy: IfNotPresent

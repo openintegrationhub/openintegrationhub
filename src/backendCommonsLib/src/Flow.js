@@ -2,7 +2,7 @@ class Flow {
     constructor(crd) {
         this.id = crd.metadata.name;
         this.metadata = crd.metadata;
-        Object.assign(this, crd.spec); 
+        Object.assign(this, crd.spec);
     }
 
     getFirstNode() {
@@ -18,11 +18,11 @@ class Flow {
         delete spec.id;
         delete spec.metadata;
         return {
-            apiVersion: "elastic.io/v1",
-            kind: "Flow",
+            apiVersion: 'elastic.io/v1',
+            kind: 'Flow',
             metadata: this.metadata,
             spec: spec
-        };    
+        };
     }
 }
 module.exports = Flow;

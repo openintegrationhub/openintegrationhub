@@ -7,7 +7,7 @@ class ConfigFabric {
         const projectRoot = this._findProjectRoot();
         nconf.env();
         nconf.file(path.resolve(projectRoot, 'config', `${environment}.json`));
-        nconf.file('default', path.resolve(projectRoot, 'config', `default.json`));
+        nconf.file('default', path.resolve(projectRoot, 'config', 'default.json'));
         nconf.defaults(this._getDefaults());
         return nconf;
     }
@@ -19,6 +19,7 @@ class ConfigFabric {
         }
         return path.dirname(m.filename);
     }
+
     static _getDefaults() {
         return {
             RABBITMQ_URI: 'amqp://guest:guest@127.0.0.1:5672/',
@@ -28,4 +29,5 @@ class ConfigFabric {
         }
     }
 }
+
 module.exports = ConfigFabric;

@@ -1,5 +1,5 @@
 const Lib = require('backendCommonsLib');
-const { 
+const {
     QueueCreator,
     App,
     K8sService,

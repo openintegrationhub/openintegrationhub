@@ -1,7 +1,7 @@
 const express = require('express');
 
 const Lib = require('backendCommonsLib');
-const { 
+const {
     QueueCreator,
     App,
     K8sService,
@@ -28,7 +28,7 @@ class SchedulerApp extends App {
     }
 
     getAmqpChannel() {
-        return this._channel; 
+        return this._channel;
     }
 
     getQueueCreator() {
@@ -38,7 +38,7 @@ class SchedulerApp extends App {
     _initHealthcheckApi(listenPort) {
         const app = express();
         app.get('/healthcheck', (req, res) => {
-            res.status(200).end(); 
+            res.status(200).end();
         });
         app.listen(listenPort);
     }
