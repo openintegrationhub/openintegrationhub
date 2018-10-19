@@ -615,7 +615,7 @@ describe('Integration Test', () => {
         describe('when sailor could not init the module', () => {
             it('should publish init errors to RabbitMQ', (done) => {
 
-                const logCriticalErrorStub = sinon.stub(logging, 'criticalError');
+                const logCriticalErrorStub = sinon.stub(logging, 'criticalErrorAndExit');
 
                 env.ELASTICIO_FUNCTION = 'fails_to_init';
 
