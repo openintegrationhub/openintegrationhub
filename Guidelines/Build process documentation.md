@@ -50,6 +50,8 @@ The following scripts are necessary and will be called in the package.json:
   - deployment.yml
   - service.yml
 
+#### Next step
+After successful build and upload to docker hub, the very first deploy of a service needs to be "manually" since there are secrets necessary in order to run the service on the cluster. These secrets commonly provide a bunch of keyvalue pairs to give some inital environmental variables for the setup
 
 ### CI/CD process with integrated backlog
 
