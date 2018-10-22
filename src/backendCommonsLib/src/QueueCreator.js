@@ -13,102 +13,102 @@ const MESSAGES_QUEUE_SUFFIX = 'messages';
 const REBOUNDS_QUEUE_SUFFIX = 'rebounds';
 
 
-function getTaskIdForQueue(task) {
-    return task.id;
+function getFlowIdForQueue(flow) {
+    return flow.id;
 }
 
-function getRoutingKeySuffixForTask(task, baseSuffix) {
+function getRoutingKeySuffixForFlow(flow, baseSuffix) {
     return baseSuffix;
 }
 
 function getQueueName(params) {
-    const { task, stepId, suffix } = params;
-    const taskId = getTaskIdForQueue(task);
-    return `${taskId}:${stepId}:${suffix}`;
+    const { flow, stepId, suffix } = params;
+    const flowId = getFlowIdForQueue(flow);
+    return `${flowId}:${stepId}:${suffix}`;
 }
 
 
-function getTaskExchange(task) {
-    return task.id;
+function getFlowExchange(flow) {
+    return flow.id;
 }
 
 function getRoutingTag(params) {
-    const { task, stepId, suffix } = params;
-    const taskId = getTaskIdForQueue(task);
-    return `${taskId}.${stepId}.${suffix}`;
+    const { flow, stepId, suffix } = params;
+    const flowId = getFlowIdForQueue(flow);
+    return `${flowId}.${stepId}.${suffix}`;
 }
 
 
-function getMessagesQueue(task, stepId) {
+function getMessagesQueue(flow, stepId) {
     return getQueueName({
-        task,
+        flow,
         stepId,
         suffix: MESSAGES_QUEUE_SUFFIX
     });
 }
 
-function getReboundsQueue(task, stepId) {
+function getReboundsQueue(flow, stepId) {
     return getQueueName({
-        task,
+        flow,
         stepId,
         suffix: REBOUNDS_QUEUE_SUFFIX
     });
 }
 
-function getDataRoutingKey(task, stepId) {
-    const suffix = getRoutingKeySuffixForTask(task, MESSAGE_TAG);
+function getDataRoutingKey(flow, stepId) {
+    const suffix = getRoutingKeySuffixForFlow(flow, MESSAGE_TAG);
     return getRoutingTag({
-        task,
+        flow,
         stepId,
         suffix
     });
 }
 
-function getInputRoutingKey(task, stepId) {
-    const suffix = getRoutingKeySuffixForTask(task, INPUT_TAG);
+function getInputRoutingKey(flow, stepId) {
+    const suffix = getRoutingKeySuffixForFlow(flow, INPUT_TAG);
     return getRoutingTag({
-        task,
+        flow,
         stepId,
         suffix
     });
 }
 
-function getErrorRoutingKey(task, stepId) {
-    const suffix = getRoutingKeySuffixForTask(task, ERROR_TAG);
+function getErrorRoutingKey(flow, stepId) {
+    const suffix = getRoutingKeySuffixForFlow(flow, ERROR_TAG);
     return getRoutingTag({
-        task,
+        flow,
         stepId,
         suffix
     });
 }
 
-function getReboundRoutingKey(task, stepId) {
+function getReboundRoutingKey(flow, stepId) {
     return getRoutingTag({
-        task,
+        flow,
         stepId,
         suffix: REBOUND_TAG
     });
 }
 
-function getRequeueRoutingKey(task, stepId) {
+function getRequeueRoutingKey(flow, stepId) {
     return getRoutingTag({
-        task,
+        flow,
         stepId,
         suffix: REQUEUE_TAG
     });
 }
 
-function getDeadLetterRoutingKey(task, stepId) {
+function getDeadLetterRoutingKey(flow, stepId) {
     return getRoutingTag({
-        task,
+        flow,
         stepId,
         suffix: DEAD_LETTER_TAG
     });
 }
 
-function getSnapshotRoutingKey(task, stepId) {
+function getSnapshotRoutingKey(flow, stepId) {
     return getRoutingTag({
-        task,
+        flow,
         stepId,
         suffix: SNAPSHOT_TAG
     });
@@ -167,7 +167,7 @@ class QueueCreator {
             processError('Failed to assert queue "%s"', queueName)(err);
         }
     }
-    
+
     async assertReboundsQueue(queueName, returnToExchange, returnWithKey) {
         const options = {
             durable: true,
@@ -204,61 +204,61 @@ class QueueCreator {
     }
 
     /**
-     * Create all queues requied to run the task including all its steps
-     * @param {Task}
+     * Create all queues required to run the flow including all its steps
+     * @param {Flow}
      * @returns {Promise<Object<String: QueueSteps>>} key-value pairs. Key is step identifier
      * value is table of queues for this step
      */
-    async makeQueuesForTheTask(task) {
-        await this.prepareExchangeForTask(task);
+    async makeQueuesForTheFlow(flow) {
+        await this.prepareExchangeForFlow(flow);
 
-        const traverseSubtree = async (task, node, parentNode, result = {}) => {
+        const traverseSubtree = async (flow, node, parentNode, result = {}) => {
             if (typeof node === 'string') {
-                node = await task.getRecipeNodeByStepId(node);
+                node = await flow.getRecipeNodeByStepId(node);
             }
             //eslint-disable-next-line no-invalid-this
-            result[node.id] = await this.createQueuesForTaskNode(task, node, parentNode);
+            result[node.id] = await this.createQueuesForFlowNode(flow, node, parentNode);
 
-            const outgoingConnections = (task.connections || []).filter(c => c.from === node.id);
+            const outgoingConnections = (flow.connections || []).filter(c => c.from === node.id);
 
             if (!outgoingConnections.length > 0) {
                 return result;
             }
 
             //eslint-disable-next-line no-invalid-this
-            await Promise.all(outgoingConnections.map(conn => traverseSubtree(task, conn.to, node, result)));
+            await Promise.all(outgoingConnections.map(conn => traverseSubtree(flow, conn.to, node, result)));
             return result;
         };
-        return await traverseSubtree(task, task.getFirstNode());
+        return await traverseSubtree(flow, flow.getFirstNode());
     }
 
-    async prepareExchangeForTask(task) {
-        const userExchange = getTaskExchange(task);
+    async prepareExchangeForFlow(flow) {
+        const userExchange = getFlowExchange(flow);
 
         await this.assertExchange(userExchange);
 
         return userExchange;
     }
 
-    getAmqpStepConfig(task, stepId) {
+    getAmqpStepConfig(flow, stepId) {
         return {
-            exchangeName: getTaskExchange(task),
-            messagesQueue: getMessagesQueue(task, stepId),
-            reboundsQueue: getReboundsQueue(task, stepId),
-            dataRoutingKey: getDataRoutingKey(task, stepId),
-            inputRoutingKey: getInputRoutingKey(task, stepId),
-            errorRoutingKey: getErrorRoutingKey(task, stepId),
-            reboundRoutingKey: getReboundRoutingKey(task, stepId),
-            snapshotRoutingKey: getSnapshotRoutingKey(task, stepId),
-            requeueRoutingKey: getRequeueRoutingKey(task, stepId),
-            deadLetterRoutingKey: getDeadLetterRoutingKey(task, stepId)
+            exchangeName: getFlowExchange(flow),
+            messagesQueue: getMessagesQueue(flow, stepId),
+            reboundsQueue: getReboundsQueue(flow, stepId),
+            dataRoutingKey: getDataRoutingKey(flow, stepId),
+            inputRoutingKey: getInputRoutingKey(flow, stepId),
+            errorRoutingKey: getErrorRoutingKey(flow, stepId),
+            reboundRoutingKey: getReboundRoutingKey(flow, stepId),
+            snapshotRoutingKey: getSnapshotRoutingKey(flow, stepId),
+            requeueRoutingKey: getRequeueRoutingKey(flow, stepId),
+            deadLetterRoutingKey: getDeadLetterRoutingKey(flow, stepId)
         };
     }
 
     /**
      * @returns {QueueSteps}
      */
-    async createQueuesForTaskNode(task, node, parentNode) {
+    async createQueuesForFlowNode(flow, node, parentNode) {
         const stepId = node.id;
 
         const {
@@ -272,7 +272,7 @@ class QueueCreator {
             requeueRoutingKey,
             snapshotRoutingKey,
             deadLetterRoutingKey
-        } = this.getAmqpStepConfig(task, stepId);
+        } = this.getAmqpStepConfig(flow, stepId);
 
         // create queues for messages, errors, rebounds
         await this.assertMessagesQueue(messagesQueue, exchangeName, deadLetterRoutingKey);
@@ -285,7 +285,7 @@ class QueueCreator {
 
         // subscribe messages queue for results from previous step
         if (parentNode) {
-            const parentNodeDataRoutingKey = getDataRoutingKey(task, parentNode.id);
+            const parentNodeDataRoutingKey = getDataRoutingKey(flow, parentNode.id);
             await this.bindQueue(messagesQueue, exchangeName, parentNodeDataRoutingKey);
         }
 
@@ -298,6 +298,7 @@ class QueueCreator {
             DATA_ROUTING_KEY: dataRoutingKey
         };
     }
+
 }
 
 module.exports = QueueCreator;

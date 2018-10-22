@@ -7,9 +7,9 @@ The revolution in data synchronization — the Open Integration Hub enables simp
 Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
 
 # OIH microservices
-Standalone platform that runs flows build from [elastic.io](https://www.elastic.io/) components on kuberntes. Components are build around [nodejs library](https://github.com/elasticio/sailor-nodejs) or [java library](https://github.com/elasticio/sailor-jvm). Generally components may be build with any other language and technology that can work with amqp protocol, send http requests, has access to process's env variables and may be packed into docker container. 
+Standalone platform that runs flows build from [elastic.io](https://www.elastic.io/) components on kuberntes. Components are build around [nodejs library](https://github.com/elasticio/sailor-nodejs) or [java library](https://github.com/elasticio/sailor-jvm). Generally components may be build with any other language and technology that can work with amqp protocol, send http requests, has access to process's env variables and may be packed into docker container.
 
-## Platform requirements: 
+## Platform requirements:
 * Any kubernetes cluster (GCP/minikube/bare-metal cluster/whatwever). The only requirement is network access to docker hub registry.
 * kubectl command installed and configured to work with kubernetes cluster.
 * It is necessary to bind the clusterrole to the cluster-admin, otherwise starting the platform will result in authentification-problems since the created role does not have full permissions to run the declared verbs
@@ -87,12 +87,12 @@ kubectl get flows --namespace=flows
 ### Send message into communication-router
 Get service uri
 ```shell
-kubectl get services communication-router-service  --namespace=platform 
+kubectl get services communication-router-service  --namespace=platform
 ```
 ```
-NAME               TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE                                                                          communication-router-service   NodePort   10.102.67.33   <none>        1234:30204/TCP   36m 
+NAME               TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE                                                                          communication-router-service   NodePort   10.102.67.33   <none>        1234:30204/TCP   36m
 ```
-In case of minikube 
+In case of minikube
 ```shell
 minikube service -n platform --url communication-router-service
 ```
@@ -106,18 +106,18 @@ curl -H 'Content-Type: application/json' '<SERVICE_URL>/flow/<FLOW_ID>' -d '{"ar
 ```
 
 ### Debug
-Flow steps are mapped to kubernetes jobs. So to see if flow steps are really running it's possible to 
+Flow steps are mapped to kubernetes jobs. So to see if flow steps are really running it's possible to
 1. get list of jobs
 ```shell
 kubectl get jobs --namespace=flows
 ```
-2. get list of pods 
+2. get list of pods
 ```shell
 kubectl get pods --namespace=flows
 ```
 
 ## Flow format
-Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/). Such custom resource defines a tree/graph like structure of interlinked components. The whole flow is build with event-based architecture. Componentes (which are graph nodes) sends messages to other components along graph edges. So flow is basically just a graph in form of [adjacency list](https://en.wikipedia.org/wiki/Adjacency_list). As source of events into first step of flow platform provides scheduler and communication-router services. Scheduler periodically send events to fist component in flow (isPolling should equal true in first step). Communication router service listens http and forwards http requests into first step of flow (isPolling should equal to false in first step). If some custom source of events is required, it's possible to create custom component that decides by itself, when and what messages should be sent to next steps.
+Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/). Such custom resource defines a tree/graph like structure of interlinked components. The whole flow is build with event-based architecture. Components (which are graph nodes) sends messages to other components along graph edges. So flow is basically just a graph in form of [adjacency list](https://en.wikipedia.org/wiki/Adjacency_list). As source of events into first step of flow platform provides scheduler and communication-router services. Scheduler periodically send events to fist component in flow (isPolling should equal true in first step). Communication router service listens http and forwards http requests into first step of flow (isPolling should equal to false in first step). If some custom source of events is required, it's possible to create custom component that decides by itself, when and what messages should be sent to next steps.
 
 ### Example/details
 ```json
@@ -139,6 +139,16 @@ Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concep
                 "data": {
                     "interval": "minute"
                 },
+                "resources": {
+                    "limits": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
+                    },
+                    "requests": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
+                    }
+                }
             },
             {
                 "image": "elasticio/email:5772ae1780f912e4f098de5718511b57b279766f",
@@ -146,6 +156,16 @@ Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concep
                 "function": "send",
                 "env": {
                     "MANDRILL_API_KEY": "PLACE_YOUR_KEY_HERE"
+                },
+                "resources": {
+                    "limits": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
+                    },
+                    "requests": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
+                    }
                 }
             },
             {
@@ -157,6 +177,16 @@ Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concep
                         "to": "\"anton@elastic.io\"",
                         "subject": "\"Test from e.io at: \" & $.fireTime",
                         "textBody": "\"Body is: \\n\" &\n$string($$)"
+                    }
+                },
+                "resources": {
+                    "limits": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
+                    },
+                    "requests": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
                     }
                 }
             }
@@ -170,32 +200,64 @@ Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concep
                 "from": "mapper:step_1:step_2",
                 "to": "step_2"
             }
-        ]
+        ],
+        "resources": {
+            "limits": {
+                "cpu": "100m",
+                "memory": "256Mi"
+            },
+            "requests": {
+                "cpu": "100m",
+                "memory": "256Mi"
+            }
+        }
     }
 }
 ```
 Flow definition consists of flow id and actually flow definition. Flow id, as always with kubernetes descriptors, is at path `.metadata.name`. Flow definition is at path `.spec` and contains two subsections: `nodes` and `connections`.
-* `nodes` defines graph nodes -- running components. Most of fields in example are self-explanatory but details
-    * `id` identifier of node inside graph. Used to define links between nodes and and as internal identifier in platform. 
-    * `image` docker image to run
-    * `function` Component may contain several funcions in it. This field selects function to run
-    * `isPolling` Optional, defauls to false. If true, it tells platform, that component should be notified every minute with message. Otherwise component should have it's own lifecycle and decide when to send messages furhter.
+* `nodes` Defines graph nodes -- running components. Most of fields in example are self-explanatory but details
+    * `id` Identifier of node inside graph. Used to define links between nodes and and as internal identifier in platform.
+    * `image` Docker image to run.
+    * `function` Component may contain several functions in it. This field selects function to run
+    * `isPolling` Optional, defaults to false. If true, it tells platform, that component should be notified every minute with message. Otherwise component should have it's own lifecycle and decide when to send messages furhter.
     * `env` Key-value pairs that will be accessible as environment variables inside running component. Optional field.
-    * `first` Boolean flag, that declares this node as "entrypoint". Usefull in case if node expects some input from outer world. Optional
-    * `data` section contains different component specific configs. During startup component fetches it and uses according to it's business logic. This data is opaque for platform. It's passed as is to component. 
+    * `first` Boolean flag, that declares this node as "entrypoint". Useful in case if node expects some input from outer world. Optional
+    * `data` Section contains different component specific configs. During startup component fetches it and uses according to it's business logic. This data is opaque for platform. It's passed as is to component.
+    * `resources` Optional. Node-wide resources definition.
 * `connections` Is array that defines edges between graph nodes. Any edge is defined as object that references edge begin and edge end node identifiers. `from` field contains id of node that send's messages into edge and `to` field contains id of node that receives messages from edge.
+* `resources` Optional. Flow-wide resources definition.
+
+### Resources definition
+It is possible to specify how much resources each of the flow containers consumes. This is implemented by using [K8s resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#resource-requests-and-limits-of-pod-and-container).
+
+The format is the following:
+```
+"resources": {
+    "limits": {
+        "cpu": "100m",
+        "memory": "256Mi"
+    },
+    "requests": {
+        "cpu": "100m",
+        "memory": "256Mi"
+    }
+}
+```
+
+It is possible to specify node-wide, flow-wide or system-wide resources limits and requests.
+System-wide settings specified by the `DEFAULT_CPU_LIMIT`, `DEFAULT_MEM_LIMIT`, `DEFAULT_CPU_REQUEST`, `DEFAULT_MEM_REQUEST` env vars;
 
 
 ## build
 To build platform just run next commands
 ```shell
-docker build -t openintegrationhub/flows-operator:latest services/flows-operator
+docker build -t openintegrationhub/flows-operator:latest  -f ./services/flows-operator/Dockerfile  ./services/
 docker push openintegrationhub/flows-operator:latest
 
-docker build -t openintegrationhub/scheduler:latest services/scheduler
+docker build -t openintegrationhub/scheduler:latest  -f ./services/scheduler/Dockerfile  ./services/
 docker push openintegrationhub/scheduler:latest
 
-docker build -t openintegrationhub/communication-router:latest services/communication-router
+docker build -t openintegrationhub/communication-router:latest  -f ./services/communication-router/Dockerfile  ./services/
 docker push openintegrationhub/communication-router:latest
 ```
 
@@ -204,8 +266,8 @@ docker push openintegrationhub/communication-router:latest
 * Platform does not handle task failure. So if component fails, and kubernetes failed to start it within retries defined by standart restart policy, than component will be broken, and the whole flow will be broken
 * Platform does not provide a way to configure secrets to download private docker images
 * Platform does not provide a way to inject some input data into flow. But this may be done by first step itself (e. g. start http server and create kubernete's service to handle input traffic for it)
-* Platform does not define resource limits on components. This confuses kubernetes' distribution mechanisms, and in worst case all components may be started at same node, and overload it.  
-* Platform does not remove queues and exchanges used by task after task deletion 
+* Platform does not define resource limits on components. This confuses kubernetes' distribution mechanisms, and in worst case all components may be started at same node, and overload it.
+* Platform does not remove queues and exchanges used by task after task deletion
 * Platform use same rabbitmq account for itself and for tasks. And requires that account has privileges to create queues and exchanges in virtual host.
 * Platform uses rabbitmq inside deployment, and does not persist rabbitmq's durable messages at some "real" storage. So they'll be lost after platform restart
 * There may be race condition between external world and service. So fast delete/creation of flow may be ignored

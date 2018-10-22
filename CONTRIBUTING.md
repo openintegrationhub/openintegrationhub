@@ -34,21 +34,31 @@ The definition of done for each issue:
 
 In addition to the previously defined definition of done some rules only apply for outputs of type document:
 
-- (Microservice)concept have been published under github.com/openintegrationhub/microservices
-- Services are described in a common form using the [microservice template](https://github.com/openintegrationhub/Microservices/blob/master/MicroserviceDescriptionTemplate.md)
-- All predefined section of the template are filled
 - All concepts must include information about the creator, last modifier and last modification date
+- (Microservice)concept:
+  - Have to be published under github.com/openintegrationhub/microservices
+  - Services are described in a common form using the [microservice template](https://github.com/openintegrationhub/Microservices/blob/master/MicroserviceDescriptionTemplate.md)
+  - All predefined section of the template are filled
+- Architecture Concepts:
+  - Have to be published under github.com/openintegrationhub/architecture
+- Architecture Decisions:
+  - Have to be published under github.com/openintegrationhub/architecture
+  - Decisions are described in a common form using the [architecture decision template](https://github.com/openintegrationhub/Architecture/blob/master/Decisions/ArchitectureDecisionTemplate.md)
+- Concept / document reviewed and accepted by CES quality manager 
 
 #### DoD Code
 
-In addition to the previously defined definition of done some rules only apply for outputs of type document:
+In addition to the previously defined definition of done some rules only apply for outputs of type code:
 
-- Code is compliant with [styleguide](Guidelines/styleGuide.md) and [devops/operations guidelines](Guidelines/serviceOperations.md)
-- Documentation have been updated
+- Code is compliant with [styleguide](Guidelines/styleGuide.md)
+- Code is compliant with [devops/operations guidelines](Guidelines/serviceOperations.md)
+- Documentation have been updated (See DoD for documents)
 - New modules are defined in package.json
-- All new features are tested in development mode (unit and functional tests)
-- Tests are written for all new features (for all acceptance criteria)
-- No critical `bugs` are open
+- All new features are tested in development mode (unit tests)
+- Once we have integration tests:
+  - Integration tests were successful applied
+  - Dependencies between software modules are documented  
+- The application is running in a test environment without critical bugs 
 
 ## Pull Requests
 
