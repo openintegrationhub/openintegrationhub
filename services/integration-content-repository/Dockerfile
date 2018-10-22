@@ -1,43 +1,26 @@
-FROM icr_ubuntubase
+FROM node:8.11.1-alpine
+LABEL NAME="oih-icr"
+LABEL MAINTAINER Hansjörg Schmidt "hschmidt@wice.de"
 
-#RUN apt-get update
-
-# These are all dependencies for nodegit
-#RUN apt-get install -y g++
-#RUN apt-get install -y libstdc++-8-dev
-#RUN apt-get install -y libssl-dev
-#RUN apt-get install -y libssh2-1-dev
-#RUN apt-get install -y libcurl4-openssl-dev
-#RUN apt-get install -y libcurl4-gnutls-dev
-#RUN apt-get install -y libgcrypt-dev
-RUN apt-get install -y gnupg2
-
-# Now we are installing NodeJS
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install -y nodejs
-
-RUN npm install -g nodemon
-
-# we create an unprivileged user called icr
-RUN useradd --user-group --create-home --shell /bin/false icr
+RUN apk --no-cache add \
+    python \
+    make \
+    g++ \
+    libc6-compat
 
 # set working directory
 WORKDIR /usr/src/app
 
 # use changes to package.json to force Docker not to use cache
-#COPY package.json ./package.json
+COPY ./app/iam-utils /usr/src/app/app/iam-utils
 COPY package.json /usr/src/app
-RUN npm install
 
-# copy the sources from the host
-#COPY ./app/ .
+RUN npm install
+RUN cd app/iam-utils && npm install && cp -r ./node_modules/* ../../node_modules/
+
 COPY . /usr/src/app
 
-#RUN chown -R icr:icr $HOME/*
+RUN chown -R 1000:1000 /usr/src/app
+USER node
 
-#USER icr
-
-#COPY . .
-
-CMD ["node", "server.js"] # will be overridden while development by docker-compose
-#CMD ["bash"]
+CMD ["node", "server.js"]
