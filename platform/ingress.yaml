@@ -8,13 +8,13 @@ metadata:
     kubernetes.io/ingress.class: "gce"
 spec:
   rules:
-  - host: iam.openintegrationhub.org
+  - host: iam.openintegrationhub.com
     http:
       paths:
       - backend:
           serviceName: iam
           servicePort: 3099
-  - host: api.openintegrationhub.org
+  - host: api.openintegrationhub.com
     http:
       paths:
       - backend:
