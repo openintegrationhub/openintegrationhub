@@ -19,4 +19,4 @@ spec:
       paths:
       - backend:
           serviceName: example-api
-          servicePort: 3099
+          servicePort: 8080
