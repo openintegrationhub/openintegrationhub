@@ -22,11 +22,11 @@ spec:
               name: mongosecret-oih-iam
               key: url
         - name: IAM_AUTH_TYPE
-          value: oidc
+          value: basic
         - name: IAM_BASEURL
-          value: 'https://127.0.0.1:3099'
+          value: 'https://iam.openintegrationhub.com'
         - name: IAM_ORIGINWHITELIST
-          value: 'localhost,example.com'
+          value: 'openintegrationhub.com'
         - name: NODE_ENV
           value: "production"
         - name: IAM_JWT_SECRET
@@ -40,18 +40,18 @@ spec:
               name: oidc-oih-iam-dev
               key: 'cookiesecrets'
         - name: IAM_JWT_AUDIENCE
-          value: example.com
+          value: openintegrationhub.com
         - name: IAM_JWT_COOKIENAME
           value: oih-iam
         - name: IAM_ACC_ADMIN_USERNAME
-          value: admin@example.com
+          value: admin@openintegrationhub.com
         - name: IAM_ACC_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
               name: oidc-oih-iam-dev
               key: 'ADMIN_PASSWORD'
         - name: IAM_ACC_SERVICE_ACCOUNT_USERNAME
-          value: service-oih-iam@example.com
+          value: service-oih-iam@openintegrationhub.com
         - name: IAM_ACC_SERVICE_ACCOUNT_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -91,4 +91,4 @@ spec:
       volumes:
           - name: oidc-certs
             secret:
-              secretName: oidc-keystore 
+              secretName: oidc-certs 
