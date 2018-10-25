@@ -39,7 +39,7 @@ As an example, you can check out our ["Identity and Access Management"-microserv
 * depending on detected changes(true): 
   - calls the respective yarn test from that changed service subfolder
   - calls the build script - if existing, tags it with the travis build number and current package.json
-* deploys the service
+* deploys the service with the "deploy.sh"-script on k8 cluster (currently commented out, will be back in code after succesfull deposited secrets of the services)
 
 
 #### Requirements for services:  
@@ -51,7 +51,7 @@ The following scripts are necessary and will be called in the package.json:
   - service.yml
 
 #### Next step
-After successful build and upload to docker hub, the very first deploy of a service needs to be "manually" since there are secrets necessary in order to run the service on the cluster. These secrets commonly provide a bunch of keyvalue pairs to give some inital environmental variables for the setup
+After successful build and upload to docker hub, the very first deploy of a service needs to be done "manually" since there are secrets necessary in order to run the service on the cluster. These secrets commonly provide a bunch of keyvalue pairs to give some inital environmental variables for the setup
 
 ### CI/CD process with integrated backlog
 
