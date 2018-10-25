@@ -2,15 +2,16 @@
 ---
 
 **Creator:** Dennis (@dennisCes), Cloud Ecosystem e.V. <br>
-**Last Modified:** - <br>
-**Last Modifier:** - <br>
-**Version:** 0.5  <br>
+**Last Modified:** 25.10.2018 <br>
+**Last Modifier:** Falk (falkvoigt), Basaas GmbH <br>
+**Version:** 0.6  <br>
 
 ---
 
 - [Introduction](#introduction)
 - [Requirements for Build and Deploy process](#requirements-for-a-successful-build-and-deploy-process)
 - [Requirements for Services](#requirements-for-services)
+- [Initial Deployment for Services](#initial-Deployment-for-services)
 - [Build process model](#cicd-process-with-integrated-backlog)
 
 
@@ -50,8 +51,16 @@ The following scripts are necessary and will be called in the package.json:
   - deployment.yml
   - service.yml
 
-#### Next step
-After successful build and upload to docker hub, the very first deploy of a service needs to be done "manually" since there are secrets necessary in order to run the service on the cluster. These secrets commonly provide a bunch of keyvalue pairs to give some inital environmental variables for the setup
+#### Initial Deployment for services
+After successful build and upload to docker hub, the very first deploy of a service needs to be done "manually".
+The Service Definition and the Deployment Definition needs to be imported to the Cluster.
+
+Commandline Example
+```
+kubectl apply -f @@PATHTOYAML@@
+```
+
+Some Services needs Kubernetes Secrets defind befor the inital upload of Service/Deployment Definitions. Please find HowTo in Kubernetes Documentation.
 
 ### CI/CD process with integrated backlog
 
