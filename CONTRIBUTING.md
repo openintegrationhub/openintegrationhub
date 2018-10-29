@@ -27,7 +27,6 @@ Issues in `openintegrationhub/openintegrationhub` are categorized in two types:
 
 The definition of done for each issue:
 
-- Workgroup consensus about output (has to be accepted) i.e. each teamlead approved the pull request
 - All acceptance criteria have been fulfilled
 - Output published on GitHub under github.com/openintegrationhub
 
@@ -35,6 +34,7 @@ The definition of done for each issue:
 
 In addition to the previously defined definition of done some rules only apply for outputs of type document:
 
+- Workgroup consensus about output (has to be accepted) i.e. each teamlead approved the pull request
 - All concepts must include information about the creator, last modifier and last modification date
 - (Microservice)concept:
   - Have to be published under github.com/openintegrationhub/microservices
@@ -51,9 +51,10 @@ In addition to the previously defined definition of done some rules only apply f
 
 In addition to the previously defined definition of done some rules only apply for outputs of type code:
 
+- Workgroup consensus about functionality i.e. each teamlead approved the pull request
 - Code is compliant with [styleguide](Guidelines/styleGuide.md)
 - Code is compliant with [devops/operations guidelines](Guidelines/serviceOperations.md)
-- Documentation have been updated (See DoD for documents)
+- Dependent documentation have been updated (See DoD for documents)
 - New modules are defined in package.json
 - All new features are tested in development mode (unit tests)
 - Once we have integration tests:
