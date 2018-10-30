@@ -43,4 +43,14 @@ module.exports = {
         },
     },
 
+    getJwtPayload: ({ _id, username, role, memberships, permissions }) => ({
+        sub: _id,
+        username,
+        role,
+        memberships,
+        permissions,
+    }),
+
+    getJwtOptions,
+
 };

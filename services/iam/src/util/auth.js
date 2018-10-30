@@ -1,6 +1,5 @@
 const Logger = require('@basaas/node-logger');
 const passport = require('passport');
-// const jwt = require('jsonwebtoken');
 const jwtUtils = require('./../util/jwt');
 const rp = require('request-promise');
 
@@ -14,12 +13,37 @@ const log = Logger.getLogger(`${conf.general.loggingNameSpace}/auth`, {
     level: 'debug',
 });
 
-// TODO: SERVICE_ACCOUNT shouldn't have admin privileges
 const isAdminRole = role => 
-    role === CONSTANTS.ROLES.ADMIN ||
-    role === CONSTANTS.ROLES.SERVICE_ACCOUNT;
+    role === CONSTANTS.ROLES.ADMIN;
+
+const allRequiredElemsExistsInArray = (array, requiredElems) => {
+
+    let hit = 0;
+
+    for (let i = 0; i < requiredElems.length; i++) {
+        if (array.indexOf(requiredElems[i]) >= 0) {
+            hit += 1;
+        }
+    }
+
+    return hit === requiredElems.length;
+};
     
 module.exports = {
+
+    hasPermissions: requiredPermissions => (req, res, next) => {
+        const { role, permissions } = req.__HEIMDAL__;
+
+        if (role === CONSTANTS.ROLES.ADMIN
+                || (role === CONSTANTS.ROLES.SERVICE_ACCOUNT &&
+                    permissions.length &&
+                    allRequiredElemsExistsInArray(permissions, requiredPermissions)
+                )) {
+            return next();
+        } else {
+            return next({ status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
+        }
+    },
 
     userIsEnabled(req, res, next) {
         if (req.user && req.user.status === CONSTANTS.STATUS.ACTIVE) {
@@ -158,6 +182,7 @@ module.exports = {
             req.__HEIMDAL__.username = payload.username;
             req.__HEIMDAL__.userid = payload.sub;
             req.__HEIMDAL__.memberships = payload.memberships;
+            req.__HEIMDAL__.permissions = payload.permissions;
             req.__HEIMDAL__.role = payload.role;
             return next();
         } else {
@@ -181,7 +206,8 @@ module.exports = {
 
         if (isAdminRole(req.__HEIMDAL__.role)) {
             return next();
-        } 
+        }
+
         if (req.__HEIMDAL__.userid === req.params.id) {
             return next();
         } 
@@ -191,7 +217,7 @@ module.exports = {
     },
 
     isLoggedIn: (req, res, next) => {
-        if (req.__HEIMDAL__.auth) {
+        if (req.__HEIMDAL__.auth || (req.__HEIMDAL__.role === CONSTANTS.ROLES.SERVICE_ACCOUNT && req.__HEIMDAL__.userid)) {
             return next();
         } 
         

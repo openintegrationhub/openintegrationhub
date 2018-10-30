@@ -5,6 +5,7 @@ const Mockgoose = require('mockgoose').Mockgoose;
 const mockgoose = new Mockgoose(mongoose);
 const request = require('supertest')('http://localhost:3099');
 const CONSTANTS = require('./../src/constants');
+const PERMISSIONS = require('./../src/access-control/permissions');
 
 let conf = null;
 
@@ -366,6 +367,70 @@ describe('routes', () => {
                 .set('Authorization', userToken)
                 .set('Accept', /application\/json/)
                 .expect(403);
+
+        });
+
+    });
+
+    describe('Basic Service Accounts', () => {
+
+        const serviceAccountData = {
+            username: 'service-account1@example.com',
+            firstname: 'service',
+            lastname: 'account',
+            status: CONSTANTS.STATUS.ACTIVE,
+            password: 'testpwd',
+            role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
+            permissions: [PERMISSIONS['ephemeral-token:create']],
+        };
+
+        const testUserData = {
+            'username': 'testuser55@example.com',
+            'firstname': 'test',
+            'lastname': 'user',
+            'status': 'ACTIVE',
+            'password': 'usertest',
+            'role': CONSTANTS.ROLES.USER,
+        };
+
+        test('service account is created', async () => {
+
+            /* Create new user and a new service account */
+
+            const createUserResponse = await request.post('/api/v1/users')
+                .send(testUserData)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+            const userId = createUserResponse.body.id;
+
+            await request.post('/api/v1/users')
+                .send(serviceAccountData)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            /* Log in as service account */
+            const response = await request.post('/login')
+                .send({
+                    username: serviceAccountData.username,
+                    password: serviceAccountData.password,
+                })
+                .set('Accept', /application\/json/)
+                .expect(200);
+            const serviceAccountToken = `Bearer ${response.body.token}`;
+
+            /* Service account can create a ephemeral token for the given user id */
+            const portTokenResponse = await request.post(`/ephemeral-token/${userId}`)
+                .set('Authorization', serviceAccountToken)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            /* Service account can fetch user data */
+            await request.get(`/api/v1/users/${userId}`)
+                .set('Authorization', `Bearer ${portTokenResponse.body.token}`)
+                .set('Accept', /application\/json/)
+                .expect(200);
 
         });
 

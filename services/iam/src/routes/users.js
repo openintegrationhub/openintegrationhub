@@ -32,6 +32,7 @@ router.post('/', jsonParser, auth.isAdmin, async (req, res, next) => {
 
     } catch (err) {
         if (err.name === 'ValidationError') {
+            log.debug(err);
             return next({
                 status: 400,
                 message: CONSTANTS.ERROR_CODES.INPUT_INVALID,

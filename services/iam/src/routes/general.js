@@ -9,6 +9,7 @@ const jsonParser = bodyParser.json();
 const authMiddleware = require('../util/auth');
 const conf = require('./../conf');
 const CONSTANTS = require('./../constants/index');
+const PERMISSIONS = require('./../access-control/permissions');
 const auth = require('./../util/auth');
 const jwtUtils = require('./../util/jwt');
 const AccountDAO = require('./../dao/users');
@@ -47,12 +48,7 @@ router.post('/login', jsonParser,
         }
 
         // genarate JWT Token
-        const jwtpayload = {
-            sub: req.user._id,
-            username: req.user.username,
-            role: req.user.role,
-            memberships: req.user.memberships,
-        };
+        const jwtpayload = jwtUtils.getJwtPayload(req.user);
 
         const token = await jwtUtils.basic.sign(jwtpayload);
         req.headers.authorization = `Bearer ${token}`;
@@ -83,18 +79,37 @@ router.get('/token', auth.validateAuthentication, async (req, res) => {
         return res.status(403).send({ message: CONSTANTS.ERROR_CODES.FORBIDDEN });
     }
 
-    const { _id, username, role, memberships } = account;
-
-    const token = await jwtUtils.basic.sign({
-        sub: _id,
-        username,
-        role,
-        memberships,
-    });
+    const token = await jwtUtils.basic.sign(account);
     req.headers.authorization = `Bearer ${token}`;
     res.status(200).send({ token });
 
 });
+
+router.post('/ephemeral-token/:accountId',
+    auth.validateAuthentication,
+    auth.hasPermissions([PERMISSIONS['ephemeral-token:create']]),
+    jsonParser,
+    async (req, res) => {
+
+        const account = await AccountDAO.findOne({ _id: req.params.accountId, status: CONSTANTS.STATUS.ACTIVE });
+
+        if (!account) {
+        // User is either disabled or does not exist anymore
+            return res.status(403).send({ message: CONSTANTS.ERROR_CODES.FORBIDDEN });
+        }
+
+        const token = await jwtUtils.basic.sign({
+            ...jwtUtils.getJwtPayload(account),
+            type: CONSTANTS.ROLES.SERVICE_ACCOUNT,
+            purpose: 'portable-token',
+            consumerServiceId: req.body.consumerServiceId,
+        }, {
+            expiresIn: '2h',
+        });
+        req.headers.authorization = `Bearer ${token}`;
+        res.status(200).send({ token });
+
+    });
 
 router.post('/logout', (req, res) => {
     req.logout();

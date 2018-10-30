@@ -54,6 +54,7 @@ const schema = {
         
     },
     memberships: [membershipsSchema],
+    permissions: [String],
 };
 
 const account = new Schema(schema, {
