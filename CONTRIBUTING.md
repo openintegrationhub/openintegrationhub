@@ -61,7 +61,7 @@ In addition to the previously defined definition of done some rules only apply f
   - Integration tests were successful applied
   - Dependencies between software modules are documented  
 - The application is running in a test environment without critical bugs
-- Service is up and running on K8s test instance
+- Services are up and running on K8s test instance
 
 ## Pull Requests
 
