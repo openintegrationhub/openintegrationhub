@@ -1,0 +1,61 @@
+{
+  "name": "secret-service",
+  "version": "1.0.0",
+  "description": "Service to manage Keys/Tokens of external services",
+  "main": "index.js",
+  "author": "Basaas GmbH",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest",
+    "watch": "nodemon src/index.js",
+    "coverage": "yarn test --coverage"
+  },
+  "dependencies": {
+    "@basaas/node-logger": "^1.1.2",
+    "@openintegrationhub/iam-utils": "1.1.0",
+    "dayjs": "^1.7.7",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.3.8",
+    "morgan": "^1.9.1",
+    "swagger-ui-express": "^4.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.8.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^21.26.2",
+    "get-port": "^4.0.0",
+    "jest": "^23.6.0",
+    "mongodb-memory-server": "^2.6.2",
+    "nodemon": "^1.18.5",
+    "supertest": "^3.3.0"
+  },
+  "jest": {
+    "globalSetup": "./src/test/setup.js",
+    "globalTeardown": "./src/test/teardown.js",
+    "testEnvironment": "./src/test/mongo-environment.js"
+  },
+  "nodemonConfig": {
+    "restartable": "rs",
+    "ignore": [
+      ".git",
+      "node_modules/**/node_modules"
+    ],
+    "verbose": true,
+    "execMap": {
+      "js": "node --harmony"
+    },
+    "events": {
+      "restart": ""
+    },
+    "watch": [
+      "src/",
+      "doc/"
+    ],
+    "ext": "js json yaml"
+  }
+}

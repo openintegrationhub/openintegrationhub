@@ -1,0 +1,479 @@
+openapi: 3.0.0
+info:
+  description: API for secret-service
+  version: "2.0.0"
+  title: Lynx Api for OIH
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: info@openintegrationhub.org
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: secrets
+    description: secrets routes and definitions
+  - name: audits
+    description: audits routes and definitions
+  - name: misc
+    description: Health check & co
+  - name: auth-clients
+    description: Oauth 1&2, SAML, etc.
+paths:
+  /:
+    get:
+      tags:
+        - misc
+      summary: Service Info
+      description: ''
+      operationId: getServiceInfo
+      responses:
+        '200':
+          description: Detailed service information
+  /healthcheck:
+    get:
+      tags:
+        - misc
+      summary: Cluster tools
+      description: ''
+      operationId: performHealthCheck
+      responses:
+        '200':
+          description: Service is healthy
+  /secrets:
+    get:
+      tags:
+        - secrets
+      summary: Get all secrets
+      description: List all secrets the current user is elligible to view.
+      operationId: getSecrets
+      responses:
+        '200':
+          description: List of all secrets
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/SecretBody"
+                  meta:
+                    $ref: "#/components/schemas/Meta"
+    post:
+      tags:
+        - secrets
+      summary: Create a secret
+      description: This can only be done by a logged in user who has the required privileges.
+      operationId: createSecret
+      requestBody:
+        description: Create a secret
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecretBody'
+      responses:
+        '200':
+          description: Success
+  '/secrets/:id':
+    get:
+      tags:
+        - secrets
+      summary: get the secret by id
+      description: This can only be done by a logged in user who has the required privileges.
+      operationId: getSecretById
+      responses:
+        '200':
+          description: Get a specific secret
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretBody'
+      parameters:
+        - name: id
+          in: path
+          description: Secret id
+          required: true
+          schema:
+            type: string
+          style: simple
+    put:
+      tags:
+        - secrets
+      summary: Replace the secret
+      description: This can only be done by a logged in user who has the required privileges.
+      operationId: modifySecretById
+      requestBody:
+        description: Replace Secret data completely with the given data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecretBody'
+      responses:
+        '200':
+          description: Success
+      parameters:
+        - name: id
+          in: path
+          description: Secret id
+          required: true
+          schema:
+            type: string
+          style: simple
+    patch:
+      tags:
+        - secrets
+      summary: Modify the secret
+      description: This can only be done by a logged in user who has the required privileges.
+      operationId: modifySecretById
+      requestBody:
+        description: Modify Secret data with the given data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecretBody'
+      responses:
+        '200':
+          description: Success
+      parameters:
+        - name: id
+          in: path
+          description: Secret id
+          required: true
+          schema:
+            type: string
+          style: simple
+    delete:
+      tags:
+        - secrets
+      summary: Delete secret
+      description: This can only be done by a logged in user who has the required privileges.
+      operationId: deleteSecret
+      parameters:
+        - name: id
+          in: path
+          description: Secret id
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '200':
+          description: Success
+  '/secrets/:id/access-token':
+    get:
+      tags:
+        - secrets
+      summary: get a fresh generated access Token related to the Secret
+      description: This can only be done by a logged in user who has the required privileges.
+      operationId: getToken
+      responses:
+        '200':
+          description: get a fresh generated access Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        '405':
+          description: This secret type does not have an access token
+        '424':
+          description: Something went wrong while fetching the access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenError'
+      parameters:
+        - name: id
+          in: path
+          description: Secret id
+          required: true
+          schema:
+            type: string
+          style: simple
+  '/secrets/:id/audit':
+    get:
+      tags:
+        - secrets
+      summary: get audit data for a specific secret
+      description: Requires a valid authentication and authorization. Users can view only audit logs for their secrets.
+      operationId: getSecretAudit
+      responses:
+        '200':
+          description: get audit data for specific secret
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfAudits'
+      parameters:
+        - name: id
+          in: path
+          description: Secret id
+          required: true
+          schema:
+            type: string
+          style: simple
+  /audits:
+    get:
+      tags:
+        - audits
+      summary: get audit data for specific organisation
+      description: This can only be done by a logged in user who has the required privileges.
+      operationId: getOrgAudit
+      responses:
+        '200':
+          description: get audit data for specific secret
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfAudits'
+  /auth-clients:
+    get:
+      tags:
+        - auth-clients
+      summary: get all platform auth clients
+      description: This resource can only be accessed by platform admin
+      operationId: getPlatformAuthClients
+      responses:
+        '200':
+          description: get all oauth clients
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/AuthClient"
+                  meta:
+                    $ref: "#/components/schemas/Meta"   
+    post:
+      tags:
+        - auth-clients
+      summary: Create a platform oauth secret for a specific oauth provider
+      description: Can only be done by an admin
+      operationId: createPlatformAuthClient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthClient'
+      responses:
+        '200':
+          description: Success    
+  '/auth-clients/:id':
+    get:
+      tags:
+        - auth-clients
+      summary: get auth client by id
+      description: This resource can only be accessed by platform admin
+      operationId: getPlatformAuthClientById
+      responses:
+        '200':
+          description: Return oauth client data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthClient'    
+    put:
+      tags:
+        - auth-clients
+      summary: Replace a platform oauth secret
+      description: Can only be done by an admin
+      operationId: updatePlatformAuthClient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthClient'
+      responses:
+        '200':
+          description: Success    
+    patch:
+      tags:
+        - auth-clients
+      summary: Modify a platform oauth secret
+      description: Can only be done by an admin
+      operationId: updatePlatformAuthClient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthClient'
+      responses:
+        '200':
+          description: Success    
+components:
+  schemas:
+    SecretBody:
+      title: Secret body
+      type: object
+      properties:
+        name:
+          type: string
+          description: Secret name
+        owner:
+          type: array
+          items:
+            $ref: '#/components/schemas/OwnerBody'
+        type:
+          type: string
+          description: 'Secret type BasicAuth, JWT'
+        data:
+          type: object
+          oneOf:
+            - $ref: "#/components/schemas/SimpleCredentials"
+            - $ref: "#/components/schemas/APIKey"
+            - $ref: "#/components/schemas/OAuth2Secret"
+    SimpleCredentials:
+      type: object
+      required:
+        - username
+        - passphrase
+      properties:
+        username:
+          type: string
+        passphrase:
+          type: string
+    APIKey:
+      type: object
+      required:
+        - value
+      properties:
+        value:
+          type: string
+        headerName:
+          type: string
+    OAuth2Secret:
+      type: object
+      required:
+        - clientId
+        - refreshTokenUrl
+        - refreshToken
+      properties:
+        clientId:
+          type: string
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        refreshTokenUrl:
+          type: string
+        scope:
+          type: string
+        expiresAt:
+          type: string
+        flowType:
+          type: string
+    OAuth2Client:
+      type: object
+      required:
+        - clientId
+        - clientSecret
+        - redirectUri
+      properties:
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+        redirectUri:
+          type: string
+        scope:
+          type: string
+        responseType:
+          type: string
+          enum: 
+            - code
+            - other
+        solutionUrl: 
+          type: string
+        authUrl:
+          type: string
+        type:
+          type: string
+    OwnerBody:
+      title: Owner  object
+      type: object
+      properties:
+        entityId:
+          type: string
+          description: Id of Owner entity
+        entityType:
+          type: string
+          description: Type of Owner entity, e.g. GROUP, TENANT, USER, etc.
+    AuditBody:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/OwnerBody'
+        secret_id:
+          type: string
+          description: Id of the secret
+        operation:
+          type: string
+          description: Which Operation was done, e.g. READ, UPDATE
+        timestamp:
+          type: string
+          description: Timestamp of when the given operation was performed on this secret
+    ArrayOfAudits:
+      type: array
+      items:
+        $ref: '#/components/schemas/AuditBody'
+    ArrayOfSecrets:
+      type: array
+      items:
+        $ref: '#/components/schemas/SecretBody'
+    ArrayOfOauthClients:
+      type: array
+      items:
+        $ref: '#/components/schemas/AuthClient'
+    AuthClient:
+      type: object
+      anyOf:
+        - $ref: '#/components/schemas/OAuth2Client'
+    AccessToken:
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: Client Id
+        token:
+          type: string
+          description: AccessToken created by Secret
+        timestamp:
+          type: string
+          description: Timestamp when the access token was fetched
+        expiresIn:
+          type: string
+          description: Timestamp when the access token expires
+        type:
+          type: string
+    AccessTokenError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error Code while fetching access token
+        timestamp:
+          type: string
+          description: Timestamp when the last fetch attempt was made
+    Meta:
+      type: "object"
+      properties:
+        page: 
+          type: "integer"
+        perPage:
+          type: "integer"
+        total:
+          type: "integer"
+        totalPages:
+          type: "integer"
+# Added by API Auto Mocking Plugin
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/basaas5/secret-service/1.0.0

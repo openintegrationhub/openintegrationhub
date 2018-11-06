@@ -1,0 +1,3 @@
+process.send({
+    foo: 'bar',
+});
