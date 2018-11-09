@@ -5,7 +5,7 @@ proposed
 
 As soon as we are building, deploying services we need integration tests to make sure services/flows are working seamlessly together   
 
-# Alternatives 1: JEST
+# Alternative 1: JEST
 
 ## pro 
 - open source 
@@ -15,7 +15,7 @@ As soon as we are building, deploying services we need integration tests to make
 - less configuration possibilities than mocha
 - less docu/community (mocha is more mature)
 
-## Consquences
+## Consequences
 
 
 # Alternative 2: MOCHA
