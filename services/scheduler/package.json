@@ -2,20 +2,19 @@
   "name": "scheduler",
   "version": "1.0.0",
   "description": "Standalone version of elastic.io platform",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "lint": "eslint ./index.js ./src",
+    "lint": "eslint ./src ./app.js",
     "test": "npm run lint",
-    "start": "node index.js",
+    "start": "node app.js",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/scheduler:${VERSION} -f Dockerfile ../../"
   },
   "author": "elastic.io",
   "license": "APL-2.0",
   "dependencies": {
-    "express": "4.16.3",
-    "node-uuid": "1.4.7",
-    "backendCommonsLib": "*"
+    "bunyan": "1.8.12",
+    "nconf": "0.10.0"
   },
   "devDependencies": {
     "eslint": "4.5.0",

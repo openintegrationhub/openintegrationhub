@@ -1,1 +1,4 @@
-{}
+{
+    "POLLING_INTERVAL": 20000,
+    "POLLING_TASK_COUNT": 20
+}
