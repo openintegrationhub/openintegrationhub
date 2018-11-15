@@ -43,4 +43,4 @@ Stats (12.11.2018)
    - spying etc
 
 # Decision
-- No decision yet
+- As discussed in the weekly backlog meeting, we agreed on using Jest for the integration tests
