@@ -14,11 +14,11 @@ const flowScheduler = new FlowScheduler({ amqpConnection: init.getAMQPConnection
 
 const schedulePublisher = {
     async scheduleFlow(flow) {
-        const taskLogger = rootLogger.taskLogger({ taskId: flow.id });
+        const flowLogger = rootLogger.taskLogger({ taskId: flow.id });
         try {
             await flowScheduler.scheduleTaskRun(flow);
         } catch (err) {
-            taskLogger.error(err, 'Failed to schedule flow run');
+            flowLogger.error(err, 'Failed to schedule flow run');
         }
     }
 };
@@ -30,18 +30,15 @@ const flowsDao = {
     },
 
     async planNextRun(flow) {
-        const taskLogger = rootLogger.taskLogger({ taskId: flow.id });
+        const flowLogger = rootLogger.taskLogger({ taskId: flow.id });
 
         try {
             await flow.adjustSchedulingParams();
             await flow.store();
-            taskLogger.info(`dueExecution is set to ${flow.dueExecution}`);
+            flowLogger.info(`dueExecution is set to ${flow.dueExecution}`);
         } catch (err) {
-            taskLogger.error(err, 'Failed to update dueExecution');
+            flowLogger.error(err, 'Failed to update dueExecution');
         }
     }
 };
-
-const scheduler = new Scheduler({ config, flowsDao, schedulePublisher });
-await scheduler.run();
 ```
