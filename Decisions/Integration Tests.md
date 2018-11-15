@@ -1,5 +1,5 @@
 # Status
-acctepted
+acctepted : alternative 1
 
 # Context
 
