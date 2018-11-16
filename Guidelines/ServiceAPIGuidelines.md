@@ -29,12 +29,20 @@ For example:
 /auth-clients/{client-id}
 ````
 
-## Must: Use snake_case (never camelCase) for Query Parameters
+## Must: Use snake_case for Query Parameters
 
 For example:
 
 ````
 id, flow_id, secret_id
+````
+
+## May: Use square brackets for a group of related Query Parameters 
+
+For example:
+
+````
+page[number]=2&page[size]=10
 ````
 
 ## Must: Pluralize Resource Names
@@ -84,7 +92,12 @@ Any access to lists of data items must support pagination to protect the service
 
 Whereby:
 
-* page: the current page
+* page: the current page whereby we use 1-based numbering
 * perPage: number of objects per page
 * total: total number of objects
 * totalPages: total number of pages
+
+The query parameters for pagingations to be used by API clients:
+
+* page[number]: number of page the client wishes to receive. Corresponds to `meta.page` defined above. For example `page[number]=2` tells the server to return the 2nd page.
+* page[size]: the size of the requested page. Corresponds to `meta.perPage` defined above. For example `page[size]=20` tells the server to return the 20 objects per page page.
