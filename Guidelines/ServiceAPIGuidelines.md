@@ -2,6 +2,8 @@
 
 Open Integration Hub architecture centers around decoupled microservices that provide functionality via APIs. In most cases these APIs are RESTful using JSON as payload. This document is the guideline for OIH service APIs. The goal is to make all OIH APIs look like they were written by the same author.
 
+The API is described using [Open API Spec](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md) v3.0.2 or higher.
+
 ## Conventions Used in These Guidelines
 The requirement level keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" used in this document (case insensitive) are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
