@@ -101,3 +101,22 @@ The query parameters for pagingations to be used by API clients:
 
 * page[number]: number of page the client wishes to receive. Corresponds to `meta.page` defined above. For example `page[number]=2` tells the server to return the 2nd page.
 * page[size]: the size of the requested page. Corresponds to `meta.perPage` defined above. For example `page[size]=20` tells the server to return the 20 objects per page page.
+
+
+# Sorting
+
+## May: A server may choose to support requests to sort resource collections according to one or more criteria
+
+If so, the `sort` Query Parameter must be used. For example, sorting by the property `updatedAt` would be accomplished as follows:
+
+````
+/flows?sort=updatedAt
+````
+
+## Must: The sort order for each sort field must be ascending
+
+If sorting is supported, the default sort order is ascending. To invert the sorting order, the property must be prefixed with a minus (`-`). For example:
+
+````
+/flows?sort=-updatedAt
+````
