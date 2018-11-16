@@ -72,6 +72,39 @@ Whereby
 * data: contains the primary payload. Maybe either a single object or an array
 * meta: a meta object that contains non-standard meta-information
 
+## May: Any object may have many owners
+
+Any object may have owners. For example a `Flow` may belong to a `User`. Regardless of whether the object has a single owner or multiple, the owners must be defined as an `array` as shown below:
+
+````jaml
+    MutableFlow:
+      type: "object"
+      required:
+        - "owners"
+      properties:
+        owners:
+          type: array
+          items:
+            $ref: "#/components/schemas/Owner"
+````
+
+Here is the definion of the `Owner` object:
+
+````jaml
+    Owner:
+      type: object
+      required:
+        - id
+        - type
+      properties:
+        id:
+          type: string
+          description: External id of the owner
+        type:
+          type: string
+          description: Type to discriminate owner's type
+````
+
 # Schemas
 
 ## Must: Define mutable & immutable versions of the same object
