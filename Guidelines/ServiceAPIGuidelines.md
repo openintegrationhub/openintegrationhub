@@ -105,6 +105,46 @@ Here is the definion of the `Owner` object:
           description: Type to discriminate owner's type
 ````
 
+# HTTP Requests
+
+## Must: Use HTTP Methods Correctly
+
+Be compliant with the standardized HTTP method semantics summarized as follows:
+
+### GET
+
+* GET requests are used to read either a single or a collection resource. GET with Body is forbidden.
+* GET requests for individual resources will usually generate a 404 if the resource does not exist
+* GET requests for collection resources may return either 200 (if the collection is empty) or 404 (if the collection is missing)
+* GET requests must NOT have a request body payload
+
+### POST
+POST requests are idiomatically used to create single resources on a collection resource endpoint, 
+
+### PUT
+
+PUT requests are used to update (in rare cases to create) entire resources - single or collection resources. 
+
+* PUT requests are usually applied to single resources, and not to collection resources, as this would imply replacing the entire collection
+* PUT requests are usually robust against non-existence of resources by implicitly creating before updating
+on successful PUT requests, the server will replace the entire resource addressed by the URL with the representation passed in the payload (subsequent reads will deliver the same payload)
+* successful PUT requests will usually generate 200 or 204 (if the resource was updated - with or without actual content returned), and 201 (if the resource was created)
+
+### PATCH
+PATCH requests are used to update parts of single resources, i.e. where only a specific subset of resource fields should be replaced.
+
+* PATCH requests are usually applied to single resources as patching entire collection is challenging
+* PATCH requests are usually not robust against non-existence of resource instances on successful PATCH requests, the server will update parts of the resource addressed by the URL as defined by the change request in the payload
+* successful PATCH requests will usually generate 200 or 204 (if resources have been updated with or without updated content returned)
+
+### DELETE
+
+DELETE requests are used to delete resources. The semantic is best described as "please delete the resource identified by the URL".
+
+* DELETE requests are usually applied to single resources, not on collection resources, as this would imply deleting the entire collection
+* successful DELETE requests will usually generate 200 (if the deleted resource is returned) or 204 (if no content is returned)
+* failed DELETE requests will usually generate 404 (if the resource cannot be found) or 410 (if the resource was already deleted before)
+
 # Schemas
 
 ## Must: Define mutable & immutable versions of the same object
