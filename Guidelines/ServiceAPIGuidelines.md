@@ -72,6 +72,58 @@ Whereby
 * data: contains the primary payload. Maybe either a single object or an array
 * meta: a meta object that contains non-standard meta-information
 
+## Must: Define mutable & immutable versions of the same object
+
+Mutable objects define properties that may be changed by clients through the API. The are to be used in `POST`, `PATCH` and `PUT` resources. Immutable objects are contain additionally properties maintained by the server, such as `id` or any time related properties. Immutable objects are to be used in `GET` resources.
+
+Here is an example of a mutable object:
+
+````jaml
+    MutableFlow:
+      type: "object"
+      required:
+        - "name"
+        - "type"
+      properties:
+        name:
+          type: "string"
+          example: "My Flow"
+        description:
+          type: "string"
+          example: "My Flow"
+        type:
+          type: "string"
+          description: "Flow type"
+          enum:
+          - "ordinary"
+          - "realtime"
+````
+
+The immutable version of a `Flow` is an extension of `MutableFlow`:
+
+````jaml
+    Flow:
+      allOf:
+        - $ref: "#/components/schemas/MutableFlow"
+        - type: "object"
+          required:
+            - "id"
+            - "status"
+            - "createdAt"
+            - "updatedAt"
+          properties:
+            id:
+              type: "string"
+            createdAt:
+              type: string
+              description: Flow creation time
+              format: date-time
+            updatedAt:
+              type: string
+              description: Flow update time
+              format: date-time
+````
+
 # Pagination
 
 ## Must: Support Pagination
@@ -102,6 +154,44 @@ The query parameters for pagingations to be used by API clients:
 * page[number]: number of page the client wishes to receive. Corresponds to `meta.page` defined above. For example `page[number]=2` tells the server to return the 2nd page.
 * page[size]: the size of the requested page. Corresponds to `meta.perPage` defined above. For example `page[size]=20` tells the server to return the 20 objects per page page.
 
+Please use the following schema in your API definition:
+
+````jaml
+    Meta:
+      type: object
+      properties:
+        page: 
+          type: integer
+          description: Current page (1-based numbering)
+        perPage:
+          type: integer
+          description: Number of objects per page
+        total:
+          type: integer
+          description: Total number of objects
+        totalPages:
+          type: integer
+          description: Total number of pages
+````
+
+Here is an example how to use `Meta` in your reponse definition:
+
+````jaml
+     responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Flow"
+                  meta:
+                    $ref: "#/components/schemas/Meta"
+````
 
 # Sorting
 
