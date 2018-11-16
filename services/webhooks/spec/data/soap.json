@@ -1,0 +1,41 @@
+{
+  "SOAP-ENV-Envelope": {
+    "_attr": {
+      "xmlns:SOAP-ENV": "http://schemas.xmlsoap.org/soap/envelope/"
+    },
+    "SOAP-ENV-Header": {
+      "Configuration": {
+        "_attr": {
+          "Supplier": "TT",
+          "FlowId": "abc123"
+        },
+        "ApiHost": "https://int.foo.com",
+        "ApiKey": "foo",
+        "ApiSecret": "bar",
+        "Currency": "USD"
+      }
+    },
+    "SOAP-ENV-Body": {
+      "OTA_HotelAvailRQ": {
+        "_attr": {
+          "xmlns": "http://www.opentravel.org/OTA/2003/05",
+          "EchoToken": "2590cbc9-50f2-4161-babb-c97cc07dfe7d",
+          "PrimaryLangID": "en-US",
+          "TimeStamp": "2016-12-05T01:10:14.057-08:00",
+          "Version": "1.0"
+        },
+        "POS": {
+          "Source": {
+            "RequestorID": {
+              "_attr": {
+                "ID": "GOOGLE",
+                "ID_Context": "BAR",
+                "Type": "18"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

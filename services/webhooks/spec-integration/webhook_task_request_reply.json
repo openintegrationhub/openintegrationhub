@@ -1,0 +1,37 @@
+{
+  "name": "Webhook Integration Task",
+  "user": "55ba18e35d040405000000dd",
+  "data": {
+    "step_1": {
+      "payload": "{}"
+    }
+  },
+  "recipe": {
+    "nodes": [
+      {
+        "compTitle": "Webhook",
+        "id": "step_1",
+        "function": "receive",
+        "compId": "55ba18e35d04040500000004",
+        "service": "webhook"
+      },
+      {
+        "compTitle": "request-reply-component",
+        "id": "step_2",
+        "function": "reply",
+        "compId": "573dd76962436c349f000003",
+        "service": "request-reply"
+      }
+    ],
+    "connections": [
+      {
+        "from": "step_1",
+        "to": "step_2"
+      }
+    ]
+  },
+  "status": "active",
+  "currentStatus": "active",
+  "platformVersion": "2.0",
+  "type": "long_running"
+}

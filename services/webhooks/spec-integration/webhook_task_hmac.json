@@ -1,0 +1,25 @@
+{
+  "name": "Webhook Integration Task",
+  "user": "55ba18e35d040405000000dd",
+  "data": {
+    "webhook_step": {
+      "payload": "{}",
+      "hmac_key": "abcd"
+    }
+  },
+  "recipe": {
+    "nodes": [
+      {
+        "compTitle": "Webhook",
+        "id": "webhook_step",
+        "function": "receive",
+        "compId": "55ba18e35d04040500000004"
+      }
+    ],
+    "connections": []
+  },
+  "status": "active",
+  "currentStatus": "active",
+  "platformVersion": "2.0",
+  "type": "ordinary"
+}

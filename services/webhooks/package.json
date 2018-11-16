@@ -1,0 +1,55 @@
+{
+  "name": "webhooks",
+  "description": "elastic.io webhooks",
+  "version": "1.0.0",
+  "author": "Open Integration Hub",
+  "private": true,
+  "engines": {
+    "node": "^8.0.0",
+    "npm": ">=5.4"
+  },
+  "scripts": {
+    "pretest": "eslint lib spec spec-integration index.js",
+    "test:integration": "NODE_ENV=test mocha --opts spec-integration/mocha.opts",
+    "test:jasmine": "NODE_ENV=test JASMINE_CONFIG_PATH=spec/support/jasmine.json jasmine",
+    "test": "npm run test:jasmine && npm run test:integration",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@elastic.io/bunyan-logger": "0.0.1",
+    "@elastic.io/commons": "file:../commons",
+    "amqplib": "0.4.2",
+    "asynckit": "0.4.0",
+    "basic-auth": "2.0.0",
+    "body-parser": "1.15.2",
+    "elasticio-node": "0.0.7",
+    "express": "4.16.2",
+    "express-xml-bodyparser": "0.3.0",
+    "lodash": "4.10.0",
+    "mime-types": "2.1.13",
+    "multiparty": "4.1.2",
+    "on-finished": "2.3.0",
+    "q": "1.4.1",
+    "qs": "6.3.0",
+    "request": "2.74.0",
+    "request-promise": "3.0.0",
+    "type-is": "1.6.14",
+    "uuid": "3.3.2",
+    "xml2js": "0.4.17",
+    "request-promise-native": "1.0.5"
+  },
+  "devDependencies": {
+    "chai": "4.1.2",
+    "eslint": "4.5.0",
+    "eslint-plugin-mocha": "4.12.1",
+    "eslint-plugin-node": "6.0.1",
+    "jasmine": "3.1.0",
+    "mocha": "4.0.1",
+    "nock": "8.0.0",
+    "rabbitmq-stats": "1.1.0",
+    "request-promise-native": "1.0.5",
+    "sinon": "6.2.0",
+    "supertest": "3.0.0"
+  },
+  "main": "index.js"
+}
