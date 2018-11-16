@@ -72,6 +72,8 @@ Whereby
 * data: contains the primary payload. Maybe either a single object or an array
 * meta: a meta object that contains non-standard meta-information
 
+# Schemas
+
 ## Must: Define mutable & immutable versions of the same object
 
 Mutable objects define properties that may be changed by clients through the API. The are to be used in `POST`, `PATCH` and `PUT` resources. Immutable objects are contain additionally properties maintained by the server, such as `id` or any time related properties. Immutable objects are to be used in `GET` resources.
@@ -122,6 +124,44 @@ The immutable version of a `Flow` is an extension of `MutableFlow`:
               type: string
               description: Flow update time
               format: date-time
+````
+
+## Must: Not to contribute to schema explosion by defining schemas for collections of objects
+
+If a resource responds with an array, it must define the `array` in the resource definition locally and not contribute to a schema explosion. The following example demonstrates a valid definition:
+
+````jaml
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Flow"
+                  meta:
+                    $ref: "#/components/schemas/Meta"
+````
+
+While the following definition is forbidden:
+
+````jaml
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ArrayOfFlows"
+                  meta:
+                    $ref: "#/components/schemas/Meta"
 ````
 
 # Pagination
