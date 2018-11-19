@@ -17,7 +17,21 @@ The requirement level keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL N
 
 ## Should: Empty array values should not be null
 
-Empty array values can unambiguously be represented as the empty list, []
+Empty array values can unambiguously be represented as the empty list, []. The following example demonstrates a valid empty array
+
+````json
+{
+    "orders": []
+}
+```
+
+The following example demonstrates how arrays must not be returned:
+
+````json
+{
+    "orders": null
+}
+```
 
 ## Should: Date property values should conform to [RFC 3339](http://tools.ietf.org/html/rfc3339#section-5.6)
 
@@ -252,7 +266,7 @@ Any access to lists of data items must support pagination to protect the service
         "page": 1,
         "perPage": 10,
         "total": 123,
-        "totalPages": 2
+        "totalPages": 13
     } 
 }
 ````
