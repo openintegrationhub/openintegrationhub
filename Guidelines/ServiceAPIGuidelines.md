@@ -19,7 +19,8 @@ The requirement level keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL N
 
 Empty array values can unambiguously be represented as the empty list, []. The following example demonstrates a valid empty array
 
-````json
+
+```json
 {
     "orders": []
 }
@@ -27,7 +28,7 @@ Empty array values can unambiguously be represented as the empty list, []. The f
 
 The following example demonstrates how arrays must not be returned:
 
-````json
+```json
 {
     "orders": null
 }
