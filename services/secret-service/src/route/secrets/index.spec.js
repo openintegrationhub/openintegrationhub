@@ -17,7 +17,7 @@ describe('secrets', () => {
         port = await getPort();
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            port
+            port,
         });
         await server.start();
     });
@@ -85,7 +85,6 @@ describe('secrets', () => {
     });
 
     test('Get the secret anonymously throws', async () => {
-
         const secretBody = {
             name: 'string333444',
             type: 'simple',
@@ -106,7 +105,6 @@ describe('secrets', () => {
     });
 
     test('Get the secret by id', async () => {
-
         const secretBody = {
             name: 'string123',
             type: 'simple',
@@ -129,14 +127,12 @@ describe('secrets', () => {
     });
 
     test('Get the secret by wrong id returns 404', async () => {
-
         await request.get(`/secrets/${mongoose.Types.ObjectId()}`)
             .set(...global.userAuth1)
             .expect(404);
     });
 
     test('Replace the secret', async () => {
-
         const secretBody = {
             name: 'string567',
             type: 'simple',
@@ -163,7 +159,6 @@ describe('secrets', () => {
     });
 
     test('Modify the secret', async () => {
-
         const secretBody = {
             name: 'string567',
             type: 'simple',
@@ -191,7 +186,6 @@ describe('secrets', () => {
     });
 
     test('Delete secret', async () => {
-
         const secretBody = {
             name: 'string99',
             type: 'simple',
