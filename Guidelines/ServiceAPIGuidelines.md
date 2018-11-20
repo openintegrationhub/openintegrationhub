@@ -160,6 +160,7 @@ DELETE requests are used to delete resources. The semantic is best described as 
 
 * DELETE requests are usually applied to single resources, not on collection resources, as this would imply deleting the entire collection
 * successful DELETE requests will usually generate 200 (if the deleted resource is returned) or 204 (if no content is returned)
+* failed DELETE requests will usually generate 404 (if the resource cannot be found)
 
 # Schemas
 
