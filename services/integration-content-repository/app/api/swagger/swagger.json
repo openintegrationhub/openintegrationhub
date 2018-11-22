@@ -15,10 +15,6 @@
   },
   "tags": [
     {
-      "name": "IAM",
-      "description": "Identity management"
-    },
-    {
       "name": "flows",
       "description": "Operations about flows",
       "externalDocs": {
@@ -28,44 +24,7 @@
     }
   ],
   "paths": {
-    "/login": {
-      "post": {
-        "x-swagger-router-controller": "token",
-        "tags": [
-          "IAM"
-        ],
-        "summary": "Returns an identity token",
-        "description": "The returned value is a jwt token containing the user's data. It is used as an authorization through the bearer token system. Users can only see and manipulate Flows that are associated with them either through ownership or tenancies.",
-        "operationId": "getToken",
-        "responses": {
-          "200": {
-            "description": "Supplies a bearer token which serves as authorization for all further operations.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Either the username or password is incorrect"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TokenRequest"
-              }
-            }
-          },
-          "description": "Username (in the format of an email-address) and password, which will be passed on to the IAM microservice.",
-          "required": true
-        }
-      }
-    },
-    "/flow": {
+    "/api/flows": {
       "get": {
         "x-swagger-router-controller": "flow",
         "security": [
@@ -81,13 +40,87 @@
         "summary": "Retrieve all flows associated with the current user from the repository",
         "description": "This will only return Flows that are either directly associated with the user, or that are associated with a tenant that the user is also a member of.",
         "operationId": "getFlows",
+        "parameters": [
+          {
+          "name": "page[number]",
+          "in": "query",
+          "description": "Amount of flows per page returned. Default is 10.",
+          "required": false,
+          "schema": {
+            "type": "integer"
+            }
+          },
+          {
+          "name": "page[size]",
+          "in": "query",
+          "description": "Number of the page to be returned. Default is 1.",
+          "required": false,
+          "schema": {
+            "type": "integer"
+            }
+          },
+          {
+          "name": "filter[has_draft]",
+          "in": "query",
+          "description": "Filter results by flow draft. Draft = 1. No draft = 0",
+          "required": false,
+          "schema": {
+            "type": "integer"
+            }
+          },
+          {
+          "name": "filter[status]",
+          "in": "query",
+          "description": "Filter results by flow status. Active = 1. Inactive = 0",
+          "required": false,
+          "schema": {
+            "type": "integer"
+            }
+          },
+          {
+          "name": "filter[type]",
+          "in": "query",
+          "description": "Filter results by flow type (ordinary, long_running)",
+          "required": false,
+          "schema": {
+            "type": "string"
+            }
+          },
+          {
+          "name": "filter[user]",
+          "in": "query",
+          "description": "Filter by user. Works for admin or users with same tenant.",
+          "required": false,
+          "schema": {
+            "type": "string"
+            }
+          },
+          {
+          "name": "sort",
+          "in": "query",
+          "description": "Sort the result by one property. Supported: createdAt, updatedAt and name. Prefix field name with - for reversed sort order (DESC) i.e. sort=-updatedAt. Default sorting is by id DESC",
+          "required": false,
+          "schema": {
+            "type": "string"
+            }
+          },
+          {
+          "name": "search",
+          "in": "query",
+          "description": "Search flows by a word or a phrase contained in the flow description OR in the flow name (case-insensitive). Behavior is similar to operator LIKE in SQL but case insensitive.",
+          "required": false,
+          "schema": {
+            "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "A list of flows.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FlowResponse"
+                  "$ref": "#/components/schemas/Flow"
                 }
               }
             }
@@ -118,7 +151,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FlowResponse"
+                  "$ref": "#/components/schemas/Flow"
                 }
               }
             }
@@ -131,7 +164,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FlowRequest"
+                "$ref": "#/components/schemas/MutableFlow"
               }
             }
           },
@@ -160,7 +193,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FlowResponse"
+                  "$ref": "#/components/schemas/Flow"
                 }
               }
             }
@@ -173,7 +206,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FlowRequest"
+                "$ref": "#/components/schemas/MutableFlow"
               }
             }
           },
@@ -182,7 +215,7 @@
         }
       }
     },
-    "/flow/{oihid}": {
+    "/api/flows/{oihid}": {
       "get": {
         "x-swagger-router-controller": "flow",
         "security": [
@@ -216,88 +249,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FlowResponse"
+                  "$ref": "#/components/schemas/Flow"
                 }
               }
             }
           },
           "404": {
             "description": "No Flow with this oihid was found."
-          }
-        }
-      },
-      "post": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "flows"
-        ],
-        "summary": "Updates a flow with form data",
-        "description": "This operation is identical to the regular update opteration, but the input can be entered through this form.",
-        "operationId": "updateFlowWithForm",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "ID of flow that needs to be updated",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The updated Flow",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FlowResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No Flow with this oihid was found."
-          },
-          "405": {
-            "description": "Invalid input"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "description": "Updated name of the flow",
-                    "type": "string",
-                    "format": "string"
-                  },
-                  "status": {
-                    "description": "Updated status of the flow",
-                    "type": "string"
-                  },
-                  "current_status": {
-                    "description": "New current status of the flow",
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "name",
-                  "status",
-                  "current_status"
-                ]
-              }
-            }
           }
         }
       },
@@ -334,7 +292,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FlowResponse"
+                  "$ref": "#/components/schemas/Flow"
                 }
               }
             }
@@ -348,696 +306,31 @@
         }
       }
     },
-    "/flow/user/{relationid}": {
+    "/healthcheck": {
       "get": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
+        "x-swagger-router-controller": "healthcheck",
+        "security": [],
         "tags": [
-          "relations"
+          "healthcheck"
         ],
-        "parameters": [
-          {
-            "name": "relationid",
-            "in": "path",
-            "description": "ID of the user",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "summary": "Get the flows associated with a specified user from the repository",
-        "description": "Note that unless the entered user id matches the current user, this will only show matching flows that are also associated with a tenant that the current user is a member of.",
-        "operationId": "getFlowsByUser",
+        "summary": "Performs a healthcheck",
+        "description": "This will return 200 and a JSON object with relevant status information when the service is running and healthy.",
         "responses": {
           "200": {
-            "description": "List of Flows associated with the user ID.",
+            "description": "A list of flows.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FlowResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No flows found"
-          }
-        }
-      }
-    },
-    "/flow/tenant/{relationid}": {
-      "get": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "relations"
-        ],
-        "parameters": [
-          {
-            "name": "relationid",
-            "in": "path",
-            "description": "ID of the tenant",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "summary": "Get the flows associated with a specified tenant from the repository",
-        "description": "Note that a user can only query for tenants that they themselves are members of.",
-        "operationId": "getFlowsByTenant",
-        "responses": {
-          "200": {
-            "description": "List of Flows",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FlowResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "A user cannot get flows from tenants that they are not a member of."
-          },
-          "404": {
-            "description": "No flows found"
-          }
-        }
-      }
-    },
-    "/flow/tenant/{oihid}/{tenantid}": {
-      "post": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "relations"
-        ],
-        "summary": "Adds a tenant to a flow",
-        "operationId": "addTenantToFlow",
-        "description": "Associates a Flow with a tenant. This allows members of that tenant to view and manipulate that Flow. A user can only associate tenants that they themselves are members of.",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "ID of the Flow",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "tenantid",
-            "in": "path",
-            "description": "ID of the Tenant",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The Flow was successfully associated with the tenant."
-          },
-          "401": {
-            "description": "A user cannot associate a tenant that they themselves are not a member of."
-          },
-          "404": {
-            "description": "No Flow with this oihid was found."
-          },
-          "409": {
-            "description": "The Flow is already associated with this tenant."
-          }
-        }
-      },
-      "delete": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "relations"
-        ],
-        "summary": "Removes a tenant from a flow",
-        "description": "Disassociates a Flow from a tenant, meaning that members of that tenant may no longer be able to view or manipulate that Flow in the future.",
-        "operationId": "deleteTenantFromFlow",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "ID of Flow",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "tenantid",
-            "in": "path",
-            "description": "ID of the Tenant",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The Flow was successfully disassociated from the tenant."
-          },
-          "404": {
-            "description": "No Flow with this oihid was found."
-          },
-          "409": {
-            "description": "The Flow is not currently associated with this tenant."
-          }
-        }
-      }
-    },
-    "/flow/node/{oihid}/{nodeid}": {
-      "get": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "nodes"
-        ],
-        "summary": "Find node by ID",
-        "description": "Returns a single node",
-        "operationId": "getNodeById",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "Id of the flow which contains the node to return",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "nodeid",
-            "in": "path",
-            "description": "ID of node to return",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns the node",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NodeResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "node not found"
-          }
-        }
-      },
-      "post": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "nodes"
-        ],
-        "summary": "Stores a node with form data",
-        "operationId": "addNode",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "ID of the flow the node gets added to",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "nodeid",
-            "in": "path",
-            "description": "ID of the node",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The new node",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NodeResponse"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Invalid input"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "command": {
-                    "description": "command of the node",
-                    "type": "string",
-                    "format": "string"
-                  },
-                  "name": {
-                    "description": "name of the node",
-                    "type": "string",
-                    "format": "string"
-                  },
-                  "description": {
-                    "description": "description of the node",
-                    "type": "string",
-                    "format": "string"
-                  },
-                  "fields_interval": {
-                    "description": "field \"interval\" of the node",
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "command",
-                  "name"
-                ]
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "nodes"
-        ],
-        "summary": "Updates a node",
-        "operationId": "updateNode",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "ID of the flow which contains the node that needs to be updated",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "nodeid",
-            "in": "path",
-            "description": "ID of node that needs to be updated",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The updated node data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NodeResponse"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Invalid input"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "command": {
-                    "description": "Updated command of the node",
-                    "type": "string",
-                    "format": "string"
-                  },
-                  "name": {
-                    "description": "Updated name of the node",
-                    "type": "string",
-                    "format": "string"
-                  },
-                  "description": {
-                    "description": "Updated description of the node",
-                    "type": "string",
-                    "format": "string"
-                  },
-                  "fields_interval": {
-                    "description": "field \"interval\" of the node",
-                    "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "pass"
+                    }
                   }
                 }
               }
             }
-          }
-        }
-      },
-      "delete": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "nodes"
-        ],
-        "summary": "Deletes a node",
-        "operationId": "deleteNode",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "Id of the flow which contains the node to delete",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "nodeid",
-            "in": "path",
-            "description": "Node id to delete",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The deleted Node",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NodeResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied"
-          },
-          "404": {
-            "description": "Node not found"
-          }
-        }
-      }
-    },
-    "/flow/edge/{oihid}/{edgeid}": {
-      "get": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "edges"
-        ],
-        "summary": "Find edge by ID",
-        "description": "Returns a single edge",
-        "operationId": "getEdgeById",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "Id of the flow which contains the edge to return",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "edgeid",
-            "in": "path",
-            "description": "ID of edge to return",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns the edge",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EdgeResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "edge not found"
-          }
-        }
-      },
-      "post": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "edges"
-        ],
-        "summary": "Stores a edge with form data",
-        "operationId": "addEdge",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "ID of the flow the edge gets added to",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "edgeid",
-            "in": "path",
-            "description": "ID of the edge",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The new edge",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EdgeResponse"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Invalid input"
-          }
-        },
-        "requestBody": {
-          "$ref": "#/components/requestBodies/addEdge"
-        }
-      },
-      "put": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "edges"
-        ],
-        "summary": "Updates a edge",
-        "operationId": "updateEdge",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "ID of the flow the edge gets added to",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "edgeid",
-            "in": "path",
-            "description": "ID of the edge",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The updated edge",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EdgeResponse"
-                }
-              }
-            }
-          },
-          "405": {
-            "description": "Invalid input"
-          }
-        },
-        "requestBody": {
-          "$ref": "#/components/requestBodies/addEdge"
-        }
-      },
-      "delete": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "edges"
-        ],
-        "summary": "Deletes a edge",
-        "operationId": "deleteEdge",
-        "parameters": [
-          {
-            "name": "oihid",
-            "in": "path",
-            "description": "Id of the flow which contains the edge to delete",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          },
-          {
-            "name": "edgeid",
-            "in": "path",
-            "description": "Edge id to delete",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The deleted Edge",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EdgeResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied"
-          },
-          "404": {
-            "description": "Edge not found"
           }
         }
       }
@@ -1049,10 +342,7 @@
   },
   "servers": [
     {
-      "url": "http://192.168.42.2:3001/api"
-    },
-    {
-      "url": "http://localhost:3001/api"
+      "url": "http://localhost:3001/"
     }
   ],
   "components": {
@@ -1128,170 +418,166 @@
       }
     },
     "schemas": {
-      "FlowRequest": {
+      "MutableFlow": {
         "type": "object",
         "required": [
-          "name"
+          "name",
+          "graph",
+          "status",
+          "type",
+          "userId",
+          "workspaceId"
         ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "flow"
-          },
-          "oihid": {
-            "type": "string",
-            "example": "123456"
-          },
-          "name": {
-            "type": "string",
-            "example": "WiceToSnazzy"
-          },
-          "status": {
-            "type": "string",
-            "example": "active"
-          },
-          "current_status": {
-            "type": "string",
-            "example": "active"
-          },
-          "default_mapper_type": {
-            "type": "string",
-            "example": "jsonata"
-          },
-          "description": {
-            "type": "string",
-            "example": "A description"
-          }
-        }
-      },
-      "TokenRequest": {
-        "type": "object",
-        "required": [
-          "username",
-          "password"
-        ],
-        "properties": {
-          "username": {
-            "type": "string",
-            "example": "user@example.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "12345abc"
-          }
-        }
-      },
-      "TokenResponse": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "example": "123abc.456def.789ghi"
-          }
-        }
-      },
-      "FlowResponse": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "flow"
-          },
-          "oihid": {
-            "type": "integer",
-            "format": "int64",
-            "example": 123456
-          },
-          "links": {
-            "type": "object",
-            "properties": {
-              "self": {
-                "type": "string",
-                "example": "/v1/flows/123456"
-              }
-            }
-          },
-          "attributes": {
-            "$ref": "#/components/schemas/attributes"
-          },
-          "relationships": {
-            "$ref": "#/components/schemas/relations"
-          }
-        }
-      },
-      "attributes": {
-        "type": "object",
         "properties": {
           "name": {
             "type": "string",
-            "example": "WiceToSnazzy"
-          },
-          "status": {
-            "type": "string",
-            "example": "inactive"
-          },
-          "type": {
-            "type": "string",
-            "example": "ordinary"
-          },
-          "created_at": {
-            "type": "string",
-            "example": "2018-06-11T15:39:02.825Z"
-          },
-          "current_status": {
-            "type": "string",
-            "example": "inactive"
-          },
-          "default_mapper_type": {
-            "type": "string",
-            "example": "jsonata"
+            "example": "My Flow"
           },
           "description": {
             "type": "string",
-            "example": "This is a description"
+            "example": "My Flow"
           },
-          "updated_at": {
+          "graph": {
+            "$ref": "#/components/schemas/FlowGraph"
+          },
+          "type": {
             "type": "string",
-            "example": "Tue Jul 17 2018 11:31:53 GMT+0000 (UTC)"
+            "description": "Flow type",
+            "enum": [
+              "ordinary",
+              "realtime"
+            ]
           },
-          "latest_version": {
+          "userId": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          }
+        }
+      },
+      "Flow": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MutableFlow"
+          },
+          {
             "type": "object",
+            "required": [
+              "id",
+              "status",
+              "createdAt",
+              "updatedAt"
+            ],
             "properties": {
-              "name": {
-                "type": "number"
-              },
-              "date": {
+              "id": {
                 "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "description": "Flow status",
+                "enum": [
+                  "active",
+                  "inactive"
+                ]
+              },
+              "createdAt": {
+                "type": "string",
+                "description": "Flow creation time",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "description": "Flow update time",
+                "format": "date-time"
               }
-            },
-            "example": {
-              "name": 2,
-              "date": "Tue Jul 17 2018 11:31:53 GMT+0000 (UTC)"
             }
-          },
-          "versions": {
+          }
+        ]
+      },
+      "FlowGraph": {
+        "type": "object",
+        "properties": {
+          "nodes": {
             "type": "array",
             "items": {
               "type": "object",
+              "required": [
+                "id",
+                "componentId",
+                "command"
+              ],
               "properties": {
-                "name": {
-                  "type": "number"
+                "id": {
+                  "type": "string"
                 },
-                "date": {
+                "componentId": {
+                  "type": "string"
+                },
+                "command": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "fields": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "source",
+                "target"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {
+                    "condition": {
+                      "type": "string"
+                    },
+                    "mapper": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "source": {
+                  "type": "string"
+                },
+                "target": {
                   "type": "string"
                 }
               }
-            },
-            "example": [
-              {
-                "name": 2,
-                "date": "Tue Jul 17 2018 11:31:53 GMT+0000 (UTC)"
-              },
-              {
-                "name": 1,
-                "date": "Mon Jul 16 2018 09:12:42 GMT+0000 (UTC)"
-              }
-            ]
+            }
+          }
+        }
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "perPage": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "totalPages": {
+            "type": "integer"
           }
         }
       },

@@ -1,28 +1,29 @@
-var bunyan = require('bunyan');
-var bformat = require('bunyan-format');
-var formatOut = bformat({ outputMode: 'long' /*, levelInString: true*/ });
+const bunyan = require('bunyan');
+const bformat = require('bunyan-format');
+
+const formatOut = bformat({ outputMode: 'long' /* , levelInString: true */ });
 
 
-var log = bunyan.createLogger({
+const log = bunyan.createLogger({
   name: 'app',
   streams: [
     {
       level: 'trace',
       type: 'file',
-      path: 'error.log'  // log ERROR and above to a file
+      path: 'error.log', // log ERROR and above to a file
 
     },
     {
       level: 'trace',
-      //stream: process.stdout            // log INFO and above to stdout
-      stream: formatOut
+      // stream: process.stdout            // log INFO and above to stdout
+      stream: formatOut,
     },
 
   ],
-  //stream: formatOut,
+  // stream: formatOut,
   level: 'trace',
-  src:true  // disable in production
-} );
+  src: true, // disable in production
+});
 
 const fs = require('fs');
 
@@ -43,10 +44,10 @@ function exitHandler(options, exitCode){
     }
     fs.appendFileSync('error.log', '{status: "Process got terminated! Logging data might be incomplete",time: "'+Date.now()+'"}"\n');
 }
-/*eslint-enable */
+/* eslint-enable */
 
-//do something when app is closing
-process.on('exit', exitHandler.bind(null,{cleanup:true}));
-process.on('uncaughtException', exitHandler.bind('fatal',{cleanup:false}));
+// do something when app is closing
+process.on('exit', exitHandler.bind(null, { cleanup: true }));
+process.on('uncaughtException', exitHandler.bind('fatal', { cleanup: false }));
 
 module.exports = log;
