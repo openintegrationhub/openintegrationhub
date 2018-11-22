@@ -17,26 +17,18 @@ The integration flows are defined by a single user of the Open Integration Hub o
 The flows are specified in JSON, therefore we store and retrieve them in JSON.
 
 ## Technical description
-Bragi uses MongoDB for archiving the integration flows. We use Mongoose for object modeling. Mongoose is built on top of the official MongoDB Node.js driver.
+Bragi uses MongoDB for archiving the integration flows. You will need a MongoDB
+and change the path in the deployment.yaml. We use Mongoose for object modeling. Mongoose is built on top of the official MongoDB Node.js driver.
 
-For documenting the API Bragi uses the SwaggerUI. Controllers are build upon the middleware swagger-express-mw, which uses the popular web application framework ExpressJS.
+For documenting the API Bragi uses the SwaggerUI.
 
-As the webserver we use NGINX, which is also used as a reverse proxy.
+Authentification is done with the OIH-IAM. Please change the iam url inside the
+deployment.yaml.
 
-## Installation
-
-Bragi requires Docker and Docker Compose.
-
-* Run docker-compose build and then docker-compose up
 
 ## REST-API documentation
 
 Visit http://localhost:3001/docs to view the Swagger API-Documentation
 
 ## Current status
-This is only a pre-release to show the functionality of a content repository.
-
-It's obvious that there are some work to do, like:
-* The definition of a flow is only a show case. It needs further specification
-* There is no access control. Bragi has to be connected to the OIH-Heimdal-Service for user management.
-* The API needs to be expanded, e.g. to manage flows of organizations
+This is only a early release to show the functionality of a content repository. The definition of a flow is still a draft.
