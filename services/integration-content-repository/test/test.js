@@ -6,7 +6,7 @@ const chaiHttp = require('chai-http');
 
 const expect = chai.expect;
 
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
 // Sets the environment variables for the iam middleware.
 // This has to happen before server.js is required
@@ -24,54 +24,54 @@ const request = require('supertest')(`${hostUrl}:${port}`);
 const log = require('../app/config/logger'); // eslint-disable-line
 require('../app/index');
 
-
-const adminId = 'TestAdmin';
-const guestId = 'TestGuest';
-
-const now = Math.round(new Date().getTime() / 1000);
+//
+// const adminId = 'TestAdmin';
+// const guestId = 'TestGuest';
+//
+// const now = Math.round(new Date().getTime() / 1000);
 
 // Creates two user objects that will be used as payloads for the authorisation tokens
-const adminUser = {
-  sub: adminId,
-  username: 'admin@example.com',
-  role: 'ADMIN',
-  memberships: [
-    {
-      role: 'TENANT_ADMIN',
-      tenant: 'testTenant1',
-    },
-    {
-      role: 'TENANT_ADMIN',
-      tenant: 'testTenant2',
-    },
-  ],
-  iat: now,
-  exp: now + 1000,
-  aud: 'Test_Audience',
-  iss: 'Test_Issuer',
-};
-
-const guestUser = {
-  sub: guestId,
-  username: 'admin@example.com',
-  role: 'GUEST',
-  memberships: [
-    {
-      role: 'TENANT_Guest',
-      tenant: 'testTenant1',
-    },
-  ],
-  iat: now,
-  exp: now + 1000,
-  aud: 'Test_Audience',
-  iss: 'Test_Issuer',
-};
-
-// Converts the payloads into json web tokens
-const adminToken = jwt.sign(adminUser, 'Test_Secret');
-const guestToken = jwt.sign(guestUser, 'Test_Secret');
-let flowId1;
-let flowId2;
+// const adminUser = {
+//   sub: adminId,
+//   username: 'admin@example.com',
+//   role: 'ADMIN',
+//   memberships: [
+//     {
+//       role: 'TENANT_ADMIN',
+//       tenant: 'testTenant1',
+//     },
+//     {
+//       role: 'TENANT_ADMIN',
+//       tenant: 'testTenant2',
+//     },
+//   ],
+//   iat: now,
+//   exp: now + 1000,
+//   aud: 'Test_Audience',
+//   iss: 'Test_Issuer',
+// };
+//
+// const guestUser = {
+//   sub: guestId,
+//   username: 'admin@example.com',
+//   role: 'GUEST',
+//   memberships: [
+//     {
+//       role: 'TENANT_Guest',
+//       tenant: 'testTenant1',
+//     },
+//   ],
+//   iat: now,
+//   exp: now + 1000,
+//   aud: 'Test_Audience',
+//   iss: 'Test_Issuer',
+// };
+//
+// // Converts the payloads into json web tokens
+// const adminToken = jwt.sign(adminUser, 'Test_Secret');
+// const guestToken = jwt.sign(guestUser, 'Test_Secret');
+// let flowId1;
+// let flowId2;
 
 
 chai.use(chaiHttp);
@@ -246,279 +246,279 @@ describe('/api/ - Login Security', () => {
       .then(done, done);
   });
 });
+//
+// describe('/api/ - Flow Operations', () => {
+//   it('should add a flow', (done) => {
+//     request
+//       .post('/api/flows/')
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .set('accept', 'application/json')
+//       .set('Content-Type', 'application/json')
+//       .send({
+//         type: 'flow',
+//         name: 'WiceToSnazzy',
+//         status: 'active',
+//         current_status: 'active',
+//         default_mapper_type: 'jsonata',
+//         description: 'A description',
+//       })
+//       .then((res) => {
+//         expect(res).to.have.status(200);
+//         expect(res.text).to.not.be.empty;
+//         const j = JSON.parse(res.text);
+//         expect(j).to.exist;
+//
+//         expect(j).to.have.property('graph');
+//         expect(j).to.have.property('type');
+//         expect(j).to.have.property('oihid');
+//         flowId1 = j.oihid;
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//
+//   it('should get the new flow', (done) => {
+//     request
+//       .get(`/api/flows/${flowId1}`)
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .then((res) => {
+//         expect(res).to.have.status(200);
+//         expect(res.text).to.not.be.empty;
+//         const j = JSON.parse(res.text);
+//         expect(j).to.exist;
+//
+//         expect(j).to.have.property('graph');
+//         expect(j).to.have.property('type');
+//         expect(j).to.have.property('oihid');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should not show the flow to another users getAll', (done) => {
+//     request
+//       .get('/api/flows/')
+//       .set('Authorization', `Bearer ${guestToken}`)
+//       .then((res) => {
+//         expect(res).to.have.status(404);
+//         expect(res.text).to.not.be.empty;
+//
+//         expect(res.text).to.equal('No flows found');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should not show the flow to another users get', (done) => {
+//     request
+//       .get('/api/flows/TestOIHID')
+//       .set('Authorization', `Bearer ${guestToken}`)
+//
+//       .then((res) => {
+//         expect(res).to.have.status(404);
+//         expect(res.text).to.not.be.empty;
+//
+//         expect(res.text).to.equal('No flows found');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should return 404 when getting a non-existent flow', (done) => {
+//     request
+//       .get('/api/flows/nothing')
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .then((res) => {
+//         expect(res).to.have.status(404);
+//         expect(res.text).to.not.be.empty;
+//
+//         expect(res.text).to.equal('No flows found');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should add a second flow', (done) => {
+//     request
+//       .post('/api/flows/')
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .set('accept', 'application/json')
+//       .set('Content-Type', 'application/json')
+//       .send({
+//         type: 'flow',
+//         name: 'SnazzyZoWice',
+//         status: 'active',
+//         current_status: 'active',
+//         default_mapper_type: 'jsonata',
+//         description: 'A description',
+//       })
+//       .then((res) => {
+//         expect(res).to.have.status(200);
+//         expect(res.text).to.not.be.empty;
+//         const j = JSON.parse(res.text);
+//         expect(j).to.exist;
+//
+//         expect(j).to.have.property('graph');
+//         expect(j).to.have.property('type');
+//         expect(j).to.have.property('oihid');
+//         flowId2 = j.oihid;
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should get all flows', (done) => {
+//     request
+//       .get('/api/flows/')
+//       .set('Authorization', `Bearer ${adminToken}`)
+//
+//       .then((res) => {
+//         expect(res).to.have.status(200);
+//         expect(res.text).to.not.be.empty;
+//         const j = JSON.parse(res.text);
+//         expect(j).to.exist;
+//
+//         expect(j.data).length.to.be.gte(1);
+//
+//         expect(j.data[0]).to.have.property('graph');
+//         expect(j.data[0]).to.have.property('type');
+//         expect(j.data[0]).to.have.property('oihid');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should update flow', (done) => {
+//     request
+//       .put('/api/flows/')
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .set('accept', 'application/json')
+//       .set('Content-Type', 'application/json')
+//       .send({
+//         type: 'flow',
+//         oihid: flowId1,
+//         name: 'NewName',
+//         status: 'active',
+//         current_status: 'active',
+//         default_mapper_type: 'jsonata',
+//         description: 'A description',
+//       })
+//       .then((res) => {
+//         expect(res).to.have.status(200);
+//         expect(res.text).to.not.be.empty;
+//         const j = JSON.parse(res.text);
+//         expect(j).to.exist;
+//
+//
+//         expect(j).to.have.property('graph');
+//         expect(j).to.have.property('type');
+//         expect(j).to.have.property('oihid');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//
+//   it('should not be able to update a non-existent flow', (done) => {
+//     request
+//       .put('/api/flows/')
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .set('accept', 'application/json')
+//       .set('Content-Type', 'application/json')
+//       .send({
+//         type: 'flow',
+//         oihid: 'nothing',
+//         name: 'NewName',
+//         status: 'active',
+//         current_status: 'active',
+//         default_mapper_type: 'jsonata',
+//         description: 'A description',
+//       })
+//       .then((res) => {
+//         expect(res).to.have.status(404);
+//         expect(res.text).to.not.be.empty;
+//         expect(res.text).to.contain('Flow not found');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
 
-describe('/api/ - Flow Operations', () => {
-  it('should add a flow', (done) => {
-    request
-      .post('/api/flows/')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json')
-      .send({
-        type: 'flow',
-        name: 'WiceToSnazzy',
-        status: 'active',
-        current_status: 'active',
-        default_mapper_type: 'jsonata',
-        description: 'A description',
-      })
-      .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.text).to.not.be.empty;
-        const j = JSON.parse(res.text);
-        expect(j).to.exist;
-
-        expect(j).to.have.property('graph');
-        expect(j).to.have.property('type');
-        expect(j).to.have.property('oihid');
-        flowId1 = j.oihid;
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-
-  it('should get the new flow', (done) => {
-    request
-      .get(`/api/flows/${flowId1}`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.text).to.not.be.empty;
-        const j = JSON.parse(res.text);
-        expect(j).to.exist;
-
-        expect(j).to.have.property('graph');
-        expect(j).to.have.property('type');
-        expect(j).to.have.property('oihid');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should not show the flow to another users getAll', (done) => {
-    request
-      .get('/api/flows/')
-      .set('Authorization', `Bearer ${guestToken}`)
-      .then((res) => {
-        expect(res).to.have.status(404);
-        expect(res.text).to.not.be.empty;
-
-        expect(res.text).to.equal('No flows found');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should not show the flow to another users get', (done) => {
-    request
-      .get('/api/flows/TestOIHID')
-      .set('Authorization', `Bearer ${guestToken}`)
-
-      .then((res) => {
-        expect(res).to.have.status(404);
-        expect(res.text).to.not.be.empty;
-
-        expect(res.text).to.equal('No flows found');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should return 404 when getting a non-existent flow', (done) => {
-    request
-      .get('/api/flows/nothing')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .then((res) => {
-        expect(res).to.have.status(404);
-        expect(res.text).to.not.be.empty;
-
-        expect(res.text).to.equal('No flows found');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should add a second flow', (done) => {
-    request
-      .post('/api/flows/')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json')
-      .send({
-        type: 'flow',
-        name: 'SnazzyZoWice',
-        status: 'active',
-        current_status: 'active',
-        default_mapper_type: 'jsonata',
-        description: 'A description',
-      })
-      .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.text).to.not.be.empty;
-        const j = JSON.parse(res.text);
-        expect(j).to.exist;
-
-        expect(j).to.have.property('graph');
-        expect(j).to.have.property('type');
-        expect(j).to.have.property('oihid');
-        flowId2 = j.oihid;
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should get all flows', (done) => {
-    request
-      .get('/api/flows/')
-      .set('Authorization', `Bearer ${adminToken}`)
-
-      .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.text).to.not.be.empty;
-        const j = JSON.parse(res.text);
-        expect(j).to.exist;
-
-        expect(j.data).length.to.be.gte(1);
-
-        expect(j.data[0]).to.have.property('graph');
-        expect(j.data[0]).to.have.property('type');
-        expect(j.data[0]).to.have.property('oihid');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should update flow', (done) => {
-    request
-      .put('/api/flows/')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json')
-      .send({
-        type: 'flow',
-        oihid: flowId1,
-        name: 'NewName',
-        status: 'active',
-        current_status: 'active',
-        default_mapper_type: 'jsonata',
-        description: 'A description',
-      })
-      .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.text).to.not.be.empty;
-        const j = JSON.parse(res.text);
-        expect(j).to.exist;
-
-
-        expect(j).to.have.property('graph');
-        expect(j).to.have.property('type');
-        expect(j).to.have.property('oihid');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-
-  it('should not be able to update a non-existent flow', (done) => {
-    request
-      .put('/api/flows/')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json')
-      .send({
-        type: 'flow',
-        oihid: 'nothing',
-        name: 'NewName',
-        status: 'active',
-        current_status: 'active',
-        default_mapper_type: 'jsonata',
-        description: 'A description',
-      })
-      .then((res) => {
-        expect(res).to.have.status(404);
-        expect(res.text).to.not.be.empty;
-        expect(res.text).to.contain('Flow not found');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  // describe('/api/user/{relationid} - User-relationship specific flow operations', () => {
-  //   it('should get flows of admin user when queried by admin user', (done) => {
-  //     request
-  //       .get(`/api/flows/user/${adminId}`)
-  //       .set('Authorization', `Bearer ${adminToken}`)
-  //       .set('accept', 'application/json')
-  //       .set('Content-Type', 'application/json')
-  //       .then((res) => {
-  //         expect(res).to.have.status(200);
-  //         expect(res.text).to.not.be.empty;
-  //         const j = JSON.parse(res.text);
-  //         expect(j).to.exist;
-  //         expect(j).length.to.be.gt(0);
-  //
-  //         expect(j[0]).to.have.property('graph');
-  //         expect(j[0]).to.have.property('type');
-  //         expect(j[0]).to.have.property('oihid');
-  //       })
-  //       .catch((err) => {
-  //         throw err;
-  //       })
-  //       .then(done, done);
-  //   });
-  //
-  //   it('should not get flows of the admin user when queried by another user', (done) => {
-  //     request
-  //       .get(`/api/flows/user/${adminId}`)
-  //       .set('Authorization', `Bearer ${guestToken}`)
-  //       .set('accept', 'application/json')
-  //       .set('Content-Type', 'application/json')
-  //       .then((res) => {
-  //         expect(res).to.have.status(401);
-  //         expect(res.text).to.not.be.empty;
-  //         expect(res.text).to.contain('Unauthorised: Cannot Get flows from users other than yourself');
-  //       })
-  //       .catch((err) => {
-  //         throw err;
-  //       })
-  //       .then(done, done);
-  //   });
-  //
-  //   it('should return 404 when user without flows queries themselves', (done) => {
-  //     request
-  //       .get(`/api/flows/user/${guestId}`)
-  //       .set('Authorization', `Bearer ${guestToken}`)
-  //       .set('accept', 'application/json')
-  //       .set('Content-Type', 'application/json')
-  //       .then((res) => {
-  //         expect(res).to.have.status(404);
-  //         expect(res.text).to.not.be.empty;
-  //       })
-  //       .catch((err) => {
-  //         throw err;
-  //       })
-  //       .then(done, done);
-  //   });
-  // });
+// describe('/api/user/{relationid} - User-relationship specific flow operations', () => {
+//   it('should get flows of admin user when queried by admin user', (done) => {
+//     request
+//       .get(`/api/flows/user/${adminId}`)
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .set('accept', 'application/json')
+//       .set('Content-Type', 'application/json')
+//       .then((res) => {
+//         expect(res).to.have.status(200);
+//         expect(res.text).to.not.be.empty;
+//         const j = JSON.parse(res.text);
+//         expect(j).to.exist;
+//         expect(j).length.to.be.gt(0);
+//
+//         expect(j[0]).to.have.property('graph');
+//         expect(j[0]).to.have.property('type');
+//         expect(j[0]).to.have.property('oihid');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should not get flows of the admin user when queried by another user', (done) => {
+//     request
+//       .get(`/api/flows/user/${adminId}`)
+//       .set('Authorization', `Bearer ${guestToken}`)
+//       .set('accept', 'application/json')
+//       .set('Content-Type', 'application/json')
+//       .then((res) => {
+//         expect(res).to.have.status(401);
+//         expect(res.text).to.not.be.empty;
+//         expect(res.text).to.contain('Unauthorised: Cannot Get flows from users other than yourself');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should return 404 when user without flows queries themselves', (done) => {
+//     request
+//       .get(`/api/flows/user/${guestId}`)
+//       .set('Authorization', `Bearer ${guestToken}`)
+//       .set('accept', 'application/json')
+//       .set('Content-Type', 'application/json')
+//       .then((res) => {
+//         expect(res).to.have.status(404);
+//         expect(res.text).to.not.be.empty;
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+// });
 
 //   describe('/api/flows/tenant/{relationid} - Tenancy-relationship specific flow operations', () => {
 //     it('should not allow users to query tenants they are not members of', (done) => {
@@ -1115,65 +1115,65 @@ describe('/api/ - Flow Operations', () => {
 //         .then(done, done);
 //     });
 //   });
-});
+// });
 
-
-describe('/api/ - Cleanup', () => {
-  it('should delete the first flow', (done) => {
-    request
-      .delete(`/api/flows/${flowId1}`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json')
-      .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.text).to.not.be.empty;
-        const j = JSON.parse(res.text);
-        expect(j).to.exist;
-        expect(j).to.have.property('graph');
-        expect(j).to.have.property('type');
-        expect(j).to.have.property('oihid');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should delete the second flow', (done) => {
-    request
-      .delete(`/api/flows/${flowId2}`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json')
-      .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.text).to.not.be.empty;
-        const j = JSON.parse(res.text);
-        expect(j).to.exist;
-
-        expect(j).to.have.property('graph');
-        expect(j).to.have.property('type');
-        expect(j).to.have.property('oihid');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should return 404 when attempting to get the just deleted flow', (done) => {
-    request
-      .get(`/api/flows/${flowId1}`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .then((res) => {
-        expect(res).to.have.status(404);
-        expect(res.text).to.not.be.empty;
-        expect(res.text).to.equal('No flows found');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-});
+//
+// describe('/api/ - Cleanup', () => {
+//   it('should delete the first flow', (done) => {
+//     request
+//       .delete(`/api/flows/${flowId1}`)
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .set('accept', 'application/json')
+//       .set('Content-Type', 'application/json')
+//       .then((res) => {
+//         expect(res).to.have.status(200);
+//         expect(res.text).to.not.be.empty;
+//         const j = JSON.parse(res.text);
+//         expect(j).to.exist;
+//         expect(j).to.have.property('graph');
+//         expect(j).to.have.property('type');
+//         expect(j).to.have.property('oihid');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should delete the second flow', (done) => {
+//     request
+//       .delete(`/api/flows/${flowId2}`)
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .set('accept', 'application/json')
+//       .set('Content-Type', 'application/json')
+//       .then((res) => {
+//         expect(res).to.have.status(200);
+//         expect(res.text).to.not.be.empty;
+//         const j = JSON.parse(res.text);
+//         expect(j).to.exist;
+//
+//         expect(j).to.have.property('graph');
+//         expect(j).to.have.property('type');
+//         expect(j).to.have.property('oihid');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+//
+//   it('should return 404 when attempting to get the just deleted flow', (done) => {
+//     request
+//       .get(`/api/flows/${flowId1}`)
+//       .set('Authorization', `Bearer ${adminToken}`)
+//       .then((res) => {
+//         expect(res).to.have.status(404);
+//         expect(res.text).to.not.be.empty;
+//         expect(res.text).to.equal('No flows found');
+//       })
+//       .catch((err) => {
+//         throw err;
+//       })
+//       .then(done, done);
+//   });
+// });
