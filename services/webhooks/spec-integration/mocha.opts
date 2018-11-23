@@ -1,6 +1,0 @@
-spec-integration/*.spec.js
-spec-integration/**/*.spec.js
---recursive
---timeout 20000
---reporter spec
---exit

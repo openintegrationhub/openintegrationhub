@@ -1,59 +1,36 @@
 'use strict';
-const { URL } = require('url');
+const bodyParser = require('body-parser');
+const xmlparser = require('express-xml-bodyparser');
 const multiparty = require('multiparty');
 const onFinished = require('on-finished');
 const qs = require('qs');
-const typeis = require('type-is');
-const rp = require('request-promise');
 const fs = require('fs');
-const request = require('request');
+const typeis = require('type-is');
 const os = require('os');
 const path = require('path');
 const mime = require('mime-types');
 
-const init = require('./init');
+const TEXT_MIME_TYPES = [
+    'text/csv',
+    'text/yaml',
+    'text/html',
+    'text/javascript'
+];
 
-async function processAttachment(descriptor, log) {
-    const [size, contentType] = [descriptor.size, descriptor.headers['content-type']];
-    const logger = log.child(descriptor);
-    const config = init.getConfig();
-    const stewardURI = config.get('STEWARD_URI');
-    logger.info('Processing uploaded file');
-    const result = {
-        'content-type': contentType,
-        'size': size
-    };
+const RAW_MIME_TYPES = [
+    'application/pdf',
+    'application/zip',
+    'application/excel',
+    'application/x-excel',
+    'image/png',
+    'image/jpeg',
+    'image/gif',
+    'image/bmp'
+];
 
-    const stewardHostnameInPlatformCluster = (new URL(stewardURI)).hostname;
-    logger.trace('Getting a new storage URL for attachment');
-    const storage = await rp.post(`${stewardURI}/files`, {
-        json: true
-    });
-    result.url = storage.get_url;
-    return new Promise(function uploadAttachment(resolve, reject) {
-        /**
-         * A little bit magic:
-         * Problem we have 2 clusters: 1) with customer tasks 2) with platform
-         * In this clusters steward service is accessible by different domain names
-         * So in platform cluter (where webhooks services is run) we need to use domain
-         * from process.env.STEWARD_URI
-         * But customer tasks should access steward by URI, in way as steward returns by itself
-         * @see webhooks-74
-         */
-        const putUrl = new URL(storage.put_url);
-        putUrl.hostname = stewardHostnameInPlatformCluster;
-        const putUrlInPlatformCluster = putUrl.toString();
-
-        logger.trace('Uploading attachments to uri=%s', putUrlInPlatformCluster);
-        fs.createReadStream(descriptor.path).pipe(request.put({
-            'uri': putUrlInPlatformCluster,
-            'content-type': contentType,
-            'content-length': size
-        })).on('end', () => {
-            resolve(result);
-        }).on('error', (err) => {
-            reject(err);
-        });
+function setRawBody(req, res, buf) {
+    Object.assign(req, {
+        rawBody: buf
     });
 }
 
@@ -62,7 +39,7 @@ async function processAttachment(descriptor, log) {
  *
  * @type {module.exports}
  */
-function middleware(options) {
+function multipart(options) {
     options = options || {};
 
     return function multipart(req, res, next) {
@@ -141,29 +118,6 @@ function middleware(options) {
 }
 
 /**
- * This function will do the clean-up, it shouldn't throw any exceptions
- *
- * @param req
- */
-function cleanup(req, logger) {
-    try {
-        if (req.files) {
-            logger.debug(req.files, 'Cleaning-up the attachments');
-            for (const fieldName in req.files) {
-                const file = req.files[fieldName];
-                try {
-                    fs.unlinkSync(file.path);
-                } catch (err) {
-                    logger.error('Error during cleanup', err);
-                }
-            }
-        }
-    } catch (err) {
-        logger.error('Error during cleanup', err);
-    }
-}
-
-/**
  * This function will write the buffer to a file
  * and emulate the multiparty behavior
  *
@@ -191,9 +145,56 @@ function bodyToAttachment(req,res,buf) {
     };
 }
 
-exports = module.exports = {
-    middleware: middleware,
-    processAttachment: processAttachment,
-    cleanup: cleanup,
-    bodyToAttachment: bodyToAttachment
+module.exports = (app, { limit } = {}) => {
+    const verify = setRawBody;
+
+    app.use(bodyParser.json({
+        limit,
+        verify
+    }));
+
+    app.use(bodyParser.json({
+        type: 'text/plain',
+        limit,
+        verify
+    }));
+
+    app.use(bodyParser.urlencoded({
+        extended: true,
+        limit,
+        verify
+    }));
+
+    // This guy will handle all -xml content types
+    app.use(xmlparser({
+        trim: false,
+        normalize: false,
+        explicitArray: false,
+        normalizeTags: false,
+        attrkey: '_attr',
+        tagNameProcessors: [
+            (name) => name.replace(':', '-')
+        ]
+    }));
+
+    app.use(multipart({
+        maxFieldsSize: limit,
+        maxFilesSize: limit
+    }));
+
+    // Parsing of the text-based payloads
+    app.use(bodyParser.text({
+        type: TEXT_MIME_TYPES,
+        limit,
+        verify: bodyToAttachment
+    }));
+
+    // Parsing of binary mime-types
+    app.use(bodyParser.raw({
+        type: RAW_MIME_TYPES,
+        limit,
+        verify: bodyToAttachment
+    }));
+
+    return app;
 };

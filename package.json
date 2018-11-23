@@ -1,5 +1,7 @@
 {
 	"private": true,
+	"name": "openintegrationhub",
+	"version": "0.0.1",
 	"scripts": {
 		"bootstrap": "lerna bootstrap",
 		"test": "lerna run test",

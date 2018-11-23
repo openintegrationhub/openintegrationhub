@@ -1,5 +1,5 @@
 'use strict';
-const bodyParser = require('../lib/bodyParser');
+const bodyParser = require('../src/body-parser');
 const express = require('express');
 const supertest = require('supertest');
 const zlib = require('zlib');
