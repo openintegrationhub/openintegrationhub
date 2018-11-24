@@ -17,6 +17,7 @@ stages:
 jobs:
   include:
     - stage: test
+      services: mongodb
       script:  yarn test
     - stage: build
       services: docker
