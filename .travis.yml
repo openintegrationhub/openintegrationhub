@@ -1,5 +1,6 @@
 dist: trusty
 language: node_js
+services: mongodb
 node_js:
   - "8"
 cache: yarn
@@ -17,7 +18,6 @@ stages:
 jobs:
   include:
     - stage: test
-      services: mongodb
       script:  yarn test
     - stage: build
       services: docker
