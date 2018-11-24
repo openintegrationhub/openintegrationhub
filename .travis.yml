@@ -6,6 +6,7 @@ node_js:
 cache: yarn
 before_install:
   - mongo --version
+  - mongo --eval 'db.hostInfo()'
   - yarn
   - git diff --name-only $TRAVIS_COMMIT_RANGE > gitchanges.txt
   - node ./scripts/getChanges.js
