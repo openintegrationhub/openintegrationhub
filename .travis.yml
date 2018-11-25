@@ -1,6 +1,6 @@
 dist: trusty
 language: node_js
-services: mongodb
+#services: mongodb
 node_js:
   - "8"
 cache: yarn
