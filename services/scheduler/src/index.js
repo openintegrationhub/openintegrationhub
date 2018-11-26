@@ -24,7 +24,7 @@ class Scheduler {
         }
         try {
             await this._flowsDao.planNextRun(flow);
-        } catch (e) {
+        } catch (err) {
             this.getLogger().error({ err, flow }, 'Failed to plan next flow run');
         }
     }
