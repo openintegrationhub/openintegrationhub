@@ -1,7 +1,7 @@
 const logger = require('./logger');
 
 class Scheduler {
-    constructor({ config, flowsDao, schedulePublisher }) {
+    constructor(config, flowsDao, schedulePublisher) {
         this._config = config;
         this._flowsDao = flowsDao;
         this._schedulePublisher = schedulePublisher;

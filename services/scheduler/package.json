@@ -1,27 +1,26 @@
 {
-  "name": "scheduler",
-  "version": "1.0.0",
-  "description": "Standalone version of elastic.io platform",
-  "main": "src/index.js",
+  "name": "@openintegrationhub/scheduler",
+  "description": "Scheduler",
+  "version": "0.0.1-dev.0",
+  "author": "Open Integration Hub",
+  "engines": {
+    "node": "^8.0.0"
+  },
   "scripts": {
-    "lint": "eslint ./src ./app.js",
-    "test": "npm run lint",
+    "pretest": "eslint ./src app.js",
+    "test": "exit 0",
     "start": "node app.js",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/scheduler:${VERSION} -f Dockerfile ../../"
   },
-  "author": "elastic.io",
-  "license": "APL-2.0",
   "dependencies": {
     "bunyan": "1.8.12",
     "nconf": "0.10.0"
   },
   "devDependencies": {
-    "eslint": "4.5.0",
+    "eslint": "4.18.2",
     "eslint-plugin-mocha": "4.12.1",
     "eslint-plugin-node": "6.0.1"
   },
-  "engines": {
-    "node": "^8.1"
-  }
+  "main": "src/index.js"
 }

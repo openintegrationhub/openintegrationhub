@@ -23,7 +23,7 @@ const config = require('./config');
         }
     };
 
-    const scheduler = new Scheduler({ config, flowsDao, schedulePublisher });
+    const scheduler = new Scheduler(config, flowsDao, schedulePublisher);
     await scheduler.run();
 })().catch(err => {
     logger.error(err);

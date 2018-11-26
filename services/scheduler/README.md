@@ -2,7 +2,7 @@
 Schedules flows for execution.
 
 ## Default implementation is to be implemented yet
-There are 2 object that `Scheduler` instance requires: `flowsDao` and `schedulePublisher`. These object have to be provided to the constructor of `Scheduler`.
+There are 3 objects that a `Scheduler` instance requires: `config`, `flowsDao` and `schedulePublisher`. These objects have to be provided to the constructor of `Scheduler`.
 `flowsDao` is a service, where `Scheduler` finds flows for execution.
 `schedulePublisher` is a service which is supposed to publish a command for scheduling a certain flow.
 
