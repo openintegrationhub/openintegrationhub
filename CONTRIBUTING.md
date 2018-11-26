@@ -2,13 +2,6 @@
 Contributions to the Open Integration Hub including code, documentation for all types of Open Integration Hub
 contributors.
 
-The Node.js project welcomes all contributions from anyone willing to work in
-good faith with other contributors and the community. No contribution is too
-small and all contributions are valued.
-
-This guide explains the process for contributing to the Node.js project's core
-`nodejs/node` GitHub Repository and describes what to expect at each step.
-
 ## [Code of Conduct](./CODE_OF_CONDUCT.md)
 
 The Open Integration Hub project has a [**code of conduct**](https://github.com/openintegrationhub/openintegrationhub/blob/master/CODE_OF_CONDUCT.md) that follows the `Contributor Covenant Code of Conduct`.

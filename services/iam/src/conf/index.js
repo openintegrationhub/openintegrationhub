@@ -3,7 +3,7 @@ const path = require('path');
 const CONSTANTS = require('./../constants');
 const pkg = require('../../package.json');
 const serviceClient = require('../oidc/util/clients/service-client');
-const { optional } = require('../util/check-env');
+const { optional, getPassword } = require('../util/check-env');
 
 const useHttps = optional('IAM_USE_SSL', 'false') === 'true';
 const port = optional('IAM_PORT', 3099);
@@ -39,13 +39,13 @@ const config = {
     accounts: {
         admin: {
             username: optional('IAM_ACC_ADMIN_USERNAME', 'admin@example.com'),
-            password: optional('IAM_ACC_ADMIN_PASSWORD', 'password123!'),
+            password: getPassword('IAM_ACC_ADMIN_PASSWORD'),
             firstname: 'admin',
             lastname: 'admin',
         },
         serviceAccount: {
             username: optional('IAM_ACC_SERVICEACCOUNT_USERNAME', 'service-iam@example.com'),
-            password: optional('IAM_ACC_SERVICEACCOUNT_PASSWORD', 'password123!'),
+            password: getPassword('IAM_ACC_SERVICEACCOUNT_PASSWORD'),
             firstname: 'sa',
             lastname: 'sa',
         },
@@ -58,7 +58,7 @@ const config = {
         algorithm: optional('IAM_JWT_ALGORITHM', 'HS256'),
         algorithmType: optional('IAM_JWT_ALGORITHM_TYPE', CONSTANTS.JWT_ALGORITHMS.HMAC),
         expiresIn: optional('IAM_JWT_EXPIRES', '3h'),
-        jwtsecret: optional('IAM_JWT_SECRET', 'example'),
+        jwtsecret: getPassword('IAM_JWT_SECRET'),
         cookieName: optional('IAM_JWT_COOKIENAME', 'cookiename'),
     },
     oidc: {
@@ -70,7 +70,7 @@ const config = {
         cookies: {
             long: { signed: true, maxAge: parseInt(optional('IAM_OIDC_MAXAGE', (1 * 24 * 60 * 60) * 1000), 10) }, // 1 day in ms
             short: { signed: true },
-            keys: [`${optional('IAM_JWT_SECRET', 'example')}`],
+            keys: [`${getPassword('IAM_JWT_SECRET')}`],
             thirdPartyCheckUrl: `${baseurl}/static/oidc/start.html`,
         },
         discovery: {
