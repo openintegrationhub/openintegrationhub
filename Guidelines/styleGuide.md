@@ -45,3 +45,7 @@ Use fixed versions for all dependencies
 
 ### rest apis (recommendation)
 If a service exposes a rest api, consider using a swagger api(json prefered) and the swagger-ui code generation tools to generate a server stub.
+
+### http assertion (testing)
+To test http requests the easy way, supertest allows to do so on a high abstraction level while still providing drop down access to the lower level API 
+* https://github.com/visionmedia/supertest
