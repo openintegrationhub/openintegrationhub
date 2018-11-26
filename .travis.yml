@@ -26,3 +26,4 @@ jobs:
     - stage: deploy
       script:
       - node ./scripts/deploy.js
+
