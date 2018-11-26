@@ -1,7 +1,8 @@
-const logger = require('./logger');
+const defaultLogger = require('./logger');
 
 class Scheduler {
     constructor(config, flowsDao, schedulePublisher) {
+        this._logger = defaultLogger;
         this._config = config;
         this._flowsDao = flowsDao;
         this._schedulePublisher = schedulePublisher;
@@ -11,29 +12,45 @@ class Scheduler {
         const flows = await this._flowsDao.findForScheduling({
             limit: parseInt(this._config.get('POLLING_TASK_COUNT'))
         });
-        logger.info(`Found ${flows.length} flows ready for scheduling`);
+        this.getLogger().info(`Found ${flows.length} flows ready for scheduling`);
         await Promise.all(flows.map(flow => this._scheduleFlow(flow)));
     }
 
     async _scheduleFlow(flow) {
-        await this._schedulePublisher.scheduleFlow(flow);
-        await this._flowsDao.planNextRun(flow);
+        try {
+            await this._schedulePublisher.scheduleFlow(flow);
+        } catch (err) {
+            this.getLogger().error({ err, flow }, 'Failed to scheduler flow');
+        }
+        try {
+            await this._flowsDao.planNextRun(flow);
+        } catch (e) {
+            this.getLogger().error({ err, flow }, 'Failed to plan next flow run');
+        }
     }
 
     async run() {
         const pollingInterval = this._config.get('POLLING_INTERVAL');
-        logger.info('Starting flows scheduling loop');
-        logger.info(`Flows will be scheduled every ${pollingInterval} millis`);
+        this.getLogger().info('Starting flows scheduling loop');
+        this.getLogger().info(`Flows will be scheduled every ${pollingInterval} millis`);
 
         /*eslint no-constant-condition:0*/
         while (true) {
             try {
                 await this._scheduleFlows();
             } catch (e) {
-                logger.error(e);
+                this.getLogger().error(e);
             }
             await new Promise(resolve => setTimeout(() => resolve(), pollingInterval));
         }
+    }
+
+    setLogger(logger) {
+        this._logger = logger;
+    }
+
+    getLogger() {
+        return this._logger;
     }
 }
 
