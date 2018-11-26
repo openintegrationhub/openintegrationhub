@@ -1,7 +1,7 @@
 /logs/
-/icr-api/.nyc_output
-/icr-api/node_modules
-/icr-api/coverage/
-/icr-api/error.log
-/icr-api/app/error.log
+.nyc_output
+node_modules
+coverage/
+error.log
+app/error.log
 .DS_Store
