@@ -1,5 +1,5 @@
 module.exports = {
     RequestHandlers: require('./request-handlers'),
-    MessagePublisher: require('./message-publisher'),
+    MessagePublishers: require('./message-publishers'),
     HttpApi: require('./http-api')
 };
