@@ -2,6 +2,7 @@ FROM node:8.12-alpine AS base
 WORKDIR /usr/src/scheduler
 
 COPY package.json yarn.lock ./
+COPY src/scheduler src/scheduler
 COPY services/scheduler/package.json services/scheduler/app.js ./services/scheduler/
 COPY services/scheduler/config services/scheduler/config
 COPY services/scheduler/src services/scheduler/src

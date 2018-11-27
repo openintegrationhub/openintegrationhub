@@ -1,7 +1,8 @@
 {
-  "name": "@openintegrationhub/scheduler",
+  "name": "scheduler",
   "description": "Scheduler",
-  "version": "0.0.1-dev.2",
+  "private": true,
+  "version": "0.0.1",
   "author": "Open Integration Hub",
   "engines": {
     "node": "^8.0.0"
