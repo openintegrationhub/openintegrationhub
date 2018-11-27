@@ -11,35 +11,12 @@ const REQUEST_FIELDS = [
     'body'
 ];
 
-// class Message {
-//     constructor() {
-//         this._headers = {};
-//         this._body = {};
-//         this._attachments = {};
-//     }
-//
-//     setHeaders(headers) {
-//         this._headers = headers;
-//     }
-//
-//     addHeader(name, value) {
-//         this._headers[name] = value;
-//     }
-//
-//     setBody(body) {
-//         this._body = body;
-//     }
-//
-//     toJSON() {
-//         return {
-//             headers: this._headers,
-//             body: this._body,
-//             attachments: this._attachments
-//         };
-//     }
-// }
-
 class PostHandler extends BaseHandler {
+    constructor(req, res, messagePublisher) {
+        super(req, res);
+        this._messagePublisher = messagePublisher; //@todo: check type
+    }
+
     async handle() {
         await this.authorize();
         const msg = await this.createMessageFromPayload();
@@ -93,12 +70,13 @@ class PostHandler extends BaseHandler {
         return { headers };
     }
 
-    async sendMessageForExecution() {
-        //@todo: send to AMQP
-        return this.getResult();
+    async sendMessageForExecution(msg, msgOpts) {
+        const flow = this.getFlow();
+        await this._messagePublisher.publish(flow, msg, msgOpts);
+        return this.getResponse();
     }
 
-    async getResult() {
+    async getResponse() {
         return {
             status: 200,
             headers: {

@@ -1,4 +1,3 @@
-'use strict';
 const bodyParser = require('body-parser');
 const xmlparser = require('express-xml-bodyparser');
 const multiparty = require('multiparty');
