@@ -22,7 +22,7 @@ class PostHandler extends BaseHandler {
         const msg = await this.createMessageFromPayload();
         const msgOpts = await this.createMessageOptions();
         const result = await this.sendMessageForExecution(msg, msgOpts);
-        await this.sendResult(result);
+        await this.sendResponse(result);
     }
 
     async authorize() {
@@ -89,7 +89,7 @@ class PostHandler extends BaseHandler {
         }
     }
 
-    async sendResult({ status = 200, headers = {}, body = {}}) {
+    async sendResponse({ status = 200, headers = {}, body = {}}) {
         this._res.status(status).set(headers).send(body);
     }
 }

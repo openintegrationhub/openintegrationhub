@@ -125,7 +125,7 @@ function multipart(options) {
  * @param buf
  * @param encoding
  */
-function bodyToAttachment(req,res,buf) {
+function bodyToAttachment(req, res, buf) {
     // Store rawBody for HMAC calculation
     Object.assign(req, {
         rawBody: buf
@@ -133,7 +133,10 @@ function bodyToAttachment(req,res,buf) {
     const ct = req.headers['content-type'] || 'application/octet-stream';
     const ext = mime.extension(ct);
     const fpath = path.join(os.tmpdir(), Math.random().toString(35).substr(2, 30) + '.' + ext);
+
+    //@todo: cleanup tmp files
     fs.writeFileSync(fpath, buf);
+
     req.files = {
         payload: {
             originalFilename: `payload.${ext}`,
