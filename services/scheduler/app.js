@@ -1,5 +1,5 @@
 const logger = require('./src/logger');
-const Scheduler = require('.');
+const { Scheduler, FlowsDao, SchedulePublisher } = require('@openintegrationhub/scheduler');
 const config = require('./config');
 
 (async () => {
@@ -11,7 +11,7 @@ const config = require('./config');
     };
 
     const flowsDao = {
-        async findForScheduling({ limit }) { //eslint-disable-line no-unused-vars
+        async findForScheduling() { //eslint-disable-line no-unused-vars
             //@todo: implement
             //This method should return flows ready for a next execution cycle
             return [];

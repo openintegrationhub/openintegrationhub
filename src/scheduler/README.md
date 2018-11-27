@@ -1,4 +1,4 @@
-# Scheduler
+# Scheduler framework
 Schedules flows for execution.
 
 ## Default implementation is to be implemented yet

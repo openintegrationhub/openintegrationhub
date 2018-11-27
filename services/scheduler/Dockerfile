@@ -3,7 +3,6 @@ WORKDIR /usr/src/scheduler
 
 COPY package.json yarn.lock ./
 COPY services/scheduler/package.json services/scheduler/app.js ./services/scheduler/
-COPY services/scheduler/src ./services/scheduler/src
 COPY services/scheduler/config services/scheduler/config
 
 # Image for building and installing dependencies
