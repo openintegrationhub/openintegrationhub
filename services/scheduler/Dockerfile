@@ -4,6 +4,7 @@ WORKDIR /usr/src/scheduler
 COPY package.json yarn.lock ./
 COPY services/scheduler/package.json services/scheduler/app.js ./services/scheduler/
 COPY services/scheduler/config services/scheduler/config
+COPY services/scheduler/src services/scheduler/src
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package

@@ -7,7 +7,6 @@ nconf.env();
 nconf.file(path.resolve(__dirname, `${ENVIRONMENT}.json`));
 nconf.defaults(DEFAULTS);
 nconf.required([
-    'POLLING_INTERVAL',
-    'POLLING_TASK_COUNT'
+    'POLLING_INTERVAL'
 ]);
 module.exports = nconf;
