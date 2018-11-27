@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const BaseHandler = require('./base');
 const { messages } = require('elasticio-node'); //@todo: replace with OIH???
+const MessagePublishers = require('../message-publishers');
+const assert = require('assert');
 
 const REQUEST_FIELDS = [
     'headers',
@@ -14,7 +16,11 @@ const REQUEST_FIELDS = [
 class PostHandler extends BaseHandler {
     constructor(req, res, messagePublisher) {
         super(req, res);
-        this._messagePublisher = messagePublisher; //@todo: check type
+        assert(
+            messagePublisher instanceof MessagePublishers.Base,
+            'messagePublisher has to be an instance of MessagePublisher'
+        );
+        this._messagePublisher = messagePublisher;
     }
 
     async handle() {

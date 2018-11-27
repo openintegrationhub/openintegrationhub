@@ -2,8 +2,10 @@ const express = require('express');
 const asyncHandler = require('express-async-handler');
 const bodyParser = require('./body-parser');
 const logger = require('bunyan');
+const FlowsDao = require('./flows-dao');
+const assert = require('assert');
 
-const TASK_ID_PARAM = 'taskId';
+const TASK_ID_PARAM = 'id';
 const WEBHOOK_ROUTE_PATH = `/hook/(:${TASK_ID_PARAM})(/\\w*)?`;
 const REQUEST_ID_HEADER = 'x-request-id';
 // Delay in msec with error response
@@ -65,6 +67,8 @@ function errorHandler(err, req, res, next) { //eslint-disable-line no-unused-var
 
 class Api {
     constructor(config, flowsDao) {
+        assert(flowsDao instanceof FlowsDao, 'flowsDao has to be an instance of FlowsDao');
+        this._config = config;
         this._flowsDao = flowsDao;
         this._logger = logger;
 
