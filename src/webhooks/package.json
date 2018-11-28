@@ -9,7 +9,7 @@
   },
   "scripts": {
     "pretest": "eslint src spec index.js",
-    "test": "jasmine"
+    "test": "mocha --recursive spec"
   },
   "dependencies": {
     "body-parser": "1.15.2",
@@ -30,10 +30,13 @@
     "uuid": "3.3.2"
   },
   "devDependencies": {
+    "chai": "4.2.0",
     "eslint": "4.5.0",
     "eslint-plugin-mocha": "4.12.1",
     "eslint-plugin-node": "6.0.1",
     "jasmine": "3.1.0",
+    "mocha": "5.2.0",
+    "sinon": "7.1.1",
     "supertest": "3.0.0"
   },
   "main": "src/index.js"
