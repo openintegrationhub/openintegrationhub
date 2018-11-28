@@ -17,9 +17,9 @@ class Scheduler {
     async _scheduleFlows() {
         const flows = await this._flowsDao.findForScheduling();
         this.getLogger().info(`Found ${flows.length} flows ready for scheduling`);
-        await Promise.all(flows.map(flow => {
+        await Promise.all(flows.map(async flow => {
             try {
-                this._scheduleFlow(flow)
+                await this._scheduleFlow(flow);
             } catch (err) {
                 this.getLogger().error({ err, flow }, 'Failed to scheduler flow');
             }
