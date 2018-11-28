@@ -6,6 +6,10 @@ module.exports = {
         RSA: 'RSA',
     },
 
+    TOKEN_TYPES: {
+        EPHEMERAL_SERVICE_ACCOUNT: 'EPHEMERAL_SERVICE_ACCOUNT',
+    },
+
     STATUS: {
         ACTIVE: 'ACTIVE',
         PENDING: 'PENDING',

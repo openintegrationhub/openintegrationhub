@@ -16,7 +16,7 @@ const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/user`, {
 });
 
 /**
- * get token data from req.__HEIMDAL__ object
+ * get token data from req.user object
  */
 router.use(auth.validateAuthentication);
 
@@ -66,7 +66,7 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
 router.get('/me', auth.isLoggedIn, async (req, res, next) => {
 
     try {
-        const doc = await UserDAO.find({ _id: req.__HEIMDAL__.userid });
+        const doc = await UserDAO.find({ _id: req.user.userid });
         return res.send(doc && doc[0]);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });

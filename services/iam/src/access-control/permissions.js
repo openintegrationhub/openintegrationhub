@@ -10,5 +10,8 @@ module.exports = {
     'tenant:delete': 'tenant:delete',
 
     'ephemeral-token:create': 'ephemeral-token:create',
+    'ephemeral-token:delete': 'ephemeral-token:delete',
+
     'token:introspect': 'token:introspect',
 };
+
