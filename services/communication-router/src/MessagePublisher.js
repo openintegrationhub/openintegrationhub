@@ -16,7 +16,6 @@ class OIH_MessagePublisher extends MessagePublishers.Base {
         }
 
         const queue = this._queueCreator.getAmqpStepConfig(flow, step.id).messagesQueue;
-        console.log(queue);
         await this._channel.sendToQueue(
             queue,
             Buffer.from(JSON.stringify(msg)),
