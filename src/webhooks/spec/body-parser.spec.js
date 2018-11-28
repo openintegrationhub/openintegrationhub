@@ -130,171 +130,143 @@ describe('Body parser', () => {
         });
     });
 
-    // describe('Content-Type: application/xml po.xml', () => {
-    //     const contentType = 'application/xml';
-    //     const rawBody = require('fs').readFileSync('./spec/data/po.xml');
-    //     const parsedJSON = require('./data/po.json');
-    //     it('should set raw body', done => supertest(app)
-    //         .post('/')
-    //         .send(rawBody)
-    //         .set('Content-Type', contentType)
-    //         .end((err, res) => {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             const { status } = res;
-    //             if (status !== 200) {
-    //                 return done(new Error(`Bad request: ${status}`));
-    //             }
-    //             expect(req.body).toEqual(parsedJSON);
-    //             expect(req.rawBody).toEqual(rawBody.toString());
-    //             done();
-    //         }));
-    // });
-    //
-    // describe('Content-Type: application/xml soap.xml', () => {
-    //     const contentType = 'application/xml';
-    //     const rawBody = require('fs').readFileSync('./spec/data/soap.xml');
-    //     const parsedJSON = require('./data/soap.json');
-    //     it('should set raw body', done => supertest(app)
-    //         .post('/')
-    //         .send(rawBody)
-    //         .set('Content-Type', contentType)
-    //         .end((err, res) => {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             const { status } = res;
-    //             if (status !== 200) {
-    //                 return done(new Error(`Bad request: ${status}`));
-    //             }
-    //             expect(req.body).toEqual(parsedJSON);
-    //             expect(req.rawBody).toEqual(rawBody.toString());
-    //             done();
-    //         }));
-    // });
-    //
-    // describe('Content-Type: application/x-www-form-urlencoded', () => {
-    //     const body = 'test=test';
-    //     const contentType = 'application/x-www-form-urlencoded';
-    //     const rawBody = Buffer.from(body, 'utf8');
-    //
-    //     it('should set raw body and parse body', done => supertest(app)
-    //         .post('/')
-    //         .send(body)
-    //         .set('Content-Type', contentType)
-    //         .end((err, res) => {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             const { status } = res;
-    //             if (status !== 200) {
-    //                 return done(new Error(`Bad request: ${status}`));
-    //             }
-    //             expect(req.body).toEqual({
-    //                 test: 'test'
-    //             });
-    //             expect(req.rawBody.equals(rawBody)).toEqual(true);
-    //             done();
-    //         }));
-    // });
-    //
-    // describe('Content-Type: multipart/form-data', () => {
-    //     it('should set raw body', done => supertest(app)
-    //         .post('/')
-    //         .field('foo', 'value')
-    //         .field('bar', 'value1')
-    //         .field('bar', 'value2')
-    //         .field('bar', 'value3')
-    //         .attach('attachment', 'spec/data/sample.jpg')
-    //         .end((err, res) => {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             const { status } = res;
-    //             if (status !== 200) {
-    //                 return done(new Error(`Bad request: ${status}`));
-    //             }
-    //             expect(req.body).toEqual({
-    //                 foo: 'value',
-    //                 bar: ['value1', 'value2', 'value3']
-    //             });
-    //             expect(req.files).toBeDefined();
-    //             expect(req.files.attachment).toBeDefined();
-    //             expect(req.files.attachment.fieldName).toEqual('attachment');
-    //             expect(req.files.attachment.originalFilename).toEqual('sample.jpg');
-    //             expect(req.files.attachment.path).toBeDefined();
-    //             expect(req.files.attachment.size).toEqual(31164);
-    //             expect(req.files.attachment.headers['content-type']).toEqual('image/jpeg');
-    //             done();
-    //         }));
-    // });
-    //
-    // describe('Content-Type: application/json with float number containing zero after dot in json', () => {
-    //     const body = '{"float": 1.0}';
-    //     const contentType = 'application/json';
-    //     const rawBody = Buffer.from(body, 'utf8');
-    //
-    //     it('should set raw body and parse body', done => supertest(app)
-    //         .post('/')
-    //         .send(body)
-    //         .set('Content-Type', contentType)
-    //         .end((err, res) => {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             const { status } = res;
-    //             if (status !== 200) {
-    //                 return done(new Error(`Bad request: ${status}`));
-    //             }
-    //             expect(req.body).toEqual({
-    //                 float: 1
-    //             });
-    //             expect(req.rawBody.equals(rawBody)).toEqual(true);
-    //             done();
-    //         }));
-    // });
-    //
-    // describe('Content-Type: application/json deflated', () => {
-    //     const body = {
-    //         test: 'test'
-    //     };
-    //     const json = JSON.stringify(body);
-    //     const contentType = 'application/json';
-    //     const rawBody = Buffer.from(json, 'utf8');
-    //     let deflatedBody;
-    //
-    //     beforeEach(done => {
-    //         zlib.deflate(rawBody, (err, buf) => {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //
-    //             deflatedBody = buf;
-    //             done();
-    //         });
-    //     });
-    //
-    //     it('should set raw body and parse body', done => {
-    //         const request = supertest(app)
-    //             .post('/')
-    //             .set('Content-Encoding', 'deflate')
-    //             .set('Content-Type', contentType);
-    //
-    //         request.write(deflatedBody);
-    //
-    //         request.end((err, res) => {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             const { status } = res;
-    //             if (status !== 200) {
-    //                 return done(new Error(`Bad request: ${status}`));
-    //             }
-    //             expect(req.body).toEqual(body);
-    //             expect(req.rawBody.equals(rawBody)).toEqual(true);
-    //             done();
-    //         });
-    //     });
-    // });
+    describe('Content-Type: application/xml po.xml', () => {
+        const contentType = 'application/xml';
+        const rawBody = require('fs').readFileSync(__dirname + '/data/po.xml');
+        const parsedJSON = require('./data/po.json');
+
+        it('should set raw body', async () => {
+            const res = await supertest(app)
+                .post('/')
+                .send(rawBody)
+                .set('Content-Type', contentType);
+            const { status } = res;
+            expect(status).to.equal(200);
+            expect(req.body).to.deep.equal(parsedJSON);
+            expect(req.rawBody).to.deep.equal(rawBody.toString());
+        });
+    });
+
+    describe('Content-Type: application/xml soap.xml', () => {
+        const contentType = 'application/xml';
+        const rawBody = require('fs').readFileSync(__dirname + '/data/soap.xml');
+        const parsedJSON = require('./data/soap.json');
+
+        it('should set raw body', async () => {
+            const res = await supertest(app)
+                .post('/')
+                .send(rawBody)
+                .set('Content-Type', contentType);
+            const { status } = res;
+            expect(status).to.equal(200);
+            expect(req.body).to.deep.equal(parsedJSON);
+            expect(req.rawBody).to.deep.equal(rawBody.toString());
+        });
+    });
+
+    describe('Content-Type: application/x-www-form-urlencoded', () => {
+        const body = 'test=test';
+        const contentType = 'application/x-www-form-urlencoded';
+        const rawBody = Buffer.from(body, 'utf8');
+
+        it('should set raw body and parse body', async () => {
+            const res = await supertest(app)
+                .post('/')
+                .send(body)
+                .set('Content-Type', contentType);
+            const { status } = res;
+            expect(status).to.equal(200);
+            expect(req.body).to.deep.equal({
+                test: 'test'
+            });
+            expect(req.rawBody).to.deep.equal(rawBody);
+        });
+    });
+
+    describe('Content-Type: multipart/form-data', () => {
+        it('should set raw body', async () => {
+            const res = await supertest(app)
+                .post('/')
+                .field('foo', 'value')
+                .field('bar', 'value1')
+                .field('bar', 'value2')
+                .field('bar', 'value3')
+                .attach('attachment', __dirname + '/data/sample.jpg');
+
+            const { status } = res;
+            expect(status).to.equal(200);
+            expect(req.body).to.deep.equal({
+                foo: 'value',
+                bar: ['value1', 'value2', 'value3']
+            });
+            expect(req.files).not.to.be.undefined;
+            expect(req.files.attachment).not.to.be.undefined;
+            expect(req.files.attachment.fieldName).to.equal('attachment');
+            expect(req.files.attachment.originalFilename).to.equal('sample.jpg');
+            expect(req.files.attachment.path).not.to.be.undefined;
+            expect(req.files.attachment.size).to.equal(31164);
+            expect(req.files.attachment.headers['content-type']).to.equal('image/jpeg');
+        });
+    });
+
+    describe('Content-Type: application/json with float number containing zero after dot in json', () => {
+        const body = '{"float": 1.0}';
+        const contentType = 'application/json';
+        const rawBody = Buffer.from(body, 'utf8');
+
+        it('should set raw body and parse body', async () => {
+            const res = await supertest(app)
+                .post('/')
+                .send(body)
+                .set('Content-Type', contentType);
+
+            const { status } = res;
+            expect(status).to.equal(status);
+            expect(req.body).to.deep.equal({
+                float: 1
+            });
+            expect(req.rawBody).to.deep.equal(rawBody);
+        });
+    });
+
+    describe('Content-Type: application/json deflated', () => {
+        const body = {
+            test: 'test'
+        };
+        const json = JSON.stringify(body);
+        const contentType = 'application/json';
+        const rawBody = Buffer.from(json, 'utf8');
+        let deflatedBody;
+
+        beforeEach(done => {
+            zlib.deflate(rawBody, (err, buf) => {
+                if (err) {
+                    return done(err);
+                }
+
+                deflatedBody = buf;
+                done();
+            });
+        });
+
+        it('should set raw body and parse body', done => {
+            const request = supertest(app)
+                .post('/')
+                .set('Content-Encoding', 'deflate')
+                .set('Content-Type', contentType);
+
+            request.write(deflatedBody);
+
+            request.end((err, res) => {
+                if (err) {
+                    return done(err);
+                }
+                const { status } = res;
+                expect(status).to.equal(200);
+                expect(req.body).to.deep.equal(body);
+                expect(req.rawBody).to.deep.equal(rawBody);
+                done();
+            });
+        });
+    });
 });

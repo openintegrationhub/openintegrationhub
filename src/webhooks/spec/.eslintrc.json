@@ -3,7 +3,7 @@
     "env": {
         "es6": true,
         "node": true,
-        "jasmine": true
+        "mocha": true
     },
     "rules": {
         "node/no-unpublished-require": "off"

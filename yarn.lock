@@ -4817,19 +4817,6 @@ isurl@^1.0.0-alpha5:
     has-to-string-tag-x "^1.2.0"
     is-object "^1.0.1"
 
-jasmine-core@~3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.1.0.tgz#a4785e135d5df65024dfc9224953df585bd2766c"
-  integrity sha1-pHheE11d9lAk38kiSVPfWFvSdmw=
-
-jasmine@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.1.0.tgz#2bd59fd7ec6ec0e8acb64e09f45a68ed2ad1952a"
-  integrity sha1-K9Wf1+xuwOistk4J9Fpo7SrRlSo=
-  dependencies:
-    glob "^7.0.6"
-    jasmine-core "~3.1.0"
-
 jenkins-mocha@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/jenkins-mocha/-/jenkins-mocha-6.0.0.tgz#5ea81a7dbb658cfc723ffb9c121831622848427f"
