@@ -5,8 +5,8 @@ const logger = require('bunyan');
 const FlowsDao = require('./flows-dao');
 const assert = require('assert');
 
-const TASK_ID_PARAM = 'id';
-const WEBHOOK_ROUTE_PATH = `/hook/(:${TASK_ID_PARAM})(/\\w*)?`;
+const FLOW_ID_PARAM = 'id';
+const WEBHOOK_ROUTE_PATH = `/hook/(:${FLOW_ID_PARAM})(/\\w*)?`;
 const REQUEST_ID_HEADER = 'x-request-id';
 // Delay in msec with error response
 // to prevent try-and-error way to find
@@ -54,11 +54,6 @@ function ensureRequestId(req, res, next) {
     return next();
 }
 
-function addPoweredBy(req, res, next) {
-    res.header('X-Powered-By', 'elastic.io'); //@todo: remove this
-    return next();
-}
-
 function errorHandler(err, req, res, next) { //eslint-disable-line no-unused-vars
     res.status(err.statusCode || 500).json({
         error: err.message
@@ -68,12 +63,11 @@ function errorHandler(err, req, res, next) { //eslint-disable-line no-unused-var
 class Api {
     constructor(config, flowsDao) {
         assert(flowsDao instanceof FlowsDao, 'flowsDao has to be an instance of FlowsDao');
-        this._config = config;
         this._flowsDao = flowsDao;
         this._logger = logger;
 
         const app = express();
-        app.use(addPoweredBy);
+        app.disable('x-powered-by');
 
         bodyParser(app, { limit: config.get('PAYLOAD_SIZE_LIMIT') });
 
@@ -84,7 +78,7 @@ class Api {
         app.get('/', asyncHandler(this.handleRoot.bind(this)));
         app.get('/healthcheck', asyncHandler(this.handleHealthCheck.bind(this)));
 
-        app.param(TASK_ID_PARAM, this.handleFlowIdParam.bind(this));
+        app.param(FLOW_ID_PARAM, this.handleFlowIdParam.bind(this));
         app.use(WEBHOOK_ROUTE_PATH, asyncHandler(ensureRequestId));
         app.use(WEBHOOK_ROUTE_PATH, asyncHandler(this.preHandle.bind(this)));
         app.head(WEBHOOK_ROUTE_PATH, asyncHandler(this.handleHead.bind(this)));
@@ -152,13 +146,17 @@ class Api {
     }
 
     preHandle(req, res, next) {
-        //@todo: default behaviour
-        return this._preHandler(req, res, next);
+        if (this._preHandler) {
+            return this._preHandler(req, res, next);
+        }
+        return next();
     }
 
     handleErrors(err, req, res, next) {
-        //@todo: default behaviour
-        return this._errorHandler(err, req, res, next);
+        if (this._errorHandler) {
+            return this._errorHandler(err, req, res, next);
+        }
+        return next();
     }
 
     setPreHandler(handler) {

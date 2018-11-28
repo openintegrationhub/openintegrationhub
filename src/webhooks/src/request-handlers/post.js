@@ -3,6 +3,7 @@ const BaseHandler = require('./base');
 const { messages } = require('elasticio-node'); //@todo: replace with OIH???
 const MessagePublishers = require('../message-publishers');
 const assert = require('assert');
+const uuid = require('uuid/v4');
 
 const REQUEST_FIELDS = [
     'headers',
@@ -72,7 +73,10 @@ class PostHandler extends BaseHandler {
     }
 
     async createMessageOptions() {
-        const headers = { taskId: this.getFlow().id };
+        const headers = {
+            taskId: this.getFlow().id,
+            execId: uuid()
+        };
         return { headers };
     }
 

@@ -147,7 +147,7 @@ function bodyToAttachment(req, res, buf) {
     };
 }
 
-module.exports = (app, { limit } = {}) => {
+module.exports = (app, { limit = '10mb' } = {}) => {
     const verify = setRawBody;
 
     app.use(bodyParser.json({
