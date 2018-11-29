@@ -1,4 +1,4 @@
-const Post = require('../../src/request-handlers/post');
+const Get = require('../../src/request-handlers/get');
 const express = require('express');
 const superagent = require('supertest');
 const { expect } = require('chai');
@@ -6,7 +6,7 @@ const MessagePublisher = require('../../src/message-publishers/base');
 const sinon = require('sinon');
 const bodyParser = require('../../src/body-parser');
 
-describe('Post Request Handler', () => {
+describe('Get Request Handler', () => {
     let sandbox;
     let messagePublisher;
 
@@ -41,12 +41,9 @@ describe('Post Request Handler', () => {
                     taskId: flow.id
                 },
                 url: `/hooks/${flow.id}/foo/bar/baz`,
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     some: 'header'
-                },
-                body: {
-                    some: 'body'
                 },
                 originalUrl: `/hooks/${flow.id}/foo/bar/baz`,
                 query: {
@@ -67,12 +64,12 @@ describe('Post Request Handler', () => {
                     return this;
                 }
             };
-            post = new Post(req, res, messagePublisher);
+            post = new Get(req, res, messagePublisher);
         });
 
         describe('constructor', () => {
             it('should accept only MessagePublisher type', () => {
-                expect(() => new Post(req, res, {})).to.throw(
+                expect(() => new Get(req, res, {})).to.throw(
                     'messagePublisher has to be an instance of MessagePublisher'
                 );
             });
@@ -92,13 +89,13 @@ describe('Post Request Handler', () => {
                 expect(msg).to.deep.equal({
                     attachments: {},
                     body: {
-                        some: 'body'
+                        some: 'query'
                     },
                     headers: {
                         some: 'header'
                     },
                     metadata: {},
-                    method: 'POST',
+                    method: 'GET',
                     originalUrl: '/hooks/test-id/foo/bar/baz',
                     params: {},
                     pathSuffix: '/hooks/test-id/foo/bar/baz',
@@ -210,18 +207,18 @@ describe('Post Request Handler', () => {
             app = express();
             app = bodyParser(app);
 
-            app.post('/', async (req, res, next) => {
+            app.get('/', async (req, res, next) => {
                 req.id = 'my-req-id';
                 req.task = flow;
                 try {
-                    new Post(req, res, messagePublisher).handle();
+                    new Get(req, res, messagePublisher).handle();
                 } catch (e) {
                     return next(e);
                 }
             });
 
             response = await superagent(app)
-                .post('/?a=b')
+                .get('/?a=b')
                 .set('X-Custom-Header', 'Hello')
                 .send({
                     data: {
@@ -276,17 +273,13 @@ describe('Post Request Handler', () => {
                 ]);
                 expect(msg.taskId).to.equal('test-flow-id');
                 expect(msg.metadata).to.deep.equal({});
-                expect(msg.method).to.equal('POST');
+                expect(msg.method).to.equal('GET');
                 expect(msg.originalUrl).to.equal('/?a=b');
                 expect(msg.pathSuffix).to.equal('/');
                 expect(msg.url).to.equal('/?a=b');
                 expect(msg.params).to.deep.equal({});
                 expect(msg.query).to.deep.equal({a: 'b'});
-                expect(msg.body).to.deep.equal({
-                    data: {
-                        some: 'payload'
-                    }
-                });
+                expect(msg.body).to.deep.equal({a: 'b'});
                 expect(msg.id).to.be.a('string');
                 expect(msg.headers).to.have.all.keys([
                     'accept-encoding',
