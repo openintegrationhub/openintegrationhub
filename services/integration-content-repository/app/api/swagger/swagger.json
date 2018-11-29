@@ -24,7 +24,7 @@
     }
   ],
   "paths": {
-    "/api/flows": {
+    "/flows": {
       "get": {
         "x-swagger-router-controller": "flow",
         "security": [
