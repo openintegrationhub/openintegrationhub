@@ -25,6 +25,19 @@ For documenting the API Bragi uses the SwaggerUI.
 Authentification is done with the OIH-IAM. Please change the iam url inside the
 deployment.yaml.
 
+## Local installation/development
+
+### Without Docker:
+- Ensure a local MongoDB Database is running
+- Run `npm install` to install dependencies. If dependencies are still reported missing, run `npm install` within the /app/iam-utils/ folder as well
+- If using the IAM middleware/features, set the environment variables `IAM_JWT_SECRET`, `IAM_JWT_AUDIENCE`, `IAM_JWT_ISSUER`, and `IAM_BASE_URL` to match those used by your IAM instance.
+- Run `npm start`
+
+### With Docker:
+- Ensure a local MongoDB Database is running
+- Build (with `docker build . -t [IMAGENAME]`) or download the docker image
+- Run the image with `docker run --network="host" [IMAGENAME]`
+- If using the IAM middleware/features, set the environment variables to match those used by your IAM instance by using the `-e` option for `docker run`. For example: `docker run -e "IAM_JWT_SECRET=secret" -e "IAM_JWT_AUDIENCE=audience" -e "IAM_JWT_ISSUER=issuer" -e "IAM_BASE_URL=http://localhost:3099" -t --network="host" [IMAGENAME]`
 
 ## REST-API documentation
 
