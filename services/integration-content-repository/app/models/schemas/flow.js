@@ -25,14 +25,19 @@ const edge = new Schema({
   _id: false,
 });
 
+const owner = new Schema({
+  id: String,
+  type: String,
+  _id: false,
+});
+
 // Define schema
 const flow = new Schema({
   name: String,
   description: String,
   graph: { nodes: [node], edges: [edge] },
   type: String,
-  userId: String,
-  workspaceId: String,
+  owners: [owner],
   oihid: String,
   status: String,
   createdAt: String,

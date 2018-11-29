@@ -133,7 +133,8 @@ router.post('/', jsonParser, async (req, res) => {
   newFlow.oihid = id;
   newFlow.createdAt = timestamp;
   newFlow.updatedAt = timestamp;
-  newFlow.userId = credentials[0];
+  // Automatically adds the current user as an owner.
+  newFlow.owners.push({ id: credentials[0], type: 'user' });
 
   const storeFlow = new Flow(newFlow);
 

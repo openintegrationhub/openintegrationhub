@@ -134,9 +134,7 @@
         "x-swagger-router-controller": "flow",
         "security": [
           {
-            "Bearer": [
-
-            ]
+            "Bearer": []
           }
         ],
         "tags": [
@@ -448,11 +446,11 @@
               "realtime"
             ]
           },
-          "userId": {
-            "type": "string"
-          },
-          "workspaceId": {
-            "type": "string"
+          "owners":{
+            "type": "array",
+            "items":{
+              "$ref": "#/components/schemas/Owner"
+            }
           }
         }
       },
@@ -580,7 +578,24 @@
             "type": "integer"
           }
         }
-      }
+      },
+      "Owner": {
+		    "type": "object",
+		    "required": [
+			    "id",
+			    "type"
+		    ],
+		    "properties": {
+			    "id": {
+				    "type": "string",
+				    "description": "External id of the owner"
+			    },
+			    "type": {
+				    "type": "string",
+				    "description": "Type to discriminate owner's type"
+			    }
+		    }
+	    }
     }
   }
 }
