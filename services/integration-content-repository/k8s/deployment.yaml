@@ -32,6 +32,12 @@ spec:
               value: 'https://iam.openintegrationhub.com'
             - name: IAM_API_BASE_URL
               value: 'https://iam.openintegrationhub.com/api/v1/'
+          resources:
+            limits:
+              cpu: '0.1'
+              memory: 1000Mi
+            requests:
+              memory: 1000Mi
           livenessProbe:
             httpGet:
               path: /healthcheck
