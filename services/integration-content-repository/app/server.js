@@ -87,6 +87,7 @@ class Server {
     // configure routes
     /*eslint-disable */
       this.app.use('/flows', require('./api/controllers/flow'));
+      this.app.use('/healthcheck', require('./api/controllers/healthcheck'));
       /* eslint-enable */
 
     // Extremely rudimentary error handler. TODO: Make it less rudimentary
