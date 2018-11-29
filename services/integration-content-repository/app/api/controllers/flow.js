@@ -140,7 +140,7 @@ router.post('/', jsonParser, async (req, res) => {
 
   try {
     const response = await storage.addFlow(storeFlow);
-    res.status(200).send(response);
+    res.status(201).send(response);
   } catch (err) {
     res.status(500).send(err);
   }

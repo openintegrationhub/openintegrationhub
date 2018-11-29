@@ -16,7 +16,7 @@
   "tags": [
     {
       "name": "flows",
-      "description": "Operations about flows",
+      "description": "Flow management",
       "externalDocs": {
         "description": "Find out more",
         "url": "http://openintegrationhub.de"
@@ -42,7 +42,7 @@
         "operationId": "getFlows",
         "parameters": [
           {
-          "name": "page[number]",
+          "name": "page[size]",
           "in": "query",
           "description": "Amount of flows per page returned. Default is 10.",
           "required": false,
@@ -51,7 +51,7 @@
             }
           },
           {
-          "name": "page[size]",
+          "name": "page[number]",
           "in": "query",
           "description": "Number of the page to be returned. Default is 1.",
           "required": false,
@@ -141,10 +141,10 @@
           "flows"
         ],
         "summary": "Add a new flow to the repository",
-        "description": "The new Flow will automatically be associated with the current user through a \"user\"-type relationship, allowing editing and viewing by this user irrespective of tenancies.",
+        "description": "The new Flow will automatically be associated with the current user in the owners array, allowing editing and viewing by this user irrespective of tenancies.",
         "operationId": "addFlow",
         "responses": {
-          "200": {
+          "201": {
             "description": "The newly created Flow.",
             "content": {
               "application/json": {
@@ -213,7 +213,7 @@
         }
       }
     },
-    "/api/flows/{oihid}": {
+    "/flows/{oihid}": {
       "get": {
         "x-swagger-router-controller": "flow",
         "security": [
@@ -566,16 +566,20 @@
         "type": "object",
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page (1-based numbering)"
           },
           "perPage": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of objects per page"
           },
           "total": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of objects"
           },
           "totalPages": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of pages"
           }
         }
       },
