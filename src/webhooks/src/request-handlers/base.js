@@ -1,10 +1,13 @@
+const bunyan = require('bunyan');
+
 class BaseHandler {
     constructor(req, res) {
         this._req = req;
         this._res = res;
         this._isStopped = false;
         this._dateStarted = Date.now();
-        this._logger = req.logger.child({
+        const logger = req.logger || bunyan.createLogger({name: 'request-handler'});
+        this._logger = logger.child({
             requestId: this.getRequestId()
         });
 
