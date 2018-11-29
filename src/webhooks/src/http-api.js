@@ -1,7 +1,7 @@
 const express = require('express');
 const asyncHandler = require('express-async-handler');
 const bodyParser = require('./body-parser');
-const logger = require('bunyan');
+const logger = require('bunyan').createLogger({name: 'http-api'});
 const FlowsDao = require('./flows-dao');
 const assert = require('assert');
 
@@ -33,17 +33,17 @@ async function requireContentType(req, res, next) {
 }
 
 function ensureRequestId(req, res, next) {
-    const incomingId = String(req.headers[REQUEST_ID_HEADER]);
+    const incomingId = req.headers[REQUEST_ID_HEADER];
     const logger = req.logger;
 
-    if (/^[0-9a-f]{32}$/.test(incomingId)) {
+    if (incomingId) {
         req.id = incomingId;
     } else {
         const generatedRequestId = generateRequestId();
         logger.warn({
             incomingId,
             generatedRequestId
-        }, `header ${REQUEST_ID_HEADER} is invalid or not provided`);
+        }, `header ${REQUEST_ID_HEADER} is not provided`);
         req.id = generatedRequestId;
     }
 
