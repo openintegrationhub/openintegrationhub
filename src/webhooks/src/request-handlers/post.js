@@ -96,7 +96,7 @@ class PostHandler extends BaseHandler {
                 requestId: this.getRequestId(),
                 message: 'thank you'
             }
-        }
+        };
     }
 
     async sendResponse({ status = 200, headers = {}, body = {}}) {

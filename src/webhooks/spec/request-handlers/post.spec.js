@@ -8,9 +8,12 @@ const bodyParser = require('../../src/body-parser');
 
 describe('Post Request Handler', () => {
     let sandbox;
+    let messagePublisher;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
+        messagePublisher = new MessagePublisher();
+        sandbox.stub(messagePublisher, 'publish').resolves();
     });
 
     afterEach(() => {
@@ -18,31 +21,140 @@ describe('Post Request Handler', () => {
     });
 
     describe('Unit tests', () => {
+        let post;
+        let req;
+        let res;
+        let flow;
+
+        beforeEach(() => {
+            flow = {
+                id: 'test-id'
+            };
+            req = {
+                id: 'request-id',
+                task: flow,
+                on() {}
+            };
+            res = {
+                on() {},
+                status() {
+                    return this;
+                },
+                set() {
+                    return this;
+                },
+                send() {
+                    return this;
+                }
+            };
+            post = new Post(req, res, messagePublisher);
+        });
+
         describe('constructor', () => {
             it('should accept only MessagePublisher type', () => {
-                const req = {
-                    on() {}
-                };
-                const res = {
-                    on() {}
-                };
                 expect(() => new Post(req, res, {})).to.throw(
                     'messagePublisher has to be an instance of MessagePublisher'
                 );
+            });
+        });
+
+        describe('#authorize', () => {
+            it('should resolve to true', async () => {
+                expect(await post.authorize()).to.be.true;
+            });
+        });
+
+        describe('#handle', () => {
+            it('should call all methods', async () => {
+                const msg = {};
+                const opts = {};
+                const result = {};
+                sandbox.stub(post, 'authorize').resolves();
+                sandbox.stub(post, 'createMessageFromPayload').resolves(msg);
+                sandbox.stub(post, 'createMessageOptions').resolves(opts);
+                sandbox.stub(post, 'sendMessageForExecution').resolves(result);
+                sandbox.stub(post, 'sendResponse').resolves();
+
+                await post.handle();
+
+                expect(post.authorize.calledOnce).to.be.true;
+                expect(post.createMessageFromPayload.calledOnce).to.be.true;
+                expect(post.createMessageOptions.calledOnce).to.be.true;
+                expect(post.sendMessageForExecution.calledOnce).to.be.true;
+                expect(post.sendMessageForExecution.calledWithExactly(msg, opts)).to.be.true;
+                expect(post.sendResponse.calledOnce).to.be.true;
+            });
+        });
+
+        describe('#createMessageOptions', () => {
+            it('should work', async () => {
+                const opts = await post.createMessageOptions();
+                expect(opts).to.be.a('object');
+                expect(opts).to.have.all.keys(['headers']);
+                expect(opts.headers).to.have.all.keys(['taskId', 'execId']);
+                expect(opts.headers.taskId).to.equal('test-id');
+                expect(opts.headers.execId).to.be.a('string');
+                expect(opts.headers.execId.length).to.equal(32);
+            });
+        });
+
+        describe('#sendMessageForExecution', () => {
+            it('should work', async () => {
+                const msg = {};
+                const opts = {};
+
+                sandbox.stub(post, 'getResponse').resolves({status: 'ok'});
+                const result = await post.sendMessageForExecution(msg, opts);
+                expect(result).to.deep.equal({status: 'ok'});
+                expect(messagePublisher.publish.calledOnce).to.be.true;
+                expect(messagePublisher.publish.calledWithExactly(flow, msg, opts)).to.be.true;
+            });
+        });
+
+        describe('#getResponse', () => {
+            it('should work', async () => {
+                const response = await post.getResponse();
+                expect(response).to.deep.equal({
+                    status: 200,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: {
+                        requestId: 'request-id',
+                        message: 'thank you'
+                    }
+                });
+            });
+        });
+
+        describe('#sendResponse', () => {
+            it('should work', async () => {
+                sandbox.spy(res, 'status');
+                sandbox.spy(res, 'set');
+                sandbox.spy(res, 'send');
+
+                const status = 400;
+                const headers = {some: 'header'};
+                const body = {some: 'data'};
+                await post.sendResponse({status, headers, body});
+
+                expect(res.status.calledOnce).to.be.true;
+                expect(res.set.calledOnce).to.be.true;
+                expect(res.send.calledOnce).to.be.true;
+
+                expect(res.status.calledWithExactly(400)).to.be.true;
+                expect(res.set.calledWithExactly(headers)).to.be.true;
+                expect(res.send.calledWithExactly(body)).to.be.true;
             });
         });
     });
 
     describe('Superagent tests', () => {
         let app;
-        let messagePublisher;
         let response;
         let flow;
 
         beforeEach(async () => {
-            messagePublisher = new MessagePublisher();
-            sandbox.stub(messagePublisher, 'publish').resolves();
-
             flow = {
                 id: 'test-flow-id'
             };
