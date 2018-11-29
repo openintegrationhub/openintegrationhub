@@ -25,11 +25,6 @@ spec:
                   key: 'jwtsecret'
             - name: IAM_JWT_AUDIENCE
               value: 'openintegrationhub.com'
-            - name: IAM_JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: oidc-oih-iam-dev
-                  key: 'jwtsecret'
             - name: IAM_JWT_ISSUER
               value: 'https://www.example.com'
             - name: IAM_BASE_URL
