@@ -58,6 +58,15 @@ describe('HttpApi', () => {
         });
 
         describe('HEAD /hook/:id', async () => {
+            it('should respond 404', async () => {
+                flowsDao.findById.resolves(null);
+                await request.get('/hook/123?a=b')
+                    .expect({
+                        error: 'Flow 123 either does not exist or is inactive.'
+                    })
+                    .expect(404);
+            });
+
             it('should respond', async () => {
                 await request.head('/hook/123')
                     .expect({})
@@ -66,6 +75,15 @@ describe('HttpApi', () => {
         });
 
         describe('GET /hook/:id', async () => {
+            it('should respond 404', async () => {
+                flowsDao.findById.resolves(null);
+                await request.get('/hook/123?a=b')
+                    .expect({
+                        error: 'Flow 123 either does not exist or is inactive.'
+                    })
+                    .expect(404);
+            });
+
             it('should respond', async () => {
                 const res = await request.get('/hook/123?a=b')
                     .set('x-request-id', 'semen-semenich')
@@ -130,6 +148,15 @@ describe('HttpApi', () => {
         });
 
         describe('POST /hook/:id', async () => {
+            it('should respond 404', async () => {
+                flowsDao.findById.resolves(null);
+                await request.get('/hook/123?a=b')
+                    .expect({
+                        error: 'Flow 123 either does not exist or is inactive.'
+                    })
+                    .expect(404);
+            });
+
             it('should respond with error if no content type header', async () => {
                 const res = await request.post('/hook/123')
                     .set('x-request-id', 'semen-semenich');
