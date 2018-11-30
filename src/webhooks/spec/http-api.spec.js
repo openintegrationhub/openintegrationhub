@@ -238,29 +238,33 @@ describe('HttpApi', () => {
         });
     });
 
-    describe('with custom root handler', () => {
-        beforeEach(() => {
-            httpApi.setRootHandler((req, res) => res.send('custom response'));
-        });
-
+    describe('with custom handlers', () => {
         describe('GET /', () => {
             it('should respond with custom response', async () => {
+                httpApi.setRootHandler((req, res) => res.send('custom response'));
+
                 await request.get('/')
                     .expect('custom response')
                     .expect(200);
             });
         });
-    });
 
-    describe('with custom healthcheck handler', () => {
-        beforeEach(() => {
-            httpApi.setHealthcheckHandler((req, res) => res.send('custom healthcheck'));
-        });
-
-        describe('GET /', () => {
+        describe('GET /healthcheck', () => {
             it('should respond with custom response', async () => {
+                httpApi.setHealthcheckHandler((req, res) => res.send('custom healthcheck'));
+
                 await request.get('/healthcheck')
                     .expect('custom healthcheck')
+                    .expect(200);
+            });
+        });
+
+        describe('GET /hook/:id', () => {
+            it('should respond with custom response', async () => {
+                httpApi.setPreHandler((req, res) => res.send('custom response'));
+
+                await request.get('/hook/123')
+                    .expect('custom response')
                     .expect(200);
             });
         });
