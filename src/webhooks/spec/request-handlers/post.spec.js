@@ -32,7 +32,7 @@ describe('Post Request Handler', () => {
             };
             req = {
                 id: 'request-id',
-                task: flow,
+                flow,
                 route: {
                     keys: []
                 },
@@ -105,7 +105,6 @@ describe('Post Request Handler', () => {
                     query: {
                         some: 'query'
                     },
-                    taskId: 'test-id',
                     url: '/hooks/test-id/foo/bar/baz'
                 });
             });
@@ -212,7 +211,7 @@ describe('Post Request Handler', () => {
 
             app.post('/', async (req, res, next) => {
                 req.id = 'my-req-id';
-                req.task = flow;
+                req.flow = flow;
                 try {
                     new Post(req, res, messagePublisher).handle();
                 } catch (e) {
@@ -271,10 +270,8 @@ describe('Post Request Handler', () => {
                     'params',
                     'pathSuffix',
                     'query',
-                    'taskId',
                     'url'
                 ]);
-                expect(msg.taskId).to.equal('test-flow-id');
                 expect(msg.metadata).to.deep.equal({});
                 expect(msg.method).to.equal('POST');
                 expect(msg.originalUrl).to.equal('/?a=b');

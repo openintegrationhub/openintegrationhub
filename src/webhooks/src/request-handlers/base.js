@@ -36,7 +36,7 @@ class BaseHandler {
     }
 
     getFlow() {
-        return this._req.task; //@todo: rename to flow
+        return this._req.flow;
     }
 }
 

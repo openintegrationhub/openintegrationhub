@@ -112,10 +112,8 @@ describe('HttpApi', () => {
                     'params',
                     'pathSuffix',
                     'query',
-                    'taskId',
                     'url'
                 ]);
-                expect(msgArg.taskId).to.equal('test-id');
                 expect(msgArg.metadata).to.deep.equal({});
                 expect(msgArg.method).to.equal('GET');
                 expect(msgArg.originalUrl).to.equal('/hook/123?a=b');
@@ -200,10 +198,8 @@ describe('HttpApi', () => {
                     'params',
                     'pathSuffix',
                     'query',
-                    'taskId',
                     'url'
                 ]);
-                expect(msgArg.taskId).to.equal('test-id');
                 expect(msgArg.metadata).to.deep.equal({});
                 expect(msgArg.method).to.equal('POST');
                 expect(msgArg.originalUrl).to.equal('/hook/123?a=b');

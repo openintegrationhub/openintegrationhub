@@ -38,7 +38,6 @@ class PostHandler extends BaseHandler {
 
     async createMessageFromPayload() {
         const req = this._req;
-        const flow = this.getFlow();
         const log = this.getLogger();
         log.trace('Creating webhook msg from request');
 
@@ -66,7 +65,6 @@ class PostHandler extends BaseHandler {
             msg.body = req.query;
         }
 
-        msg.taskId = flow.id; //@todo: don't forget
         log.debug({ msg: msg }, 'Message to be pushed to the webhook queue');
 
         return msg;

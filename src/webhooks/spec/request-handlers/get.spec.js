@@ -32,7 +32,7 @@ describe('Get Request Handler', () => {
             };
             req = {
                 id: 'request-id',
-                task: flow,
+                flow,
                 route: {
                     keys: []
                 },
@@ -102,7 +102,6 @@ describe('Get Request Handler', () => {
                     query: {
                         some: 'query'
                     },
-                    taskId: 'test-id',
                     url: '/hooks/test-id/foo/bar/baz'
                 });
             });
@@ -209,7 +208,7 @@ describe('Get Request Handler', () => {
 
             app.get('/', async (req, res, next) => {
                 req.id = 'my-req-id';
-                req.task = flow;
+                req.flow = flow;
                 try {
                     new Get(req, res, messagePublisher).handle();
                 } catch (e) {
@@ -268,10 +267,8 @@ describe('Get Request Handler', () => {
                     'params',
                     'pathSuffix',
                     'query',
-                    'taskId',
                     'url'
                 ]);
-                expect(msg.taskId).to.equal('test-flow-id');
                 expect(msg.metadata).to.deep.equal({});
                 expect(msg.method).to.equal('GET');
                 expect(msg.originalUrl).to.equal('/?a=b');

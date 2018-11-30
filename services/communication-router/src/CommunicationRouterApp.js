@@ -26,7 +26,7 @@ class CommunicationRouterApp extends App {
         const httpApi = new HttpApi(config, flowsDao);
         httpApi.setLogger(this.getLogger());
         httpApi.setHeadHandler((req, res) => new RequestHandlers.Head(req, res).handle());
-        httpApi.setGetHandler((req, res) => new RequestHandlers.Post(req, res, messagePublisher).handle());
+        httpApi.setGetHandler((req, res) => new RequestHandlers.Get(req, res, messagePublisher).handle());
         httpApi.setPostHandler((req, res) => new RequestHandlers.Post(req, res, messagePublisher).handle());
 
         this._httpApi = httpApi;

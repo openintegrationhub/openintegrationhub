@@ -12,7 +12,7 @@ describe('Base request handler', () => {
         sandbox = sinon.createSandbox();
         req = {
             id: 'req-id',
-            task: {
+            flow: {
                 id: 'test-id'
             },
             on() {}
@@ -79,7 +79,7 @@ describe('Base request handler', () => {
     });
 
     it('#getFlow', () => {
-        expect(base.getFlow()).to.equal(req.task);
+        expect(base.getFlow()).to.equal(req.flow);
     });
 
     describe('#isStopped', () => {

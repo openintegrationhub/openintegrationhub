@@ -105,7 +105,7 @@ class Api {
                 throw err;
             }
 
-            req.task = flow;
+            req.flow = flow;
             req.logger = logger;
 
             return next();
