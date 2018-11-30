@@ -63,16 +63,65 @@ describe('HttpApi', () => {
 
     describe('GET /hook/:id', async () => {
         it('should respond', async () => {
-            const res = await request.get('/hook/123')
-                .set('x-request-id', 'semen-semenich');
+            const res = await request.get('/hook/123?a=b')
+                .set('x-request-id', 'semen-semenich')
+                .set('x-custom-header', 'Hello');
 
             expect(res.status).to.equal(200);
             expect(res.body).to.deep.equal({
                 message: 'thank you',
                 requestId: 'semen-semenich'
             });
+
             expect(messagePublisher.publish.calledOnce).to.be.true;
-            //@todo: analize message
+            const [ flowArg, msgArg, optsArg ] = messagePublisher.publish.args[0];
+            // flow
+            expect(flowArg).to.deep.equal(flow);
+            // msg
+            expect(msgArg).to.be.a('object');
+            expect(msgArg).to.to.have.all.keys([
+                'attachments',
+                'body',
+                'headers',
+                'id',
+                'metadata',
+                'method',
+                'originalUrl',
+                'params',
+                'pathSuffix',
+                'query',
+                'taskId',
+                'url'
+            ]);
+            expect(msgArg.taskId).to.equal('test-id');
+            expect(msgArg.metadata).to.deep.equal({});
+            expect(msgArg.method).to.equal('GET');
+            expect(msgArg.originalUrl).to.equal('/hook/123?a=b');
+            expect(msgArg.pathSuffix).to.equal('/hook/123');
+            expect(msgArg.url).to.equal('/hook/123?a=b');
+            expect(msgArg.params).to.deep.equal({});
+            expect(msgArg.query).to.deep.equal({a: 'b'});
+            expect(msgArg.body).to.deep.equal({
+                a: 'b'
+            });
+            expect(msgArg.id).to.be.a('string');
+            expect(msgArg.headers).to.have.all.keys([
+                'accept-encoding',
+                'connection',
+                'host',
+                'user-agent',
+                'x-custom-header',
+                'x-request-id'
+            ]);
+            expect(msgArg.headers['x-custom-header']).to.equal('Hello');
+
+            // msg options
+            expect(optsArg).to.be.a('object');
+            expect(optsArg).to.have.all.keys(['headers']);
+            expect(optsArg.headers).to.be.a('object');
+            expect(optsArg.headers).to.have.all.keys(['taskId', 'execId']);
+            expect(optsArg.headers.taskId).to.equal(flow.id);
+            expect(optsArg.headers.execId).to.be.a('string');
         });
     });
 
@@ -89,9 +138,10 @@ describe('HttpApi', () => {
         });
 
         it('should respond', async () => {
-            const res = await request.post('/hook/123')
+            const res = await request.post('/hook/123?a=b')
                 .set('x-request-id', 'semen-semenich')
                 .set('content-type', 'application/json')
+                .set('x-custom-header', 'Hello')
                 .send({
                     some: 'data'
                 });
@@ -101,7 +151,58 @@ describe('HttpApi', () => {
                 message: 'thank you',
                 requestId: 'semen-semenich'
             });
-            expect(messagePublisher.publish.called).to.be.true;
+
+            expect(messagePublisher.publish.calledOnce).to.be.true;
+            const [ flowArg, msgArg, optsArg ] = messagePublisher.publish.args[0];
+            // flow
+            expect(flowArg).to.deep.equal(flow);
+            // msg
+            expect(msgArg).to.be.a('object');
+            expect(msgArg).to.to.have.all.keys([
+                'attachments',
+                'body',
+                'headers',
+                'id',
+                'metadata',
+                'method',
+                'originalUrl',
+                'params',
+                'pathSuffix',
+                'query',
+                'taskId',
+                'url'
+            ]);
+            expect(msgArg.taskId).to.equal('test-id');
+            expect(msgArg.metadata).to.deep.equal({});
+            expect(msgArg.method).to.equal('POST');
+            expect(msgArg.originalUrl).to.equal('/hook/123?a=b');
+            expect(msgArg.pathSuffix).to.equal('/hook/123');
+            expect(msgArg.url).to.equal('/hook/123?a=b');
+            expect(msgArg.params).to.deep.equal({});
+            expect(msgArg.query).to.deep.equal({a: 'b'});
+            expect(msgArg.body).to.deep.equal({
+                some: 'data'
+            });
+            expect(msgArg.id).to.be.a('string');
+            expect(msgArg.headers).to.have.all.keys([
+                'accept-encoding',
+                'connection',
+                'content-length',
+                'content-type',
+                'host',
+                'user-agent',
+                'x-custom-header',
+                'x-request-id'
+            ]);
+            expect(msgArg.headers['x-custom-header']).to.equal('Hello');
+
+            // msg options
+            expect(optsArg).to.be.a('object');
+            expect(optsArg).to.have.all.keys(['headers']);
+            expect(optsArg.headers).to.be.a('object');
+            expect(optsArg.headers).to.have.all.keys(['taskId', 'execId']);
+            expect(optsArg.headers.taskId).to.equal(flow.id);
+            expect(optsArg.headers.execId).to.be.a('string');
         });
     });
 });
