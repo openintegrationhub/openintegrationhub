@@ -163,6 +163,10 @@ class Api {
         this._preHandler = handler;
     }
 
+    setHealthcheckHandler(handler) {
+        this._healthCheckHandler = handler;
+    }
+
     setErrorHandler(handler) {
         this._errorHandler = handler;
     }
