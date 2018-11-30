@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Subscription xmlns="http://schema.broadsoft.com/xsi">
+    <targetIdType>System</targetIdType>
+    <event> Advanced Call </event>
+    <applicationId>elastic.io</applicationId>
+</Subscription>

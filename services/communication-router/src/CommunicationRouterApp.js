@@ -5,7 +5,10 @@ const {
     K8sService,
     AMQPService
 } = Lib;
-const HttpApi = require('./HttpApi.js');
+
+const FlowsDao = require('./FlowsDao');
+const MessagePublisher = require('./MessagePublisher');
+const { RequestHandlers, HttpApi } = require('@openintegrationhub/webhooks');
 
 class CommunicationRouterApp extends App {
     async _run () {
@@ -15,7 +18,18 @@ class CommunicationRouterApp extends App {
         await this._k8s.start();
         this._channel = await this._amqp.getConnection().createChannel();
         this._queueCreator = new QueueCreator(this._channel);
-        this._httpApi = new HttpApi(this);
+
+        const config = this.getConfig();
+        const flowsDao = new FlowsDao(this.getK8s().getCRDClient());
+        const messagePublisher = new MessagePublisher(this._queueCreator, this._channel);
+
+        const httpApi = new HttpApi(config, flowsDao);
+        httpApi.setLogger(this.getLogger());
+        httpApi.setHeadHandler((req, res) => new RequestHandlers.Head(req, res).handle());
+        httpApi.setGetHandler((req, res) => new RequestHandlers.Get(req, res, messagePublisher).handle());
+        httpApi.setPostHandler((req, res) => new RequestHandlers.Post(req, res, messagePublisher).handle());
+
+        this._httpApi = httpApi;
         this._httpApi.listen(this.getConfig().get('LISTEN_PORT'));
     }
 
@@ -35,4 +49,5 @@ class CommunicationRouterApp extends App {
         return 'communication-router';
     }
 }
+
 module.exports = CommunicationRouterApp;
