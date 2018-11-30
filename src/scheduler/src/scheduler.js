@@ -32,7 +32,7 @@ class Scheduler {
     }
 
     async run() {
-        const pollingInterval = this._config.get('POLLING_INTERVAL');
+        const pollingInterval = this._config.get('POLLING_INTERVAL') || 5000;
         this.getLogger().info('Starting flows scheduling loop');
         this.getLogger().info(`Flows will be scheduled every ${pollingInterval} millis`);
 
