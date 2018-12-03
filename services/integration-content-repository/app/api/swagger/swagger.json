@@ -244,14 +244,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The deleted Flow",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Flow"
-                }
-              }
-            }
+            "description": "Flow was successfully deleted"
           },
           "400": {
             "description": "Invalid ID supplied"

@@ -282,7 +282,7 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
   if (!response) {
     res.status(404).send('Flow not found');
   } else {
-    res.json(response);
+    res.status(200).send('Flow was successfully deleted');
   }
 });
 
