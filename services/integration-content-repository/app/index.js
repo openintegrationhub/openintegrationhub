@@ -9,7 +9,9 @@ const mainServer = new Server();
 
 (async () => {
   try {
-    await mainServer.setup(mongoose);
+    if (!module.parent) {
+      await mainServer.setup(mongoose);
+    }
     mainServer.setupRoutes();
     mainServer.setupSwagger();
 
