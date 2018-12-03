@@ -24,17 +24,21 @@
     "uniqid": "^5.0.3"
   },
   "devDependencies": {
-    "jest": "^23.6.0",
-    "mongodb": "^3.0.10",
-    "mongod": "^2.0.0",
-    "supertest": "^3.1.0",
+    "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^22.1.0",
     "eslint-plugin-json": "^1.2.1",
     "eslint-plugin-mocha": "^5.2.0",
-    "eslint-plugin-jest": "^22.1.0",
+    "fs": "0.0.1-security",
+    "jest": "^23.6.0",
+    "jest-environment-node": "^23.4.0",
+    "mongod": "^2.0.0",
+    "mongodb": "^3.0.10",
+    "mongodb-memory-server": "^2.7.4",
     "nyc": "^12.0.2",
-    "eslint": "^5.3.0"
+    "path": "^0.12.7",
+    "supertest": "^3.1.0"
   },
   "nyc": {
     "exclude": [

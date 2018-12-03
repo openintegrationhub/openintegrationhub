@@ -5,3 +5,4 @@ coverage/
 error.log
 app/error.log
 .DS_Store
+/test/utils/globalConfig.json
