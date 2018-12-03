@@ -169,48 +169,6 @@
           "description": "A Flow object to be added to the repository.",
           "required": true
         }
-      },
-      "put": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "flows"
-        ],
-        "summary": "Update an existing flow",
-        "description": "The oihid is used to match the existing Flow that will be updated. Note that missing fields in the input will overwrite existing fields with null. The current version and version history is updated automatically.",
-        "operationId": "updateFlow",
-        "responses": {
-          "200": {
-            "description": "The updated Flow.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Flow"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Flow not found"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MutableFlow"
-              }
-            }
-          },
-          "description": "Flow object containing the desired new values.",
-          "required": true
-        }
       }
     },
     "/flows/{oihid}": {
@@ -301,6 +259,48 @@
           "404": {
             "description": "No Flow with this oihid was found."
           }
+        }
+      },
+      "patch": {
+        "x-swagger-router-controller": "flow",
+        "security": [
+          {
+            "Bearer": [
+
+            ]
+          }
+        ],
+        "tags": [
+          "flows"
+        ],
+        "summary": "Update an existing flow",
+        "description": "The oihid is used to match the existing Flow that will be updated. Note that missing fields in the input will overwrite existing fields with null. The current version and version history is updated automatically.",
+        "operationId": "updateFlow",
+        "responses": {
+          "200": {
+            "description": "The updated Flow.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Flow"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Flow not found"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MutableFlow"
+              }
+            }
+          },
+          "description": "Flow object containing the desired new values.",
+          "required": true
         }
       }
     },

@@ -96,7 +96,7 @@ describe('/api-docs/ - Documentation', () => {
 describe('/api/ - Login Security', () => {
   it('should not be able to get flows without login', (done) => {
     request
-      .get('/api/flows/')
+      .get('/flows/')
       .then((res) => {
         expect(res).to.have.status(401);
         expect(res.text).to.not.be.empty;
@@ -110,7 +110,7 @@ describe('/api/ - Login Security', () => {
 
   it('should not be able to get specific flows without login', (done) => {
     request
-      .get('/api/flows/TestOIHID')
+      .get('/flows/TestOIHID')
       .then((res) => {
         expect(res).to.have.status(401);
         expect(res.text).to.not.be.empty;
@@ -124,7 +124,7 @@ describe('/api/ - Login Security', () => {
 
   it('should not be able to add flows without login', (done) => {
     request
-      .post('/api/flows/')
+      .post('/flows/')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
@@ -147,62 +147,62 @@ describe('/api/ - Login Security', () => {
       .then(done, done);
   });
 
-  it('should not be able to get specific nodes without login', (done) => {
-    request
-      .get('/api/flows/node/TestOIHID/n1')
-      .set('accept', 'application/json')
-      .then((res) => {
-        expect(res).to.have.status(401);
-        expect(res.text).to.not.be.empty;
-        expect(res.text).to.contain('Missing authorization header.');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should not be able to add nodes without login', (done) => {
-    request
-      .post('/api/flows/node/TestOIHID/n1')
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .send({
-        command: 'cmd1', name: 'node 1', description: 'desc1', fields_interval: 'minute',
-      })
-      .then((res) => {
-        expect(res).to.have.status(401);
-        expect(res.text).to.not.be.empty;
-        expect(res.text).to.contain('Missing authorization header.');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should not be able to add edges without login', (done) => {
-    request
-      .post('/api/flows/edge/TestOIHID/e1')
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .send({
-        mapper_type: 'nixmapper', condition: 'conditional', mapper_to: 'b', mapper_subject: 'subj', mapper_textbody: 'txt', source: 'a', target: 'b',
-      })
-      .then((res) => {
-        expect(res).to.have.status(401);
-        expect(res.text).to.not.be.empty;
-        expect(res.text).to.contain('Missing authorization header.');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
+  // it('should not be able to get specific nodes without login', (done) => {
+  //   request
+  //     .get('/api/flows/node/TestOIHID/n1')
+  //     .set('accept', 'application/json')
+  //     .then((res) => {
+  //       expect(res).to.have.status(401);
+  //       expect(res.text).to.not.be.empty;
+  //       expect(res.text).to.contain('Missing authorization header.');
+  //     })
+  //     .catch((err) => {
+  //       throw err;
+  //     })
+  //     .then(done, done);
+  // });
+  //
+  // it('should not be able to add nodes without login', (done) => {
+  //   request
+  //     .post('/api/flows/node/TestOIHID/n1')
+  //     .set('accept', 'application/json')
+  //     .set('Content-Type', 'application/x-www-form-urlencoded')
+  //     .send({
+  //       command: 'cmd1', name: 'node 1', description: 'desc1', fields_interval: 'minute',
+  //     })
+  //     .then((res) => {
+  //       expect(res).to.have.status(401);
+  //       expect(res.text).to.not.be.empty;
+  //       expect(res.text).to.contain('Missing authorization header.');
+  //     })
+  //     .catch((err) => {
+  //       throw err;
+  //     })
+  //     .then(done, done);
+  // });
+  //
+  // it('should not be able to add edges without login', (done) => {
+  //   request
+  //     .post('/api/flows/edge/TestOIHID/e1')
+  //     .set('accept', 'application/json')
+  //     .set('Content-Type', 'application/x-www-form-urlencoded')
+  //     .send({
+  //       mapper_type: 'nixmapper', condition: 'conditional', mapper_to: 'b', mapper_subject: 'subj', mapper_textbody: 'txt', source: 'a', target: 'b',
+  //     })
+  //     .then((res) => {
+  //       expect(res).to.have.status(401);
+  //       expect(res.text).to.not.be.empty;
+  //       expect(res.text).to.contain('Missing authorization header.');
+  //     })
+  //     .catch((err) => {
+  //       throw err;
+  //     })
+  //     .then(done, done);
+  // });
 
   it('should not be able to delete flows without login', (done) => {
     request
-      .delete('/api/flows/TestOIHID')
+      .delete('/flows/TestOIHID')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .then((res) => {
@@ -216,35 +216,35 @@ describe('/api/ - Login Security', () => {
       .then(done, done);
   });
 
-  it('should not be able to delete nodes without login', (done) => {
-    request
-      .delete('/api/flows/node/TestOIHID/n1')
-      .set('accept', 'application/json')
-      .then((res) => {
-        expect(res).to.have.status(401);
-        expect(res.text).to.not.be.empty;
-        expect(res.text).to.contain('Missing authorization header.');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
-
-  it('should not be able to delete edge without login', (done) => {
-    request
-      .delete('/api/flows/edge/TestOIHID/e1')
-      .set('accept', 'application/json')
-      .then((res) => {
-        expect(res).to.have.status(401);
-        expect(res.text).to.not.be.empty;
-        expect(res.text).to.contain('Missing authorization header.');
-      })
-      .catch((err) => {
-        throw err;
-      })
-      .then(done, done);
-  });
+  // it('should not be able to delete nodes without login', (done) => {
+  //   request
+  //     .delete('/api/flows/node/TestOIHID/n1')
+  //     .set('accept', 'application/json')
+  //     .then((res) => {
+  //       expect(res).to.have.status(401);
+  //       expect(res.text).to.not.be.empty;
+  //       expect(res.text).to.contain('Missing authorization header.');
+  //     })
+  //     .catch((err) => {
+  //       throw err;
+  //     })
+  //     .then(done, done);
+  // });
+  //
+  // it('should not be able to delete edge without login', (done) => {
+  //   request
+  //     .delete('/api/flows/edge/TestOIHID/e1')
+  //     .set('accept', 'application/json')
+  //     .then((res) => {
+  //       expect(res).to.have.status(401);
+  //       expect(res.text).to.not.be.empty;
+  //       expect(res.text).to.contain('Missing authorization header.');
+  //     })
+  //     .catch((err) => {
+  //       throw err;
+  //     })
+  //     .then(done, done);
+  // });
 });
 //
 // describe('/api/ - Flow Operations', () => {
