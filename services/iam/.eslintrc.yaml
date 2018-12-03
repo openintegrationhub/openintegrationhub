@@ -2,7 +2,7 @@
 plugins:
 - jasmine
 - jest
-extends: 
+extends:
 - airbnb-base
 env:
   jest: true
@@ -28,7 +28,6 @@ rules:
   - 2
   - except-parens
   no-console: 0
-  no-plusplus: 0
   no-constant-condition: 2
   no-control-regex: 2
   no-debugger: 1
@@ -201,3 +200,8 @@ rules:
   - markers:
     - ","
   wrap-regex: 0
+overrides:
+- files:
+  - "*.js"
+  rules:
+    prefer-destructuring: "off"

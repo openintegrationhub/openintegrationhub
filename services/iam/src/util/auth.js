@@ -1,7 +1,7 @@
 const Logger = require('@basaas/node-logger');
 const passport = require('passport');
-const jwtUtils = require('./../util/jwt');
 const rp = require('request-promise');
+const jwtUtils = require('./../util/jwt');
 
 const basic = require('../oidc/helper/basic-auth-header');
 const CONSTANTS = require('../constants');
@@ -13,14 +13,13 @@ const log = Logger.getLogger(`${conf.general.loggingNameSpace}/auth`, {
     level: 'debug',
 });
 
-const isAdminRole = role => 
-    role === CONSTANTS.ROLES.ADMIN;
+const isAdminRole = role => role === CONSTANTS.ROLES.ADMIN;
 
 const allRequiredElemsExistsInArray = (array, requiredElems) => {
 
     let hit = 0;
 
-    for (let i = 0; i < requiredElems.length; i++) {
+    for (let i = 0; i < requiredElems.length; i += 1) {
         if (array.indexOf(requiredElems[i]) >= 0) {
             hit += 1;
         }
@@ -35,9 +34,9 @@ module.exports = {
         const { role, permissions } = req.user;
 
         if (role === CONSTANTS.ROLES.ADMIN
-                || (role === CONSTANTS.ROLES.SERVICE_ACCOUNT &&
-                    permissions.length &&
-                    allRequiredElemsExistsInArray(permissions, requiredPermissions)
+                || (role === CONSTANTS.ROLES.SERVICE_ACCOUNT
+                    && permissions.length
+                    && allRequiredElemsExistsInArray(permissions, requiredPermissions)
                 )) {
             return next();
         } else {

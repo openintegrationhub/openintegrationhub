@@ -1,8 +1,8 @@
 const Logger = require('@basaas/node-logger');
-const conf = require('../../conf');
 const fs = require('fs');
 const path = require('path');
 const { createKeyStore } = require('oidc-provider');
+const conf = require('../../conf');
 
 const keystore = createKeyStore();
 

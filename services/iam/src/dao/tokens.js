@@ -1,6 +1,6 @@
+const Logger = require('@basaas/node-logger');
 const Token = require('./../models/token');
 const CONF = require('./../conf');
-const Logger = require('@basaas/node-logger');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/tokenDao`);
 const auditLog = Logger.getAuditLogger('token');

@@ -1,6 +1,6 @@
-const conf = require('../../conf');
 const { MongoClient } = require('mongodb'); // eslint-disable-line import/no-unresolved
 const { snakeCase } = require('lodash');
+const conf = require('../../conf');
 
 let DB;
 
