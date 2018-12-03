@@ -24,9 +24,21 @@ const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/token`, {
 router.use(auth.validateAuthentication);
 
 /**
- * Create a new token
+ * Get all Tokens
+ */
+router.get('/', auth.isAdmin, async (req, res, next) => {
+    try {
+        const docs = await TokenDAO.find({});
+        return res.send(docs);
+    } catch (err) {
+        return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
+    }
+});
+
+/**
+ * Create a new ephemeral token
  * */
-router.post('/ephemeral-token', jsonParser, auth.hasPermissions([PERMISSIONS['ephemeral-token:create']]), async (req, res, next) => {
+router.post('/ephemeral', jsonParser, auth.hasPermissions([PERMISSIONS['token.ephemeral.create']]), async (req, res, next) => {
 
     const account = await AccountDAO.findOne({ _id: req.body.accountId, status: CONSTANTS.STATUS.ACTIVE });
     const tokenLifespan = req.body.expiresIn || CONF.jwt.expiresIn;
@@ -36,10 +48,14 @@ router.post('/ephemeral-token', jsonParser, auth.hasPermissions([PERMISSIONS['ep
         return res.status(403).send({ message: CONSTANTS.ERROR_CODES.FORBIDDEN });
     }
 
+    if (!req.body.consumerServiceId) {
+        return res.status(400).send({ message: 'Missing consumerServiceId' });
+    }
+
     const token = await jwtUtils.basic.sign({
         ...jwtUtils.getJwtPayload(account),
         type: CONSTANTS.TOKEN_TYPES.EPHEMERAL_SERVICE_ACCOUNT,
-        purpose: 'ephemeral-token',
+        purpose: 'token.ephemeral',
         consumerServiceId: req.body.consumerServiceId,
     }, {
         expiresIn: tokenLifespan,
@@ -62,31 +78,20 @@ router.post('/ephemeral-token', jsonParser, auth.hasPermissions([PERMISSIONS['ep
 /**
  * Get all Tokens
  */
-router.post('/introspect', jsonParser, auth.hasPermissions([PERMISSIONS['token:introspect']]), async (req, res, next) => {
+router.post('/introspect', jsonParser, auth.hasPermissions([PERMISSIONS['token.introspect']]), async (req, res, next) => {
     try {
         const payload = await jwtUtils.basic.verify(req.body.token);
 
-        // const token = await TokenDAO.findOne({ tokenId: payload.tokenId });
-        // const accountData = await AccountDAO.findOne({ _id: token.inquirer });
-        return res.send(payload);
-    } catch (err) {
-        return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
-    }
-});
-/**
- * Get all Tokens
- */
-router.get('/', auth.isAdmin, async (req, res, next) => {
-    try {
-        const docs = await TokenDAO.find({});
-        return res.send(docs);
+        const token = await TokenDAO.findOne({ tokenId: payload.tokenId });
+        const accountData = await AccountDAO.findOne({ _id: token.inquirer });
+        return res.send(accountData);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
     }
 });
 
 /**
- * Get my token & refresh my token
+ * Get & refresh my token
  */
 router.get('/refresh', async (req, res, next) => {
 
@@ -127,7 +132,7 @@ router.get('/:id', auth.isAdmin, async (req, res, next) => {
 /**
  * Delete a token
  */
-router.delete('/:id', auth.hasPermissions([PERMISSIONS['ephemeral-token:delete']]), async (req, res, next) => {
+router.delete('/:id', auth.hasPermissions([PERMISSIONS['token.ephemeral.delete']]), async (req, res, next) => {
     try {
         await TokenDAO.delete({ id: req.params.id });
         return res.sendStatus(200);

@@ -381,7 +381,7 @@ describe('routes', () => {
             status: CONSTANTS.STATUS.ACTIVE,
             password: 'testpwd',
             role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
-            permissions: [PERMISSIONS['ephemeral-token:create']],
+            permissions: [PERMISSIONS['token.ephemeral.create']],
         };
 
         const testUserData = {
@@ -421,7 +421,7 @@ describe('routes', () => {
             const serviceAccountToken = `Bearer ${response.body.token}`;
 
             /* Service account can create a ephemeral token for the given user id */
-            const portTokenResponse = await request.post('/api/v1/tokens/ephemeral-token')
+            const portTokenResponse = await request.post('/api/v1/tokens/ephemeral')
                 .send({
                     accountId: userId,
                     expiresIn: '1h',
@@ -451,7 +451,7 @@ describe('routes', () => {
             // const serviceAccountToken = `Bearer ${response.body.token}`;
             //
             // /* Service account can create a ephemeral token for the given user id */
-            // const portTokenResponse = await request.post('/api/v1/tokens/ephemeral-token')
+            // const portTokenResponse = await request.post('/api/v1/tokens/ephemeral')
             //     .send({
             //         accountId: userId,
             //         expiresIn: '1h',
