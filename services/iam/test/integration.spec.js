@@ -425,6 +425,7 @@ describe('routes', () => {
                 .send({
                     accountId: userId,
                     expiresIn: '1h',
+                    consumerServiceId: 'someId',
                 })
                 .set('Authorization', serviceAccountToken)
                 .set('Accept', /application\/json/)
