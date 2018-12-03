@@ -17,7 +17,7 @@ const getFlows = async ( // eslint-disable-line
 ) => new Promise(async (resolve) => {
   const qry = { $and: [] };
 
-  if (credentials !== false) {
+  if (credentials !== 'admin') {
     qry.$and.push({ 'owners.id': { $in: credentials } });
   }
 
@@ -56,6 +56,9 @@ const getFlows = async ( // eslint-disable-line
   // count results
   const count = await Flow.find(qry).estimatedDocumentCount();
 
+  if (qry.$and.length === 0) {
+    delete qry.$and;
+  }
   // add offset and limit to query and execute
   Flow.find(qry).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
     .lean()

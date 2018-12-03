@@ -108,7 +108,7 @@ router.get('/', jsonParser, async (req, res) => {
   }
 
   if (res.locals.admin) {
-    response = await storage.getFlows(false, pageSize, pageNumber, searchString, filters, sortField, sortOrder); // eslint-disable-line
+    response = await storage.getFlows('admin', pageSize, pageNumber, searchString, filters, sortField, sortOrder); // eslint-disable-line
   } else {
     response = await storage.getFlows(credentials, pageSize, pageNumber, searchString, filters, sortField, sortOrder); // eslint-disable-line
   }
@@ -135,6 +135,9 @@ router.post('/', jsonParser, async (req, res) => {
   newFlow.createdAt = timestamp;
   newFlow.updatedAt = timestamp;
   // Automatically adds the current user as an owner.
+  if (!newFlow.owners) {
+    newFlow.owners = [];
+  }
   newFlow.owners.push({ id: credentials[0], type: 'user' });
 
   const storeFlow = new Flow(newFlow);
