@@ -6,11 +6,13 @@ module.exports = {
   "env": {
       es6: true,
       node: true,
-      mocha: true
+      mocha: true,
+      "jest/globals": true
   },
   "plugins": [
       "json",
-      "mocha"
+      "mocha",
+      "jest"
   ],
   "parserOptions": {
       "ecmaVersion": 8,
