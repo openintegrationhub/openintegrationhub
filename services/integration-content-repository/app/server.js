@@ -19,13 +19,13 @@ class Server {
     this.app.disable('x-powered-by');
 
     // This middleware insures we always have security headers
-    this.app.use(async (req, res, next) => {
-      res.append('Strict-Transport-Security', 'max-age=3600');
-      res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-      res.append('Content-Security-Policy', "default-src 'self'");
-      res.append('Content-Security-Policy', "frame-ancestors 'none'");
-      next();
-    });
+    // this.app.use(async (req, res, next) => {
+    //   res.append('Strict-Transport-Security', 'max-age=3600');
+    //   res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    //   res.append('Content-Security-Policy', "default-src 'self'");
+    //   res.append('Content-Security-Policy', "frame-ancestors 'none'");
+    //   next();
+    // });
   }
 
   setupRoutes() {
