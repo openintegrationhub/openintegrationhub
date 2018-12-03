@@ -19,7 +19,7 @@ spec:
           env:
             - name: MONGODB_URL
               value: 'mongodb://icrdb.openintegrationhub.com'
-            - name: IAM_JWT_SECRET
+            - name: IAM_JWT_HMAC_SECRET
               valueFrom:
                 secretKeyRef:
                   name: oidc-oih-iam-dev
