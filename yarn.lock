@@ -177,28 +177,6 @@
     request "2.87.0"
     request-promise "^4.2.2"
 
-"@openintegrationhub/webhooks@0.0.1-dev.5":
-  version "0.0.1-dev.5"
-  resolved "https://registry.yarnpkg.com/@openintegrationhub/webhooks/-/webhooks-0.0.1-dev.5.tgz#5e929ee23b307227b3447d9906448c19857c0aa8"
-  integrity sha512-DVA8WUtW5RtJkFcjDmzm9OC6kt8dpn4ozfL7Om+3MBUoZy1yXBoZFf/7Bq+VyqOddEuk6nm5tcRtt4ptT/VI1Q==
-  dependencies:
-    body-parser "1.15.2"
-    bunyan "1.8.12"
-    elasticio-node "0.0.7"
-    express "4.16.2"
-    express-async-handler "1.1.4"
-    express-xml-bodyparser "0.3.0"
-    lodash "4.10.0"
-    mime-types "2.1.13"
-    multiparty "4.1.2"
-    on-finished "2.3.0"
-    qs "6.3.0"
-    request "2.74.0"
-    request-promise "3.0.0"
-    request-promise-native "1.0.5"
-    type-is "1.6.14"
-    uuid "^3.3.2"
-
 "@sindresorhus/is@^0.7.0":
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
