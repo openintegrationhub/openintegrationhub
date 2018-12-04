@@ -1,5 +1,6 @@
 /* eslint no-underscore-dangle: "off" */
 /* eslint max-len: "off" */
+/* eslint func-names: "off" */
 // const path = require('path');
 // const _ = require('lodash');
 const express = require('express');
@@ -17,6 +18,21 @@ const log = require('../../config/logger'); // eslint-disable-line
 
 // require our MongoDB-Model
 const Flow = require('../../models/flow');
+
+// Removes MongoDB-specific fields from the final displayed object
+const cleanAttributes = function (data) {
+  const cleanData = data;
+  if (Array.isArray(cleanData)) {
+    for (let i = 0; i < cleanData.length; i += 1) {
+      delete cleanData[i]._id;
+      delete cleanData[i].__v;
+    }
+  } else {
+    delete cleanData._id;
+    delete cleanData.__v;
+  }
+  return cleanData;
+};
 
 // Gets all flows
 router.get('/', jsonParser, async (req, res) => {
@@ -96,7 +112,7 @@ router.get('/', jsonParser, async (req, res) => {
     if (!(sortField in sortableFields)) error = true;
 
     if (error) {
-      res.status(404).send('Invalid sort parameter');
+      res.status(400).send('Invalid sort parameter');
       return;
     }
   }
@@ -116,6 +132,7 @@ router.get('/', jsonParser, async (req, res) => {
   if (response.data.length === 0) {
     res.status(404).send('No flows found');
   } else {
+    response.data = cleanAttributes(response.data);
     response.meta.page = pageNumber;
     response.meta.perPage = pageSize;
     response.meta.totalPages = response.meta.total / pageSize;
@@ -144,7 +161,8 @@ router.post('/', jsonParser, async (req, res) => {
 
   try {
     const response = await storage.addFlow(storeFlow);
-    res.status(201).send(response);
+    const cleanResponse = cleanAttributes(response);
+    res.status(201).send(cleanResponse);
   } catch (err) {
     res.status(500).send(err);
   }
@@ -172,13 +190,51 @@ router.patch('/:oihid', jsonParser, async (req, res) => {
       if (!response) {
         res.status(404).send('Flow not found');
       } else {
-        res.status(200).send(response);
+        const cleanResponse = cleanAttributes(response);
+        res.status(200).send(cleanResponse);
       }
     } catch (err) {
       res.status(500).send(err);
     }
   }
 });
+
+// Gets a flow by oihid
+router.get('/:oihid', jsonParser, async (req, res) => {
+  const flowId = req.params.oihid;
+  const credentials = res.locals.credentials[1];
+  let response;
+
+  if (res.locals.admin) {
+    response = await storage.getAnyFlowById(flowId);
+  } else {
+    response = await storage.getFlowById(flowId, credentials);
+  }
+
+  if (!response) {
+    res.status(404).send('No flows found');
+  } else {
+    const cleanResponse = cleanAttributes(response);
+    res.status(200).send(cleanResponse);
+  }
+});
+
+
+// Deletes a flow
+router.delete('/:oihid', jsonParser, async (req, res) => {
+  const flowId = req.params.oihid;
+  const credentials = res.locals.credentials[0];
+
+  const response = await storage.deleteFlow(flowId, credentials);
+
+  if (!response) {
+    res.status(404).send('Flow not found');
+  } else {
+    res.status(200).send('Flow was successfully deleted');
+  }
+});
+
+// The following functions are currently deactivated, but may become relevant again in the future
 
 // // Gets flows by user
 // router.get('/user/:relationid', jsonParser, async (req, res) => {
@@ -216,24 +272,6 @@ router.patch('/:oihid', jsonParser, async (req, res) => {
 //   }
 // });
 
-// Gets a flow by oihid
-router.get('/:oihid', jsonParser, async (req, res) => {
-  const flowId = req.params.oihid;
-  const credentials = res.locals.credentials[1];
-  let response;
-
-  if (res.locals.admin) {
-    response = await storage.getAnyFlowById(flowId);
-  } else {
-    response = await storage.getFlowById(flowId, credentials);
-  }
-
-  if (!response) {
-    res.status(404).send('No flows found');
-  } else {
-    res.json(response);
-  }
-});
 
 // Updates a flow wih form data
 // router.post('/:oihid', urlParser, async (req, res) => {
@@ -274,20 +312,6 @@ router.get('/:oihid', jsonParser, async (req, res) => {
 //     res.json(response);
 //   }
 // });
-
-// Deletes a flow
-router.delete('/:oihid', jsonParser, async (req, res) => {
-  const flowId = req.params.oihid;
-  const credentials = res.locals.credentials[0];
-
-  const response = await storage.deleteFlow(flowId, credentials);
-
-  if (!response) {
-    res.status(404).send('Flow not found');
-  } else {
-    res.status(200).send('Flow was successfully deleted');
-  }
-});
 
 
 // Adds a tenant to a flow by pushing it to its organisations array
