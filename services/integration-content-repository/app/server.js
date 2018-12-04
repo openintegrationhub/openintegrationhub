@@ -145,8 +145,8 @@ class Server {
   }
 
   listen(port) {
-    log.debug(`opening port ${port}`);
     const cport = typeof port !== 'undefined' ? port : 3001;
+    log.debug(`opening port ${cport}`);
     return this.app.listen(cport);
   }
 }

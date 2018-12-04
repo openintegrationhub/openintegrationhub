@@ -27,7 +27,11 @@ const getFlows = async ( // eslint-disable-line
   if (length > 0) {
     let i;
     for (i = 0; i < length; i += 1) {
-      qry[filterFields[i]] = filters[filterFields[i]];
+      if (filterFields[i] === 'user') {
+        qry['owners.id'] = filters.user;
+      } else {
+        qry[filterFields[i]] = filters[filterFields[i]];
+      }
     }
   }
 

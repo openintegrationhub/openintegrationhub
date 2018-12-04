@@ -53,7 +53,7 @@ const adminUser = {
 
 const guestUser = {
   sub: guestId,
-  username: 'admin@example.com',
+  username: 'guest@example.com',
   role: 'GUEST',
   memberships: [
     {
@@ -120,8 +120,6 @@ describe('Login Security', () => {
         oihid: 'TestOIHID',
         name: 'WiceToSnazzy',
         status: 'active',
-        current_status: 'active',
-        default_mapper_type: 'jsonata',
         description: 'A description',
       });
     expect(res.status).toEqual(401);
@@ -150,11 +148,9 @@ describe('Flow Operations', () => {
         .set('accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send({
-          type: 'flow',
+          type: 'ordinary',
           name: 'WiceToSnazzy',
           status: 'active',
-          current_status: 'active',
-          default_mapper_type: 'jsonata',
           description: 'A description',
         });
 
@@ -180,7 +176,13 @@ describe('Flow Operations', () => {
     const j = JSON.parse(res.text);
 
     expect(j).not.toBeNull();
+    expect(j.name).toEqual('WiceToSnazzy');
     expect(j).toHaveProperty('oihid');
+    expect(j).toHaveProperty('graph');
+    expect(j.graph).toHaveProperty('nodes');
+    expect(j.graph).toHaveProperty('edges');
+    expect(j.owners[0].id).toEqual('TestAdmin');
+    expect(j.owners[0].type).toEqual('user');
   });
 
   test('should not show the flow to another users getAll', async () => {
@@ -216,16 +218,14 @@ describe('Flow Operations', () => {
   test('should add a second flow', async () => {
     const res = await request
       .post('/flows/')
-      .set('Authorization', `Bearer ${adminToken}`)
+      .set('Authorization', `Bearer ${guestToken}`)
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        type: 'flow',
+        type: 'long_running',
         name: 'SnazzyZoWice',
         status: 'active',
-        current_status: 'active',
-        default_mapper_type: 'jsonata',
-        description: 'A description',
+        description: 'Different content',
       });
     expect(res.status).toEqual(201);
     expect(res.text).not.toBeNull();
@@ -236,16 +236,76 @@ describe('Flow Operations', () => {
     flowId2 = j.oihid;
   });
 
-  test('should get all flows', async () => {
+  test('should get all flows, filtered by status', async () => {
     const res = await request
       .get('/flows/')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+        'filter[status]': 1,
+      })
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveLength(2);
+    expect(j.data[0]).toHaveProperty('oihid');
+  });
+
+  test('should get all flows, filtered by user', async () => {
+    const res = await request
+      .get('/flows/')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+        'filter[user]': guestId,
+      })
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
     const j = JSON.parse(res.text);
     expect(j).not.toBeNull();
-    expect(j.data).toHaveLength(2);
+    expect(j.data).toHaveLength(1);
+    expect(j.data[0]).toHaveProperty('oihid');
+  });
+
+  test('should get all flows, filtered by type', async () => {
+    const res = await request
+      .get('/flows/')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+        'filter[type]': 'ordinary',
+      })
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveLength(1);
+    expect(j.data[0]).toHaveProperty('oihid');
+  });
+
+  test('should get all flows, using a search', async () => {
+    const res = await request
+      .get('/flows/')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+        search: 'desc',
+      })
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveLength(1);
     expect(j.data[0]).toHaveProperty('oihid');
   });
 
@@ -261,8 +321,6 @@ describe('Flow Operations', () => {
         oihid: flowId1,
         name: 'NewName',
         status: 'active',
-        current_status: 'active',
-        default_mapper_type: 'jsonata',
         description: 'A description',
       });
     expect(res.status).toEqual(200);
@@ -284,8 +342,6 @@ describe('Flow Operations', () => {
         oihid: 'nothing',
         name: 'NewName',
         status: 'active',
-        current_status: 'active',
-        default_mapper_type: 'jsonata',
         description: 'A description',
       });
     expect(res.status).toEqual(404);
@@ -309,7 +365,7 @@ describe('Cleanup', () => {
   test('should delete the second flow', async () => {
     const res = await request
       .delete(`/flows/${flowId2}`)
-      .set('Authorization', `Bearer ${adminToken}`)
+      .set('Authorization', `Bearer ${guestToken}`)
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(200);

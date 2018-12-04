@@ -28,40 +28,36 @@ router.get('/', jsonParser, async (req, res) => {
   let pageNumber = 1;
 
   const filters = {};
-  const filterTypes = { createdAt: 1, updatedAt: 1, name: 1 };
+  const filterTypes = { ordinary: 1, long_running: 1 };
 
   let searchString = '';
 
-  const sortableFields = { ordinary: 1, long_running: 1 };
+  const sortableFields = { createdAt: 1, updatedAt: 1, name: 1 };
   let sortField = 'id';
   let sortOrder = '-1';
 
   // page[size]
   if (req.query.page && (req.query.page.size !== undefined && pageSize > 1)) {
-    pageSize = String(parseInt(req.query.page.size, 10));
+    pageSize = parseInt(req.query.page.size, 10);
   }
   // page[number]
   if (req.query.page && (req.query.page.number !== undefined && pageNumber > 0)) {
-    pageNumber = String(parseInt(req.query.page.number, 10));
+    pageNumber = parseInt(req.query.page.number, 10);
   }
 
   // filter[has_draft] 1 0
-  if (req.query.filter && (req.query.filter.has_draft !== undefined)) {
-    if (req.query.filter.has_draft === '1' || req.query.filter.has_draft === '0') {
-      // filters.has_draft = req.query.filter.has_draft;
-      res.end(404).send('Filter parameter not implemented yet needs clarification of purpose');
-      return;
-    }
-    res.end(404).send('Invalid filter[has_draft] parameter');
-    return;
-  }
+  // if (req.query.filter && (req.query.filter.has_draft !== undefined)) {
+  // TODO: Define draft
+  // }
 
   // filter[status] 1 0
   if (req.query.filter && req.query.filter.status !== undefined) {
-    if (req.query.filter.status === '1' || req.query.filter.status === '0') {
-      filters.status = req.query.filter.status;
+    if (req.query.filter.status === '1') {
+      filters.status = 'active';
+    } else if (req.query.filter.status === '0') {
+      filters.status = 'inactive';
     } else {
-      res.end(404).send('Invalid filter[status] parameter');
+      res.status(400).send('Invalid filter[status] parameter');
       return;
     }
   }
@@ -71,14 +67,18 @@ router.get('/', jsonParser, async (req, res) => {
     if (req.query.filter.type in filterTypes) {
       filters.type = req.query.filter.type;
     } else {
-      res.end(404).send('Invalid filter[type] parameter');
+      res.status(400).send('Invalid filter[type] parameter');
       return;
     }
   }
 
   // filter[user]
   if (req.query.filter && req.query.filter.user !== undefined) {
-    filters.userId = String(parseInt(req.query.filter.user, 10));
+    if (!res.locals.admin) {
+      res.status(403).send('Filtering by user is only available to admins');
+      return;
+    }
+    filters.user = req.query.filter.user;
   }
 
   // sort createdAt, updatedAt and name,  Prefix -
@@ -96,14 +96,14 @@ router.get('/', jsonParser, async (req, res) => {
     if (!(sortField in sortableFields)) error = true;
 
     if (error) {
-      res.end(404).send('Invalid sort parameter');
+      res.status(404).send('Invalid sort parameter');
       return;
     }
   }
 
   // search
   if (req.query.search !== undefined) {
-    searchString = req.query.filter.type.replace(/[^a-z0-9\p{L}\-_\s]/img, '');
+    searchString = req.query.search.replace(/[^a-z0-9\p{L}\-_\s]/img, '');
     searchString = searchString.replace(/(^[\s]+|[\s]$)/img, '');
   }
 
