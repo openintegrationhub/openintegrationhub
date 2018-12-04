@@ -1,13 +1,14 @@
 {
   "name": "@openintegrationhub/webhooks",
   "description": "webhooks",
-  "version": "0.0.1-dev.7",
+  "version": "1.0.0",
   "author": "Open Integration Hub",
   "engines": {
     "node": "^8.0.0",
     "npm": ">=5.4"
   },
   "scripts": {
+    "prepublishOnly": "npm test",
     "pretest": "eslint src spec index.js",
     "test": "mocha --recursive spec"
   },
