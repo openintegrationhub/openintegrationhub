@@ -1,4 +1,5 @@
 /* eslint no-use-before-define: "off" */
+/* eslint no-underscore-dangle: "off" */
 
 // require our MongoDB-Model
 const Flow = require('../../models/flow');
@@ -90,7 +91,7 @@ const getAnyFlowById = flowId => new Promise((resolve) => {
 const addFlow = storeFlow => new Promise((resolve) => {
   storeFlow.save()
     .then((doc) => {
-      resolve(doc);
+      resolve(doc._doc);
     })
     .catch((err) => {
       log.debug(err);
