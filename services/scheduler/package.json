@@ -15,7 +15,7 @@
     "build:docker": "docker build -t openintegrationhub/scheduler:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
-    "@openintegrationhub/scheduler": "1.0.0",
+    "@openintegrationhub/scheduler": "*",
     "backendCommonsLib": "*",
     "express": "4.16.3",
     "nconf": "0.10.0",

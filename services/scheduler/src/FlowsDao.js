@@ -11,6 +11,7 @@ class OIH_FlowsDao extends FlowsDao {
         this._crdClient = crdClient;
     }
 
+    //@todo: split into smaller methods
     async findForScheduling() {
         const flows = (await this._crdClient.flows.get()).body.items;
         this._logger.info(`Found ${flows.length} flows`);
@@ -82,14 +83,10 @@ class OIH_FlowsDao extends FlowsDao {
             }
         }
 
-        // for (let flowId in schedulerRecordsIndex) {
-        //     await this._crdClient.schedulerrecords(flowId).delete();
-        // }
-
         return flowsToSchedule;
     }
 
-    async planNextRun(flow) { //eslint-disable-line no-unused-vars
+    async planNextRun(flow) {
         const schedulerRecord = this._schedulerRecordsIndex[flow.id];
         const newDueExecution = new Date();
         newDueExecution.setMinutes(newDueExecution.getMinutes() + TICK_INTERVAL_MINUTES);

@@ -13,7 +13,7 @@
   "author": "elastic.io",
   "license": "APL-2.0",
   "dependencies": {
-    "@openintegrationhub/webhooks": "1.0.0",
+    "@openintegrationhub/webhooks": "*",
     "body-parser": "1.18.3",
     "express": "4.16.3",
     "backendCommonsLib": "*"

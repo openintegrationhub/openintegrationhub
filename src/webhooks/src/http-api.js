@@ -13,6 +13,7 @@ const REQUEST_ID_HEADER = 'x-request-id';
 // suitable webhook IDs
 const ANTIHACK_RESPONSE_DELAY = 1000;
 
+//@todo move to class
 function generateRequestId() {
     // NOTE the result should be in the same format as provided by proxy in from of this server (nginx)
     const numbers = [];
@@ -22,6 +23,7 @@ function generateRequestId() {
     return numbers.join('');
 }
 
+//@todo move to class
 async function requireContentType(req, res, next) {
     //if content-type is omitted in POST throw 415
     if (!req.headers['content-type']) {
@@ -32,6 +34,7 @@ async function requireContentType(req, res, next) {
     return next();
 }
 
+//@todo move to class
 function ensureRequestId(req, res, next) {
     const incomingId = req.headers[REQUEST_ID_HEADER];
     const logger = req.logger;
@@ -54,6 +57,7 @@ function ensureRequestId(req, res, next) {
     return next();
 }
 
+//@todo move to class
 function errorHandler(err, req, res, next) { //eslint-disable-line no-unused-vars
     res.status(err.statusCode || 500).json({
         error: err.message
