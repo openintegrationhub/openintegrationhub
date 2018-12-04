@@ -14,7 +14,23 @@ const REQUEST_FIELDS = [
     'body'
 ];
 
+/**
+ * Configuration object for a client response.
+ * @typedef {Object} ClientResponseConfig
+ * @param {number} status - http response status code.
+ * @param {Object} headers - http response headers.
+ * @param {(Object|string|number)} - http response body.
+ */
+
+/**
+ * Post webhook request handler.
+ */
 class PostHandler extends BaseHandler {
+    /**
+     * @param req - express request object
+     * @param res - express response object
+     * @param {MessagePublisher} messagePublisher
+     */
     constructor(req, res, messagePublisher) {
         super(req, res);
         assert(
@@ -24,6 +40,10 @@ class PostHandler extends BaseHandler {
         this._messagePublisher = messagePublisher;
     }
 
+    /**
+     * Handle request.
+     * @returns {Promise<void>}
+     */
     async handle() {
         await this.authorize();
         const msg = await this.createMessageFromPayload();
@@ -32,10 +52,19 @@ class PostHandler extends BaseHandler {
         await this.sendResponse(result);
     }
 
+    /**
+     * Authorizes a request.
+     * @throws an arrow if not authorized.
+     * @returns {Promise<void>}
+     */
     async authorize() {
-        return true;
+        return;
     }
 
+    /**
+     * Parse incoming request and create a Message object based on it.
+     * @returns {Message}
+     */
     async createMessageFromPayload() {
         const req = this._req;
         const log = this.getLogger();
@@ -70,6 +99,10 @@ class PostHandler extends BaseHandler {
         return msg;
     }
 
+    /**
+     * Create message options object.
+     * @returns {Promise<Object>}
+     */
     async createMessageOptions() {
         const headers = {
             taskId: this.getFlow().id,
@@ -78,12 +111,22 @@ class PostHandler extends BaseHandler {
         return { headers };
     }
 
+    /**
+     * Send a webhook message for execution.
+     * @param {Message} msg
+     * @param {Object} msgOpts
+     * @returns {Promise<ClientResponseConfig>}
+     */
     async sendMessageForExecution(msg, msgOpts) {
         const flow = this.getFlow();
         await this._messagePublisher.publish(flow, msg, msgOpts);
         return this.getResponse();
     }
 
+    /**
+     * Return client response configuration object.
+     * @returns {Promise<ClientResponseConfig>}
+     */
     async getResponse() {
         return {
             status: 200,
@@ -97,6 +140,11 @@ class PostHandler extends BaseHandler {
         };
     }
 
+    /**
+     * Respond to client.
+     * @param {ClientResponseConfig}
+     * @returns {Promise<void>}
+     */
     async sendResponse({ status = 200, headers = {}, body = {}}) {
         this._res.status(status).set(headers).send(body);
     }

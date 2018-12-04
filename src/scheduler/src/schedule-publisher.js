@@ -1,6 +1,5 @@
 /**
  * Abstraction layer for sending flows for execution.
- * @class
  */
 class SchedulePublisher {
     /**

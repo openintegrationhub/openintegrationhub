@@ -1,6 +1,5 @@
 /**
- * Data access object for flows.
- * @class
+ * Abstraction layer for accessing a flow's data.
  */
 class FlowsDao {
     /**

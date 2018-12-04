@@ -4,8 +4,7 @@ const FlowsDao = require('./flows-dao');
 const SchedulePublisher = require('./schedule-publisher');
 
 /**
- * Main class that orchestrates scheduling.
- * @class
+ * Main class that orchestrates scheduling process.
  */
 class Scheduler {
     /**

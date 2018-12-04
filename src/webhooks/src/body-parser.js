@@ -147,6 +147,13 @@ function bodyToAttachment(req, res, buf) {
     };
 }
 
+/**
+ * Sets required middlewares for processing an incoming request's body.
+ * @param {app} app - express application instance
+ * @param {Object} options
+ * @param {(string|number)} limit - Controls the maximum request body size. If this is a number, then the value specifies the number of bytes; if it is a string, the value is passed to the {@link https://www.npmjs.com/package/bytes|bytes} library for parsing.
+ * @returns {app} - express application instance
+ */
 module.exports = (app, { limit = '10mb' } = {}) => {
     const verify = setRawBody;
 

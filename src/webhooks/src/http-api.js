@@ -60,7 +60,14 @@ function errorHandler(err, req, res, next) { //eslint-disable-line no-unused-var
     });
 }
 
-class Api {
+/**
+ * Sets up http API.
+ */
+class HttpApi {
+    /**
+     * @param {Config} config
+     * @param {FlowsDao} flowsDao
+     */
     constructor(config, flowsDao) {
         assert(flowsDao instanceof FlowsDao, 'flowsDao has to be an instance of FlowsDao');
         this._flowsDao = flowsDao;
@@ -187,17 +194,29 @@ class Api {
         this._postHandler = handler;
     }
 
+    /**
+     * Set a logger.
+     * @param {Logger} logger
+     */
     setLogger(logger) {
         this._logger = logger;
     }
 
+    /**
+     * Start listening on specified port.
+     * @param {number} port
+     */
     listen(port) {
         this.getApp().listen(port);
     }
 
+    /**
+     * Get express app instance.
+     * @returns {app} - Express app instance
+     */
     getApp() {
         return this._app;
     }
 }
 
-module.exports = Api;
+module.exports = HttpApi;
