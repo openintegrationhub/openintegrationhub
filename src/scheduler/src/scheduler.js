@@ -24,7 +24,7 @@ class Scheduler {
     }
 
     /**
-     * Gets a list of flows from the flowsDao object and schedules each of them
+     * Gets a list of flows from the flowsDao object and schedules each of them.
      * @returns {Promise<void>}
      * @private
      */
@@ -41,7 +41,7 @@ class Scheduler {
     }
 
     /**
-     * Schedules individual flow
+     * Schedules individual flow.
      * @param {Flow} flow
      * @returns {Promise<void>}
      * @private
