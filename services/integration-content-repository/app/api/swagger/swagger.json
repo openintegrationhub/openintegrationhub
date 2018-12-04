@@ -266,6 +266,18 @@
         "tags": [
           "flows"
         ],
+        "parameters": [
+          {
+            "name": "oihid",
+            "in": "path",
+            "description": "ID of flow to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
         "summary": "Update an existing flow",
         "description": "The oihid is used to match the existing Flow that will be updated. Note that missing fields in the input will overwrite existing fields with null. The current version and version history is updated automatically.",
         "operationId": "updateFlow",
@@ -415,9 +427,7 @@
           "name",
           "graph",
           "status",
-          "type",
-          "userId",
-          "workspaceId"
+          "type"
         ],
         "properties": {
           "name": {
@@ -455,13 +465,13 @@
           {
             "type": "object",
             "required": [
-              "id",
+              "oihid",
               "status",
               "createdAt",
               "updatedAt"
             ],
             "properties": {
-              "id": {
+              "oihid": {
                 "type": "string"
               },
               "status": {
