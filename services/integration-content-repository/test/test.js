@@ -322,6 +322,12 @@ describe('Flow Operations', () => {
         name: 'NewName',
         status: 'active',
         description: 'A description',
+        owners: [
+          {
+            type: 'user',
+            id: 'dude',
+          },
+        ],
       });
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();

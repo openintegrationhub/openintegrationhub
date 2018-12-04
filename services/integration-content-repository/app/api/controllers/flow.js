@@ -183,6 +183,11 @@ router.patch('/:oihid', jsonParser, async (req, res) => {
     const updateFlow = Object.assign(oldFlow, updateData);
     updateFlow.updatedAt = timestamp;
 
+    // Re-adds the current user to the owners array if they're missing
+    if (!updateFlow.owners.some(e => e.id === credentials[0])) {
+      updateFlow.owners.push({ id: credentials[0], type: 'user' });
+    }
+
     const storeFlow = new Flow(updateFlow);
 
     try {

@@ -106,7 +106,7 @@ const updateFlow = (storeFlow, credentials) => new Promise((resolve) => {
   }, storeFlow,
   { upsert: false, new: true })
     .then((doc) => {
-      resolve(doc);
+      resolve(doc._doc);
     })
     .catch((err) => {
       log.debug(err);
