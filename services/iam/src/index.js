@@ -1,9 +1,10 @@
+const mongoose = require('mongoose');
+const Logger = require('@basaas/node-logger');
 const App = require('./app');
 const pjson = require('../package.json');
 const conf = require('./conf');
-const mongoose = require('mongoose');
 
-const log = require('@basaas/node-logger').getLogger(`${conf.general.loggingNameSpace}/init`, {
+const log = Logger.getLogger(`${conf.general.loggingNameSpace}/init`, {
     level: 'info',
 });
 

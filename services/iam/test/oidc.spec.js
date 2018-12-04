@@ -2,9 +2,9 @@ const path = require('path');
 const mongoose = require('mongoose');
 const Mockgoose = require('mockgoose').Mockgoose;
 const request = require('supertest')('http://127.0.0.1:3099');
-const CONSTANTS = require('./../src/constants');
 const { encode } = require('base64-url');
 const fs = require('fs');
+const CONSTANTS = require('./../src/constants');
 
 let conf = null;
 

@@ -14,8 +14,8 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./../../doc/openapi.json');
 const Logger = require('@basaas/node-logger');
+const swaggerDocument = require('./../../doc/openapi.json');
 
 const CONSTANTS = require('../constants');
 const conf = require('../conf');
