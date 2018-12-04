@@ -80,7 +80,7 @@ describe('Post Request Handler', () => {
 
         describe('#authorize', () => {
             it('should resolve to true', async () => {
-                expect(await post.authorize()).to.be.true;
+                expect(await post.authorize()).to.be.undefined;
             });
         });
 
