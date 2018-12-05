@@ -12,32 +12,37 @@
     "coverage": "yarn test --coverage"
   },
   "dependencies": {
-    "@basaas/node-logger": "^1.1.2",
-    "@openintegrationhub/iam-utils": "1.1.0",
-    "dayjs": "^1.7.7",
-    "dotenv": "^6.1.0",
-    "express": "^4.16.4",
-    "jsonwebtoken": "^8.3.0",
-    "mongoose": "^5.3.8",
-    "morgan": "^1.9.1",
-    "swagger-ui-express": "^4.0.1",
-    "yamljs": "^0.3.0"
+    "@basaas/node-logger": "1.1.2",
+    "@openintegrationhub/iam-utils": "1.2.0",
+    "dotenv": "6.1.0",
+    "express": "4.16.4",
+    "jsonwebtoken": "8.4.0",
+    "moment": "2.22.2",
+    "mongoose": "5.3.14",
+    "morgan": "1.9.1",
+    "request": "2.88.0",
+    "swagger-ui-express": "4.0.1",
+    "yamljs": "0.3.0"
   },
   "devDependencies": {
-    "eslint": "^5.8.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jest": "^22.0.0",
-    "get-port": "^4.0.0",
-    "jest": "^23.6.0",
-    "mongodb-memory-server": "^2.6.2",
-    "nodemon": "^1.18.7",
-    "supertest": "^3.3.0"
+    "eslint": "5.9.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-plugin-import": "2.14.0",
+    "eslint-plugin-jest": "22.1.2",
+    "get-port": "4.0.0",
+    "jest": "23.6.0",
+    "mongodb": "3.1.10",
+    "mongodb-memory-server": "2.7.4",
+    "nock": "10.0.3",
+    "nodemon": "1.18.7",
+    "supertest": "3.3.0"
   },
   "jest": {
     "globalSetup": "./src/test/setup.js",
     "globalTeardown": "./src/test/teardown.js",
-    "testEnvironment": "./src/test/mongo-environment.js"
+    "testEnvironment": "./src/test/mongo-environment.js",
+    "setupTestFrameworkScriptFile": "./src/test/jest.setup.js",
+    "silent": false
   },
   "nodemonConfig": {
     "restartable": "rs",

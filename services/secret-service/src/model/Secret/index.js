@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const owner = require('../schema/owner');
-const { TYPE } = require('../../constant').SECRET;
+const { AUTH_TYPE } = require('../../constant');
+
+const {
+    SIMPLE, API_KEY, OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE,
+} = AUTH_TYPE;
 
 const { Schema } = mongoose;
 
@@ -15,10 +19,10 @@ const secretBaseSchema = new Schema({
     },
     type: {
         type: String,
-        enum: Object.keys(TYPE),
+        enum: Object.keys(AUTH_TYPE),
         required: true,
     },
-    data: {},
+    value: {},
 }, {
     timestamps: true,
 });
@@ -27,45 +31,58 @@ const Secret = mongoose.model('secret', secretBaseSchema);
 
 module.exports = {
     full: Secret,
-    [TYPE.simple]: Secret.discriminator(TYPE.simple, new Schema({
-        data: {
-            username: {
-                type: String,
-                required: true,
-            },
-            passphrase: {
-                type: String,
-                required: true,
-            },
-        },
-    })),
-    [TYPE.apiKey]: Secret.discriminator(TYPE.apiKey, new Schema({
-        data: {
+    [SIMPLE]:
+        Secret.discriminator(`S_${SIMPLE}`, new Schema({
             value: {
-                type: String,
-                required: true,
+                username: {
+                    type: String,
+                    required: true,
+                },
+                passphrase: {
+                    type: String,
+                    required: true,
+                },
             },
-            headerName: String,
-        },
-    })),
-    [TYPE.oAuth2]: Secret.discriminator(TYPE.oAuth2, new Schema({
-        data: {
-            clientId: {
-                type: String,
-                required: true,
+        })),
+    [API_KEY]:
+        Secret.discriminator(`S_${API_KEY}`, new Schema({
+            value: {
+                key: {
+                    type: String,
+                    required: true,
+                },
+                headerName: String,
             },
-            accessToken: String,
-            refreshToken: {
-                type: String,
-                required: true,
+        })),
+    [OA1_TWO_LEGGED]:
+        Secret.discriminator(`S_${OA1_TWO_LEGGED}`, new Schema({
+            value: {
+                expiresAt: String,
             },
-            refreshTokenUrl: {
-                type: String,
-                required: true,
+        })),
+    [OA2_AUTHORIZATION_CODE]:
+        Secret.discriminator(`S_${OA2_AUTHORIZATION_CODE}`, new Schema({
+            value: {
+                sub: String,
+                authClientId: {
+                    type: Schema.Types.ObjectId,
+                    required: true,
+                },
+                refreshToken: {
+                    type: String,
+                    required: true,
+                },
+                scope: {
+                    type: String,
+                    required: true,
+                },
+                endpoint: {
+                    refresh: {
+                        type: String,
+                        required: true,
+                    },
+                },
+                expires: String,
             },
-            scoped: String,
-            expiresAt: String,
-            flowType: String,
-        },
-    })),
+        })),
 };

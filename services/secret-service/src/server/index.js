@@ -4,7 +4,6 @@ const path = require('path');
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-
 const conf = require('../conf');
 
 const swaggerDocument = YAML.load(path.join(__dirname, '/../../doc/openapi.yaml'));
@@ -15,12 +14,13 @@ const swaggerOptions = {
 };
 
 module.exports = class Server {
-    constructor({ port }) {
+    constructor({ port, mongoDbConnection }) {
         this.port = port || conf.port;
         this.app = express();
         this.app.disable('x-powered-by');
 
-        Server.setupDatabase();
+        // setup database
+        Server.setupDatabase(mongoDbConnection);
 
         // enable advanced stdout logging
         if (conf.debugMode) {
@@ -35,22 +35,21 @@ module.exports = class Server {
 
         const apiBase = express.Router();
 
-
+        // setup routes
         apiBase.use('/secrets', require('./../route/secrets')); // eslint-disable-line global-require
         apiBase.use('/auth-clients', require('./../route/auth-clients')); // eslint-disable-line global-require
         apiBase.use('/audits', require('./../route/audits')); // eslint-disable-line global-require
-
-        // setup routes
+        apiBase.use('/callback', require('./../route/callback')); // eslint-disable-line global-require
         this.app.use(conf.apiBase, apiBase);
-
 
         // error middleware
         this.app.use(require('./../middleware/error').default);
-
     }
 
-    static setupDatabase() {
-        const connectionString = global.__MONGO_URI__ || conf.mongoDbConnection;
+    static setupDatabase(mongoDbConnection) {
+        const connectionString = mongoDbConnection
+        || global.__MONGO_URI__
+        || conf.mongoDbConnection;
 
         mongoose.connect(connectionString, {
             poolSize: 50,

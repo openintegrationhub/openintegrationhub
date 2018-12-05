@@ -4,6 +4,7 @@ const logger = require('@basaas/node-logger');
 const auth = require('../../middleware/auth');
 const conf = require('../../conf');
 const SecretsDAO = require('../../dao/secret');
+const TokenDAO = require('../../dao/token');
 const { ROLE } = require('../../constant');
 
 const log = logger.getLogger(`${conf.logging.namespace}/secrets`);
@@ -33,6 +34,7 @@ router.post('/', jsonParser, async (req, res, next) => {
                 entityType: ROLE.USER,
             },
         });
+
         res.send({ _id: secret._id });
     } catch (err) {
         log.error(err);
@@ -45,10 +47,7 @@ router.post('/', jsonParser, async (req, res, next) => {
 router.get('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     // TODO send 403 if user is not an owner of the resource
     try {
-        const secret = await SecretsDAO.findOne({
-            _id: req.params.id,
-            'owner.entityId': req.user.sub,
-        });
+        const secret = req.obj;
         if (secret) {
             res.send(secret);
         } else {
@@ -108,11 +107,20 @@ router.delete('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     }
 });
 
-router.get('/:id/access-token', async (req, res, next) => {
-    res.sendStatus(200);
+router.get('/:id/access-token', auth.userIsOwnerOfSecret, async (req, res, next) => {
+    try {
+        const secret = req.obj;
+        const token = await TokenDAO.getOrWait(secret);
+        res.send(token);
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 500,
+        });
+    }
 });
 
-router.get('/:id/audit', async (req, res, next) => {
+router.get('/:id/audit', async (req, res) => {
     res.sendStatus(200);
 });
 
