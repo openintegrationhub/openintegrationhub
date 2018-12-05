@@ -243,7 +243,7 @@ describe('/api/ - Login Security', function() {
   });
 });
 
-_describe('/api/ - Flow Operations', function() {
+describe('/api/ - Flow Operations', function() {
 
 
   it('should add a flow', function(done) {
