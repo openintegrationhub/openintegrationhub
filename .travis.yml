@@ -11,9 +11,9 @@ install: true
 stages:
   - test
   - name: build
-    if: branch = master AND fork = false AND pull_request = false
+    if: branch = master AND fork = false AND type IN (push)
   - name: deploy
-    if: branch = master AND fork = false AND pull_request = false
+    if: branch = master AND fork = false AND type IN (push)
 jobs:
   include:
     - stage: test
