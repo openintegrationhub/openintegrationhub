@@ -1,1 +1,3 @@
-{}
+{
+  "PAYLOAD_SIZE_LIMIT": "10mb"
+}

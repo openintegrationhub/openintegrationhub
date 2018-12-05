@@ -1,1 +1,3 @@
-{}
+{
+    "POLLING_INTERVAL": 20000
+}
