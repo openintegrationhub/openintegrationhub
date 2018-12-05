@@ -13,4 +13,7 @@ module.exports = {
     },
     mongoDbConnection: optional('MONGODB_CONNECTION', `mongodb://localhost:27017/${pjson.name}`),
     debugMode: optional('DEBUG_MODE', false) === true,
+    ttl: {
+        authFlow: '2m',
+    },
 };

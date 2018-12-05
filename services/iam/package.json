@@ -72,7 +72,6 @@
     "supertest": "^3.3.0"
   },
   "jest": {
-    "testEnvironment": "node",
-    "verbose": true
+    "testEnvironment": "node"
   }
 }

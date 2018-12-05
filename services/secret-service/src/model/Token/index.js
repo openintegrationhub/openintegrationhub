@@ -8,19 +8,14 @@ const token = new Schema({
         required: true,
     },
     secretId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
     },
     expires: {
         type: Date,
         required: true,
     },
-    willBeRenewed: {
-        type: Boolean,
-    },
-    renewalStartedAt: {
-        type: Date,
-    },
+    lockedAt: Date,
 }, {
     timestamps: true,
 });

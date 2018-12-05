@@ -1,17 +1,16 @@
-const express = require('express');
 const getPort = require('get-port');
 const supertest = require('supertest');
-const conf = require('../../conf');
 const Server = require('../../server');
 
 let port;
 let request;
 
 describe('error', () => {
-    beforeAll(async () => {
+    beforeAll(async (done) => {
         port = await getPort();
         const host = `http://localhost:${port}`;
         request = supertest(host);
+        done();
     });
     test('status and message', async () => {
         const server = new Server({

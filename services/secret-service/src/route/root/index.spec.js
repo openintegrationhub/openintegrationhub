@@ -1,4 +1,3 @@
-const express = require('express');
 const getPort = require('get-port');
 const supertest = require('supertest');
 const conf = require('../../conf');
@@ -9,17 +8,20 @@ let request;
 let server;
 
 describe('root', () => {
-    beforeAll(async () => {
+    beforeAll(async (done) => {
         port = await getPort();
         request = supertest(`http://localhost:${port}`);
         server = new Server({
+            mongoDbConnection: `${global.__MONGO_URI__}-root`,
             port,
         });
         await server.start();
+        done();
     });
 
-    afterAll(async () => {
+    afterAll(async (done) => {
         await server.stop();
+        done();
     });
 
     test('Service Info', async () => {

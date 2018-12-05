@@ -1,4 +1,3 @@
-const express = require('express');
 const getPort = require('get-port');
 const supertest = require('supertest');
 const conf = require('../../conf');
@@ -13,6 +12,7 @@ describe('audits', () => {
         port = await getPort();
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
+            mongoDbConnection: `${global.__MONGO_URI__}-audits`,
             port,
         });
         await server.start();
