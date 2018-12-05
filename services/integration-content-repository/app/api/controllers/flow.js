@@ -5,7 +5,6 @@
 // const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
-const uniqid = require('uniqid');
 const config = require('../../config/index');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
@@ -18,21 +17,6 @@ const log = require('../../config/logger'); // eslint-disable-line
 
 // require our MongoDB-Model
 const Flow = require('../../models/flow');
-
-// Removes MongoDB-specific fields from the final displayed object
-const cleanAttributes = function (data) {
-  const cleanData = data;
-  if (Array.isArray(cleanData)) {
-    for (let i = 0; i < cleanData.length; i += 1) {
-      delete cleanData[i]._id;
-      delete cleanData[i].__v;
-    }
-  } else {
-    delete cleanData._id;
-    delete cleanData.__v;
-  }
-  return cleanData;
-};
 
 // Gets all flows
 router.get('/', jsonParser, async (req, res) => {
@@ -132,7 +116,6 @@ router.get('/', jsonParser, async (req, res) => {
   if (response.data.length === 0) {
     res.status(404).send('No flows found');
   } else {
-    response.data = cleanAttributes(response.data);
     response.meta.page = pageNumber;
     response.meta.perPage = pageSize;
     response.meta.totalPages = response.meta.total / pageSize;
@@ -146,9 +129,7 @@ router.post('/', jsonParser, async (req, res) => {
   const credentials = res.locals.credentials[0];
   const now = new Date();
   const timestamp = now.toString();
-  const id = uniqid();
 
-  newFlow.oihid = id;
   newFlow.createdAt = timestamp;
   newFlow.updatedAt = timestamp;
   // Automatically adds the current user as an owner.
@@ -161,22 +142,21 @@ router.post('/', jsonParser, async (req, res) => {
 
   try {
     const response = await storage.addFlow(storeFlow);
-    const cleanResponse = cleanAttributes(response);
-    res.status(201).send(cleanResponse);
+    res.status(201).send(response);
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
 // Updates a flow with body data
-router.patch('/:oihid', jsonParser, async (req, res) => {
+router.patch('/:id', jsonParser, async (req, res) => {
   const updateData = req.body;
   const credentials = res.locals.credentials[0];
   const now = new Date();
   const timestamp = now.toString();
 
   // Get the flow to retrieve the updated version and version history
-  const oldFlow = await storage.getFlowById(req.params.oihid, credentials);
+  const oldFlow = await storage.getFlowById(req.params.id, credentials);
   if (!oldFlow) {
     res.status(404).send('Flow not found');
   } else {
@@ -195,8 +175,7 @@ router.patch('/:oihid', jsonParser, async (req, res) => {
       if (!response) {
         res.status(404).send('Flow not found');
       } else {
-        const cleanResponse = cleanAttributes(response);
-        res.status(200).send(cleanResponse);
+        res.status(200).send(response);
       }
     } catch (err) {
       res.status(500).send(err);
@@ -204,9 +183,9 @@ router.patch('/:oihid', jsonParser, async (req, res) => {
   }
 });
 
-// Gets a flow by oihid
-router.get('/:oihid', jsonParser, async (req, res) => {
-  const flowId = req.params.oihid;
+// Gets a flow by id
+router.get('/:id', jsonParser, async (req, res) => {
+  const flowId = req.params.id;
   const credentials = res.locals.credentials[1];
   let response;
 
@@ -219,15 +198,14 @@ router.get('/:oihid', jsonParser, async (req, res) => {
   if (!response) {
     res.status(404).send('No flows found');
   } else {
-    const cleanResponse = cleanAttributes(response);
-    res.status(200).send(cleanResponse);
+    res.status(200).send(response);
   }
 });
 
 
 // Deletes a flow
-router.delete('/:oihid', jsonParser, async (req, res) => {
-  const flowId = req.params.oihid;
+router.delete('/:id', jsonParser, async (req, res) => {
+  const flowId = req.params.id;
   const credentials = res.locals.credentials[0];
 
   const response = await storage.deleteFlow(flowId, credentials);
@@ -279,8 +257,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 
 
 // Updates a flow wih form data
-// router.post('/:oihid', urlParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.post('/:id', urlParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const credentials = res.locals.credentials[0];
 //
 //
@@ -293,7 +271,7 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 //
 //   const storeFlow = {
 //     type: oldFlow.type,
-//     oihid: flowId,
+//     id: flowId,
 //     links: oldFlow.links,
 //     attributes: {
 //       name: req.body.name,
@@ -320,8 +298,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 
 
 // Adds a tenant to a flow by pushing it to its organisations array
-// router.post('/tenant/:oihid/:tenantid', jsonParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.post('/tenant/:id/:tenantid', jsonParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const tenantId = req.params.tenantid;
 //   const credentials = res.locals.credentials[0];
 //
@@ -358,8 +336,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 // });
 //
 // // Removes a tenant from a flow by pulling the entry from its array
-// router.delete('/tenant/:oihid/:tenantid', jsonParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.delete('/tenant/:id/:tenantid', jsonParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const tenantId = req.params.tenantid;
 //   const credentials = res.locals.credentials[0];
 //
@@ -396,8 +374,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 //   }
 // });
 //
-// router.post('/node/:oihid/:nodeid', urlParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.post('/node/:id/:nodeid', urlParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const nodeId = req.params.nodeid;
 //   const newNode = req.body;
 //   const credentials = res.locals.credentials[0];
@@ -419,8 +397,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 //   }
 // });
 //
-// router.post('/edge/:oihid/:edgeid', urlParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.post('/edge/:id/:edgeid', urlParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const edgeId = req.params.edgeid;
 //   const newEdge = req.body;
 //   const credentials = res.locals.credentials[0];
@@ -449,8 +427,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 //   }
 // });
 //
-// router.put('/node/:oihid/:nodeid', urlParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.put('/node/:id/:nodeid', urlParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const nodeId = req.params.nodeid;
 //   const newNode = req.body;
 //   const credentials = res.locals.credentials[0];
@@ -493,8 +471,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 //   }
 // });
 //
-// router.put('/edge/:oihid/:edgeid', urlParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.put('/edge/:id/:edgeid', urlParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const edgeId = req.params.edgeid;
 //   const newEdge = req.body;
 //   const credentials = res.locals.credentials[0];
@@ -529,8 +507,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 //   }
 // });
 //
-// router.get('/node/:oihid/:nodeid', jsonParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.get('/node/:id/:nodeid', jsonParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const nodeId = req.params.nodeid;
 //   const credentials = res.locals.credentials[1];
 //
@@ -543,8 +521,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 //   }
 // });
 //
-// router.get('/edge/:oihid/:edgeid', jsonParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.get('/edge/:id/:edgeid', jsonParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const edgeId = req.params.edgeid;
 //   const credentials = res.locals.credentials[1];
 //
@@ -557,8 +535,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 //   }
 // });
 //
-// router.delete('/node/:oihid/:nodeid', jsonParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.delete('/node/:id/:nodeid', jsonParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const nodeId = req.params.nodeid;
 //   const credentials = res.locals.credentials[0];
 //
@@ -571,8 +549,8 @@ router.delete('/:oihid', jsonParser, async (req, res) => {
 //   }
 // });
 //
-// router.delete('/edge/:oihid/:edgeid', jsonParser, async (req, res) => {
-//   const flowId = req.params.oihid;
+// router.delete('/edge/:id/:edgeid', jsonParser, async (req, res) => {
+//   const flowId = req.params.id;
 //   const edgeId = req.params.edgeid;
 //   const credentials = res.locals.credentials[0];
 //

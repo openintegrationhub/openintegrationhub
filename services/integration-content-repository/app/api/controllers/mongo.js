@@ -1,9 +1,13 @@
 /* eslint no-use-before-define: "off" */
 /* eslint no-underscore-dangle: "off" */
+/* eslint quote-props: "off" */
 
 // require our MongoDB-Model
-const Flow = require('../../models/flow');
+// const mongoose = require('mongoose');
 const log = require('../../config/logger');
+const Flow = require('../../models/flow');
+
+// const ObjectId = mongoose.Types.ObjectId;
 
 // Retrieves all flows for authorized owner or for admin irrespective of ownership.
 
@@ -75,10 +79,10 @@ const getFlows = async ( // eslint-disable-line
     });
 });
 
-// Retrieves a specific flow by oihid, irrespective of ownership.
+// Retrieves a specific flow by id, irrespective of ownership.
 // Should only be available to internal methods or OIH-Admin
 const getAnyFlowById = flowId => new Promise((resolve) => {
-  Flow.find({ oihid: flowId })
+  Flow.find({ '_id': flowId })
     .then((doc) => {
       resolve(doc[0]);
     })
@@ -100,7 +104,7 @@ const addFlow = storeFlow => new Promise((resolve) => {
 
 const updateFlow = (storeFlow, credentials) => new Promise((resolve) => {
   Flow.findOneAndUpdate({
-    $and: [{ oihid: storeFlow.oihid },
+    $and: [{ '_id': storeFlow.id },
       { 'owners.id': { $in: credentials } },
     ],
   }, storeFlow,
@@ -116,7 +120,7 @@ const updateFlow = (storeFlow, credentials) => new Promise((resolve) => {
 
 const getFlowById = (flowId, credentials) => new Promise((resolve) => {
   Flow.findOne({
-    $and: [{ oihid: flowId },
+    $and: [{ '_id': flowId },
       { 'owners.id': { $in: credentials } },
     ],
   }).lean()
@@ -132,7 +136,7 @@ const getFlowById = (flowId, credentials) => new Promise((resolve) => {
 const deleteFlow = (flowId, credentials) => new Promise((resolve) => {
   Flow.findOneAndRemove({
     $and: [
-      { oihid: flowId },
+      { '_id': flowId },
       { 'owners.id': { $in: credentials } },
     ],
   })

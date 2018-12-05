@@ -104,7 +104,7 @@ describe('Login Security', () => {
   });
 
   test('should not be able to get specific flows without login', async () => {
-    const res = await request.get('/flows/TestOIHID/');
+    const res = await request.get('/flows/123456789012/');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
     expect(res.text).toEqual('Missing authorization header.');
@@ -117,7 +117,6 @@ describe('Login Security', () => {
       .set('Content-Type', 'application/json')
       .send({
         type: 'flow',
-        oihid: 'TestOIHID',
         name: 'WiceToSnazzy',
         status: 'active',
         description: 'A description',
@@ -159,8 +158,8 @@ describe('Flow Operations', () => {
       const j = JSON.parse(res.text);
       expect(j).not.toBeNull();
 
-      expect(j).toHaveProperty('oihid');
-      flowId1 = j.oihid;
+      expect(j).toHaveProperty('_id');
+      flowId1 = j._id;
     } catch (e) {
       log.error(e);
     }
@@ -177,7 +176,7 @@ describe('Flow Operations', () => {
 
     expect(j).not.toBeNull();
     expect(j.name).toEqual('WiceToSnazzy');
-    expect(j).toHaveProperty('oihid');
+    expect(j).toHaveProperty('_id');
     expect(j).toHaveProperty('graph');
     expect(j.graph).toHaveProperty('nodes');
     expect(j.graph).toHaveProperty('edges');
@@ -197,7 +196,7 @@ describe('Flow Operations', () => {
 
   test('should not show the flow to another users get', async () => {
     const res = await request
-      .get('/flows/TestOIHID')
+      .get('/flows/123456789012')
       .set('Authorization', `Bearer ${guestToken}`);
 
     expect(res.status).toEqual(404);
@@ -207,7 +206,7 @@ describe('Flow Operations', () => {
 
   test('should return 404 when getting a non-existent flow', async () => {
     const res = await request
-      .get('/flows/nothing')
+      .get('/flows/123456789012')
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.status).toEqual(404);
@@ -232,8 +231,8 @@ describe('Flow Operations', () => {
     const j = JSON.parse(res.text);
     expect(j).not.toBeNull();
 
-    expect(j).toHaveProperty('oihid');
-    flowId2 = j.oihid;
+    expect(j).toHaveProperty('_id');
+    flowId2 = j._id;
   });
 
   test('should get all flows, filtered by status', async () => {
@@ -252,7 +251,7 @@ describe('Flow Operations', () => {
 
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(2);
-    expect(j.data[0]).toHaveProperty('oihid');
+    expect(j.data[0]).toHaveProperty('_id');
   });
 
   test('should get all flows, filtered by user', async () => {
@@ -270,7 +269,7 @@ describe('Flow Operations', () => {
     const j = JSON.parse(res.text);
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(1);
-    expect(j.data[0]).toHaveProperty('oihid');
+    expect(j.data[0]).toHaveProperty('_id');
   });
 
   test('should get all flows, filtered by type', async () => {
@@ -288,7 +287,7 @@ describe('Flow Operations', () => {
     const j = JSON.parse(res.text);
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(1);
-    expect(j.data[0]).toHaveProperty('oihid');
+    expect(j.data[0]).toHaveProperty('_id');
   });
 
   test('should get all flows, using a search', async () => {
@@ -306,7 +305,7 @@ describe('Flow Operations', () => {
     const j = JSON.parse(res.text);
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(1);
-    expect(j.data[0]).toHaveProperty('oihid');
+    expect(j.data[0]).toHaveProperty('_id');
   });
 
 
@@ -318,7 +317,6 @@ describe('Flow Operations', () => {
       .set('Content-Type', 'application/json')
       .send({
         type: 'flow',
-        oihid: flowId1,
         name: 'NewName',
         status: 'active',
         description: 'A description',
@@ -334,18 +332,17 @@ describe('Flow Operations', () => {
     const j = JSON.parse(res.text);
     expect(j).not.toBeNull();
 
-    expect(j).toHaveProperty('oihid');
+    expect(j).toHaveProperty('_id');
   });
 
   test('should not be able to update a non-existent flow', async () => {
     const res = await request
-      .patch('/flows/NonExistentFlow')
+      .patch('/flows/123456789012')
       .set('Authorization', `Bearer ${adminToken}`)
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
         type: 'flow',
-        oihid: 'nothing',
         name: 'NewName',
         status: 'active',
         description: 'A description',
