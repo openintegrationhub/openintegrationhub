@@ -14,8 +14,8 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./../../doc/openapi.json');
 const Logger = require('@basaas/node-logger');
+const swaggerDocument = require('./../../doc/openapi.json');
 
 const CONSTANTS = require('../constants');
 const conf = require('../conf');
@@ -148,6 +148,7 @@ class App {
         const apiBase = express.Router();
         apiBase.use('/users', require('./../routes/users')); // eslint-disable-line global-require
         apiBase.use('/tenants', require('./../routes/tenants')); // eslint-disable-line global-require
+        apiBase.use('/tokens', require('./../routes/tokens')); // eslint-disable-line global-require
 
         // TODO: if the client is not a browser, no origin or host will be provided
         this.app.use(`/${conf.general.apiBase}`, apiBase);

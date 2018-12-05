@@ -4,19 +4,18 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 
 const jsonParser = bodyParser.json();
+const Logger = require('@basaas/node-logger');
 const CONF = require('./../conf');
 const CONSTANTS = require('./../constants');
 const auth = require('./../util/auth');
 const UserDAO = require('./../dao/users');
-
-const Logger = require('@basaas/node-logger');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/user`, {
     level: 'debug',
 });
 
 /**
- * get token data from req.__HEIMDAL__ object
+ * get token data from req.user object
  */
 router.use(auth.validateAuthentication);
 
@@ -66,7 +65,7 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
 router.get('/me', auth.isLoggedIn, async (req, res, next) => {
 
     try {
-        const doc = await UserDAO.find({ _id: req.__HEIMDAL__.userid });
+        const doc = await UserDAO.find({ _id: req.user.userid });
         return res.send(doc && doc[0]);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -96,7 +95,9 @@ router.get('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
 router.patch('/:id', auth.paramsMatchesUserId, jsonParser, async (req, res, next) => {
     const userObj = req.body;
     try {
-        await UserDAO.update({ id: req.params.id, userObj, partialUpdate: true, method: 'patch' });
+        await UserDAO.update({
+            id: req.params.id, userObj, partialUpdate: true, method: 'patch', 
+        });
         return res.sendStatus(200);
     } catch (err) {
         log.error(err);
@@ -112,7 +113,9 @@ router.put('/:id', auth.paramsMatchesUserId, jsonParser, async (req, res, next) 
     const userObj = req.body;
 
     try {
-        await UserDAO.update({ id: req.params.id, userObj, partialUpdate: false, method: 'put' });
+        await UserDAO.update({
+            id: req.params.id, userObj, partialUpdate: false, method: 'put', 
+        });
         return res.sendStatus(200);
     } catch (err) {
         log.error(err);

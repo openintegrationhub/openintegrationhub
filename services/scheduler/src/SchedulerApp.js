@@ -1,15 +1,13 @@
 const express = require('express');
-
-const Lib = require('backendCommonsLib');
 const {
     QueueCreator,
     App,
     K8sService,
     AMQPService
-} = Lib;
-
-const Scheduler = require('./Scheduler.js');
-
+} = require('backendCommonsLib');
+const { Scheduler } = require('@openintegrationhub/scheduler');
+const FlowsDao = require('./FlowsDao');
+const SchedulePublisher = require('./SchedulePublisher');
 
 class SchedulerApp extends App {
     async _run() {
@@ -20,7 +18,11 @@ class SchedulerApp extends App {
         this._initHealthcheckApi(this.getConfig().get('LISTEN_PORT'));
         this._channel = await this._amqp.getConnection().createChannel();
         this._queueCreator = new QueueCreator(this._channel);
-        new Scheduler(this);
+
+        const flowsDao = new FlowsDao(this.getConfig(), this.getLogger(), this.getK8s().getCRDClient());
+        const schedulePublisher = new SchedulePublisher(this.getLogger(), this.getQueueCreator(), this.getAmqpChannel());
+        const scheduler = new Scheduler(this.getConfig(), flowsDao, schedulePublisher);
+        await scheduler.run();
     }
 
     getK8s() {
@@ -44,8 +46,8 @@ class SchedulerApp extends App {
     }
 
     static get NAME() {
-        return 'flows-operator';
+        return 'scheduler';
     }
 }
-module.exports = SchedulerApp;
 
+module.exports = SchedulerApp;

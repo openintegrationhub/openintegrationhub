@@ -123,9 +123,9 @@ const config = {
                     reason: 'client_not_authorized',
                 };
             } else if (
-                ctx.oidc.client.applicationType === 'native' &&
-                ctx.oidc.params.response_type !== 'none' &&
-                !ctx.oidc.result) { // TODO: in 3.x require consent to be passed in results
+                ctx.oidc.client.applicationType === 'native'
+                && ctx.oidc.params.response_type !== 'none'
+                && !ctx.oidc.result) { // TODO: in 3.x require consent to be passed in results
                 return {
                     error: 'interaction_required',
                     error_description: 'native clients require End-User interaction',

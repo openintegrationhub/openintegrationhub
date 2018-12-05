@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header>
+        <Configuration Supplier="TT" FlowId="abc123">
+            <ApiHost>https://int.foo.com</ApiHost>
+            <ApiKey>foo</ApiKey>
+            <ApiSecret>bar</ApiSecret>
+            <Currency>USD</Currency>
+        </Configuration>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <OTA_HotelAvailRQ xmlns="http://www.opentravel.org/OTA/2003/05" EchoToken="2590cbc9-50f2-4161-babb-c97cc07dfe7d"
+                          PrimaryLangID="en-US" TimeStamp="2016-12-05T01:10:14.057-08:00" Version="1.0">
+            <POS>
+                <Source>
+                    <RequestorID ID="GOOGLE" ID_Context="BAR" Type="18"/>
+                </Source>
+            </POS>
+        </OTA_HotelAvailRQ>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

@@ -1,8 +1,8 @@
 const Logger = require('@basaas/node-logger');
-const conf = require('../conf/index');
 const fs = require('fs');
 const path = require('path');
 const jose = require('node-jose');
+const conf = require('../conf/index');
 
 const { JWK: { createKeyStore } } = jose;
 

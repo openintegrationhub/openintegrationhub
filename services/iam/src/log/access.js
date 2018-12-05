@@ -1,7 +1,8 @@
-
+const Logger = require('@basaas/node-logger');
 const moment = require('moment');
 const conf = require('./../conf');
-const log = require('@basaas/node-logger').getLogger(`${conf.general.loggingNameSpace}/access`);
+
+const log = Logger.getLogger(`${conf.general.loggingNameSpace}/access`);
 
 const logExpress = (req) => {
     const now = moment();

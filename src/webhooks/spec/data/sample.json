@@ -1,0 +1,10 @@
+{
+  "Subscription": {
+    "_attr": {
+      "xmlns": "http://schema.broadsoft.com/xsi"
+    },
+    "targetIdType": "System",
+    "event": " Advanced Call ",
+    "applicationId": "elastic.io"
+  }
+}

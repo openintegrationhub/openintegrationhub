@@ -1,0 +1,26 @@
+{
+  "name": "@openintegrationhub/scheduler",
+  "description": "Scheduler framework",
+  "version": "1.0.0",
+  "author": "Open Integration Hub",
+  "engines": {
+    "node": "^8.0.0"
+  },
+  "scripts": {
+    "prepublishOnly": "npm test",
+    "pretest": "eslint ./src",
+    "test": "mocha spec --recursive"
+  },
+  "dependencies": {
+    "bunyan": "1.8.12"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "eslint": "4.18.2",
+    "eslint-plugin-mocha": "4.12.1",
+    "eslint-plugin-node": "6.0.1",
+    "mocha": "5.2.0",
+    "sinon": "7.1.1"
+  },
+  "main": "src/index.js"
+}

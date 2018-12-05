@@ -1,7 +1,7 @@
 const Logger = require('@basaas/node-logger');
 const passport = require('passport');
-const jwtUtils = require('./../util/jwt');
 const rp = require('request-promise');
+const jwtUtils = require('./../util/jwt');
 
 const basic = require('../oidc/helper/basic-auth-header');
 const CONSTANTS = require('../constants');
@@ -13,14 +13,13 @@ const log = Logger.getLogger(`${conf.general.loggingNameSpace}/auth`, {
     level: 'debug',
 });
 
-const isAdminRole = role => 
-    role === CONSTANTS.ROLES.ADMIN;
+const isAdminRole = role => role === CONSTANTS.ROLES.ADMIN;
 
 const allRequiredElemsExistsInArray = (array, requiredElems) => {
 
     let hit = 0;
 
-    for (let i = 0; i < requiredElems.length; i++) {
+    for (let i = 0; i < requiredElems.length; i += 1) {
         if (array.indexOf(requiredElems[i]) >= 0) {
             hit += 1;
         }
@@ -32,12 +31,12 @@ const allRequiredElemsExistsInArray = (array, requiredElems) => {
 module.exports = {
 
     hasPermissions: requiredPermissions => (req, res, next) => {
-        const { role, permissions } = req.__HEIMDAL__;
+        const { role, permissions } = req.user;
 
         if (role === CONSTANTS.ROLES.ADMIN
-                || (role === CONSTANTS.ROLES.SERVICE_ACCOUNT &&
-                    permissions.length &&
-                    allRequiredElemsExistsInArray(permissions, requiredPermissions)
+                || (role === CONSTANTS.ROLES.SERVICE_ACCOUNT
+                    && permissions.length
+                    && allRequiredElemsExistsInArray(permissions, requiredPermissions)
                 )) {
             return next();
         } else {
@@ -99,13 +98,11 @@ module.exports = {
 
     validateAuthentication: async (req, res, next) => {
         let payload = null;
-        let authType = null;
         let client = null;
 
         /** User has a valid cookie */
         if (req.user) {
-            req.__HEIMDAL__ = req.user;
-            req.__HEIMDAL__.userid = req.user._id;
+            req.user.userid = req.user._id;
             return next();
         }
 
@@ -113,7 +110,7 @@ module.exports = {
             return next({ status: 401 });
         }
 
-        authType = req.headers['x-auth-type'] ? req.headers['x-auth-type'] : conf.general.authType;
+        const authType = req.headers['x-auth-type'] ? req.headers['x-auth-type'] : conf.general.authType;
         switch (authType) {
             case 'oidc':
                 client = {
@@ -176,14 +173,14 @@ module.exports = {
                 return next({ status: 400 });
         }
         if (payload) {
-            req.__HEIMDAL__ = req.__HEIMDAL__ || {};
-            req.__HEIMDAL__.token = req.headers.authorization;
-            req.__HEIMDAL__.auth = payload;
-            req.__HEIMDAL__.username = payload.username;
-            req.__HEIMDAL__.userid = payload.sub;
-            req.__HEIMDAL__.memberships = payload.memberships;
-            req.__HEIMDAL__.permissions = payload.permissions;
-            req.__HEIMDAL__.role = payload.role;
+            req.user = req.user || {};
+            req.user.token = req.headers.authorization;
+            req.user.auth = payload;
+            req.user.username = payload.username;
+            req.user.userid = payload.sub;
+            req.user.memberships = payload.memberships;
+            req.user.permissions = payload.permissions;
+            req.user.role = payload.role;
             return next();
         } else {
             log.error('JWT payload is empty or undefined', { payload });
@@ -194,7 +191,7 @@ module.exports = {
 
     isAdmin: (req, res, next) => {
 
-        if (isAdminRole(req.__HEIMDAL__.role)) {
+        if (isAdminRole(req.user.role)) {
             return next();
         } 
         
@@ -204,11 +201,11 @@ module.exports = {
 
     paramsMatchesUserId: (req, res, next) => {
 
-        if (isAdminRole(req.__HEIMDAL__.role)) {
+        if (isAdminRole(req.user.role)) {
             return next();
         }
 
-        if (req.__HEIMDAL__.userid === req.params.id) {
+        if (req.user.userid === req.params.id) {
             return next();
         } 
         
@@ -217,7 +214,7 @@ module.exports = {
     },
 
     isLoggedIn: (req, res, next) => {
-        if (req.__HEIMDAL__.auth || (req.__HEIMDAL__.role === CONSTANTS.ROLES.SERVICE_ACCOUNT && req.__HEIMDAL__.userid)) {
+        if (req.user.auth || (req.user.role === CONSTANTS.ROLES.SERVICE_ACCOUNT && req.user.userid)) {
             return next();
         } 
         
@@ -229,11 +226,11 @@ module.exports = {
         // how to be sure that this is a TenantID?
         const id = req.params.id;
 
-        if (isAdminRole(req.__HEIMDAL__.role)) {
+        if (isAdminRole(req.user.role)) {
             return next();
         } 
-        if (req.__HEIMDAL__.memberships && req.__HEIMDAL__.memberships.length > 0) {
-            const found = req.__HEIMDAL__.memberships.find(element => (element.tenant === id && element.role === CONSTANTS.MEMBERSHIP_ROLES.TENANT_ADMIN));
+        if (req.user.memberships && req.user.memberships.length > 0) {
+            const found = req.user.memberships.find(element => (element.tenant === id && element.role === CONSTANTS.MEMBERSHIP_ROLES.TENANT_ADMIN));
             return (found && found.tenant) ? next() : next({ status: 403 });
         }
 

@@ -213,7 +213,7 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(200);
 
-            const fetchNewTokenResp = await request.get('/token')
+            const fetchNewTokenResp = await request.get('/api/v1/tokens/refresh')
                 .set('Accept', /application\/json/)
                 .set('Authorization', `Bearer ${userToken}`);
 
@@ -332,7 +332,7 @@ describe('routes', () => {
             const userCookie = response.headers['set-cookie'].pop().split(';')[0];
 
             /* Refresh token success */
-            await request.get('/token')
+            await request.get('/api/v1/tokens/refresh')
                 .set('Cookie', userCookie)
                 .set('Accept', /application\/json/)
                 .expect(200);
@@ -344,13 +344,13 @@ describe('routes', () => {
                 .expect(200);
 
             /* Refresh token fails */
-            await request.get('/token')
+            await request.get('/api/v1/tokens/refresh')
                 .set('Cookie', userCookie)
                 .set('Accept', /application\/json/)
                 .expect(401);
 
             /* Refresh token success with user token */
-            await request.get('/token')
+            await request.get('/api/v1/tokens/refresh')
                 .set('Authorization', userToken)
                 .set('Accept', /application\/json/)
                 .expect(200);
@@ -363,7 +363,7 @@ describe('routes', () => {
                 .expect(200);
 
             /* Refresh token fails with user token */
-            await request.get('/token')
+            await request.get('/api/v1/tokens/refresh')
                 .set('Authorization', userToken)
                 .set('Accept', /application\/json/)
                 .expect(403);
@@ -381,7 +381,7 @@ describe('routes', () => {
             status: CONSTANTS.STATUS.ACTIVE,
             password: 'testpwd',
             role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
-            permissions: [PERMISSIONS['ephemeral-token:create']],
+            permissions: [PERMISSIONS['token.ephemeral.create']],
         };
 
         const testUserData = {
@@ -421,7 +421,12 @@ describe('routes', () => {
             const serviceAccountToken = `Bearer ${response.body.token}`;
 
             /* Service account can create a ephemeral token for the given user id */
-            const portTokenResponse = await request.post(`/ephemeral-token/${userId}`)
+            const portTokenResponse = await request.post('/api/v1/tokens/ephemeral')
+                .send({
+                    accountId: userId,
+                    expiresIn: '1h',
+                    consumerServiceId: 'someId',
+                })
                 .set('Authorization', serviceAccountToken)
                 .set('Accept', /application\/json/)
                 .expect(200);
@@ -431,6 +436,36 @@ describe('routes', () => {
                 .set('Authorization', `Bearer ${portTokenResponse.body.token}`)
                 .set('Accept', /application\/json/)
                 .expect(200);
+
+        });
+
+        xtest('introspect service token', async () => {
+
+            /* Log in as service account */
+            // const response = await request.post('/login')
+            //     .send({
+            //         username: serviceAccountData.username,
+            //         password: serviceAccountData.password,
+            //     })
+            //     .set('Accept', /application\/json/)
+            //     .expect(200);
+            // const serviceAccountToken = `Bearer ${response.body.token}`;
+            //
+            // /* Service account can create a ephemeral token for the given user id */
+            // const portTokenResponse = await request.post('/api/v1/tokens/ephemeral')
+            //     .send({
+            //         accountId: userId,
+            //         expiresIn: '1h',
+            //     })
+            //     .set('Authorization', serviceAccountToken)
+            //     .set('Accept', /application\/json/)
+            //     .expect(200);
+            //
+            // /* Service account can fetch user data */
+            // await request.get(`/api/v1/users/${userId}`)
+            //     .set('Authorization', `Bearer ${portTokenResponse.body.token}`)
+            //     .set('Accept', /application\/json/)
+            //     .expect(200);
 
         });
 
@@ -489,7 +524,7 @@ describe('RSA Signing', () => {
 
         test('token verification is successful', async () => {
 
-            await request.get('/token')
+            await request.get('/api/v1/tokens/refresh')
                 .set('Accept', /application\/json/)
                 .set('Authorization', tokenAdmin)
                 .expect(200);

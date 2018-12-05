@@ -4,12 +4,11 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 
 const jsonParser = bodyParser.json();
+const Logger = require('@basaas/node-logger');
 const conf = require('./../conf');
 const auth = require('./../util/auth');
 const TenantDAO = require('./../dao/tenants');
 const UserDAO = require('./../dao/users');
-
-const Logger = require('@basaas/node-logger');
 
 const log = Logger.getLogger(`${conf.general.loggingNameSpace}/user`, {
     level: 'debug',

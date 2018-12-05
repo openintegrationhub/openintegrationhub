@@ -1,6 +1,6 @@
+const Logger = require('@basaas/node-logger');
 const Account = require('./../models/account');
 const CONF = require('./../conf');
-const Logger = require('@basaas/node-logger');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/userDao`);
 const auditLog = Logger.getAuditLogger('user');
@@ -37,7 +37,9 @@ const UserDAO = {
         return account.toJSON();
     },
 
-    update: async ({ id, userObj, partialUpdate = false, method }) => {
+    update: async ({
+        id, userObj, partialUpdate = false, method, 
+    }) => {
 
         const updateOperation = partialUpdate ? { $set: userObj } : userObj;
 
@@ -88,8 +90,7 @@ const UserDAO = {
         _id: userId,
     }, {
         $pull: {
-            memberships: { $elemMatch: { tenant: tenantId },
-            },
+            memberships: { $elemMatch: { tenant: tenantId } },
         },
     }),
 

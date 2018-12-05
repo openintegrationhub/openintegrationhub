@@ -1,6 +1,6 @@
+const Logger = require('@basaas/node-logger');
 const Tenant = require('./../models/tenant');
 const CONF = require('./../conf');
-const Logger = require('@basaas/node-logger');
 const UserDAO = require('./users');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/tenantDao`);

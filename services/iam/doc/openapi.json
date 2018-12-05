@@ -27,6 +27,10 @@
       "description": "tenant routes and definitions"
     },
     {
+      "name": "token",
+      "description": "tokens"
+    },
+    {
       "name": "misc",
       "description": "Health check & co"
     }
@@ -61,7 +65,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Login"
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ]
               }
             }
           }
@@ -72,7 +87,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccessToken"
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Auth token"
+                    }
+                  }
                 }
               }
             }
@@ -104,30 +124,19 @@
         }
       }
     },
-    "/token": {
+    "/.well-known/jwks.json": {
       "get": {
         "tags": [
           "authentication"
         ],
-        "summary": "Returns a fresh JWT token. Works only with x-auth-type 'basic'",
+        "summary": "Returns a list of JWKs and public keys/certificates used by the service",
         "description": "",
-        "operationId": "refreshToken",
+        "operationId": "getJwks",
         "responses": {
           "200": {
-            "description": "New Token",
+            "description": "Get public keys",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccessToken"
-                }
-              }
             }
-          },
-          "401": {
-            "description": "Current token either expired or client is not logged in"
-          },
-          "403": {
-            "description": "Cannot login user. Account is either disabled or a precondition is missing."
           }
         }
       }
@@ -161,7 +170,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArrayOfTenants"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tenant"
+                  }
                 }
               }
             }
@@ -181,7 +193,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TenantRequest"
+                "$ref": "#/components/schemas/MutableTenant"
               }
             }
           }
@@ -207,7 +219,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TenantResponse"
+                  "$ref": "#/components/schemas/Tenant"
                 }
               }
             }
@@ -239,7 +251,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TenantRequest"
+                "$ref": "#/components/schemas/MutableTenant"
               }
             }
           }
@@ -302,7 +314,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArrayOfUserTenantContext"
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "user": {
+                        "type": "string",
+                        "description": "User Id"
+                      },
+                      "tenant": {
+                        "type": "string",
+                        "description": "Tenant Id"
+                      },
+                      "role": {
+                        "$ref": "#/components/schemas/MembershipRole"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -334,7 +361,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserBody"
+                "$ref": "#/components/schemas/MutableUser"
               }
             }
           }
@@ -409,7 +436,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArrayOfUsers"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
                 }
               }
             }
@@ -429,7 +459,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserObject"
+                "$ref": "#/components/schemas/MutableUser"
               }
             }
           }
@@ -440,7 +470,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserObject"
+                  "_id": "string"
                 }
               }
             }
@@ -462,7 +492,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserObject"
+                  "$ref": "#/components/schemas/User"
                 }
               }
             }
@@ -494,7 +524,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserObject"
+                "$ref": "#/components/schemas/MutableUser"
               }
             }
           }
@@ -530,7 +560,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserObject"
+                "$ref": "#/components/schemas/MutableUser"
               }
             }
           }
@@ -593,7 +623,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserObject"
+                  "$ref": "#/components/schemas/User"
                 }
               }
             }
@@ -637,6 +667,182 @@
           }
         }
       }
+    },
+    "/tokens": {
+      "get": {
+        "tags": [
+          "token"
+        ],
+        "summary": "Get all tokens",
+        "description": "This can only be done by an admin.",
+        "operationId": "getTokens",
+        "responses": {
+          "200": {
+            "description": "List of all tokens",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Token"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tokens/ephemeral": {
+      "post": {
+        "tags": [
+          "token"
+        ],
+        "summary": "Create an ephemeral token",
+        "description": "This can only be done by a privileged service account or an admin.",
+        "operationId": "createEphemeralToken",
+        "requestBody": {
+          "description": "Creates and stores an ephemeral token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "accountId": {
+                    "type": "string"
+                  },
+                  "consumerServiceId": {
+                    "type": "string"
+                  },
+                  "expiresIn": {
+                    "type": "string",
+                    "description": "time in ms"
+                  }
+                },
+                "required": [
+                  "accountId",
+                  "expiresIn"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tokens/introspect": {
+      "post": {
+        "tags": [
+          "token"
+        ],
+        "summary": "Introspect a token",
+        "description": "This can only be done by a privileged service account or an admin.",
+        "operationId": "introspectToken",
+        "requestBody": {
+          "description": "Introspects and returns token data or current user data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "token"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/token/:id": {
+      "get": {
+        "tags": [
+          "token"
+        ],
+        "summary": "get a token by id",
+        "description": "This can only be done by a logged in user/service account with the required privileges.",
+        "operationId": "getTokenById",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "token"
+        ],
+        "summary": "delete a token",
+        "description": "This can only be done by a privileged account/admin.",
+        "operationId": "deleteToken",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -653,36 +859,20 @@
         "type": "string",
         "enum": [
           "ADMIN",
-          "INSTANCE_ADMIN"
+          "USER"
         ]
       },
       "MembershipRole": {
         "type": "string",
         "enum": [
           "TENANT_ADMIN",
-          "EDITOR",
-          "TRANSLATOR",
-          "GUEST"
+          "TENANT_DEVELOPER",
+          "TENANT_INTEGRATOR",
+          "TENANT_GUEST"
         ]
       },
-      "Login": {
-        "title": "Login data",
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "username",
-          "password"
-        ]
-      },
-      "TenantRequest": {
-        "title": "Tenant Schema",
+      "MutableTenant": {
+        "title": "MutableTenant",
         "type": "object",
         "properties": {
           "name": {
@@ -701,62 +891,75 @@
           "name"
         ]
       },
-      "TenantResponse": {
+      "Tenant": {
         "title": "Tenant Schema",
         "type": "object",
+        "allOf": [{
+          "$ref": "#/components/schemas/MutableTenant"
+        }],
         "properties": {
-          "id": {
+          "_id": {
             "type": "string",
             "description": "id of tenant organization"
           },
-          "name": {
-            "type": "string",
-            "description": "name of tenant organization"
+          "createdAt": {
+            "type": "string($date-time)"
           },
-          "status": {
-            "$ref": "#/components/schemas/Status"
-          },
-          "confirmed": {
-            "type": "boolean",
-            "description": "true, if the confirmation link/email has been triggered"
+          "updatedAt": {
+            "type": "string($date-time)"
           }
         },
         "required": [
-          "name"
+          "name",
+          "_id"
         ]
       },
-      "UserBody": {
-        "title": "User body",
+      "Token": {
+        "title": "Token",
         "type": "object",
         "properties": {
-          "username": {
-            "type": "string",
-            "description": "Username as an email address"
+          "_id": {
+            "type": "string"
           },
-          "role": {
-            "$ref": "#/components/schemas/MembershipRole",
-            "description": "Role assigned to this user"
-          }
-        }
-      },
-      "UserId": {
-        "type": "object",
-        "properties": {
-          "id": {
+          "tokenId": {
             "type": "string",
-            "description": "Id of created user"
-          }
-        }
-      },
-      "AccessToken": {
-        "title": "Access token object",
-        "type": "object",
-        "properties": {
-          "token": {
+            "description": "This is a JTI"
+          },
+          "inquirer": {
             "type": "string",
-            "description": "Auth token"
+            "description": "id of the inquiring service account"
+          },
+          "initiator": {
+            "type": "string",
+            "description": "id of the initiator service"
+          },
+          "description": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "description": "An array containing the permissions",
+            "items": {
+              "type": "string"
+            },
+            "example": "token.ephemeral.create"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "EPHEMERAL_SERVICE_ACCOUNT"
+            ]
+          },
+          "createdAt": {
+            "type": "string($date-time)"
+          },
+          "updatedAt": {
+            "type": "string($date-time)"
           }
-        }
+        },
+        "required": [
+          "_id"
+        ]
       },
       "UserTenantContext": {
         "title": "User tenant membership",
@@ -776,14 +979,10 @@
           }
         }
       },
-      "UserObject": {
-        "title": "User information",
+      "MutableUser": {
+        "title": "Mutable user object",
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "description": "User Id"
-          },
           "username": {
             "type": "string",
             "description": "Username as an email address"
@@ -795,6 +994,10 @@
           "lastname": {
             "type": "string",
             "description": "lastname"
+          },
+          "password": {
+            "type": "string",
+            "description": "password"
           },
           "status": {
             "$ref": "#/components/schemas/Status"
@@ -818,11 +1021,31 @@
           "role"
         ]
       },
-      "ArrayOfTenants": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/TenantResponse"
-        }
+      "User": {
+        "title": "User object",
+        "type": "object",
+        "allOf": [{
+          "$ref": "#/components/schemas/MutableUser"
+        }],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User Id"
+          },
+          "createdAt": {
+            "type": "string($date-time)"
+          },
+          "updatedAt": {
+            "type": "string($date-time)"
+          }
+        },
+        "required": [
+          "_id",
+          "username",
+          "firstname",
+          "lastname",
+          "role"
+        ]
       },
       "resetPassword": {
         "type": "object",
@@ -831,18 +1054,6 @@
             "type": "string",
             "description": "password"
           }
-        }
-      },
-      "ArrayOfUsers": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/UserObject"
-        }
-      },
-      "ArrayOfUserTenantContext": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/UserTenantContext"
         }
       }
     }
