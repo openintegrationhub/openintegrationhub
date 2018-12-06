@@ -23,4 +23,4 @@ COPY . /usr/src/app
 RUN chown -R 1000:1000 /usr/src/app
 USER node
 
-CMD ["node", "server.js"]
+CMD ["node", "./app/index.js"]
