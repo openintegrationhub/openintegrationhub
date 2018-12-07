@@ -139,9 +139,10 @@ describe('HttpApi', () => {
                 expect(optsArg).to.be.a('object');
                 expect(optsArg).to.have.all.keys(['headers']);
                 expect(optsArg.headers).to.be.a('object');
-                expect(optsArg.headers).to.have.all.keys(['taskId', 'execId']);
+                expect(optsArg.headers).to.have.all.keys(['taskId', 'execId', 'userId']);
                 expect(optsArg.headers.taskId).to.equal(flow.id);
                 expect(optsArg.headers.execId).to.be.a('string');
+                expect(optsArg.headers.userId).to.equal('DOES_NOT_MATTER');
             });
         });
 
@@ -227,9 +228,10 @@ describe('HttpApi', () => {
                 expect(optsArg).to.be.a('object');
                 expect(optsArg).to.have.all.keys(['headers']);
                 expect(optsArg.headers).to.be.a('object');
-                expect(optsArg.headers).to.have.all.keys(['taskId', 'execId']);
+                expect(optsArg.headers).to.have.all.keys(['taskId', 'execId', 'userId']);
                 expect(optsArg.headers.taskId).to.equal(flow.id);
                 expect(optsArg.headers.execId).to.be.a('string');
+                expect(optsArg.headers.userId).to.equal('DOES_NOT_MATTER');
             });
         });
     });

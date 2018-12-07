@@ -18,7 +18,7 @@ spec:
       data:
         mapper:
           to: '"igor@elastic.io"'
-          subject: '"webhooks-flow from e.io'
+          subject: '"webhooks-flow from e.io"'
           textBody: |-
             "Body is: \n" &
             $string($$)
