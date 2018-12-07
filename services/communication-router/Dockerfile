@@ -3,6 +3,7 @@ WORKDIR /usr/src/communication-router
 
 COPY package.json yarn.lock ./
 COPY src/backendCommonsLib src/backendCommonsLib
+COPY src/webhooks src/webhooks
 COPY services/communication-router/package.json  services/communication-router/index.js ./services/communication-router/
 COPY services/communication-router/src services/communication-router/src
 COPY services/communication-router/config/default.json services/communication-router/config/default.json

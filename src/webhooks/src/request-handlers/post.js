@@ -106,7 +106,8 @@ class PostHandler extends BaseHandler {
     async createMessageOptions() {
         const headers = {
             taskId: this.getFlow().id,
-            execId: uuid().replace(/-/g, '')
+            execId: uuid().replace(/-/g, ''),
+            userId: 'DOES_NOT_MATTER'
         };
         return { headers };
     }
