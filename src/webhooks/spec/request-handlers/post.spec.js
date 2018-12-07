@@ -137,10 +137,11 @@ describe('Post Request Handler', () => {
                 const opts = await post.createMessageOptions();
                 expect(opts).to.be.a('object');
                 expect(opts).to.have.all.keys(['headers']);
-                expect(opts.headers).to.have.all.keys(['taskId', 'execId']);
+                expect(opts.headers).to.have.all.keys(['taskId', 'execId', 'userId']);
                 expect(opts.headers.taskId).to.equal('test-id');
                 expect(opts.headers.execId).to.be.a('string');
                 expect(opts.headers.execId.length).to.equal(32);
+                expect(opts.headers.userId).to.equal('DOES_NOT_MATTER');
             });
         });
 
@@ -302,9 +303,10 @@ describe('Post Request Handler', () => {
                 expect(args[2]).to.be.a('object');
                 expect(Object.keys(args[2])).to.deep.equal(['headers']);
                 expect(args[2].headers).to.be.a('object');
-                expect(args[2].headers).to.have.all.keys(['execId', 'taskId']);
+                expect(args[2].headers).to.have.all.keys(['execId', 'taskId', 'userId']);
                 expect(args[2].headers.execId.length).to.equal(32);
                 expect(args[2].headers.taskId).to.equal('test-flow-id');
+                expect(args[2].headers.userId).to.equal('DOES_NOT_MATTER');
             });
         });
     });
