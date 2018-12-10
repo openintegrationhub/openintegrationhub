@@ -242,8 +242,9 @@ describe('HttpApi', () => {
             });
 
             describe('without specifying Content-Type', () => {
-                it('should respond with 415', async () => {
-                    await request.post(`/hook/123`)
+                it('should respond with 415', () =>
+                    request
+                        .post(`/hook/123`)
                         .send(JSON.stringify({
                             msg: 'Lorem ipsum'
                         }))
@@ -251,13 +252,14 @@ describe('HttpApi', () => {
                         .expect(415)
                         .expect({
                             error: 'Content-Type header is missing'
-                        });
-                });
+                        })
+                );
             });
 
             describe('text/plain payload', () => {
                 it('should post successfully', () =>
-                    request.post(`/hook/123`)
+                    request
+                        .post(`/hook/123`)
                         .set('Content-Type', 'text/plain')
                         .send(JSON.stringify({
                             msg: 'Lorem ipsum'
@@ -269,7 +271,8 @@ describe('HttpApi', () => {
 
             describe('text/csv payload', () => {
                 it('should post successfully', () =>
-                        request.post(`/hook/123`)
+                    request
+                        .post(`/hook/123`)
                         .set('Content-Type', 'text/csv')
                         .send('foo,bar,baz\nbaz,bar,foo')
                         .expect(200)
