@@ -59,7 +59,7 @@ function ensureRequestId(req, res, next) {
 
 //@todo move to class
 function errorHandler(err, req, res, next) { //eslint-disable-line no-unused-vars
-    res.status(err.statusCode || 500).json({
+    res.status(err.status || err.statusCode || 500).json({
         error: err.message
     });
 }

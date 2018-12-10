@@ -5,6 +5,8 @@ const MessagePublisher = require('../src/message-publishers/base');
 const sinon = require('sinon');
 const { Head, Post, Get } = require('../src/request-handlers');
 const { expect } = require('chai');
+const fs = require('fs');
+const path = require('path');
 
 describe('HttpApi', () => {
     function createConfig(conf = {}) {
@@ -147,6 +149,11 @@ describe('HttpApi', () => {
         });
 
         describe('POST /hook/:id', async () => {
+            function assertSuccessResponseBody (res) {
+                expect(res.body.message).to.equal('thank you');
+                expect(res.body.requestId).to.be.a('string');
+            }
+
             it('should respond 404', async () => {
                 flowsDao.findById.resolves(null);
                 await request.get('/hook/123?a=b')
@@ -232,6 +239,97 @@ describe('HttpApi', () => {
                 expect(optsArg.headers.taskId).to.equal(flow.id);
                 expect(optsArg.headers.execId).to.be.a('string');
                 expect(optsArg.headers.userId).to.equal('DOES_NOT_MATTER');
+            });
+
+            describe('without specifying Content-Type', () => {
+                it('should respond with 415', () =>
+                    request
+                        .post(`/hook/123`)
+                        .send(JSON.stringify({
+                            msg: 'Lorem ipsum'
+                        }))
+                        .unset('Content-Type')
+                        .expect(415)
+                        .expect({
+                            error: 'Content-Type header is missing'
+                        })
+                );
+            });
+
+            describe('text/plain payload', () => {
+                it('should post successfully', () =>
+                    request
+                        .post(`/hook/123`)
+                        .set('Content-Type', 'text/plain')
+                        .send(JSON.stringify({
+                            msg: 'Lorem ipsum'
+                        }))
+                        .expect(200)
+                        .expect(assertSuccessResponseBody)
+                );
+            });
+
+            describe('text/csv payload', () => {
+                it('should post successfully', () =>
+                    request
+                        .post(`/hook/123`)
+                        .set('Content-Type', 'text/csv')
+                        .send('foo,bar,baz\nbaz,bar,foo')
+                        .expect(200)
+                        .expect(assertSuccessResponseBody)
+                );
+            });
+
+            describe('application/xml payload', () => {
+                it('should post successfully', () =>
+                    request
+                        .post(`/hook/123`)
+                        .set('Content-Type', 'application/xml')
+                        .send(fs.readFileSync(path.join(__dirname, '/data/po.xml'), 'utf-8'))
+                        .expect(200)
+                        .expect(assertSuccessResponseBody)
+                );
+            });
+
+            describe('invalid application/xml payload', () => {
+                it('should receive 400 "Bad Request"', () =>
+                    request
+                        .post(`/hook/123`)
+                        .set('Content-Type', 'application/xml')
+                        .send('<bar><hasi></bar>')
+                        .expect({
+                            error: 'Unexpected close tag\nLine: 0\nColumn: 17\nChar: >'
+                        })
+                        .expect(400)
+                );
+            });
+
+            describe('application/x-www-form-urlencoded payload', () => {
+                it('should post successfully', () =>
+                    request
+                        .post(`/hook/123`)
+                        .set('Content-Type', 'application/x-www-form-urlencoded')
+                        .send('param1=hello&foo[bar][baz]=foobarbaz')
+                        .expect(200)
+                        .expect(assertSuccessResponseBody)
+                );
+            });
+
+            describe('multipart/form-data with', () => {
+                describe('values payload', () => {
+                    it('should post successfully', () =>
+                        request
+                            .post(`/hook/123`)
+                            .field('foo', 'value')
+                            .field('bar', 'value1')
+                            .field('bar', 'value2')
+                            .field('bar', 'value3')
+                            .attach('attachment', path.join(__dirname, '/data/sample.jpg'))
+                            // TODO it would be nice to test attachments too
+                            .expect(200)
+                            .expect(assertSuccessResponseBody)
+                    );
+                });
             });
         });
     });
