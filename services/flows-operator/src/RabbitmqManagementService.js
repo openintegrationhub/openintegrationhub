@@ -3,16 +3,15 @@ const url = require('url');
 const RabbitmqManagement = require('rabbitmq-stats');
 
 class RabbitmqManagementService {
-
-    constructor(app) {
-        this._app = app;
-        this._logger = app.getLogger().child({service: 'RabbitmqManagement'});
+    constructor(config, logger) {
+        this._config = config;
+        this._logger = logger.child({service: 'RabbitmqManagement'});
     }
 
     async start() {
-        const managementUri = this._app.getConfig().get('RABBITMQ_MANAGEMENT_URI');
+        const managementUri = this._config.get('RABBITMQ_MANAGEMENT_URI');
         const parsedUrl = new url.URL(managementUri);
-        const {username, password } = parsedUrl;
+        const { username, password } = parsedUrl;
         this._vhost = parsedUrl.pathname.replace(/^\//, '') || '/';
         parsedUrl.username = '';
         parsedUrl.password = '';

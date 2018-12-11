@@ -1,14 +1,14 @@
 const express = require('express');
-
 const Lib = require('backendCommonsLib');
-const { Flow, errors } = Lib;
+const { errors } = Lib;
 
 class HttpApi {
-    constructor(app) {
-        this._logger = app.getLogger().child({service: 'HttpApi'});
-        this._crdClient = app.getK8s().getCRDClient();
+    constructor(config, logger, flowsDao) {
+        this._config = config;
+        this._logger = logger.child({service: 'HttpApi'});
+        this._flowsDao = flowsDao;
         this._app = express();
-        this._app.get('/v1/tasks/:taskId/steps/:stepId', this._getStepInfo.bind(this));
+        this._app.get('/v1/tasks/:flowId/steps/:stepId', this._getStepInfo.bind(this));
         this._app.get('/healthcheck', this._healthcheck.bind(this));
     }
     listen(listenPort) {
@@ -18,12 +18,11 @@ class HttpApi {
     async _getStepInfo(req, res) {
         this._logger.trace(req.params, 'Node info request');
         try {
-            const flow = await this._crdClient.flows(req.params.taskId).get();
+            const flow = await this._flowsDao.findById(req.params.flowId);
             if (!flow) {
                 throw new errors.ResourceNotFoundError('Flow is not found');
             }
-            const flowModel = new Flow(flow.body);
-            const node = flowModel.getRecipeNodeByStepId(req.params.stepId);
+            const node = flow.getRecipeNodeByStepId(req.params.stepId);
             if (!node) {
                 throw new errors.ResourceNotFoundError('Node is not found');
             }
