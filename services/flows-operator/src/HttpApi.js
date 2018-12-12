@@ -11,10 +11,12 @@ class HttpApi {
         this._app.get('/v1/tasks/:flowId/steps/:stepId', this._getStepInfo.bind(this));
         this._app.get('/healthcheck', this._healthcheck.bind(this));
     }
+
     listen(listenPort) {
         this._logger.info({port: listenPort}, 'Going to listen for http');
         this._app.listen(listenPort);
     }
+
     async _getStepInfo(req, res) {
         this._logger.trace(req.params, 'Node info request');
         try {
@@ -39,6 +41,7 @@ class HttpApi {
             return;
         }
     }
+
     async _healthcheck(req, res) {
         this._logger.trace('Healthcheck request');
         res.status(200).end();

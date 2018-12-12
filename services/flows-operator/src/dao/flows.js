@@ -17,7 +17,7 @@ class FlowsDao {
     }
 
     async findAll() {
-        return ((await this._crdClient.flows.get()).body.items || []).map(f => new Flow(f.body));
+        return ((await this._crdClient.flows.get()).body.items || []).map(item => new Flow(item));
     }
 }
 

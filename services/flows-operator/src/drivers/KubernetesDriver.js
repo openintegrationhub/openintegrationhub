@@ -1,4 +1,8 @@
 const BaseDriver = require('./BaseDriver');
+const uuid = require('uuid/v4');
+const _ = require('lodash');
+
+const ANNOTATION_KEY = 'annotation.flows.elastic.io';
 
 class KubernetesDriver extends BaseDriver {
     constructor(config, logger, k8s) {

@@ -4,5 +4,6 @@
     "DEFAULT_CPU_REQUEST": "100m",
     "DEFAULT_MEM_REQUEST": "256Mi",
     "RABBITMQ_MANAGEMENT_URI": "http://guest:guest@localhost:15672",
+    "RABBITMQ_URI_FLOWS": "amqp://localhost",
     "SELF_API_URI": "http://api-service.platform.svc.cluster.local:1234"
 }

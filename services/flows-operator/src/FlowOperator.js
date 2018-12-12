@@ -1,5 +1,5 @@
 //@see https://github.com/kubernetes/community/blob/master/contributors/devel/api-conventions.md
-const uuid = require('node-uuid');
+const uuid = require('uuid/v4');
 const _ = require('lodash');
 const { URL } = require('url');
 
@@ -263,7 +263,7 @@ class FlowOperator {
 
     async _createAmqpCredentials(flow) {
         const username = flow.id;
-        const password = uuid.v4();
+        const password = uuid();
 
         this._logger.trace('About to create RabbitMQ user');
         await this._rabbitmqManagement.createFlowUser({
