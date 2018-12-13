@@ -1,8 +1,7 @@
 const BaseDriver = require('./BaseDriver');
 const uuid = require('uuid/v4');
 const _ = require('lodash');
-
-const ANNOTATION_KEY = 'annotation.flows.elastic.io';
+const KubernetesRunningApp = require('./KubernetesRunningApp');
 
 class KubernetesDriver extends BaseDriver {
     constructor(config, logger, k8s) {
@@ -34,7 +33,7 @@ class KubernetesDriver extends BaseDriver {
     }
 
     async getAppList() {
-        return (await this._batchClient.jobs.get()).body.items; //@todo: RunningApp
+        return ((await this._batchClient.jobs.get()).body.items || []).map(i => new KubernetesRunningApp(i));
     }
 
     async _deployNode(flow, node, queues) {
@@ -57,7 +56,7 @@ class KubernetesDriver extends BaseDriver {
         return this._generateAppDefinition(flow, jobName, env, node);
     }
 
-    _generateAppDefinition(flowModel, appId, envVars, node) {
+    _generateAppDefinition(flow, appId, envVars, node) {
         const env = Object.keys(envVars).map(key => ({
             name: key,
             value: envVars[key]
@@ -67,7 +66,7 @@ class KubernetesDriver extends BaseDriver {
             name: 'ELASTICIO_AMQP_URI',
             valueFrom: {
                 secretKeyRef: {
-                    name: flowModel.id,
+                    name: flow.id,
                     key: 'AMQP_URI'
                 }
             }
@@ -80,15 +79,15 @@ class KubernetesDriver extends BaseDriver {
                 name: appId,
                 namespace: this._config.get('NAMESPACE'),
                 annotations: {
-                    [ANNOTATION_KEY]: flowModel.metadata.resourceVersion
+                    [KubernetesRunningApp.ANNOTATION_KEY]: flow.metadata.resourceVersion
                 },
                 ownerReferences: [
                     {
                         apiVersion: 'elastic.io/v1',
                         kind: 'Flow',
                         controller: true,
-                        name: flowModel.metadata.name,
-                        uid: flowModel.metadata.uid
+                        name: flow.metadata.name,
+                        uid: flow.metadata.uid
                     }
                 ]
             },
@@ -104,7 +103,7 @@ class KubernetesDriver extends BaseDriver {
                             name: 'apprunner',
                             imagePullPolicy: 'Always',
                             env,
-                            resources: this._prepareResourcesDefinition(flowModel, node)
+                            resources: this._prepareResourcesDefinition(flow, node)
                         }]
                     }
                 }

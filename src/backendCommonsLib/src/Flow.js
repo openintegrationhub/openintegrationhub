@@ -5,6 +5,14 @@ class Flow {
         Object.assign(this, crd.spec);
     }
 
+    get isDeleted() {
+        return !!this.metadata.deletionTimestamp;
+    }
+
+    get version() {
+        return this.metadata.resourceVersion;
+    }
+
     getFirstNode() {
         return this.nodes.find((step) => step.first);
     }

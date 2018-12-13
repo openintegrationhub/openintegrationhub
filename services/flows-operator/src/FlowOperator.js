@@ -40,56 +40,55 @@ class FlowOperator {
     async _loopBody() {
         //TODO any step here blocks all the job, that's shit. Timeouts, multiple execution threads with limits for
         //parallel jobs not to destroy backend;
-        const allJobs = await this._driver.getAppList();
-        const jobIndex = this._buildJobIndex(allJobs);
+        const flows = await this._flowsDao.findAll();
+        const allApps = await this._driver.getAppList();
+        const queuesStructure = await this._getQueuesStructure();
+        await this._processState(flows, allApps, queuesStructure);
+    }
+
+    async _processState(flows, allApps, queuesStructure) {
+        const appsIndex = this._buildJobIndex(allApps);
+        for (let flow of flows) {
+            await this._handleFlow(flow, appsIndex, queuesStructure);
+        }
+        await this._removeLostJobs(allApps, flows);
+    }
+
+    async _getQueuesStructure() {
         const queues = await this._rabbitmqManagement.getQueues();
         const exchanges = await this._rabbitmqManagement.getExchanges();
         const bindings = await this._rabbitmqManagement.getBindings();
-        const queuesStructure = this._buildMQIndex(queues, exchanges, bindings);
-        const flows = await this._flowsDao.findAll();
-        for (let flow of flows) {
-            await this._handleFlow(flow, jobIndex, queuesStructure);
-        }
-        await this._removeLostJobs(allJobs, flows);
+        return this._buildMQIndex(queues, exchanges, bindings);
     }
 
     _buildJobIndex(allJobs) {
-        return allJobs.reduce((index, job) => {
-            const flowId = this._getFlowIdFromJob(job);
-            const nodeId = this._getNodeIdFromJob(job);
+        return allJobs.reduce((index, app) => {
+            const flowId = app.flowId;
+            const nodeId = app.nodeId;
             index[flowId] = index[flowId] || {};
-            index[flowId][nodeId] = job;
+            index[flowId][nodeId] = app;
             return index;
         }, {});
     }
 
-    async _handleFlow(flow, jobsIndex, queuesStructure) {
+    async _handleFlow(flow, appsIndex, queuesStructure) {
         const flowId = flow.id;
 
-        if (flow.metadata.deletionTimestamp) {
-            this._logger.trace({name: flow.metadata.name}, 'Going to delete flow');
-            for (let node of Object.values(jobsIndex[flowId] || {})) {
-                this._logger.trace({flow: flow.metadata.name, node: node.metadata.name}, 'Going to delete flow node');
-                await this._driver.destroyApp(node.metadata.name);
-            }
+        // if flow is deleted
+        if (flow.isDeleted) {
+            this._logger.trace({name: flow.id}, 'Going to delete flow');
 
-            if (queuesStructure[flowId]) {
-                const channel = await this._channelPromise;
-                for (let queue of queuesStructure[flowId].queues) {
-                    await channel.deleteQueue(queue);
-                }
-                for (let exchange of queuesStructure[flowId].exchanges) {
-                    await channel.deleteExchange(exchange);
-                }
-            }
-
+            await this._deleteRunningAppsForFlow(flow, appsIndex);
+            await this._deleteInfrastructureForFlow(flow, queuesStructure);
             await this._deleteFlowSecret(flow);
 
+            // delete finalizer
             flow.metadata.finalizers = (flow.metadata.finalizers || []).filter(finalizer => finalizer !== FLOW_FINALIZER_NAME);
             //FIXME make sure 409 works. So non-sequential updates should go into next iteration
             //possibly handle revision field
-            this._flowsDao.update(flow);
+            await this._flowsDao.update(flow);
         } else {
+            // ensure finalizer is set
             if (!(flow.metadata.finalizers || []).includes(FLOW_FINALIZER_NAME)) {
                 flow.metadata.finalizers = (flow.metadata.finalizers || []).concat(FLOW_FINALIZER_NAME);
                 //FIXME make sure 409 works. So non-sequential updates should go into next iteration
@@ -97,46 +96,33 @@ class FlowOperator {
                 await this._flowsDao.update(flow);
             }
 
-            //@todo: optimise it in the future
-            const flowSecret = await this._getFlowSecret(flow);
-            if (!flowSecret) {
-                await this._createFlowSecret(flow);
-            }
+            // ensure secret
+            await this._ensureFlowSecret(flow);
 
             let totalRedeploy = Object.keys(flow.nodes).some((nodeId) => {
-                const job = jobsIndex[flowId] && jobsIndex[flowId][nodeId];
-                return job && (flow.metadata.resourceVersion !== job.metadata.annotations[ANNOTATION_KEY]);
+                const app = appsIndex[flowId] && appsIndex[flowId][nodeId];
+                return app && (flow.version !== app.flowVersion);
              });
-            totalRedeploy = totalRedeploy || _.difference(Object.keys(jobsIndex[flowId] || {}), (flow.nodes || []).map(node=>node.id)).length > 0;
+            totalRedeploy = totalRedeploy || _.difference(Object.keys(appsIndex[flowId] || {}), (flow.nodes || []).map(node=>node.id)).length > 0;
 
             if (totalRedeploy) {
-                this._logger.trace({name: flow.metadata.name}, 'Flow changed. Redeploy');
-                for (let node of Object.values(jobsIndex[flowId] || {})) {
-                    this._logger.trace({flow: flow.metadata.name, node: node.metadata.name}, 'Going to delete flow node');
-                    await this._driver.destroyApp(node.metadata.name);
-                }
-                if (queuesStructure[flowId]) {
-                    const channel = await this._channelPromise;
-                    for (let queue of queuesStructure[flowId].queues) {
-                        await channel.deleteQueue(queue);
-                    }
-                    for (let exchange of queuesStructure[flowId].exchanges) {
-                        await channel.deleteExchange(exchange);
-                    }
-                }
+                this._logger.trace({name: flow.id}, 'Flow changed. Redeploy');
+                await this._deleteRunningAppsForFlow(flow, appsIndex);
+                await this._deleteInfrastructureForFlow(flow, queuesStructure); // delete all queues? really?
+
                 const queues =  await this._queueCreator.makeQueuesForTheFlow(flow);
                 for (let node of flow.nodes) {
-                    this._logger.trace({flow: flow.metadata.name, node: node.id}, 'Going to create flow node');
+                    this._logger.trace({flow: flow.id, node: node.id}, 'Going to create flow node');
                     await this._driver.createApp(flow, node, queues);
                 }
             } else {
-                this._logger.trace({name: flow.metadata.name}, 'Nothing changed. Ensure nodes and queues exists');
+                this._logger.trace({name: flow.id}, 'Nothing changed. Ensure nodes and queues exists');
 
                 //TODO ensure queues/exchanges. Use QueuesStructure table
                 const queues =  await this._queueCreator.makeQueuesForTheFlow(flow);
                 for (let node of flow.nodes) {
-                    if (!jobsIndex[flowId] || !jobsIndex[flowId][node.id]) {
-                        this._logger.trace({flow: flow.metadata.name, node: node.id}, 'Going to create flow node');
+                    if (!appsIndex[flowId] || !appsIndex[flowId][node.id]) {
+                        this._logger.trace({flow: flow.id, node: node.id}, 'Going to create flow node');
                         await this._driver.createApp(flow, node, queues);
                     }
                 }
@@ -144,13 +130,44 @@ class FlowOperator {
         }
     }
 
-    async _removeLostJobs(allJobs, allFlows) {
+    async _ensureFlowSecret(flow) {
+        const flowSecret = await this._getFlowSecret(flow);
+        if (!flowSecret) {
+            return this._createFlowSecret(flow);
+        }
+        return flowSecret;
+    }
+
+    async _deleteInfrastructureForFlow(flow, queuesStructure) {
+        const flowId = flow.id;
+        // delete all queues
+        if (queuesStructure[flowId]) {
+            const channel = await this._channelPromise;
+            for (let queue of queuesStructure[flowId].queues) {
+                await channel.deleteQueue(queue);
+            }
+            for (let exchange of queuesStructure[flowId].exchanges) {
+                await channel.deleteExchange(exchange);
+            }
+        }
+    }
+
+    async _deleteRunningAppsForFlow(flow, appsIndex) {
+        const flowId = flow.id;
+        // delete all containers
+        for (let app of Object.values(appsIndex[flowId] || {})) {
+            this._logger.trace({flow: flow.id, node: app.id}, 'Going to delete flow node');
+            await this._driver.destroyApp(app.id);
+        }
+    }
+
+    async _removeLostJobs(allApps, allFlows) {
         const flowsIndex = this._buildFlowsIndex(allFlows);
-        for (let job of allJobs) {
-            const flowId = this._getFlowIdFromJob(job);
-            const nodeId = this._getNodeIdFromJob(job);
+        for (let app of allApps) {
+            const flowId = app.flowId;
+            const nodeId = app.nodeId;
             if (!flowsIndex[flowId] || !flowsIndex[flowId][nodeId]) {
-                await this._driver.destroyApp(job.metadata.name);
+                await this._driver.destroyApp(app.id);
             }
         }
     }
@@ -164,14 +181,6 @@ class FlowOperator {
             });
             return index;
         }, {});
-    }
-
-    _getFlowIdFromJob(job) {
-        return job.spec.template.spec.containers[0].env.find((pair) => pair.name === 'ELASTICIO_FLOW_ID').value;
-    }
-
-    _getNodeIdFromJob(job) {
-        return job.spec.template.spec.containers[0].env.find((pair) => pair.name === 'ELASTICIO_STEP_ID').value;
     }
 
     _buildMQIndex(queues, exchanges, bindings) {
@@ -209,7 +218,7 @@ class FlowOperator {
                         apiVersion: 'elastic.io/v1',
                         kind: 'Flow',
                         controller: true,
-                        name: flow.metadata.name,
+                        name: flow.id,
                         uid: flow.metadata.uid
                     }
                 ]
@@ -224,6 +233,8 @@ class FlowOperator {
         });
 
         this._logger.debug('Secret has been created');
+
+        return flowSecret;
     }
 
     async _deleteFlowSecret(flow) {
