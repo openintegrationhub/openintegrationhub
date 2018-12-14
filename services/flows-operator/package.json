@@ -7,6 +7,7 @@
     "lint": "eslint ./index.js ./src",
     "test": "npm run lint",
     "start": "node index.js",
+    "start:dev": "npm start | bunyan",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/flows-operator:${VERSION} -f Dockerfile ../../"
   },
@@ -21,6 +22,7 @@
     "uuid": "3.3.2"
   },
   "devDependencies": {
+    "bunyan": "1.8.12",
     "eslint": "4.5.0",
     "eslint-plugin-mocha": "4.12.1",
     "eslint-plugin-node": "6.0.1"

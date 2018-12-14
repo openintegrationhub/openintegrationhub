@@ -1,18 +1,77 @@
-const BaseDriver = require('./BaseDriver');
+const BaseDriver = require('../BaseDriver');
 const uuid = require('uuid/v4');
 const _ = require('lodash');
 const KubernetesRunningApp = require('./KubernetesRunningApp');
+const FlowSecret = require('./FlowSecret');
 
 class KubernetesDriver extends BaseDriver {
     constructor(config, logger, k8s) {
         super();
         this._config = config;
         this._logger = logger;
+        this._coreClient = k8s.getCoreClient();
         this._batchClient = k8s.getBatchClient();
     }
 
-    async createApp(flow, node, queues) {
-        return this._deployNode(flow, node, queues);
+    async createApp(flow, node, envVars, secretEnvVars) {
+        this._logger.info({flow: flow.id}, 'Going to deploy job to k8s');
+        await this._ensureFlowSecret(flow, secretEnvVars);
+        const descriptor = this._buildDescriptor(flow, node, envVars);
+        this._logger.trace(descriptor, 'going to deploy a job to k8s');
+        try {
+            await this._batchClient.jobs.post({body: descriptor});
+        } catch (e) {
+            this._logger.error(e, 'Failed to deploy the job');
+        }
+    }
+
+    async _ensureFlowSecret(flow, secretEnvVars) {
+        const flowSecret = await this._getFlowSecret(flow);
+        if (!flowSecret) {
+            return this._createFlowSecret(flow, secretEnvVars);
+        }
+        return flowSecret;
+    }
+
+    async _getFlowSecret(flow) {
+        try {
+            const result = await this._coreClient.secrets(flow.id).get();
+            return FlowSecret.fromDescriptor(result.body);
+        } catch (e) {
+            if (e.statusCode === 404) {
+                return null;
+            }
+            throw e;
+        }
+    }
+
+    async _createFlowSecret(flow, data) {
+        this._logger.debug('About to create a secret');
+
+        const flowSecret = new FlowSecret({
+            metadata: {
+                name: flow.id,
+                namespace: this._config.get('NAMESPACE'),
+                ownerReferences: [
+                    {
+                        apiVersion: 'elastic.io/v1',
+                        kind: 'Flow',
+                        controller: true,
+                        name: flow.id,
+                        uid: flow.metadata.uid
+                    }
+                ]
+            },
+            data
+        });
+
+        await this._coreClient.secrets.post({
+            body: flowSecret.toDescriptor()
+        });
+
+        this._logger.debug('Secret has been created');
+
+        return flowSecret;
     }
 
     async destroyApp(appId) {
@@ -36,27 +95,15 @@ class KubernetesDriver extends BaseDriver {
         return ((await this._batchClient.jobs.get()).body.items || []).map(i => new KubernetesRunningApp(i));
     }
 
-    async _deployNode(flow, node, queues) {
-        let jobName = flow.id +'.'+ node.id;
-        jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
-        this._logger.info({jobName}, 'Going to deploy job to k8s');
-        const descriptor = this._buildDescriptor(flow, node, queues);
-        this._logger.trace(descriptor, 'going to deploy a job to k8s');
-        try {
-            await this._batchClient.jobs.post({body: descriptor});
-        } catch (e) {
-            this._logger.error(e, 'Failed to deploy the job');
-        }
+    _buildDescriptor(flow, node, envVars) {
+        const env = this._prepareEnvVars(flow, node, envVars);
+        return this._generateAppDefinition(flow, node, env);
     }
 
-    _buildDescriptor(flow, node, queues) {
-        let jobName = flow.id +'.'+ node.id;
-        jobName = jobName.toLowerCase().replace(/[^0-9a-z]/g, '');
-        const env = this._prepareEnvVars(flow, node, queues[node.id]);
-        return this._generateAppDefinition(flow, jobName, env, node);
-    }
+    _generateAppDefinition(flow, node, envVars) {
+        let appId = flow.id +'.'+ node.id;
+        appId = appId.toLowerCase().replace(/[^0-9a-z]/g, '');
 
-    _generateAppDefinition(flow, appId, envVars, node) {
         const env = Object.keys(envVars).map(key => ({
             name: key,
             value: envVars[key]
@@ -143,7 +190,6 @@ class KubernetesDriver extends BaseDriver {
         envVars.COMP_ID = 'does not matter';
         envVars.FUNCTION = node.function;
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
-
         envVars.API_USERNAME = 'does not matter';
         envVars.API_KEY = 'does not matter';
         envVars = Object.entries(envVars).reduce((env, [k, v]) => {

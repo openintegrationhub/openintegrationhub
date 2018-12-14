@@ -9,8 +9,8 @@ const {
 const FlowOperator = require('./FlowOperator.js');
 const RabbitmqManagementService = require('./RabbitmqManagementService.js');
 const HttpApi = require('./HttpApi.js');
-const KubernetesDriver = require('./drivers/KubernetesDriver');
-const FlowsDao = require('./dao/flows');
+const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
+const FlowsDao = require('./dao/FlowsK8sDao');
 
 class FlowOperatorApp extends App {
     async _run() {
@@ -30,7 +30,6 @@ class FlowOperatorApp extends App {
         const flowOperator = new FlowOperator(
             this.getConfig(),
             this.getLogger(),
-            this.getK8s(),
             this.getQueueCreator(),
             this.getRabbitmqManagement(),
             this.getAmqp().getConnection(),

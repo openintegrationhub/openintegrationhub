@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const RunningApp = require('./RunningApp');
+const RunningApp = require('../RunningApp');
 
 class KubernetesRunningApp extends RunningApp {
     constructor(app) {
