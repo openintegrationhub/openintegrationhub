@@ -6,11 +6,10 @@ const {
     AMQPService
 } = Lib;
 
-const FlowOperator = require('./FlowOperator.js');
-const RabbitmqManagementService = require('./RabbitmqManagementService.js');
-const HttpApi = require('./HttpApi.js');
-const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
-const FlowsDao = require('./dao/FlowsK8sDao');
+const { FlowOperator, KubernetesDriver } = require('@openintegrationhub/resource-coordinator');
+const RabbitmqManagementService = require('./RabbitmqManagementService');
+const HttpApi = require('./HttpApi');
+const FlowsK8sDao = require('./dao/FlowsK8sDao');
 
 class FlowOperatorApp extends App {
     async _run() {
@@ -20,7 +19,7 @@ class FlowOperatorApp extends App {
         this._k8s = new K8sService(this);
         await this._amqp.start();
         await this._k8s.start();
-        const flowsDao = new FlowsDao(this.getK8s());
+        const flowsDao = new FlowsK8sDao(this.getK8s());
         this._httpApi = new HttpApi(this.getConfig(), this.getLogger(), flowsDao);
         this._httpApi.listen(this.getConfig().get('LISTEN_PORT'));
         const channel = await this._amqp.getConnection().createChannel();

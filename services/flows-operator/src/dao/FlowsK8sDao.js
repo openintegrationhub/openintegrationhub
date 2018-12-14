@@ -1,6 +1,6 @@
 const Lib = require('backendCommonsLib');
 const { Flow } = Lib;
-const FlowsDao = require('./FlowsDao');
+const { FlowsDao } = require('@openintegrationhub/resource-coordinator');
 const FLOW_FINALIZER_NAME = 'finalizer.flows.elastic.io';
 
 class FlowsK8sDao extends FlowsDao {
