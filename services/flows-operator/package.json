@@ -4,7 +4,7 @@
   "description": "Standalone version of elastic.io platform",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint ./index.js ./src",
+    "lint": "eslint .",
     "test": "npm run lint",
     "start": "node index.js",
     "start:dev": "npm start | bunyan",
