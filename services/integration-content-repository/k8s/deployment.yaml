@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name: icr
-          image: openintegrationhub/icr:latest
+          image: openintegrationhub/integration-content-repository:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3001
