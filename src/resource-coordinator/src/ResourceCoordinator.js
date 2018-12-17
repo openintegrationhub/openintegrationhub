@@ -15,9 +15,9 @@ async function loop (body, logger, loopInterval) {
     }, loopInterval);
 }
 
-class FlowOperator {
+class ResourceCoordinator {
     constructor(config, logger, queueCreator, rabbitmqManagement, amqpConnection, flowsDao, driver) {
-        this._logger = logger.child({service: 'FlowOperator'});
+        this._logger = logger.child({service: 'ResourceCoordinator'});
         this._queueCreator = queueCreator;
         this._rabbitmqManagement = rabbitmqManagement;
         this._config = config;
@@ -226,4 +226,4 @@ class FlowOperator {
     }
 }
 
-module.exports = FlowOperator;
+module.exports = ResourceCoordinator;

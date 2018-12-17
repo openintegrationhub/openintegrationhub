@@ -1,5 +1,5 @@
 module.exports = {
-    FlowOperator: require('./FlowOperator'),
+    ResourceCoordinator: require('./ResourceCoordinator'),
     KubernetesDriver: require('./drivers/kubernetes/KubernetesDriver'),
     FlowsDao: require('./dao/FlowsDao')
 };

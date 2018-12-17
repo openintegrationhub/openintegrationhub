@@ -6,12 +6,12 @@ const {
     AMQPService
 } = Lib;
 
-const { FlowOperator, KubernetesDriver } = require('@openintegrationhub/resource-coordinator');
+const { ResourceCoordinator, KubernetesDriver } = require('@openintegrationhub/resource-coordinator');
 const RabbitmqManagementService = require('./RabbitmqManagementService');
 const HttpApi = require('./HttpApi');
 const FlowsK8sDao = require('./dao/FlowsK8sDao');
 
-class FlowOperatorApp extends App {
+class ResourceCoordinatorApp extends App {
     async _run() {
         this._amqp = new AMQPService(this);
         this._rabbitmqManagement = new RabbitmqManagementService(this.getConfig(), this.getLogger());
@@ -26,7 +26,7 @@ class FlowOperatorApp extends App {
         this._queueCreator = new QueueCreator(channel);
 
         const driver = new KubernetesDriver(this.getConfig(), this.getLogger(), this.getK8s());
-        const flowOperator = new FlowOperator(
+        const flowOperator = new ResourceCoordinator(
             this.getConfig(),
             this.getLogger(),
             this.getQueueCreator(),
@@ -55,7 +55,7 @@ class FlowOperatorApp extends App {
     }
 
     static get NAME() {
-        return 'flows-operator';
+        return 'resource-coordinator';
     }
 }
-module.exports = FlowOperatorApp
+module.exports = ResourceCoordinatorApp;
