@@ -1,7 +1,7 @@
 {
-  "name": "flow-operator",
+  "name": "resource-coordinator",
   "version": "1.0.0",
-  "description": "Standalone version of elastic.io platform",
+  "description": "Resource coodinator",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
@@ -9,7 +9,7 @@
     "start": "node index.js",
     "start:dev": "npm start | bunyan",
     "build": "echo \"No Build defined\"",
-    "build:docker": "docker build -t openintegrationhub/flows-operator:${VERSION} -f Dockerfile ../../"
+    "build:docker": "docker build -t openintegrationhub/resource-coordinator:${VERSION} -f Dockerfile ../../"
   },
   "author": "elastic.io",
   "license": "APL-2.0",

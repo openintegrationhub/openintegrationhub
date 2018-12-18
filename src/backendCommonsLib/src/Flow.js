@@ -9,6 +9,10 @@ class Flow {
         return !!this.metadata.deletionTimestamp;
     }
 
+    get isNew() {
+        return !(this.metadata.finalizers || []).includes(this.constructor.FLOW_FINALIZER_NAME);
+    }
+
     get version() {
         return this.metadata.resourceVersion;
     }
@@ -31,6 +35,18 @@ class Flow {
             metadata: this.metadata,
             spec: spec
         };
+    }
+
+    addFinalizer(finalizerName) {
+        this.metadata.finalizers = (this.metadata.finalizers || []).concat(finalizerName);
+    }
+
+    removeFinalizer(finalizerName) {
+        this.metadata.finalizers = (this.metadata.finalizers || []).filter(finalizer => finalizer !== finalizerName);
+    }
+
+    static get FLOW_FINALIZER_NAME() {
+        return 'finalizer.flows.elastic.io';
     }
 }
 module.exports = Flow;

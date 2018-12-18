@@ -1,7 +1,6 @@
 const Lib = require('backendCommonsLib');
 const { Flow } = Lib;
 const { FlowsDao } = require('@openintegrationhub/resource-coordinator');
-const FLOW_FINALIZER_NAME = 'finalizer.flows.elastic.io';
 
 class FlowsK8sDao extends FlowsDao {
     constructor(k8s) {
@@ -24,8 +23,8 @@ class FlowsK8sDao extends FlowsDao {
     }
 
     async ensureFinalizer(flow) {
-        if (!(flow.metadata.finalizers || []).includes(FLOW_FINALIZER_NAME)) {
-            flow.metadata.finalizers = (flow.metadata.finalizers || []).concat(FLOW_FINALIZER_NAME);
+        if (flow.isNew) {
+            flow.addFinalizer(Flow.FLOW_FINALIZER_NAME);
             //FIXME make sure 409 works. So non-sequential updates should go into next iteration
             //possibly handle revision field
             await this.update(flow);
@@ -33,8 +32,7 @@ class FlowsK8sDao extends FlowsDao {
     }
 
     async removeFinalizer(flow) {
-        // delete finalizer
-        flow.metadata.finalizers = (flow.metadata.finalizers || []).filter(finalizer => finalizer !== FLOW_FINALIZER_NAME);
+        flow.removeFinalizer(Flow.FLOW_FINALIZER_NAME);
         //FIXME make sure 409 works. So non-sequential updates should go into next iteration
         //possibly handle revision field
         await this.update(flow);

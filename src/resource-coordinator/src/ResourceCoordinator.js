@@ -83,16 +83,15 @@ class ResourceCoordinator {
             //@todo ensure queues/exchanges. Use QueuesStructure table
             const flowEnvVars =  await this._queueCreator.makeQueuesForTheFlow(flow);
             const amqpCredentials = await this._createFlowAmqpCredentials(flow);
-            const amqpUriEnv = {
+            const secretEnvVars = {
                 AMQP_URI: this._prepareAmqpUri(amqpCredentials)
             };
-
             this._logger.trace({name: flow.id}, 'Nothing changed.');
 
             for (let node of flow.nodes) {
                 if (!appsIndex[flowId] || !appsIndex[flowId][node.id]) {
                     this._logger.trace({flow: flow.id, node: node.id}, 'Going to create a flow node');
-                    await this._driver.createApp(flow, node, flowEnvVars[node.id], amqpUriEnv);
+                    await this._driver.createApp(flow, node, flowEnvVars[node.id], secretEnvVars);
                 }
             }
         }
