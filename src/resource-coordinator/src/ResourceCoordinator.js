@@ -73,7 +73,7 @@ class ResourceCoordinator {
 
             await this._deleteRunningAppsForFlow(flow, appsIndex);
             await this._deleteQueuesForFlow(flow, queuesStructure);
-            this._deleteFlowAmqpCredentials(flow);
+            await this._deleteFlowAmqpCredentials(flow);
 
             await this._flowsDao.removeFinalizer(flow); //@todo: onFlowDeleted?
         } else {
