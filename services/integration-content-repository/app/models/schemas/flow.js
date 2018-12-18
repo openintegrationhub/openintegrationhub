@@ -42,6 +42,7 @@ const flow = new Schema({
   status: String,
   createdAt: String,
   updatedAt: String,
-});
+},
+{ collection: 'flows' });
 
 module.exports.flow = flow;
