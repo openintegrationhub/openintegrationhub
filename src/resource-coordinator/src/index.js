@@ -1,5 +1,6 @@
 module.exports = {
     ResourceCoordinator: require('./ResourceCoordinator'),
-    KubernetesDriver: require('./drivers/kubernetes/KubernetesDriver'),
+    BaseDriver: require('./drivers/BaseDriver'),
+    RunningApp: require('./drivers/RunningApp'),
     FlowsDao: require('./dao/FlowsDao')
 };

@@ -7,11 +7,11 @@ class BaseDriver {
         throw new Error('To be implemented');
     }
 
-    async getAppList () {
+    async getAppList() {
         throw new Error('To be implemented');
     }
 
-    async getAppById () {
+    async getAppById() {
         throw new Error('To be implemented');
     }
 }

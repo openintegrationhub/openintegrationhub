@@ -6,7 +6,8 @@ const {
     AMQPService
 } = Lib;
 
-const { ResourceCoordinator, KubernetesDriver } = require('@openintegrationhub/resource-coordinator');
+const { ResourceCoordinator } = require('@openintegrationhub/resource-coordinator');
+const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
 const RabbitmqManagementService = require('./RabbitmqManagementService');
 const HttpApi = require('./HttpApi');
 const FlowsK8sDao = require('./dao/FlowsK8sDao');

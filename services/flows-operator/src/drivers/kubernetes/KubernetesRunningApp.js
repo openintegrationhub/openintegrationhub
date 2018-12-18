@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const RunningApp = require('../RunningApp');
+const { RunningApp } = require('@openintegrationhub/resource-coordinator');
 
 class KubernetesRunningApp extends RunningApp {
     constructor(app) {
@@ -7,15 +7,15 @@ class KubernetesRunningApp extends RunningApp {
         this._app = app;
     }
 
-    get id() {
+    getId() {
         return this._getMetadataValue('name');
     }
 
-    get flowId() {
+    getFlowId() {
         return this._getEnvVar('ELASTICIO_FLOW_ID');
     }
 
-    get nodeId() {
+    getNodeId() {
         return this._getEnvVar('ELASTICIO_STEP_ID');
     }
 

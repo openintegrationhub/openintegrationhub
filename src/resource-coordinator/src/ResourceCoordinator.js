@@ -72,7 +72,7 @@ class ResourceCoordinator {
             this._logger.trace({name: flow.id}, 'Going to delete flow');
 
             await this._deleteRunningAppsForFlow(flow, appsIndex);
-            await this._deleteInfrastructureForFlow(flow, queuesStructure);
+            await this._deleteQueuesForFlow(flow, queuesStructure);
             this._deleteFlowAmqpCredentials(flow);
 
             await this._flowsDao.removeFinalizer(flow); //@todo: onFlowDeleted?
@@ -91,7 +91,7 @@ class ResourceCoordinator {
 
             for (let node of flow.nodes) {
                 if (!appsIndex[flowId] || !appsIndex[flowId][node.id]) {
-                    this._logger.trace({flow: flow.id, node: node.id}, 'Going to create flow node');
+                    this._logger.trace({flow: flow.id, node: node.id}, 'Going to create a flow node');
                     await this._driver.createApp(flow, node, flowEnvVars[node.id], amqpUriEnv);
                 }
             }
@@ -110,7 +110,7 @@ class ResourceCoordinator {
         if (totalRedeploy) {
             this._logger.trace({name: flow.id}, 'Flow changed. Redeploy');
             await this._deleteRunningAppsForFlow(flow, appsIndex);
-            await this._deleteInfrastructureForFlow(flow, queuesStructure); // delete all queues? really?
+            await this._deleteQueuesForFlow(flow, queuesStructure); // delete all queues? really?
 
             const queues = await this._queueCreator.makeQueuesForTheFlow(flow);
             for (let node of flow.nodes) {
@@ -120,7 +120,7 @@ class ResourceCoordinator {
         }
     }
 
-    async _deleteInfrastructureForFlow(flow, queuesStructure) {
+    async _deleteQueuesForFlow(flow, queuesStructure) {
         const flowId = flow.id;
         // delete all queues
         if (queuesStructure[flowId]) {

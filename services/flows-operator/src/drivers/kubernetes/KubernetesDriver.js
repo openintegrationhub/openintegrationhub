@@ -1,4 +1,4 @@
-const BaseDriver = require('../BaseDriver');
+const { BaseDriver } = require('@openintegrationhub/resource-coordinator');
 const uuid = require('uuid/v4');
 const _ = require('lodash');
 const KubernetesRunningApp = require('./KubernetesRunningApp');
