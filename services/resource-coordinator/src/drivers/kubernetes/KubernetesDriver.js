@@ -1,7 +1,7 @@
 const { BaseDriver } = require('@openintegrationhub/resource-coordinator');
 const uuid = require('uuid/v4');
 const _ = require('lodash');
-const KubernetesRunningApp = require('./KubernetesRunningApp');
+const KubernetesRunningApp = require('./KubernetesRunningNode');
 const FlowSecret = require('./FlowSecret');
 
 class KubernetesDriver extends BaseDriver {

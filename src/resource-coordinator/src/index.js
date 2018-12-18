@@ -1,6 +1,6 @@
 module.exports = {
     ResourceCoordinator: require('./ResourceCoordinator'),
     BaseDriver: require('./drivers/BaseDriver'),
-    RunningApp: require('./drivers/RunningApp'),
+    RunningNode: require('./drivers/RunningNode'),
     FlowsDao: require('./dao/FlowsDao')
 };

@@ -1,7 +1,7 @@
 const _ = require('lodash');
-const { RunningApp } = require('@openintegrationhub/resource-coordinator');
+const { RunningNode } = require('@openintegrationhub/resource-coordinator');
 
-class KubernetesRunningApp extends RunningApp {
+class KubernetesRunningNode extends RunningNode {
     constructor(app) {
         super();
         this._app = app;
@@ -49,4 +49,4 @@ class KubernetesRunningApp extends RunningApp {
     }
 }
 
-module.exports = KubernetesRunningApp;
+module.exports = KubernetesRunningNode;

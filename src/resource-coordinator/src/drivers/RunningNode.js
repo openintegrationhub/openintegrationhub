@@ -1,4 +1,4 @@
-class RunningApp {
+class RunningNode {
     get id() {
         return this.getId();
     }
@@ -24,4 +24,4 @@ class RunningApp {
     }
 }
 
-module.exports = RunningApp;
+module.exports = RunningNode;
