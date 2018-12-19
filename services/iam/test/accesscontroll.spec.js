@@ -27,7 +27,7 @@ describe('Role Routes', () => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_AUTH_TYPE = 'basic';
         conf = require('./../src/conf/index');
-        const App = require('../src/app'); 
+        const App = require('../src/app');
         app = new App();
         await mockgoose.prepareStorage();
         await app.setup(mongoose);
@@ -109,7 +109,7 @@ describe('Role Routes', () => {
     });
 
     afterAll(() => {
-        app.stop(); 
+        app.stop();
     });
 
     test('get current context is successful', async () => {
@@ -288,6 +288,69 @@ describe('Role Routes', () => {
             .expect(200);
         expect(tenantRole.body).toBeDefined();
         expect(tenantRole.body._id).toBe(roleResp.body._id);
+
+    });
+
+    test('Extend user permissions with custom permissions', async () => {
+
+        const testUserData = {
+            'username': 'testuser130@example.com',
+            'firstname': 'test',
+            'lastname': 'user',
+            'status': 'ACTIVE',
+            'password': 'usertest',
+            'role': CONSTANTS.ROLES.USER,
+        };
+        /* Create new user and a new service account */
+
+        const createUserResponse = await request.post('/api/v1/users')
+            .send(testUserData)
+            .set('Authorization', tokenAdmin)
+            .set('Accept', /application\/json/)
+            .expect(200);
+        const userId = createUserResponse.body.id;
+
+        const newTokenResp1 = await request.post('/api/v1/tokens')
+            .send({
+                accountId: userId,
+                expiresIn: '1h',
+                consumerServiceId: 'someId',
+            })
+            .set('Authorization', tokenAdmin)
+            .set('Accept', /application\/json/)
+            .expect(200);
+
+        const introspect1 = await request.post('/api/v1/tokens/introspect')
+            .send({
+                token: newTokenResp1.body.token,
+            })
+            .set('Authorization', tokenAdmin)
+            .set('Accept', /application\/json/)
+            .expect(200);
+
+        expect(introspect1.body.permissions.length).toBe(0);
+
+        const newTokenResp2 = await request.post('/api/v1/tokens')
+            .send({
+                accountId: userId,
+                expiresIn: '1h',
+                consumerServiceId: 'someId',
+                customPermissions: [PERMISSIONS['tenant.roles.read']],
+            })
+            .set('Authorization', tokenAdmin)
+            .set('Accept', /application\/json/)
+            .expect(200);
+
+        const introspect2 = await request.post('/api/v1/tokens/introspect')
+            .send({
+                token: newTokenResp2.body.token,
+            })
+            .set('Authorization', tokenAdmin)
+            .set('Accept', /application\/json/)
+            .expect(200);
+
+        expect(introspect2.body.permissions.length).toBe(1);
+        expect(introspect2.body.permissions[0]).toBe(PERMISSIONS['tenant.roles.read']);
 
     });
 

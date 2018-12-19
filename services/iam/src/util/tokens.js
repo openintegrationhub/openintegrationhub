@@ -18,7 +18,7 @@ module.exports = {
         return {};
     },
 
-    sign: async (account, opts = {}) => {
+    sign: async (accountPayload, opts = {}) => {
 
         // opts.lifespan = opts.lifespan || CONF.jwt.expiresIn;
 
@@ -32,7 +32,7 @@ module.exports = {
         }
 
         const query = {
-            initiator: account._id,
+            initiator: accountPayload._id,
             type: opts.type || CONSTANTS.TOKEN_TYPES.SELF,
         };
 
@@ -52,6 +52,7 @@ module.exports = {
             ...query,
             tokenId,
             tokenLifeSpan: opts.lifespan || CONF.jwt.expiresIn,
+            permissions: accountPayload.permissions,
             ...tokenExpireAt,
         });
 
