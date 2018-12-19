@@ -1,22 +1,22 @@
 class FlowsDao {
-    async findById(id) { //eslint-disable-line
+    findById(id) { //eslint-disable-line
         throw new Error('To be implemented');
     }
 
-    async update(flow) { //eslint-disable-line
+    update(flow) { //eslint-disable-line
         throw new Error('To be implemented');
     }
 
-    async findAll() { //eslint-disable-line
+    findAll() { //eslint-disable-line
         throw new Error('To be implemented');
     }
 
-    async ensureFinalizer(flow) { //eslint-disable-line
-        throw new Error('To be implemented');
+    ensureFinalizer(flow) { //eslint-disable-line
+        // optional
     }
 
-    async removeFinalizer(flow) { //eslint-disable-line
-        throw new Error('To be implemented');
+    removeFinalizer(flow) { //eslint-disable-line
+        // optional
     }
 }
 

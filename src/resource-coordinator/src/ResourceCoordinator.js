@@ -17,10 +17,10 @@ async function loop (body, logger, loopInterval) {
 
 class ResourceCoordinator {
     constructor(config, logger, queueCreator, rabbitmqManagement, amqpConnection, flowsDao, driver) {
+        this._config = config;
         this._logger = logger.child({service: 'ResourceCoordinator'});
         this._queueCreator = queueCreator;
         this._rabbitmqManagement = rabbitmqManagement;
-        this._config = config;
         this._channelPromise = amqpConnection.createChannel();
         this._flowsDao = flowsDao;
         this._driver = driver;
@@ -65,9 +65,6 @@ class ResourceCoordinator {
     }
 
     async _handleFlow(flow, appsIndex, queuesStructure) {
-        const flowId = flow.id;
-
-        // if flow is deleted
         if (flow.isDeleted) {
             this._logger.trace({name: flow.id}, 'Going to delete flow');
 
@@ -80,16 +77,23 @@ class ResourceCoordinator {
             // ensure flow infrastructure - finalizer + secret + queues
             await this._flowsDao.ensureFinalizer(flow); //@todo: onFlowCreated?
 
+            if (await this._isRedeployRequired(flow, appsIndex)) {
+                this._logger.trace({name: flow.id}, 'Flow changed. Redeploy.');
+                await this._deleteRunningAppsForFlow(flow, appsIndex);
+                await this._deleteQueuesForFlow(flow, queuesStructure); // delete all queues? really?
+                delete appsIndex[flow.id];
+            }
+
             //@todo ensure queues/exchanges. Use QueuesStructure table
             const flowEnvVars =  await this._queueCreator.makeQueuesForTheFlow(flow);
+            //@todo: don't create credentials each time
             const amqpCredentials = await this._createFlowAmqpCredentials(flow);
             const secretEnvVars = {
                 AMQP_URI: this._prepareAmqpUri(amqpCredentials)
             };
-            this._logger.trace({name: flow.id}, 'Nothing changed.');
 
             for (let node of flow.nodes) {
-                if (!appsIndex[flowId] || !appsIndex[flowId][node.id]) {
+                if (!appsIndex[flow.id] || !appsIndex[flow.id][node.id]) {
                     this._logger.trace({flow: flow.id, node: node.id}, 'Going to create a flow node');
                     await this._driver.createApp(flow, node, flowEnvVars[node.id], secretEnvVars);
                 }
@@ -97,26 +101,14 @@ class ResourceCoordinator {
         }
     }
 
-    async _totalRedeploy(flow, appsIndex, queuesStructure) {
+    _isRedeployRequired(flow, appsIndex) {
         const flowId = flow.id;
 
         let totalRedeploy = Object.keys(flow.nodes).some((nodeId) => {
             const app = appsIndex[flowId] && appsIndex[flowId][nodeId];
             return app && (flow.version !== app.flowVersion);
         });
-        totalRedeploy = totalRedeploy || _.difference(Object.keys(appsIndex[flowId] || {}), (flow.nodes || []).map(node=>node.id)).length > 0;
-
-        if (totalRedeploy) {
-            this._logger.trace({name: flow.id}, 'Flow changed. Redeploy');
-            await this._deleteRunningAppsForFlow(flow, appsIndex);
-            await this._deleteQueuesForFlow(flow, queuesStructure); // delete all queues? really?
-
-            const queues = await this._queueCreator.makeQueuesForTheFlow(flow);
-            for (let node of flow.nodes) {
-                this._logger.trace({flow: flow.id, node: node.id}, 'Going to create flow node');
-                await this._driver.createApp(flow, node, queues[node.id]);
-            }
-        }
+        return totalRedeploy || _.difference(Object.keys(appsIndex[flowId] || {}), (flow.nodes || []).map(node => node.id)).length > 0;
     }
 
     async _deleteQueuesForFlow(flow, queuesStructure) {

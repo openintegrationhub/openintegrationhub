@@ -4,7 +4,7 @@
   "description": "Orchestrates cluster resources",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint src spec",
     "test": "npm run lint"
   },
   "author": "Open Integration Hub",
@@ -14,9 +14,12 @@
     "uuid": "3.3.2"
   },
   "devDependencies": {
+    "chai": "4.2.0",
     "eslint": "4.5.0",
     "eslint-plugin-mocha": "4.12.1",
-    "eslint-plugin-node": "6.0.1"
+    "eslint-plugin-node": "6.0.1",
+    "mocha": "5.2.0",
+    "sinon": "7.2.2"
   },
   "engines": {
     "node": "^8"

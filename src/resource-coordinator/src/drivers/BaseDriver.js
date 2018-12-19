@@ -1,17 +1,13 @@
 class BaseDriver {
-    async createApp() {
+    createApp() {
         throw new Error('To be implemented');
     }
 
-    async destroyApp() {
+    destroyApp() {
         throw new Error('To be implemented');
     }
 
-    async getAppList() {
-        throw new Error('To be implemented');
-    }
-
-    async getAppById() {
+    getAppList() {
         throw new Error('To be implemented');
     }
 }
