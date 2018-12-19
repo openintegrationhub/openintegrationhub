@@ -29,6 +29,7 @@ describe('ResourceCoordinator', () => {
         queueCreator = {
             makeQueuesForTheFlow: () => {}
         };
+        sinon.stub(queueCreator, 'makeQueuesForTheFlow').resolves();
 
         rabbitmqManagement = {
             getQueues: () => {},
@@ -119,6 +120,163 @@ describe('ResourceCoordinator', () => {
         });
     });
 
+    describe('#_handleFlow', () => {
+        describe('for deleted flow', () => {
+            it('should delete queues and running apps', async () => {
+                const flow = {
+                    id: 'flow1',
+                    nodes: [{id: 'step1'}],
+                    isDeleted: true
+                };
+                const appsIndex = {
+                    flow1: {
+                        step1: {id: 'flow1.step1'}
+                    }
+                };
+                const queuesStructure = {
+                    flow1: {
+                        queues: ['flow1:step1'],
+                        exchanges: ['flow1'],
+                        bindings: [{destination: 'flow1:step2'}]
+                    }
+                };
+
+                sinon.stub(rc, '_deleteRunningAppsForFlow').resolves();
+                sinon.stub(rc, '_deleteQueuesForFlow').resolves();
+                sinon.stub(rc, '_deleteFlowAmqpCredentials').resolves();
+
+                await rc._handleFlow(flow, appsIndex, queuesStructure);
+
+                expect(rc._deleteRunningAppsForFlow).to.have.been.calledOnceWithExactly(flow, appsIndex);
+                expect(rc._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow, queuesStructure);
+                expect(rc._deleteFlowAmqpCredentials).to.have.been.calledOnceWithExactly(flow);
+                expect(flowsDao.removeFinalizer).to.have.been.calledOnceWithExactly(flow);
+            });
+        });
+
+        describe('for active flow', () => {
+            it('should ensure running nodes without redeploy', async () => {
+                const flow = {
+                    id: 'flow1',
+                    nodes: [
+                        {id: 'step1'},
+                        {id: 'step2'}
+                    ]
+                };
+                const appsIndex = {
+                    flow1: {
+                        step1: {id: 'flow1.step1'}
+                    }
+                };
+                const queuesStructure = {
+                    flow1: {
+                        queues: ['flow1:step1', 'flow1:step2'],
+                        exchanges: ['flow1'],
+                        bindings: [{destination: 'flow1:step2'}]
+                    }
+                };
+
+                sinon.stub(rc, '_deleteRunningAppsForFlow').resolves();
+                sinon.stub(rc, '_deleteQueuesForFlow').resolves();
+                sinon.stub(rc, '_deleteFlowAmqpCredentials').resolves();
+                sinon.stub(rc, '_createFlowAmqpCredentials').resolves({username: 'john', password: '123'});
+                sinon.stub(rc, '_isRedeployRequired').resolves(false);
+                sinon.stub(rc, '_prepareAmqpUri').returns('amqp://test@localhost');
+                queueCreator.makeQueuesForTheFlow.resolves({
+                    step1: {
+                        some: 'env1'
+                    },
+                    step2: {
+                        some: 'env2'
+                    }
+                });
+
+                await rc._handleFlow(flow, appsIndex, queuesStructure);
+
+                expect(flowsDao.ensureFinalizer).to.have.been.calledOnceWithExactly(flow);
+
+                //redeploy logic
+                expect(rc._isRedeployRequired).to.have.been.calledOnceWithExactly(flow, appsIndex);
+                expect(rc._deleteRunningAppsForFlow).not.to.have.been.called;
+                expect(rc._deleteQueuesForFlow).not.to.have.been.called;
+
+                //normal flow
+                expect(rc._createFlowAmqpCredentials).to.have.been.calledOnceWithExactly(flow);
+                expect(rc._prepareAmqpUri).to.have.been.calledOnceWithExactly({username: 'john', password: '123'});
+                expect(driver.createApp).to.have.been.calledOnceWithExactly(
+                    flow,
+                    {id: 'step2'},
+                    {some: 'env2'},
+                    {AMQP_URI: 'amqp://test@localhost'}
+                );
+            });
+
+            it('should ensure running nodes with redeploy', async () => {
+                const flow = {
+                    id: 'flow1',
+                    nodes: [
+                        {id: 'step1'},
+                        {id: 'step2'}
+                    ]
+                };
+                const appsIndex = {
+                    flow1: {
+                        step1: {id: 'flow1.step1'}
+                    }
+                };
+                const queuesStructure = {
+                    flow1: {
+                        queues: ['flow1:step1', 'flow1:step2'],
+                        exchanges: ['flow1'],
+                        bindings: [{destination: 'flow1:step2'}]
+                    }
+                };
+
+                sinon.stub(rc, '_deleteRunningAppsForFlow').resolves();
+                sinon.stub(rc, '_deleteQueuesForFlow').resolves();
+                sinon.stub(rc, '_deleteFlowAmqpCredentials').resolves();
+                sinon.stub(rc, '_createFlowAmqpCredentials').resolves({username: 'john', password: '123'});
+                sinon.stub(rc, '_isRedeployRequired').resolves(true);
+                sinon.stub(rc, '_prepareAmqpUri').returns('amqp://test@localhost');
+                queueCreator.makeQueuesForTheFlow.resolves({
+                    step1: {
+                        some: 'env1'
+                    },
+                    step2: {
+                        some: 'env2'
+                    }
+                });
+
+                await rc._handleFlow(flow, appsIndex, queuesStructure);
+
+                expect(flowsDao.ensureFinalizer).to.have.been.calledOnceWithExactly(flow);
+
+                //redeploy logic
+                expect(rc._isRedeployRequired).to.have.been.calledOnceWithExactly(flow, appsIndex);
+                expect(rc._deleteRunningAppsForFlow).to.have.been.calledOnceWithExactly(flow, appsIndex);
+                expect(rc._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow, queuesStructure);
+
+                //normal flow
+                expect(rc._createFlowAmqpCredentials).to.have.been.calledOnceWithExactly(flow);
+                expect(rc._prepareAmqpUri).to.have.been.calledOnceWithExactly({username: 'john', password: '123'});
+
+                expect(driver.createApp).to.have.been.calledTwice;
+                expect(driver.createApp.firstCall.args).to.deep.equal([
+                    flow,
+                    {id: 'step1'},
+                    {some: 'env1'},
+                    {AMQP_URI: 'amqp://test@localhost'}
+                ]);
+                expect(driver.createApp.secondCall.args).to.deep.equal([
+                    flow,
+                    {id: 'step2'},
+                    {some: 'env2'},
+                    {AMQP_URI: 'amqp://test@localhost'}
+                ]);
+            });
+        });
+    });
+
     describe('#_isRedeployRequired', () => {
         it('when versions are the same', async () => {
             const flow = {
@@ -168,6 +326,63 @@ describe('ResourceCoordinator', () => {
 
             const result = rc._isRedeployRequired(flow, appsIndex);
             expect(result).to.be.true;
+        });
+
+        it('when there are more nodes in the index than in a flow', async () => {
+            const flow = {
+                id: 'flow1',
+                nodes: [
+                    {id: 'step1'},
+                    {id: 'step2'}
+                ],
+                version: '1'
+            };
+            const appsIndex = {
+                flow1: {
+                    step1: {
+                        id: 'flow1.step1',
+                        flowVersion: '1'
+                    },
+                    step2: {
+                        id: 'flow1.step2',
+                        flowVersion: '1'
+                    },
+                    step3: {
+                        id: 'flow1.step3',
+                        flowVersion: '1'
+                    }
+                }
+            };
+
+            const result = rc._isRedeployRequired(flow, appsIndex);
+            expect(result).to.be.true;
+        });
+
+        it('when there are more nodes in a flow than in the index', async () => {
+            const flow = {
+                id: 'flow1',
+                nodes: [
+                    {id: 'step1'},
+                    {id: 'step2'},
+                    {id: 'step3'}
+                ],
+                version: '1'
+            };
+            const appsIndex = {
+                flow1: {
+                    step1: {
+                        id: 'flow1.step1',
+                        flowVersion: '1'
+                    },
+                    step2: {
+                        id: 'flow1.step2',
+                        flowVersion: '1'
+                    }
+                }
+            };
+
+            const result = rc._isRedeployRequired(flow, appsIndex);
+            expect(result).to.be.false;
         });
     });
 
