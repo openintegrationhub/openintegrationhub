@@ -120,7 +120,55 @@ describe('ResourceCoordinator', () => {
     });
 
     describe('#_isRedeployRequired', () => {
-        //@todo: write this test
+        it('when versions are the same', async () => {
+            const flow = {
+                id: 'flow1',
+                nodes: [
+                    {id: 'step1'},
+                    {id: 'step2'}
+                ],
+                version: '1'
+            };
+            const appsIndex = {
+                flow1: {
+                    step1: {
+                        flowVersion: '1'
+                    },
+                    step2: {
+                        flowVersion: '1'
+                    }
+                }
+            };
+
+            const result = rc._isRedeployRequired(flow, appsIndex);
+            expect(result).to.be.false;
+        });
+
+        it('when versions are not the same', async () => {
+            const flow = {
+                id: 'flow1',
+                nodes: [
+                    {id: 'step1'},
+                    {id: 'step2'}
+                ],
+                version: '2'
+            };
+            const appsIndex = {
+                flow1: {
+                    step1: {
+                        id: 'flow1.step1',
+                        flowVersion: '1'
+                    },
+                    step2: {
+                        id: 'flow1.step2',
+                        flowVersion: '1'
+                    }
+                }
+            };
+
+            const result = rc._isRedeployRequired(flow, appsIndex);
+            expect(result).to.be.true;
+        });
     });
 
     describe('#_getQueuesStructure', () => {

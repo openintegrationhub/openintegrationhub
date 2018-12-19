@@ -85,13 +85,14 @@ class ResourceCoordinator {
     }
 
     _isRedeployRequired(flow, appsIndex) {
-        const flowId = flow.id;
-
-        let totalRedeploy = Object.keys(flow.nodes).some((nodeId) => {
-            const app = appsIndex[flowId] && appsIndex[flowId][nodeId];
+        const flowNodes = flow.nodes || [];
+        const flowsVersionChanged = flowNodes.some(node => {
+            const app = appsIndex[flow.id] && appsIndex[flow.id][node.id];
             return app && (flow.version !== app.flowVersion);
         });
-        return totalRedeploy || _.difference(Object.keys(appsIndex[flowId] || {}), (flow.nodes || []).map(node => node.id)).length > 0;
+        const differentNumber = _.difference(Object.keys(appsIndex[flow.id] || {}), flowNodes.map(node => node.id)).length > 0;
+
+        return flowsVersionChanged || differentNumber;
     }
 
     async _getQueuesStructure() {
