@@ -9,3 +9,4 @@ const SchedulerApp = require('./src/SchedulerApp.js');
         process.exit(1); //eslint-disable-line no-process-exit
     }
 })();
+

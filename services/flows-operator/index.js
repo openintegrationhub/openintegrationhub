@@ -9,3 +9,4 @@ const FlowOperatorApp = require('./src/FlowOperatorApp.js');
         process.exit(1);
     }
 })();
+
