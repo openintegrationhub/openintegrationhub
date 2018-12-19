@@ -19,7 +19,7 @@ const log = Logger.getLogger(`${conf.general.loggingNameSpace}/auth`, {
 
 // TODO: SERVICE_ACCOUNT shouldn't have admin privileges
 const isAdminRole = role => role === CONSTANTS.ROLES.ADMIN;
-    // || role === CONSTANTS.ROLES.SERVICE_ACCOUNT;
+// || role === CONSTANTS.ROLES.SERVICE_ACCOUNT;
 
 const allRequiredElemsExistsInArray = (array, requiredElems) => {
 

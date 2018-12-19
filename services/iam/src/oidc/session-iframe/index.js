@@ -69,5 +69,5 @@ module.exports = (debug, provider) => `<!DOCTYPE html>
             <iframe src="/static/oidc/start.html" style="display:none" />
           
           </body>
-          </html>`
-;
+          </html>`;
+

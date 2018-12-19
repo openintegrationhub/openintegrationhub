@@ -69,7 +69,7 @@ router.get('/:id', userIsOwnerOfResource, async (req, res, next) => {
             tenant: req.user.currentContext.tenant,
             _id: req.params.id,
         });
-        if(docs) {
+        if (docs) {
             return res.send(docs);
         }
         return res.sendStatus(404);
