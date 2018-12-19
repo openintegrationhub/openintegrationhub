@@ -40,28 +40,11 @@ class ResourceCoordinator {
     }
 
     async _processState(flows, allApps, queuesStructure) {
-        const appsIndex = this._buildJobIndex(allApps);
+        const appsIndex = await this._buildJobIndex(allApps);
         for (let flow of flows) {
             await this._handleFlow(flow, appsIndex, queuesStructure);
         }
         await this._removeLostJobs(allApps, flows);
-    }
-
-    async _getQueuesStructure() {
-        const queues = await this._rabbitmqManagement.getQueues();
-        const exchanges = await this._rabbitmqManagement.getExchanges();
-        const bindings = await this._rabbitmqManagement.getBindings();
-        return this._buildMQIndex(queues, exchanges, bindings);
-    }
-
-    _buildJobIndex(allJobs) {
-        return allJobs.reduce((index, app) => {
-            const flowId = app.flowId;
-            const nodeId = app.nodeId;
-            index[flowId] = index[flowId] || {};
-            index[flowId][nodeId] = app;
-            return index;
-        }, {});
     }
 
     async _handleFlow(flow, appsIndex, queuesStructure) {
@@ -111,6 +94,23 @@ class ResourceCoordinator {
         return totalRedeploy || _.difference(Object.keys(appsIndex[flowId] || {}), (flow.nodes || []).map(node => node.id)).length > 0;
     }
 
+    async _getQueuesStructure() {
+        const queues = await this._rabbitmqManagement.getQueues();
+        const exchanges = await this._rabbitmqManagement.getExchanges();
+        const bindings = await this._rabbitmqManagement.getBindings();
+        return this._buildMQIndex(queues, exchanges, bindings);
+    }
+
+    _buildJobIndex(allJobs) {
+        return allJobs.reduce((index, app) => {
+            const flowId = app.flowId;
+            const nodeId = app.nodeId;
+            index[flowId] = index[flowId] || {};
+            index[flowId][nodeId] = app;
+            return index;
+        }, {});
+    }
+
     async _deleteQueuesForFlow(flow, queuesStructure) {
         const flowId = flow.id;
         // delete all queues
@@ -126,9 +126,7 @@ class ResourceCoordinator {
     }
 
     async _deleteRunningAppsForFlow(flow, appsIndex) {
-        const flowId = flow.id;
-        // delete all containers
-        for (let app of Object.values(appsIndex[flowId] || {})) {
+        for (let app of Object.values(appsIndex[flow.id] || {})) {
             this._logger.trace({flow: flow.id, node: app.id}, 'Going to delete flow node');
             await this._driver.destroyApp(app.id);
         }
