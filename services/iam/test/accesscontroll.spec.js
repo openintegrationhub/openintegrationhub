@@ -301,7 +301,16 @@ describe('Role Routes', () => {
             'password': 'usertest',
             'role': CONSTANTS.ROLES.USER,
         };
-        /* Create new user and a new service account */
+
+        const serviceAccountData = {
+            username: 'service-account8@example.com',
+            firstname: 'service',
+            lastname: 'account',
+            status: CONSTANTS.STATUS.ACTIVE,
+            password: 'testpwd',
+            role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
+            permissions: [RESTRICTED_PERMISSIONS['iam.token.create']],
+        };
 
         const createUserResponse = await request.post('/api/v1/users')
             .send(testUserData)
@@ -351,6 +360,35 @@ describe('Role Routes', () => {
 
         expect(introspect2.body.permissions.length).toBe(1);
         expect(introspect2.body.permissions[0]).toBe(PERMISSIONS['tenant.roles.read']);
+
+
+        await request.post('/api/v1/users')
+            .send(serviceAccountData)
+            .set('Authorization', tokenAdmin)
+            .set('Accept', /application\/json/)
+            .expect(200);
+
+        /* Log in as service account */
+        const response = await request.post('/login')
+            .send({
+                username: serviceAccountData.username,
+                password: serviceAccountData.password,
+            })
+            .set('Accept', /application\/json/)
+            .expect(200);
+        const serviceAccountToken = `Bearer ${response.body.token}`;
+
+        // A service account with the iam.token.update permission can not extend token permissions
+        await request.post('/api/v1/tokens')
+            .send({
+                accountId: userId,
+                expiresIn: '1h',
+                consumerServiceId: 'someId',
+                customPermissions: [PERMISSIONS['tenant.roles.read']],
+            })
+            .set('Authorization', serviceAccountToken)
+            .set('Accept', /application\/json/)
+            .expect(403);
 
     });
 
