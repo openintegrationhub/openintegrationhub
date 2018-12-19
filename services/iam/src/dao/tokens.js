@@ -32,6 +32,19 @@ const TokenDAO = {
         return token.toJSON();
     },
 
+    update: async ({ id, props }) => {
+
+        log.debug('update.token', { id, props });
+
+        await Token.findOneAndUpdate({
+            _id: id,
+        }, { $set: props });
+
+        log.info('updated.token', { id, props });
+        auditLog.info('update.token', { data: props, id });
+
+    },
+
     delete: async ({ id }) => {
 
         await Token.deleteOne({ _id: id });

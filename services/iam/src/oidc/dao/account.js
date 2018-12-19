@@ -15,12 +15,13 @@ class Account {
             status: this.data.status,
             role: this.data.role,
             memberships: this.data.memberships,
+            permissions: this.data.permissions,
             confirmed: this.data.confirmed,
         };
         return claims; 
     }
 
-    static async findById(ctx, id) {
+    static async findById(ctx, id, token) {
         const data = await AccountModel.findOne({ _id: id });
         return new Account(data);
     }

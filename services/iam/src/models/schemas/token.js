@@ -1,15 +1,25 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
 const CONSTANTS = require('./../../constants');
 
+const Schema = mongoose.Schema;
+
 const TokenSchema = new Schema({
-    inquirer: { type: Schema.ObjectId, ref: 'account' }, // user or a a service running on behalf of the user
-    initiator: { type: Schema.ObjectId, ref: 'account' }, // a privileged service, which can create such token
-    tokenId: String, // jti
-    type: String,
+    inquirer: { type: Schema.ObjectId, ref: 'account', index: true }, // user or a a service running on behalf of the user
+    initiator: { type: Schema.ObjectId, ref: 'account', index: true }, // a privileged service, which can create such token
+    tokenId: {
+        type: String,
+        index: true,
+        unique: true,
+    }, // jti
+    type: {
+        type: String,
+        'enum': Object.keys(CONSTANTS.TOKEN_TYPES),
+        'default': CONSTANTS.TOKEN_TYPES.SELF,
+    },
     description: String,
     permissions: [String],
+    tokenLifeSpan: String,
     expireAt: { type: Date, default: undefined },
 
 }, {

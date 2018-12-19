@@ -3,18 +3,18 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 
-const jsonParser = bodyParser.json();
 const Logger = require('@basaas/node-logger');
 const conf = require('./../conf');
+const CONSTANTS = require('./../constants');
 const auth = require('./../util/auth');
 const TenantDAO = require('./../dao/tenants');
-const UserDAO = require('./../dao/users');
+const UserDAO = require('../dao/accounts');
+const RolesDAO = require('../dao/roles');
+const { permissionsAreCommon, PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
 
-const log = Logger.getLogger(`${conf.general.loggingNameSpace}/user`, {
+const logger = Logger.getLogger(`${conf.general.loggingNameSpace}/user`, {
     level: 'debug',
 });
-
-router.use(auth.validateAuthentication);
 
 /**
  * Get all Tenants
@@ -31,7 +31,7 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
 /**
  * Create a new tenant
  */
-router.post('/', auth.isAdmin, jsonParser, async (req, res, next) => {
+router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.tenant.create']]), async (req, res, next) => {
     const tenantProperties = req.body;
     try {
 
@@ -42,10 +42,10 @@ router.post('/', auth.isAdmin, jsonParser, async (req, res, next) => {
 
     } catch (err) {
         if (err.name === 'ValidationError') {
-            log.error(err);
+            logger.error(err);
             return res.sendStatus(400);
         } else {
-            log.error(err);
+            logger.error(err);
             return next(err);
         }
             
@@ -56,11 +56,24 @@ router.post('/', auth.isAdmin, jsonParser, async (req, res, next) => {
 /**
  * Get a specific tenant by id
  */
+router.get('/:id/profile', auth.hasContext, auth.hasTenantPermissions([PERMISSIONS['tenant.profile.read']]), async (req, res, next) => {
+    const tenantID = req.params.id;
+    try {
+        const doc = await TenantDAO.findOne({ _id: tenantID });
+        return res.send(doc);
+    } catch (err) {
+        return next(err);
+    }
+});
+
+/**
+ * Get a specific tenant by id
+ */
 router.get('/:id', auth.isTenantAdmin, async (req, res, next) => {
     const tenantID = req.params.id;
     try {
-        const doc = await TenantDAO.find({ _id: tenantID });
-        return res.send(doc && doc[0]);
+        const doc = await TenantDAO.findOne({ _id: tenantID });
+        return res.send(doc);
     } catch (err) {
         return next(err);
     }
@@ -69,14 +82,14 @@ router.get('/:id', auth.isTenantAdmin, async (req, res, next) => {
 /**
  * Modify tenant entirely
  * */
-router.put('/:id', auth.isTenantAdmin, jsonParser, async (req, res, next) => {
+router.put('/:id', auth.isTenantAdmin, async (req, res, next) => {
     const props = req.body;
     try {
         await TenantDAO.update({ id: req.params.id, props, partialUpdate: false });
     
         return res.sendStatus(200);
     } catch (err) {
-        log.error(err);
+        logger.error(err);
         return next(err);
     }
 });
@@ -85,14 +98,14 @@ router.put('/:id', auth.isTenantAdmin, jsonParser, async (req, res, next) => {
  * Modify tenant partially
  *
  * */
-router.patch('/:id', auth.isTenantAdmin, jsonParser, async (req, res, next) => {
+router.patch('/:id', auth.isTenantAdmin, async (req, res, next) => {
     const props = req.body;
     try {
         await TenantDAO.update({ id: req.params.id, props, partialUpdate: true });
 
         return res.sendStatus(200);
     } catch (err) {
-        log.error(err);
+        logger.error(err);
         return next(err);
     }
 });
@@ -101,13 +114,13 @@ router.patch('/:id', auth.isTenantAdmin, jsonParser, async (req, res, next) => {
  * Delete a tenant
  *
  * */
-router.delete('/:id', auth.isAdmin, async (req, res, next) => {
+router.delete('/:id', auth.can([RESTRICTED_PERMISSIONS['iam.tenant.delete']]), async (req, res, next) => {
 
     try {
         await TenantDAO.delete({ id: req.params.id });
         return res.sendStatus(200);
     } catch (err) {
-        log.error(err);
+        logger.error(err);
         return next({ status: 500, message: err });
     }
     
@@ -119,17 +132,24 @@ router.delete('/:id', auth.isAdmin, async (req, res, next) => {
 router.get('/:id/users', auth.isTenantAdmin, async (req, res, next) => {
     try {
         const doc = await UserDAO.getUsersAssignedToTenant({ tenantId: req.params.id });
-        log.debug(doc);
+        logger.debug(doc);
         return res.send(doc);
     } catch (err) {
         return next(err);
     }
 });
 
+const roleBelongsToTenant = async ({ role, tenant }) => RolesDAO.findOne({
+    role,
+    tenant,
+}).lean();
+
 /**
  * Assign given user to the tenant
  */
-router.post('/:id/users', auth.isTenantAdmin, jsonParser, async (req, res, next) => {
+router.post('/:id/users', auth.isTenantAdmin, async (req, res, next) => {
+
+    // TODO: switch to tenant context
     const reqBody = req.body;
     const tenantID = req.params.id;
 
@@ -137,15 +157,27 @@ router.post('/:id/users', auth.isTenantAdmin, jsonParser, async (req, res, next)
         return next({ status: 400, message: 'Missing role or user id' });
     }
 
+    if (await !roleBelongsToTenant({ role: reqBody.role, tenant: tenantID })) {
+        return next({ status: 400, message: `Role ${reqBody.role} does not belong to tenant ${tenantID}.` });
+    }
+
+    if (reqBody.permissions && !permissionsAreCommon(reqBody.permissions)) {
+        logger.warn(`An attempt to assign a restricted permission to a role by user ${req.user.userid}`);
+        return next({
+            status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN, details: 'Restricted permission used',
+        });
+    }
+
     try {
         const doc = await UserDAO.assignUserToTenantWithRole({
             tenantId: tenantID,
             role: reqBody.role,
             userId: reqBody.user,
+            permissions: reqBody.permissions,
         });
         return res.send(doc);
     } catch (err) {
-        log.error(err);
+        logger.error(err);
         return next(err);
     }
 });
@@ -153,7 +185,7 @@ router.post('/:id/users', auth.isTenantAdmin, jsonParser, async (req, res, next)
 /**
  * Remove the user from tenant
  */
-router.delete('/:id/user/:userId', auth.isTenantAdmin, jsonParser, async (req, res, next) => {
+router.delete('/:id/user/:userId', auth.isTenantAdmin, async (req, res, next) => {
     try {
         const doc = await UserDAO.removeUserFromTenant({
             tenantId: req.params.id, 

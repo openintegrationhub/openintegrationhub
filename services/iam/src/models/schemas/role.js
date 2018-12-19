@@ -1,0 +1,35 @@
+const mongoose = require('mongoose');
+
+const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../../access-control/permissions');
+
+const Schema = mongoose.Schema;
+
+const RoleSchema = new Schema({
+    name: {
+        type: String,
+    },
+    type: String,
+    isGlobal: {
+        type: Boolean,
+        default: false,
+    },
+    // TODO: should this really be a reference? It may cause a lot of DB lookups
+    // permissions: [{
+    //     type: Schema.ObjectId,
+    //     ref: 'permission',
+    // }],
+    permissions: [{
+        type: String,
+        'enum': Object.keys(PERMISSIONS).concat(Object.keys(RESTRICTED_PERMISSIONS)),
+    }],
+    description: String,
+    tenant: {
+        type: Schema.ObjectId, ref: 'tenant',
+    },
+}, {
+    timestamps: true,
+});
+
+RoleSchema.index({ name: 1, tenant: 1 }, { unique: true });
+
+module.exports = RoleSchema;

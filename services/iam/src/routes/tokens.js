@@ -1,34 +1,35 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const ms = require('ms');
 const Logger = require('@basaas/node-logger');
 
 const router = express.Router();
 
-const jsonParser = bodyParser.json();
 const CONF = require('./../conf');
 const CONSTANTS = require('./../constants');
-const PERMISSIONS = require('./../access-control/permissions');
+const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
 const auth = require('./../util/auth');
 const TokenDAO = require('./../dao/tokens');
-const AccountDAO = require('./../dao/users');
-const jwtUtils = require('./../util/jwt');
+const AccountDAO = require('../dao/accounts');
+const TokenUtils = require('./../util/tokens');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/token`, {
     level: 'debug',
 });
-
-/**
- * get token data from req.user object
- */
-router.use(auth.validateAuthentication);
+const auditLog = Logger.getAuditLogger(`${CONF.general.loggingNameSpace}/token-router`);
 
 /**
  * Get all Tokens
  */
 router.get('/', auth.isAdmin, async (req, res, next) => {
+
+    const query = {};
+
+    if (req.query.tokenId) {
+        query.tokenId = req.query.tokenId;
+    }
+
     try {
-        const docs = await TokenDAO.find({});
+        const docs = await TokenDAO.find(query);
         return res.send(docs);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -36,55 +37,70 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
 });
 
 /**
- * Create a new ephemeral token
+ * Create a new token
  * */
-router.post('/ephemeral', jsonParser, auth.hasPermissions([PERMISSIONS['token.ephemeral.create']]), async (req, res, next) => {
+router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (req, res, next) => {
 
     const account = await AccountDAO.findOne({ _id: req.body.accountId, status: CONSTANTS.STATUS.ACTIVE });
-    const tokenLifespan = req.body.expiresIn || CONF.jwt.expiresIn;
+    const tokenLifespan = req.body.expiresIn;
 
     if (!account) {
         // User is either disabled or does not exist anymore
-        return res.status(403).send({ message: CONSTANTS.ERROR_CODES.FORBIDDEN });
+        return next({ status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
+    }
+
+    if (req.body.customPermissions && !auth.hasPermissions({
+        user: req.user,
+        requiredPermissions: [RESTRICTED_PERMISSIONS['iam.token.update']],
+    })) {
+        return next({ status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
     }
 
     if (!req.body.consumerServiceId) {
-        return res.status(400).send({ message: 'Missing consumerServiceId' });
+        return next({ status: 400, message: 'Missing consumerServiceId' });
     }
 
-    const token = await jwtUtils.basic.sign({
-        ...jwtUtils.getJwtPayload(account),
-        type: CONSTANTS.TOKEN_TYPES.EPHEMERAL_SERVICE_ACCOUNT,
-        purpose: 'token.ephemeral',
+    const token = await TokenUtils.sign({
+        ...account,
+        purpose: req.body.purpose || 'accountToken',
         consumerServiceId: req.body.consumerServiceId,
-    }, {
-        expiresIn: tokenLifespan,
-    });
-
-    await TokenDAO.create({
         inquirer: account._id,
         initiator: req.user.userid,
-        tokenId: JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()).jti,
-        type: CONSTANTS.TOKEN_TYPES.EPHEMERAL_SERVICE_ACCOUNT,
-        description: '',
-        permissions: account.permissions,
-        expireAt: new Date(new Date().getTime() + ms(tokenLifespan)),
+        description: req.body.description || '',
+        permissions: account.permissions.concat(req.body.customPermissions || []),
+    }, {
+        type: tokenLifespan === -1 ? CONSTANTS.TOKEN_TYPES.PERSISTENT : CONSTANTS.TOKEN_TYPES.EPHEMERAL_SERVICE_ACCOUNT,
+        lifespan: tokenLifespan,
+        new: true,
     });
 
-    req.headers.authorization = `Bearer ${token}`;
+    auditLog.info('token.create', {
+        data: req.body,
+        initiator: req.user.userid,
+        'x-request-id': req.headers['x-request-id'],
+    });
+
     res.status(200).send({ token });
 });
 
 /**
  * Get all Tokens
  */
-router.post('/introspect', jsonParser, auth.hasPermissions([PERMISSIONS['token.introspect']]), async (req, res, next) => {
+router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspect']]), async (req, res, next) => {
     try {
-        const payload = await jwtUtils.basic.verify(req.body.token);
+        const accountData = await TokenUtils.getAccountData(req.body.token);
 
-        const token = await TokenDAO.findOne({ tokenId: payload.tokenId });
-        const accountData = await AccountDAO.findOne({ _id: token.inquirer });
-        return res.send(accountData);
+        if (accountData) {
+            auditLog.info('iam.token.introspect', {
+                token: req.body.token.replace(/.(?=.{4,}$)/g, '*'),
+                initiator: req.user.userid,
+                'x-request-id': req.headers['x-request-id'],
+            });
+            return res.send(accountData);
+        } else {
+            return res.sendStatus(404);
+        }
+
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
     }
@@ -96,16 +112,19 @@ router.post('/introspect', jsonParser, auth.hasPermissions([PERMISSIONS['token.i
 router.get('/refresh', async (req, res, next) => {
 
     try {
-        const account = await AccountDAO.findOne({ _id: req.user.userid, status: CONSTANTS.STATUS.ACTIVE });
+        const newToken = await TokenUtils.fetchAndProlongToken(req.user.tokenId);
 
-        if (!account) {
-            // User is either disabled or does not exist anymore
-            return res.status(403).send({ message: CONSTANTS.ERROR_CODES.FORBIDDEN });
+        if (newToken) {
+            auditLog.info('token.refresh', {
+                newToken: newToken.tokenId.replace(/.(?=.{4,}$)/g, '*'),
+                initiator: req.user.userid,
+                'x-request-id': req.headers['x-request-id'],
+            });
+            req.headers.authorization = `Bearer ${newToken.tokenId}`;
+            return res.send({ token: newToken.tokenId });
+        } else {
+            return next({ status: 401, message: CONSTANTS.ERROR_CODES.SESSION_EXPIRED });
         }
-
-        const token = await jwtUtils.basic.sign(jwtUtils.getJwtPayload(account));
-        req.headers.authorization = `Bearer ${token}`;
-        res.status(200).send({ token });
 
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -116,6 +135,7 @@ router.get('/refresh', async (req, res, next) => {
  * Get token by id
  */
 router.get('/:id', auth.isAdmin, async (req, res, next) => {
+
     try {
         const doc = await TokenDAO.find({ _id: req.params.id });
         if (!doc) {
@@ -132,9 +152,15 @@ router.get('/:id', auth.isAdmin, async (req, res, next) => {
 /**
  * Delete a token
  */
-router.delete('/:id', auth.hasPermissions([PERMISSIONS['token.ephemeral.delete']]), async (req, res, next) => {
+router.delete('/:id', auth.can([RESTRICTED_PERMISSIONS['iam.token.delete']]), async (req, res, next) => {
+
     try {
         await TokenDAO.delete({ id: req.params.id });
+        auditLog.info('iam.token.delete', {
+            token: req.params.id,
+            initiator: req.user.userid,
+            'x-request-id': req.headers['x-request-id'],
+        });
         return res.sendStatus(200);
     } catch (err) {
         log.error(err);

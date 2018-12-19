@@ -1,6 +1,7 @@
 
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const bodyParser = require('body-parser');
 
 const passport = require('passport');
 // const cors = require('cors');
@@ -17,11 +18,16 @@ const swaggerUi = require('swagger-ui-express');
 const Logger = require('@basaas/node-logger');
 const swaggerDocument = require('./../../doc/openapi.json');
 
+const jsonParser = bodyParser.json();
+
 const CONSTANTS = require('../constants');
 const conf = require('../conf');
 const { createOIDCProvider, addOIDCRoutes } = require('./../oidc');
 const registerModels = require('./../models/registerModels');
 const Account = require('./../models/account');
+const Roles = require('./../models/role');
+const auth = require('./../util/auth');
+const { DEFAULT_ROLES } = require('./../access-control/permissions');
 
 const FORCE_SSL = conf.general.useHttps === 'true';
 
@@ -63,6 +69,7 @@ class App {
             connectTimeoutMS: 30000,
             keepAlive: 120,
             useNewUrlParser: true,
+            useCreateIndex: true,
         });
 
         registerModels();
@@ -75,6 +82,7 @@ class App {
 
         this.setupRoutes();
         await App.createMasterAccount();
+        await App.setupDefaultRoles();
 
     }
 
@@ -96,6 +104,11 @@ class App {
             next(); 
         });
 
+    }
+
+    static userLanguageMiddleware(req, res, next) {
+        req.__acceptedLAnguages = req.acceptsLanguages();
+        next();
     }
 
     setupMiddleware() {
@@ -122,7 +135,9 @@ class App {
         passport.use(new LocalStrategy(Account.authenticate()));
         passport.serializeUser(Account.serializeUser());
         passport.deserializeUser(Account.deserializeUser());
-        
+
+        this.app.use(App.userLanguageMiddleware);
+
     }
 
     async setupOidcProvider() {
@@ -131,6 +146,8 @@ class App {
     }
 
     setupRoutes() {
+
+        this.app.use(jsonParser);
 
         // access log
         this.app.use(require('./../log/access')); // eslint-disable-line global-require
@@ -146,9 +163,11 @@ class App {
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
 
         const apiBase = express.Router();
+        apiBase.use(auth.validateAuthentication);
         apiBase.use('/users', require('./../routes/users')); // eslint-disable-line global-require
         apiBase.use('/tenants', require('./../routes/tenants')); // eslint-disable-line global-require
         apiBase.use('/tokens', require('./../routes/tokens')); // eslint-disable-line global-require
+        apiBase.use('/roles', require('./../routes/roles')); // eslint-disable-line global-require
 
         // TODO: if the client is not a browser, no origin or host will be provided
         this.app.use(`/${conf.general.apiBase}`, apiBase);
@@ -191,6 +210,21 @@ class App {
             await serviceaccount.save();
             log.info('Initial db setup done');
         } 
+    }
+
+    static async setupDefaultRoles() {
+        if (!await Roles.countDocuments()) {
+
+            const bulk = Object.entries(DEFAULT_ROLES).map(([key, value]) => ({
+                name: key,
+                permissions: value,
+                isGlobal: true,
+            }));
+
+            await Roles.insertMany(bulk);
+
+            log.info('Initial roles added');
+        }
     }
 
     async start() {
