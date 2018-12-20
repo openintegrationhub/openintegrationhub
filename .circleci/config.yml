@@ -3,6 +3,7 @@ version: 2
 aliases:
   - &docker_environment
     - image: circleci/node:8-stretch
+    - image: circleci/mongo:3.6
   - &checkout
     path: ~/oih
   - &restore_cache_dependencies
@@ -56,7 +57,7 @@ workflows:
   version: 2
   build_development:
     jobs:
-      - commutication-router
+      - communication-router
       - flows-operator
       - iam
       - integration-content-repository
