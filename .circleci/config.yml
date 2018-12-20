@@ -7,19 +7,19 @@ aliases:
   - &checkout
     path: ~/oih
   - &restore_cache_dependencies
-    name: "Restoring node_modules from the cache"
+    name: Restoring from the cache
     keys:
       - v1-node-modules-cache-{{ checksum "package.json" }}
   - &run_npm_install
     name: Installing Dependencies
     command: yarn install
   - &save_cache_dependencies
-    name: "Saving node_modules into the cache"
+    name: Saving into the cache
     key: v1-node-modules-cache-{{ checksum "package.json" }}
     paths:
       - ~/.cache/yarn
   - &run_build
-    name: Run tests
+    name: Running tests
     command: yarn test
   - &common_steps
     - checkout: *checkout
@@ -67,8 +67,8 @@ workflows:
     jobs:
       - services/communication-router
       - services/flows-operator
-      - services/iam
-      - services/integration-content-repository
+      #- services/iam
+      #- services/integration-content-repository
       - services/scheduler
       - services/secret-service
       - src/backendCommonsLib
