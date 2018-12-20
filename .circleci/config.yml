@@ -17,18 +17,14 @@ aliases:
     name: "Saving node_modules into the cache"
     key: node-modules-cache-{{ checksum "package.json" }}
     paths:
-      - node_modules
+      - ~/.cache/yarn
   - &run_build
     name: Building an Image
     command: yarn test
   - &common_steps
     - checkout: *checkout
     - restore_cache: *restore_cache_dependencies
-    - run: pwd
-    - run: ls -la ~/oih
     - run: *run_npm_install
-    - run: ls -la ./node_modules
-    - run: ls -la ~/oih/node_modules
     - save_cache: *save_cache_dependencies
     #- setup_remote_docker
     - run: *run_build
