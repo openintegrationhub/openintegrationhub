@@ -64,7 +64,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
         ...account,
         purpose: req.body.purpose || 'accountToken',
         consumerServiceId: req.body.consumerServiceId,
-        inquirer: account._id,
+        inquirer: account._id.toString(),
         initiator: req.user.userid,
         description: req.body.description || '',
         permissions: account.permissions.concat(req.body.customPermissions || []),

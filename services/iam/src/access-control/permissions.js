@@ -23,6 +23,8 @@ const PERMISSIONS = {
 
         'iam.token.introspect': 'iam.token.introspect',
 
+        'secrets.raw.read': 'secrets.raw.read',
+
     },
 
     common: {
@@ -40,6 +42,11 @@ const PERMISSIONS = {
         'tenant.roles.create': 'tenant.roles.create',
         'tenant.roles.update': 'tenant.roles.update',
         'tenant.roles.delete': 'tenant.roles.delete',
+
+        'tenant.flows.read': 'tenant.flows.read',
+        'tenant.flows.create': 'tenant.flows.create',
+        'tenant.flows.update': 'tenant.flows.update',
+        'tenant.flows.delete': 'tenant.flows.delete',
     },
 
 };
@@ -47,6 +54,10 @@ const PERMISSIONS = {
 const DEFAULT_ROLES = {
 
     [ROLES.ADMIN]: ['all'],
+
+    [ROLES.USER]: [
+
+    ],
 
     [MEMBERSHIP_ROLES.TENANT_ADMIN]: [
 

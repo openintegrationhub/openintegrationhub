@@ -32,7 +32,8 @@ module.exports = {
         }
 
         const query = {
-            initiator: accountPayload._id,
+            initiator: accountPayload.initiator,
+            inquirer: accountPayload.inquirer,
             type: opts.type || CONSTANTS.TOKEN_TYPES.SELF,
         };
 
