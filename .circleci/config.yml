@@ -9,13 +9,13 @@ aliases:
   - &restore_cache_dependencies
     name: "Restoring node_modules from the cache"
     keys:
-      - node-modules-cache-{{ checksum "~/oih/yarn.lock" }}
+      - node-modules-cache-{{ checksum "package.json" }}
   - &run_npm_install
     name: Installing Dependencies
     command: yarn install
   - &save_cache_dependencies
     name: "Saving node_modules into the cache"
-    key: node-modules-cache-{{ checksum "~/oih/yarn.lock" }}
+    key: node-modules-cache-{{ checksum "package.json" }}
     paths:
       - node_modules
   - &run_build
@@ -28,6 +28,7 @@ aliases:
     - run: ls -la .
     - run: *run_npm_install
     - run: ls -la ./node_modules
+    - run: ls -la ~/oih
     - save_cache: *save_cache_dependencies
     #- setup_remote_docker
     - run: *run_build
