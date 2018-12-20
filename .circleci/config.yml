@@ -19,7 +19,7 @@ aliases:
     paths:
       - ~/.cache/yarn
   - &run_build
-    name: Building an Image
+    name: Run tests
     command: yarn test
   - &common_steps
     - checkout: *checkout
