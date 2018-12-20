@@ -33,13 +33,32 @@ aliases:
 
 
 jobs:
+  communication-router:
+    <<: *common_environment
+    working_directory: ~/oih/services/communication-router
+  flows-operator:
+    <<: *common_environment
+    working_directory: ~/oih/services/flows-operator
+  iam:
+    <<: *common_environment
+    working_directory: ~/oih/services/iam
+  integration-content-repository:
+    <<: *common_environment
+    working_directory: ~/oih/services/integration-content-repository
   scheduler:
     <<: *common_environment
     working_directory: ~/oih/services/scheduler
-
+  secret-service:
+    <<: *common_environment
+    working_directory: ~/oih/services/secret-service
 
 workflows:
   version: 2
   build_development:
     jobs:
+      - commutication-router
+      - flows-operator
+      - iam
+      - integration-content-repository
       - scheduler
+      - secret-service
