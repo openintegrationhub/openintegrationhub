@@ -37,32 +37,44 @@ aliases:
     steps: *common_steps
 
 jobs:
-  communication-router:
+  services/communication-router:
     <<: *common_environment
     working_directory: ~/oih/services/communication-router
-  flows-operator:
+  services/flows-operator:
     <<: *common_environment
     working_directory: ~/oih/services/flows-operator
-  iam:
+  services/iam:
     <<: *common_environment
     working_directory: ~/oih/services/iam
-  integration-content-repository:
+  services/integration-content-repository:
     <<: *common_environment
     working_directory: ~/oih/services/integration-content-repository
-  scheduler:
+  services/scheduler:
     <<: *common_environment
     working_directory: ~/oih/services/scheduler
-  secret-service:
+  services/secret-service:
     <<: *common_environment
     working_directory: ~/oih/services/secret-service
+  src/backendCommonsLib:
+    <<: *common_environment
+      working_directory: ~/oih/src/backendCommonsLib
+  src/scheduler:
+    <<: *common_environment
+      working_directory: ~/oih/src/scheduler
+  src/webhooks:
+    <<: *common_environment
+      working_directory: ~/oih/src/webhooks
 
 workflows:
   version: 2
   build_development:
     jobs:
-      - communication-router
-      - flows-operator
-      - iam
-      - integration-content-repository
-      - scheduler
-      - secret-service
+      - services/communication-router
+      - services/flows-operator
+      - services/iam
+      - services/integration-content-repository
+      - services/scheduler
+      - services/secret-service
+      - src/backendCommonsLib
+      - src/scheduler
+      - src/webhooks
