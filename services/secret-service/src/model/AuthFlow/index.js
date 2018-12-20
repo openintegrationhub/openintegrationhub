@@ -12,11 +12,6 @@ const authFlow = new Schema({
         type: String,
         required: true,
     },
-    scope: {
-        type: String,
-        required: true,
-    },
-    backReference: String,
     authClientId: {
         type: Schema.Types.ObjectId,
         required: true,
