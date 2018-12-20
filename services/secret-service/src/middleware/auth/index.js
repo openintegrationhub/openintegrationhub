@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const rp = require('request-promise');
 const logger = require('@basaas/node-logger');
 // const { verify } = require('@openintegrationhub/iam-utils');
 const conf = require('../../conf');
@@ -24,8 +25,7 @@ async function verifyToken(req) {
 
 async function verifyRole(validRoles, req, res, next) {
     try {
-        req.user = await verifyToken(req);
-        // TODO set entityType
+        req.user = req.user || await verifyToken(req);
         if (validRoles.indexOf(req.user.role) !== -1) {
             next();
         } else {
@@ -64,6 +64,45 @@ async function userIsOwnerOf(dao, req, res, next) {
     }
 }
 
+const getUserData = async (req, res, next) => {
+    // TODO userinfo endpoint with users bearer token
+
+    let token;
+
+    try {
+        token = extractToken(req);
+    } catch (err) {
+        return next({
+            status: 401,
+            message: 'Could not parse token',
+        });
+    }
+
+    rp({
+        method: 'POST',
+        uri: conf.introspectEndpoint,
+        body: {
+            token,
+        },
+        headers: {
+            authorization: `Bearer ${conf.iamToken}`,
+            ...conf.introspectHeader,
+        },
+        json: true,
+    })
+        .then((body) => {
+            req.user = body;
+            req.user.sub = req.user.sub || body._id;
+            return next();
+        })
+        .catch((err) => {
+            log.error(err);
+            return next({
+                status: 500,
+            });
+        });
+};
+
 module.exports = {
     async isLoggedIn(req, res, next) {
         try {
@@ -74,6 +113,7 @@ module.exports = {
             next({ status: 401 });
         }
     },
+    getUserData,
     async isUser(req, res, next) {
         await verifyRole([ROLE.ADMIN, ROLE.USER], req, res, next);
     },

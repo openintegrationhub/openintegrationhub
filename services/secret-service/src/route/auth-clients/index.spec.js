@@ -1,7 +1,9 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
+const nock = require('nock');
 const conf = require('../../conf');
 const Server = require('../../server');
+const token = require('../../test/tokens');
 const {
     OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE,
 } = require('../../constant').AUTH_TYPE;
@@ -18,6 +20,17 @@ describe('auth-clients', () => {
             mongoDbConnection: `${global.__MONGO_URI__}-auth-client`,
             port,
         });
+        const endpointPrefix = conf.introspectEndpoint.substr(0, conf.introspectEndpoint.lastIndexOf('/'));
+        const endpointSuffix = conf.introspectEndpoint.substr(conf.introspectEndpoint.lastIndexOf('/'));
+        nock(endpointPrefix)
+            .persist()
+            .post(endpointSuffix)
+            .reply((uri, requestBody, cb) => {
+                const tokenName = requestBody.token;
+
+                cb(null, [200, token[tokenName].value]);
+                // ...
+            });
         await server.start();
         done();
     });
@@ -33,14 +46,12 @@ describe('auth-clients', () => {
             .send({
                 name: 'string',
                 type: OA1_TWO_LEGGED,
-                property: {
-                    consumerKey: 'string',
-                    consumerSecret: 'string',
-                    nonce: 'string',
-                    signature: 'string',
-                    signatureMethod: 'string',
-                    version: 'string',
-                },
+                consumerKey: 'string',
+                consumerSecret: 'string',
+                nonce: 'string',
+                signature: 'string',
+                signatureMethod: 'string',
+                version: 'string',
             })
             .expect(200);
 
@@ -49,14 +60,21 @@ describe('auth-clients', () => {
             .send({
                 type: OA2_AUTHORIZATION_CODE,
                 name: 'oAuth2',
-                property: {
-                    clientId: 'string',
-                    clientSecret: 'string',
-                    redirectUri: '/dev/null',
-                    endpoint: {
-                        start: 'http://',
-                        exchange: 'http://',
-                        refresh: 'http://',
+                clientId: 'string',
+                clientSecret: 'string',
+                redirectUri: '/dev/null',
+                endpoint: {
+                    auth: 'http://',
+                    token: 'http://',
+                    userinfo: 'http://',
+                },
+                mappings: {
+                    externalId: {
+                        source: 'id_token',
+                        key: 'sub',
+                    },
+                    scope: {
+                        key: 'scope',
                     },
                 },
             })
@@ -102,31 +120,40 @@ describe('auth-clients', () => {
             .send({
                 type: OA2_AUTHORIZATION_CODE,
                 name: 'google oAuth2',
-                property: {
-                    clientId: process.env.CLIENT_ID,
-                    clientSecret: process.env.CLIENT_SECRET,
-                    redirectUri: `http://localhost:${conf.port}/callback`,
-                    endpoint: {
-                        start: 'https://accounts.google.com/o/oauth2/v2/auth?'
+                clientId: 'clientId',
+                clientSecret: 'clientSecret',
+                redirectUri: `http://localhost:${conf.port}/callback`,
+                endpoint: {
+                    auth: 'https://accounts.google.com/o/oauth2/v2/auth?'
                             + 'scope={{scope}}&'
                             + 'access_type=offline&'
                             + 'include_granted_scopes=true&'
-                            + 'state=state_parameter_passthrough_value&'
+                            + 'state={{state}}&'
                             + 'redirect_uri={{redirectUri}}&'
                             + 'response_type=code&'
                             + 'client_id={{clientId}}',
-                        exchange: 'https://www.googleapis.com/oauth2/v4/token',
-                        refresh: 'https://www.googleapis.com/oauth2/v4/token',
+                    token: 'https://www.googleapis.com/oauth2/v4/token',
+                    userinfo: 'https://www.googleapis.com/oauth2/v4/token',
+                },
+                mappings: {
+                    externalId: {
+                        source: 'id_token',
+                        key: 'sub',
+                    },
+                    scope: {
+                        key: 'scope',
                     },
                 },
             })
             .expect(200)).body;
 
-        await request.post(`/auth-clients/${authClientId}/start-flow`)
+        const { body } = await request.post(`/auth-clients/${authClientId}/start-flow`)
             .set(...global.userAuth1)
             .send({
                 scope,
             })
             .expect(200);
+
+        expect(body.authUrl).not.toMatch('undefined');
     });
 });

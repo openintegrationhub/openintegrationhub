@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const owner = require('../schema/owner');
-// const requestOptions = require('../schema/requestOptions');
-const { OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE } = require('../../constant').AUTH_TYPE;
+
+const { OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE, EXTERNAL_ID_SOURCE } = require('../../constant').AUTH_TYPE;
 
 const { Schema } = mongoose;
 
@@ -19,7 +19,6 @@ const authClientBaseSchema = new Schema({
         enum: [OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE],
         required: true,
     },
-    property: {},
 }, {
     timestamps: true,
 });
@@ -30,57 +29,70 @@ module.exports = {
     full: AuthClient,
     [OA1_TWO_LEGGED]:
         AuthClient.discriminator(`C_${OA1_TWO_LEGGED}`, new Schema({
-            property: {
-                consumerKey: {
-                    type: String,
-                    required: true,
-                },
-                consumerSecret: {
-                    type: String,
-                    required: true,
-                },
-                nonce: {
-                    type: String,
-                    required: true,
-                },
-                signature: {
-                    type: String,
-                    required: true,
-                },
-                signatureMethod: {
-                    type: String,
-                    required: true,
-                },
-                version: String,
+            consumerKey: {
+                type: String,
+                required: true,
             },
-
+            consumerSecret: {
+                type: String,
+                required: true,
+            },
+            nonce: {
+                type: String,
+                required: true,
+            },
+            signature: {
+                type: String,
+                required: true,
+            },
+            signatureMethod: {
+                type: String,
+                required: true,
+            },
+            version: String,
         })),
-
     [OA2_AUTHORIZATION_CODE]:
         AuthClient.discriminator(`A_${OA2_AUTHORIZATION_CODE}`, new Schema({
-            property: {
-                clientId: {
+            clientId: {
+                type: String,
+                required: true,
+            },
+            clientSecret: {
+                type: String,
+                required: true,
+            },
+            redirectUri: {
+                type: String,
+                required: true,
+            },
+            endpoint: {
+                auth: {
                     type: String,
                     required: true,
                 },
-                clientSecret: {
+                token: {
                     type: String,
                     required: true,
                 },
-                redirectUri: {
-                    type: String,
-                    required: true,
-                },
-                endpoint: {
-                    start: {
+                userinfo: String,
+                revocation: String,
+                endSession: String,
+            },
+            predefinedScope: String,
+            mappings: {
+                scope: {
+                    key: {
                         type: String,
                         required: true,
                     },
-                    exchange: {
+                },
+                externalId: {
+                    source: {
                         type: String,
+                        enum: EXTERNAL_ID_SOURCE,
                         required: true,
                     },
-                    refresh: {
+                    key: {
                         type: String,
                         required: true,
                     },

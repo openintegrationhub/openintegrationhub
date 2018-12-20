@@ -22,6 +22,7 @@ const secretBaseSchema = new Schema({
         enum: Object.keys(AUTH_TYPE),
         required: true,
     },
+    lockedAt: Date,
     value: {},
 }, {
     timestamps: true,
@@ -63,7 +64,6 @@ module.exports = {
     [OA2_AUTHORIZATION_CODE]:
         Secret.discriminator(`S_${OA2_AUTHORIZATION_CODE}`, new Schema({
             value: {
-                sub: String,
                 authClientId: {
                     type: Schema.Types.ObjectId,
                     required: true,
@@ -72,17 +72,19 @@ module.exports = {
                     type: String,
                     required: true,
                 },
-                scope: {
+                accessToken: {
                     type: String,
                     required: true,
                 },
+                scope: String,
                 endpoint: {
-                    refresh: {
+                    token: {
                         type: String,
                         required: true,
                     },
                 },
                 expires: String,
+                externalId: String,
             },
         })),
 };
