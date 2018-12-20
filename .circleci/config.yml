@@ -9,13 +9,13 @@ aliases:
   - &restore_cache_dependencies
     name: "Restoring node_modules from the cache"
     keys:
-      - node-modules-cache-{{ checksum "package.json" }}
+      - v1-node-modules-cache-{{ checksum "package.json" }}
   - &run_npm_install
     name: Installing Dependencies
     command: yarn install
   - &save_cache_dependencies
     name: "Saving node_modules into the cache"
-    key: node-modules-cache-{{ checksum "package.json" }}
+    key: v1-node-modules-cache-{{ checksum "package.json" }}
     paths:
       - ~/.cache/yarn
   - &run_build
