@@ -1,0 +1,45 @@
+version: 2
+
+aliases:
+  - &docker_environment
+    - image: circleci/node:8-stretch
+  - &checkout
+    path: ~/oih
+  - &restore_cache_dependencies
+    name: "Restoring node_modules from the cache"
+    keys:
+      - node-modules-cache-{{ checksum "yarn.lock" }}
+  - &run_npm_install
+    name: Installing Dependencies
+    command: yarn install
+  - &save_cache_dependencies
+    name: "Saving node_modules into the cache"
+    key: node-modules-cache-{{ checksum "yarn.lock" }}
+    paths:
+      - node_modules
+  - &run_build
+    name: Building an Image
+    command: yarn test
+  - &common_steps
+    - checkout: *checkout
+    - restore_cache: *restore_cache_dependencies
+    - run: *run_npm_install
+    - save_cache: *save_cache_dependencies
+    #- setup_remote_docker
+    - run: *run_build
+  - &common_environment
+    docker: *docker_environment
+    steps: *common_steps
+
+
+jobs:
+  scheduler:
+    <<: *common_environment
+    working_directory: ~/oih/services/scheduler
+
+
+workflows:
+  version: 2
+  build_development:
+    jobs:
+      - admiral
