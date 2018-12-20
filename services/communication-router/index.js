@@ -8,3 +8,4 @@ const CommunicationRouterApp = require('./src/CommunicationRouterApp.js');
         process.exit(1); //eslint-disable-line no-process-exit
     }
 })();
+

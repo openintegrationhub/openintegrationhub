@@ -20,3 +20,9 @@ spec:
       - backend:
           serviceName: example-api
           servicePort: 8080
+  - host: skm.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: secret-service
+          servicePort: 3000

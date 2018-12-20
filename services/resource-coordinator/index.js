@@ -9,3 +9,4 @@ const ResourceCoordinatorApp = require('./src/ResourceCoordinatorApp.js');
         process.exit(1);
     }
 })();
+
