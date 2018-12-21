@@ -10,32 +10,32 @@ Visit the official [Open Integration Hub homepage](https://www.openintegrationhu
 Standalone platform that runs flows build from [elastic.io](https://www.elastic.io/) components on kuberntes. Components are build around [nodejs library](https://github.com/elasticio/sailor-nodejs) or [java library](https://github.com/elasticio/sailor-jvm). Generally components may be build with any other language and technology that can work with amqp protocol, send http requests, has access to process's env variables and may be packed into docker container.
 
 ## Platform requirements:
-* Any kubernetes cluster (GCP/minikube/bare-metal cluster/whatwever). The only requirement is network access to docker hub registry.
+* Any kubernetes cluster (GCP/minikube/bare-metal cluster/whatwever). The only requirement is network access to Docker Hub registry.
 * kubectl command installed and configured to work with kubernetes cluster.
 * It is necessary to bind the clusterrole to the cluster-admin, otherwise starting the platform will result in authentification-problems since the created role does not have full permissions to run the declared verbs
 as the cluster-admin(operations@openintegrationhub.com) has, to do so, copy the following command: <br>
 ```
-kubectl create clusterrolebinding flows-operator-clusterrolebinding --clusterrole=cluster-admin --user=operations@openintegrationhub.com
+kubectl create clusterrolebinding resource-coordinator-clusterrolebinding --clusterrole=cluster-admin --user=operations@openintegrationhub.com
 ```
 and
 
 ```
-kubectl create clusterrolebinding flows-operator-rolebinding --clusterrole=cluster-admin --user=operations@openintegrationhub.com
+kubectl create clusterrolebinding resource-coordinator-rolebinding --clusterrole=cluster-admin --user=operations@openintegrationhub.com
 ```
 
 * In general: all new rolebindings need to be binded to the cluster-admin
 ## Installation
-The whole platform is described as one json file with a set of kubernetes descriptors. To install (reinstall) platform:
+The whole platform is described as one yaml file with a set of kubernetes descriptors. To install (reinstall) platform:
 1. Clean out previous installation if required
 ```shell
-kubectl delete -f platform/platform.json
+kubectl delete -f platform/platform.yaml
 ```
 2. Install platform
 ```shell
-kubectl create -f platform/platform.json
+kubectl create -f platform/platform.yaml
 ```
 Same actions may be done using kubernetes dashboard.
-After installation kubernetes cluster should contain deployments and theirs pods.
+After installation kubernetes cluster should contain deployments and their pods.
 Their startup may take some time (to download docker images and to start). To check if everything has been started up:
 
 Get deployments
@@ -43,28 +43,28 @@ Get deployments
 kubectl get deployments --namespace=platform
 ```
 ```
-NAME             DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-flows-operator   1         1         1            1           27m
-rabbitmq         1         1         1            1           27m
-scheduler        1         1         1            1           27m
-communication-router         1         1         1            1           27m
+NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+resource-coordinator   1         1         1            1           27m
+rabbitmq               1         1         1            1           27m
+scheduler              1         1         1            1           27m
+communication-router   1         1         1            1           27m
 ```
 And their pods
 ```shell
 kubectl get pods --namespace=platform
 ```
 ```
-NAME                              READY     STATUS    RESTARTS   AGE
-flows-operator-576fb76f65-b86rr   1/1       Running   0          27m
-rabbitmq-5c5c7ffd4-6g2gb          1/1       Running   0          27m
-scheduler-5d84c698d4-hxb65        1/1       Running   0          27m
-communication-router-6d4d575967-4nsbd         1/1       Running   0          27m
+NAME                                    READY     STATUS    RESTARTS   AGE
+resource-coordinator-576fb76f65-b86rr   1/1       Running   0          27m
+rabbitmq-5c5c7ffd4-6g2gb                1/1       Running   0          27m
+scheduler-5d84c698d4-hxb65              1/1       Running   0          27m
+communication-router-6d4d575967-4nsbd   1/1       Running   0          27m
 ```
 ## Usage
-To make platform to do somthing usefull, it's required do create flow in kubernetes cluster. Platform will start appropriate pods, and glue them together using amqp. Flows are defined as kubernetes' custom resources. Examples are given in repository `example/flow.json` and `example/flow2.json`
+To make platform to do something usefull it's required create a flow in the Kubernetes cluster. The platform will start appropriate pods, and glue them together using amqp. Flows are defined as kubernetes custom resources. Have a look at the [examples](./example).
 
 ### Start flow
-Next command will start flow defined in `example/flow.json` file. That example flow periodically sends email to address defined in it's configuration
+The following command will start a flow defined in `example/flow.json` file.
 ```shell
 kubectl create -f example/flow.json
 ```
@@ -101,8 +101,8 @@ http://192.168.39.24:30204
 ```
 Actually send message
 ```shell
-curl '<SERVICE_URL>/flow/<FLOW_ID>?arg1=val1&arg2=val2'
-curl -H 'Content-Type: application/json' '<SERVICE_URL>/flow/<FLOW_ID>' -d '{"arg1": "val1", "arg2": "val2"}'
+curl '<SERVICE_URL>/hook/<FLOW_ID>?arg1=val1&arg2=val2'
+curl -H 'Content-Type: application/json' '<SERVICE_URL>/hook/<FLOW_ID>' -d '{"arg1": "val1", "arg2": "val2"}'
 ```
 
 ### Debug
@@ -125,7 +125,7 @@ Flow is defined as [kubernetes custom resorce](https://kubernetes.io/docs/concep
     "apiVersion": "elastic.io/v1",
     "kind": "Flow",
     "metadata": {
-        "name": "example-task",
+        "name": "example-flow",
         "namespace": "flows"
     },
     "spec": {
@@ -247,29 +247,11 @@ The format is the following:
 It is possible to specify node-wide, flow-wide or system-wide resources limits and requests.
 System-wide settings specified by the `DEFAULT_CPU_LIMIT`, `DEFAULT_MEM_LIMIT`, `DEFAULT_CPU_REQUEST`, `DEFAULT_MEM_REQUEST` env vars;
 
-
-## build
-To build platform just run next commands
-```shell
-docker build -t openintegrationhub/flows-operator:latest  -f ./services/flows-operator/Dockerfile  ./services/
-docker push openintegrationhub/flows-operator:latest
-
-docker build -t openintegrationhub/scheduler:latest  -f ./services/scheduler/Dockerfile  ./services/
-docker push openintegrationhub/scheduler:latest
-
-docker build -t openintegrationhub/communication-router:latest  -f ./services/communication-router/Dockerfile  ./services/
-docker push openintegrationhub/communication-router:latest
-```
-
 ## TODOS/Known issues
-* Platform does not handle changes in task. So to apply changes you need to delete and then recreate flow.
-* Platform does not handle task failure. So if component fails, and kubernetes failed to start it within retries defined by standart restart policy, than component will be broken, and the whole flow will be broken
-* Platform does not provide a way to configure secrets to download private docker images
-* Platform does not provide a way to inject some input data into flow. But this may be done by first step itself (e. g. start http server and create kubernete's service to handle input traffic for it)
-* Platform does not define resource limits on components. This confuses kubernetes' distribution mechanisms, and in worst case all components may be started at same node, and overload it.
-* Platform does not remove queues and exchanges used by task after task deletion
-* Platform use same rabbitmq account for itself and for tasks. And requires that account has privileges to create queues and exchanges in virtual host.
-* Platform uses rabbitmq inside deployment, and does not persist rabbitmq's durable messages at some "real" storage. So they'll be lost after platform restart
-* There may be race condition between external world and service. So fast delete/creation of flow may be ignored
-* There may be race condition between scheduler and job start. First timer tick may be lost.
+* The platform doesn't handle flows failure. So if component fails and Kubernetes failed to start it within retries defined by standard restart policy, than component will be broken, and the whole flow will be broken.
+* The platform doesn't provide a way to configure secrets to download private docker images.
+* The platform doesn't provide a way to inject some input data into flow. But this may be done by first step itself (e. g. start http server and create kubernetes service to handle input traffic for it).
+* The platform uses RabbitMQ inside deployment, and does not persist RabbitMQ's durable messages at some "real" storage. So they'll be lost after platform restart.
+* There may be a race condition between external world and service. So fast delete/creation of a flow may be ignored.
+* There may be a race condition between scheduler and job start. First timer tick may be lost.
 
