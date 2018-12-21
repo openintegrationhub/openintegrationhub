@@ -1,5 +1,4 @@
 const url = require('url');
-
 const RabbitmqManagement = require('rabbitmq-stats');
 
 class RabbitmqManagementService {
@@ -9,27 +8,54 @@ class RabbitmqManagementService {
     }
 
     async start() {
+        this._client = this._createClient();
+    }
+
+    /**
+     * Creates RabbitMQ management client.
+     * @private
+     */
+    _createClient() {
         const managementUri = this._config.get('RABBITMQ_MANAGEMENT_URI');
         const parsedUrl = new url.URL(managementUri);
         const { username, password } = parsedUrl;
         this._vhost = parsedUrl.pathname.replace(/^\//, '') || '/';
         parsedUrl.username = '';
         parsedUrl.password = '';
-        this._client = new RabbitmqManagement(parsedUrl.toString(), username, password);
+        return new RabbitmqManagement(parsedUrl.toString(), username, password);
     }
 
+    /**
+     * Get all virtual host's queues.
+     * @returns {Promise<*>}
+     */
     async getQueues() {
         return this._client.getVhostQueues(this._vhost);
     }
 
+    /**
+     * Get all virtual host's exchanges.
+     * @returns {Promise<*>}
+     */
     async getExchanges() {
         return this._client.getVhostExchanges(this._vhost);
     }
 
+    /**
+     * Get all virtual host's bindings.
+     * @returns {Promise<*>}
+     */
     async getBindings() {
         return this._client.getVhostBindings(this._vhost);
     }
 
+    /**
+     * Create RabbitMQ user for a flow.
+     * @param {string} username
+     * @param {string} password
+     * @param {Flow} flow - Flow instance
+     * @returns {Promise<void>}
+     */
     async createFlowUser({ username, password, flow }) {
         const userBody = {
             //@todo it would be great to pass a password_hash instead of a password
@@ -55,6 +81,12 @@ class RabbitmqManagementService {
         await this._client.setUserPermissions(username, this._vhost, permissionsBody);
     }
 
+    /**
+     * Delete RabbitMQ user.
+     * @param {Object} credentials
+     * @param {string} credentials.username
+     * @returns {Promise<void>}
+     */
     async deleteUser({ username }) {
         await this._client.deleteUser(username);
     }

@@ -8,16 +8,30 @@ class FlowsK8sDao extends FlowsDao {
         this._crdClient = k8s.getCRDClient();
     }
 
+    /**
+     * Finds flow by ID.
+     * @param id
+     * @returns {Promise<Flow>}
+     */
     async findById(id) {
         return new Flow((await this._crdClient.flows(id).get()).body);
     }
 
+    /**
+     * Updates a flow.
+     * @param flow
+     * @returns {*}
+     */
     update(flow) {
         return this._crdClient.flow(flow.id).put({
             body: flow.toCRD()
         });
     }
 
+    /**
+     * Find all flows.
+     * @returns {Promise<Flow[]>}
+     */
     async findAll() {
         return ((await this._crdClient.flows.get()).body.items || []).map(item => new Flow(item));
     }
