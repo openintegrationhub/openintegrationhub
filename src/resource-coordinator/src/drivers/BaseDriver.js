@@ -10,6 +10,10 @@ class BaseDriver {
     getAppList() {
         throw new Error('To be implemented');
     }
+
+    initFlow() {
+        throw new Error('To be implemented');
+    }
 }
 
 module.exports = BaseDriver;

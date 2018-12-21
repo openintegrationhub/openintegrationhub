@@ -59,8 +59,15 @@ class ResourceCoordinator {
             return;
         }
 
-        // ensure flow infrastructure - finalizer + secret + queues
-        await this._flowsDao.ensureFinalizer(flow); //@todo: onFlowCreated?
+        if (flow.isNew) {
+            // ensure flow infrastructure - finalizer + secret + queues
+            const amqpCredentials = await this._createFlowAmqpCredentials(flow);
+            const secretEnvVars = {
+                AMQP_URI: this._prepareAmqpUri(amqpCredentials)
+            };
+            await this._driver.initFlow(flow, secretEnvVars);
+            await this._flowsDao.ensureFinalizer(flow); //@todo: onFlowCreated?
+        }
 
         if (await this._isRedeployRequired(flow, appsIndex)) {
             this._logger.trace({name: flow.id}, 'Flow changed. Redeploy.');
@@ -71,16 +78,11 @@ class ResourceCoordinator {
 
         //@todo ensure queues/exchanges. Use QueuesStructure table
         const flowEnvVars =  await this._queueCreator.makeQueuesForTheFlow(flow);
-        //@todo: don't create credentials each time
-        const amqpCredentials = await this._createFlowAmqpCredentials(flow);
-        const secretEnvVars = {
-            AMQP_URI: this._prepareAmqpUri(amqpCredentials)
-        };
 
         for (let node of flow.nodes) {
             if (!appsIndex[flow.id] || !appsIndex[flow.id][node.id]) {
                 this._logger.trace({flow: flow.id, node: node.id}, 'Going to create a flow node');
-                await this._driver.createApp(flow, node, flowEnvVars[node.id], secretEnvVars);
+                await this._driver.createApp(flow, node, flowEnvVars[node.id]);
             }
         }
     }
