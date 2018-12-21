@@ -1,7 +1,5 @@
 //@see https://github.com/kubernetes/community/blob/master/contributors/devel/api-conventions.md
-const uuid = require('uuid/v4');
 const _ = require('lodash');
-const { URL } = require('url');
 
 async function loop (body, logger, loopInterval) {
     logger.info('loop TICK');
@@ -16,12 +14,11 @@ async function loop (body, logger, loopInterval) {
 }
 
 class ResourceCoordinator {
-    constructor(config, logger, queueCreator, rabbitmqManagement, amqpConnection, flowsDao, driver) {
+    constructor({ config, logger, infrastructureManager, rabbitmqManagement, flowsDao, driver }) {
         this._config = config;
         this._logger = logger.child({service: 'ResourceCoordinator'});
-        this._queueCreator = queueCreator;
         this._rabbitmqManagement = rabbitmqManagement;
-        this._channelPromise = amqpConnection.createChannel();
+        this._infrastructureManager = infrastructureManager;
         this._flowsDao = flowsDao;
         this._driver = driver;
     }
@@ -52,8 +49,7 @@ class ResourceCoordinator {
             this._logger.trace({name: flow.id}, 'Going to delete flow');
 
             await this._deleteRunningAppsForFlow(flow, appsIndex);
-            await this._deleteQueuesForFlow(flow, queuesStructure);
-            await this._deleteFlowAmqpCredentials(flow);
+            await this._infrastructureManager.deleteForFlow(flow, queuesStructure);
 
             await this._flowsDao.removeFinalizer(flow); //@todo: onFlowDeleted?
             return;
@@ -61,28 +57,23 @@ class ResourceCoordinator {
 
         if (flow.isNew) {
             // ensure flow infrastructure - finalizer + secret + queues
-            const amqpCredentials = await this._createFlowAmqpCredentials(flow);
-            const secretEnvVars = {
-                AMQP_URI: this._prepareAmqpUri(amqpCredentials)
-            };
-            await this._driver.initFlow(flow, secretEnvVars);
+            await this._infrastructureManager.createForFlow(flow);
             await this._flowsDao.ensureFinalizer(flow); //@todo: onFlowCreated?
         }
 
         if (await this._isRedeployRequired(flow, appsIndex)) {
             this._logger.trace({name: flow.id}, 'Flow changed. Redeploy.');
             await this._deleteRunningAppsForFlow(flow, appsIndex);
-            await this._deleteQueuesForFlow(flow, queuesStructure); // delete all queues? really?
+            await this._infrastructureManager.updateForFlow(flow, queuesStructure);
             delete appsIndex[flow.id];
         }
 
-        //@todo ensure queues/exchanges. Use QueuesStructure table
-        const flowEnvVars =  await this._queueCreator.makeQueuesForTheFlow(flow);
-
         for (let node of flow.nodes) {
             if (!appsIndex[flow.id] || !appsIndex[flow.id][node.id]) {
+                //@todo: abstraction for settings
+                const envVars = await this._infrastructureManager.getSettingsForNodeExecution(flow, node);
                 this._logger.trace({flow: flow.id, node: node.id}, 'Going to create a flow node');
-                await this._driver.createApp(flow, node, flowEnvVars[node.id]);
+                await this._driver.createApp(flow, node, envVars);
             }
         }
     }
@@ -113,20 +104,6 @@ class ResourceCoordinator {
             index[flowId][nodeId] = app;
             return index;
         }, {});
-    }
-
-    async _deleteQueuesForFlow(flow, queuesStructure) {
-        const flowId = flow.id;
-        // delete all queues
-        if (queuesStructure[flowId]) {
-            const channel = await this._channelPromise;
-            for (let queue of queuesStructure[flowId].queues) {
-                await channel.deleteQueue(queue);
-            }
-            for (let exchange of queuesStructure[flowId].exchanges) {
-                await channel.deleteExchange(exchange);
-            }
-        }
     }
 
     async _deleteRunningAppsForFlow(flow, appsIndex) {
@@ -178,44 +155,6 @@ class ResourceCoordinator {
             index[flowId].bindings.push(binding);
         }
         return index;
-    }
-
-    _prepareAmqpUri({ username, password }) {
-        const baseUri = new URL(this._config.get('RABBITMQ_URI_FLOWS'));
-        baseUri.username = username;
-        baseUri.password = password;
-
-        return baseUri.toString();
-    }
-
-    _createFlowAmqpCredentials(flow) {
-        return this._createAmqpCredentials(flow);
-    }
-
-    async _createAmqpCredentials(flow) {
-        const username = flow.id;
-        const password = uuid();
-
-        this._logger.trace('About to create RabbitMQ user');
-        await this._rabbitmqManagement.createFlowUser({
-            username,
-            password,
-            flow
-        });
-        this._logger.trace('Created RabbitMQ user');
-
-        return {
-            username,
-            password
-        };
-    }
-
-    _deleteFlowAmqpCredentials(flow) {
-        return this._deleteAmqpCredentials({username: flow.id});
-    }
-
-    _deleteAmqpCredentials(credentials) {
-        return this._rabbitmqManagement.deleteUser(credentials);
     }
 }
 
