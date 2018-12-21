@@ -3,7 +3,10 @@
     "DEFAULT_MEM_LIMIT": "256Mi",
     "DEFAULT_CPU_REQUEST": "100m",
     "DEFAULT_MEM_REQUEST": "256Mi",
+    "LISTEN_PORT": 1234,
+    "NAMESPACE": "flows",
     "RABBITMQ_MANAGEMENT_URI": "http://guest:guest@localhost:15672",
+    "RABBITMQ_URI": "amqp://guest:guest@127.0.0.1:5672/",
     "RABBITMQ_URI_FLOWS": "amqp://localhost",
     "SELF_API_URI": "http://api-service.platform.svc.cluster.local:1234"
 }
