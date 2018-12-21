@@ -1,9 +1,11 @@
 const _ = require('lodash');
-const { URL } = require('url');
 
 const toBase64 = str => Buffer.from(str).toString('base64');
 const fromBase64 = str => Buffer.from(str, 'base64').toString();
 
+/**
+ * Represents a Flow's K8s Secret
+ */
 class FlowSecret {
     constructor({ metadata = {}, data = {} } = {}) {
         Object.assign(this, {
@@ -16,11 +18,10 @@ class FlowSecret {
         return _.get(this, 'metadata.name');
     }
 
-    get amqpUsername() {
-        const { username } = new URL(_.get(this, 'data.AMQP_URI'));
-        return username;
-    }
-
+    /**
+     * Return K8s descriptor representation.
+     * @returns K8s descriptor
+     */
     toDescriptor() {
         return {
             apiVersion: 'v1',
@@ -34,6 +35,11 @@ class FlowSecret {
         };
     }
 
+    /**
+     * Create a FlowSecret from a K8s descriptor.
+     * @param {Object} descriptor
+     * @returns {FlowSecret}
+     */
     static fromDescriptor(descriptor = {}) {
         return new this({
             metadata: descriptor.metadata,

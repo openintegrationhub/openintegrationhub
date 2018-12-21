@@ -1,3 +1,6 @@
 {
-    "POLLING_INTERVAL": 20000
+    "LISTEN_PORT": 1234,
+    "NAMESPACE": "flows",
+    "POLLING_INTERVAL": 20000,
+    "RABBITMQ_URI": "amqp://guest:guest@127.0.0.1:5672/"
 }

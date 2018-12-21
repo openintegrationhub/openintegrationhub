@@ -41,12 +41,12 @@ items:
   - apiVersion: v1
     kind: ServiceAccount
     metadata:
-      name: flows-operator-account
+      name: resource-coordinator-account
       namespace: platform
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: Role
     metadata:
-      name: flows-operator-role
+      name: resource-coordinator-role
       namespace: flows
     rules:
       - apiGroups:
@@ -100,7 +100,7 @@ items:
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRole
     metadata:
-      name: flows-operator-clusterrole
+      name: resource-coordinator-clusterrole
     rules:
       - apiGroups:
           - apiextensions.k8s.io
@@ -118,49 +118,49 @@ items:
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: RoleBinding
     metadata:
-      name: flows-operator-rolebinding
+      name: resource-coordinator-rolebinding
       namespace: flows
     roleRef:
       apiGroup: rbac.authorization.k8s.io
       kind: Role
-      name: flows-operator-role
+      name: resource-coordinator-role
     subjects:
       - kind: ServiceAccount
-        name: flows-operator-account
+        name: resource-coordinator-account
         namespace: platform
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRoleBinding
     metadata:
-      name: flows-operator-clusterrolebinding
+      name: resource-coordinator-clusterrolebinding
     roleRef:
       apiGroup: rbac.authorization.k8s.io
       kind: ClusterRole
-      name: flows-operator-clusterrole
+      name: resource-coordinator-clusterrole
     subjects:
       - kind: ServiceAccount
-        name: flows-operator-account
+        name: resource-coordinator-account
         namespace: platform
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
-      name: flows-operator
+      name: resource-coordinator
       namespace: platform
       labels:
-        app: flows-operator
+        app: resource-coordinator
     spec:
       replicas: 1
       selector:
         matchLabels:
-          app: flows-operator
+          app: resource-coordinator
       template:
         metadata:
-          name: flows-operator
+          name: resource-coordinator
           labels:
-            app: flows-operator
+            app: resource-coordinator
         spec:
           containers:
-            - name: flows-operator
-              image: 'openintegrationhub/flows-operator:latest'
+            - name: resource-coordinator
+              image: 'openintegrationhub/resource-coordinator:latest'
               env:
                 - name: LISTEN_PORT
                   value: '1234'
@@ -190,7 +190,7 @@ items:
                 httpGet:
                   path: /healthcheck
                   port: 1234
-          serviceAccountName: flows-operator-account
+          serviceAccountName: resource-coordinator-account
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
       strategy:
@@ -212,7 +212,7 @@ items:
           protocol: TCP
           targetPort: 1234
       selector:
-        app: flows-operator
+        app: resource-coordinator
       sessionAffinity: None
       type: ClusterIP
   - kind: Deployment
@@ -255,7 +255,7 @@ items:
                   port: 1234
               securityContext:
                 privileged: false
-          serviceAccountName: flows-operator-account
+          serviceAccountName: resource-coordinator-account
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
       strategy:
@@ -305,7 +305,7 @@ items:
                   port: 1234
               securityContext:
                 privileged: false
-          serviceAccountName: flows-operator-account
+          serviceAccountName: resource-coordinator-account
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
       strategy:

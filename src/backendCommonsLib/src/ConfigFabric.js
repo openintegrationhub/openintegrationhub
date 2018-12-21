@@ -22,11 +22,8 @@ class ConfigFabric {
 
     static _getDefaults() {
         return {
-            RABBITMQ_URI: 'amqp://guest:guest@127.0.0.1:5672/',
-            LOG_LEVEL: 'info',
-            NAMESPACE: 'flows',
-            LISTEN_PORT: 1234
-        }
+            LOG_LEVEL: 'info'
+        };
     }
 }
 
