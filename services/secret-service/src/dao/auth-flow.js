@@ -12,6 +12,11 @@ module.exports = {
         return await AuthFlow.findById(id).lean();
     },
 
+    async delete(id) {
+        return await AuthFlow.deleteOne({
+            _id: id,
+        });
+    },
     // findByEntity: async entityId => await Secret.full.find({
     //     'owner.entityId': entityId,
     // }).lean(),

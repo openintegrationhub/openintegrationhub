@@ -1,18 +1,17 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const logger = require('@basaas/node-logger');
 const auth = require('../../middleware/auth');
+const authFlowManager = require('../../auth-flow-manager');
 const conf = require('../../conf');
+const AuthClientDAO = require('../../dao/auth-client');
 const SecretsDAO = require('../../dao/secret');
-const TokenDAO = require('../../dao/token');
 const { ROLE } = require('../../constant');
 
 const log = logger.getLogger(`${conf.logging.namespace}/secrets`);
 
-const jsonParser = bodyParser.json();
 const router = express.Router();
 
-router.use(auth.isLoggedIn);
+// router.use(auth.isLoggedIn);
 
 router.get('/', async (req, res, next) => {
     try {
@@ -25,7 +24,8 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.post('/', jsonParser, async (req, res, next) => {
+
+router.post('/', async (req, res, next) => {
     try {
         const secret = await SecretsDAO.create({
             ...req.body,
@@ -49,7 +49,7 @@ router.get('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     try {
         const secret = req.obj;
         if (secret) {
-            res.send(secret);
+            res.send(await SecretsDAO.getRefreshed(secret));
         } else {
             res.sendStatus(404);
         }
@@ -61,7 +61,7 @@ router.get('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     }
 });
 
-router.put('/:id', jsonParser, auth.userIsOwnerOfSecret, async (req, res, next) => {
+router.put('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     const obj = req.body;
 
     try {
@@ -77,7 +77,7 @@ router.put('/:id', jsonParser, auth.userIsOwnerOfSecret, async (req, res, next) 
     }
 });
 
-router.patch('/:id', jsonParser, auth.userIsOwnerOfSecret, async (req, res, next) => {
+router.patch('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     const obj = req.body;
 
     try {
@@ -107,21 +107,32 @@ router.delete('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     }
 });
 
-router.get('/:id/access-token', auth.userIsOwnerOfSecret, async (req, res, next) => {
-    try {
-        const secret = req.obj;
-        const token = await TokenDAO.getOrWait(secret);
-        res.send(token);
-    } catch (err) {
-        log.error(err);
-        next({
-            status: 500,
-        });
-    }
-});
-
 router.get('/:id/audit', async (req, res) => {
     res.sendStatus(200);
+});
+
+router.get('/:id/userinfo', auth.userIsOwnerOfSecret, async (req, res, next) => {
+    try {
+        const secret = req.obj;
+        const authClient = await AuthClientDAO.findById(secret.value.authClientId);
+
+        if (!authClient.endpoint.userinfo) {
+            return next({
+                status: 404,
+            });
+        }
+
+        res.send(
+            await authFlowManager.userinfoRequest(
+                authClient.endpoint.userinfo,
+                secret.value.accessToken,
+            ),
+        );
+    } catch (err) {
+        next({
+            status: 400,
+        });
+    }
 });
 
 module.exports = router;

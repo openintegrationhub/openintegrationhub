@@ -1,15 +1,14 @@
-const mongoose = require('mongoose');
 const getPort = require('get-port');
 const { fork } = require('child_process');
 const supertest = require('supertest');
-const jwt = require('jsonwebtoken');
 const nock = require('nock');
+const mongoose = require('mongoose');
+const token = require('../../test/tokens');
 const AuthFlow = require('../../model/AuthFlow');
 const Secret = require('../../model/Secret');
 const conf = require('../../conf');
 const { AUTH_TYPE } = require('../../constant');
 const Server = require('../../server');
-const token = require('../../test/token');
 const {
     SIMPLE, API_KEY, OA2_AUTHORIZATION_CODE,
 } = require('../../constant').AUTH_TYPE;
@@ -27,6 +26,17 @@ describe('secrets', () => {
             port,
         });
         await server.start();
+        const endpointPrefix = conf.introspectEndpoint.substr(0, conf.introspectEndpoint.lastIndexOf('/'));
+        const endpointSuffix = conf.introspectEndpoint.substr(conf.introspectEndpoint.lastIndexOf('/'));
+        nock(endpointPrefix)
+            .persist()
+            .post(endpointSuffix)
+            .reply((uri, requestBody, cb) => {
+                const tokenName = requestBody.token;
+
+                cb(null, [200, token[tokenName].value]);
+                // ...
+            });
         done();
     });
 
@@ -76,7 +86,7 @@ describe('secrets', () => {
 
         expect(secrets.length).toEqual(2);
         secrets.forEach((secret) => {
-            expect(secret.owner[0].entityId).toEqual(jwt.decode(token.userToken1).sub);
+            expect(secret.owner[0].entityId).toEqual(token.userToken1.value.sub);
         });
     });
 
@@ -201,34 +211,80 @@ describe('secrets', () => {
             .set(...global.userAuth1)
             .expect(200);
 
-        // await request.get(`/secrets/${body._id}`)
-        //     .set(...global.userAuth1)
-        //     .expect(404);
+        await request.get(`/secrets/${body._id}`)
+            .set(...global.userAuth1)
+            .expect(404);
     });
 
     test('Full flow with new client initial request, access token request and auto refresh', async (done) => {
         const scope = 'foo bar';
+        const example = nock('https://example.com');
+
+
+        // nock setup
+        example
+            .post('/auth')
+            .reply(200, {
+                access_token: 'old',
+                expires_in: 0,
+                refresh_token: 'old',
+                scope,
+                token_type: 'Bearer',
+                id_token: 'asdsdf',
+            });
+
+        example
+            .get('/userinfo')
+            .reply(200, {
+                sub: 'me',
+                expires_in: 0,
+                refresh_token: 'new',
+                scope,
+                token_type: 'Bearer',
+                id_token: 'asdsdf',
+            });
+
+
+        example
+            .persist()
+            .post('/token')
+            .reply(200, {
+                access_token: 'new',
+                expires_in: 0,
+                refresh_token: 'new',
+                scope,
+                token_type: 'Bearer',
+                id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+            });
+
         // create auth client
         const { authClientId } = (await request.post('/auth-clients')
             .set(...global.userAuth1)
             .send({
                 type: OA2_AUTHORIZATION_CODE,
                 name: 'google oAuth2',
-                property: {
-                    clientId: process.env.CLIENT_ID,
-                    clientSecret: process.env.CLIENT_SECRET,
-                    redirectUri: `http://localhost:${conf.port}/callback`,
-                    endpoint: {
-                        start: 'https://example.com/auth?'
+                clientId: 'clientId',
+                clientSecret: 'clientSecret',
+                redirectUri: `http://localhost:${conf.port}/callback`,
+                endpoint: {
+                    auth: 'https://example.com/auth?'
                             + 'scope={{scope}}&'
                             + 'access_type=offline&'
                             + 'include_granted_scopes=true&'
-                            + 'state=state_parameter_passthrough_value&'
+                            + 'state={{state}}&'
                             + 'redirect_uri={{redirectUri}}&'
                             + 'response_type=code&'
                             + 'client_id={{clientId}}',
-                        exchange: 'https://example.com/exchange',
-                        refresh: 'https://example.com/token',
+                    token: 'https://example.com/token',
+                    userinfo: 'https://example.com/userinfo',
+                },
+                mappings: {
+                    externalId: {
+                        source: 'id_token',
+                        key: 'sub',
+                    },
+                    scope: {
+                        key: 'scope',
                     },
                 },
             })
@@ -241,29 +297,6 @@ describe('secrets', () => {
                 scope,
             })
             .expect(200);
-
-        // create mocked api
-        nock('https://example.com')
-            .post('/exchange')
-            .reply(200, {
-                access_token: 'old',
-                expires_in: 0,
-                refresh_token: 'old',
-                scope,
-                token_type: 'Bearer',
-                id_token: 'asdsdf',
-            });
-
-        nock('https://example.com')
-            .post('/token')
-            .reply(200, {
-                access_token: 'new',
-                expires_in: 0,
-                refresh_token: 'new',
-                scope,
-                token_type: 'Bearer',
-                id_token: 'asdsdf',
-            });
 
         // get authFlow id to set proper state value
         const authFlow = await AuthFlow.findOne({
@@ -280,12 +313,22 @@ describe('secrets', () => {
             'value.scope': scope,
         });
 
+
         // fetch access-token
-        const { body } = await request.get(`/secrets/${_id}/access-token`)
+        const { body } = await request.get(`/secrets/${_id}`)
             .set(...global.userAuth1)
             .expect(200);
 
-        expect(body.value).toEqual('new');
+
+        expect(body.value.accessToken).toEqual('new');
+
+
+        // fetch userinfo
+        const resp = await request.get(`/secrets/${_id}/userinfo`)
+            .set(...global.userAuth1)
+            .expect(200);
+
+        expect(resp.body.sub).toEqual('me');
 
         // fork test program
         const forkedTest = fork(`${__dirname}/test/forked-test.js`, {
@@ -293,17 +336,16 @@ describe('secrets', () => {
                 __MONGO_URI__: `${global.__MONGO_URI__}-secrets`,
                 secretId: _id,
                 auth: global.userAuth1,
+                IAM_TOKEN: 'SecretServiceIamToken',
             },
         });
 
         // exit test on success
         forkedTest.on('message', (msg) => {
-            expect(msg.ended).toBeTruthy();
-            expect(msg.dones).toBe(msg.clients);
-            expect(msg.errors).toBe(0);
+            expect(msg.failed).toEqual(0);
             done();
         });
-    }, 20000);
+    }, 1000000);
 
     test('Get audit data for a specific secret', async () => {
         await request.get('/secrets/fofo/audit')
