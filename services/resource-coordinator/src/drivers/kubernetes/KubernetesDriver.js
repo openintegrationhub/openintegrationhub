@@ -87,7 +87,9 @@ class KubernetesDriver extends BaseDriver {
                 }
             });
         } catch (e) {
-            this._logger.error(e, 'failed to undeploy job');
+            if (e.statusCode !== 404) {
+                this._logger.error(e, 'failed to undeploy job');
+            }
         }
     }
 

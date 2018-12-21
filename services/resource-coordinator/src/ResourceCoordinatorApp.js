@@ -20,39 +20,23 @@ class ResourceCoordinatorApp extends App {
         this._k8s = new K8sService(this);
         await this._amqp.start();
         await this._k8s.start();
-        const flowsDao = new FlowsK8sDao(this.getK8s());
+        const flowsDao = new FlowsK8sDao(this._k8s);
         this._httpApi = new HttpApi(this.getConfig(), this.getLogger(), flowsDao);
         this._httpApi.listen(this.getConfig().get('LISTEN_PORT'));
         const channel = await this._amqp.getConnection().createChannel();
         this._queueCreator = new QueueCreator(channel);
 
-        const driver = new KubernetesDriver(this.getConfig(), this.getLogger(), this.getK8s());
+        const driver = new KubernetesDriver(this.getConfig(), this.getLogger(), this._k8s);
         const flowOperator = new ResourceCoordinator(
             this.getConfig(),
             this.getLogger(),
-            this.getQueueCreator(),
-            this.getRabbitmqManagement(),
-            this.getAmqp().getConnection(),
+            this._queueCreator,
+            this._rabbitmqManagement,
+            this._amqp.getConnection(),
             flowsDao,
             driver
         );
         await flowOperator.start();
-    }
-
-    getK8s() {
-        return this._k8s;
-    }
-
-    getQueueCreator() {
-        return this._queueCreator;
-    }
-
-    getRabbitmqManagement() {
-        return this._rabbitmqManagement;
-    }
-
-    getAmqp() {
-        return this._amqp;
     }
 
     static get NAME() {
