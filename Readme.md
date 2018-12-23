@@ -28,11 +28,11 @@ kubectl create clusterrolebinding resource-coordinator-rolebinding --clusterrole
 The whole platform is described as one yaml file with a set of kubernetes descriptors. To install (reinstall) platform:
 1. Clean out previous installation if required
 ```shell
-kubectl delete -f platform/platform.yaml
+kubectl delete -f platform/platform.yml
 ```
-2. Install platform
+2. Install the platform
 ```shell
-kubectl create -f platform/platform.yaml
+kubectl create -f platform/platform.yml
 ```
 Same actions may be done using kubernetes dashboard.
 After installation kubernetes cluster should contain deployments and their pods.
@@ -61,7 +61,7 @@ scheduler-5d84c698d4-hxb65              1/1       Running   0          27m
 communication-router-6d4d575967-4nsbd   1/1       Running   0          27m
 ```
 ## Usage
-To make platform to do something usefull it's required create a flow in the Kubernetes cluster. The platform will start appropriate pods, and glue them together using amqp. Flows are defined as kubernetes custom resources. Have a look at the [examples](./example).
+To make platform to do something useful it's required to create a flow in the Kubernetes cluster. The platform will start appropriate pods and glue them together using RabbitMQ. Flows are defined as Kubernetes custom resources. Have a look at the [examples](./example).
 
 ### Start flow
 The following command will start a flow defined in `example/flow.json` file.
