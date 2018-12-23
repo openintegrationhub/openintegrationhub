@@ -32,7 +32,7 @@ module.exports = {
         }
 
         const query = {
-            initiator: accountPayload.initiator,
+            accountId: accountPayload._id,
             inquirer: accountPayload.inquirer,
             type: opts.type || CONSTANTS.TOKEN_TYPES.SELF,
         };
@@ -94,7 +94,7 @@ module.exports = {
         }
 
         const AccountData = await AccountsDAO.findOne({
-            _id: existingToken.initiator,
+            _id: existingToken.accountId,
         });
 
         if (!AccountData || AccountData.status !== CONSTANTS.STATUS.ACTIVE) {

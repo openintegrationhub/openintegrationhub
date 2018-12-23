@@ -64,8 +64,8 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
         ...account,
         purpose: req.body.purpose || 'accountToken',
         consumerServiceId: req.body.consumerServiceId,
-        inquirer: account._id.toString(),
-        initiator: req.user.userid,
+        inquirer: req.user.userid,
+        accountId: account._id.toString(),
         description: req.body.description || '',
         permissions: account.permissions.concat(req.body.customPermissions || []),
     }, {
@@ -76,7 +76,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
 
     auditLog.info('token.create', {
         data: req.body,
-        initiator: req.user.userid,
+        accountId: req.user.userid,
         'x-request-id': req.headers['x-request-id'],
     });
 
@@ -93,7 +93,7 @@ router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspec
         if (accountData) {
             auditLog.info('iam.token.introspect', {
                 token: req.body.token.replace(/.(?=.{4,}$)/g, '*'),
-                initiator: req.user.userid,
+                accountId: req.user.userid,
                 'x-request-id': req.headers['x-request-id'],
             });
             return res.send(accountData);
@@ -117,7 +117,7 @@ router.get('/refresh', async (req, res, next) => {
         if (newToken) {
             auditLog.info('token.refresh', {
                 newToken: newToken.tokenId.replace(/.(?=.{4,}$)/g, '*'),
-                initiator: req.user.userid,
+                accountId: req.user.userid,
                 'x-request-id': req.headers['x-request-id'],
             });
             req.headers.authorization = `Bearer ${newToken.tokenId}`;
@@ -158,7 +158,7 @@ router.delete('/:id', auth.can([RESTRICTED_PERMISSIONS['iam.token.delete']]), as
         await TokenDAO.delete({ id: req.params.id });
         auditLog.info('iam.token.delete', {
             token: req.params.id,
-            initiator: req.user.userid,
+            accountId: req.user.userid,
             'x-request-id': req.headers['x-request-id'],
         });
         return res.sendStatus(200);

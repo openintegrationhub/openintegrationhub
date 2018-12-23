@@ -361,7 +361,6 @@ describe('Role Routes', () => {
         expect(introspect2.body.permissions.length).toBe(1);
         expect(introspect2.body.permissions[0]).toBe(PERMISSIONS['tenant.roles.read']);
 
-
         await request.post('/api/v1/users')
             .send(serviceAccountData)
             .set('Authorization', tokenAdmin)
