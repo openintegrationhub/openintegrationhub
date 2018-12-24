@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint",
+    "pretest": "npm run lint",
+    "test": "mocha spec --recursive",
     "start": "node index.js",
     "start:dev": "npm start | bunyan",
     "build": "echo \"No Build defined\"",
@@ -24,9 +25,13 @@
   },
   "devDependencies": {
     "bunyan": "1.8.12",
+    "chai": "4.2.0",
     "eslint": "4.5.0",
     "eslint-plugin-mocha": "4.12.1",
-    "eslint-plugin-node": "6.0.1"
+    "eslint-plugin-node": "6.0.1",
+    "mocha": "5.2.0",
+    "sinon": "7.2.2",
+    "sinon-chai": "3.3.0"
   },
   "engines": {
     "node": "^8"

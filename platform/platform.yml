@@ -5,10 +5,12 @@ items:
     kind: Namespace
     metadata:
       name: platform
+
   - apiVersion: v1
     kind: Namespace
     metadata:
       name: flows
+
   - apiVersion: apiextensions.k8s.io/v1beta1
     kind: CustomResourceDefinition
     metadata:
@@ -24,6 +26,7 @@ items:
         singular: flow
       scope: Namespaced
       version: v1
+
   - apiVersion: apiextensions.k8s.io/v1beta1
     kind: CustomResourceDefinition
     metadata:
@@ -38,11 +41,13 @@ items:
         singular: schedulerrecord
       scope: Namespaced
       version: v1
+
   - apiVersion: v1
     kind: ServiceAccount
     metadata:
       name: resource-coordinator-account
       namespace: platform
+
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: Role
     metadata:
@@ -71,6 +76,19 @@ items:
           - get
           - list
       - apiGroups:
+        - ''
+        resources:
+          - secrets
+        verbs:
+          - create
+          - delete
+          - deletecollection
+          - get
+          - list
+          - patch
+          - update
+          - watch
+      - apiGroups:
           - apiextensions.k8s.io
         resources:
           - customresourcedefinitions
@@ -97,6 +115,7 @@ items:
           - patch
           - update
           - watch
+
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRole
     metadata:
@@ -115,6 +134,7 @@ items:
           - patch
           - update
           - watch
+
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: RoleBinding
     metadata:
@@ -128,6 +148,7 @@ items:
       - kind: ServiceAccount
         name: resource-coordinator-account
         namespace: platform
+
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRoleBinding
     metadata:
@@ -140,6 +161,7 @@ items:
       - kind: ServiceAccount
         name: resource-coordinator-account
         namespace: platform
+
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -198,6 +220,7 @@ items:
         rollingUpdate:
           maxUnavailable: 1
           maxSurge: 1
+
   - apiVersion: v1
     kind: Service
     metadata:
@@ -215,6 +238,7 @@ items:
         app: resource-coordinator
       sessionAffinity: None
       type: ClusterIP
+
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -263,6 +287,7 @@ items:
         rollingUpdate:
           maxUnavailable: 1
           maxSurge: 1
+
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -313,6 +338,7 @@ items:
         rollingUpdate:
           maxUnavailable: 1
           maxSurge: 1
+
   - apiVersion: v1
     kind: Service
     metadata:
@@ -329,6 +355,7 @@ items:
       selector:
         app: communication-router
       type: NodePort
+
   - apiVersion: v1
     kind: Service
     metadata:
@@ -350,6 +377,7 @@ items:
         app: rabbitmq
       sessionAffinity: None
       type: ClusterIP
+
   - kind: Deployment
     apiVersion: apps/v1
     metadata:

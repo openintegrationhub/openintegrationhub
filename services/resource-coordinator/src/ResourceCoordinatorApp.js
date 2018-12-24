@@ -11,32 +11,42 @@ const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
 const RabbitmqManagementService = require('./RabbitmqManagementService');
 const HttpApi = require('./HttpApi');
 const FlowsK8sDao = require('./dao/FlowsK8sDao');
+const InfrastructureManager = require('./InfrastructureManager');
 
 class ResourceCoordinatorApp extends App {
     async _run() {
-        this._amqp = new AMQPService(this);
-        this._rabbitmqManagement = new RabbitmqManagementService(this.getConfig(), this.getLogger());
-        await this._rabbitmqManagement.start();
-        this._k8s = new K8sService(this);
-        await this._amqp.start();
-        await this._k8s.start();
-        const flowsDao = new FlowsK8sDao(this._k8s);
-        this._httpApi = new HttpApi(this.getConfig(), this.getLogger(), flowsDao);
-        this._httpApi.listen(this.getConfig().get('LISTEN_PORT'));
-        const channel = await this._amqp.getConnection().createChannel();
-        this._queueCreator = new QueueCreator(channel);
+        const config = this.getConfig();
+        const logger = this.getLogger();
+        const amqp = new AMQPService(this);
+        const rabbitmqManagement = new RabbitmqManagementService(config, logger);
+        await rabbitmqManagement.start();
+        const k8s = new K8sService(this);
+        await amqp.start();
+        await k8s.start();
+        const flowsDao = new FlowsK8sDao(k8s);
+        this._httpApi = new HttpApi(config, logger, flowsDao);
+        this._httpApi.listen(config.get('LISTEN_PORT'));
+        const channel = await amqp.getConnection().createChannel();
+        const queueCreator = new QueueCreator(channel);
 
-        const driver = new KubernetesDriver(this.getConfig(), this.getLogger(), this._k8s);
-        const flowOperator = new ResourceCoordinator(
-            this.getConfig(),
-            this.getLogger(),
-            this._queueCreator,
-            this._rabbitmqManagement,
-            this._amqp.getConnection(),
+        const driver = new KubernetesDriver(config, logger, k8s);
+        const infrastructureManager = new InfrastructureManager({
+            config,
+            logger,
+            driver,
+            rabbitmqManagement,
+            amqpConnection: amqp.getConnection(),
+            queueCreator
+        });
+        const resourceCoordinator = new ResourceCoordinator({
+            config,
+            logger,
+            rabbitmqManagement,
+            infrastructureManager,
             flowsDao,
             driver
-        );
-        await flowOperator.start();
+        });
+        await resourceCoordinator.start();
     }
 
     static get NAME() {

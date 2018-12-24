@@ -8,12 +8,10 @@ const { expect } = chai;
 describe('ResourceCoordinator', () => {
     let rc;
     let config;
-    let queueCreator;
     let rabbitmqManagement;
-    let amqpConnection;
     let flowsDao;
     let driver;
-    let amqpChannel;
+    let infrastructureManager;
 
     function createConfig(conf = {}) {
         return {
@@ -22,14 +20,7 @@ describe('ResourceCoordinator', () => {
     }
 
     beforeEach(() => {
-        config = createConfig({
-            RABBITMQ_URI_FLOWS: 'amqp://localhost'
-        });
-
-        queueCreator = {
-            makeQueuesForTheFlow: () => {}
-        };
-        sinon.stub(queueCreator, 'makeQueuesForTheFlow').resolves();
+        config = createConfig();
 
         rabbitmqManagement = {
             getQueues: () => {},
@@ -43,17 +34,6 @@ describe('ResourceCoordinator', () => {
         sinon.stub(rabbitmqManagement, 'getQueues').resolves([]);
         sinon.stub(rabbitmqManagement, 'getExchanges').resolves([]);
         sinon.stub(rabbitmqManagement, 'getBindings').resolves([]);
-
-        amqpChannel = {
-            deleteQueue: () => {},
-            deleteExchange: () => {}
-        };
-        sinon.stub(amqpChannel, 'deleteQueue').resolves();
-        sinon.stub(amqpChannel, 'deleteExchange').resolves();
-
-        amqpConnection = {
-            createChannel: () => Promise.resolve(amqpChannel)
-        };
 
         flowsDao = {
             findAll: () => {},
@@ -73,7 +53,25 @@ describe('ResourceCoordinator', () => {
         sinon.stub(driver, 'createApp').resolves();
         sinon.stub(driver, 'destroyApp').resolves();
 
-        rc = new ResourceCoordinator(config, logger, queueCreator, rabbitmqManagement, amqpConnection, flowsDao, driver);
+        infrastructureManager = {
+            createForFlow: () => {},
+            updateForFlow: () => {},
+            deleteForFlow: () => {},
+            getSettingsForNodeExecution: () => {}
+        };
+        sinon.stub(infrastructureManager, 'createForFlow').resolves();
+        sinon.stub(infrastructureManager, 'updateForFlow').resolves();
+        sinon.stub(infrastructureManager, 'deleteForFlow').resolves();
+        sinon.stub(infrastructureManager, 'getSettingsForNodeExecution').resolves();
+
+        rc = new ResourceCoordinator({
+            config,
+            logger,
+            rabbitmqManagement,
+            infrastructureManager,
+            flowsDao,
+            driver
+        });
     });
 
     afterEach(() => {
@@ -142,19 +140,63 @@ describe('ResourceCoordinator', () => {
                 };
 
                 sinon.stub(rc, '_deleteRunningAppsForFlow').resolves();
-                sinon.stub(rc, '_deleteQueuesForFlow').resolves();
-                sinon.stub(rc, '_deleteFlowAmqpCredentials').resolves();
 
                 await rc._handleFlow(flow, appsIndex, queuesStructure);
 
                 expect(rc._deleteRunningAppsForFlow).to.have.been.calledOnceWithExactly(flow, appsIndex);
-                expect(rc._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow, queuesStructure);
-                expect(rc._deleteFlowAmqpCredentials).to.have.been.calledOnceWithExactly(flow);
+                expect(infrastructureManager.deleteForFlow).to.have.been.calledOnceWithExactly(flow, queuesStructure);
                 expect(flowsDao.removeFinalizer).to.have.been.calledOnceWithExactly(flow);
             });
         });
 
         describe('for active flow', () => {
+            it('should create flow infrastructure for new flows', async () => {
+                const flow = {
+                    id: 'flow1',
+                    isNew: true,
+                    nodes: [
+                        {id: 'step1'},
+                        {id: 'step2'}
+                    ]
+                };
+                const appsIndex = {
+                    flow1: {
+                        step1: {id: 'flow1.step1'}
+                    }
+                };
+                const queuesStructure = {
+                    flow1: {
+                        queues: ['flow1:step1', 'flow1:step2'],
+                        exchanges: ['flow1'],
+                        bindings: [{destination: 'flow1:step2'}]
+                    }
+                };
+
+                sinon.stub(rc, '_deleteRunningAppsForFlow').resolves();
+                sinon.stub(rc, '_isRedeployRequired').resolves(false);
+
+                infrastructureManager.getSettingsForNodeExecution.resolves({
+                    SOME: 'env'
+                });
+
+                await rc._handleFlow(flow, appsIndex, queuesStructure);
+
+                expect(flowsDao.ensureFinalizer).to.have.been.calledOnceWithExactly(flow);
+                expect(infrastructureManager.createForFlow).to.have.been.calledOnceWithExactly(flow);
+
+                //redeploy logic
+                expect(rc._isRedeployRequired).to.have.been.calledOnceWithExactly(flow, appsIndex);
+                expect(infrastructureManager.deleteForFlow).not.to.have.been.called;
+
+                //normal flow
+                expect(infrastructureManager.getSettingsForNodeExecution).to.have.been.calledOnceWithExactly(flow, {id: 'step2'});
+                expect(driver.createApp).to.have.been.calledOnceWithExactly(
+                    flow,
+                    {id: 'step2'},
+                    {SOME: 'env'}
+                );
+            });
+
             it('should ensure running nodes without redeploy', async () => {
                 const flow = {
                     id: 'flow1',
@@ -177,37 +219,26 @@ describe('ResourceCoordinator', () => {
                 };
 
                 sinon.stub(rc, '_deleteRunningAppsForFlow').resolves();
-                sinon.stub(rc, '_deleteQueuesForFlow').resolves();
-                sinon.stub(rc, '_deleteFlowAmqpCredentials').resolves();
-                sinon.stub(rc, '_createFlowAmqpCredentials').resolves({username: 'john', password: '123'});
                 sinon.stub(rc, '_isRedeployRequired').resolves(false);
-                sinon.stub(rc, '_prepareAmqpUri').returns('amqp://test@localhost');
-                queueCreator.makeQueuesForTheFlow.resolves({
-                    step1: {
-                        some: 'env1'
-                    },
-                    step2: {
-                        some: 'env2'
-                    }
+
+                infrastructureManager.getSettingsForNodeExecution.resolves({
+                    SOME: 'env'
                 });
 
                 await rc._handleFlow(flow, appsIndex, queuesStructure);
 
-                expect(flowsDao.ensureFinalizer).to.have.been.calledOnceWithExactly(flow);
+                expect(flowsDao.ensureFinalizer).not.to.have.been.called;
 
                 //redeploy logic
                 expect(rc._isRedeployRequired).to.have.been.calledOnceWithExactly(flow, appsIndex);
-                expect(rc._deleteRunningAppsForFlow).not.to.have.been.called;
-                expect(rc._deleteQueuesForFlow).not.to.have.been.called;
+                expect(infrastructureManager.deleteForFlow).not.to.have.been.called;
 
                 //normal flow
-                expect(rc._createFlowAmqpCredentials).to.have.been.calledOnceWithExactly(flow);
-                expect(rc._prepareAmqpUri).to.have.been.calledOnceWithExactly({username: 'john', password: '123'});
+                expect(infrastructureManager.getSettingsForNodeExecution).to.have.been.calledOnceWithExactly(flow, {id: 'step2'});
                 expect(driver.createApp).to.have.been.calledOnceWithExactly(
                     flow,
                     {id: 'step2'},
-                    {some: 'env2'},
-                    {AMQP_URI: 'amqp://test@localhost'}
+                    {SOME: 'env'}
                 );
             });
 
@@ -233,45 +264,29 @@ describe('ResourceCoordinator', () => {
                 };
 
                 sinon.stub(rc, '_deleteRunningAppsForFlow').resolves();
-                sinon.stub(rc, '_deleteQueuesForFlow').resolves();
-                sinon.stub(rc, '_deleteFlowAmqpCredentials').resolves();
-                sinon.stub(rc, '_createFlowAmqpCredentials').resolves({username: 'john', password: '123'});
                 sinon.stub(rc, '_isRedeployRequired').resolves(true);
-                sinon.stub(rc, '_prepareAmqpUri').returns('amqp://test@localhost');
-                queueCreator.makeQueuesForTheFlow.resolves({
-                    step1: {
-                        some: 'env1'
-                    },
-                    step2: {
-                        some: 'env2'
-                    }
+                infrastructureManager.getSettingsForNodeExecution.resolves({
+                    SOME: 'env'
                 });
 
                 await rc._handleFlow(flow, appsIndex, queuesStructure);
 
-                expect(flowsDao.ensureFinalizer).to.have.been.calledOnceWithExactly(flow);
+                expect(flowsDao.ensureFinalizer).not.to.have.been.called;
 
                 //redeploy logic
                 expect(rc._isRedeployRequired).to.have.been.calledOnceWithExactly(flow, appsIndex);
-                expect(rc._deleteRunningAppsForFlow).to.have.been.calledOnceWithExactly(flow, appsIndex);
-                expect(rc._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow, queuesStructure);
-
-                //normal flow
-                expect(rc._createFlowAmqpCredentials).to.have.been.calledOnceWithExactly(flow);
-                expect(rc._prepareAmqpUri).to.have.been.calledOnceWithExactly({username: 'john', password: '123'});
+                expect(infrastructureManager.updateForFlow).to.have.been.calledOnceWithExactly(flow, queuesStructure);
 
                 expect(driver.createApp).to.have.been.calledTwice;
                 expect(driver.createApp.firstCall.args).to.deep.equal([
                     flow,
                     {id: 'step1'},
-                    {some: 'env1'},
-                    {AMQP_URI: 'amqp://test@localhost'}
+                    {SOME: 'env'}
                 ]);
                 expect(driver.createApp.secondCall.args).to.deep.equal([
                     flow,
                     {id: 'step2'},
-                    {some: 'env2'},
-                    {AMQP_URI: 'amqp://test@localhost'}
+                    {SOME: 'env'}
                 ]);
             });
         });
@@ -431,22 +446,6 @@ describe('ResourceCoordinator', () => {
         });
     });
 
-    describe('#_deleteQueuesForFlow', () => {
-        it('should delete queues and exchanges', async () => {
-            const flow = {id: 'flow1'};
-            const queuesStructure = {
-                flow1: {
-                    queues: ['flow1:step1'],
-                    exchanges: ['flow1']
-                }
-            };
-            await rc._deleteQueuesForFlow(flow, queuesStructure);
-
-            expect(amqpChannel.deleteQueue).to.have.been.calledOnceWithExactly('flow1:step1');
-            expect(amqpChannel.deleteExchange).to.have.been.calledOnceWithExactly('flow1');
-        });
-    });
-
     describe('#_deleteRunningAppsForFlow', () => {
         it('should all running nodes', async () => {
             const flow = {
@@ -583,55 +582,6 @@ describe('ResourceCoordinator', () => {
                     bindings
                 }
             });
-        });
-    });
-
-    describe('#_prepareAmqpUri', () => {
-        it('should return amqp connection string', () => {
-            const uri = rc._prepareAmqpUri({username: 'homer', password: 'simpson'});
-            expect(uri).to.equal('amqp://homer:simpson@localhost');
-        });
-    });
-
-    describe('#_createFlowAmqpCredentials', () => {
-        it('should create amqp credentials', async () => {
-            const flow = {id: 'test'};
-            sinon.stub(rc, '_createAmqpCredentials').resolves();
-            await rc._createFlowAmqpCredentials(flow);
-            expect(rc._createAmqpCredentials).to.have.been.calledOnceWithExactly(flow);
-        });
-    });
-
-    describe('#_createAmqpCredentials', () => {
-        it('should create credentials', async () => {
-            const flow = {id: 'test'};
-            const result = await rc._createAmqpCredentials(flow);
-            expect(rabbitmqManagement.createFlowUser).to.have.been.calledOnce;
-            const arg = rabbitmqManagement.createFlowUser.firstCall.args[0];
-            expect(arg).to.be.a('object');
-            expect(arg.flow).to.equal(flow);
-            expect(arg.username).to.equal(flow.id);
-            expect(arg.password).to.be.a('string');
-            expect(arg.password.length).to.equal(36);
-            expect(result).to.deep.equal({username: arg.username, password: arg.password});
-        });
-    });
-
-    describe('#_deleteFlowAmqpCredentials', () => {
-        it('should call _deleteAmqpCredentials', async () => {
-            const flow = {id: 'test'};
-            sinon.stub(rc, '_deleteAmqpCredentials').resolves();
-            await rc._deleteFlowAmqpCredentials(flow);
-
-            expect(rc._deleteAmqpCredentials).to.have.been.calledOnceWithExactly({username: flow.id});
-        });
-    });
-
-    describe('#_deleteAmqpCredentials', () => {
-        it('should call deleteUser', async () => {
-            const credentials = {};
-            await rc._deleteAmqpCredentials(credentials);
-            expect(rabbitmqManagement.deleteUser).to.have.been.calledOnceWithExactly(credentials);
         });
     });
 });

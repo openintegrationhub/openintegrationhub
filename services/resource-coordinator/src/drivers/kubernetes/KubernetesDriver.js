@@ -13,9 +13,9 @@ class KubernetesDriver extends BaseDriver {
         this._batchClient = k8s.getBatchClient();
     }
 
-    async createApp(flow, node, envVars, secretEnvVars) {
+    async createApp(flow, node, envVars) {
         this._logger.info({flow: flow.id}, 'Going to deploy job to k8s');
-        await this._ensureFlowSecret(flow, secretEnvVars);
+
         const descriptor = this._buildDescriptor(flow, node, envVars);
         this._logger.trace(descriptor, 'going to deploy a job to k8s');
         try {
@@ -23,6 +23,10 @@ class KubernetesDriver extends BaseDriver {
         } catch (e) {
             this._logger.error(e, 'Failed to deploy the job');
         }
+    }
+
+    async initFlow(flow, secretEnvVars) {
+        await this._ensureFlowSecret(flow, secretEnvVars);
     }
 
     async _ensureFlowSecret(flow, secretEnvVars) {

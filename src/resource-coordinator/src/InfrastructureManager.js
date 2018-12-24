@@ -1,19 +1,19 @@
-class BaseDriver {
-    createApp() {
+class InfrastructureManager {
+    createForFlow() {
         throw new Error('To be implemented');
     }
 
-    destroyApp() {
+    updateForFlow() {
         throw new Error('To be implemented');
     }
 
-    getAppList() {
+    deleteForFlow() {
         throw new Error('To be implemented');
     }
 
-    initFlow() {
+    getSettingsForNodeExecution() {
         throw new Error('To be implemented');
     }
 }
 
-module.exports = BaseDriver;
+module.exports = InfrastructureManager;
