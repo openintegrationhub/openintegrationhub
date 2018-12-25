@@ -18,7 +18,7 @@ describe('routes', () => {
         process.env.IAM_AUTH_TYPE = 'basic';
         process.env.IAM_BASEURL = 'http://localhost';
         conf = require('./../src/conf/index');
-        const App = require('../src/app'); 
+        const App = require('../src/app');
         app = new App();
         await mockgoose.prepareStorage();
         await app.setup(mongoose);
@@ -42,9 +42,9 @@ describe('routes', () => {
     });
 
     afterAll(() => {
-        app.stop(); 
+        app.stop();
     });
-    
+
     describe('General Routes', () => {
 
         test('login successful', async () => {
@@ -55,9 +55,9 @@ describe('routes', () => {
             const response = await request.post('/login')
                 .send(jsonPayload)
                 .set('Accept', /application\/json/)
-                .expect(200); 
+                .expect(200);
             tokenAdmin = `Bearer ${response.body.token}`;
-            
+
         });
 
         test('login fails for wrong username', async () => {
@@ -70,7 +70,7 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(401);
             expect(response.body.message).toBe(CONSTANTS.ERROR_CODES.USER_NOT_FOUND);
-    
+
         });
 
         test('login fails with wrong password', async () => {
@@ -83,14 +83,14 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(401);
             expect(response.body.message).toBe(CONSTANTS.ERROR_CODES.PASSWORD_INCORRECT);
-    
+
         });
 
         test('logout is successful', async () => {
             await request.post('/logout')
                 .set('Accept', /application\/json/)
                 .expect(200);
-    
+
         });
 
         test('get redirect for error call', async () => {
@@ -104,7 +104,7 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(200);
             // expect(response.body).toBe(0);
-    
+
         });
     });
 
@@ -510,7 +510,7 @@ describe('routes', () => {
                 .send({
                     accountId: userId,
                     expiresIn: '1h',
-                    consumerServiceId: 'someId',
+                    inquirer: mongoose.Types.ObjectId(),
                 })
                 .set('Authorization', serviceAccountToken)
                 .set('Accept', /application\/json/)
@@ -566,7 +566,7 @@ describe('routes', () => {
                 .expect(200);
             const userId2 = createUserResponse2.body.id;
 
-            /* Missing consumerServiceId */
+            /* Missing inquirer id */
             await request.post('/api/v1/tokens')
                 .send({
                     accountId: userId2,
@@ -628,7 +628,7 @@ describe('routes', () => {
                 .send({
                     accountId: userId,
                     expiresIn: '1h',
-                    consumerServiceId: 'someId',
+                    inquirer: mongoose.Types.ObjectId(),
                 })
                 .set('Authorization', serviceAccountToken)
                 .set('Accept', /application\/json/)
@@ -702,7 +702,7 @@ describe('routes', () => {
                 .send({
                     accountId: userId,
                     expiresIn: '1h',
-                    consumerServiceId: 'someId',
+                    inquirer: mongoose.Types.ObjectId(),
                 })
                 .set('Authorization', serviceAccountToken)
                 .set('Accept', /application\/json/)

@@ -34,7 +34,8 @@ module.exports = {
         const query = {
             accountId: accountPayload._id,
             inquirer: accountPayload.inquirer,
-            type: opts.type || CONSTANTS.TOKEN_TYPES.SELF,
+            permissions: accountPayload.permissions,
+            type: opts.type || (accountPayload.inquirer ? CONSTANTS.TOKEN_TYPES.DELEGATE : CONSTANTS.TOKEN_TYPES.SELF),
         };
 
         // Search for an existing token --> findOneAndUpdate?
@@ -51,9 +52,11 @@ module.exports = {
         const tokenId = uuid.v4();
         await TokensDAO.create({
             ...query,
+            description: accountPayload.description,
             tokenId,
+            initiator: accountPayload.initiator,
             tokenLifeSpan: opts.lifespan || CONF.jwt.expiresIn,
-            permissions: accountPayload.permissions,
+            permissions: accountPayload.permissions || [],
             ...tokenExpireAt,
         });
 
@@ -101,8 +104,7 @@ module.exports = {
             return null;
         }
 
-        AccountData.permissions = AccountData.permissions
-            .concat(existingToken.permissions);
+        AccountData.permissions = Array.from(new Set((AccountData.permissions || []).concat(existingToken.permissions || [])));
 
         return AccountData;
 

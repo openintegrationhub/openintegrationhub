@@ -56,22 +56,22 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
         return next({ status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
     }
 
-    if (!req.body.consumerServiceId) {
-        return next({ status: 400, message: 'Missing consumerServiceId' });
+    if (!req.body.inquirer) {
+        return next({ status: 400, message: 'Missing inquirer' });
     }
 
     const token = await TokenUtils.sign({
         ...account,
         purpose: req.body.purpose || 'accountToken',
-        consumerServiceId: req.body.consumerServiceId,
-        inquirer: req.user.userid,
+        initiator: req.user.userid,
+        inquirer: req.body.inquirer,
         accountId: account._id.toString(),
         description: req.body.description || '',
-        permissions: account.permissions.concat(req.body.customPermissions || []),
+        permissions: Array.from(new Set((account.permissions || []).concat(req.body.customPermissions || []))),
     }, {
         type: tokenLifespan === -1 ? CONSTANTS.TOKEN_TYPES.PERSISTENT : CONSTANTS.TOKEN_TYPES.EPHEMERAL_SERVICE_ACCOUNT,
         lifespan: tokenLifespan,
-        new: true,
+        new: req.body.new, // return an existing token if new != true
     });
 
     auditLog.info('token.create', {
@@ -102,6 +102,7 @@ router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspec
         }
 
     } catch (err) {
+        console.log(err);
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
     }
 });

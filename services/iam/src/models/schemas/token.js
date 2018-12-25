@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 
 const TokenSchema = new Schema({
     inquirer: { type: Schema.ObjectId, ref: 'account', index: true }, // user or a a service running on behalf of the user
+    initiator: { type: Schema.ObjectId, ref: 'account', index: true }, // user or a a service who initiated this token request
     accountId: { type: Schema.ObjectId, ref: 'account', index: true },
     tokenId: {
         type: String,
