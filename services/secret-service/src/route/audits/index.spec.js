@@ -7,7 +7,7 @@ let port;
 let request;
 let server;
 
-describe('audits', () => {
+xdescribe('audits', () => {
     beforeAll(async () => {
         port = await getPort();
         request = supertest(`http://localhost:${port}${conf.apiBase}`);

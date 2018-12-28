@@ -9,7 +9,7 @@
   },
   "scripts": {
     "prepublishOnly": "npm test",
-    "pretest": "eslint src spec index.js",
+    "pretest": "eslint src spec",
     "test": "mocha --recursive spec"
   },
   "dependencies": {

@@ -1,17 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
 const morgan = require('morgan');
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
+const bodyParser = require('body-parser');
 const conf = require('../conf');
+const { getUserData } = require('../middleware/auth');
 
-const swaggerDocument = YAML.load(path.join(__dirname, '/../../doc/openapi.yaml'));
-const swaggerOptions = {
-    // swaggerUrl: 'https://raw.githubusercontent.com/openintegrationhub/Architecture/master/SmartDataFramework/oih-sdf-api-0.0.2.json',
-    enableCORS: false,
-    explorer: true,
-};
+const jsonParser = bodyParser.json();
 
 module.exports = class Server {
     constructor({ port, mongoDbConnection }) {
@@ -27,19 +21,21 @@ module.exports = class Server {
             this.app.use(morgan('combined'));
         }
 
+        this.app.use(jsonParser);
+
         this.app.use('/', require('./../route/root'));
-        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
         this.app.get('/healthcheck', (req, res) => {
             res.sendStatus(200);
         });
 
         const apiBase = express.Router();
 
+        apiBase.use('/callback', require('./../route/callback')); // eslint-disable-line global-require
+        apiBase.use(getUserData);
         // setup routes
         apiBase.use('/secrets', require('./../route/secrets')); // eslint-disable-line global-require
         apiBase.use('/auth-clients', require('./../route/auth-clients')); // eslint-disable-line global-require
         apiBase.use('/audits', require('./../route/audits')); // eslint-disable-line global-require
-        apiBase.use('/callback', require('./../route/callback')); // eslint-disable-line global-require
         this.app.use(conf.apiBase, apiBase);
 
         // error middleware

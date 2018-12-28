@@ -1,6 +1,6 @@
 {
   "name": "secret-service",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Service to manage Keys/Tokens of external services",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -15,27 +15,26 @@
   "dependencies": {
     "@basaas/node-logger": "1.1.2",
     "@openintegrationhub/iam-utils": "1.2.0",
-    "dotenv": "6.1.0",
+    "dotenv": "6.2.0",
     "express": "4.16.4",
     "jsonwebtoken": "8.4.0",
-    "moment": "2.22.2",
-    "mongoose": "5.3.14",
+    "moment": "2.23.0",
+    "mongoose": "^5.4.0",
     "morgan": "1.9.1",
     "request": "2.88.0",
-    "swagger-ui-express": "4.0.1",
-    "yamljs": "0.3.0"
+    "request-promise": "4.2.2"
   },
   "devDependencies": {
-    "eslint": "5.9.0",
+    "eslint": "5.10.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.14.0",
     "eslint-plugin-jest": "22.1.2",
     "get-port": "4.0.0",
     "jest": "23.6.0",
     "mongodb": "3.1.10",
-    "mongodb-memory-server": "2.7.4",
-    "nock": "10.0.3",
-    "nodemon": "1.18.7",
+    "mongodb-memory-server": "2.9.0",
+    "nock": "10.0.4",
+    "nodemon": "1.18.9",
     "supertest": "3.3.0"
   },
   "jest": {

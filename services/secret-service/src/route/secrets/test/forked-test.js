@@ -1,31 +1,82 @@
-require('dotenv').config();
-
+const path = require('path');
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') });
 const cluster = require('cluster');
-
-const skmClients = require('os').cpus().length;
+const skmInstances = require('os').cpus().length;
 const getPort = require('get-port');
 const supertest = require('supertest');
 const nock = require('nock');
 const conf = require('../../../conf');
+const token = require('../../../test/tokens');
 const Server = require('../../../server');
 
+const amountRequestWorkers = 3;
+const amountRequestsPerWorker = 10;
+
 const ports = [];
-const childsDone = [];
-const childsError = [];
+
+const skmWorkers = [];
+const requestWorkers = [];
+let doneRequestWorker = 0;
+let failedRequestWorker = 0;
+
 global.__MONGO_URI__ = process.env.__MONGO_URI__;
 
+
 (async () => {
+    function startRequestWorker() {
+        // Fork workers.
+        for (let i = 0; i < amountRequestWorkers; i++) {
+            const worker = cluster.fork({
+                type: 'requestWorker',
+                auth: process.env.auth,
+                secretId: process.env.secretId,
+                ports: JSON.stringify(ports),
+                NODE_ENV: 'test',
+                id: i,
+            });
+            requestWorkers.push(worker.id);
+        }
+    }
+
+    function skmMessageHandler(msg) {
+        if (!msg.error) {
+            skmWorkers.push(msg.id);
+        }
+
+        if (skmWorkers.length === skmInstances) {
+            startRequestWorker();
+        }
+    }
+
+    const endpointPrefix = conf.introspectEndpoint.substr(0, conf.introspectEndpoint.lastIndexOf('/'));
+    const endpointSuffix = conf.introspectEndpoint.substr(conf.introspectEndpoint.lastIndexOf('/'));
+
+    nock(endpointPrefix)
+        .persist()
+        .post(endpointSuffix)
+        .reply((uri, requestBody, cb) => {
+            // console.log('path:', this.req.path);
+            // console.log('headers:', this.req.headers);
+            // console.log('body:', requestBody);
+            const tokenName = requestBody.token;
+
+            cb(null, [200, token[tokenName].value]);
+            // ...
+        });
+
     if (cluster.isMaster) {
         console.log(`Master ${process.pid} is running`);
 
         // get available ports
-        for (let i = 0; i < skmClients; i++) {
+        for (let i = 0; i < skmInstances; i++) {
             ports.push(await getPort());
         }
 
         // Fork workers.
-        for (let i = 0; i < skmClients; i++) {
-            cluster.fork({
+        for (let i = 0; i < skmInstances; i++) {
+            const worker = cluster.fork({
+                type: 'skmInstance',
+                DEBUG_MODE: false,
                 __MONGO_URI__: process.env.__MONGO_URI__,
                 auth: process.env.auth,
                 secretId: process.env.secretId,
@@ -33,54 +84,84 @@ global.__MONGO_URI__ = process.env.__MONGO_URI__;
                 NODE_ENV: 'test',
                 id: i,
             });
+            worker.on('message', skmMessageHandler);
         }
 
         cluster.on('exit', (worker, code) => {
-            if (code === 0) {
-                childsDone.push(worker);
-                console.log(`done ${childsDone.length}`);
-            } else {
-                childsError.push(worker);
-                console.log(`error ${childsError.length}`);
+            if (requestWorkers.indexOf(worker.id) !== -1) {
+                if (code === 0) {
+                    doneRequestWorker++;
+                } else {
+                    failedRequestWorker++;
+                }
             }
-
-            if (childsError.length + childsDone.length === skmClients) {
-                console.log('end process');
-                process.send({
-                    ended: true,
-                    clients: skmClients,
-                    errors: childsError.length,
-                    dones: childsDone.length,
+            if (doneRequestWorker + failedRequestWorker === amountRequestWorkers) {
+                // kill instances
+                skmWorkers.forEach((id) => {
+                    cluster.workers[id].send({ exit: true });
                 });
+                process.send({
+                    failed: failedRequestWorker,
+                    done: doneRequestWorker,
+                });
+                process.exit(0);
             }
         });
-    } else {
-    // start child server and request access token
+    } else if (process.env.type === 'skmInstance') {
         const port = process.env.port;
         const server = new Server({ port });
-        const request = supertest(`http://localhost:${port}${conf.apiBase}`);
+        const example = nock('https://example.com');
 
-        // create refresh url mock
-        nock('https://example.com')
+        example
+            .persist()
             .post('/token')
-            .reply(200, {
-                access_token: 'new',
-                expires_in: 0,
-                refresh_token: 'new',
-                scope: 'foo bar',
-                token_type: 'Bearer',
-                id_token: 'asdsdf',
+            .reply((uri, requestBody, cb) => {
+                setTimeout(() => {
+                    cb(null, [200, {
+                        access_token: 'new',
+                        expires_in: -1,
+                        refresh_token: 'new',
+                        scope: 'foo bar',
+                        token_type: 'Bearer',
+                        id_token: 'asdsdf',
+                    }]);
+                }, 10);
             });
-
         try {
+            process.on('message', async ({ exit }) => {
+                if (exit) {
+                    await server.stop();
+                    process.exit(0);
+                }
+            });
             // start server
             await server.start();
-            // request ressource
-            const token = await request.get(`/secrets/${process.env.secretId}/access-token`)
-                .set(...process.env.auth.split(','))
-                .expect(200);
-            console.log(`response ${process.env.id}`, token.body);
+            process.send({
+                id: cluster.worker.id,
+                error: null,
+            });
+        } catch (err) {
+            process.send({
+                id: cluster.worker.id,
+                error: err,
+            });
+        }
+    } else {
+        // start request worker
+        const ports = JSON.parse(process.env.ports);
+        const randomPort = ports[Math.floor(Math.random() * ports.length)];
+        const request = supertest(`http://localhost:${randomPort}${conf.apiBase}`);
+        const promises = [];
 
+        for (let i = 0; i < amountRequestsPerWorker; i++) {
+            process.env.REQUEST_ID = i;
+            promises.push(request.get(`/secrets/${process.env.secretId}?forkedTestRequest`)
+                .set(...process.env.auth.split(','))
+                .expect(200));
+        }
+
+        try {
+            await Promise.race(promises);
             process.exit(0);
         } catch (err) {
             console.error(err);

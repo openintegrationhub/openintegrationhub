@@ -1,5 +1,7 @@
 # SKM Service (working title / codename: *Lynx*)
 
+[Documentation on Swagger Hub](https://app.swaggerhub.com/apis/basaas/secret-service/2.1.0/)
+
 ### Basic usage
 
 Install packages

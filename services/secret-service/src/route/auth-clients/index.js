@@ -13,8 +13,6 @@ const log = logger.getLogger(`${conf.logging.namespace}/auth-client`);
 const jsonParser = bodyParser.json();
 const router = express.Router();
 
-router.use(auth.isLoggedIn);
-
 router.get('/', async (req, res, next) => {
     try {
         res.send(await AuthClientDAO.findByEntity(req.user.sub));
@@ -26,7 +24,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.post('/', jsonParser, async (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
         const authClient = await AuthClientDAO.create({
             ...req.body,
@@ -56,11 +54,9 @@ router.patch('/:id', auth.userIsOwnerOfAuthClient, async (req, res) => {
 router.post('/:id/start-flow', auth.userIsOwnerOfAuthClient, jsonParser, async (req, res, next) => {
     try {
         const authClient = req.obj;
-
         const flow = await AuthFlowDAO.create({
             creator: req.user.sub,
             creatorType: ROLE.USER,
-            scope: req.body.scope,
             authClientId: authClient._id,
             type: authClient.type,
         });
@@ -68,6 +64,7 @@ router.post('/:id/start-flow', auth.userIsOwnerOfAuthClient, jsonParser, async (
         const authUrl = await authFlowManager.start(
             authClient,
             flow,
+            req.body.scope || '',
         );
 
         res.send({

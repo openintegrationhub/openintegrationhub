@@ -1,4 +1,9 @@
 module.exports = {
+    EXTERNAL_ID_SOURCE: {
+        ID_TOKEN: 'id_token',
+        ACCESS_TOKEN: 'access_token',
+        USERINFO: 'userinfo',
+    },
     AUTH_TYPE: {
         API_KEY: 'API_KEY',
         OA1_TWO_LEGGED: 'OA1_TWO_LEGGED',

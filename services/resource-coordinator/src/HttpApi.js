@@ -1,29 +1,47 @@
 const express = require('express');
-
 const Lib = require('backendCommonsLib');
-const { Flow, errors } = Lib;
+const { errors } = Lib;
 
 class HttpApi {
-    constructor(app) {
-        this._logger = app.getLogger().child({service: 'HttpApi'});
-        this._crdClient = app.getK8s().getCRDClient();
+    /**
+     * @constructor
+     * @param config
+     * @param logger
+     * @param flowsDao - Flow Data Access Object
+     */
+    constructor(config, logger, flowsDao) {
+        this._config = config;
+        this._logger = logger.child({service: 'HttpApi'});
+        this._flowsDao = flowsDao;
         this._app = express();
-        this._app.get('/v1/tasks/:taskId/steps/:stepId', this._getStepInfo.bind(this));
+        this._app.get('/v1/tasks/:flowId/steps/:stepId', this._getStepInfo.bind(this));
         this._app.get('/healthcheck', this._healthcheck.bind(this));
     }
+
+    /**
+     * Start listening for incoming traffic on a port.
+     * @param listenPort
+     */
     listen(listenPort) {
         this._logger.info({port: listenPort}, 'Going to listen for http');
         this._app.listen(listenPort);
     }
+
+    /**
+     * This API is required by flow nodes in order to get a node's configuration.
+     * @param req
+     * @param res
+     * @returns {Promise<void>}
+     * @private
+     */
     async _getStepInfo(req, res) {
         this._logger.trace(req.params, 'Node info request');
         try {
-            const flow = await this._crdClient.flows(req.params.taskId).get();
+            const flow = await this._flowsDao.findById(req.params.flowId);
             if (!flow) {
                 throw new errors.ResourceNotFoundError('Flow is not found');
             }
-            const flowModel = new Flow(flow.body);
-            const node = flowModel.getRecipeNodeByStepId(req.params.stepId);
+            const node = flow.getRecipeNodeByStepId(req.params.stepId);
             if (!node) {
                 throw new errors.ResourceNotFoundError('Node is not found');
             }
@@ -34,12 +52,20 @@ class HttpApi {
                 config: node.data || {}
             });
         } catch (e) {
-            this._logger.error(e, req.params, 'Node info request falied');
+            this._logger.error(e, req.params, 'Node info request failed');
             res.status(500);
             res.end(e.message);
             return;
         }
     }
+
+    /**
+     * Healthcheck endpoint.
+     * @param req
+     * @param res
+     * @returns {Promise<void>}
+     * @private
+     */
     async _healthcheck(req, res) {
         this._logger.trace('Healthcheck request');
         res.status(200).end();
