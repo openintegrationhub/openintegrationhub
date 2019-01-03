@@ -1,0 +1,76 @@
+version: 2
+
+aliases:
+  - &docker_environment
+    - image: circleci/node:8-stretch
+    - image: circleci/mongo:3.6
+  - &checkout
+    path: ~/oih
+  - &restore_cache_dependencies
+    name: Restoring from the cache
+    keys:
+      - v1-node-modules-cache-{{ checksum "package.json" }}
+  - &run_npm_install
+    name: Installing Dependencies
+    command: yarn install
+  - &save_cache_dependencies
+    name: Saving into the cache
+    key: v1-node-modules-cache-{{ checksum "package.json" }}
+    paths:
+      - ~/.cache/yarn
+  - &run_build
+    name: Running tests
+    command: yarn test
+  - &common_steps
+    - checkout: *checkout
+    - restore_cache: *restore_cache_dependencies
+    - run: *run_npm_install
+    - save_cache: *save_cache_dependencies
+    #- setup_remote_docker
+    - run: *run_build
+  - &common_environment
+    docker: *docker_environment
+    steps: *common_steps
+
+jobs:
+  services/communication-router:
+    <<: *common_environment
+    working_directory: ~/oih/services/communication-router
+  services/flows-operator:
+    <<: *common_environment
+    working_directory: ~/oih/services/flows-operator
+  services/iam:
+    <<: *common_environment
+    working_directory: ~/oih/services/iam
+  services/integration-content-repository:
+    <<: *common_environment
+    working_directory: ~/oih/services/integration-content-repository
+  services/scheduler:
+    <<: *common_environment
+    working_directory: ~/oih/services/scheduler
+  services/secret-service:
+    <<: *common_environment
+    working_directory: ~/oih/services/secret-service
+  src/backendCommonsLib:
+    <<: *common_environment
+    working_directory: ~/oih/src/backendCommonsLib
+  src/scheduler:
+    <<: *common_environment
+    working_directory: ~/oih/src/scheduler
+  src/webhooks:
+    <<: *common_environment
+    working_directory: ~/oih/src/webhooks
+
+workflows:
+  version: 2
+  build_development:
+    jobs:
+      - services/communication-router
+      - services/flows-operator
+      #- services/iam
+      #- services/integration-content-repository
+      - services/scheduler
+      - services/secret-service
+      - src/backendCommonsLib
+      - src/scheduler
+      - src/webhooks
