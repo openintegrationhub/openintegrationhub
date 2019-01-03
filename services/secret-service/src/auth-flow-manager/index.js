@@ -62,7 +62,7 @@ function userinfoRequest(url, token) {
 
 module.exports = {
     userinfoRequest,
-    async start(authClient, flow, scope) {
+    async start(authClient, scope, state) {
         // create authorization request url
         switch (authClient.type) {
         case OA2_AUTHORIZATION_CODE:
@@ -70,8 +70,7 @@ module.exports = {
                 .replace('{{scope}}', encodeURI(
                     (authClient.predefinedScope ? `${authClient.predefinedScope} ` : '') + scope,
                 ))
-            // store flow id in state
-                .replace('{{state}}', encodeURI(flow._id))
+                .replace('{{state}}', encodeURI(state))
                 .replace('{{redirectUri}}', encodeURI(authClient.redirectUri))
                 .replace('{{clientId}}', encodeURI(authClient.clientId));
         default:

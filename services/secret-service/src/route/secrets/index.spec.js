@@ -3,6 +3,7 @@ const { fork } = require('child_process');
 const supertest = require('supertest');
 const nock = require('nock');
 const mongoose = require('mongoose');
+const base64url = require('base64url');
 const token = require('../../test/tokens');
 const AuthFlow = require('../../model/AuthFlow');
 const Secret = require('../../model/Secret');
@@ -26,11 +27,11 @@ describe('secrets', () => {
             port,
         });
         await server.start();
-        const endpointPrefix = conf.introspectEndpoint.substr(0, conf.introspectEndpoint.lastIndexOf('/'));
-        const endpointSuffix = conf.introspectEndpoint.substr(conf.introspectEndpoint.lastIndexOf('/'));
-        nock(endpointPrefix)
+        const iamEndpointPrefix = conf.introspectEndpoint.substr(0, conf.introspectEndpoint.lastIndexOf('/'));
+        const iamEndpointSuffix = conf.introspectEndpoint.substr(conf.introspectEndpoint.lastIndexOf('/'));
+        nock(iamEndpointPrefix)
             .persist()
-            .post(endpointSuffix)
+            .post(iamEndpointSuffix)
             .reply((uri, requestBody, cb) => {
                 const tokenName = requestBody.token;
 
@@ -46,6 +47,21 @@ describe('secrets', () => {
     });
 
     test('Get all secrets', async () => {
+        // call without having secrets
+        let body = (await request.get('/secrets')
+            .set(...global.userAuth1)
+            .expect(200)).body;
+
+        let secrets = body.data;
+        let pagination = body.meta;
+
+        expect(secrets.length).toEqual(0);
+
+        expect(pagination.page).toEqual(1);
+        expect(pagination.total).toEqual(0);
+        expect(pagination.perPage).toEqual(conf.pagination.pageSize);
+        expect(pagination.totalPages).toEqual(0);
+
         // invalid request body
         await request.post('/secrets')
             .set(...global.userAuth1)
@@ -72,6 +88,18 @@ describe('secrets', () => {
             .set(...global.userAuth1)
             .send({
                 name: 'string',
+                type: SIMPLE,
+                value: {
+                    username: 'foo',
+                    passphrase: 'bar',
+                },
+            })
+            .expect(200);
+
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                name: 'string',
                 type: API_KEY,
                 value: {
                     key: 'foo',
@@ -80,14 +108,158 @@ describe('secrets', () => {
             })
             .expect(200);
 
-        const secrets = (await request.get('/secrets')
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                name: 'string',
+                type: API_KEY,
+                value: {
+                    key: 'foo',
+                    headerName: 'bar',
+                },
+            })
+            .expect(200);
+
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                name: 'string',
+                type: API_KEY,
+                value: {
+                    key: 'foo',
+                    headerName: 'bar',
+                },
+            })
+            .expect(200);
+
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                name: 'string',
+                type: API_KEY,
+                value: {
+                    key: 'foo',
+                    headerName: 'bar',
+                },
+            })
+            .expect(200);
+
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                name: 'string',
+                type: API_KEY,
+                value: {
+                    key: 'foo',
+                    headerName: 'bar',
+                },
+            })
+            .expect(200);
+
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                name: 'string',
+                type: API_KEY,
+                value: {
+                    key: 'foo',
+                    headerName: 'bar',
+                },
+            })
+            .expect(200);
+
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                name: 'string',
+                type: API_KEY,
+                value: {
+                    key: 'foo',
+                    headerName: 'bar',
+                },
+            })
+            .expect(200);
+
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                name: 'string',
+                type: API_KEY,
+                value: {
+                    key: 'foo',
+                    headerName: 'bar',
+                },
+            })
+            .expect(200);
+
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                name: 'string',
+                type: API_KEY,
+                value: {
+                    key: 'foo',
+                    headerName: 'bar',
+                },
+            })
+            .expect(200);
+
+        body = (await request.get('/secrets')
             .set(...global.userAuth1)
             .expect(200)).body;
 
-        expect(secrets.length).toEqual(2);
+        secrets = body.data;
+        pagination = body.meta;
+
+        expect(secrets.length).toEqual(conf.pagination.pageSize);
+
+        expect(pagination.page).toEqual(1);
+        expect(pagination.total).toEqual(11);
+        expect(pagination.perPage).toEqual(conf.pagination.pageSize);
+        expect(pagination.totalPages).toEqual(Math.abs(11 / conf.pagination.pageSize));
+
         secrets.forEach((secret) => {
             expect(secret.owner[0].entityId).toEqual(token.userToken1.value.sub);
         });
+
+        body = (await request.get('/secrets?page[number]=2&page[size]=2')
+            .set(...global.userAuth1)
+            .expect(200)).body;
+
+        secrets = body.data;
+        pagination = body.meta;
+
+        expect(secrets.length).toEqual(2);
+        expect(pagination.page).toEqual(2);
+        expect(pagination.total).toEqual(11);
+        expect(pagination.perPage).toEqual(2);
+        expect(pagination.totalPages).toEqual(Math.abs(11 / 2));
+
+        body = (await request.get('/secrets?page[number]=10&page[size]=100')
+            .set(...global.userAuth1)
+            .expect(200)).body;
+
+        secrets = body.data;
+        pagination = body.meta;
+
+        expect(secrets.length).toEqual(0);
+        expect(pagination.page).toEqual(10);
+        expect(pagination.total).toEqual(11);
+        expect(pagination.perPage).toEqual(100);
+        expect(pagination.totalPages).toEqual(Math.abs(11 / 100));
+
+        body = (await request.get('/secrets?page[number]=0&page[size]=100')
+            .set(...global.userAuth1)
+            .expect(200)).body;
+
+        secrets = body.data;
+        pagination = body.meta;
+
+        expect(secrets.length).toEqual(11);
+        expect(pagination.page).toEqual(1);
+        expect(pagination.total).toEqual(11);
+        expect(pagination.perPage).toEqual(100);
+        expect(pagination.totalPages).toEqual(Math.abs(11 / 100));
     });
 
     test('Get the secret anonymously throws', async () => {
@@ -132,15 +304,43 @@ describe('secrets', () => {
         expect(secondResp.body.name).toEqual(secretBody.name);
     });
 
-    test('Get the secret by wrong id returns 404', async () => {
-        await request.get(`/secrets/${mongoose.Types.ObjectId()}`)
+    test('Update a secret by id', async () => {
+        const secretBody = {
+            name: 'string123',
+            type: SIMPLE,
+            value: {
+                username: 'foo',
+                passphrase: 'bar',
+            },
+        };
+        const modifiedSecret = {
+            name: 'secret567',
+            value: {
+                username: 'specialName',
+            },
+        };
+
+        const { body } = await request.post('/secrets')
             .set(...global.userAuth1)
-            .expect(404);
+            .send(secretBody)
+            .expect(200);
+
+        // modify the secret
+        await request.patch(`/secrets/${body._id}`)
+            .set(...global.userAuth1)
+            .send(modifiedSecret)
+            .expect(200);
+
+        const modResp = await request.get(`/secrets/${body._id}`)
+            .set(...global.userAuth1)
+            .expect(200);
+        expect(modResp.body.name).toEqual(modifiedSecret.name);
+        expect(modResp.body.value.username).toEqual(modifiedSecret.value.username);
     });
 
-    test('Replace the secret', async () => {
+    test('Raw secret only returned if authorized', async () => {
         const secretBody = {
-            name: 'string567',
+            name: 'string123',
             type: SIMPLE,
             value: {
                 username: 'foo',
@@ -154,14 +354,23 @@ describe('secrets', () => {
             .send(secretBody)
             .expect(200);
 
-        await request.put(`/secrets/${body._id}`)
-            .set(...global.userAuth1)
-            .send({ ...secretBody, name: 'newName' })
-            .expect(200);
-
         const secondResp = await request.get(`/secrets/${body._id}`)
-            .set(...global.userAuth1);
-        expect(secondResp.body.name).toEqual('newName');
+            .set(...global.userAuth1)
+            .expect(200);
+        expect(secondResp.body.name).toEqual(secretBody.name);
+        expect(secondResp.body.value.passphrase).toEqual('***');
+
+        const extraPermResp = await request.get(`/secrets/${body._id}`)
+            .set(...global.userToken1ExtraPerm)
+            .expect(200);
+        expect(extraPermResp.body.name).toEqual(secretBody.name);
+        expect(extraPermResp.body.value.passphrase).toEqual(secretBody.value.passphrase);
+    });
+
+    test('Get the secret by wrong id returns 404', async () => {
+        await request.get(`/secrets/${mongoose.Types.ObjectId()}`)
+            .set(...global.userAuth1)
+            .expect(404);
     });
 
     test('Modify the secret', async () => {
@@ -304,7 +513,11 @@ describe('secrets', () => {
         });
 
         // simulate external api call with valid state
-        await request.get(`/callback?state=${authFlow._id}&code=123456`)
+        const state = base64url(JSON.stringify({
+            flowId: authFlow._id,
+            payload: {},
+        }));
+        await request.get(`/callback?state=${state}&code=123456`)
             .expect(200);
 
         // obtain secret id
@@ -346,10 +559,4 @@ describe('secrets', () => {
             done();
         });
     }, 1000000);
-
-    test('Get audit data for a specific secret', async () => {
-        await request.get('/secrets/fofo/audit')
-            .set(...global.userAuth1)
-            .expect(200);
-    });
 });

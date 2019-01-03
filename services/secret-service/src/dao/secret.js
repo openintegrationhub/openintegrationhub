@@ -52,7 +52,9 @@ const refresh = secret => new Promise(async (resolve, reject) => {
                 if (shouldRefreshToken(_secret)) {
                     const { expires_in, access_token } = await refreshToken(_secret);
 
-                    _secret.value.access_token = access_token;
+                    // FIXME expired or revoked token should throw
+
+                    _secret.value.accessToken = access_token;
                     _secret.value.expires = moment().add(expires_in, 'seconds').toISOString();
                 }
 
@@ -80,8 +82,18 @@ module.exports = {
         await secret.save();
         return secret;
     },
-    async findByEntity(entityId) {
+    async findByEntityWithPagination(
+        entityId,
+        pageSize = conf.pagination.pageSize,
+        pageNumber = conf.pagination.defaultPage,
+    ) {
         return await Secret.full.find({
+            'owner.entityId': entityId,
+        }, null, { skip: (pageNumber - 1) * pageSize, limit: pageSize });
+    },
+
+    async countByEntity(entityId) {
+        return await Secret.full.countDocuments({
             'owner.entityId': entityId,
         });
     },
@@ -99,6 +111,7 @@ module.exports = {
     async findOne(query) {
         return await Secret.full.findOne(query);
     },
+
     async update({ id, obj, partialUpdate = false }) {
         const updateOperation = partialUpdate ? { $set: obj } : obj;
 

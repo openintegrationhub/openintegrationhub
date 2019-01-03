@@ -22,6 +22,18 @@ module.exports = {
         },
     },
 
+    userToken1ExtraPerm: {
+        token: 'userToken1ExtraPerm',
+        value: {
+            sub: 'u2',
+            name: 'User2',
+            role: 'USER',
+            memberships: ['t1'],
+            permissions: ['secrets.raw.read'],
+            iat: 1337,
+        },
+    },
+
     connectorToken: {
         token: 'connectorToken',
         value: {
@@ -30,7 +42,7 @@ module.exports = {
             role: 'EPHEMERAL_SERVICE_ACCOUNT',
             memberships: ['t1'],
             permissions: [
-                'secrets.raw.read'
+                'secrets.raw.read',
             ],
             iat: 1337,
         },
@@ -70,4 +82,3 @@ module.exports = {
     },
 
 };
-
