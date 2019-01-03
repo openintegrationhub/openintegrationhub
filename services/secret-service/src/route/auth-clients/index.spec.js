@@ -101,15 +101,109 @@ describe('auth-clients', () => {
     });
 
     test('Get auth client by id', async () => {
-        await request.get('/auth-clients/fofo')
+        const { authClientId } = (await request.post('/auth-clients')
             .set(...global.userAuth1)
-            .expect(401);
+            .send({
+                type: OA2_AUTHORIZATION_CODE,
+                name: 'oAuth2',
+                clientId: 'string',
+                clientSecret: 'string',
+                redirectUri: '/dev/null',
+                endpoint: {
+                    auth: 'http://',
+                    token: 'http://',
+                    userinfo: 'http://',
+                },
+                mappings: {
+                    externalId: {
+                        source: 'id_token',
+                        key: 'sub',
+                    },
+                    scope: {
+                        key: 'scope',
+                    },
+                },
+            })
+            .expect(200)).body;
+        const authClient = (await request.get(`/auth-clients/${authClientId}`)
+            .set(...global.userAuth1)
+            .expect(200)).body;
+
+        expect(authClient._id).toEqual(authClientId);
     });
 
     test('Modify a platform oauth secret', async () => {
-        await request.patch('/auth-clients/fofo')
+        const authClientBody = {
+            type: OA2_AUTHORIZATION_CODE,
+            name: 'oAuth2',
+            clientId: 'string',
+            clientSecret: 'string',
+            redirectUri: '/dev/null',
+            endpoint: {
+                auth: 'http://',
+                token: 'http://',
+                userinfo: 'http://',
+            },
+            mappings: {
+                externalId: {
+                    source: 'id_token',
+                    key: 'sub',
+                },
+                scope: {
+                    key: 'scope',
+                },
+            },
+        };
+
+        const { authClientId } = (await request.post('/auth-clients')
             .set(...global.userAuth1)
-            .expect(401);
+            .send(authClientBody)
+            .expect(200)).body;
+
+        await request.patch(`/auth-clients/${authClientId}`)
+            .set(...global.userAuth1)
+            .send({
+                ...authClientBody,
+                name: 'test',
+            })
+            .expect(200);
+
+        const authClient = (await request.get(`/auth-clients/${authClientId}`)
+            .set(...global.userAuth1)
+            .expect(200)).body;
+
+        expect(authClient.name).toEqual('test');
+    });
+
+    test('Remove a platform oauth secret', async () => {
+        const { authClientId } = (await request.post('/auth-clients')
+            .set(...global.userAuth1)
+            .send({
+                type: OA2_AUTHORIZATION_CODE,
+                name: 'oAuth2',
+                clientId: 'string',
+                clientSecret: 'string',
+                redirectUri: '/dev/null',
+                endpoint: {
+                    auth: 'http://',
+                    token: 'http://',
+                    userinfo: 'http://',
+                },
+                mappings: {
+                    externalId: {
+                        source: 'id_token',
+                        key: 'sub',
+                    },
+                    scope: {
+                        key: 'scope',
+                    },
+                },
+            })
+            .expect(200)).body;
+
+        await request.delete(`/auth-clients/${authClientId}`)
+            .set(...global.userAuth1)
+            .expect(200);
     });
 
     test('Start oauth2 authorization code flow', async () => {

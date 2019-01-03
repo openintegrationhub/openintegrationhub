@@ -3,6 +3,7 @@ const logger = require('@basaas/node-logger');
 const url = require('url');
 const qs = require('querystring');
 const moment = require('moment');
+const base64url = require('base64url');
 const AuthClientDAO = require('../../dao/auth-client');
 const AuthFlowDAO = require('../../dao/auth-flow');
 const SecretDAO = require('../../dao/secret');
@@ -17,9 +18,9 @@ router.get('/', async (req, res, next) => {
     try {
         const queryObject = qs.parse(url.parse(req.originalUrl).query);
         const code = queryObject.code;
-        const state = queryObject.state;
 
-        const flow = await AuthFlowDAO.findById(state);
+        const stateObject = JSON.parse(base64url.decode(queryObject.state));
+        const flow = await AuthFlowDAO.findById(stateObject.flowId);
 
         const authClient = await AuthClientDAO.findById(flow.authClientId);
 

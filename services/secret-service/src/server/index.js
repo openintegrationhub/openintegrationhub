@@ -35,7 +35,6 @@ module.exports = class Server {
         // setup routes
         apiBase.use('/secrets', require('./../route/secrets')); // eslint-disable-line global-require
         apiBase.use('/auth-clients', require('./../route/auth-clients')); // eslint-disable-line global-require
-        apiBase.use('/audits', require('./../route/audits')); // eslint-disable-line global-require
         this.app.use(conf.apiBase, apiBase);
 
         // error middleware

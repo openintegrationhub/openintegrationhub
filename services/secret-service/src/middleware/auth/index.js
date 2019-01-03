@@ -65,8 +65,6 @@ async function userIsOwnerOf(dao, req, res, next) {
 }
 
 const getUserData = async (req, res, next) => {
-    // TODO userinfo endpoint with users bearer token
-
     let token;
 
     try {
@@ -104,6 +102,7 @@ const getUserData = async (req, res, next) => {
 };
 
 module.exports = {
+    getUserData,
     async isLoggedIn(req, res, next) {
         try {
             req.user = await verifyToken(req);
@@ -113,7 +112,6 @@ module.exports = {
             next({ status: 401 });
         }
     },
-    getUserData,
     async isUser(req, res, next) {
         await verifyRole([ROLE.ADMIN, ROLE.USER], req, res, next);
     },

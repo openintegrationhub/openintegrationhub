@@ -1,4 +1,9 @@
+const Logger = require('@basaas/node-logger');
 const AuthClient = require('../model/AuthClient');
+
+const conf = require('./../conf');
+
+const log = Logger.getLogger(`${conf.logging.namespace}/authClientDao`);
 
 module.exports = {
 
@@ -6,6 +11,12 @@ module.exports = {
         const client = new AuthClient[obj.type]({ ...obj });
         await client.save();
         return client;
+    },
+
+    async find(query = {}) {
+        return await AuthClient.full
+            .find(query, 'name type')
+            .lean();
     },
 
     async findByEntity(entityId) {
@@ -22,27 +33,19 @@ module.exports = {
         return await AuthClient.full.findOne(query).lean();
     },
 
-    // findByEntity: async entityId => await Secret.full.find({
-    //     'owner.entityId': entityId,
-    // }).lean(),
+    async update({ id, obj, partialUpdate = false }) {
+        const updateOperation = partialUpdate ? { $set: obj } : obj;
 
-    // find: async query => await Secret.full.find(query).lean(),
+        await AuthClient.full.findOneAndUpdate({
+            _id: id,
+        }, updateOperation);
 
-    // findOne: async query => await Secret.full.findOne(query).lean(),
+        log.debug('updated.client', { id });
+    },
 
-    // update: async ({ id, obj, partialUpdate = false }) => {
-    //     const updateOperation = partialUpdate ? { $set: obj } : obj;
-
-    //     await Secret.full.findOneAndUpdate({
-    //         _id: id,
-    //     }, updateOperation);
-
-    //     log.debug('updated.secret', { id });
-    // },
-
-    // delete: async ({ id }) => {
-    //     await Secret.full.deleteOne({ _id: id });
-    //     log.info('deleted.secret', { id });
-    // },
+    async delete({ id }) {
+        await AuthClient.full.deleteOne({ _id: id });
+        log.info('deleted.client', { id });
+    },
 
 };

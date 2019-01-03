@@ -21,7 +21,6 @@ let failedRequestWorker = 0;
 
 global.__MONGO_URI__ = process.env.__MONGO_URI__;
 
-
 (async () => {
     function startRequestWorker() {
         // Fork workers.
