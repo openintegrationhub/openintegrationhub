@@ -36,9 +36,9 @@ jobs:
   services/communication-router:
     <<: *common_environment
     working_directory: ~/oih/services/communication-router
-  services/flows-operator:
+  services/resource-coordinator:
     <<: *common_environment
-    working_directory: ~/oih/services/flows-operator
+    working_directory: ~/oih/services/resource-coordinator
   services/iam:
     <<: *common_environment
     working_directory: ~/oih/services/iam
@@ -66,7 +66,7 @@ workflows:
   build_development:
     jobs:
       - services/communication-router
-      - services/flows-operator
+      - services/resource-coordinator
       #- services/iam
       #- services/integration-content-repository
       - services/scheduler
