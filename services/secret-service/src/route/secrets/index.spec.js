@@ -27,8 +27,8 @@ describe('secrets', () => {
             port,
         });
         await server.start();
-        const iamEndpointPrefix = conf.introspectEndpoint.substr(0, conf.introspectEndpoint.lastIndexOf('/'));
-        const iamEndpointSuffix = conf.introspectEndpoint.substr(conf.introspectEndpoint.lastIndexOf('/'));
+        const iamEndpointPrefix = conf.iam.introspectEndpoint.substr(0, conf.iam.introspectEndpoint.lastIndexOf('/'));
+        const iamEndpointSuffix = conf.iam.introspectEndpoint.substr(conf.iam.introspectEndpoint.lastIndexOf('/'));
         nock(iamEndpointPrefix)
             .persist()
             .post(iamEndpointSuffix)
