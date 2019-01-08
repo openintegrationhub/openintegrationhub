@@ -5,9 +5,9 @@
 const express = require('express');
 
 const swaggerUi = require('swagger-ui-express');
+const iamMiddleware = require('@openintegrationhub/iam-utils');
 const config = require('./config/index');
 
-const iamMiddleware = require('./iam-utils/index');
 
 const swaggerDocument = require('./api/swagger/swagger.json');
 
