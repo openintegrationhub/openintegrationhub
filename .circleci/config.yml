@@ -23,7 +23,7 @@ jobs:
           path: ~/oih
       - run: *run_npm_install
       - save_cache: 
-          key: v1-bundle-{{ checksum "Gemfile.lock" }}
+          key: yarn-deps
           paths:
             - ~/oih
   iam-test:
@@ -34,7 +34,7 @@ jobs:
           path: ~/oih
       - restore_cache:
           keys:
-            - v1-bundle-{{ checksum "Gemfile.lock" }}
+            - yarn-deps
       - run: yarn test
 
 workflows:
