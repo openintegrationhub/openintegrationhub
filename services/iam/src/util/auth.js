@@ -164,6 +164,7 @@ module.exports = {
         /** User has a valid cookie */
         if (req.user) {
             req.user.userid = req.user._id.toString();
+            req.user.auth = req.user;
             return next();
         }
 
