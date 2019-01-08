@@ -15,7 +15,7 @@ jobs:
           path: ~/oih
       - run: *run_npm_install
       - save_cache: 
-          key: yarn-deps
+          key: yarn-deps-{{ checksum "package.json" }}
           paths:
             - ~/oih
   iam-test:
@@ -26,7 +26,7 @@ jobs:
           path: ~/oih
       - restore_cache:
           keys:
-            - yarn-deps
+            - yarn-deps-{{ checksum "package.json" }}
       - run: yarn test
 
 workflows:
