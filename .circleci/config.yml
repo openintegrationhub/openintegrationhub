@@ -22,8 +22,6 @@ jobs:
     docker: *nodeenv
     working_directory: ~/oih/services/iam
     steps: 
-      - checkout: 
-          path: ~/oih
       - restore_cache:
           keys:
             - yarn-deps-{{ checksum "package.json" }}
