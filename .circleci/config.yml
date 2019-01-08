@@ -3,6 +3,8 @@ version: 2
 aliases:
   - &docker_environment
     - image: circleci/node:8-stretch
+  - &docker_environment_mongo
+    - image: circleci/node:8-stretch
     - image: circleci/mongo:3.6
   - &checkout
     path: ~/oih
@@ -28,37 +30,39 @@ aliases:
     - save_cache: *save_cache_dependencies
     #- setup_remote_docker
     - run: *run_build
+  - &mongo_environment
+    docker: *docker_environment_mongo
+    steps: *common_steps
   - &common_environment
     docker: *docker_environment
     steps: *common_steps
-
 jobs:
   services/communication-router:
-    <<: *common_environment
+    <<: *mongo_environment
     working_directory: ~/oih/services/communication-router
   services/resource-coordinator:
-    <<: *common_environment
+    <<: *mongo_environment
     working_directory: ~/oih/services/resource-coordinator
   services/iam:
     <<: *common_environment
     working_directory: ~/oih/services/iam
   services/integration-content-repository:
-    <<: *common_environment
+    <<: *mongo_environment
     working_directory: ~/oih/services/integration-content-repository
   services/scheduler:
-    <<: *common_environment
+    <<: *mongo_environment
     working_directory: ~/oih/services/scheduler
   services/secret-service:
     <<: *common_environment
     working_directory: ~/oih/services/secret-service
   src/backendCommonsLib:
-    <<: *common_environment
+    <<: *mongo_environment
     working_directory: ~/oih/src/backendCommonsLib
   src/scheduler:
-    <<: *common_environment
+    <<: *mongo_environment
     working_directory: ~/oih/src/scheduler
   src/webhooks:
-    <<: *common_environment
+    <<: *mongo_environment
     working_directory: ~/oih/src/webhooks
 
 workflows:
@@ -67,7 +71,7 @@ workflows:
     jobs:
       - services/communication-router
       - services/resource-coordinator
-      #- services/iam
+      - services/iam
       #- services/integration-content-repository
       - services/scheduler
       - services/secret-service
