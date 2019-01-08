@@ -15,7 +15,7 @@ jobs:
           path: ~/oih
       - run: *run_npm_install
       - save_cache: 
-          key: yarn-deps
+          key: yarn-deps-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/oih
   iam-test:
@@ -24,7 +24,7 @@ jobs:
     steps: 
       - restore_cache:
           keys:
-            - yarn-deps
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
       - run: yarn test
 
 workflows:
