@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 aliases:
   - &nodeenv
@@ -8,32 +8,40 @@ aliases:
     key: v1-node-modules-cache-{{ checksum "package.json" }}
   - &run_npm_install
     name: Installing Dependencies
-    command: yarn install
+    command: yarn
   - &save_cache_dependencies
     name: Saving into the cache
     key: v1-node-modules-cache-{{ checksum "package.json" }}
     paths:
       - ~/.cache/yarn
 jobs:
-  iam:
+  dep:
+    docker: *nodeenv
+    working_directory: ~/oih
+    steps: 
+      - checkout: 
+          path: ~/oih
+      - run: *run_npm_install
+      - save_cache: 
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
+          paths:
+            - ~/oih
+  iam-test:
     docker: *nodeenv
     working_directory: ~/oih/services/iam
     steps: 
       - checkout: 
           path: ~/oih
-      - restore_cache: *restore_cache_dependencies
-      - run: *run_npm_install
-      - save_cache: *save_cache_dependencies
-  test:
-    docker: *nodeenv
-    steps:
+      - restore_cache:
+          keys:
+            - v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: yarn test
+
 workflows:
-  version: 2
   pipeline_iam:
     jobs:
-      - iam
-      - test:
+      - dep
+      - iam-test:
           requires:
             - iam
         
