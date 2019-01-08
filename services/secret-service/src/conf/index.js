@@ -1,4 +1,4 @@
-const { optional, required } = require('./check-env');
+const { optional } = require('./check-env');
 const { version, name } = require('../../package.json');
 
 module.exports = {
@@ -8,10 +8,14 @@ module.exports = {
     },
     apiBase: optional('API_BASE', '/api/v1'),
     userAuthType: optional('AUTH_TYPE', 'oidc'),
-    introspectEndpoint: optional('INTROSPECT_ENDPOINT', 'https://accounts.basaas.com/op/userinfo'),
-    introspectHeader: process.env.INTROSPECT_BASIC ? { 'x-auth-type': 'basic' } : {},
-    iamTokenEndpoint: optional('IAM_TOKEN_API', 'https://accounts.basaas.com/api/v1/tokens/ephemeral'),
-    iamToken: required('IAM_TOKEN'),
+    iam: {
+        introspectType: optional('INTROSPECT_TYPE', 'BASIC'),
+        introspectEndpoint: optional('INTROSPECT_ENDPOINT', 'https://accounts.basaas.com/op/userinfo'),
+        tokenEndpoint: optional('IAM_TOKEN_API', 'https://accounts.basaas.com/api/v1/tokens/ephemeral'),
+        token: optional('IAM_TOKEN', 'token'),
+        oidcServiceClientId: optional('IAM_OIDC_SERVICE_CLIENT_ID', 'id'),
+        oidcServiceClientSecret: optional('IAM_OIDC_SERVICE_CLIENT_SECRET', 'secret'),
+    },
     logging: {
         namespace: optional('LOGGING_NAMESPACE', name),
         level: optional('LOGGING_LEVEL', 'error'),
