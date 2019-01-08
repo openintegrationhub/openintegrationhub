@@ -43,5 +43,5 @@ workflows:
       - dep
       - iam-test:
           requires:
-            - iam
+            - dep
         
