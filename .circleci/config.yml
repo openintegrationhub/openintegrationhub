@@ -1,17 +1,11 @@
 version: 2
 
 aliases:
-  - &docker_environment
+  - &nodeenv
     - image: circleci/node:8-stretch
-  - &docker_environment_mongo
-    - image: circleci/node:8-stretch
-    - image: circleci/mongo:3.6
-  - &checkout
-    path: ~/oih
   - &restore_cache_dependencies
     name: Restoring from the cache
-    keys:
-      - v1-node-modules-cache-{{ checksum "package.json" }}
+    key: v1-node-modules-cache-{{ checksum "package.json" }}
   - &run_npm_install
     name: Installing Dependencies
     command: yarn install
@@ -20,61 +14,26 @@ aliases:
     key: v1-node-modules-cache-{{ checksum "package.json" }}
     paths:
       - ~/.cache/yarn
-  - &run_build
-    name: Running tests
-    command: yarn test
-  - &common_steps
-    - checkout: *checkout
-    - restore_cache: *restore_cache_dependencies
-    - run: *run_npm_install
-    - save_cache: *save_cache_dependencies
-    #- setup_remote_docker
-    - run: *run_build
-  - &mongo_environment
-    docker: *docker_environment_mongo
-    steps: *common_steps
-  - &common_environment
-    docker: *docker_environment
-    steps: *common_steps
 jobs:
-  services/communication-router:
-    <<: *mongo_environment
-    working_directory: ~/oih/services/communication-router
-  services/resource-coordinator:
-    <<: *mongo_environment
-    working_directory: ~/oih/services/resource-coordinator
-  services/iam:
-    <<: *common_environment
+  iam:
+    docker: *nodeenv
     working_directory: ~/oih/services/iam
-  services/integration-content-repository:
-    <<: *mongo_environment
-    working_directory: ~/oih/services/integration-content-repository
-  services/scheduler:
-    <<: *mongo_environment
-    working_directory: ~/oih/services/scheduler
-  services/secret-service:
-    <<: *common_environment
-    working_directory: ~/oih/services/secret-service
-  src/backendCommonsLib:
-    <<: *mongo_environment
-    working_directory: ~/oih/src/backendCommonsLib
-  src/scheduler:
-    <<: *mongo_environment
-    working_directory: ~/oih/src/scheduler
-  src/webhooks:
-    <<: *mongo_environment
-    working_directory: ~/oih/src/webhooks
-
+    steps: 
+      - checkout: 
+          path: ~/oih
+      - restore_cache: *restore_cache_dependencies
+      - run: *run_npm_install
+      - save_cache: *save_cache_dependencies
+  test:
+    docker: *nodeenv
+    steps:
+      - run: yarn test
 workflows:
   version: 2
-  build_development:
+  pipeline_iam:
     jobs:
-      - services/communication-router
-      - services/resource-coordinator
-      - services/iam
-      #- services/integration-content-repository
-      - services/scheduler
-      - services/secret-service
-      - src/backendCommonsLib
-      - src/scheduler
-      - src/webhooks
+      - iam
+      - test:
+          requires:
+            - iam
+        
