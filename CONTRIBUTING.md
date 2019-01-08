@@ -40,7 +40,7 @@ In addition to the previously defined definition of done some rules only apply f
   - Decisions are described in a common form using the [architecture decision template](https://github.com/openintegrationhub/Architecture/blob/master/Decisions/ArchitectureDecisionTemplate.md)
 - Concept / document reviewed and accepted by CES quality manager 
 
-#### DoD Code
+#### DoD Services
 
 In addition to the previously defined definition of done some rules only apply for outputs of type code:
 
