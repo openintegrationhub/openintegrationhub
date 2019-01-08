@@ -1,6 +1,7 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
 const nock = require('nock');
+const base64url = require('base64url');
 const Secret = require('../../model/Secret');
 const { AUTH_TYPE } = require('../../constant');
 const AuthFlow = require('../../model/AuthFlow');
@@ -105,7 +106,12 @@ describe('callback', () => {
             });
 
         // simulate external api call
-        await request.get(`/callback?state=${authFlow._id}&code=123456`)
+
+        const state = base64url(JSON.stringify({
+            flowId: authFlow._id,
+            payload: {},
+        }));
+        await request.get(`/callback?state=${state}&code=123456`)
             .expect(200);
     });
 
@@ -170,24 +176,16 @@ describe('callback', () => {
         });
 
         // simulate external api call
-        await request.get(`/callback?state=${authFlow._id}&code=123456`)
+        const state = base64url(JSON.stringify({
+            flowId: authFlow._id,
+            payload: {},
+        }));
+        await request.get(`/callback?state=${state}&code=123456`)
             .expect(200);
 
         const { _id } = await Secret[AUTH_TYPE.OA2_AUTHORIZATION_CODE].findOne({
             'value.scope': scope,
         });
-
-        // example
-        //     .post('/exchange')
-        //     .reply(200, {
-        //         access_token: 'asdasd',
-        //         expires_in: 3602,
-        //         refresh_token: 'asdasd',
-        //         scope,
-        //         token_type: 'Bearer',
-        //         // sub: 1234567890
-        //         id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-        //     });
 
         const externalId = (await request.get(`/secrets/${_id}`)
             .set(...global.userAuth1)
@@ -256,7 +254,11 @@ describe('callback', () => {
         });
 
         // simulate external api call
-        await request.get(`/callback?state=${authFlow._id}&code=123456`)
+        const state = base64url(JSON.stringify({
+            flowId: authFlow._id,
+            payload: {},
+        }));
+        await request.get(`/callback?state=${state}&code=123456`)
             .expect(200);
 
         const { _id } = await Secret[AUTH_TYPE.OA2_AUTHORIZATION_CODE].findOne({
@@ -337,24 +339,16 @@ describe('callback', () => {
         });
 
         // simulate external api call
-        await request.get(`/callback?state=${authFlow._id}&code=123456`)
+        let state = base64url(JSON.stringify({
+            flowId: authFlow._id,
+            payload: {},
+        }));
+        await request.get(`/callback?state=${state}&code=123456`)
             .expect(200);
 
         const { _id } = await Secret[AUTH_TYPE.OA2_AUTHORIZATION_CODE].findOne({
             'value.scope': scope,
         });
-
-        // example
-        //     .post('/exchange')
-        //     .reply(200, {
-        //         access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-        //         expires_in: 3604,
-        //         refresh_token: 'asdasd',
-        //         scope: 'new scope',
-        //         token_type: 'Bearer',
-        //         // sub: 1234567890
-        //         id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-        //     });
 
         let secret = (await request.get(`/secrets/${_id}`)
             .set(...global.userAuth1)
@@ -395,7 +389,11 @@ describe('callback', () => {
             });
 
         // simulate external api call
-        await request.get(`/callback?state=${authFlow._id}&code=123456`)
+        state = base64url(JSON.stringify({
+            flowId: authFlow._id,
+            payload: {},
+        }));
+        await request.get(`/callback?state=${state}&code=123456`)
             .expect(200);
 
         example
