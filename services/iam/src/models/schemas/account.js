@@ -5,16 +5,15 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const CONSTANTS = require('./../../constants');
 
 const validateEmail = function(email) {
-    return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/.test(email);
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email); // eslint-disable-line
 };
 
 const membershipsSchema = new Schema({
     role: {
-        type: String,
-        'enum': Object.keys(CONSTANTS.MEMBERSHIP_ROLES),
-        'default': CONSTANTS.MEMBERSHIP_ROLES.TENANT_GUEST,
+        type: Schema.ObjectId, ref: 'role',
     },
     tenant: { type: Schema.ObjectId, ref: 'tenant' },
+    permissions: [String],
 }, {
     _id: false,
 });
@@ -54,6 +53,7 @@ const schema = {
         
     },
     memberships: [membershipsSchema],
+    currentContext: membershipsSchema,
     permissions: [String],
 };
 
