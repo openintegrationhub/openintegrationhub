@@ -1,40 +1,15 @@
-const jwt = require('jsonwebtoken');
 const rp = require('request-promise');
 const logger = require('@basaas/node-logger');
-// const { verify } = require('@openintegrationhub/iam-utils');
+const base64url = require('base64url');
 const conf = require('../../conf');
 
 const log = logger.getLogger(`${conf.logging.namespace}/auth`);
-const { ROLE } = require('../../constant');
 const SecretsDAO = require('../../dao/secret');
 const AuthClientDAO = require('../../dao/auth-client');
 
 function extractToken(req) {
     const header = req.headers.authorization.split(' ');
     return header[1];
-}
-
-async function verifyToken(req) {
-    if (process.env.NODE_ENV === 'test') {
-        return jwt.decode(extractToken(req));
-    }
-
-    // return await verify(extractToken(req));
-    return jwt.decode(extractToken(req));
-}
-
-async function verifyRole(validRoles, req, res, next) {
-    try {
-        req.user = req.user || await verifyToken(req);
-        if (validRoles.indexOf(req.user.role) !== -1) {
-            next();
-        } else {
-            next({ status: 401 });
-        }
-    } catch (err) {
-        log.error(err);
-        next({ status: 401 });
-    }
 }
 
 async function userIsOwnerOf(dao, req, res, next) {
@@ -64,61 +39,51 @@ async function userIsOwnerOf(dao, req, res, next) {
     }
 }
 
-const getUserData = async (req, res, next) => {
-    let token;
+module.exports = {
+    async getUserData(req, res, next) {
+        let token;
 
-    try {
-        token = extractToken(req);
-    } catch (err) {
-        return next({
-            status: 401,
-            message: 'Could not parse token',
-        });
-    }
+        try {
+            token = extractToken(req);
+        } catch (err) {
+            return next({
+                status: 401,
+                message: 'Could not parse token',
+            });
+        }
+        try {
+            const body = await rp.post({
+                uri: conf.iam.introspectEndpoint,
+                headers: conf.iam.introspectType === 'OIDC' ? {
+                    authorization: `Basic ${base64url(`${
+                        encodeURIComponent(conf.iam.oidcServiceClientId)}:${encodeURIComponent(conf.iam.oidcServiceClientId)}`)
+                    }`,
+                } : {
+                    'x-auth-type': 'basic',
+                    authorization: `Bearer ${conf.iam.token}`,
+                },
+                ...(conf.iam.introspectType === 'OIDC' ? {
+                    form: {
+                        token,
+                    },
+                } : {
+                    body: {
+                        token,
+                    },
+                }),
+                json: true,
+            });
 
-    rp({
-        method: 'POST',
-        uri: conf.introspectEndpoint,
-        body: {
-            token,
-        },
-        headers: {
-            authorization: `Bearer ${conf.iamToken}`,
-            ...conf.introspectHeader,
-        },
-        json: true,
-    })
-        .then((body) => {
             req.user = body;
             req.user.sub = req.user.sub || body._id;
             return next();
-        })
-        .catch((err) => {
+        } catch (err) {
             log.error(err);
             return next({
                 status: 500,
             });
-        });
-};
-
-module.exports = {
-    getUserData,
-    async isLoggedIn(req, res, next) {
-        try {
-            req.user = await verifyToken(req);
-            next();
-        } catch (err) {
-            log.error(err);
-            next({ status: 401 });
         }
     },
-    async isUser(req, res, next) {
-        await verifyRole([ROLE.ADMIN, ROLE.USER], req, res, next);
-    },
-    async isAdmin(req, res, next) {
-        await verifyRole([ROLE.ADMIN], req, res, next);
-    },
-
     async userIsOwnerOfSecret(req, res, next) {
         await userIsOwnerOf(SecretsDAO, req, res, next);
     },

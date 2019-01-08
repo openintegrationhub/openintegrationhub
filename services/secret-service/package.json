@@ -20,14 +20,14 @@
     "express": "4.16.4",
     "jsonwebtoken": "8.4.0",
     "moment": "2.23.0",
-    "mongoose": "5.4.1",
+    "mongoose": "5.4.2",
     "morgan": "1.9.1",
     "qs": "6.6.0",
     "request": "2.88.0",
     "request-promise": "4.2.2"
   },
   "devDependencies": {
-    "eslint": "5.11.1",
+    "eslint": "5.12.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.14.0",
     "eslint-plugin-jest": "22.1.2",

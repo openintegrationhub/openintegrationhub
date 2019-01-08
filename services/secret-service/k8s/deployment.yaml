@@ -16,38 +16,32 @@ spec:
       - name: secret-service
         image: openintegrationhub/secret-service:latest
         env:
-        - name: SECRET_SERVICE_MONGODB_CONNECTION
+        - name: MONGODB_CONNECTION
           valueFrom:
             secretKeyRef:
               name: oih-secret-service-dev
               key: mongourl
-        - name: SECRET_SERVICE_BASEURL
-          value: 'https://secret-service.openintegrationhub.com'
-        - name: SECRET_SERVICE_ORIGINWHITELIST
-          value: 'openintegrationhub.com'
+        # - name: IAM_OIDC_SERVICE_CLIENT_ID
+        #   value: 8ce00058-5f75-435f-9026-ad952480e15a
+        # - name: IAM_OIDC_SERVICE_CLIENT_SECRET
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: oih-secret-service-dev
+        #       key: 'client-secret'
+        - name: "INTROSPECT_TYPE"
+          value: "BASIC"
+        - name: "INTROSPECT_ENDPOINT"
+          value: "https://iam.oih/op/token/introspection"
         - name: PORT
           value: '3000'
-        - name: NODE_ENV
-          value: "production"
-        - name: SECRET_SERVICE_ACC_ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: oih-secret-service-dev
-              key: 'ADMIN_PASSWORD'
-        - name: SECRET_SERVICE_ACC_SERVICE_ACCOUNT_USERNAME
-          value: service-oih-secret-service@openintegrationhub.com
-        - name: SECRET_SERVICE_ACC_SERVICE_ACCOUNT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: oih-secret-service-dev
-              key: serviceaccpass
-        - name: SECRET_SERVICE_SERVICE_CLIENT_ID
-          value: 8ce00058-5f75-435f-9026-ad952480e15a
-        - name: SECRET_SERVICE_SERVICE_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: oih-secret-service-dev
-              key: 'client-secret'
+        - name: API_BASE
+          value: "/api/v1"
+        - name: LOGGING_LEVEL
+          value: "error"
+        - name: TTL_AUTHFLOW
+          value: "2m"
+        - name: DEBUG_MODE
+          value: "false"
         ports:
         - containerPort: 3000
         livenessProbe:
@@ -68,11 +62,3 @@ spec:
             memory: 1000Mi
           requests:
             memory: 1000Mi
-        volumeMounts:
-          - name: oidc-certs
-            mountPath: /usr/src/app/keystore
-            readOnly: true
-      volumes:
-          - name: oidc-certs
-            secret:
-              secretName: oidc-certs 
