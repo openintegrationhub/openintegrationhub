@@ -68,7 +68,7 @@ workflows:
       - services/communication-router
       - services/flows-operator
       #- services/iam
-      #- services/integration-content-repository
+      - services/integration-content-repository
       - services/scheduler
       - services/secret-service
       - src/backendCommonsLib
