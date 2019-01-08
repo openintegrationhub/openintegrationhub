@@ -3,17 +3,9 @@ version: 2.1
 aliases:
   - &nodeenv
     - image: circleci/node:8-stretch
-  - &restore_cache_dependencies
-    name: Restoring from the cache
-    key: v1-node-modules-cache-{{ checksum "package.json" }}
   - &run_npm_install
     name: Installing Dependencies
     command: yarn
-  - &save_cache_dependencies
-    name: Saving into the cache
-    key: v1-node-modules-cache-{{ checksum "package.json" }}
-    paths:
-      - ~/.cache/yarn
 jobs:
   dep:
     docker: *nodeenv
