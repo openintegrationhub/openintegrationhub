@@ -83,8 +83,8 @@ workflows:
             - deps
       - iam-build:
           requires:
-            - deps
+            - iam-test
       - iam-deploy:
           requires:
-            - deps
+            - iam-build
         
