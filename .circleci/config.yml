@@ -69,11 +69,11 @@ jobs:
   iam-build:
     docker: *node_env
     working_directory: ~/oih/services/iam
-    steps: *test_steps
+    steps: *build_steps
   iam-deploy:
     docker: *node_env
     working_directory: ~/oih/services/iam
-    steps: *test_steps
+    steps: *deploy_steps
 workflows:
   pipeline_iam:
     jobs:
