@@ -1,14 +1,56 @@
 version: 2.1
 
 aliases:
-  - &nodeenv
+  - &node_env
     - image: circleci/node:8-stretch
+  - &node_mongo_env
+    - image: circleci/node:8-stretch
+    - image: circleci/mongo:3.6
   - &run_npm_install
     name: Installing Dependencies
     command: yarn
+  - &set_version
+    run: |
+      export VERSION=`node -e "const fs = require('fs'); console.log(JSON.parse(fs.readFileSync('./package.json')).version);"`
+      echo $VERSION-$CIRCLE_BUILD_NUM > version
+  - &set_servicename
+    run: basename $PWD > servicename
+  - &test_steps
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+      - *set_version
+      - *set_servicename
+      - run: yarn test
+      - save_cache: 
+          key: yarn-deps-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/oih
+  - &build_steps
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+      - run: |
+          # export SERVICENAME=`cat servicename`
+          # export VERSION=`cat version`
+          # echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          # yarn run build:docker
+          # docker tag openintegrationhub/${SERVICENAME}:${VERSION} openintegrationhub/${SERVICENAME}:latest
+          # docker push openintegrationhub/${SERVICENAME}:${VERSION}
+          # docker push openintegrationhub/${SERVICENAME}:latest
+  - &deploy_steps
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+      - run: |
+          # export SERVICENAME=`cat servicename`
+          # export VERSION=`cat version`
+          # ./scripts/install-gcloud.sh
+          # echo 'Command  kubectl set image deployment/${servicename}  ${servicename}=openintegrationhub/${servicename}:${VERSION}'
 jobs:
-  dep:
-    docker: *nodeenv
+  deps:
+    docker: *node_env
     working_directory: ~/oih
     steps: 
       - checkout: 
@@ -19,19 +61,22 @@ jobs:
           paths:
             - ~/oih
   iam-test:
-    docker: *nodeenv
+    docker: *node_env
     working_directory: ~/oih/services/iam
-    steps: 
-      - restore_cache:
-          keys:
-            - yarn-deps-{{ .Branch }}-{{ .Revision }}
-      - run: yarn test
-
+    steps: *test_steps
+  iam-build:
+    docker: *node_env
+    working_directory: ~/oih/services/iam
+    steps: *test_steps
+  iam-deploy:
+    docker: *node_env
+    working_directory: ~/oih/services/iam
+    steps: *test_steps
 workflows:
   pipeline_iam:
     jobs:
-      - dep
+      - deps
       - iam-test:
           requires:
-            - dep
+            - deps
         
