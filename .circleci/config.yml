@@ -32,13 +32,12 @@ aliases:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}-test
       - run: |
-          env
-          ls -la
           export SERVICENAME=`cat servicename`
           export VERSION=`cat version`
           echo $SERVICENAME $VERSION
           # echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          # yarn run build:docker
+          yarn run build:docker
+          docker images -a
           # docker tag openintegrationhub/${SERVICENAME}:${VERSION} openintegrationhub/${SERVICENAME}:latest
           # docker push openintegrationhub/${SERVICENAME}:${VERSION}
           # docker push openintegrationhub/${SERVICENAME}:latest
@@ -47,7 +46,6 @@ aliases:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}-test
       - run: |
-          ls -la
           export SERVICENAME=`cat servicename`
           export VERSION=`cat version`
           echo $SERVICENAME $VERSION
