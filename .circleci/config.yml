@@ -32,8 +32,8 @@ aliases:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
       - run: |
-          export SERVICENAME=`cat servicename`
-          export VERSION=`cat version`
+          export SERVICENAME=`cat ~/oih/servicename`
+          export VERSION=`cat ~/oih/version`
           echo $SERVICENAME $VERSION
           # echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
           # yarn run build:docker
@@ -45,8 +45,8 @@ aliases:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
       - run: |
-          export SERVICENAME=`cat servicename`
-          export VERSION=`cat version`
+          export SERVICENAME=`cat ~/oih/servicename`
+          export VERSION=`cat ~/oih/version`
           echo $SERVICENAME $VERSION
           # ./scripts/install-gcloud.sh
           # echo 'Command  kubectl set image deployment/${servicename}  ${servicename}=openintegrationhub/${servicename}:${VERSION}'
