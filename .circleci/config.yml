@@ -23,17 +23,19 @@ aliases:
       - *set_servicename
       - run: yarn test
       - save_cache: 
-          key: yarn-deps-{{ .Branch }}-{{ .Revision }}
+          key: yarn-deps-{{ .Branch }}-{{ .Revision }}-test
           paths:
             - ~/oih
   - &build_steps
       - setup_remote_docker
       - restore_cache:
           keys:
-            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}-test
       - run: |
-          export SERVICENAME=`cat ~/oih/servicename`
-          export VERSION=`cat ~/oih/version`
+          env
+          ls -la
+          export SERVICENAME=`cat servicename`
+          export VERSION=`cat version`
           echo $SERVICENAME $VERSION
           # echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
           # yarn run build:docker
@@ -43,10 +45,11 @@ aliases:
   - &deploy_steps
       - restore_cache:
           keys:
-            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}-test
       - run: |
-          export SERVICENAME=`cat ~/oih/servicename`
-          export VERSION=`cat ~/oih/version`
+          ls -la
+          export SERVICENAME=`cat servicename`
+          export VERSION=`cat version`
           echo $SERVICENAME $VERSION
           # ./scripts/install-gcloud.sh
           # echo 'Command  kubectl set image deployment/${servicename}  ${servicename}=openintegrationhub/${servicename}:${VERSION}'
