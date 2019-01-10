@@ -1,4 +1,4 @@
-const { Flow } = require('backendCommonsLib');
+const { Flow } = require('backend-commons-lib');
 const { FlowsDao } = require('@openintegrationhub/scheduler');
 
 const TICK_INTERVAL_MINUTES = 3;

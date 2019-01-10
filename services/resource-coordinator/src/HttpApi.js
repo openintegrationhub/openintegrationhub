@@ -1,5 +1,5 @@
 const express = require('express');
-const Lib = require('backendCommonsLib');
+const Lib = require('backend-commons-lib');
 const { errors } = Lib;
 
 class HttpApi {

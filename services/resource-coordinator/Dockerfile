@@ -1,9 +1,9 @@
 FROM node:8.12-alpine AS base
-WORKDIR /usr/src/resource-coordinator
+WORKDIR /usr/lib/resource-coordinator
 
 COPY package.json yarn.lock ./
-COPY src/backendCommonsLib src/backendCommonsLib
-COPY src/resource-coordinator src/resource-coordinator
+COPY lib/backend-commons-lib lib/backend-commons-lib
+COPY lib/resource-coordinator lib/resource-coordinator
 COPY services/resource-coordinator/package.json services/resource-coordinator/index.js ./services/resource-coordinator/
 COPY services/resource-coordinator/src ./services/resource-coordinator/src
 COPY services/resource-coordinator/config/default.json  services/resource-coordinator/config/default.json
@@ -17,7 +17,7 @@ RUN apk add --no-cache make gcc g++ python
 RUN yarn install --production
 
 FROM base AS release
-COPY --from=dependencies /usr/src/resource-coordinator/node_modules ./node_modules
+COPY --from=dependencies /usr/lib/resource-coordinator/node_modules ./node_modules
 RUN rm yarn.lock
 CMD ["yarn", "--cwd", "services/resource-coordinator", "start"]
 

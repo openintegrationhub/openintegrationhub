@@ -1,5 +1,5 @@
 const { MessagePublishers } = require('@openintegrationhub/webhooks');
-const { errors } = require('backendCommonsLib');
+const { errors } = require('backend-commons-lib');
 const { ResourceNotFoundError } = errors;
 
 class OIH_MessagePublisher extends MessagePublishers.Base {
