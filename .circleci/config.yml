@@ -15,6 +15,9 @@ aliases:
       echo $VERSION-$CIRCLE_BUILD_NUM > version
   - &set_servicename
     run: basename $PWD > servicename
+  - &only_master_filter
+    branches:
+      only: master
   - &basaas_test_steps
       - restore_cache:
           keys:
@@ -95,9 +98,11 @@ workflows:
       - iam-build:
           requires:
             - iam-test
+          filters: *only_master_filter
       - iam-deploy:
           requires:
             - iam-build
+          filters: *only_master_filter
   pipeline_secret-service:
     jobs:
       - deps
@@ -107,6 +112,8 @@ workflows:
       - secret-service-build:
           requires:
             - secret-service-test
+          filters: *only_master_filter
       - secret-service-deploy:
           requires:
             - secret-service-build
+          filters: *only_master_filter
