@@ -23,7 +23,7 @@ aliases:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
       - run: yarn test
-  - &basaas_build_steps
+  - &build_steps
       - setup_remote_docker
       - restore_cache:
           keys:
@@ -43,7 +43,7 @@ aliases:
           docker tag openintegrationhub/${SERVICENAME}:${VERSION} openintegrationhub/${SERVICENAME}:latest
           docker push openintegrationhub/${SERVICENAME}:${VERSION}
           docker push openintegrationhub/${SERVICENAME}:latest
-  - &basaas_deploy_steps
+  - &deploy_steps
       - restore_cache:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}-build
@@ -71,11 +71,11 @@ jobs:
   iam-build:
     docker: *node_env
     working_directory: ~/oih/services/iam
-    steps: *basaas_build_steps
+    steps: *build_steps
   iam-deploy:
     docker: *node_env
     working_directory: ~/oih/services/iam
-    steps: *basaas_deploy_steps
+    steps: *deploy_steps
   secret-service-test:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
@@ -83,11 +83,11 @@ jobs:
   secret-service-build:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
-    steps: *basaas_build_steps
+    steps: *build_steps
   secret-service-deploy:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
-    steps: *basaas_deploy_steps
+    steps: *deploy_steps
 workflows:
   pipeline_iam:
     jobs:
