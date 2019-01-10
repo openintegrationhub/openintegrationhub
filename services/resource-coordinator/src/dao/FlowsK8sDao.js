@@ -1,4 +1,4 @@
-const Lib = require('backendCommonsLib');
+const Lib = require('backend-commons-lib');
 const { Flow } = Lib;
 const { FlowsDao } = require('@openintegrationhub/resource-coordinator');
 

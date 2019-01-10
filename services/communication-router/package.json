@@ -16,7 +16,7 @@
     "@openintegrationhub/webhooks": "*",
     "body-parser": "1.18.3",
     "express": "4.16.3",
-    "backendCommonsLib": "*"
+    "backend-commons-lib": "*"
   },
   "devDependencies": {
     "eslint": "4.5.0",

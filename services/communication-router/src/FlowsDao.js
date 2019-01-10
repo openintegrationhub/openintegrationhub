@@ -1,5 +1,5 @@
 const { FlowsDao } = require('@openintegrationhub/webhooks');
-const { Flow } = require('backendCommonsLib');
+const { Flow } = require('backend-commons-lib');
 
 class OIH_FlowsDao extends FlowsDao {
     constructor(crdClient) {

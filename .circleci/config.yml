@@ -51,15 +51,15 @@ jobs:
   services/secret-service:
     <<: *common_environment
     working_directory: ~/oih/services/secret-service
-  src/backendCommonsLib:
+  lib/backend-commons-lib:
     <<: *common_environment
-    working_directory: ~/oih/src/backendCommonsLib
-  src/scheduler:
+    working_directory: ~/oih/lib/backend-commons-lib
+  lib/scheduler:
     <<: *common_environment
-    working_directory: ~/oih/src/scheduler
-  src/webhooks:
+    working_directory: ~/oih/lib/scheduler
+  lib/webhooks:
     <<: *common_environment
-    working_directory: ~/oih/src/webhooks
+    working_directory: ~/oih/lib/webhooks
 
 workflows:
   version: 2
@@ -71,6 +71,6 @@ workflows:
       #- services/integration-content-repository
       - services/scheduler
       - services/secret-service
-      - src/backendCommonsLib
-      - src/scheduler
-      - src/webhooks
+      - lib/backend-commons-lib
+      - lib/scheduler
+      - lib/webhooks
