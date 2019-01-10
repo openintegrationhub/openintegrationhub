@@ -15,12 +15,12 @@ aliases:
       echo $VERSION-$CIRCLE_BUILD_NUM > version
   - &set_servicename
     run: basename $PWD > servicename
-  - &test_steps
+  - &basaas_test_steps
       - restore_cache:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
       - run: yarn test
-  - &build_steps
+  - &basaas_build_steps
       - setup_remote_docker
       - restore_cache:
           keys:
@@ -32,6 +32,7 @@ aliases:
           paths:
             - ~/oih
       - run: |
+          yarn build
           export SERVICENAME=`cat servicename`
           export VERSION=`cat version`
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
@@ -39,7 +40,7 @@ aliases:
           docker tag openintegrationhub/${SERVICENAME}:${VERSION} openintegrationhub/${SERVICENAME}:latest
           docker push openintegrationhub/${SERVICENAME}:${VERSION}
           docker push openintegrationhub/${SERVICENAME}:latest
-  - &deploy_steps
+  - &basaas_deploy_steps
       - restore_cache:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}-build
@@ -63,27 +64,27 @@ jobs:
   iam-test:
     docker: *node_env
     working_directory: ~/oih/services/iam
-    steps: *test_steps
+    steps: *basaas_test_steps
   iam-build:
     docker: *node_env
     working_directory: ~/oih/services/iam
-    steps: *build_steps
+    steps: *basaas_build_steps
   iam-deploy:
     docker: *node_env
     working_directory: ~/oih/services/iam
-    steps: *deploy_steps
+    steps: *basaas_deploy_steps
   secret-service-test:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
-    steps: *test_steps
+    steps: *basaas_test_steps
   secret-service-build:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
-    steps: *build_steps
+    steps: *basaas_build_steps
   secret-service-deploy:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
-    steps: *deploy_steps
+    steps: *basaas_deploy_steps
 workflows:
   pipeline_iam:
     jobs:
