@@ -1,76 +1,150 @@
-version: 2
+version: 2.1
 
 aliases:
-  - &docker_environment
+  - &node_env
+    - image: circleci/node:8-stretch
+  - &node_mongo_env
     - image: circleci/node:8-stretch
     - image: circleci/mongo:3.6
-  - &checkout
-    path: ~/oih
-  - &restore_cache_dependencies
-    name: Restoring from the cache
-    keys:
-      - v1-node-modules-cache-{{ checksum "package.json" }}
   - &run_npm_install
     name: Installing Dependencies
-    command: yarn install
-  - &save_cache_dependencies
-    name: Saving into the cache
-    key: v1-node-modules-cache-{{ checksum "package.json" }}
-    paths:
-      - ~/.cache/yarn
-  - &run_build
-    name: Running tests
-    command: yarn test
-  - &common_steps
-    - checkout: *checkout
-    - restore_cache: *restore_cache_dependencies
-    - run: *run_npm_install
-    - save_cache: *save_cache_dependencies
-    #- setup_remote_docker
-    - run: *run_build
-  - &common_environment
-    docker: *docker_environment
-    steps: *common_steps
-
+    command: yarn
+  - &set_version
+    run: |
+      export VERSION=`node -e "const fs = require('fs'); console.log(JSON.parse(fs.readFileSync('./package.json')).version);"`
+      echo $VERSION-$CIRCLE_BUILD_NUM > version
+  - &set_servicename
+    run: basename $PWD > servicename
+  - &only_master_filter
+    branches:
+      only: master
+  - &basaas_test_steps
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+      - run: yarn test
+  - &wice_test_steps
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+      - run: yarn test
+  - &build_steps
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+      - *set_version
+      - *set_servicename
+      - save_cache:
+          key: yarn-deps-{{ .Branch }}-{{ .Revision }}-build
+          paths:
+            - ~/oih
+      - run: |
+          yarn build
+          export SERVICENAME=`cat servicename`
+          export VERSION=`cat version`
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          yarn run build:docker
+          docker tag openintegrationhub/${SERVICENAME}:${VERSION} openintegrationhub/${SERVICENAME}:latest
+          docker push openintegrationhub/${SERVICENAME}:${VERSION}
+          docker push openintegrationhub/${SERVICENAME}:latest
+  - &deploy_steps
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}-build
+      - run: |
+          export SERVICENAME=`cat servicename`
+          export VERSION=`cat version`
+          # ./scripts/install-gcloud.sh
+          echo 'Command  kubectl set image deployment/${servicename}  ${servicename}=openintegrationhub/${servicename}:${VERSION}'
 jobs:
-  services/communication-router:
-    <<: *common_environment
-    working_directory: ~/oih/services/communication-router
-  services/resource-coordinator:
-    <<: *common_environment
-    working_directory: ~/oih/services/resource-coordinator
-  services/iam:
-    <<: *common_environment
+  deps:
+    docker: *node_env
+    working_directory: ~/oih
+    steps:
+      - checkout:
+          path: ~/oih
+      - run: *run_npm_install
+      - save_cache:
+          key: yarn-deps-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/oih
+  iam-test:
+    docker: *node_env
     working_directory: ~/oih/services/iam
-  services/integration-content-repository:
-    <<: *common_environment
-    working_directory: ~/oih/services/integration-content-repository
-  services/scheduler:
-    <<: *common_environment
-    working_directory: ~/oih/services/scheduler
-  services/secret-service:
-    <<: *common_environment
+    steps: *basaas_test_steps
+  iam-build:
+    docker: *node_env
+    working_directory: ~/oih/services/iam
+    steps: *build_steps
+  iam-deploy:
+    docker: *node_env
+    working_directory: ~/oih/services/iam
+    steps: *deploy_steps
+  secret-service-test:
+    docker: *node_env
     working_directory: ~/oih/services/secret-service
-  src/backendCommonsLib:
-    <<: *common_environment
-    working_directory: ~/oih/src/backendCommonsLib
-  src/scheduler:
-    <<: *common_environment
-    working_directory: ~/oih/src/scheduler
-  src/webhooks:
-    <<: *common_environment
-    working_directory: ~/oih/src/webhooks
-
+    steps: *basaas_test_steps
+  secret-service-build:
+    docker: *node_env
+    working_directory: ~/oih/services/secret-service
+    steps: *build_steps
+  secret-service-deploy:
+    docker: *node_env
+    working_directory: ~/oih/services/secret-service
+    steps: *deploy_steps
+  icr-test:
+    docker: *node_env
+    working_directory: ~/oih/services/integration-content-repository
+    steps: *wice_test_steps
+  icr-build:
+    docker: *node_env
+    working_directory: ~/oih/services/integration-content-repository
+    steps: *build_steps
+  icr-deploy:
+    docker: *node_env
+    working_directory: ~/oih/services/integration-content-repository
+    steps: *deploy_steps
 workflows:
-  version: 2
-  build_development:
+  pipeline_iam:
     jobs:
-      - services/communication-router
-      - services/resource-coordinator
-      #- services/iam
-      - services/integration-content-repository
-      - services/scheduler
-      - services/secret-service
-      - src/backendCommonsLib
-      - src/scheduler
-      - src/webhooks
+      - deps
+      - iam-test:
+          requires:
+            - deps
+      - iam-build:
+          requires:
+            - iam-test
+          filters: *only_master_filter
+      - iam-deploy:
+          requires:
+            - iam-build
+          filters: *only_master_filter
+  pipeline_secret-service:
+    jobs:
+      - deps
+      - secret-service-test:
+          requires:
+            - deps
+      - secret-service-build:
+          requires:
+            - secret-service-test
+          filters: *only_master_filter
+      - secret-service-deploy:
+          requires:
+            - secret-service-build
+          filters: *only_master_filter
+  pipeline_icr:
+    jobs:
+      - deps
+      - icr-test:
+          requires:
+            - deps
+      - icr-build:
+          requires:
+            - icr-test
+          filters: *only_master_filter
+      - icr-deploy:
+          requires:
+            - icr-build
+          filters: *only_master_filter
