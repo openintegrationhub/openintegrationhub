@@ -64,15 +64,19 @@ jobs:
           key: yarn-deps-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/oih
+  test:
+    docker: *node_env
+    steps: 
+      - run: echo OK
   iam-test:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *basaas_test_steps
-  iam-build:
+  build:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *build_steps
-  iam-deploy:
+  deploy:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *deploy_steps
@@ -80,40 +84,25 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
     steps: *basaas_test_steps
-  secret-service-build:
-    docker: *node_env
-    working_directory: ~/oih/services/secret-service
-    steps: *build_steps
-  secret-service-deploy:
-    docker: *node_env
-    working_directory: ~/oih/services/secret-service
-    steps: *deploy_steps
 workflows:
-  pipeline_iam:
+  pipeline:
     jobs:
       - deps
       - iam-test:
           requires:
             - deps
-      - iam-build:
-          requires:
-            - iam-test
-          filters: *only_master_filter
-      - iam-deploy:
-          requires:
-            - iam-build
-          filters: *only_master_filter
-  pipeline_secret-service:
-    jobs:
-      - deps
       - secret-service-test:
           requires:
             - deps
-      - secret-service-build:
+      - test:
           requires:
+            - iam-test
             - secret-service-test
-          filters: *only_master_filter
-      - secret-service-deploy:
+      - build:
           requires:
-            - secret-service-build
+            - test
+          filters: *only_master_filter
+      - deploy:
+          requires:
+            - build
           filters: *only_master_filter
