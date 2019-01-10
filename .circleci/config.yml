@@ -34,7 +34,6 @@ aliases:
       - run: |
           export SERVICENAME=`cat servicename`
           export VERSION=`cat version`
-          echo $SERVICENAME $VERSION
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
           yarn run build:docker
           docker tag openintegrationhub/${SERVICENAME}:${VERSION} openintegrationhub/${SERVICENAME}:latest
@@ -47,7 +46,6 @@ aliases:
       - run: |
           export SERVICENAME=`cat servicename`
           export VERSION=`cat version`
-          echo $SERVICENAME $VERSION
           # ./scripts/install-gcloud.sh
           echo 'Command  kubectl set image deployment/${servicename}  ${servicename}=openintegrationhub/${servicename}:${VERSION}'
 jobs:
