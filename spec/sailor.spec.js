@@ -124,24 +124,57 @@ describe('Sailor', () => {
     });
 
     describe('prepare', () => {
+        let sailor;
 
-        it('should fail if unable to retrieve step info', done => {
-            const sailor = new Sailor(settings);
+        beforeEach(() => {
+            sailor = new Sailor(settings);
+        });
 
-            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
-                expect(taskId).toEqual('5559edd38968ec0736000003');
-                expect(stepId).toEqual('step_1');
-                return Q.reject(new Error('Cant find step info'));
+        describe('when step data retrieved', () => {
+            let stepData;
+            beforeEach(() => {
+                stepData = {
+                    snapshot: {}
+                };
             });
 
-            sailor.prepare()
-                .then(() => {
-                    throw new Error('Error is expected');
-                })
-                .catch(err => {
-                    expect(err.message).toEqual('Cant find step info');
-                    done();
+            describe(`when step data retreived`, () => {
+                beforeEach(() => {
+                    spyOn(sailor.componentReader, 'init').andReturn(Promise.resolve());
+                    spyOn(sailor.apiClient.tasks, 'retrieveStep').andReturn(Promise.resolve(stepData));
                 });
+
+                it('should init component', done => {
+                    sailor.prepare()
+                        .then(() => {
+                            expect(sailor.stepData).toEqual(stepData);
+                            expect(sailor.snapshot).toEqual(stepData.snapshot);
+                            expect(sailor.apiClient.tasks.retrieveStep)
+                                .toHaveBeenCalledWith(settings.FLOW_ID, settings.STEP_ID);
+                            expect(sailor.componentReader.init).toHaveBeenCalledWith(settings.COMPONENT_PATH);
+                            done();
+                        })
+                        .catch(done);
+                });
+            });
+        });
+
+        describe('when step data is not retrieved', () => {
+            beforeEach(() => {
+                spyOn(sailor.apiClient.tasks, 'retrieveStep')
+                    .andReturn(Promise.reject(new Error('failed')));
+            });
+
+            it('should fail', done => {
+                sailor.prepare()
+                    .then(() => {
+                        throw new Error('Error is expected');
+                    })
+                    .catch(err => {
+                        expect(err.message).toEqual('failed');
+                        done();
+                    });
+            });
         });
     });
 

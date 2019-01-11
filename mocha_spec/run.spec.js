@@ -252,7 +252,11 @@ describe('Integration Test', () => {
                     // sailor persists startup data via sailor-support API
                     let hooksDataRequest;
                     const hooksDataNock = nock('https://apidotelasticidotio')
-                        .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
+                        .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
+                            subscriptionResult: {
+                                status: 'ok'
+                            }
+                        })
                         .reply(201, (uri, requestBody) => {
                             hooksDataRequest = requestBody;
                             return requestBody;
@@ -335,7 +339,11 @@ describe('Integration Test', () => {
                     let hooksDataRequest2;
                     // sailor persists startup data via sailor-support API
                     const hooksDataNock1 = nock('https://apidotelasticidotio')
-                        .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
+                        .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
+                            subscriptionResult: {
+                                status: 'ok'
+                            }
+                        })
                         .reply(409, (uri, requestBody) => {
                             hooksDataRequest1 = requestBody;
                             return {
@@ -351,7 +359,11 @@ describe('Integration Test', () => {
                         // sailor persists startup data via sailor-support API
 
                     const hooksDataNock2 = nock('https://apidotelasticidotio')
-                        .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
+                        .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
+                            subscriptionResult: {
+                                status: 'ok'
+                            }
+                        })
                         .reply(201, (uri, requestBody) => {
                             hooksDataRequest2 = requestBody;
                             return requestBody;

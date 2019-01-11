@@ -1,28 +1,29 @@
 {
   "name": "elasticio-sailor-nodejs",
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "main": "run.js",
   "scripts": {
-    "check_style": "eslint lib spec mocha_spec lib run.js runService.js",
-    "pretest": "npm run check_style",
+    "lint": "./node_modules/.bin/eslint lib spec mocha_spec lib run.js runService.js",
+    "pretest": "npm run lint",
     "test": "npm run test:jasmine && npm run test:mocha",
     "test:jasmine": "NODE_ENV=test jasmine-node spec",
-    "test:mocha": "NODE_ENV=test mocha mocha_spec/*",
+    "test:mocha": "NODE_ENV=test mocha mocha_spec/**/*.js",
     "postpublish": "./postpublish.js"
   },
   "engines": {
-    "node": "8.1.0"
+    "node": ">=10.15.0"
   },
   "dependencies": {
     "amqplib": "0.5.1",
     "bunyan": "^1.8.10",
     "co": "4.6.0",
     "debug": "3.1.0",
-    "elasticio-rest-node": "1.2.0",
+    "elasticio-rest-node": "1.2.2",
     "lodash": "4.17.4",
     "q": "1.4.1",
-    "request-promise-native": "^1.0.3",
+    "request-promise-native": "^1.0.5",
+    "requestretry": "^3.1.0",
     "uuid": "3.0.1"
   },
   "devDependencies": {
@@ -30,7 +31,7 @@
     "chai": "3.5.0",
     "code-quality-js": "2.0.2",
     "del": "2.2.2",
-    "eslint": "^4.18.2",
+    "eslint": "^4.19.1",
     "eslint-plugin-mocha": "^4.12.1",
     "express": "4.14.1",
     "gulp": "3.9.1",
@@ -38,8 +39,9 @@
     "gulp-jasmine": "0.2.0",
     "jasmine-node": "^1.15.0",
     "mocha": "3.3.0",
-    "nock": "9.0.13",
+    "nock": "10.0.6",
     "nsp": "^2.8.1",
+    "request": "^2.88.0",
     "sinon": "^2.1.0"
   },
   "repository": "elasticio/sailor-nodejs",

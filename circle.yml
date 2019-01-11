@@ -1,6 +1,0 @@
-machine:
-  node:
-    version: 7.10.0
-
-  services:
-    - rabbitmq-server
