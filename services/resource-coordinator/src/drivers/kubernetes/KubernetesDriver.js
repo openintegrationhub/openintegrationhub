@@ -16,6 +16,11 @@ class KubernetesDriver extends BaseDriver {
     async createApp(flow, node, envVars) {
         this._logger.info({flow: flow.id}, 'Going to deploy job to k8s');
 
+        // if (envVars.AMQP_URI) {
+        //     await this._ensureFlowNodeSecret(flow, {AMQP_URI: envVars.AMQP_URI});
+        //     delete envVars.AMQP_URI;
+        // }
+
         const descriptor = this._buildDescriptor(flow, node, envVars);
         this._logger.trace(descriptor, 'going to deploy a job to k8s');
         try {
@@ -25,19 +30,15 @@ class KubernetesDriver extends BaseDriver {
         }
     }
 
-    async initFlow(flow, secretEnvVars) {
-        await this._ensureFlowSecret(flow, secretEnvVars);
-    }
-
-    async _ensureFlowSecret(flow, secretEnvVars) {
-        const flowSecret = await this._getFlowSecret(flow);
+    async _ensureFlowNodeSecret(flow, secretEnvVars) {
+        const flowSecret = await this._getFlowNodeSecret(flow);
         if (!flowSecret) {
-            return this._createFlowSecret(flow, secretEnvVars);
+            return this._createFlowNodeSecret(flow, secretEnvVars);
         }
         return flowSecret;
     }
 
-    async _getFlowSecret(flow) {
+    async _getFlowNodeSecret(flow) {
         try {
             const result = await this._coreClient.secrets(flow.id).get();
             return FlowSecret.fromDescriptor(result.body);
@@ -49,7 +50,7 @@ class KubernetesDriver extends BaseDriver {
         }
     }
 
-    async _createFlowSecret(flow, data) {
+    async _createFlowNodeSecret(flow, data) {
         this._logger.debug('About to create a secret');
 
         const flowSecret = new FlowSecret({
@@ -115,15 +116,15 @@ class KubernetesDriver extends BaseDriver {
             value: envVars[key]
         }));
 
-        env.push({
-            name: 'ELASTICIO_AMQP_URI',
-            valueFrom: {
-                secretKeyRef: {
-                    name: flow.id,
-                    key: 'AMQP_URI'
-                }
-            }
-        });
+        // env.push({
+        //     name: 'ELASTICIO_AMQP_URI',
+        //     valueFrom: {
+        //         secretKeyRef: {
+        //             name: flow.id,
+        //             key: 'AMQP_URI'
+        //         }
+        //     }
+        // });
 
         return {
             apiVersion: 'batch/v1',

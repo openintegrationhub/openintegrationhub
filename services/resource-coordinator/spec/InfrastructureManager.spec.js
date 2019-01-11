@@ -144,11 +144,11 @@ describe('Infrastructure Manager', () => {
         });
     });
 
-    describe('#_deleteFlowAmqpCredentials', () => {
+    describe('#_deleteRabbitMqCredentialsForFlow', () => {
         it('should call _deleteAmqpCredentials', async () => {
             const flow = {id: 'test'};
             sinon.stub(im, '_deleteAmqpCredentials').resolves();
-            await im._deleteFlowAmqpCredentials(flow);
+            await im._deleteRabbitMqCredentialsForFlow(flow);
 
             expect(im._deleteAmqpCredentials).to.have.been.calledOnceWithExactly({username: flow.id});
         });
