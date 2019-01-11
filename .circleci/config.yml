@@ -69,15 +69,19 @@ jobs:
           key: yarn-deps-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/oih
+  test:
+    docker: *node_env
+    steps:
+      - run: echo OK
   iam-test:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *basaas_test_steps
-  iam-build:
+  build:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *build_steps
-  iam-deploy:
+  deploy:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *deploy_steps
@@ -85,66 +89,33 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
     steps: *basaas_test_steps
-  secret-service-build:
-    docker: *node_env
-    working_directory: ~/oih/services/secret-service
-    steps: *build_steps
-  secret-service-deploy:
-    docker: *node_env
-    working_directory: ~/oih/services/secret-service
-    steps: *deploy_steps
   icr-test:
     docker: *node_env
     working_directory: ~/oih/services/integration-content-repository
     steps: *wice_test_steps
-  icr-build:
-    docker: *node_env
-    working_directory: ~/oih/services/integration-content-repository
-    steps: *build_steps
-  icr-deploy:
-    docker: *node_env
-    working_directory: ~/oih/services/integration-content-repository
-    steps: *deploy_steps
 workflows:
-  pipeline_iam:
-    jobs:
-      - deps
-      - iam-test:
-          requires:
-            - deps
-      - iam-build:
-          requires:
-            - iam-test
-          filters: *only_master_filter
-      - iam-deploy:
-          requires:
-            - iam-build
-          filters: *only_master_filter
-  pipeline_secret-service:
-    jobs:
-      - deps
-      - secret-service-test:
-          requires:
-            - deps
-      - secret-service-build:
-          requires:
-            - secret-service-test
-          filters: *only_master_filter
-      - secret-service-deploy:
-          requires:
-            - secret-service-build
-          filters: *only_master_filter
-  pipeline_icr:
-    jobs:
-      - deps
-      - icr-test:
-          requires:
-            - deps
-      - icr-build:
-          requires:
-            - icr-test
-          filters: *only_master_filter
-      - icr-deploy:
-          requires:
-            - icr-build
-          filters: *only_master_filter
+    pipeline:
+      jobs:
+        - deps
+        - iam-test:
+            requires:
+              - deps
+        - secret-service-test:
+            requires:
+              - deps
+        - icr-test:
+            requires:
+              - deps
+        - test:
+            requires:
+              - iam-test
+              - secret-service-test
+              - icr-test
+        - build:
+            requires:
+              - test
+            filters: *only_master_filter
+        - deploy:
+            requires:
+              - build
+            filters: *only_master_filter
