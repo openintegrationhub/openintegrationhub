@@ -61,16 +61,16 @@ class Server {
       const user = req.__HEIMDAL__;
 
       // A flag that shows the current user is an OIH admin, allowing them to see all flows irrespective of ownership
-      if (user.role === 'ADMIN') {
+      if (config.oihViewerRoles.includes(user.role)) {
         res.locals.admin = true;
       }
 
       // Two-dimensional array that will hold the user's id and memberships. First row contains ids with read/write permissions, second row contains ids with read permissions.
       const credentials = [[user.userid], [user.userid]];
 
-      // Pushes the ids of the tenants to the credentials array. If the user is an Admin or Integrator, the id is pushed to the read/write and the read rows of the array. Otherwise the id is pushed only to the read row.
+      // Pushes the ids of the tenants to the credentials array. If the user role allows writing of tenant flows, the id is pushed to the read/write and the read rows of the array. Otherwise the id is pushed only to the read row.
       for (let i = 0; i < user.memberships.length; i += 1) {
-        if (user.memberships[i].role === ('TENANT_ADMIN' || 'TENANT_INTEGRATOR')) {
+        if (config.tenantWriterRoles.includes(user.memberships[i].role)) {
           credentials[0].push(user.memberships[i].tenant);
         }
         credentials[1].push(user.memberships[i].tenant);
