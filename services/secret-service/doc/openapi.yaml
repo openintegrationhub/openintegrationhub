@@ -384,6 +384,34 @@ components:
               required:
                 - source
                 - key
+      example: {
+        "_id": "5c06ee51120e789235d9dc19",
+        "endpoint": {
+          "auth": "https://accounts.google.com/o/oauth2/v2/auth?prompt=consent&scope={{scope}}&access_type=offline&include_granted_scopes=true&state={{state}}&redirect_uri={{redirectUri}}&response_type=code&client_id={{clientId}}",
+          "token": "https://www.googleapis.com/oauth2/v4/token",
+          "userinfo": "https://www.googleapis.com/oauth2/v4/userinfo"
+        },
+        "clientId": "myclientid",
+        "clientSecret": "shhhhhhhh",
+        "redirectUri": "http://localhost:9001/api/v1/callback",
+        "mappings": {
+          "externalId": {
+            "source": "id_token",
+            "key": "sub"
+          },
+          "scope": {
+            "key": "scope"
+          }
+        },
+        "type": "OA2_AUTHORIZATION_CODE",
+        "name": "example google oAuth2",
+        "owner": [
+        {
+          "entityId": "u4",
+          "entityType": "USER"
+        }
+        ],
+      }
     MutableOAuth1Client:
       required:
         - consumerKey
@@ -410,12 +438,12 @@ components:
     MutableAuthClient:
       required:
         - name
-        - owner
+        - owners
         - type
       properties:
         name:
           type: string
-        owner:
+        owners:
           type: array
           items:
             $ref: "#/components/schemas/Owner"
@@ -441,7 +469,7 @@ components:
             userinfo: https://user.example.com
           }
           predefinedScope: userinfo.read
-        owner: [
+        owners: [
         {
           id: '585430d3f02852a8a9fac45e',
           type: 'workspace'
@@ -508,11 +536,11 @@ components:
           oneOf:
             - $ref: '#/components/schemas/MixedSecret'
             - $ref: '#/components/schemas/OAuth1Secret'
-            - $ref: '#/components/schemas/OAuth2Secret'
+            - $ref: '#/components/schemas/OAuth2ThreeLeggedSecret'
             - $ref: '#/components/schemas/BasicSecret'
           discriminator:
             propertyName: type
-        owner:
+        owners:
           type: array
           items:
             $ref: "#/components/schemas/Owner"
@@ -550,7 +578,7 @@ components:
               type: string
               description: Secret update time
               format: date-time
-    OAuth2Secret:
+    OAuth2ThreeLeggedSecret:
       type: object
       required:
         - accessToken
@@ -565,19 +593,29 @@ components:
           description: Date object in UTC
         refreshToken:
           type: string
-        endpoint:
-          type: object
-          properties:
-            token:
-              type: string
-          required:
-            - token
         authClientId:
           type: string
           description: Id of the auth client this secret was created with
         externalId:
           type: string
-          enum: [id_token, access_token, userinfo]
+          description: Unique user id in the external system. When updating/extending a secret for an existing user account (e.g. Google), we want to reference an existing secret instead of creating always new secrets.
+      example:
+        type: OA2_AUTHORIZATION_CODE
+        name: My OAuth2 Secret
+        value: {
+          "authClientId": "5c06ee51120e789235d9dc19",
+          "refreshToken": "my_secret_refresh_token",
+          "accessToken": "my_secret_access_token",
+          "scope": "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/bigquery",
+          "externalId": "usersexternalidwithgoogle",
+          "expires": "2019-01-07T16:36:53.066Z"
+        }
+        owner: [
+        {
+          id: '585430d3f02852a8a9fac45e',
+          type: 'workspace'
+        }
+        ]
     OAuth1Secret:
       type: object
       required:
