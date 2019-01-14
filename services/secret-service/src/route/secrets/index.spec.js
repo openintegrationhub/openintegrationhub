@@ -219,7 +219,7 @@ describe('secrets', () => {
         expect(pagination.totalPages).toEqual(Math.abs(11 / conf.pagination.pageSize));
 
         secrets.forEach((secret) => {
-            expect(secret.owner[0].entityId).toEqual(token.userToken1.value.sub);
+            expect(secret.owners[0].entityId).toEqual(token.userToken1.value.sub);
         });
 
         body = (await request.get('/secrets?page[number]=2&page[size]=2')

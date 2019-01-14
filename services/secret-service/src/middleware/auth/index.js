@@ -24,7 +24,7 @@ async function userIsOwnerOf(dao, req, res, next) {
             return next({ status: 404 });
         }
 
-        const userIsOwner = doc.owner.find(
+        const userIsOwner = doc.owners.find(
             elem => elem.entityId === req.user.sub,
         );
 

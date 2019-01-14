@@ -21,7 +21,7 @@ module.exports = {
 
     async findByEntity(entityId) {
         return await AuthClient.full.find({
-            'owner.entityId': entityId,
+            'owners.entityId': entityId,
         }).lean();
     },
 

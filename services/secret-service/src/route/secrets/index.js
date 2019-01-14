@@ -90,7 +90,7 @@ router.post('/', async (req, res, next) => {
     try {
         const secret = await SecretsDAO.create({
             ...req.body,
-            owner: {
+            owners: {
                 entityId: req.user.sub.toString(),
                 entityType: ROLE.USER,
             },
