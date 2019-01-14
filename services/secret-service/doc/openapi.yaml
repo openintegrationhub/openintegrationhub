@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   description: "Secrets service is used in the Open Integration Hub for managing secrets used in integration flows."
-  version: "2.2.0"
+  version: "0.0.5"
   title: "Secrets Service"
   license:
     name: "Apache 2.0"
@@ -9,8 +9,6 @@ info:
 tags:
   - name: Auth clients
     description: "Auth clients management"
-  - name: Callback
-    description: "Callback for auth clients"
   - name: Secrets
     description: "Secrets management"
   - name: Misc
@@ -51,7 +49,9 @@ paths:
           application/json:
             schema:
               type: "object"
-              $ref: "#/components/schemas/MutableAuthClient"
+              properties:
+                data:
+                  $ref: "#/components/schemas/MutableAuthClient"
       responses:
         200:
           description: "successful operation"
@@ -59,7 +59,9 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/MutableAuthClient"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AuthClient"
         405:
           description: "Invalid input"
       security:
@@ -85,11 +87,15 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/MutableAuthClient"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AuthClient"
         400:
           description: "Invalid ID supplied"
         404:
           description: "Client with given ID not found"
+      security:
+        - api_key: []
     patch:
       tags:
         - Auth clients
@@ -108,7 +114,9 @@ paths:
           application/json:
             schema:
               type: "object"
-              $ref: "#/components/schemas/MutableAuthClient"
+              properties:
+                data:
+                  $ref: "#/components/schemas/MutableAuthClient"
       responses:
         200:
           description: "successful operation"
@@ -116,69 +124,15 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/MutableAuthClient"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AuthClient"
         405:
           description: "Invalid input"
         404:
           description: "Client with given ID not found"
       security:
         - api_key: []
-  /auth-clients/{clientId}/start-flow:
-    post:
-      tags:
-        - Auth clients
-      summary: Start an authorization flow
-      parameters:
-        - name: "clientId"
-          in: "path"
-          description: "ID of the client to return"
-          required: true
-          schema:
-            type: string
-      description: Can be done by any user
-      operationId: startPlatformAuthFlow
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: "object"
-              properties:
-                scope:
-                  type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: "object"
-                properties:
-                  authUrl:
-                    type: string
-  /callback:
-    get:
-      tags:
-        - Callback
-      summary: Invoked by Provider (redirect uri) or other services
-      description: Should be called by service only
-      operationId: callbackPlatformAuthFlow
-      parameters:
-        - in: path
-          name: code
-          schema:
-            type: string
-          required: true
-          description: Authorization code to obtain access token from provider
-        - in: path
-          name: state
-          schema:
-            type: string
-          required: true
-          description: Base64Url encoded, contains auth flow id and meta data
-      responses:
-        200:
-          description: Success
   /secrets/:
     get:
       tags:
@@ -258,7 +212,9 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/Secret"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Secret"
         400:
           description: "Invalid ID supplied"
         404:
@@ -283,7 +239,9 @@ paths:
           application/json:
             schema:
               type: "object"
-              $ref: "#/components/schemas/MutableSecret"
+              properties:
+                data:
+                  $ref: "#/components/schemas/MutableSecret"
       responses:
         200:
           description: "successful operation"
@@ -291,7 +249,9 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/Secret"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Secret"
         405:
           description: "Invalid input"
       security:
@@ -319,7 +279,7 @@ paths:
   /healthcheck:
     get:
       tags:
-        - Misc
+        - "misc"
       summary: "Retrieve health status"
       description: "Retrieve health status of the API."
       operationId: "performHealthcheck"
@@ -339,51 +299,14 @@ components:
         - clientSecret
         - refreshTokenUrl
       properties:
+        name:
+          type: string
         clientId:
           type: string
         clientSecret:
           type: string
-        redirectUri:
+        refreshTokenUrl:
           type: string
-        endpoint:
-          type: object
-          properties:
-            auth:
-              type: string
-            token:
-              type: string
-            userinfo:
-              type: string
-            revocation:
-              type: string
-            endSession:
-              type: string
-          required:
-            - auth
-            - token
-        predefinedScope:
-          type: string
-        mappings:
-          type: object
-          properties:
-            scope:
-              type: object
-              properties:
-                key:
-                  type: string
-              required:
-                - key
-            externalId:
-              type: object
-              properties:
-                source:
-                  type: string
-                  enum: [id_token, access_token, userinfo]
-                key:
-                  type: string
-              required:
-                - source
-                - key
     MutableOAuth1Client:
       required:
         - consumerKey
@@ -391,7 +314,7 @@ components:
         - nonce
         - signature
         - signatureMethod
-        - version
+        - verifier
       properties:
         name:
           type: string
@@ -408,45 +331,9 @@ components:
         version:
           type: string
     MutableAuthClient:
-      required:
-        - name
-        - owner
-        - type
-      properties:
-        name:
-          type: string
-        owner:
-          type: array
-          items:
-            $ref: "#/components/schemas/Owner"
-        type:
-          type: string
-          enum:
-            - OA1_TWO_LEGGED
-            - OA2_AUTHORIZATION_CODE
       oneOf:
         - $ref: "#/components/schemas/MutableOAuth1Client"
         - $ref: "#/components/schemas/MutableThreeLeggedOAuth2Client"
-      example:
-        type: OA2_AUTHORIZATION_CODE
-        name: My Auth Client
-        value:
-          name: my oauth2 client
-          clientId: abc
-          clientSecret: def
-          redirectUri: http://example.com
-          endpoint: {
-            auth: https://auth.example.com?access_type=offline,
-            token: https://auth.example.com/auth,
-            userinfo: https://user.example.com
-          }
-          predefinedScope: userinfo.read
-        owner: [
-        {
-          id: '585430d3f02852a8a9fac45e',
-          type: 'workspace'
-        }
-        ]
     OAuth1Client:
       allOf:
         - $ref: "#/components/schemas/MutableOAuth1Client"
@@ -488,6 +375,7 @@ components:
       oneOf:
         - $ref: "#/components/schemas/OAuth1Client"
         - $ref: "#/components/schemas/ThreeLeggedOAuth2Client"
+
     MutableSecret:
       type: object
       required:
@@ -500,10 +388,10 @@ components:
         type:
           type: string
           enum:
-            - OA1_TWO_LEGGED
-            - OA2_AUTHORIZATION_CODE
-            - SIMPLE
-            - API_KEY
+            - three-legged-oauth1
+            - three-legged-oauth2
+            - basic
+            - other
         value:
           oneOf:
             - $ref: '#/components/schemas/MixedSecret'
@@ -512,14 +400,10 @@ components:
             - $ref: '#/components/schemas/BasicSecret'
           discriminator:
             propertyName: type
-        owner:
+        owners:
           type: array
           items:
             $ref: "#/components/schemas/Owner"
-        lockedAt:
-          type: string
-          format: date-time
-          description: Datetime (UTC) when the secret was locked. Relevant for 3legged-oauth-2 during acesstoken updates.
       example:
         type: other
         name: My Basic Auth Secret
@@ -550,34 +434,24 @@ components:
               type: string
               description: Secret update time
               format: date-time
+
     OAuth2Secret:
       type: object
       required:
         - accessToken
+        - accessTokenExpiresIn
         - refreshToken
         - authClientId
       properties:
         accessToken:
           type: string
-        expires:
-          type: string
-          format: date-time
-          description: Date object in UTC
+        accessTokenExpiresIn:
+          type: integer
         refreshToken:
           type: string
-        endpoint:
-          type: object
-          properties:
-            token:
-              type: string
-          required:
-            - token
         authClientId:
           type: string
           description: Id of the auth client this secret was created with
-        externalId:
-          type: string
-          enum: [id_token, access_token, userinfo]
     OAuth1Secret:
       type: object
       required:
@@ -608,14 +482,13 @@ components:
     Owner:
       type: object
       required:
-        - entityId
-        - entityType
+        - id
+        - type
       properties:
-        entityId:
+        id:
           type: string
-        entityType:
+        type:
           type: string
-          description: Type of Owner entity, e.g. GROUP, TENANT, USER, etc.
     Meta:
       type: "object"
       properties:
