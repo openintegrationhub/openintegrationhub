@@ -2,6 +2,7 @@ const fs = require('fs');
 const data = fs.readFileSync(`${__dirname}/../gitchanges.txt`).toString('utf8');
 const readjson = fs.readdirSync(`${__dirname}/../services`);
 const result = [];
+let buildnumber = 'dev';
 
 readjson.forEach((service) => {
     
@@ -11,10 +12,11 @@ readjson.forEach((service) => {
 
         console.log(service);
         const temp = JSON.parse(fs.readFileSync(`${__dirname}/../services/${service}/package.json`));
-
+        if (process.env.TRAVIS_BUILD_NUMBER) buildnumber = process.env.TRAVIS_BUILD_NUMBER
+        if (process.env.CIRCLE_BUILD_NUM) buildnumber = process.env.CIRCLE_BUILD_NUM
         result.push({
             name: service,
-            version: `${temp.version}_${process.env.TRAVIS_BUILD_NUMBER ? process.env.TRAVIS_BUILD_NUMBER : 'dev'}`
+            version: `${temp.version}_${buildnumber}`
         });
     }
 });
