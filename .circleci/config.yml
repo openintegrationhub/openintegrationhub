@@ -35,6 +35,7 @@ aliases:
       - run: |
           git diff --no-commit-id --name-only -r `git log -n 3 --oneline --pretty=format:"%h" | tail -n1` > gitchanges.txt
           cd ./scripts # needed for compatible with travis implementation
+          node getChanges.js
           node build.js
   - &deploy_steps
       - restore_cache:
