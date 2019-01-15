@@ -9,12 +9,7 @@ aliases:
   - &run_npm_install
     name: Installing Dependencies
     command: yarn
-  - &set_version
-    run: |
-      export VERSION=`node -e "const fs = require('fs'); console.log(JSON.parse(fs.readFileSync('./package.json')).version);"`
-      echo $VERSION-$CIRCLE_BUILD_NUM > version
-  - &set_servicename
-    run: basename $PWD > servicename
+
   - &only_master_filter
     branches:
       only: master
@@ -33,30 +28,23 @@ aliases:
       - restore_cache:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
-      - *set_version
-      - *set_servicename
       - save_cache:
           key: yarn-deps-{{ .Branch }}-{{ .Revision }}-build
           paths:
             - ~/oih
       - run: |
-          yarn build
-          export SERVICENAME=`cat servicename`
-          export VERSION=`cat version`
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          yarn run build:docker
-          docker tag openintegrationhub/${SERVICENAME}:${VERSION} openintegrationhub/${SERVICENAME}:latest
-          docker push openintegrationhub/${SERVICENAME}:${VERSION}
-          docker push openintegrationhub/${SERVICENAME}:latest
+          git diff --no-commit-id --name-only -r `git log -n 3 --oneline --pretty=format:"%h" | tail -n1` > gitchanges.txt
+          cd ./scripts # needed for compatible with travis implementation
+          node build.js
   - &deploy_steps
       - restore_cache:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}-build
       - run: |
-          export SERVICENAME=`cat servicename`
-          export VERSION=`cat version`
-          # ./scripts/install-gcloud.sh
-          echo 'Command  kubectl set image deployment/${servicename}  ${servicename}=openintegrationhub/${servicename}:${VERSION}'
+          git diff --no-commit-id --name-only -r `git log -n 3 --oneline --pretty=format:"%h" | tail -n1` > gitchanges.txt
+          cd ./scripts  # needed for compatible with travis implementation
+          echo 'Deploy disabled'
+          # node deploy.js   # not yet useable because of missing service account
 jobs:
   deps:
     docker: *node_env
@@ -79,11 +67,11 @@ jobs:
     steps: *basaas_test_steps
   build:
     docker: *node_env
-    working_directory: ~/oih/services/iam
+    working_directory: ~/oih
     steps: *build_steps
   deploy:
     docker: *node_env
-    working_directory: ~/oih/services/iam
+    working_directory: ~/oih
     steps: *deploy_steps
   secret-service-test:
     docker: *node_env
@@ -114,7 +102,7 @@ workflows:
         - build:
             requires:
               - test
-            filters: *only_master_filter
+#            filters: *only_master_filter
         - deploy:
             requires:
               - build
