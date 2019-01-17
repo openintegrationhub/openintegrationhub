@@ -9,7 +9,7 @@ if (services && services.length > 0) {
         console.log('In the Version: ',service.version);
         console.log('Deployment not yet enabled')
         console.log(`Command:  kubectl set image deployment/${service.name} ${service.name}=openintegrationhub/${service.name}:${service.version}`)
-        // execSync (`kubectl set image deployment/${service.name} ${service.name}=openintegrationhub/${service.name}:${service.version}`, { stdio: [0, 1, 2] });
+        execSync (`kubectl -n oih-dev-ns set image deployment/${service.name} ${service.name}=openintegrationhub/${service.name}:${service.version}`, { stdio: [0, 1, 2] });
     });
 } else {
     console.log('No Changes to Services!')
