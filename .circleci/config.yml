@@ -41,7 +41,7 @@ aliases:
           cd ./scripts  # needed for compatible with travis implementation
           node getChanges.js
           echo 'Deploy disabled'
-          # node deploy.js   # not yet useable because of missing service account
+          node deploy.js  
 jobs:
   deps:
     docker: *node_env
@@ -91,8 +91,8 @@ workflows:
       - build:
           requires:
             - test
-          filters: *only_master_filter
+          # filters: *only_master_filter
       - deploy:
           requires:
             - build
-          filters: *only_master_filter
+          # filters: *only_master_filter
