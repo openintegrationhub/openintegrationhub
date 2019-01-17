@@ -8,7 +8,6 @@ const CONSTANTS = require('./../src/constants');
 const PERMISSIONS = require('./../src/access-control/permissions');
 
 let conf = null;
-// Just test Pipeline
 // Token will be set via Login and is valid 3h
 let tokenAdmin = null;
 describe('routes', () => {
