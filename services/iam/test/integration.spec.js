@@ -8,7 +8,7 @@ const CONSTANTS = require('./../src/constants');
 const PERMISSIONS = require('./../src/access-control/permissions');
 
 let conf = null;
-// LETS TEST AGAIN
+// LETS TEST AGAIN and rework
 // Token will be set via Login and is valid 3h
 let tokenAdmin = null;
 describe('routes', () => {

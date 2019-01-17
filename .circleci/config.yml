@@ -28,14 +28,16 @@ aliases:
           cd ./scripts # needed for compatible with travis implementation
           node getChanges.js
           node build.js
+      - save_cache: 
+          key: build-deps-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/oih
   - &deploy_steps
       - restore_cache:
           keys:
-            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+            - build-deps-{{ .Branch }}-{{ .Revision }}
       - run: |
-          git diff --no-commit-id --name-only -r `git log -n 2 --oneline --pretty=format:"%h" | tail -n1` > gitchanges.txt
           cd ./scripts  # needed for compatible with travis implementation
-          node getChanges.js
           node deploy.js  
 jobs:
   deps:

@@ -21,4 +21,3 @@ echo 'Get Access to Cluster'
 kubectl config view
 echo 'Set Default Cluster Context'
 kubectl config current-context
-which kubectl
