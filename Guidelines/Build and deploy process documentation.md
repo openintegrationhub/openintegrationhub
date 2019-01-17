@@ -3,8 +3,8 @@
 
 **Creator:** Dennis (@dennisCes), Cloud Ecosystem e.V. <br>
 **Last Modified:** 17.01.2018 <br>
-**Last Modifier:** Falk (falkvoigt), Basaas GmbH <br>
-**Version:** 0.6  <br>
+**Last Modifier:** Dennis Steiniger, CES <br>
+**Version:** 0.7  <br>
 
 ---
 
