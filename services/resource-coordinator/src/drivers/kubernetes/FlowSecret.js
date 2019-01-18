@@ -15,6 +15,10 @@ class FlowSecret {
     }
 
     get id() {
+        return this.id;
+    }
+
+    get name() {
         return _.get(this, 'metadata.name');
     }
 

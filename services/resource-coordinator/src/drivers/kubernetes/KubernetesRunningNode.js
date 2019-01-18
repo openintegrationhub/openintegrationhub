@@ -12,16 +12,20 @@ class KubernetesRunningNode extends RunningNode {
     }
 
     getFlowId() {
-        return this._getEnvVar('ELASTICIO_FLOW_ID');
+        return this._getAnnotationsValue('flowId');
     }
 
     getNodeId() {
-        return this._getEnvVar('ELASTICIO_STEP_ID');
+        return this._getAnnotationsValue('nodeId');
     }
 
     // @todo: not sure yet if we need to expose this API
     get flowVersion() {
         return _.get(this._getMetadataValue('annotations'), this.constructor.ANNOTATION_KEY);
+    }
+
+    _getAnnotationsValue(key) {
+        return _.get(this, `_app.metadata.annotations.${key}`);
     }
 
     _getMetadataValue(key) {
