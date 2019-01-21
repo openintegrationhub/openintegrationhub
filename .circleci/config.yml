@@ -96,14 +96,14 @@ workflows:
               - deps
         - test:
             requires:
-              # - iam-test
-              # - secret-service-test
+              - iam-test
+              - secret-service-test
               - icr-test
         - build:
             requires:
               - test
-            # filters: *only_master_filter
+            filters: *only_master_filter
         - deploy:
             requires:
               - build
-            # filters: *only_master_filter
+            filters: *only_master_filter
