@@ -27,8 +27,8 @@ describe('secrets', () => {
             port,
         });
         await server.start();
-        const iamEndpointPrefix = conf.introspectEndpoint.substr(0, conf.introspectEndpoint.lastIndexOf('/'));
-        const iamEndpointSuffix = conf.introspectEndpoint.substr(conf.introspectEndpoint.lastIndexOf('/'));
+        const iamEndpointPrefix = conf.iam.introspectEndpoint.substr(0, conf.iam.introspectEndpoint.lastIndexOf('/'));
+        const iamEndpointSuffix = conf.iam.introspectEndpoint.substr(conf.iam.introspectEndpoint.lastIndexOf('/'));
         nock(iamEndpointPrefix)
             .persist()
             .post(iamEndpointSuffix)
@@ -219,7 +219,7 @@ describe('secrets', () => {
         expect(pagination.totalPages).toEqual(Math.abs(11 / conf.pagination.pageSize));
 
         secrets.forEach((secret) => {
-            expect(secret.owner[0].entityId).toEqual(token.userToken1.value.sub);
+            expect(secret.owners[0].entityId).toEqual(token.userToken1.value.sub);
         });
 
         body = (await request.get('/secrets?page[number]=2&page[size]=2')

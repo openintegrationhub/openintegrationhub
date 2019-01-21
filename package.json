@@ -15,7 +15,7 @@
 	},
 	"workspaces": [
 		"services/*",
-		"src/*"
+		"lib/*"
 	],
 	"dependencies": {
 		"child_process": "^1.0.2"

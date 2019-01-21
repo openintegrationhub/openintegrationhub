@@ -1,5 +1,5 @@
 # Scheduler
-Schedules flows for execution. Based on [@openintegrationhub/scheduler](../../src/scheduler).
+Schedules flows for execution. Based on [@openintegrationhub/scheduler](../../lib/scheduler).
 
 ## Environment variables
 

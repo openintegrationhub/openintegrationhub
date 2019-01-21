@@ -1,14 +1,12 @@
 const path = require('path');
-
-const CONSTANTS = require('./../constants');
 const pkg = require('../../package.json');
 const serviceClient = require('../oidc/util/clients/service-client');
 const { optional, getPassword } = require('../util/check-env');
 
-const useHttps = optional('IAM_USE_SSL', 'false') === 'true';
-const port = optional('IAM_PORT', 3099);
-const baseurl = optional('IAM_BASEURL', `${useHttps ? 'https' : 'http'}://127.0.0.1:3099`);
+const CONSTANTS = require('./../constants');
 
+const port = optional('IAM_PORT', 3099);
+const baseurl = optional('IAM_BASEURL', 'https://127.0.0.1:3099');
 const apiBase = optional('IAM_APIBASE', 'api/v1');
 const oidcBase = optional('IAM_OIDCBASE', 'op');
 const originwhitelist = optional('IAM_ORIGINWHITELIST') ? optional('IAM_ORIGINWHITELIST').split(',') : [];
@@ -21,19 +19,22 @@ const config = {
         authType: optional('IAM_AUTH_TYPE', 'basic'),
         debug: optional('IAM_DEBUG', 'false') === 'true',
 
+        useHttps: optional('IAM_USE_SSL') && optional('IAM_USE_SSL') === 'true',
+
         loggingNameSpace: 'accounts',
 
-        useHttps,
         apiBase,
         port,
 
         mongodb_url: optional('IAM_MONGODB_CONNECTION', 'mongodb://localhost:27017/accounts'),
 
-        originWhitelist: originwhitelist.concat(optional('NODE_ENV', 'development') !== 'production' ? [
+        originWhitelist: originwhitelist.concat(optional('NODE_ENV') !== 'production' ? [
             // development only
-            '127.0.0.1',
+            '127.0.0.1', 
             'localhost',
+            '.basaas.app',
         ] : [
+
         ]),
     },
     accounts: {
@@ -49,12 +50,11 @@ const config = {
             firstname: 'sa',
             lastname: 'sa',
         },
-        keystoreFile: optional('IAM_OIDC_KEYSTORE_PATH', path.join(__dirname, '../../', 'keystore/keystore.json')),
 
     },
-    jwt: {
+    jwt: {       
         issuer: optional('IAM_BASEURL', 'https://www.example.com'),
-        audience: optional('IAM_JWT_AUDIENCE', 'service.example.com'),
+        audience: optional('IAM_JWT_AUDIENCE', 'example.com'),
         algorithm: optional('IAM_JWT_ALGORITHM', 'HS256'),
         algorithmType: optional('IAM_JWT_ALGORITHM_TYPE', CONSTANTS.JWT_ALGORITHMS.HMAC),
         expiresIn: optional('IAM_JWT_EXPIRES', '3h'),
@@ -64,13 +64,14 @@ const config = {
     oidc: {
         serviceClient,
         base: oidcBase,
+        keystoreFile: optional('IAM_OIDC_KEYSTORE_PATH', path.join(__dirname, '../../', 'keystore/keystore.json')),
         dbPrefix: optional('IAM_OIDC_DBPREFIX', 'oidc'),
         acrValues: ['session', 'urn:mace:incommon:iap:bronze'],
         issuer: baseurl,
         cookies: {
-            long: { signed: true, maxAge: parseInt(optional('IAM_OIDC_MAXAGE', (1 * 24 * 60 * 60) * 1000), 10) }, // 1 day in ms
+            long: { signed: true, maxAge: parseInt(optional('IAM_OIDC_MAXAGE'), 10) * 1000 || ((1 * 24 * 60 * 60) * 1000) }, // 1 day in ms
             short: { signed: true },
-            keys: [`${getPassword('IAM_JWT_SECRET')}`],
+            keys: [`${getPassword('IAM_SESSION_COOKIE_SECRET')}`],
             thirdPartyCheckUrl: `${baseurl}/static/oidc/start.html`,
         },
         discovery: {
@@ -80,12 +81,13 @@ const config = {
         claims: {
             amr: null,
             global: [
-                'username',
-                'firstname',
+                'username', 
+                'firstname', 
                 'lastname',
                 'status',
                 'role',
                 'memberships',
+                'permissions',
                 'confirmed',
             ],
         },
@@ -110,11 +112,11 @@ const config = {
             // },
         },
         subjectTypes: ['public'],
-
+    
         interactionUrl: function interactionUrl(ctx, interaction) { // eslint-disable-line no-unused-vars
             return `/${oidcBase}/interaction/${ctx.oidc.uuid}`;
         },
-
+    
         async interactionCheck(ctx) {
             if (!ctx.oidc.session.sidFor(ctx.oidc.client.clientId)) {
                 return {
@@ -124,25 +126,25 @@ const config = {
                 };
             } else if (
                 ctx.oidc.client.applicationType === 'native'
-                && ctx.oidc.params.response_type !== 'none'
-                && !ctx.oidc.result) { // TODO: in 3.x require consent to be passed in results
+              && ctx.oidc.params.response_type !== 'none'
+              && !ctx.oidc.result) { // TODO: in 3.x require consent to be passed in results
                 return {
                     error: 'interaction_required',
                     error_description: 'native clients require End-User interaction',
                     reason: 'native_client_prompt',
                 };
             }
-
+        
             return false;
         },
-
+    
         clientCacheDuration: 1 * 24 * 60 * 60, // 1 day in seconds,
         ttl: {
             AccessToken: optional('IAM_OIDC_TTL_ACCESSTOKEN', 1 * 60 * 60), // 1 hour in seconds
-            AuthorizationCode: optional('IAM_OIDC_TTL_AUTHCODE', 10 * 60), // 10 minutes in seconds
-            ClientCredentials: optional('IAM_OIDC_TTL_CLIENTCRED', 10 * 60), // 10 minutes in seconds
-            IdToken: optional('IAM_OIDC_TTL_IDTOKEN', 1 * 60 * 60), // 1 hour in seconds
-            RefreshToken: optional('IAM_OIDC_TTL_REFRESHTOKEN', 1 * 24 * 60 * 60), // 1 day in seconds
+            AuthorizationCode: optional('IAM_OIDC_TTL_AUTHCODE', 1 * 24 * 60 * 60), // 1 day in seconds,
+            ClientCredentials: optional('IAM_OIDC_TTL_CLIENTCRED', 1 * 24 * 60 * 60), // 1 day in seconds,
+            IdToken: optional('IAM_OIDC_TTL_IDTOKEN', 14 * 24 * 60 * 60), // 14 days in seconds
+            RefreshToken: optional('IAM_OIDC_TTL_REFRESHTOKEN', 14 * 24 * 60 * 60), // 14 days in seconds
             RegistrationAccessToken: optional('IAM_OIDC_TTL_REGACCESSTOKEN', 1 * 24 * 60 * 60), // 1 day in seconds
         },
         /*
@@ -152,7 +154,7 @@ const config = {
        *   renders a confirmation prompt for the User-Agent.
        * affects: session management
        */
-
+       
         async logoutSource(ctx, form) {
             ctx.body = `<!DOCTYPE html>
                 <head>
@@ -177,7 +179,7 @@ const config = {
                 </body>
             </html>`;
         },
-
+    
         /*
        * renderError
        *

@@ -18,7 +18,7 @@ module.exports = {
         });
     },
     // findByEntity: async entityId => await Secret.full.find({
-    //     'owner.entityId': entityId,
+    //     'owners.entityId': entityId,
     // }).lean(),
 
     // find: async query => await Secret.full.find(query).lean(),

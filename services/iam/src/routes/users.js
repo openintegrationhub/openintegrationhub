@@ -3,26 +3,21 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 
-const jsonParser = bodyParser.json();
 const Logger = require('@basaas/node-logger');
 const CONF = require('./../conf');
 const CONSTANTS = require('./../constants');
 const auth = require('./../util/auth');
-const UserDAO = require('./../dao/users');
+const UserDAO = require('../dao/accounts');
+const { RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/user`, {
     level: 'debug',
 });
 
 /**
- * get token data from req.user object
- */
-router.use(auth.validateAuthentication);
-
-/**
  * Create a new user
  * */
-router.post('/', jsonParser, auth.isAdmin, async (req, res, next) => {
+router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.account.create']]), async (req, res, next) => {
     const userObj = req.body;
     try {
 
@@ -65,8 +60,8 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
 router.get('/me', auth.isLoggedIn, async (req, res, next) => {
 
     try {
-        const doc = await UserDAO.find({ _id: req.user.userid });
-        return res.send(doc && doc[0]);
+        const doc = await UserDAO.findOne({ _id: req.user.userid });
+        return res.send(doc);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
     }
@@ -77,11 +72,11 @@ router.get('/me', auth.isLoggedIn, async (req, res, next) => {
  */
 router.get('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
     try {
-        const doc = await UserDAO.find({ _id: req.params.id });
+        const doc = await UserDAO.findOne({ _id: req.params.id });
         if (!doc) {
             return res.sendStatus(404);
         } else {
-            return res.send(doc[0]);
+            return res.send(doc);
         }
 
     } catch (err) {
@@ -92,7 +87,7 @@ router.get('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
 /**
  * Partial modify of a user
  */
-router.patch('/:id', auth.paramsMatchesUserId, jsonParser, async (req, res, next) => {
+router.patch('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
     const userObj = req.body;
     try {
         await UserDAO.update({
@@ -108,7 +103,7 @@ router.patch('/:id', auth.paramsMatchesUserId, jsonParser, async (req, res, next
 /**
  * Complete modify of user data ith given data
  * */
-router.put('/:id', auth.paramsMatchesUserId, jsonParser, async (req, res, next) => {
+router.put('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
 
     const userObj = req.body;
 

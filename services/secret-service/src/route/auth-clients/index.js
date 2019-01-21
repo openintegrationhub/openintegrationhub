@@ -30,7 +30,7 @@ router.post('/', async (req, res, next) => {
     try {
         const authClient = await AuthClientDAO.create({
             ...req.body,
-            owner: {
+            owners: {
                 entityId: req.user.sub.toString(),
                 entityType: ROLE.USER,
             },

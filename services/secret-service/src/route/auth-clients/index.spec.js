@@ -20,8 +20,8 @@ describe('auth-clients', () => {
             mongoDbConnection: `${global.__MONGO_URI__}-auth-client`,
             port,
         });
-        const endpointPrefix = conf.introspectEndpoint.substr(0, conf.introspectEndpoint.lastIndexOf('/'));
-        const endpointSuffix = conf.introspectEndpoint.substr(conf.introspectEndpoint.lastIndexOf('/'));
+        const endpointPrefix = conf.iam.introspectEndpoint.substr(0, conf.iam.introspectEndpoint.lastIndexOf('/'));
+        const endpointSuffix = conf.iam.introspectEndpoint.substr(conf.iam.introspectEndpoint.lastIndexOf('/'));
         nock(endpointPrefix)
             .persist()
             .post(endpointSuffix)
