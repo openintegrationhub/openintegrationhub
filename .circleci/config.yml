@@ -96,8 +96,8 @@ workflows:
               - deps
         - test:
             requires:
-              - iam-test
-              - secret-service-test
+              # - iam-test
+              # - secret-service-test
               - icr-test
         - build:
             requires:
