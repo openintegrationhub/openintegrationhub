@@ -84,7 +84,7 @@ jobs:
     steps: *yarn_test_steps
   lib-backend-commons-lib-test:
     docker: *node_env
-    working_directory: ~/oih/src/backend-coomons-lib
+    working_directory: ~/oih/src/backendCommonsLib
     steps: *yarn_test_steps
   lib-resource-coordinator-test:
     docker: *node_env
@@ -104,16 +104,16 @@ workflows:
       - deps
       - communication-router-test:
           requires:
-            - deps
+            - lib-webhooks-test
       - iam-test:
           requires:
             - deps
       - resource-coordinator-test:
           requires:
-            - deps
+            - lib-resource-coordinator-test
       - scheduler-test:
           requires:
-            - deps
+            - lib-scheduler-test
       - secret-service-test:
           requires:
             - deps
@@ -122,13 +122,13 @@ workflows:
             - deps
       - lib-resource-coordinator-test:
           requires:
-            - deps
+            - lib-backend-commons-lib-test
       - lib-scheduler-test:
           requires:
-            - deps
+            - lib-backend-commons-lib-test
       - lib-webhooks-test:
           requires:
-            - deps
+            - lib-backend-commons-lib-test
       - test:
           requires:
             - communication-router-test
