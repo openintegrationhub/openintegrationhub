@@ -24,6 +24,10 @@ router.get('/', jsonParser, async (req, res) => {
   let response;
   let error = false;
 
+  if (credentials.length >== 0) {
+    res.status(403).send('User does not have permissions to view flows');
+  }
+
   let pageSize = 10;
   let pageNumber = 1;
 
@@ -188,6 +192,10 @@ router.get('/:id', jsonParser, async (req, res) => {
   const flowId = req.params.id;
   const credentials = res.locals.credentials[1];
   let response;
+
+  if (credentials.length >== 0) {
+    res.status(403).send('User does not have permissions to view flows');
+  }
 
   if (res.locals.admin) {
     response = await storage.getAnyFlowById(flowId);
