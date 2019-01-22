@@ -84,19 +84,19 @@ jobs:
     steps: *yarn_test_steps
   lib-backend-commons-lib-test:
     docker: *node_env
-    working_directory: ~/oih/lib/backend-coomons-lib
+    working_directory: ~/oih/src/backend-coomons-lib
     steps: *yarn_test_steps
-  lib-resource-coordinator:
+  lib-resource-coordinator-test:
     docker: *node_env
-    working_directory: ~/oih/lib/resource-coordinator
+    working_directory: ~/oih/src/resource-coordinator
     steps: *yarn_test_steps
-  lib-scheduler:
+  lib-scheduler-test:
     docker: *node_env
-    working_directory: ~/oih/lib/scheduler
+    working_directory: ~/oih/src/scheduler
     steps: *yarn_test_steps
-  lib-webhooks:
+  lib-webhooks-test:
     docker: *node_env
-    working_directory: ~/oih/lib/webhooks
+    working_directory: ~/oih/src/webhooks
     steps: *yarn_test_steps
 workflows:
   pipeline:
@@ -120,13 +120,13 @@ workflows:
       - lib-backend-commons-lib-test:
           requires:
             - deps
-      - lib-resource-coordinator:
+      - lib-resource-coordinator-test:
           requires:
             - deps
-      - lib-scheduler:
+      - lib-scheduler-test:
           requires:
             - deps
-      - lib-webhooks:
+      - lib-webhooks-test:
           requires:
             - deps
       - test:
@@ -137,9 +137,9 @@ workflows:
             - scheduler-test
             - secret-service-test
             - lib-backend-commons-lib-test
-            - lib-resource-coordinator
-            - lib-scheduler
-            - lib-webhooks
+            - lib-resource-coordinator-test
+            - lib-scheduler-test
+            - lib-webhooks-test
       - build:
           requires:
             - test
