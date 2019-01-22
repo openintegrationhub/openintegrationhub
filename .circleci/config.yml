@@ -12,7 +12,7 @@ aliases:
   - &only_master_filter
     branches:
       only: master
-  - &basaas_test_steps
+  - &yarn_test_steps
       - restore_cache:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
@@ -54,10 +54,6 @@ jobs:
     docker: *node_env
     steps:
       - run: echo OK
-  iam-test:
-    docker: *node_env
-    working_directory: ~/oih/services/iam
-    steps: *basaas_test_steps
   build:
     docker: *node_env
     working_directory: ~/oih
@@ -66,33 +62,50 @@ jobs:
     docker: *node_env
     working_directory: ~/oih
     steps: *deploy_steps
-  secret-service-test:
-    docker: *node_env
-    working_directory: ~/oih/services/secret-service
-    steps: *basaas_test_steps
   communication-router-test:
     docker: *node_env
     working_directory: ~/oih/services/communication-router
-    steps: *basaas_test_steps
+    steps: *yarn_test_steps
+  iam-test:
+    docker: *node_env
+    working_directory: ~/oih/services/iam
+    steps: *yarn_test_steps
   resource-coordinator-test:
     docker: *node_env
     working_directory: ~/oih/services/resource-coordinator
-    steps: *basaas_test_steps
+    steps: *yarn_test_steps
   scheduler-test:
     docker: *node_env
     working_directory: ~/oih/services/scheduler
-    steps: *basaas_test_steps
+    steps: *yarn_test_steps
+  secret-service-test:
+    docker: *node_env
+    working_directory: ~/oih/services/secret-service
+    steps: *yarn_test_steps
+  lib/backend-commons-lib-test:
+    docker: *node_env
+    working_directory: ~/oih/lib/backend-coomons-lib
+    steps: *yarn_test_steps
+  lib/resource-coordinator:
+    docker: *node_env
+    working_directory: ~/oih/lib/resource-coordinator
+    steps: *yarn_test_steps
+  lib/scheduler:
+    docker: *node_env
+    working_directory: ~/oih/lib/scheduler
+    steps: *yarn_test_steps
+  lib/webhooks:
+    docker: *node_env
+    working_directory: ~/oih/lib/webhooks
+    steps: *yarn_test_steps
 workflows:
   pipeline:
     jobs:
       - deps
-      - iam-test:
-          requires:
-            - deps
-      - secret-service-test:
-          requires:
-            - deps
       - communication-router-test:
+          requires:
+            - deps
+      - iam-test:
           requires:
             - deps
       - resource-coordinator-test:
@@ -101,13 +114,32 @@ workflows:
       - scheduler-test:
           requires:
             - deps
+      - secret-service-test:
+          requires:
+            - deps
+      - lib/backend-commons-lib-test:
+          requires:
+            - deps
+      - lib/resource-coordinator:
+          requires:
+            - deps
+      - lib/scheduler:
+          requires:
+            - deps
+      - lib/webhooks:
+          requires:
+            - deps
       - test:
           requires:
-            - iam-test
-            - secret-service-test
             - communication-router-test
+            - iam-test
             - resource-coordinator-test
             - scheduler-test
+            - secret-service-test
+            - lib/backend-commons-lib-test
+            - lib/resource-coordinator
+            - lib/scheduler
+            - lib/webhooks
       - build:
           requires:
             - test
