@@ -66,14 +66,24 @@ class Server {
       }
 
       // Two-dimensional array that will hold the user's id and memberships. First row contains ids with read/write permissions, second row contains ids with read permissions.
-      const credentials = [[user.userid], [user.userid]];
+      const credentials = [[], []];
+
+      if user.permissions.includes(config.flowReadPermission) {
+        credentials[1].push(user.userid);
+      }
+
+      if user.permissions.includes(config.flowWritePermission) {
+        credentials[1].push(user.userid);
+      }
 
       // Pushes the ids of the tenants to the credentials array. If the user role allows writing of tenant flows, the id is pushed to the read/write and the read rows of the array. Otherwise the id is pushed only to the read row.
       for (let i = 0; i < user.memberships.length; i += 1) {
-        if (config.tenantWriterRoles.includes(user.memberships[i].role)) {
+        if (user.memberships[i].permissions.includes(config.flowReadPermission)) {
+          credentials[1].push(user.memberships[i].tenant);
+        }
+        if (user.memberships[i].permissions.includes(config.flowWritePermission)) {
           credentials[0].push(user.memberships[i].tenant);
         }
-        credentials[1].push(user.memberships[i].tenant);
       }
 
       res.locals.credentials = credentials; // Passes on the tenancies that the user is a member of
