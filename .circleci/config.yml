@@ -9,7 +9,6 @@ aliases:
   - &run_npm_install
     name: Installing Dependencies
     command: yarn
-
   - &only_master_filter
     branches:
       only: master
@@ -28,7 +27,7 @@ aliases:
           cd ./scripts # needed for compatible with travis implementation
           node getChanges.js
           node build.js
-      - save_cache: 
+      - save_cache:
           key: build-deps-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/oih
@@ -38,22 +37,22 @@ aliases:
             - build-deps-{{ .Branch }}-{{ .Revision }}
       - run: |
           cd ./scripts  # needed for compatible with travis implementation
-          node deploy.js  
+          node deploy.js
 jobs:
   deps:
     docker: *node_env
     working_directory: ~/oih
-    steps: 
-      - checkout: 
+    steps:
+      - checkout:
           path: ~/oih
       - run: *run_npm_install
-      - save_cache: 
+      - save_cache:
           key: yarn-deps-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/oih
   test:
     docker: *node_env
-    steps: 
+    steps:
       - run: echo OK
   iam-test:
     docker: *node_env
@@ -71,6 +70,18 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
     steps: *basaas_test_steps
+  communication-router-test:
+    docker: *node_env
+    working_directory: ~/oih/services/communication-router
+    steps: *basaas_test_steps
+  resource-coordinator-test:
+    docker: *node_env
+    working_directory: ~/oih/services/resource-coordinator
+    steps: *basaas_test_steps
+  scheduler-test:
+    docker: *node_env
+    working_directory: ~/oih/services/scheduler
+    steps: *basaas_test_steps
 workflows:
   pipeline:
     jobs:
@@ -81,10 +92,22 @@ workflows:
       - secret-service-test:
           requires:
             - deps
+      - communication-router-test:
+          requires:
+            - deps
+      - resource-coordinator-test:
+          requires:
+            - deps
+      - scheduler-test:
+          requires:
+            - deps
       - test:
           requires:
             - iam-test
             - secret-service-test
+            - communication-router-test
+            - resource-coordinator-test
+            - scheduler-test
       - build:
           requires:
             - test
