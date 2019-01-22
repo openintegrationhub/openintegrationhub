@@ -136,10 +136,6 @@ workflows:
             - resource-coordinator-test
             - scheduler-test
             - secret-service-test
-            - lib-backend-commons-lib-test
-            - lib-resource-coordinator-test
-            - lib-scheduler-test
-            - lib-webhooks-test
       - build:
           requires:
             - test
