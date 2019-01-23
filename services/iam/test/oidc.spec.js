@@ -17,6 +17,7 @@ describe('basic OIDC test Suite', () => {
 
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
+        this.timeout(120000);
         process.env.IAM_SERVICE_CLIENT_ID = 'test';
         process.env.IAM_AUTH_TYPE = 'oidc';
         process.env.IAM_SERVICE_CLIENT_SECRET = 'test';

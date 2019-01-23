@@ -8,14 +8,16 @@ const CONSTANTS = require('./../src/constants');
 const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../src/access-control/permissions');
 
 let conf = null;
-
 // Token will be set via Login and is valid 3h
 let tokenAdmin = null;
 describe('routes', () => {
     let app = null;
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
+        this.timeout(120000);
+
         process.env.IAM_AUTH_TYPE = 'basic';
+
         process.env.IAM_BASEURL = 'http://localhost';
         conf = require('./../src/conf/index');
         const App = require('../src/app');
