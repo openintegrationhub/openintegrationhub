@@ -1,7 +1,6 @@
 // const conf = require('config');
 const mongoose = require('mongoose');
 const log = require('./config/logger');
-// const iamMiddleware = require('./iam-utils/index');
 
 const Server = require('./server');
 

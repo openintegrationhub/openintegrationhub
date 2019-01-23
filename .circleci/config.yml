@@ -98,6 +98,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/lib/webhooks
     steps: *yarn_test_steps
+  icr-test:
+    docker: *node_env
+    working_directory: ~/oih/services/integration-content-repository
+    steps: *yarn_test_steps
 workflows:
   pipeline:
     jobs:
@@ -115,6 +119,9 @@ workflows:
           requires:
             - lib-scheduler-test
       - secret-service-test:
+          requires:
+            - deps
+      - icr-test:
           requires:
             - deps
       - lib-backend-commons-lib-test:
@@ -136,12 +143,12 @@ workflows:
             - resource-coordinator-test
             - scheduler-test
             - secret-service-test
+            - icr-test
       - build:
           requires:
             - test
-          # filters: *only_master_filter
+          filters: *only_master_filter
       - deploy:
           requires:
             - build
-          # filters: *only_master_filter
-
+          filters: *only_master_filter

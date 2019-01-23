@@ -5,7 +5,7 @@ const result = [];
 let buildnumber = 'dev';
 
 readjson.forEach((service) => {
-    
+
     const directMatch = data.match(new RegExp(`services/${service}/`, 'i'));
     const matcher = (directMatch && directMatch.length > 0);
     if (matcher) {
