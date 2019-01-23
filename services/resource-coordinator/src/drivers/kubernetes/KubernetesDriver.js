@@ -1,7 +1,7 @@
 const { BaseDriver } = require('@openintegrationhub/resource-coordinator');
 const uuid = require('uuid/v4');
 const _ = require('lodash');
-const KubernetesRunningNode = require('./KubernetesRunningNode');
+const KubernetesRunningFlowNode = require('./KubernetesRunningFlowNode');
 const FlowSecret = require('./FlowSecret');
 
 class KubernetesDriver extends BaseDriver {
@@ -114,7 +114,7 @@ class KubernetesDriver extends BaseDriver {
     }
 
     async getAppList() {
-        return ((await this._batchClient.jobs.get()).body.items || []).map(i => new KubernetesRunningNode(i));
+        return ((await this._batchClient.jobs.get()).body.items || []).map(i => new KubernetesRunningFlowNode(i));
     }
 
     _buildDescriptor(flow, node, nodeSecret) {
@@ -132,7 +132,7 @@ class KubernetesDriver extends BaseDriver {
                 name: appId,
                 namespace: this._config.get('NAMESPACE'),
                 annotations: {
-                    [KubernetesRunningNode.ANNOTATION_KEY]: flow.metadata.resourceVersion,
+                    [KubernetesRunningFlowNode.ANNOTATION_KEY]: flow.metadata.resourceVersion,
                     flowId: flow.id,
                     nodeId: node.id
                 },

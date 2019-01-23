@@ -2,7 +2,7 @@ const chai = require('chai');
 chai.use(require('sinon-chai'));
 const { expect } = chai;
 
-const KubernetesRunningNode = require('../../../src/drivers/kubernetes/KubernetesRunningNode');
+const KubernetesRunningNode = require('../../../src/drivers/kubernetes/KubernetesRunningFlowNode');
 
 describe('KubernetesRunningNode', () => {
     describe('getters', () => {

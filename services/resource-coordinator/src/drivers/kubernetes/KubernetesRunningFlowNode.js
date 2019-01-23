@@ -1,7 +1,7 @@
 const _ = require('lodash');
-const { RunningNode } = require('@openintegrationhub/resource-coordinator');
+const { RunningFlowNode } = require('@openintegrationhub/resource-coordinator');
 
-class KubernetesRunningNode extends RunningNode {
+class KubernetesRunningFlowNode extends RunningFlowNode {
     constructor(app) {
         super();
         this._app = app;
@@ -53,4 +53,4 @@ class KubernetesRunningNode extends RunningNode {
     }
 }
 
-module.exports = KubernetesRunningNode;
+module.exports = KubernetesRunningFlowNode;
