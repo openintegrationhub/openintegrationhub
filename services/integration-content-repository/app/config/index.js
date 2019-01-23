@@ -8,7 +8,7 @@ const general = {
   tenantWriterRoles: ['TENANT_ADMIN', 'TENANT_INTEGRATOR'],
 
   // Determines whether the IAM-permission system should be used. Set to true to enable
-  usePermissions: process.env.USE_PERMISSIONS || false
+  usePermissions: process.env.USE_PERMISSIONS || false,
   flowReadPermission: process.env.FLOW_READ_PERMISSION || 'flows.read',
   flowWritePermission: process.env.FLOW_WRITE_PERMISSION || 'flows.write',
 

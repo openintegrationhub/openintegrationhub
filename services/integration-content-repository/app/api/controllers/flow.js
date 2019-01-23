@@ -24,7 +24,7 @@ router.get('/', jsonParser, async (req, res) => {
   let response;
   let error = false;
 
-  if (credentials.length >== 0) {
+  if (!res.locals.admin && credentials.length <= 0) {
     res.status(403).send('User does not have permissions to view flows');
   }
 
@@ -60,7 +60,7 @@ router.get('/', jsonParser, async (req, res) => {
       filters.status = 'active';
     } else if (req.query.filter.status === '0') {
       filters.status = 'inactive';
-    } else {
+    } else if (!res.headersSent) {
       res.status(400).send('Invalid filter[status] parameter');
       return;
     }
@@ -70,7 +70,7 @@ router.get('/', jsonParser, async (req, res) => {
   if (req.query.filter && req.query.filter.type !== undefined) {
     if (req.query.filter.type in filterTypes) {
       filters.type = req.query.filter.type;
-    } else {
+    } else if (!res.headersSent) {
       res.status(400).send('Invalid filter[type] parameter');
       return;
     }
@@ -78,7 +78,7 @@ router.get('/', jsonParser, async (req, res) => {
 
   // filter[user]
   if (req.query.filter && req.query.filter.user !== undefined) {
-    if (!res.locals.admin) {
+    if (!res.locals.admin && (!res.headersSent)) {
       res.status(403).send('Filtering by user is only available to admins');
       return;
     }
@@ -99,7 +99,7 @@ router.get('/', jsonParser, async (req, res) => {
     }
     if (!(sortField in sortableFields)) error = true;
 
-    if (error) {
+    if (error && !res.headersSent) {
       res.status(400).send('Invalid sort parameter');
       return;
     }
@@ -117,9 +117,9 @@ router.get('/', jsonParser, async (req, res) => {
     response = await storage.getFlows(credentials, pageSize, pageNumber, searchString, filters, sortField, sortOrder); // eslint-disable-line
   }
 
-  if (response.data.length === 0) {
+  if (response.data.length === 0 && !res.headersSent) {
     res.status(404).send('No flows found');
-  } else {
+  } else if (!res.headersSent) {
     response.meta.page = pageNumber;
     response.meta.perPage = pageSize;
     response.meta.totalPages = response.meta.total / pageSize;
@@ -193,7 +193,7 @@ router.get('/:id', jsonParser, async (req, res) => {
   const credentials = res.locals.credentials[1];
   let response;
 
-  if (credentials.length >== 0) {
+  if (!res.locals.admin && credentials.length <= 0) {
     res.status(403).send('User does not have permissions to view flows');
   }
 
@@ -203,10 +203,12 @@ router.get('/:id', jsonParser, async (req, res) => {
     response = await storage.getFlowById(flowId, credentials);
   }
 
-  if (!response) {
-    res.status(404).send('No flows found');
-  } else {
-    res.status(200).send(response);
+  if (!res.headersSent) {
+    if (!response) {
+      res.status(404).send('No flows found');
+    } else {
+      res.status(200).send(response);
+    }
   }
 });
 

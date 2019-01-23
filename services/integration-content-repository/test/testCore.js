@@ -82,7 +82,6 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  mongoose.connection.db.dropDatabase();
   mongoose.connection.close();
   app.close();
 });
