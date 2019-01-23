@@ -8,5 +8,6 @@
     "RABBITMQ_MANAGEMENT_URI": "http://guest:guest@localhost:15672",
     "RABBITMQ_URI": "amqp://guest:guest@127.0.0.1:5672/",
     "RABBITMQ_URI_FLOWS": "amqp://localhost",
-    "SELF_API_URI": "http://api-service.platform.svc.cluster.local:1234"
+    "SELF_API_URI": "http://api-service.platform.svc.cluster.local:1234",
+    "TICK_INTERVAL": 10000
 }
