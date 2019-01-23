@@ -17,7 +17,7 @@ gcloud --quiet config set container/cluster oih-production-v1
 gcloud --quiet config set compute/zone europe-west3-c
 gcloud components install kubectl
 gcloud --quiet container clusters get-credentials oih-production-v1	
-
+echo 'Get Access to Cluster'
 kubectl config view
+echo 'Set Default Cluster Context'
 kubectl config current-context
-

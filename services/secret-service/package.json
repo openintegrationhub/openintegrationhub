@@ -7,6 +7,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "node src/index.js",
+    "build": "echo \"No Build defined\"",
     "test": "jest",
     "watch": "nodemon src/index.js",
     "coverage": "yarn test --coverage",
