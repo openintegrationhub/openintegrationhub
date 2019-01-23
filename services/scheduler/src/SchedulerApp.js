@@ -4,7 +4,7 @@ const {
     App,
     K8sService,
     AMQPService
-} = require('backendCommonsLib');
+} = require('backend-commons-lib');
 const { Scheduler } = require('@openintegrationhub/scheduler');
 const FlowsDao = require('./FlowsDao');
 const SchedulePublisher = require('./SchedulePublisher');

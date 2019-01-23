@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const owner = require('../schema/owner');
+const owners = require('../schema/owners');
 
 const { OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE, EXTERNAL_ID_SOURCE } = require('../../constant').AUTH_TYPE;
 
@@ -10,8 +10,8 @@ const authClientBaseSchema = new Schema({
         type: String,
         required: true,
     },
-    owner: {
-        type: [owner],
+    owners: {
+        type: [owners],
         required: true,
     },
     type: {

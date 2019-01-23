@@ -22,6 +22,9 @@ const UserDAO = {
 
     create: async ({ userObj }) => {
 
+        delete userObj.memberships;
+        delete userObj.roles;
+
         const account = new Account({
             confirmed: true,
             ...userObj,

@@ -40,21 +40,17 @@ In addition to the previously defined definition of done some rules only apply f
   - Decisions are described in a common form using the [architecture decision template](https://github.com/openintegrationhub/Architecture/blob/master/Decisions/ArchitectureDecisionTemplate.md)
 - Concept / document reviewed and accepted by CES quality manager 
 
-#### DoD Code
+#### DoD Services
 
 In addition to the previously defined definition of done some rules only apply for outputs of type code:
 
-- Workgroup consensus about functionality i.e. each teamlead approved the pull request
 - Code is compliant with [styleguide](Guidelines/styleGuide.md)
 - Code is compliant with [devops/operations guidelines](Guidelines/serviceOperations.md)
 - Dependent documentation have been updated (See DoD for documents)
-- New modules are defined in package.json
 - All new features are tested in development mode (unit tests)
 - Once we have integration tests:
   - Integration tests were successful applied
   - Dependencies between software modules are documented  
-- The application is running in a test environment without critical bugs
-- Services are up and running on K8s test instance
 
 ## Pull Requests
 

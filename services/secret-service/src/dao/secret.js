@@ -88,13 +88,13 @@ module.exports = {
         pageNumber = conf.pagination.defaultPage,
     ) {
         return await Secret.full.find({
-            'owner.entityId': entityId,
+            'owners.entityId': entityId,
         }, null, { skip: (pageNumber - 1) * pageSize, limit: pageSize });
     },
 
     async countByEntity(entityId) {
         return await Secret.full.countDocuments({
-            'owner.entityId': entityId,
+            'owners.entityId': entityId,
         });
     },
 

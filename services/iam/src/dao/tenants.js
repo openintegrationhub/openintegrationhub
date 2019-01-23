@@ -1,7 +1,7 @@
 const Logger = require('@basaas/node-logger');
 const Tenant = require('./../models/tenant');
 const CONF = require('./../conf');
-const UserDAO = require('./users');
+const AccountDAO = require('./accounts');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/tenantDao`);
 const auditLog = Logger.getAuditLogger('tenant');
@@ -13,6 +13,13 @@ const TenantDAO = {
         const query = filter || {};
 
         return Tenant.find(query);
+    },
+
+    findOne: (filter) => {
+
+        const query = filter || {};
+
+        return Tenant.findOne(query);
     },
 
     create: async ({ props }) => {
@@ -53,7 +60,7 @@ const TenantDAO = {
         auditLog.info('delete.tenant', { data: { id } });
     },
 
-    getUsersAssignedToTenant: async ({ id }) => UserDAO.getUsersAssignedToTenant({ tenantId: id }),
+    getUsersAssignedToTenant: async ({ id }) => AccountDAO.getUsersAssignedToTenant({ tenantId: id }),
 
 };
 

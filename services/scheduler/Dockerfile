@@ -1,9 +1,9 @@
 FROM node:8.12-alpine AS base
-WORKDIR /usr/src/scheduler
+WORKDIR /usr/lib/scheduler
 
 COPY package.json yarn.lock ./
-COPY src/backendCommonsLib src/backendCommonsLib
-COPY src/scheduler src/scheduler
+COPY lib/backend-commons-lib lib/backend-commons-lib
+COPY lib/scheduler lib/scheduler
 COPY services/scheduler/package.json services/scheduler/index.js ./services/scheduler/
 COPY services/scheduler/src ./services/scheduler/src
 COPY services/scheduler/config services/scheduler/config
@@ -17,7 +17,7 @@ RUN apk add --no-cache make gcc g++ python
 RUN yarn install --production
 
 FROM base AS release
-COPY --from=dependencies /usr/src/scheduler/node_modules ./node_modules
+COPY --from=dependencies /usr/lib/scheduler/node_modules ./node_modules
 RUN rm yarn.lock
 CMD ["yarn", "--cwd", "services/scheduler", "start"]
 

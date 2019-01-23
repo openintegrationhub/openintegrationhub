@@ -19,11 +19,11 @@ describe('basic OIDC test Suite', () => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         this.timeout(120000);
         process.env.IAM_SERVICE_CLIENT_ID = 'test';
+        process.env.IAM_AUTH_TYPE = 'oidc';
         process.env.IAM_SERVICE_CLIENT_SECRET = 'test';
         process.env.IAM_BASEURL = 'http://127.0.0.1:3099';
         process.env.IAM_ACC_SERVICEACCOUNT_USERNAME = 'testuser@basaas.de';
         process.env.IAM_ACC_SERVICEACCOUNT_PASSWORD = 'testpass';
-        process.env.IAM_AUTH_TYPE = 'oidc';
         process.env.IAM_DEBUG = 'true';
 
         getHeader = `Basic ${encode(`${
@@ -114,6 +114,38 @@ describe('basic OIDC test Suite', () => {
         expect(response.body.role).toBe(CONSTANTS.ROLES.ADMIN);
     });
 
+    test('create User Account via Client Sec successful', async () => {
+        const jsonPayload = {
+            username: 'user@basaas.com',
+            password: 'abcDEF1',
+            firstname: 'user',
+            lastname: 'user',
+            phone: '',
+            status: CONSTANTS.STATUS.ACTIVE,
+            confirmed: true,
+            role: CONSTANTS.ROLES.USER,
+        };
+        const response = await request.post('/api/v1/users')
+            .send(jsonPayload)
+            .set('Authorization', `Bearer ${serviceAccessToken}`)
+            .set('x-auth-type', 'oidc');
+        expect(response.body.id).toBeDefined;
+    });
+
+    test('Deny token request via password grant as user', async () => {
+        const jsonPayload = {
+            scope: 'global',
+            grant_type: 'password',
+            username: 'user@basaas.com',
+            password: 'abcDEF1',
+        };
+        await request.post('/op/token')
+            .send(jsonPayload)
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .set('Authorization', getHeader)
+            .expect(400);
+    });
+
     // test('create new client via oidc call successful', async () => {
     //     const jsonPayload = {
     //         grant_types: ['client_credentials'],
@@ -133,10 +165,10 @@ describe('basic OIDC test Suite', () => {
     test('generate Keystore successful', async () => {
         const pathToKeystore = path.join(__dirname, '../keystore/keystore.json');
         const { generateFile } = require('../src/util/keystore');
-
+        
         await fs.unlink(pathToKeystore);
         await generateFile();
-
+        
     });
 });
 
