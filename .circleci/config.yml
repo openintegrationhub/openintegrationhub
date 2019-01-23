@@ -84,19 +84,19 @@ jobs:
     steps: *yarn_test_steps
   lib-backend-commons-lib-test:
     docker: *node_env
-    working_directory: ~/oih/src/backendCommonsLib
+    working_directory: ~/oih/lib/backend-commons-lib
     steps: *yarn_test_steps
   lib-resource-coordinator-test:
     docker: *node_env
-    working_directory: ~/oih/src/resource-coordinator
+    working_directory: ~/oih/lib/resource-coordinator
     steps: *yarn_test_steps
   lib-scheduler-test:
     docker: *node_env
-    working_directory: ~/oih/src/scheduler
+    working_directory: ~/oih/lib/scheduler
     steps: *yarn_test_steps
   lib-webhooks-test:
     docker: *node_env
-    working_directory: ~/oih/src/webhooks
+    working_directory: ~/oih/lib/webhooks
     steps: *yarn_test_steps
 workflows:
   pipeline:
