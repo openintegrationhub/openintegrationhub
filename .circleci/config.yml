@@ -9,11 +9,10 @@ aliases:
   - &run_npm_install
     name: Installing Dependencies
     command: yarn
-
   - &only_master_filter
     branches:
       only: master
-  - &basaas_test_steps
+  - &yarn_test_steps
       - restore_cache:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
@@ -39,12 +38,6 @@ aliases:
       - run: |
           cd ./scripts  # needed for compatible with travis implementation
           node deploy.js
-  - &wice_test_steps
-      - restore_cache:
-          keys:
-            - yarn-deps-{{ .Branch }}-{{ .Revision }}
-      - run: yarn test
-
 jobs:
   deps:
     docker: *node_env
@@ -61,10 +54,6 @@ jobs:
     docker: *node_env
     steps:
       - run: echo OK
-  iam-test:
-    docker: *node_env
-    working_directory: ~/oih/services/iam
-    steps: *basaas_test_steps
   build:
     docker: *node_env
     working_directory: ~/oih
@@ -73,37 +62,93 @@ jobs:
     docker: *node_env
     working_directory: ~/oih
     steps: *deploy_steps
+  communication-router-test:
+    docker: *node_env
+    working_directory: ~/oih/services/communication-router
+    steps: *yarn_test_steps
+  iam-test:
+    docker: *node_env
+    working_directory: ~/oih/services/iam
+    steps: *yarn_test_steps
+  resource-coordinator-test:
+    docker: *node_env
+    working_directory: ~/oih/services/resource-coordinator
+    steps: *yarn_test_steps
+  scheduler-test:
+    docker: *node_env
+    working_directory: ~/oih/services/scheduler
+    steps: *yarn_test_steps
   secret-service-test:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
-    steps: *basaas_test_steps
+    steps: *yarn_test_steps
+  lib-backend-commons-lib-test:
+    docker: *node_env
+    working_directory: ~/oih/lib/backend-commons-lib
+    steps: *yarn_test_steps
+  lib-resource-coordinator-test:
+    docker: *node_env
+    working_directory: ~/oih/lib/resource-coordinator
+    steps: *yarn_test_steps
+  lib-scheduler-test:
+    docker: *node_env
+    working_directory: ~/oih/lib/scheduler
+    steps: *yarn_test_steps
+  lib-webhooks-test:
+    docker: *node_env
+    working_directory: ~/oih/lib/webhooks
+    steps: *yarn_test_steps
   icr-test:
     docker: *node_env
     working_directory: ~/oih/services/integration-content-repository
-    steps: *wice_test_steps
+    steps: *yarn_test_steps
 workflows:
-    pipeline:
-      jobs:
-        - deps
-        - iam-test:
-            requires:
-              - deps
-        - secret-service-test:
-            requires:
-              - deps
-        - icr-test:
-            requires:
-              - deps
-        - test:
-            requires:
-              - iam-test
-              - secret-service-test
-              - icr-test
-        - build:
-            requires:
-              - test
-            filters: *only_master_filter
-        - deploy:
-            requires:
-              - build
-            filters: *only_master_filter
+  pipeline:
+    jobs:
+      - deps
+      - communication-router-test:
+          requires:
+            - lib-webhooks-test
+      - iam-test:
+          requires:
+            - deps
+      - resource-coordinator-test:
+          requires:
+            - lib-resource-coordinator-test
+      - scheduler-test:
+          requires:
+            - lib-scheduler-test
+      - secret-service-test:
+          requires:
+            - deps
+      - icr-test:
+          requires:
+            - deps
+      - lib-backend-commons-lib-test:
+          requires:
+            - deps
+      - lib-resource-coordinator-test:
+          requires:
+            - lib-backend-commons-lib-test
+      - lib-scheduler-test:
+          requires:
+            - lib-backend-commons-lib-test
+      - lib-webhooks-test:
+          requires:
+            - lib-backend-commons-lib-test
+      - test:
+          requires:
+            - communication-router-test
+            - iam-test
+            - resource-coordinator-test
+            - scheduler-test
+            - secret-service-test
+            - icr-test
+      - build:
+          requires:
+            - test
+          filters: *only_master_filter
+      - deploy:
+          requires:
+            - build
+          filters: *only_master_filter
