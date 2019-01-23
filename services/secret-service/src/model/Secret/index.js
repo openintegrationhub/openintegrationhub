@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const owner = require('../schema/owner');
+const owners = require('../schema/owners');
 const { AUTH_TYPE } = require('../../constant');
 
 const {
@@ -13,8 +13,8 @@ const secretBaseSchema = new Schema({
         type: String,
         required: true,
     },
-    owner: {
-        type: [owner],
+    owners: {
+        type: [owners],
         required: true,
     },
     type: {
@@ -77,12 +77,6 @@ module.exports = {
                     required: true,
                 },
                 scope: String,
-                endpoint: {
-                    token: {
-                        type: String,
-                        required: true,
-                    },
-                },
                 expires: String,
                 externalId: String,
             },

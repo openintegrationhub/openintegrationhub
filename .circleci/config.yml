@@ -1,76 +1,154 @@
-version: 2
+version: 2.1
 
 aliases:
-  - &docker_environment
+  - &node_env
+    - image: circleci/node:8-stretch
+  - &node_mongo_env
     - image: circleci/node:8-stretch
     - image: circleci/mongo:3.6
-  - &checkout
-    path: ~/oih
-  - &restore_cache_dependencies
-    name: Restoring from the cache
-    keys:
-      - v1-node-modules-cache-{{ checksum "package.json" }}
   - &run_npm_install
     name: Installing Dependencies
-    command: yarn install
-  - &save_cache_dependencies
-    name: Saving into the cache
-    key: v1-node-modules-cache-{{ checksum "package.json" }}
-    paths:
-      - ~/.cache/yarn
-  - &run_build
-    name: Running tests
-    command: yarn test
-  - &common_steps
-    - checkout: *checkout
-    - restore_cache: *restore_cache_dependencies
-    - run: *run_npm_install
-    - save_cache: *save_cache_dependencies
-    #- setup_remote_docker
-    - run: *run_build
-  - &common_environment
-    docker: *docker_environment
-    steps: *common_steps
-
+    command: yarn
+  - &only_master_filter
+    branches:
+      only: master
+  - &yarn_test_steps
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+      - run: yarn test
+  - &build_steps
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+      - run: |
+          git diff --no-commit-id --name-only -r `git log -n 2 --oneline --pretty=format:"%h" | tail -n1` > gitchanges.txt
+          cd ./scripts # needed for compatible with travis implementation
+          node getChanges.js
+          node build.js
+      - save_cache:
+          key: build-deps-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/oih
+  - &deploy_steps
+      - restore_cache:
+          keys:
+            - build-deps-{{ .Branch }}-{{ .Revision }}
+      - run: |
+          cd ./scripts  # needed for compatible with travis implementation
+          node deploy.js
 jobs:
-  services/communication-router:
-    <<: *common_environment
+  deps:
+    docker: *node_env
+    working_directory: ~/oih
+    steps:
+      - checkout:
+          path: ~/oih
+      - run: *run_npm_install
+      - save_cache:
+          key: yarn-deps-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/oih
+  test:
+    docker: *node_env
+    steps:
+      - run: echo OK
+  build:
+    docker: *node_env
+    working_directory: ~/oih
+    steps: *build_steps
+  deploy:
+    docker: *node_env
+    working_directory: ~/oih
+    steps: *deploy_steps
+  communication-router-test:
+    docker: *node_env
     working_directory: ~/oih/services/communication-router
-  services/resource-coordinator:
-    <<: *common_environment
-    working_directory: ~/oih/services/resource-coordinator
-  services/iam:
-    <<: *common_environment
+    steps: *yarn_test_steps
+  iam-test:
+    docker: *node_env
     working_directory: ~/oih/services/iam
-  services/integration-content-repository:
-    <<: *common_environment
-    working_directory: ~/oih/services/integration-content-repository
-  services/scheduler:
-    <<: *common_environment
+    steps: *yarn_test_steps
+  resource-coordinator-test:
+    docker: *node_env
+    working_directory: ~/oih/services/resource-coordinator
+    steps: *yarn_test_steps
+  scheduler-test:
+    docker: *node_env
     working_directory: ~/oih/services/scheduler
-  services/secret-service:
-    <<: *common_environment
+    steps: *yarn_test_steps
+  secret-service-test:
+    docker: *node_env
     working_directory: ~/oih/services/secret-service
-  lib/backend-commons-lib:
-    <<: *common_environment
+    steps: *yarn_test_steps
+  lib-backend-commons-lib-test:
+    docker: *node_env
     working_directory: ~/oih/lib/backend-commons-lib
-  lib/scheduler:
-    <<: *common_environment
+    steps: *yarn_test_steps
+  lib-resource-coordinator-test:
+    docker: *node_env
+    working_directory: ~/oih/lib/resource-coordinator
+    steps: *yarn_test_steps
+  lib-scheduler-test:
+    docker: *node_env
     working_directory: ~/oih/lib/scheduler
-  lib/webhooks:
-    <<: *common_environment
+    steps: *yarn_test_steps
+  lib-webhooks-test:
+    docker: *node_env
     working_directory: ~/oih/lib/webhooks
-
+    steps: *yarn_test_steps
+  icr-test:
+    docker: *node_env
+    working_directory: ~/oih/services/integration-content-repository
+    steps: *yarn_test_steps
 workflows:
-  version: 2
-  build_development:
+  pipeline:
     jobs:
-      - services/communication-router
-      - services/resource-coordinator
-      #- services/iam
-      #- services/integration-content-repository
-      - services/scheduler
-      - services/secret-service
-      - lib/backend-commons-lib
-      - lib/scheduler
-      - lib/webhooks
+      - deps
+      - communication-router-test:
+          requires:
+            - lib-webhooks-test
+      - iam-test:
+          requires:
+            - deps
+      - resource-coordinator-test:
+          requires:
+            - lib-resource-coordinator-test
+      - scheduler-test:
+          requires:
+            - lib-scheduler-test
+      - secret-service-test:
+          requires:
+            - deps
+      - icr-test:
+          requires:
+            - deps
+      - lib-backend-commons-lib-test:
+          requires:
+            - deps
+      - lib-resource-coordinator-test:
+          requires:
+            - lib-backend-commons-lib-test
+      - lib-scheduler-test:
+          requires:
+            - lib-backend-commons-lib-test
+      - lib-webhooks-test:
+          requires:
+            - lib-backend-commons-lib-test
+      - test:
+          requires:
+            - communication-router-test
+            - iam-test
+            - resource-coordinator-test
+            - scheduler-test
+            - secret-service-test
+            - icr-test
+      - build:
+          requires:
+            - test
+          filters: *only_master_filter
+      - deploy:
+          requires:
+            - build
+          filters: *only_master_filter

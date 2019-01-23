@@ -20,6 +20,7 @@ router.get('/', async (req, res, next) => {
         const code = queryObject.code;
 
         const stateObject = JSON.parse(base64url.decode(queryObject.state));
+
         const flow = await AuthFlowDAO.findById(stateObject.flowId);
 
         const authClient = await AuthClientDAO.findById(flow.authClientId);
@@ -62,7 +63,7 @@ router.get('/', async (req, res, next) => {
             // create new secret & token
             secret = await SecretDAO.create({
                 name: authClient.name,
-                owner: {
+                owners: {
                     entityId: flow.creator,
                     entityType: flow.creatorType,
                 },
@@ -72,9 +73,6 @@ router.get('/', async (req, res, next) => {
                     refreshToken: tokens.refresh_token,
                     accessToken: tokens.access_token,
                     scope,
-                    endpoint: {
-                        token: authClient.endpoint.token,
-                    },
                     externalId,
                     expires,
                 },

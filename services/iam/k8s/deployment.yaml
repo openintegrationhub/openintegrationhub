@@ -23,6 +23,8 @@ spec:
               key: url
         - name: IAM_AUTH_TYPE
           value: basic
+        - name: IAM_PORT
+          value: '3099'
         - name: IAM_BASEURL
           value: 'https://iam.openintegrationhub.com'
         - name: IAM_ORIGINWHITELIST
