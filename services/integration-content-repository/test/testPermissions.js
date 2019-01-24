@@ -29,6 +29,7 @@ const log = require('../app/config/logger'); // eslint-disable-line
 
 const permittedId = 'PermitGuy';
 const unpermittedId = 'UnpermitGuy';
+const partpermittedId = 'PartpermitGuy';
 
 const now = Math.round(new Date().getTime() / 1000);
 
@@ -74,10 +75,31 @@ const unpermittedUser = {
   iss: 'Test_Issuer',
 };
 
+const partpermittedUser = {
+  sub: partpermittedId,
+  username: 'guest@example.com',
+  role: 'GUEST',
+  permissions: ['schoko.riegel'],
+  memberships: [
+    {
+      role: 'TENANT_Guest',
+      tenant: 'testTenant1',
+      permissions: ['flows.read'],
+    },
+  ],
+  iat: now,
+  exp: now + 1000,
+  aud: 'Test_Audience',
+  iss: 'Test_Issuer',
+};
+
+
 // Converts the payloads into json web tokens
 const permitToken = jwt.sign(permittedUser, 'Test_Secret');
 const unpermitToken = jwt.sign(unpermittedUser, 'Test_Secret');
+const partpermitToken = jwt.sign(partpermittedUser, 'Test_Secret');
 let flowId1;
+let flowId2;
 let app;
 
 beforeAll(async () => {
@@ -174,5 +196,112 @@ describe('Permissions', () => {
       .set('Authorization', `Bearer ${unpermitToken}`);
 
     expect(res.status).toEqual(403);
+  });
+
+  test('should not be able to add a flow without write permission', async () => {
+    try {
+      const res = await request
+        .post('/flows/')
+        .set('Authorization', `Bearer ${partpermitToken}`)
+        .set('accept', 'application/json')
+        .set('Content-Type', 'application/json')
+        .send({
+          type: 'ordinary',
+          name: 'WiceToSnazzy',
+          status: 'active',
+          description: 'A description',
+          owners: [
+            { id: 'testTenant1', type: 'tenant' },
+          ],
+        });
+
+      expect(res.status).toEqual(403);
+    } catch (e) {
+      log.error(e);
+    }
+  });
+
+  test('should add a second flow belonging to a tenant', async () => {
+    try {
+      const res = await request
+        .post('/flows/')
+        .set('Authorization', `Bearer ${permitToken}`)
+        .set('accept', 'application/json')
+        .set('Content-Type', 'application/json')
+        .send({
+          type: 'ordinary',
+          name: 'WiceToSnazzy',
+          status: 'active',
+          description: 'A description',
+          owners: [
+            { id: 'testTenant1', type: 'tenant' },
+          ],
+        });
+
+      expect(res.status).toEqual(201);
+      expect(res.text).not.toHaveLength(0);
+      const j = JSON.parse(res.text);
+      expect(j).not.toBeNull();
+
+      expect(j).toHaveProperty('_id');
+      flowId2 = j._id;
+    } catch (e) {
+      log.error(e);
+    }
+  });
+
+  test('should get the second flow through tenant permissions', async () => {
+    const res = await request
+      .get(`/flows/${flowId2}`)
+      .set('Authorization', `Bearer ${partpermitToken}`);
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+
+    expect(j).not.toBeNull();
+    expect(j.name).toEqual('WiceToSnazzy');
+    expect(j).toHaveProperty('_id');
+    expect(j).toHaveProperty('graph');
+    expect(j.graph).toHaveProperty('nodes');
+    expect(j.graph).toHaveProperty('edges');
+  });
+
+  test('should not be able to edit the second flow without a write permission', async () => {
+    try {
+      const res = await request
+        .patch(`/flows/${flowId2}`)
+        .set('Authorization', `Bearer ${partpermitToken}`)
+        .set('accept', 'application/json')
+        .set('Content-Type', 'application/json')
+        .send({
+          type: 'ordinary',
+          name: 'WiceToSnazzy',
+          status: 'active',
+          description: 'A description',
+          owners: [
+            { id: 'testTenant1', type: 'tenant' },
+          ],
+        });
+
+      expect(res.status).toEqual(403);
+      expect(res.text).not.toHaveLength(0);
+    } catch (e) {
+      log.error(e);
+    }
+  });
+
+  test('should not be able to delete the second flow without a write permission', async () => {
+    try {
+      const res = await request
+        .delete(`/flows/${flowId2}`)
+        .set('Authorization', `Bearer ${partpermitToken}`)
+        .set('accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(res.status).toEqual(403);
+      expect(res.text).not.toHaveLength(0);
+    } catch (e) {
+      log.error(e);
+    }
   });
 });

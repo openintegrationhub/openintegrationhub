@@ -5,6 +5,7 @@
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
+
 // Sets the environment variables for the iam middleware.
 // This has to happen before server.js is required
 process.env.IAM_UPDATE_USERDATA = false;
