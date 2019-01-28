@@ -3,7 +3,7 @@ const { Flow } = Lib;
 const { FlowsDao } = require('@openintegrationhub/resource-coordinator');
 
 class FlowsK8sDao extends FlowsDao {
-    constructor(k8s) {
+    constructor({ k8s }) {
         super();
         this._crdClient = k8s.getCRDClient();
     }

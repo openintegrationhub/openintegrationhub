@@ -5,7 +5,7 @@ const KubernetesRunningFlowNode = require('./KubernetesRunningFlowNode');
 const FlowSecret = require('./FlowSecret');
 
 class KubernetesDriver extends BaseDriver {
-    constructor(config, logger, k8s) {
+    constructor({ config, logger, k8s }) {
         super();
         this._config = config;
         this._logger = logger;
