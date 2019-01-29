@@ -20,6 +20,7 @@
     "backend-commons-lib": "*",
     "express": "4.16.3",
     "lodash": "4.17.11",
+    "mongoose": "5.4.7",
     "rabbitmq-stats": "1.1.2",
     "uuid": "3.3.2"
   },
