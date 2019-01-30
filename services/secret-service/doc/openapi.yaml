@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   description: "Secrets service is used in the Open Integration Hub for managing secrets used in integration flows."
-  version: "2.2.0"
+  version: "0.1.0"
   title: "Secrets Service"
   license:
     name: "Apache 2.0"
@@ -51,7 +51,9 @@ paths:
           application/json:
             schema:
               type: "object"
-              $ref: "#/components/schemas/MutableAuthClient"
+              properties:
+                data:
+                  $ref: "#/components/schemas/MutableAuthClient"
       responses:
         200:
           description: "successful operation"
@@ -59,7 +61,9 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/MutableAuthClient"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/MutableAuthClient"
         405:
           description: "Invalid input"
       security:
@@ -85,7 +89,9 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/MutableAuthClient"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/MutableAuthClient"
         400:
           description: "Invalid ID supplied"
         404:
@@ -108,7 +114,9 @@ paths:
           application/json:
             schema:
               type: "object"
-              $ref: "#/components/schemas/MutableAuthClient"
+              properties:
+                data:
+                  $ref: "#/components/schemas/MutableAuthClient"
       responses:
         200:
           description: "successful operation"
@@ -116,7 +124,9 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/MutableAuthClient"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AuthClient"
         405:
           description: "Invalid input"
         404:
@@ -258,7 +268,9 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/Secret"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Secret"
         400:
           description: "Invalid ID supplied"
         404:
@@ -283,7 +295,9 @@ paths:
           application/json:
             schema:
               type: "object"
-              $ref: "#/components/schemas/MutableSecret"
+              properties:
+                data:
+                  $ref: "#/components/schemas/MutableSecret"
       responses:
         200:
           description: "successful operation"
@@ -291,7 +305,9 @@ paths:
             application/json:
               schema:
                 type: "object"
-                $ref: "#/components/schemas/Secret"
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Secret"
         405:
           description: "Invalid input"
       security:
@@ -337,7 +353,6 @@ components:
       required:
         - clientId
         - clientSecret
-        - refreshTokenUrl
       properties:
         clientId:
           type: string
@@ -345,70 +360,31 @@ components:
           type: string
         redirectUri:
           type: string
-        endpoint:
+        endpoints:
           type: object
           properties:
             auth:
               type: string
             token:
               type: string
-            userinfo:
-              type: string
-            revocation:
-              type: string
-            endSession:
-              type: string
           required:
             - auth
             - token
-        predefinedScope:
-          type: string
-        mappings:
-          type: object
-          properties:
-            scope:
-              type: object
-              properties:
-                key:
-                  type: string
-              required:
-                - key
-            externalId:
-              type: object
-              properties:
-                source:
-                  type: string
-                  enum: [id_token, access_token, userinfo]
-                key:
-                  type: string
-              required:
-                - source
-                - key
       example: {
         "_id": "5c06ee51120e789235d9dc19",
-        "endpoint": {
+        "endpoints": {
           "auth": "https://accounts.google.com/o/oauth2/v2/auth?prompt=consent&scope={{scope}}&access_type=offline&include_granted_scopes=true&state={{state}}&redirect_uri={{redirectUri}}&response_type=code&client_id={{clientId}}",
-          "token": "https://www.googleapis.com/oauth2/v4/token",
-          "userinfo": "https://www.googleapis.com/oauth2/v4/userinfo"
+          "token": "https://www.googleapis.com/oauth2/v4/token"
         },
         "clientId": "myclientid",
         "clientSecret": "shhhhhhhh",
         "redirectUri": "http://localhost:9001/api/v1/callback",
-        "mappings": {
-          "externalId": {
-            "source": "id_token",
-            "key": "sub"
-          },
-          "scope": {
-            "key": "scope"
-          }
-        },
         "type": "OA2_AUTHORIZATION_CODE",
         "name": "example google oAuth2",
-        "owner": [
+        "owners": [
         {
-          "entityId": "u4",
-          "entityType": "USER"
+          "id": "u4",
+          "type": "USER"
         }
         ],
       }
@@ -419,7 +395,7 @@ components:
         - nonce
         - signature
         - signatureMethod
-        - version
+        - verifier
       properties:
         name:
           type: string
@@ -433,7 +409,7 @@ components:
           type: string
         signatureMethod:
           type: string
-        version:
+        verifier:
           type: string
     MutableAuthClient:
       required:
@@ -463,12 +439,10 @@ components:
           clientId: abc
           clientSecret: def
           redirectUri: http://example.com
-          endpoint: {
+          endpoints: {
             auth: https://auth.example.com?access_type=offline,
-            token: https://auth.example.com/auth,
-            userinfo: https://user.example.com
+            token: https://auth.example.com/auth
           }
-          predefinedScope: userinfo.read
         owners: [
         {
           id: '585430d3f02852a8a9fac45e',
@@ -596,26 +570,6 @@ components:
         authClientId:
           type: string
           description: Id of the auth client this secret was created with
-        externalId:
-          type: string
-          description: Unique user id in the external system. When updating/extending a secret for an existing user account (e.g. Google), we want to reference an existing secret instead of creating always new secrets.
-      example:
-        type: OA2_AUTHORIZATION_CODE
-        name: My OAuth2 Secret
-        value: {
-          "authClientId": "5c06ee51120e789235d9dc19",
-          "refreshToken": "my_secret_refresh_token",
-          "accessToken": "my_secret_access_token",
-          "scope": "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/bigquery",
-          "externalId": "usersexternalidwithgoogle",
-          "expires": "2019-01-07T16:36:53.066Z"
-        }
-        owner: [
-        {
-          id: '585430d3f02852a8a9fac45e',
-          type: 'workspace'
-        }
-        ]
     OAuth1Secret:
       type: object
       required:
@@ -649,9 +603,9 @@ components:
         - entityId
         - entityType
       properties:
-        entityId:
+        id:
           type: string
-        entityType:
+        type:
           type: string
           description: Type of Owner entity, e.g. GROUP, TENANT, USER, etc.
     Meta:
