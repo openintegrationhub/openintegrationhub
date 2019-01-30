@@ -17,11 +17,13 @@ class Server {
   constructor() {
     this.app = express();
     this.app.disable('x-powered-by');
+    
     this.app.use((req, res, next) => {
       if (req.method === "OPTIONS") {
         return res.status(200).end();
       }
-    }
+    });
+    
     // This middleware insures we always have security headers
      this.app.use(async (req, res, next) => {
        res.append('Strict-Transport-Security', 'max-age=3600');
