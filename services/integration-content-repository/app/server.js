@@ -21,6 +21,7 @@ class Server {
       if (req.method === 'OPTIONS') {
         return res.status(200).end();
       }
+      next();
     });
     // This middleware insures we always have security headers
     this.app.use(async (req, res, next) => {
