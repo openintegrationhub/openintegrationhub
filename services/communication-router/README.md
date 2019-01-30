@@ -1,6 +1,30 @@
 # Communication Router
 Receives http calls and passes messages to execution. Based on [@openintegrationhub/webhooks](../../lib/webhooks).
 
+## How it works
+It listens for incoming HTTP connections, serializes incoming data and puts it to the queue of the first node of the flow. The message is being consumed and processed by the component.
+
+### Available endpoints
+- `HEAD /hook/{flowId}` - returns `200` if a flow is found and ready for receiving messages, otherwise `404`. This endpoint doesn't process any incoming data.
+- `GET /hook/{flowId}` - this endpoint processes incoming data. It's possible to pass message arguments as query params and headers.
+- `POST /hook/{flowId}` - this endpoint processes incoming data. It allows to pass data in request body, headers or query params.
+
+## Prerequisites
+- Kubernetes cluster
+- RabbitMQ
+
+## How to build
+```
+docker build -t openintegrationhub/communication-router:latest -f Dockerfile ../../
+```
+or
+```
+VERSION=latest npm run build:docker
+```
+
+## How to deploy
+Kubernetes descriptors for Communication Router along with the other core platform microservices can be found in the [platform](../../platform) directory.
+
 ## Environment variables
 
 #### General
