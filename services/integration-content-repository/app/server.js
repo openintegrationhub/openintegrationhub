@@ -30,7 +30,6 @@ class Server {
        res.append('Content-Security-Policy', "frame-ancestors 'none'");
        next();
      });
-  }
 
   setupRoutes() {
     log.debug('setting routes...');
