@@ -600,8 +600,8 @@ components:
     Owner:
       type: object
       required:
-        - entityId
-        - entityType
+        - id
+        - type
       properties:
         id:
           type: string
