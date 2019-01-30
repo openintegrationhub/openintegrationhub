@@ -14,7 +14,7 @@ const swaggerDocument = require('./api/swagger/swagger.json');
 const log = require('./config/logger');
 
 class Server {
- constructor() {
+  constructor() {
    this.app = express();
    this.app.disable('x-powered-by');
    this.app.use((req, res, next) => {
