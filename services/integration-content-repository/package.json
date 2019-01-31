@@ -1,7 +1,7 @@
 {
   "name": "integration-content-repository",
   "version": "0.0.5",
-  "description": "",
+  "description": "Stores and manages integration flows.",
   "main": "index.js",
   "scripts": {
     "start": "node app/index.js",
@@ -16,6 +16,7 @@
     "body-parser": "^1.18.2",
     "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
+    "cors": "^2.8.5",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.1.3",

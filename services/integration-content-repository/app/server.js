@@ -6,8 +6,8 @@ const express = require('express');
 
 const swaggerUi = require('swagger-ui-express');
 const iamMiddleware = require('@openintegrationhub/iam-utils');
+const cors = require('cors');
 const config = require('./config/index');
-
 
 const swaggerDocument = require('./api/swagger/swagger.json');
 
@@ -17,22 +17,8 @@ class Server {
   constructor() {
     this.app = express();
     this.app.disable('x-powered-by');
-
-    this.app.use(async (req, res, next) => {
-      if (req.method === 'OPTIONS') {
-        res.status(200).end();
-      }
-      return next();
-    });
-
-    // This middleware insures we always have security headers
-    this.app.use(async (req, res, next) => {
-      res.append('Strict-Transport-Security', 'max-age=3600');
-      res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-      res.append('Content-Security-Policy', "default-src 'self'");
-      res.append('Content-Security-Policy', "frame-ancestors 'none'");
-      next();
-    });
+    this.app.use(cors());
+    this.app.options('*', cors());
   }
 
   setupRoutes() {
