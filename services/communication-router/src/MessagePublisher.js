@@ -3,10 +3,10 @@ const { errors } = require('backend-commons-lib');
 const { ResourceNotFoundError } = errors;
 
 class OIH_MessagePublisher extends MessagePublishers.Base {
-    constructor(queueCreator, amqpChannel) {
+    constructor({queueCreator, channel}) {
         super();
         this._queueCreator = queueCreator;
-        this._channel = amqpChannel;
+        this._channel = channel;
     }
 
     async publish(flow, msg, msgOpts) {

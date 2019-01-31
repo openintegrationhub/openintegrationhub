@@ -39,6 +39,9 @@ deployment.yaml.
 - Run the image with `docker run --network="host" [IMAGENAME]`
 - If using the IAM middleware/features, set the environment variables to match those used by your IAM instance by using the `-e` option for `docker run`. For example: `docker run -e "IAM_JWT_HMAC_SECRET=secret" -e "IAM_JWT_AUDIENCE=audience" -e "IAM_JWT_ISSUER=issuer" -e "IAM_BASE_URL=http://localhost:3099" -t --network="host" [IMAGENAME]`
 
+### Use of IAM permission system.
+By default, the ICR derives read and write permissions implicitly from the user's tenant roles, as defined in the config. However, it can also make use of the IAM's permission system, allowing for a finer control of each user's permissions. To use this system instead of the default role-based one, set the environment variable USE_PERMISSIONS to true. Make certain that your user object has the "permission" arrays according to the latest IAM data model, and that they are endowed with the necessary permissions as defined in the ICR config.
+
 ## REST-API documentation
 
 Visit http://localhost:3001/docs to view the Swagger API-Documentation
