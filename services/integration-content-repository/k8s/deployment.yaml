@@ -8,10 +8,10 @@ spec:
   template:
     metadata:
       labels:
-        app: icr
+        app: integration-content-repository
     spec:
       containers:
-        - name: icr
+        - name: integration-content-repository
           image: openintegrationhub/integration-content-repository:latest
           imagePullPolicy: Always
           ports:
