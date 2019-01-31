@@ -2,7 +2,7 @@ const uuid = require('uuid/v1');
 const { SchedulePublisher } = require('@openintegrationhub/scheduler');
 
 class OIH_SchedulePublisher extends SchedulePublisher {
-    constructor(logger, queueCreator, channel) {
+    constructor({logger, queueCreator, channel}) {
         super();
         this._logger = logger;
         this._queueCreator = queueCreator;

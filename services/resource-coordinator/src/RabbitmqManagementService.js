@@ -2,7 +2,7 @@ const url = require('url');
 const RabbitmqManagement = require('rabbitmq-stats');
 
 class RabbitmqManagementService {
-    constructor(config, logger) {
+    constructor({config, logger}) {
         this._config = config;
         this._logger = logger.child({service: 'RabbitmqManagement'});
     }
