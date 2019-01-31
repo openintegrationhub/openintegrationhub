@@ -1,7 +1,7 @@
 const { BaseDriver } = require('@openintegrationhub/resource-coordinator');
 const uuid = require('uuid/v4');
 const _ = require('lodash');
-const KubernetesRunningApp = require('./KubernetesRunningNode');
+const KubernetesRunningFlowNode = require('./KubernetesRunningFlowNode');
 const FlowSecret = require('./FlowSecret');
 
 class KubernetesDriver extends BaseDriver {
@@ -15,8 +15,9 @@ class KubernetesDriver extends BaseDriver {
 
     async createApp(flow, node, envVars) {
         this._logger.info({flow: flow.id}, 'Going to deploy job to k8s');
-
-        const descriptor = this._buildDescriptor(flow, node, envVars);
+        const env = this._prepareEnvVars(flow, node, envVars);
+        const nodeSecret = await this._ensureFlowNodeSecret(flow, node, env);
+        const descriptor = this._buildDescriptor(flow, node, nodeSecret);
         this._logger.trace(descriptor, 'going to deploy a job to k8s');
         try {
             await this._batchClient.jobs.post({body: descriptor});
@@ -25,21 +26,31 @@ class KubernetesDriver extends BaseDriver {
         }
     }
 
-    async initFlow(flow, secretEnvVars) {
-        await this._ensureFlowSecret(flow, secretEnvVars);
-    }
-
-    async _ensureFlowSecret(flow, secretEnvVars) {
-        const flowSecret = await this._getFlowSecret(flow);
+    async _ensureFlowNodeSecret(flow, node, secretEnvVars) {
+        const flowSecret = await this._getFlowNodeSecret(flow, node);
         if (!flowSecret) {
-            return this._createFlowSecret(flow, secretEnvVars);
+            return this._createFlowNodeSecret(flow, node, secretEnvVars);
         }
+
+        flowSecret.data = secretEnvVars;
+        await this._updateFlowNodeSecret(flowSecret);
+
         return flowSecret;
     }
 
-    async _getFlowSecret(flow) {
+    async _updateFlowNodeSecret(flowSecret) {
+        const secretName = flowSecret.metadata.name;
+        this._logger.debug({secretName}, 'About to update the secret');
+        await this._coreClient.secrets(secretName).put({
+            body: flowSecret.toDescriptor()
+        });
+        return flowSecret;
+    }
+
+    async _getFlowNodeSecret(flow, node) {
         try {
-            const result = await this._coreClient.secrets(flow.id).get();
+            const secretName = this._getFlowNodeSecretName(flow, node);
+            const result = await this._coreClient.secrets(secretName).get();
             return FlowSecret.fromDescriptor(result.body);
         } catch (e) {
             if (e.statusCode === 404) {
@@ -49,12 +60,17 @@ class KubernetesDriver extends BaseDriver {
         }
     }
 
-    async _createFlowSecret(flow, data) {
-        this._logger.debug('About to create a secret');
+    _getFlowNodeSecretName(flow, node) {
+        return `${flow.id}${node.id}`.toLowerCase().replace(/[^0-9a-z]/g, '');
+    }
+
+    async _createFlowNodeSecret(flow, node, data) {
+        const secretName = this._getFlowNodeSecretName(flow, node);
+        this._logger.debug({secretName}, 'About to create a secret');
 
         const flowSecret = new FlowSecret({
             metadata: {
-                name: flow.id,
+                name: secretName,
                 namespace: this._config.get('NAMESPACE'),
                 ownerReferences: [
                     {
@@ -98,32 +114,16 @@ class KubernetesDriver extends BaseDriver {
     }
 
     async getAppList() {
-        return ((await this._batchClient.jobs.get()).body.items || []).map(i => new KubernetesRunningApp(i));
+        return ((await this._batchClient.jobs.get()).body.items || []).map(i => new KubernetesRunningFlowNode(i));
     }
 
-    _buildDescriptor(flow, node, envVars) {
-        const env = this._prepareEnvVars(flow, node, envVars);
-        return this._generateAppDefinition(flow, node, env);
+    _buildDescriptor(flow, node, nodeSecret) {
+        return this._generateAppDefinition(flow, node, nodeSecret);
     }
 
-    _generateAppDefinition(flow, node, envVars) {
+    _generateAppDefinition(flow, node, nodeSecret) {
         let appId = flow.id +'.'+ node.id;
         appId = appId.toLowerCase().replace(/[^0-9a-z]/g, '');
-
-        const env = Object.keys(envVars).map(key => ({
-            name: key,
-            value: envVars[key]
-        }));
-
-        env.push({
-            name: 'ELASTICIO_AMQP_URI',
-            valueFrom: {
-                secretKeyRef: {
-                    name: flow.id,
-                    key: 'AMQP_URI'
-                }
-            }
-        });
 
         return {
             apiVersion: 'batch/v1',
@@ -132,7 +132,9 @@ class KubernetesDriver extends BaseDriver {
                 name: appId,
                 namespace: this._config.get('NAMESPACE'),
                 annotations: {
-                    [KubernetesRunningApp.ANNOTATION_KEY]: flow.metadata.resourceVersion
+                    [KubernetesRunningFlowNode.ANNOTATION_KEY]: flow.metadata.resourceVersion,
+                    flowId: flow.id,
+                    nodeId: node.id
                 },
                 ownerReferences: [
                     {
@@ -155,7 +157,11 @@ class KubernetesDriver extends BaseDriver {
                             image: node.image,
                             name: 'apprunner',
                             imagePullPolicy: 'Always',
-                            env,
+                            envFrom: [{
+                                secretRef: {
+                                    name: nodeSecret.metadata.name
+                                }
+                            }],
                             resources: this._prepareResourcesDefinition(flow, node)
                         }]
                     }

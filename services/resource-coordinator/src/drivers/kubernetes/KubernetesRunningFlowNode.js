@@ -1,7 +1,7 @@
 const _ = require('lodash');
-const { RunningNode } = require('@openintegrationhub/resource-coordinator');
+const { RunningFlowNode } = require('@openintegrationhub/resource-coordinator');
 
-class KubernetesRunningNode extends RunningNode {
+class KubernetesRunningFlowNode extends RunningFlowNode {
     constructor(app) {
         super();
         this._app = app;
@@ -12,16 +12,20 @@ class KubernetesRunningNode extends RunningNode {
     }
 
     getFlowId() {
-        return this._getEnvVar('ELASTICIO_FLOW_ID');
+        return this._getAnnotationsValue('flowId');
     }
 
     getNodeId() {
-        return this._getEnvVar('ELASTICIO_STEP_ID');
+        return this._getAnnotationsValue('nodeId');
     }
 
     // @todo: not sure yet if we need to expose this API
     get flowVersion() {
         return _.get(this._getMetadataValue('annotations'), this.constructor.ANNOTATION_KEY);
+    }
+
+    _getAnnotationsValue(key) {
+        return _.get(this, `_app.metadata.annotations.${key}`);
     }
 
     _getMetadataValue(key) {
@@ -49,4 +53,4 @@ class KubernetesRunningNode extends RunningNode {
     }
 }
 
-module.exports = KubernetesRunningNode;
+module.exports = KubernetesRunningFlowNode;

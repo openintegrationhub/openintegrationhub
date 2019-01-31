@@ -1,26 +1,47 @@
 const uuid = require('uuid/v4');
 const { URL } = require('url');
+const _ = require('lodash');
 
 const { InfrastructureManager } = require('@openintegrationhub/resource-coordinator');
 
-class OIHInfrastructureManager extends InfrastructureManager {
-    constructor({ driver, rabbitmqManagement, amqpConnection, queueCreator, logger, config }) {
+class CredentialsStore {
+    constructor() {
+        this._store = {};
+    }
+
+    async get(flowId, nodeId) {
+        return _.get(this._store, [flowId, nodeId]);
+    }
+
+    async set(flowId, nodeId, credential) {
+        this._store[flowId] = this._store[flowId] || {};
+        this._store[flowId][nodeId] = credential;
+    }
+
+    async remove(flowId, nodeId) {
+        if (_.get(this._store, [flowId, nodeId])) {
+            delete this._store[flowId][nodeId];
+        }
+    }
+
+    async getAllForFlow(flowId) {
+        return this._store[flowId] || {};
+    }
+}
+
+class RabbitMqInfrastructureManager extends InfrastructureManager {
+    constructor({ rabbitmqManagement, amqpConnection, queueCreator, logger, config }) {
         super();
         this._config = config;
         this._logger = logger;
-        this._driver = driver;
         this._rabbitmqManagement = rabbitmqManagement;
         this._channelPromise = amqpConnection.createChannel();
         this._queueCreator = queueCreator;
+        this._credentialsStore = new CredentialsStore();
     }
 
     async createForFlow(flow) {
-        const amqpCredentials = await this._createFlowAmqpCredentials(flow);
-        const secretEnvVars = {
-            AMQP_URI: this._prepareAmqpUri(amqpCredentials)
-        };
-        await this._driver.initFlow(flow, secretEnvVars);
-        await this._queueCreator.makeQueuesForTheFlow(flow);
+        return await this._queueCreator.makeQueuesForTheFlow(flow);
     }
 
     async updateForFlow(flow, queuesStructure) {
@@ -30,13 +51,21 @@ class OIHInfrastructureManager extends InfrastructureManager {
 
     async deleteForFlow(flow, queuesStructure) {
         await this._deleteQueuesForFlow(flow, queuesStructure);
-        await this._deleteFlowAmqpCredentials(flow);
+        await this._deleteRabbitMqCredentialsForFlow(flow);
     }
 
     async getSettingsForNodeExecution(flow, node) {
         //@todo: don't ensure queues every time
-        const flowEnvVars = await this._queueCreator.makeQueuesForTheFlow(flow);
-        return flowEnvVars[node.id];
+        const flowSettings = await this._queueCreator.makeQueuesForTheFlow(flow);
+        const rabbitCredentials = await this._ensureRabbitMqCredentialsForFlowNode(flow, node);
+        const AMQP_URI = this._prepareAmqpUri(rabbitCredentials);
+
+        const stepSettings = flowSettings[node.id] || {};
+        Object.assign(stepSettings, {
+            AMQP_URI
+        });
+
+        return stepSettings;
     }
 
     _prepareAmqpUri({ username, password }) {
@@ -47,34 +76,50 @@ class OIHInfrastructureManager extends InfrastructureManager {
         return baseUri.toString();
     }
 
-    _createFlowAmqpCredentials(flow) {
-        return this._createAmqpCredentials(flow);
-    }
+    async _ensureRabbitMqCredentialsForFlowNode(flow, node) {
+        const creds = await this._getRabbitMqCredentials(flow, node);
+        if (creds) {
+            this._logger.trace(creds, 'Found created credentials');
+            return creds;
+        }
 
-    async _createAmqpCredentials(flow) {
-        const username = flow.id;
+        const username = `${flow.id}_${node.id}`.toLowerCase().replace(/[^a-z0-9]/g, '');
         const password = uuid();
 
-        this._logger.trace('About to create RabbitMQ user');
+        this._logger.trace({username, password}, 'About to create RabbitMQ user');
+        // @todo: create node user
         await this._rabbitmqManagement.createFlowUser({
             username,
             password,
             flow
         });
-        this._logger.trace('Created RabbitMQ user');
+        this._logger.trace({username}, 'Created RabbitMQ user');
 
-        return {
-            username,
-            password
-        };
+        const newCreds = {username, password};
+        await this._saveRabbitMqCredentials(flow, node, newCreds);
+
+        return newCreds;
     }
 
-    _deleteFlowAmqpCredentials(flow) {
-        return this._deleteAmqpCredentials({username: flow.id});
+    _getRabbitMqCredentials(flow, node) {
+        return this._credentialsStore.get(flow.id, node.id);
     }
 
-    _deleteAmqpCredentials(credentials) {
-        return this._rabbitmqManagement.deleteUser(credentials);
+    _saveRabbitMqCredentials(flow, node, credentials) {
+        return this._credentialsStore.set(flow.id, node.id, credentials);
+    }
+
+    _deleteRabbitMqCredentials(flow, node) {
+        return this._credentialsStore.remove(flow.id, node.id);
+    }
+
+    async _deleteRabbitMqCredentialsForFlow(flow) {
+        const flowCredentials = await this._credentialsStore.getAllForFlow(flow.id);
+        for (const [nodeId, credential] of Object.entries(flowCredentials)) {
+            this._logger.trace(credential, 'About to delete RabbitMQ credential');
+            await this._rabbitmqManagement.deleteUser(credential);
+            await this._deleteRabbitMqCredentials(flow, {id: nodeId});
+        }
     }
 
     async _deleteQueuesForFlow(flow, queuesStructure) {
@@ -92,4 +137,4 @@ class OIHInfrastructureManager extends InfrastructureManager {
     }
 }
 
-module.exports = OIHInfrastructureManager;
+module.exports = RabbitMqInfrastructureManager;
