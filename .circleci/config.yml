@@ -23,7 +23,7 @@ aliases:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
       - run: |
-          git diff --no-commit-id --name-only -r `git log -n 2 --oneline --pretty=format:"%h" | tail -n1` > gitchanges.txt
+          git diff --no-commit-id --name-only -r `git log -n 3 --oneline --pretty=format:"%h" | tail -n1` > gitchanges.txt
           cd ./scripts # needed for compatible with travis implementation
           node getChanges.js
           node build.js

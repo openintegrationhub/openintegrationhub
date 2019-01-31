@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: icr
+  name: integration-content-repository
   namespace: oih-dev-ns
 spec:
   replicas: 1
