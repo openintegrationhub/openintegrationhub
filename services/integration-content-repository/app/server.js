@@ -22,7 +22,7 @@ class Server {
       if (req.method === 'OPTIONS') {
         res.status(200).end();
       }
-      next();
+      return next();
     });
 
     // This middleware insures we always have security headers
