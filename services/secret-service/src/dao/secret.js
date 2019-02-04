@@ -1,6 +1,6 @@
 const Logger = require('@basaas/node-logger');
 const moment = require('moment');
-const remove = require('lodash/remove');
+const pull = require('lodash/pull');
 const crypto = require('../util/crypto');
 const { OA2_AUTHORIZATION_CODE } = require('../constant').AUTH_TYPE;
 const { ENCRYPT, DECRYPT } = require('../constant').CRYPTO.METHODS;
@@ -25,30 +25,22 @@ function cryptoSecret(secret, key, method = ENCRYPT, selection = []) {
     if (!key) {
         return secret;
     }
-    const processedFields = [];
     const fields = selection.length ? selection : SENSITIVE_FIELDS;
     fields.forEach((field) => {
         if (secret.value[field]) {
-            if (method === ENCRYPT
-                && secret.encryptedFields
-                && secret.encryptedFields.indexOf(field) !== -1) {
-                throw (new Error(`Field ${field} already encrypted!`));
+            if (method === ENCRYPT) {
+                if (secret.encryptedFields) {
+                    if (secret.encryptedFields.indexOf(field) !== -1) {
+                        throw (new Error(`Field ${field} already encrypted!`));
+                    }
+                    secret.encryptedFields.push(field);
+                }
+            } else if (secret.encryptedFields) {
+                pull(secret.encryptedFields, field);
             }
             secret.value[field] = crypto[method](secret.value[field], key);
-            processedFields.push(field);
         }
     });
-
-    if (secret.encryptedFields) {
-        if (method === ENCRYPT) {
-            processedFields.forEach((field) => {
-                secret.encryptedFields.push(field);
-            });
-        } else {
-            remove(secret.encryptedFields, field => processedFields.indexOf(field) !== -1);
-        }
-    }
-
     return secret;
 }
 
@@ -129,10 +121,14 @@ const refresh = (secret, key) => new Promise(async (resolve, reject) => {
 
 
 module.exports = {
-    async create(obj, key = null) {
-        let secret = new Secret[obj.type]({ ...obj });
+    async create(data, key = null) {
+        if (data.encryptedFields) {
+            delete data.encryptedFields;
+        }
+        let secret = new Secret[data.type]({ ...data });
         secret = cryptoSecret(secret, key, ENCRYPT);
         await secret.save();
+
         return secret.toObject();
     },
     async findByEntityWithPagination(
@@ -163,9 +159,15 @@ module.exports = {
     },
 
     async update({ id, data }, key = null) {
+        let sensitiveFields = [];
+
+        if (data.encryptedFields) {
+            delete data.encryptedFields;
+        }
+
         if (data.value) {
-            const sensitiveFields = SENSITIVE_FIELDS.filter(
-                field => Object.keys(data.value).indexOf(field) !== -1,
+            sensitiveFields = SENSITIVE_FIELDS.filter(
+                field => field in data.value,
             );
 
             data = cryptoSecret(
@@ -186,6 +188,9 @@ module.exports = {
             _id: id,
         }, {
             $set: data,
+            $addToSet: {
+                encryptedFields: sensitiveFields,
+            },
         }, {
             new: true,
         }).lean();
