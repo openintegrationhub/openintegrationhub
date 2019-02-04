@@ -4,11 +4,13 @@ const url = require('url');
 const qs = require('querystring');
 const moment = require('moment');
 const base64url = require('base64url');
+const crypto = require('crypto');
 const AuthClientDAO = require('../../dao/auth-client');
 const AuthFlowDAO = require('../../dao/auth-flow');
 const SecretDAO = require('../../dao/secret');
 const authFlowManager = require('../../auth-flow-manager');
 const conf = require('../../conf');
+const { getKey } = require('../../middleware/key');
 
 const log = logger.getLogger(`${conf.logging.namespace}/callback`);
 
@@ -25,6 +27,10 @@ router.get('/', async (req, res, next) => {
 
         const authClient = await AuthClientDAO.findById(flow.authClientId);
 
+        // fetch key
+        req.keyParameter = flow.keyParameter;
+        const key = await getKey(req);
+
         // request tokens
         const tokens = await authFlowManager.continue(
             authClient,
@@ -32,40 +38,42 @@ router.get('/', async (req, res, next) => {
         );
         //
 
-        const expires = moment().add(tokens.expires_in, 'seconds').toISOString();
+        const expires = !Number.isNaN(tokens.expires_in)
+            ? moment().add(tokens.expires_in, 'seconds').toISOString() : moment(1e15).toISOString();
 
-        const externalId = await authFlowManager.getExternalId(authClient, tokens);
-        if (!externalId) {
-            log.error(new Error('Could not find external id.'));
-            return next({
-                status: 400,
-            });
+        let externalId = await authFlowManager.getExternalData(authClient, tokens, 'externalId');
+
+        if (externalId) {
+            const hash = crypto.createHash(conf.crypto.alg.hash);
+            hash.update(externalId);
+            externalId = hash.digest('hex');
         }
 
-        const scope = authFlowManager.getScope(authClient, tokens);
-        if (!scope) {
-            log.error(new Error('Could not find scope in token response.'));
-            return next({
-                status: 400,
-            });
-        }
+        const scope = tokens.scope || tokens.scopes || flow.scope;
 
-        let secret = await SecretDAO.findByExternalId(externalId, flow.authClientId);
+        // try to find secret by external id to prevent duplication
+        let secret = externalId && await SecretDAO.findByExternalId(externalId, flow.authClientId);
 
         if (secret) {
-            // update existing secret & token
-            secret.value.scope = scope;
-            secret.value.expires = expires;
-            secret.value.refreshToken = tokens.refresh_token;
-            secret.value.accessToken = tokens.access_token;
-            await secret.save();
+            secret = await SecretDAO.update({
+                id: secret._id,
+                data: {
+                    value: {
+                        scope,
+                        expires,
+                        externalId,
+                        refreshToken: tokens.refresh_token,
+                        accessToken: tokens.access_token,
+                    },
+                },
+            });
         } else {
-            // create new secret & token
+            // create new secret
             secret = await SecretDAO.create({
-                name: authClient.name,
+                name: flow.secretName || authClient.name,
                 owners: {
-                    entityId: flow.creator,
-                    entityType: flow.creatorType,
+                    id: flow.creator,
+                    type: flow.creatorType,
                 },
                 type: authClient.type,
                 value: {
@@ -76,7 +84,7 @@ router.get('/', async (req, res, next) => {
                     externalId,
                     expires,
                 },
-            });
+            }, key);
         }
         // clean up flow data
         await AuthFlowDAO.delete(flow._id);

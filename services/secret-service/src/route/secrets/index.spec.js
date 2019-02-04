@@ -60,26 +60,30 @@ describe('secrets', () => {
         expect(pagination.page).toEqual(1);
         expect(pagination.total).toEqual(0);
         expect(pagination.perPage).toEqual(conf.pagination.pageSize);
-        expect(pagination.totalPages).toEqual(0);
+        expect(pagination.totalPages).toEqual(1);
 
         // invalid request body
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                value: {},
-                type: 'not existing',
+                data: {
+                    name: 'string',
+                    value: {},
+                    type: 'not existing',
+                },
             })
             .expect(400);
         // add example secrets
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: SIMPLE,
-                value: {
-                    username: 'foo',
-                    passphrase: 'bar',
+                data: {
+                    name: 'string',
+                    type: SIMPLE,
+                    value: {
+                        username: 'foo',
+                        passphrase: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -87,11 +91,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: SIMPLE,
-                value: {
-                    username: 'foo',
-                    passphrase: 'bar',
+                data: {
+                    name: 'string',
+                    type: SIMPLE,
+                    value: {
+                        username: 'foo',
+                        passphrase: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -99,11 +105,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: API_KEY,
-                value: {
-                    key: 'foo',
-                    headerName: 'bar',
+                data: {
+                    name: 'string',
+                    type: API_KEY,
+                    value: {
+                        key: 'foo',
+                        headerName: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -111,11 +119,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: API_KEY,
-                value: {
-                    key: 'foo',
-                    headerName: 'bar',
+                data: {
+                    name: 'string',
+                    type: API_KEY,
+                    value: {
+                        key: 'foo',
+                        headerName: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -123,11 +133,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: API_KEY,
-                value: {
-                    key: 'foo',
-                    headerName: 'bar',
+                data: {
+                    name: 'string',
+                    type: API_KEY,
+                    value: {
+                        key: 'foo',
+                        headerName: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -135,11 +147,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: API_KEY,
-                value: {
-                    key: 'foo',
-                    headerName: 'bar',
+                data: {
+                    name: 'string',
+                    type: API_KEY,
+                    value: {
+                        key: 'foo',
+                        headerName: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -147,11 +161,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: API_KEY,
-                value: {
-                    key: 'foo',
-                    headerName: 'bar',
+                data: {
+                    name: 'string',
+                    type: API_KEY,
+                    value: {
+                        key: 'foo',
+                        headerName: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -159,11 +175,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: API_KEY,
-                value: {
-                    key: 'foo',
-                    headerName: 'bar',
+                data: {
+                    name: 'string',
+                    type: API_KEY,
+                    value: {
+                        key: 'foo',
+                        headerName: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -171,11 +189,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: API_KEY,
-                value: {
-                    key: 'foo',
-                    headerName: 'bar',
+                data: {
+                    name: 'string',
+                    type: API_KEY,
+                    value: {
+                        key: 'foo',
+                        headerName: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -183,11 +203,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: API_KEY,
-                value: {
-                    key: 'foo',
-                    headerName: 'bar',
+                data: {
+                    name: 'string',
+                    type: API_KEY,
+                    value: {
+                        key: 'foo',
+                        headerName: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -195,11 +217,13 @@ describe('secrets', () => {
         await request.post('/secrets')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: API_KEY,
-                value: {
-                    key: 'foo',
-                    headerName: 'bar',
+                data: {
+                    name: 'string',
+                    type: API_KEY,
+                    value: {
+                        key: 'foo',
+                        headerName: 'bar',
+                    },
                 },
             })
             .expect(200);
@@ -211,15 +235,15 @@ describe('secrets', () => {
         secrets = body.data;
         pagination = body.meta;
 
-        expect(secrets.length).toEqual(conf.pagination.pageSize);
+        expect(secrets.length).toEqual(10);
 
         expect(pagination.page).toEqual(1);
         expect(pagination.total).toEqual(11);
         expect(pagination.perPage).toEqual(conf.pagination.pageSize);
-        expect(pagination.totalPages).toEqual(Math.abs(11 / conf.pagination.pageSize));
+        expect(pagination.totalPages).toEqual(2);
 
         secrets.forEach((secret) => {
-            expect(secret.owners[0].entityId).toEqual(token.userToken1.value.sub);
+            expect(secret.owners[0].id).toEqual(token.userToken1.value.sub);
         });
 
         body = (await request.get('/secrets?page[number]=2&page[size]=2')
@@ -233,7 +257,7 @@ describe('secrets', () => {
         expect(pagination.page).toEqual(2);
         expect(pagination.total).toEqual(11);
         expect(pagination.perPage).toEqual(2);
-        expect(pagination.totalPages).toEqual(Math.abs(11 / 2));
+        expect(pagination.totalPages).toEqual(6);
 
         body = (await request.get('/secrets?page[number]=10&page[size]=100')
             .set(...global.userAuth1)
@@ -246,7 +270,7 @@ describe('secrets', () => {
         expect(pagination.page).toEqual(10);
         expect(pagination.total).toEqual(11);
         expect(pagination.perPage).toEqual(100);
-        expect(pagination.totalPages).toEqual(Math.abs(11 / 100));
+        expect(pagination.totalPages).toEqual(1);
 
         body = (await request.get('/secrets?page[number]=0&page[size]=100')
             .set(...global.userAuth1)
@@ -259,11 +283,11 @@ describe('secrets', () => {
         expect(pagination.page).toEqual(1);
         expect(pagination.total).toEqual(11);
         expect(pagination.perPage).toEqual(100);
-        expect(pagination.totalPages).toEqual(Math.abs(11 / 100));
+        expect(pagination.totalPages).toEqual(1);
     });
 
     test('Get the secret anonymously throws', async () => {
-        const secretBody = {
+        const data = {
             name: 'string333444',
             type: SIMPLE,
             value: {
@@ -275,15 +299,15 @@ describe('secrets', () => {
         // add example secrets
         const { body } = await request.post('/secrets')
             .set(...global.userAuth1)
-            .send(secretBody)
+            .send({ data })
             .expect(200);
 
-        await request.get(`/secrets/${body._id}`)
+        await request.get(`/secrets/${body.data._id}`)
             .expect(401);
     });
 
     test('Get the secret by id', async () => {
-        const secretBody = {
+        const data = {
             name: 'string123',
             type: SIMPLE,
             value: {
@@ -295,51 +319,17 @@ describe('secrets', () => {
         // add example secrets
         const { body } = await request.post('/secrets')
             .set(...global.userAuth1)
-            .send(secretBody)
+            .send({ data })
             .expect(200);
 
-        const secondResp = await request.get(`/secrets/${body._id}`)
+        const secondResp = await request.get(`/secrets/${body.data._id}`)
             .set(...global.userAuth1)
             .expect(200);
-        expect(secondResp.body.name).toEqual(secretBody.name);
-    });
-
-    test('Update a secret by id', async () => {
-        const secretBody = {
-            name: 'string123',
-            type: SIMPLE,
-            value: {
-                username: 'foo',
-                passphrase: 'bar',
-            },
-        };
-        const modifiedSecret = {
-            name: 'secret567',
-            value: {
-                username: 'specialName',
-            },
-        };
-
-        const { body } = await request.post('/secrets')
-            .set(...global.userAuth1)
-            .send(secretBody)
-            .expect(200);
-
-        // modify the secret
-        await request.patch(`/secrets/${body._id}`)
-            .set(...global.userAuth1)
-            .send(modifiedSecret)
-            .expect(200);
-
-        const modResp = await request.get(`/secrets/${body._id}`)
-            .set(...global.userAuth1)
-            .expect(200);
-        expect(modResp.body.name).toEqual(modifiedSecret.name);
-        expect(modResp.body.value.username).toEqual(modifiedSecret.value.username);
+        expect(secondResp.body.data.name).toEqual(data.name);
     });
 
     test('Raw secret only returned if authorized', async () => {
-        const secretBody = {
+        const data = {
             name: 'string123',
             type: SIMPLE,
             value: {
@@ -351,20 +341,20 @@ describe('secrets', () => {
         // add example secrets
         const { body } = await request.post('/secrets')
             .set(...global.userAuth1)
-            .send(secretBody)
+            .send({ data })
             .expect(200);
 
-        const secondResp = await request.get(`/secrets/${body._id}`)
+        const secondResp = await request.get(`/secrets/${body.data._id}`)
             .set(...global.userAuth1)
             .expect(200);
-        expect(secondResp.body.name).toEqual(secretBody.name);
-        expect(secondResp.body.value.passphrase).toEqual('***');
+        expect(secondResp.body.data.name).toEqual(data.name);
+        expect(secondResp.body.data.value.passphrase).toEqual('***');
 
-        const extraPermResp = await request.get(`/secrets/${body._id}`)
+        const extraPermResp = await request.get(`/secrets/${body.data._id}`)
             .set(...global.userToken1ExtraPerm)
             .expect(200);
-        expect(extraPermResp.body.name).toEqual(secretBody.name);
-        expect(extraPermResp.body.value.passphrase).toEqual(secretBody.value.passphrase);
+        expect(extraPermResp.body.data.name).toEqual(data.name);
+        expect(extraPermResp.body.data.value.passphrase).toEqual(data.value.passphrase);
     });
 
     test('Get the secret by wrong id returns 404', async () => {
@@ -374,7 +364,7 @@ describe('secrets', () => {
     });
 
     test('Modify the secret', async () => {
-        const secretBody = {
+        const data = {
             name: 'string567',
             type: SIMPLE,
             value: {
@@ -384,24 +374,43 @@ describe('secrets', () => {
         };
 
         // add example secrets
-        const { body } = await request.post('/secrets')
+        const secret = (await request.post('/secrets')
             .set(...global.userAuth1)
-            .send(secretBody)
-            .expect(200);
+            .send({ data })
+            .expect(200)).body.data;
 
-        await request.patch(`/secrets/${body._id}`)
+        let updatedSecret = (await request.patch(`/secrets/${secret._id}`)
             .set(...global.userAuth1)
-            .send({ name: 'newName2' })
-            .expect(200);
+            .send({
+                data: {
+                    name: 'newName2',
+                },
+            })
+            .expect(200)).body.data;
 
-        const secondResp = await request.get(`/secrets/${body._id}`)
-            .set(...global.userAuth1);
-        expect(secondResp.body.name).toEqual('newName2');
-        expect(secondResp.body.type).toEqual(secretBody.type);
+        expect(updatedSecret.name).toEqual('newName2');
+        expect(updatedSecret._id).toEqual(secret._id);
+
+        updatedSecret = (await request.patch(`/secrets/${secret._id}`)
+            .set(...global.userToken1ExtraPerm)
+            .send({
+                data: {
+                    name: 'second',
+                    value: {
+                        username: 'foo',
+                        passphrase: 'bar',
+                    },
+                },
+            })
+            .expect(200)).body.data;
+
+        expect(updatedSecret.name).toEqual('second');
+        expect(updatedSecret.value.username).toEqual('foo');
+        expect(updatedSecret.value.passphrase).toEqual('bar');
     });
 
     test('Delete secret', async () => {
-        const secretBody = {
+        const data = {
             name: 'string99',
             type: SIMPLE,
             value: {
@@ -413,14 +422,14 @@ describe('secrets', () => {
         // add example secrets
         const { body } = await request.post('/secrets')
             .set(...global.userAuth1)
-            .send(secretBody)
+            .send({ data })
             .expect(200);
 
-        await request.delete(`/secrets/${body._id}`)
+        await request.delete(`/secrets/${body.data._id}`)
             .set(...global.userAuth1)
-            .expect(200);
+            .expect(204);
 
-        await request.get(`/secrets/${body._id}`)
+        await request.get(`/secrets/${body.data._id}`)
             .set(...global.userAuth1)
             .expect(404);
     });
@@ -467,49 +476,53 @@ describe('secrets', () => {
             });
 
         // create auth client
-        const { authClientId } = (await request.post('/auth-clients')
+        const authClient = (await request.post('/auth-clients')
             .set(...global.userAuth1)
             .send({
-                type: OA2_AUTHORIZATION_CODE,
-                name: 'google oAuth2',
-                clientId: 'clientId',
-                clientSecret: 'clientSecret',
-                redirectUri: `http://localhost:${conf.port}/callback`,
-                endpoint: {
-                    auth: 'https://example.com/auth?'
-                            + 'scope={{scope}}&'
-                            + 'access_type=offline&'
-                            + 'include_granted_scopes=true&'
-                            + 'state={{state}}&'
-                            + 'redirect_uri={{redirectUri}}&'
-                            + 'response_type=code&'
-                            + 'client_id={{clientId}}',
-                    token: 'https://example.com/token',
-                    userinfo: 'https://example.com/userinfo',
-                },
-                mappings: {
-                    externalId: {
-                        source: 'id_token',
-                        key: 'sub',
+                data: {
+                    type: OA2_AUTHORIZATION_CODE,
+                    name: 'google oAuth2',
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    redirectUri: `http://localhost:${conf.port}/callback`,
+                    endpoints: {
+                        auth: 'https://example.com/auth?'
+                                + 'scope={{scope}}&'
+                                + 'access_type=offline&'
+                                + 'include_granted_scopes=true&'
+                                + 'state={{state}}&'
+                                + 'redirect_uri={{redirectUri}}&'
+                                + 'response_type=code&'
+                                + 'client_id={{clientId}}',
+                        token: 'https://example.com/token',
+                        userinfo: 'https://example.com/userinfo',
                     },
-                    scope: {
-                        key: 'scope',
+                    mappings: {
+                        externalId: {
+                            source: 'id_token',
+                            key: 'sub',
+                        },
+                        scope: {
+                            key: 'scope',
+                        },
                     },
                 },
             })
-            .expect(200)).body;
+            .expect(200)).body.data;
 
         // start initial token request with oauth2 code exchange
-        await request.post(`/auth-clients/${authClientId}/start-flow`)
+        await request.post(`/auth-clients/${authClient._id}/start-flow`)
             .set(...global.userAuth1)
             .send({
-                scope,
+                data: {
+                    scope,
+                },
             })
             .expect(200);
 
         // get authFlow id to set proper state value
         const authFlow = await AuthFlow.findOne({
-            authClientId,
+            authClientId: authClient._id,
         });
 
         // simulate external api call with valid state
@@ -532,16 +545,7 @@ describe('secrets', () => {
             .set(...global.userAuth1)
             .expect(200);
 
-
-        expect(body.value.accessToken).toEqual('new');
-
-
-        // fetch userinfo
-        const resp = await request.get(`/secrets/${_id}/userinfo`)
-            .set(...global.userAuth1)
-            .expect(200);
-
-        expect(resp.body.sub).toEqual('me');
+        expect(body.data.value.accessToken).toEqual('new');
 
         // fork test program
         const forkedTest = fork(`${__dirname}/test/forked-test.js`, {

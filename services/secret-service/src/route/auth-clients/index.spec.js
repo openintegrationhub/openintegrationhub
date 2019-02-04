@@ -44,38 +44,15 @@ describe('auth-clients', () => {
         await request.post('/auth-clients')
             .set(...global.userAuth1)
             .send({
-                name: 'string',
-                type: OA1_TWO_LEGGED,
-                consumerKey: 'string',
-                consumerSecret: 'string',
-                nonce: 'string',
-                signature: 'string',
-                signatureMethod: 'string',
-                version: 'string',
-            })
-            .expect(200);
-
-        await request.post('/auth-clients')
-            .set(...global.userAuth1)
-            .send({
-                type: OA2_AUTHORIZATION_CODE,
-                name: 'oAuth2',
-                clientId: 'string',
-                clientSecret: 'string',
-                redirectUri: '/dev/null',
-                endpoint: {
-                    auth: 'http://',
-                    token: 'http://',
-                    userinfo: 'http://',
-                },
-                mappings: {
-                    externalId: {
-                        source: 'id_token',
-                        key: 'sub',
-                    },
-                    scope: {
-                        key: 'scope',
-                    },
+                data: {
+                    name: 'string',
+                    type: OA1_TWO_LEGGED,
+                    consumerKey: 'string',
+                    consumerSecret: 'string',
+                    nonce: 'string',
+                    signature: 'string',
+                    signatureMethod: 'string',
+                    version: 'string',
                 },
             })
             .expect(200);
@@ -83,11 +60,40 @@ describe('auth-clients', () => {
         await request.post('/auth-clients')
             .set(...global.userAuth1)
             .send({
-                name: 'oAuth2',
-                clientId: 'string',
-                clientSecret: 'string',
-                refreshTokenUrl: 'string',
-                type: 'foo',
+                data: {
+                    type: OA2_AUTHORIZATION_CODE,
+                    name: 'oAuth2',
+                    clientId: 'string',
+                    clientSecret: 'string',
+                    redirectUri: '/dev/null',
+                    endpoints: {
+                        auth: 'http://',
+                        token: 'http://',
+                        userinfo: 'http://',
+                    },
+                    mappings: {
+                        externalId: {
+                            source: 'id_token',
+                            key: 'sub',
+                        },
+                        scope: {
+                            key: 'scope',
+                        },
+                    },
+                },
+            })
+            .expect(200);
+
+        await request.post('/auth-clients')
+            .set(...global.userAuth1)
+            .send({
+                data: {
+                    name: 'oAuth2',
+                    clientId: 'string',
+                    clientSecret: 'string',
+                    refreshTokenUrl: 'string',
+                    type: 'foo',
+                },
             })
             .expect(400);
     });
@@ -97,49 +103,51 @@ describe('auth-clients', () => {
             .set(...global.userAuth1)
             .expect(200);
 
-        expect(body.length).toBe(2);
+        expect(body.data.length).toBe(2);
     });
 
     test('Get auth client by id', async () => {
-        const { authClientId } = (await request.post('/auth-clients')
-            .set(...global.userAuth1)
-            .send({
-                type: OA2_AUTHORIZATION_CODE,
-                name: 'oAuth2',
-                clientId: 'string',
-                clientSecret: 'string',
-                redirectUri: '/dev/null',
-                endpoint: {
-                    auth: 'http://',
-                    token: 'http://',
-                    userinfo: 'http://',
-                },
-                mappings: {
-                    externalId: {
-                        source: 'id_token',
-                        key: 'sub',
-                    },
-                    scope: {
-                        key: 'scope',
-                    },
-                },
-            })
-            .expect(200)).body;
-        const authClient = (await request.get(`/auth-clients/${authClientId}`)
-            .set(...global.userAuth1)
-            .expect(200)).body;
-
-        expect(authClient._id).toEqual(authClientId);
-    });
-
-    test('Modify a platform oauth secret', async () => {
-        const authClientBody = {
+        const data = {
             type: OA2_AUTHORIZATION_CODE,
             name: 'oAuth2',
             clientId: 'string',
             clientSecret: 'string',
             redirectUri: '/dev/null',
-            endpoint: {
+            endpoints: {
+                auth: 'http://',
+                token: 'http://',
+                userinfo: 'http://',
+            },
+            mappings: {
+                externalId: {
+                    source: 'id_token',
+                    key: 'sub',
+                },
+                scope: {
+                    key: 'scope',
+                },
+            },
+        };
+        const authClient = (await request.post('/auth-clients')
+            .set(...global.userAuth1)
+            .send({ data })
+            .expect(200)).body.data;
+
+        const authClientById = (await request.get(`/auth-clients/${authClient._id}`)
+            .set(...global.userAuth1)
+            .expect(200)).body.data;
+
+        expect(data.name).toEqual(authClientById.name);
+    });
+
+    test('Modify a platform oauth client', async () => {
+        const data = {
+            type: OA2_AUTHORIZATION_CODE,
+            name: 'oAuth2',
+            clientId: 'string',
+            clientSecret: 'string',
+            redirectUri: '/dev/null',
+            endpoints: {
                 auth: 'http://',
                 token: 'http://',
                 userinfo: 'http://',
@@ -155,99 +163,105 @@ describe('auth-clients', () => {
             },
         };
 
-        const { authClientId } = (await request.post('/auth-clients')
+        let authClient = (await request.post('/auth-clients')
             .set(...global.userAuth1)
-            .send(authClientBody)
-            .expect(200)).body;
+            .send({ data })
+            .expect(200)).body.data;
 
-        await request.patch(`/auth-clients/${authClientId}`)
+        expect(authClient.name).toEqual('oAuth2');
+
+        authClient = (await request.patch(`/auth-clients/${authClient._id}`)
             .set(...global.userAuth1)
             .send({
-                ...authClientBody,
-                name: 'test',
+                data: {
+                    ...data,
+                    name: 'test',
+                },
             })
-            .expect(200);
-
-        const authClient = (await request.get(`/auth-clients/${authClientId}`)
-            .set(...global.userAuth1)
-            .expect(200)).body;
+            .expect(200)).body.data;
 
         expect(authClient.name).toEqual('test');
     });
 
     test('Remove a platform oauth secret', async () => {
-        const { authClientId } = (await request.post('/auth-clients')
+        const { _id } = (await request.post('/auth-clients')
             .set(...global.userAuth1)
             .send({
-                type: OA2_AUTHORIZATION_CODE,
-                name: 'oAuth2',
-                clientId: 'string',
-                clientSecret: 'string',
-                redirectUri: '/dev/null',
-                endpoint: {
-                    auth: 'http://',
-                    token: 'http://',
-                    userinfo: 'http://',
-                },
-                mappings: {
-                    externalId: {
-                        source: 'id_token',
-                        key: 'sub',
+                data: {
+                    type: OA2_AUTHORIZATION_CODE,
+                    name: 'oAuth2',
+                    clientId: 'string',
+                    clientSecret: 'string',
+                    redirectUri: '/dev/null',
+                    endpoints: {
+                        auth: 'http://',
+                        token: 'http://',
+                        userinfo: 'http://',
                     },
-                    scope: {
-                        key: 'scope',
+                    mappings: {
+                        externalId: {
+                            source: 'id_token',
+                            key: 'sub',
+                        },
+                        scope: {
+                            key: 'scope',
+                        },
                     },
                 },
             })
-            .expect(200)).body;
+            .expect(200)).body.data;
 
-        await request.delete(`/auth-clients/${authClientId}`)
+        await request.delete(`/auth-clients/${_id}`)
             .set(...global.userAuth1)
-            .expect(200);
+            .expect(204);
     });
 
     test('Start oauth2 authorization code flow', async () => {
         const scope = 'scope1 scope2';
         // create auth client first
-        const { authClientId } = (await request.post('/auth-clients')
+        const { _id } = (await request.post('/auth-clients')
             .set(...global.userAuth1)
             .send({
-                type: OA2_AUTHORIZATION_CODE,
-                name: 'google oAuth2',
-                clientId: 'clientId',
-                clientSecret: 'clientSecret',
-                redirectUri: `http://localhost:${conf.port}/callback`,
-                endpoint: {
-                    auth: 'https://accounts.google.com/o/oauth2/v2/auth?'
-                            + 'scope={{scope}}&'
-                            + 'access_type=offline&'
-                            + 'include_granted_scopes=true&'
-                            + 'state={{state}}&'
-                            + 'redirect_uri={{redirectUri}}&'
-                            + 'response_type=code&'
-                            + 'client_id={{clientId}}',
-                    token: 'https://www.googleapis.com/oauth2/v4/token',
-                    userinfo: 'https://www.googleapis.com/oauth2/v4/token',
-                },
-                mappings: {
-                    externalId: {
-                        source: 'id_token',
-                        key: 'sub',
+                data: {
+                    type: OA2_AUTHORIZATION_CODE,
+                    name: 'google oAuth2',
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    redirectUri: `http://localhost:${conf.port}/callback`,
+                    endpoints: {
+                        auth: 'https://accounts.google.com/o/oauth2/v2/auth?'
+                                + 'scope={{scope}}&'
+                                + 'access_type=offline&'
+                                + 'include_granted_scopes=true&'
+                                + 'state={{state}}&'
+                                + 'redirect_uri={{redirectUri}}&'
+                                + 'response_type=code&'
+                                + 'client_id={{clientId}}',
+                        token: 'https://www.googleapis.com/oauth2/v4/token',
+                        userinfo: 'https://www.googleapis.com/oauth2/v4/token',
                     },
-                    scope: {
-                        key: 'scope',
+                    mappings: {
+                        externalId: {
+                            source: 'id_token',
+                            key: 'sub',
+                        },
+                        scope: {
+                            key: 'scope',
+                        },
                     },
                 },
             })
-            .expect(200)).body;
+            .expect(200)).body.data;
 
-        const { body } = await request.post(`/auth-clients/${authClientId}/start-flow`)
+        const { body } = await request.post(`/auth-clients/${_id}/start-flow`)
             .set(...global.userAuth1)
             .send({
-                scope,
+                data: {
+                    scope,
+                },
             })
             .expect(200);
 
-        expect(body.authUrl).not.toMatch('undefined');
+        expect(body.data.authUrl).not.toMatch('undefined');
     });
 });

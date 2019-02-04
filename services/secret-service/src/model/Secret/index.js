@@ -3,7 +3,9 @@ const owners = require('../schema/owners');
 const { AUTH_TYPE } = require('../../constant');
 
 const {
-    SIMPLE, API_KEY, OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE,
+    SIMPLE, API_KEY,
+    OA1_TWO_LEGGED,
+    OA2_AUTHORIZATION_CODE,
 } = AUTH_TYPE;
 
 const { Schema } = mongoose;
@@ -23,6 +25,10 @@ const secretBaseSchema = new Schema({
         required: true,
     },
     lockedAt: Date,
+    encryptedFields: {
+        type: [String],
+        default: [],
+    },
     value: {},
 }, {
     timestamps: true,
@@ -70,7 +76,6 @@ module.exports = {
                 },
                 refreshToken: {
                     type: String,
-                    required: true,
                 },
                 accessToken: {
                     type: String,
