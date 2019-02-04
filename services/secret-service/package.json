@@ -1,6 +1,6 @@
 {
   "name": "secret-service",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Service to manage Keys/Tokens of external services",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -20,32 +20,36 @@
     "dotenv": "6.2.0",
     "express": "4.16.4",
     "jsonwebtoken": "8.4.0",
-    "moment": "2.23.0",
-    "mongoose": "5.4.2",
+    "lru-cache": "5.1.1",
+    "moment": "2.24.0",
+    "mongoose": "5.4.9",
     "morgan": "1.9.1",
     "qs": "6.6.0",
     "request": "2.88.0",
     "request-promise": "4.2.2"
   },
   "devDependencies": {
-    "eslint": "5.12.0",
+    "eslint": "5.13.0",
     "eslint-config-airbnb-base": "13.1.0",
-    "eslint-plugin-import": "2.14.0",
-    "eslint-plugin-jest": "22.1.2",
+    "eslint-plugin-import": "2.16.0",
+    "eslint-plugin-jest": "22.2.2",
     "get-port": "4.1.0",
-    "jest": "23.6.0",
-    "mongodb": "3.1.10",
-    "mongodb-memory-server": "2.9.1",
+    "jest": "24.0.0",
+    "mongodb": "3.1.13",
+    "mongodb-memory-server": "3.0.0",
     "nock": "10.0.6",
     "nodemon": "1.18.9",
-    "supertest": "3.3.0"
+    "supertest": "3.4.2"
   },
   "jest": {
     "globalSetup": "./src/test/setup.js",
     "globalTeardown": "./src/test/teardown.js",
     "testEnvironment": "./src/test/mongo-environment.js",
-    "setupTestFrameworkScriptFile": "./src/test/jest.setup.js",
-    "silent": false
+    "setupFilesAfterEnv": [
+      "./src/test/jest.setup.js"
+    ],
+    "silent": false,
+    "verbose": true
   },
   "nodemonConfig": {
     "restartable": "rs",

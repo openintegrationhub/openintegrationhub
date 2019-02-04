@@ -1,7 +1,12 @@
 const request = require('request');
 const jwt = require('jsonwebtoken');
 const { OA2_AUTHORIZATION_CODE } = require('../constant').AUTH_TYPE;
-const { ACCESS_TOKEN, ID_TOKEN, USERINFO } = require('../constant').EXTERNAL_ID_SOURCE;
+const {
+    ACCESS_TOKEN,
+    ID_TOKEN,
+    USERINFO,
+    TOKEN_RESPONSE,
+} = require('../constant').EXTERNAL_SOURCE;
 
 function requestHelper(url, form) {
     return new Promise((resolve, reject) => {
@@ -66,7 +71,7 @@ module.exports = {
         // create authorization request url
         switch (authClient.type) {
         case OA2_AUTHORIZATION_CODE:
-            return authClient.endpoint.auth
+            return authClient.endpoints.auth
                 .replace('{{scope}}', encodeURI(
                     (authClient.predefinedScope ? `${authClient.predefinedScope} ` : '') + scope,
                 ))
@@ -83,7 +88,7 @@ module.exports = {
 
         switch (authClient.type) {
         case OA2_AUTHORIZATION_CODE:
-            return await exchangeRequest(authClient.endpoint.token, {
+            return await exchangeRequest(authClient.endpoints.token, {
                 code,
                 clientId,
                 clientSecret,
@@ -99,7 +104,7 @@ module.exports = {
 
         switch (authClient.type) {
         case OA2_AUTHORIZATION_CODE:
-            return await refreshRequest(authClient.endpoint.token, {
+            return await refreshRequest(authClient.endpoints.token, {
                 clientId,
                 clientSecret,
                 refreshToken,
@@ -108,9 +113,9 @@ module.exports = {
         default:
         }
     },
-    async getExternalId(authClient, tokens) {
-        const { source, key } = authClient.mappings.externalId;
-        const { userinfo } = authClient.endpoint;
+    async getExternalData(authClient, tokens, externalItem) {
+        const { source, key } = authClient.mappings[externalItem];
+        const { userinfo } = authClient.endpoints;
         switch (authClient.type) {
         case OA2_AUTHORIZATION_CODE:
             switch (source) {
@@ -120,6 +125,8 @@ module.exports = {
                 return jwt.decode(tokens.id_token)[key];
             case USERINFO:
                 return (await userinfoRequest(userinfo, tokens.access_token))[key];
+            case TOKEN_RESPONSE:
+                return tokens[key];
             default:
                 return null;
             }

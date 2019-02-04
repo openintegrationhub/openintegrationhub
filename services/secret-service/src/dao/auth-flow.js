@@ -17,27 +17,5 @@ module.exports = {
             _id: id,
         });
     },
-    // findByEntity: async entityId => await Secret.full.find({
-    //     'owners.entityId': entityId,
-    // }).lean(),
-
-    // find: async query => await Secret.full.find(query).lean(),
-
-    // findOne: async query => await Secret.full.findOne(query).lean(),
-
-    // update: async ({ id, obj, partialUpdate = false }) => {
-    //     const updateOperation = partialUpdate ? { $set: obj } : obj;
-
-    //     await Secret.full.findOneAndUpdate({
-    //         _id: id,
-    //     }, updateOperation);
-
-    //     log.debug('updated.secret', { id });
-    // },
-
-    // delete: async ({ id }) => {
-    //     await Secret.full.deleteOne({ _id: id });
-    //     log.info('deleted.secret', { id });
-    // },
 
 };
