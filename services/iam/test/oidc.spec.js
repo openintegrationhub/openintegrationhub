@@ -19,6 +19,7 @@ describe('basic OIDC test Suite', () => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_SERVICE_CLIENT_ID = 'test';
         process.env.IAM_SERVICE_CLIENT_SECRET = 'test';
+        process.env.IAM_AUTH_TYPE = 'oidc';
         process.env.IAM_BASEURL = 'http://127.0.0.1:3099';
         process.env.IAM_ACC_SERVICEACCOUNT_USERNAME = 'testuser@basaas.de';
         process.env.IAM_ACC_SERVICEACCOUNT_PASSWORD = 'testpass';
