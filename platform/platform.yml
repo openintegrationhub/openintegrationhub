@@ -186,6 +186,9 @@ items:
               env:
                 - name: LISTEN_PORT
                   value: '1234'
+                - name: MONGODB_URI
+                  value: >-
+                    mongodb://mongodb-service.platform.svc.cluster.local/resource-coordinator
                 - name: RABBITMQ_URI
                   value: >-
                     amqp://guest:guest@rabbitmq-service.platform.svc.cluster.local

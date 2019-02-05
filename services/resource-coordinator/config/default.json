@@ -4,6 +4,7 @@
     "DEFAULT_CPU_REQUEST": "100m",
     "DEFAULT_MEM_REQUEST": "256Mi",
     "LISTEN_PORT": 1234,
+    "MONGODB_URI": "mongodb://localhost/resource-coordinator",
     "NAMESPACE": "flows",
     "RABBITMQ_MANAGEMENT_URI": "http://guest:guest@localhost:15672",
     "RABBITMQ_URI": "amqp://guest:guest@127.0.0.1:5672/",
