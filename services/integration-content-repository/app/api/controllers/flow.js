@@ -24,6 +24,10 @@ router.get('/', jsonParser, async (req, res) => {
   let response;
   let error = false;
 
+  if (!res.locals.admin && credentials.length <= 0) {
+    res.status(403).send('User does not have permissions to view flows');
+  }
+
   let pageSize = 10;
   let pageNumber = 1;
 
@@ -56,7 +60,7 @@ router.get('/', jsonParser, async (req, res) => {
       filters.status = 'active';
     } else if (req.query.filter.status === '0') {
       filters.status = 'inactive';
-    } else {
+    } else if (!res.headersSent) {
       res.status(400).send('Invalid filter[status] parameter');
       return;
     }
@@ -66,7 +70,7 @@ router.get('/', jsonParser, async (req, res) => {
   if (req.query.filter && req.query.filter.type !== undefined) {
     if (req.query.filter.type in filterTypes) {
       filters.type = req.query.filter.type;
-    } else {
+    } else if (!res.headersSent) {
       res.status(400).send('Invalid filter[type] parameter');
       return;
     }
@@ -74,7 +78,7 @@ router.get('/', jsonParser, async (req, res) => {
 
   // filter[user]
   if (req.query.filter && req.query.filter.user !== undefined) {
-    if (!res.locals.admin) {
+    if (!res.locals.admin && (!res.headersSent)) {
       res.status(403).send('Filtering by user is only available to admins');
       return;
     }
@@ -95,7 +99,7 @@ router.get('/', jsonParser, async (req, res) => {
     }
     if (!(sortField in sortableFields)) error = true;
 
-    if (error) {
+    if (error && !res.headersSent) {
       res.status(400).send('Invalid sort parameter');
       return;
     }
@@ -113,9 +117,9 @@ router.get('/', jsonParser, async (req, res) => {
     response = await storage.getFlows(credentials, pageSize, pageNumber, searchString, filters, sortField, sortOrder); // eslint-disable-line
   }
 
-  if (response.data.length === 0) {
+  if (response.data.length === 0 && !res.headersSent) {
     res.status(404).send('No flows found');
-  } else {
+  } else if (!res.headersSent) {
     response.meta.page = pageNumber;
     response.meta.perPage = pageSize;
     response.meta.totalPages = response.meta.total / pageSize;
@@ -130,6 +134,10 @@ router.post('/', jsonParser, async (req, res) => {
   const now = new Date();
   const timestamp = now.toString();
 
+  if (!res.locals.admin && credentials.length <= 0) {
+    res.status(403).send('User does not have permissions to write flows');
+  }
+
   newFlow.createdAt = timestamp;
   newFlow.updatedAt = timestamp;
   // Automatically adds the current user as an owner.
@@ -140,45 +148,65 @@ router.post('/', jsonParser, async (req, res) => {
 
   const storeFlow = new Flow(newFlow);
 
-  try {
-    const response = await storage.addFlow(storeFlow);
-    res.status(201).send(response);
-  } catch (err) {
-    res.status(500).send(err);
+  if (!res.headersSent) {
+    try {
+      const response = await storage.addFlow(storeFlow);
+      res.status(201).send(response);
+    } catch (err) {
+      res.status(500).send(err);
+    }
   }
 });
 
 // Updates a flow with body data
 router.patch('/:id', jsonParser, async (req, res) => {
   const updateData = req.body;
-  const credentials = res.locals.credentials[0];
+  const readCredentials = res.locals.credentials[1];
+  const writeCredentials = res.locals.credentials[0];
   const now = new Date();
   const timestamp = now.toString();
 
   // Get the flow to retrieve the updated version and version history
-  const oldFlow = await storage.getFlowById(req.params.id, credentials);
+  const oldFlow = await storage.getFlowById(req.params.id, readCredentials);
   if (!oldFlow) {
     res.status(404).send('Flow not found');
   } else {
+    if (config.usePermissions) {
+      let permitted = false;
+
+      // Checks whether the user has write permissions for this flow by attempting to match credentials to the flow's owners.
+      for (let i = 0; i < oldFlow.owners.length; i += 1) {
+        if (writeCredentials.includes(oldFlow.owners[i].id)) {
+          permitted = true;
+          break;
+        }
+      }
+      if (!permitted) {
+        res.status(403).send('User does not have write permissions for this flow');
+      }
+    }
+
     const updateFlow = Object.assign(oldFlow, updateData);
     updateFlow.updatedAt = timestamp;
 
     // Re-adds the current user to the owners array if they're missing
-    if (!updateFlow.owners.some(e => e.id === credentials[0])) {
-      updateFlow.owners.push({ id: credentials[0], type: 'user' });
+    if (!updateFlow.owners.some(e => e.id === writeCredentials[0])) {
+      updateFlow.owners.push({ id: writeCredentials[0], type: 'user' });
     }
 
     const storeFlow = new Flow(updateFlow);
 
-    try {
-      const response = await storage.updateFlow(storeFlow, credentials);
-      if (!response) {
-        res.status(404).send('Flow not found');
-      } else {
-        res.status(200).send(response);
+    if (!res.headersSent) {
+      try {
+        const response = await storage.updateFlow(storeFlow, writeCredentials);
+        if (!response) {
+          res.status(404).send('Flow not found');
+        } else {
+          res.status(200).send(response);
+        }
+      } catch (err) {
+        res.status(500).send(err);
       }
-    } catch (err) {
-      res.status(500).send(err);
     }
   }
 });
@@ -189,16 +217,22 @@ router.get('/:id', jsonParser, async (req, res) => {
   const credentials = res.locals.credentials[1];
   let response;
 
+  if (!res.locals.admin && credentials.length <= 0) {
+    res.status(403).send('User does not have permissions to view flows');
+  }
+
   if (res.locals.admin) {
     response = await storage.getAnyFlowById(flowId);
   } else {
     response = await storage.getFlowById(flowId, credentials);
   }
 
-  if (!response) {
-    res.status(404).send('No flows found');
-  } else {
-    res.status(200).send(response);
+  if (!res.headersSent) {
+    if (!response) {
+      res.status(404).send('No flows found');
+    } else {
+      res.status(200).send(response);
+    }
   }
 });
 
@@ -206,14 +240,37 @@ router.get('/:id', jsonParser, async (req, res) => {
 // Deletes a flow
 router.delete('/:id', jsonParser, async (req, res) => {
   const flowId = req.params.id;
-  const credentials = res.locals.credentials[0];
+  const readCredentials = res.locals.credentials[1];
+  const writeCredentials = res.locals.credentials[0];
 
-  const response = await storage.deleteFlow(flowId, credentials);
-
-  if (!response) {
+  const oldFlow = await storage.getFlowById(flowId, readCredentials);
+  if (!oldFlow) {
     res.status(404).send('Flow not found');
   } else {
-    res.status(200).send('Flow was successfully deleted');
+    if (config.usePermissions) {
+      let permitted = false;
+
+      // Checks whether the user has write permissions for this flow by attempting to match credentials to the flow's owners.
+      for (let i = 0; i < oldFlow.owners.length; i += 1) {
+        if (writeCredentials.includes(oldFlow.owners[i].id)) {
+          permitted = true;
+          break;
+        }
+      }
+      if (!permitted) {
+        res.status(403).send('User does not have write permissions for this flow');
+      }
+    }
+
+    if (!res.headersSent) {
+      const response = await storage.deleteFlow(flowId, writeCredentials);
+
+      if (!response) {
+        res.status(404).send('Flow not found');
+      } else {
+        res.status(200).send('Flow was successfully deleted');
+      }
+    }
   }
 });
 

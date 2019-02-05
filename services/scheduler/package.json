@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@openintegrationhub/scheduler": "*",
+    "awilix": "4.1.0",
     "backend-commons-lib": "*",
     "express": "4.16.3",
     "nconf": "0.10.0",

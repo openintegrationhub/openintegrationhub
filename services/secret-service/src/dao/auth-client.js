@@ -10,19 +10,17 @@ module.exports = {
     async create(obj) {
         const client = new AuthClient[obj.type]({ ...obj });
         await client.save();
-        return client;
+        return client.toObject();
     },
 
-    async find(query = {}) {
+    async findWithPagination(query = {}, props) {
         return await AuthClient.full
-            .find(query, 'name type')
+            .find(query, 'name type', props)
             .lean();
     },
 
-    async findByEntity(entityId) {
-        return await AuthClient.full.find({
-            'owners.entityId': entityId,
-        }).lean();
+    async countByEntity() {
+        return await AuthClient.full.countDocuments({});
     },
 
     async findById(id) {
@@ -33,14 +31,17 @@ module.exports = {
         return await AuthClient.full.findOne(query).lean();
     },
 
-    async update({ id, obj, partialUpdate = false }) {
-        const updateOperation = partialUpdate ? { $set: obj } : obj;
-
-        await AuthClient.full.findOneAndUpdate({
+    async update({ id, data, partialUpdate = false }) {
+        const updateOperation = partialUpdate ? { $set: data } : data;
+        const result = await AuthClient.full.findOneAndUpdate({
             _id: id,
-        }, updateOperation);
+        }, updateOperation, {
+            new: true,
+        }).lean();
 
         log.debug('updated.client', { id });
+
+        return result;
     },
 
     async delete({ id }) {

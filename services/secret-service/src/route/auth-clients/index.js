@@ -5,19 +5,60 @@ const base64url = require('base64url');
 const AuthClientDAO = require('../../dao/auth-client');
 const AuthFlowDAO = require('../../dao/auth-flow');
 const auth = require('../../middleware/auth');
+const { getKeyParameter } = require('../../middleware/key');
 const conf = require('../../conf');
 const { ROLE } = require('../../constant');
 const authFlowManager = require('../../auth-flow-manager');
+const Pagination = require('../../util/pagination');
+const { OA2_AUTHORIZATION_CODE } = require('../../constant').AUTH_TYPE;
 
 const log = logger.getLogger(`${conf.logging.namespace}/auth-client`);
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
 
+const authClientObfuscator = {
+
+    [OA2_AUTHORIZATION_CODE]: value => ({
+        ...value,
+        clientId: '***',
+        clientSecret: '***',
+    }),
+
+};
+
+const maskAuthClient = ({ requester, authClient }) => {
+    if (conf.debugMode) {
+        return authClient;
+    }
+
+    let maskedAuthClient = authClient;
+
+    if (requester.permissions && requester.permissions.length && requester.permissions.indexOf('auth-clients.raw.read') >= 0) {
+        return maskedAuthClient;
+    }
+
+    if (authClientObfuscator[authClient.type]) {
+        maskedAuthClient = authClientObfuscator[authClient.type](authClient);
+    }
+
+    return maskedAuthClient;
+};
+
+
 router.get('/', async (req, res, next) => {
     try {
-        // res.send(await AuthClientDAO.findByEntity(req.user.sub));
-        res.send(await AuthClientDAO.find());
+        const pagination = new Pagination(req.originalUrl, AuthClientDAO, req.user.sub);
+
+        res.send({
+            data: await AuthClientDAO.findWithPagination(
+                {},
+                pagination.props(),
+            ),
+            meta: {
+                ...await pagination.calc(),
+            },
+        });
     } catch (err) {
         log.error(err);
         next({
@@ -27,16 +68,20 @@ router.get('/', async (req, res, next) => {
 });
 
 router.post('/', async (req, res, next) => {
+    const { data } = req.body;
     try {
-        const authClient = await AuthClientDAO.create({
-            ...req.body,
-            owners: {
-                entityId: req.user.sub.toString(),
-                entityType: ROLE.USER,
-            },
+        res.send({
+            data: maskAuthClient({
+                authClient: await AuthClientDAO.create({
+                    ...data,
+                    owners: {
+                        id: req.user.sub.toString(),
+                        type: ROLE.USER,
+                    },
+                }),
+                requester: req.user,
+            }),
         });
-
-        res.send({ authClientId: authClient._id });
     } catch (err) {
         log.error(err);
         next({
@@ -45,18 +90,26 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.get('/:id', auth.userIsOwnerOfAuthClient, async (req, res) => {
-    res.send(req.obj);
+router.get('/:id', auth.userIsOwnerOfAuthClient, (req, res) => {
+    res.send({
+        data: maskAuthClient({
+            authClient: req.obj,
+            requester: req.user,
+        }),
+    });
 });
 
 router.patch('/:id', auth.userIsOwnerOfAuthClient, async (req, res, next) => {
-    const obj = req.body;
-
+    const { data } = req.body;
     try {
-        await AuthClientDAO.update({
-            id: req.params.id, obj, partialUpdate: false,
+        res.send({
+            data: maskAuthClient({
+                authClient: await AuthClientDAO.update({
+                    id: req.params.id, data, partialUpdate: false,
+                }),
+                requester: req.user,
+            }),
         });
-        res.sendStatus(200);
     } catch (err) {
         log.error(err);
         next({
@@ -68,7 +121,7 @@ router.patch('/:id', auth.userIsOwnerOfAuthClient, async (req, res, next) => {
 router.delete('/:id', auth.userIsOwnerOfAuthClient, async (req, res, next) => {
     try {
         await AuthClientDAO.delete(req.obj);
-        res.sendStatus(200);
+        res.sendStatus(204);
     } catch (err) {
         log.error(err);
         next({
@@ -77,30 +130,35 @@ router.delete('/:id', auth.userIsOwnerOfAuthClient, async (req, res, next) => {
     }
 });
 
-router.post('/:id/start-flow', /* auth.userIsOwnerOfAuthClient, */ jsonParser, async (req, res, next) => {
+router.post('/:id/start-flow', getKeyParameter, /* auth.userIsOwnerOfAuthClient, */ jsonParser, async (req, res, next) => {
     const authClient = await AuthClientDAO.findOne({ _id: req.params.id });
-
+    const { data } = req.body;
     try {
         // const authClient = req.obj;
         const flow = await AuthFlowDAO.create({
             creator: req.user.sub,
             creatorType: ROLE.USER,
+            scope: data.scope,
+            secretName: data.secretName,
             authClientId: authClient._id,
             type: authClient.type,
+            keyParameter: req.keyParameter,
         });
 
         const authUrl = await authFlowManager.start(
             authClient,
-            req.body.scope || '',
+            data.scope || '',
             // state
             base64url(JSON.stringify({
                 flowId: flow._id,
-                payload: req.body.payload || {},
+                payload: data.payload || {},
             })),
         );
 
         res.send({
-            authUrl,
+            data: {
+                authUrl,
+            },
         });
     } catch (err) {
         log.error(err);

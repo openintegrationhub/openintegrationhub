@@ -1,40 +1,36 @@
 const express = require('express');
 const {
     QueueCreator,
-    App,
-    K8sService,
-    AMQPService
+    App
 } = require('backend-commons-lib');
 const { Scheduler } = require('@openintegrationhub/scheduler');
 const FlowsDao = require('./FlowsDao');
 const SchedulePublisher = require('./SchedulePublisher');
+const { asValue, asClass } = require('awilix');
 
 class SchedulerApp extends App {
     async _run() {
-        this._amqp = new AMQPService(this);
-        this._k8s = new K8sService(this);
-        await this._amqp.start();
-        await this._k8s.start();
-        this._initHealthcheckApi(this.getConfig().get('LISTEN_PORT'));
-        this._channel = await this._amqp.getConnection().createChannel();
-        this._queueCreator = new QueueCreator(this._channel);
+        const container = this.getContainer();
+        const config = container.resolve('config');
+        const amqp = container.resolve('amqp');
+        const k8s = container.resolve('k8s');
+        await amqp.start();
+        await k8s.start();
+        this._initHealthcheckApi(config.get('LISTEN_PORT'));
+        const channel = await amqp.getConnection().createChannel();
+        const queueCreator = new QueueCreator(channel);
 
-        const flowsDao = new FlowsDao(this.getConfig(), this.getLogger(), this.getK8s().getCRDClient());
-        const schedulePublisher = new SchedulePublisher(this.getLogger(), this.getQueueCreator(), this.getAmqpChannel());
-        const scheduler = new Scheduler(this.getConfig(), flowsDao, schedulePublisher);
+        container.register({
+            crdClient: asValue(k8s.getCRDClient()),
+            channel: asValue(channel),
+            queueCreator: asValue(queueCreator),
+            flowsDao: asClass(FlowsDao),
+            schedulePublisher: asClass(SchedulePublisher),
+            scheduler: asClass(Scheduler).singleton()
+        });
+
+        const scheduler = container.resolve('scheduler');
         await scheduler.run();
-    }
-
-    getK8s() {
-        return this._k8s;
-    }
-
-    getAmqpChannel() {
-        return this._channel;
-    }
-
-    getQueueCreator() {
-        return this._queueCreator;
     }
 
     _initHealthcheckApi(listenPort) {

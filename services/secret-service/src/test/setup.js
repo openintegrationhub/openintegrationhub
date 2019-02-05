@@ -10,7 +10,7 @@ const mongod = new MongodbMemoryServer.default({
         dbName: 'jest',
     },
     binary: {
-        version: 'latest',
+        version: '4.0.5',
     },
     autoStart: false,
 });

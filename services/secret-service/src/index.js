@@ -19,11 +19,15 @@ function exitHandler(options, err) {
 
 process.on('SIGINT', exitHandler.bind(null));
 
-const server = new Server({});
+const server = new Server({
+    adapter: {
+        key: require('./adapter/key'),
+    },
+});
 
-if (process.env.ALLOW_SELF_SIGNED) {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
-}
+// if (process.env.ALLOW_SELF_SIGNED) {
+//     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+// }
 
 (async () => {
     try {

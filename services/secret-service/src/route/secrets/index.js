@@ -1,14 +1,12 @@
 const express = require('express');
 const logger = require('@basaas/node-logger');
-const url = require('url');
-const qs = require('qs');
 const auth = require('../../middleware/auth');
-const authFlowManager = require('../../auth-flow-manager');
+const { getKeyParameter, getKey } = require('../../middleware/key');
 const conf = require('../../conf');
-const AuthClientDAO = require('../../dao/auth-client');
-const SecretsDAO = require('../../dao/secret');
+const SecretDAO = require('../../dao/secret');
 const { ROLE, AUTH_TYPE } = require('../../constant');
 const { maskString } = require('../../util/common');
+const Pagination = require('../../util/pagination');
 
 const {
     SIMPLE, API_KEY, OA2_AUTHORIZATION_CODE,
@@ -60,22 +58,14 @@ const maskSecret = ({ requester, secret }) => {
 
 router.get('/', async (req, res, next) => {
     try {
-        const { page } = qs.parse(url.parse(req.originalUrl).query);
-
-        const pSize = (page && page.size && parseInt(page.size, 10))
-        || conf.pagination.pageSize;
-        const pNumber = (page && page.number && parseInt(page.number, 10))
-        || conf.pagination.defaultPage;
-
-        const count = await SecretsDAO.countByEntity(req.user.sub);
-
+        const pagination = new Pagination(req.originalUrl, SecretDAO, req.user.sub);
         res.send({
-            data: await SecretsDAO.findByEntityWithPagination(req.user.sub, pSize, pNumber),
+            data: await SecretDAO.findByEntityWithPagination(
+                req.user.sub,
+                pagination.props(),
+            ),
             meta: {
-                page: pNumber,
-                perPage: pSize,
-                total: count,
-                totalPages: Math.abs(count / pSize),
+                ...await pagination.calc(),
             },
         });
     } catch (err) {
@@ -86,17 +76,18 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', getKeyParameter, getKey, async (req, res, next) => {
+    const { data } = req.body;
     try {
-        const secret = await SecretsDAO.create({
-            ...req.body,
-            owners: {
-                entityId: req.user.sub.toString(),
-                entityType: ROLE.USER,
-            },
+        res.send({
+            data: await SecretDAO.create({
+                ...data,
+                owners: {
+                    id: req.user.sub.toString(),
+                    type: ROLE.USER,
+                },
+            }, req.key),
         });
-
-        res.send({ _id: secret._id });
     } catch (err) {
         log.error(err);
         next({
@@ -105,34 +96,37 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.get('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
+router.get('/:id', auth.userIsOwnerOfSecret, getKeyParameter, getKey, async (req, res, next) => {
     try {
         const secret = req.obj;
+
         if (secret) {
-            const refreshedSecret = await SecretsDAO.getRefreshed(secret);
-            res.send(maskSecret({
-                secret: refreshedSecret,
-                requester: req.user,
-            }));
+            const refreshedSecret = await SecretDAO.getRefreshed(secret, req.key);
+            res.send({
+                data: maskSecret({
+                    secret: refreshedSecret,
+                    requester: req.user,
+                }),
+            });
         } else {
             res.sendStatus(403);
         }
     } catch (err) {
-        log.error(err);
+        log.error(err, { 'x-request-id': req.headers['x-request-id'] });
         next({
             status: 500,
         });
     }
 });
 
-router.patch('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
-    const obj = req.body;
-
+router.patch('/:id', auth.userIsOwnerOfSecret, getKeyParameter, getKey, async (req, res, next) => {
+    const { data } = req.body;
     try {
-        await SecretsDAO.update({
-            id: req.params.id, obj, partialUpdate: false,
+        res.send({
+            data: await SecretDAO.update({
+                id: req.params.id, data,
+            }),
         });
-        res.sendStatus(200);
     } catch (err) {
         log.error(err);
         next({
@@ -143,38 +137,14 @@ router.patch('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
 
 router.delete('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     try {
-        await SecretsDAO.delete({
+        await SecretDAO.delete({
             id: req.params.id,
         });
-        res.sendStatus(200);
+        res.sendStatus(204);
     } catch (err) {
         log.error(err);
         next({
             status: 500,
-        });
-    }
-});
-
-router.get('/:id/userinfo', auth.userIsOwnerOfSecret, async (req, res, next) => {
-    try {
-        const secret = req.obj;
-        const authClient = await AuthClientDAO.findById(secret.value.authClientId);
-
-        if (!authClient.endpoint.userinfo) {
-            return next({
-                status: 404,
-            });
-        }
-
-        res.send(
-            await authFlowManager.userinfoRequest(
-                authClient.endpoint.userinfo,
-                secret.value.accessToken,
-            ),
-        );
-    } catch (err) {
-        next({
-            status: 400,
         });
     }
 });

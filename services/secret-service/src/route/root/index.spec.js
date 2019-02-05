@@ -28,6 +28,6 @@ describe('root', () => {
         const res = await request.get('/')
             .expect(200);
 
-        expect(res.body).toEqual(conf.wellKnown);
+        expect(res.body.data).toEqual(conf.wellKnown);
     });
 });

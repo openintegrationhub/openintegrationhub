@@ -8,7 +8,7 @@ const { getUserData } = require('../middleware/auth');
 const jsonParser = bodyParser.json();
 
 module.exports = class Server {
-    constructor({ port, mongoDbConnection }) {
+    constructor({ port, mongoDbConnection, adapter }) {
         this.port = port || conf.port;
         this.app = express();
         this.app.disable('x-powered-by');
@@ -21,6 +21,8 @@ module.exports = class Server {
             this.app.use(morgan('combined'));
         }
 
+        this.setupAdapter(adapter || {});
+
         this.app.use(jsonParser);
 
         this.app.use('/', require('./../route/root'));
@@ -30,15 +32,22 @@ module.exports = class Server {
 
         const apiBase = express.Router();
 
-        apiBase.use('/callback', require('./../route/callback')); // eslint-disable-line global-require
+        apiBase.use('/callback', require('./../route/callback'));
         apiBase.use(getUserData);
         // setup routes
-        apiBase.use('/secrets', require('./../route/secrets')); // eslint-disable-line global-require
-        apiBase.use('/auth-clients', require('./../route/auth-clients')); // eslint-disable-line global-require
+        apiBase.use('/secrets', require('./../route/secrets'));
+        apiBase.use('/auth-clients', require('./../route/auth-clients'));
+
         this.app.use(conf.apiBase, apiBase);
 
         // error middleware
         this.app.use(require('./../middleware/error').default);
+    }
+
+    setupAdapter({ key }) {
+        this.app.locals.middleware = {
+            key: key || require('../adapter/key'),
+        };
     }
 
     static setupDatabase(mongoDbConnection) {

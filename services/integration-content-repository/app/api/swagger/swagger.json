@@ -342,10 +342,10 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3001/"
+      "url": "http://icr.openintegrationhub.com/"
     },
     {
-      "url": "icr.openintegrationhub.com"
+      "url": "http://localhost:3001/"
     }
   ],
   "components": {
