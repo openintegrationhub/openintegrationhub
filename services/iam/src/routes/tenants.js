@@ -10,9 +10,10 @@ const auth = require('./../util/auth');
 const TenantDAO = require('./../dao/tenants');
 const UserDAO = require('../dao/accounts');
 const RolesDAO = require('../dao/roles');
+const KeyDAO = require('../dao/keys');
 const { permissionsAreCommon, PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
 
-const logger = Logger.getLogger(`${conf.general.loggingNameSpace}/user`, {
+const log = Logger.getLogger(`${conf.general.loggingNameSpace}/user`, {
     level: 'debug',
 });
 
@@ -42,10 +43,10 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.tenant.create']]), async 
 
     } catch (err) {
         if (err.name === 'ValidationError') {
-            logger.error(err);
+            log.error(err);
             return res.sendStatus(400);
         } else {
-            logger.error(err);
+            log.error(err);
             return next(err);
         }
             
@@ -89,7 +90,7 @@ router.put('/:id', auth.isTenantAdmin, async (req, res, next) => {
     
         return res.sendStatus(200);
     } catch (err) {
-        logger.error(err);
+        log.error(err);
         return next(err);
     }
 });
@@ -105,7 +106,7 @@ router.patch('/:id', auth.isTenantAdmin, async (req, res, next) => {
 
         return res.sendStatus(200);
     } catch (err) {
-        logger.error(err);
+        log.error(err);
         return next(err);
     }
 });
@@ -120,7 +121,7 @@ router.delete('/:id', auth.can([RESTRICTED_PERMISSIONS['iam.tenant.delete']]), a
         await TenantDAO.delete({ id: req.params.id });
         return res.sendStatus(200);
     } catch (err) {
-        logger.error(err);
+        log.error(err);
         return next({ status: 500, message: err });
     }
     
@@ -132,7 +133,7 @@ router.delete('/:id', auth.can([RESTRICTED_PERMISSIONS['iam.tenant.delete']]), a
 router.get('/:id/users', auth.isTenantAdmin, async (req, res, next) => {
     try {
         const doc = await UserDAO.getUsersAssignedToTenant({ tenantId: req.params.id });
-        logger.debug(doc);
+        log.debug(doc);
         return res.send(doc);
     } catch (err) {
         return next(err);
@@ -162,7 +163,7 @@ router.post('/:id/users', auth.isTenantAdmin, async (req, res, next) => {
     }
 
     if (reqBody.permissions && !permissionsAreCommon(reqBody.permissions)) {
-        logger.warn(`An attempt to assign a restricted permission to a role by user ${req.user.userid}`);
+        log.warn(`An attempt to assign a restricted permission to a role by user ${req.user.userid}`);
         return next({
             status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN, details: 'Restricted permission used',
         });
@@ -177,7 +178,7 @@ router.post('/:id/users', auth.isTenantAdmin, async (req, res, next) => {
         });
         return res.send(doc);
     } catch (err) {
-        logger.error(err);
+        log.error(err);
         return next(err);
     }
 });
@@ -196,4 +197,25 @@ router.delete('/:id/user/:userId', auth.isTenantAdmin, async (req, res, next) =>
         next(err);
     }
 });
+
+router.post('/:id/key/', auth.can([RESTRICTED_PERMISSIONS['iam.key.create']]), async (req, res, next) => {
+    const { value } = req.body;
+    try {
+        await KeyDAO.create(req.params.id, value);
+        res.sendStatus(200);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/:id/key/', auth.can([RESTRICTED_PERMISSIONS['iam.key.read']]), async (req, res, next) => {
+    try {
+        res.send(await KeyDAO.findByTenant(
+            req.params.id,
+        ));
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

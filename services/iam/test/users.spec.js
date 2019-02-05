@@ -22,7 +22,6 @@ describe('User Routes', () => {
     let app = null;
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-        this.timeout(120000);
         process.env.IAM_AUTH_TYPE = 'basic';
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 

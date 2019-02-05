@@ -17,9 +17,7 @@ describe('basic OIDC test Suite', () => {
 
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-        this.timeout(120000);
         process.env.IAM_SERVICE_CLIENT_ID = 'test';
-        process.env.IAM_AUTH_TYPE = 'oidc';
         process.env.IAM_SERVICE_CLIENT_SECRET = 'test';
         process.env.IAM_BASEURL = 'http://127.0.0.1:3099';
         process.env.IAM_ACC_SERVICEACCOUNT_USERNAME = 'testuser@basaas.de';
@@ -106,9 +104,7 @@ describe('basic OIDC test Suite', () => {
     });
 
     test('get /me via oidc call successful', async () => {
-        const response = await request.post('/op/me')
-            .send({ serviceAccessToken })
-            .set('Content-Type', 'application/x-www-form-urlencoded')
+        const response = await request.get('/op/me')
             .set('Authorization', `Bearer ${serviceAccessToken}`)
             .expect(200);
         expect(response.body.role).toBe(CONSTANTS.ROLES.ADMIN);

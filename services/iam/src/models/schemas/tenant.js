@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 const CONSTANTS = require('./../../constants');
 
 const TenantSchema = new Schema({

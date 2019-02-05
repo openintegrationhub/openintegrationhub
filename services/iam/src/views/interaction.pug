@@ -1,6 +1,7 @@
 extends layout.pug
 
 block content
-  form(autocomplete='off', action=`/${conf.oidc.base}/interaction/${details.uuid}/confirm`, method='post')
+  form(name='refresh' autocomplete='off', action=`/${conf.oidc.base}/interaction/${details.uuid}/confirm`, method='post')
     input(type='hidden', name='uuid', value=details.uuid)
-    button.login.login-submit(autofocus='', type='submit') Continue
+    script.
+      document.forms['refresh'].submit()
