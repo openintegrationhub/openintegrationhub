@@ -1,6 +1,13 @@
 # Resource Coordinator
 Orchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Docker containers for each flow node on flow creation and cleans up on flow deletion.
 
+## How it works
+The application works in a loop. During each loop iteration it makes sure, that all nodes for each flow have been deployed and asserts RabbitMQ queues and RabbitMQ user for each node.
+If a flow has been deleted, the application removes the corresponding containers and RabbitMQ queues and RabbitMQ user.
+
+### Handling flow updates
+If a container is running an outdated version of node, it will be redeployed.
+
 ## Prerequisites
 - Kubernetes cluster with enabled RBAC.
 - RabbitMQ with enabled [Management plugin](https://www.rabbitmq.com/management.html).
@@ -35,6 +42,7 @@ kubectl apply -f ./platform.yml
 | RABBITMQ_MANAGEMENT_URI | URI of the http interface of the RabbitMQ management plugin. |
 | RABBITMQ_URI_FLOWS | RabbitMQ connection URI for node containers. |
 | SELF_API_URI | URI to the current application. This API is called then from the inside of node containers. |
+| TICK_INTERVAL | Main loop interval. |
 | NAMESPACE | Kubernetes namespace, where flows are stored as CRD. |
 
 #### Kubernetes driver specific
