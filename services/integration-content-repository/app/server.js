@@ -6,8 +6,8 @@ const express = require('express');
 
 const swaggerUi = require('swagger-ui-express');
 const iamMiddleware = require('@openintegrationhub/iam-utils');
+const cors = require('cors');
 const config = require('./config/index');
-
 
 const swaggerDocument = require('./api/swagger/swagger.json');
 
@@ -17,20 +17,8 @@ class Server {
   constructor() {
     this.app = express();
     this.app.disable('x-powered-by');
-    this.app.use((req, res, next) => {
-      if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-      }
-      next();
-    });
-    // This middleware insures we always have security headers
-    this.app.use(async (req, res, next) => {
-      res.append('Strict-Transport-Security', 'max-age=3600');
-      res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-      res.append('Content-Security-Policy', "default-src 'self'");
-      res.append('Content-Security-Policy', "frame-ancestors 'none'");
-      next();
-    });
+    this.app.use(cors());
+    this.app.options('*', cors());
   }
 
   setupRoutes() {
@@ -71,14 +59,38 @@ class Server {
       }
 
       // Two-dimensional array that will hold the user's id and memberships. First row contains ids with read/write permissions, second row contains ids with read permissions.
-      const credentials = [[user.userid], [user.userid]];
+      let credentials = [[], []];
 
-      // Pushes the ids of the tenants to the credentials array. If the user role allows writing of tenant flows, the id is pushed to the read/write and the read rows of the array. Otherwise the id is pushed only to the read row.
-      for (let i = 0; i < user.memberships.length; i += 1) {
-        if (config.tenantWriterRoles.includes(user.memberships[i].role)) {
-          credentials[0].push(user.memberships[i].tenant);
+      if (config.usePermissions) {
+        if (user.auth.permissions.includes(config.flowReadPermission)) {
+          credentials[1].push(user.userid);
         }
-        credentials[1].push(user.memberships[i].tenant);
+
+        if (user.auth.permissions.includes(config.flowWritePermission)) {
+          credentials[0].push(user.userid);
+        }
+
+        // Pushes the ids of the tenants to the credentials array. If the user role allows writing of tenant flows, the id is pushed to the read/write and the read rows of the array. Otherwise the id is pushed only to the read row.
+        for (let i = 0; i < user.memberships.length; i += 1) {
+          if (user.memberships[i].permissions.includes(config.flowReadPermission)) {
+            credentials[1].push(user.memberships[i].tenant);
+          }
+          if (user.memberships[i].permissions.includes(config.flowWritePermission)) {
+            credentials[0].push(user.memberships[i].tenant);
+          }
+        }
+      } else {
+        // Adds the user's id to the credentials array, meaning that the user can always create flows, and view and edit those they have personally created.
+
+        credentials = [[user.userid], [user.userid]];
+
+        // Pushes the ids of the tenants to the credentials array. If the user role allows writing of tenant flows, the id is pushed to the read/write and the read rows of the array. Otherwise the id is pushed only to the read row.
+        for (let i = 0; i < user.memberships.length; i += 1) {
+          if (config.tenantWriterRoles.includes(user.memberships[i].role)) {
+            credentials[0].push(user.memberships[i].tenant);
+          }
+          credentials[1].push(user.memberships[i].tenant);
+        }
       }
 
       res.locals.credentials = credentials; // Passes on the tenancies that the user is a member of

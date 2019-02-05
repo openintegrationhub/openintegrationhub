@@ -5,11 +5,11 @@ const { errors } = Lib;
 class HttpApi {
     /**
      * @constructor
-     * @param config
-     * @param logger
-     * @param flowsDao - Flow Data Access Object
+     * @param opts.config
+     * @param opts.logger
+     * @param opts.flowsDao - Flow Data Access Object
      */
-    constructor(config, logger, flowsDao) {
+    constructor({ config, logger, flowsDao }) {
         this._config = config;
         this._logger = logger.child({service: 'HttpApi'});
         this._flowsDao = flowsDao;

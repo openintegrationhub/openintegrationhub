@@ -16,6 +16,8 @@ spec:
       - name: secret-service
         image: openintegrationhub/secret-service:latest
         env:
+        - name: CRYPTO_DISABLED
+          value: "true"
         - name: MONGODB_CONNECTION
           valueFrom:
             secretKeyRef:

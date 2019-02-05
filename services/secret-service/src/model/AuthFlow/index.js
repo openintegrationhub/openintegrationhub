@@ -16,6 +16,13 @@ const authFlow = new Schema({
         type: Schema.Types.ObjectId,
         required: true,
     },
+    scope: {
+        type: String,
+    },
+    secretName: {
+        type: String,
+    },
+    keyParameter: String,
     createdAt: {
         type: Date,
         default: Date.now,

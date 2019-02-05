@@ -17,8 +17,22 @@ module.exports = {
             sub: 'u2',
             name: 'User2',
             role: 'USER',
-            memberships: ['t1'],
             iat: 1337,
+            memberships: [
+                {
+                    tenant: '5c507eb60838f1f976e5f2a4',
+                    permissions: [
+                        'tenant.all',
+                        'secrets.raw.read',
+                    ],
+                },
+            ],
+            currentContext: {
+                tenant: '5c507eb60838f1f976e5f2a4',
+                permissions: [
+                    'tenant.all',
+                ],
+            },
         },
     },
 
@@ -28,10 +42,24 @@ module.exports = {
             sub: 'u2',
             name: 'User2',
             role: 'USER',
-            memberships: ['t1'],
             permissions: ['secrets.raw.read'],
             iat: 1337,
+            memberships: [
+                {
+                    tenant: '5c507eb60838f1f976e5f2a4',
+                    permissions: [
+                        'tenant.all',
+                    ],
+                },
+            ],
+            currentContext: {
+                tenant: '5c507eb60838f1f976e5f2a4',
+                permissions: [
+                    'tenant.all',
+                ],
+            },
         },
+
     },
 
     connectorToken: {
@@ -80,5 +108,4 @@ module.exports = {
             iat: 1337,
         },
     },
-
 };

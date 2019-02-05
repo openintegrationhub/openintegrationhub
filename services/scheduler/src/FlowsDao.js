@@ -4,7 +4,7 @@ const { FlowsDao } = require('@openintegrationhub/scheduler');
 const TICK_INTERVAL_MINUTES = 3;
 
 class OIH_FlowsDao extends FlowsDao {
-    constructor(config, logger, crdClient) {
+    constructor({config, logger, crdClient}) {
         super();
         this._config = config;
         this._logger = logger;

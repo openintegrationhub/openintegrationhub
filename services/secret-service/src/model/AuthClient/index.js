@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const owners = require('../schema/owners');
 
-const { OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE, EXTERNAL_ID_SOURCE } = require('../../constant').AUTH_TYPE;
+const { OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE, EXTERNAL_SOURCE } = require('../../constant').AUTH_TYPE;
 
 const { Schema } = mongoose;
 
@@ -49,7 +49,7 @@ module.exports = {
                 type: String,
                 required: true,
             },
-            version: String,
+            verifier: String,
         })),
     [OA2_AUTHORIZATION_CODE]:
         AuthClient.discriminator(`A_${OA2_AUTHORIZATION_CODE}`, new Schema({
@@ -65,7 +65,7 @@ module.exports = {
                 type: String,
                 required: true,
             },
-            endpoint: {
+            endpoints: {
                 auth: {
                     type: String,
                     required: true,
@@ -80,16 +80,10 @@ module.exports = {
             },
             predefinedScope: String,
             mappings: {
-                scope: {
-                    key: {
-                        type: String,
-                        required: true,
-                    },
-                },
                 externalId: {
                     source: {
                         type: String,
-                        enum: EXTERNAL_ID_SOURCE,
+                        enum: EXTERNAL_SOURCE,
                         required: true,
                     },
                     key: {
