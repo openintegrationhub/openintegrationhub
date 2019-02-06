@@ -13,8 +13,8 @@
     "task": "node",
     "generate-keystore": "node -e 'require(\"./src/oidc/util/generate-keystore\").generateFile()'",
     "generate-nodemon-env": "node -e 'require(\"./src/util/nodemon-env\").saveToFile()'",
-    "test": "jest --runInBand --forceExit ",
-    "coverage": "jest --runInBand --coverage --forceExit ",
+    "test": "yarn build && jest --runInBand --forceExit ",
+    "coverage": "yarn build && jest --runInBand --coverage --forceExit ",
     "postinstall": "node ./src/app/dev/generateKeys.js"
   },
   "keywords": [
