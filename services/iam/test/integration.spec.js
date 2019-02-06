@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Mockgoose = require('mockgoose').Mockgoose;
 
 const mockgoose = new Mockgoose(mongoose);
-const request = require('supertest')('http://localhost:3099');
+const request = require('supertest')('http://127.0.0.1:3099');
 const CONSTANTS = require('./../src/constants');
 const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../src/access-control/permissions');
 
@@ -16,7 +16,7 @@ describe('routes', () => {
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_AUTH_TYPE = 'basic';
-        process.env.IAM_BASEURL = 'http://localhost';
+        process.env.IAM_BASEURL = 'http://127.0.0.1';
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 
         app = new App();
