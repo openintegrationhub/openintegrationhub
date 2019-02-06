@@ -88,6 +88,7 @@ const config = {
                 'role',
                 'memberships',
                 'permissions',
+                'currentContext',
                 'confirmed',
             ],
         },
@@ -106,6 +107,7 @@ const config = {
             request: true,
             revocation: true,
             sessionManagement: true,
+            conformIdTokenClaims: false,
             // ...{
             //     registration: true,
             //     registrationManagement: { rotateRegistrationAccessToken: true },
@@ -200,8 +202,6 @@ const config = {
         },
     },
 };
-
-// Accept self signed certificates. Use with caution!
 
 if (config.general.useHttps) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';

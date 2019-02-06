@@ -1,6 +1,6 @@
 process.env.AUTH_TYPE = 'basic';
 const mongoose = require('mongoose');
-const Mockgoose = require('mockgoose').Mockgoose;
+const { Mockgoose } = require('mockgoose');
 
 const mockgoose = new Mockgoose(mongoose);
 const request = require('supertest')('http://localhost:3099');
@@ -11,12 +11,12 @@ let conf = null;
 
 describe('Tenant Routes', () => {
     let TenantID = null;
+    const tenantKey = 'sshhhhhh';
     // Token will be set via Login and is valid 3h
     let tokenAdmin = null;
     let app = null;
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-        this.timeout(120000);
         process.env.IAM_AUTH_TYPE = 'basic';
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 
@@ -59,6 +59,23 @@ describe('Tenant Routes', () => {
             .set('Accept', /application\/json/)
             .expect(200);
         TenantID = response.body.id;
+    });
+
+    test('create tenant key', async () => {
+        const jsonPayload = {
+            value: tenantKey,
+        };
+        await request.post(`/api/v1/tenants/${TenantID}/key`)
+            .send(jsonPayload)
+            .set('Authorization', tokenAdmin)
+            .expect(200);
+    });
+
+    test('get tenant key', async () => {
+
+        const { body } = await request.get(`/api/v1/tenants/${TenantID}/key`)
+            .set('Authorization', tokenAdmin);
+        expect(body.value).toEqual(tenantKey);
     });
 
     test('create tenant fails for wrong or missing request body', async () => {

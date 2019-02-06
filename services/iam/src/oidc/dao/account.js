@@ -16,6 +16,7 @@ class Account {
             role: this.data.role,
             memberships: this.data.memberships,
             permissions: this.data.permissions,
+            currentContext: this.data.currentContext,
             confirmed: this.data.confirmed,
         };
         return claims; 

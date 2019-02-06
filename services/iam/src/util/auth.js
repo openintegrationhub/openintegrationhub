@@ -43,7 +43,6 @@ module.exports = {
         }
 
         const { role, permissions, currentContext } = user;
-
         /* requester is either admin, or a service account with correct permissions or a user in context of a tenant with her permissions */
         if (role === CONSTANTS.ROLES.ADMIN
             || (role === CONSTANTS.ROLES.SERVICE_ACCOUNT
@@ -62,7 +61,6 @@ module.exports = {
      * @param {Array} requiredPermissions
      * */
     can: requiredPermissions => async (req, res, next) => {
-
         const userHasPermissions = module.exports.hasPermissions({
             requiredPermissions,
             user: req.user,
@@ -237,8 +235,8 @@ module.exports = {
         }
         if (payload) {
             req.user = req.user || {};
-            req.user.token = req.headers.authorization;
-            req.user.tokenId = token;
+            // req.user.token = req.headers.authorization;
+            req.user.token = token;
             req.user.auth = payload;
             req.user.username = payload.username;
             req.user.userid = payload._id && payload._id.toString();

@@ -1,5 +1,8 @@
+const memwatch = require('memwatch-next');
 const mongoose = require('mongoose');
 const Logger = require('@basaas/node-logger');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const App = require('./app');
 const pjson = require('../package.json');
 const conf = require('./conf');
@@ -9,6 +12,10 @@ const log = Logger.getLogger(`${conf.general.loggingNameSpace}/init`, {
 });
 
 log.info('Startup');
+
+memwatch.on('leak', (info) => {
+    log.warn('POTENTIAL MEMORY LEAK', info);
+});
 
 function exitHandler(options, err) {
     if (options.cleanup) { log.info('Clean shutdown'); }

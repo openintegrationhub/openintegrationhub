@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 const passportLocalMongoose = require('passport-local-mongoose');
 const CONSTANTS = require('./../../constants');
 
@@ -13,6 +13,7 @@ const membershipsSchema = new Schema({
         type: Schema.ObjectId, ref: 'role',
     },
     tenant: { type: Schema.ObjectId, ref: 'tenant' },
+    scope: String,
     permissions: [String],
 }, {
     _id: false,
@@ -27,8 +28,8 @@ const schema = {
         validate: [validateEmail, CONSTANTS.ERROR_CODES.EMAIL_NOT_VALID],
     },
     
-    firstname: { type: String, required: true, index: true },
-    lastname: { type: String, required: true, index: true },
+    firstname: { type: String, index: true },
+    lastname: { type: String, index: true },
     phone: String,
     avatar: String,
     status: {
