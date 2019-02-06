@@ -95,8 +95,7 @@ describe('routes', () => {
 
         test('get redirect for error call', async () => {
             expect(await request.get('/')
-                .set('Accept', 'text/html')
-                .expect(200)).toBe(null);
+                .set('Accept', 'text/html')).toBe(null);
         });
 
         // test('healthcheck', async () => {
