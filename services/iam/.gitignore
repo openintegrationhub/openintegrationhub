@@ -41,3 +41,5 @@ clients.json
 
 /src/app/dev/*.pem
 /src/app/dev/*.pem
+
+run-test-container

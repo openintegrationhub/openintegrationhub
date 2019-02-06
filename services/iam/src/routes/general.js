@@ -16,15 +16,17 @@ const logger = Logger.getLogger(`${CONF.general.loggingNameSpace}/general`, {
     level: 'debug',
 });
 
-router.get('/', (req, res) => {
-    
-    res
-        .send(
+router.get('/', (req, res, next) => {
+    try {
+        res.send(
             pug.renderFile(
                 path.join(__dirname, '../views/home.pug'), {
                 },
             ),
         );
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get('/.well-known/jwks.json', async (req, res) => {
