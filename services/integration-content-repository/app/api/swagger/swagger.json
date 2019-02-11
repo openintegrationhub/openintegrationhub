@@ -212,7 +212,9 @@
                   "type": "object",
                   "properties": {
                     "data": { "$ref": "#/components/schemas/Flow" },
-                    "meta": { "$ref": "#/components/schemas/Meta" }
+                    "meta": {
+                      "type": "object"
+                    }
                   }
                 }
               }
