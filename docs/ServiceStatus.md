@@ -14,7 +14,7 @@
 |Framework|Microservice Name|Responsibility|Official Deadline|Current Overall Status|Link to documentation|
 |---|---|---|---|---|---|
 |Integration Framework|Authentication / Authorisation / User Management & Identity Management|Basaas GmbH|30.06.2018|**Description:** Finished <br> **Development:** [Published (WIP)](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/iam)|See: [Concepts](services/IAM/IAMConcept.md) and [service documentation](https://github.com/openintegrationhub/openintegrationhub/blob/master/services/iam/README.md)|
-|Integration Framework|Secure-Key-Management|Elastic.io GmbH|30.06.2019|**Description:** Initial <br> **Development:** [Published (WIP)](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/secret-service)|See: [Concepts](services/SecureAccessControl) and [service documentation](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/secret-service/README.md)|
+|Integration Framework|Secure-Key-Management|Elastic.io GmbH|30.06.2019|**Description:** Initial <br> **Development:** [Published (WIP)](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/secret-service)|See: [Concepts](services/SecureKeyManagementConcept.md) and [service documentation](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/secret-service/README.md)|
 
 ## Message Processing
 **Workgroup Manager: Igor (Elastic.io)**
