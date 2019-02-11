@@ -98,7 +98,7 @@
           {
           "name": "sort",
           "in": "query",
-          "description": "Sort the result by one property. Supported: createdAt, updatedAt and name. Prefix field name with - for reversed sort order (DESC) i.e. sort=-updatedAt. Default sorting is by id DESC",
+          "description": "Sort the result by one property. Supported: createdAt, updatedAt and name. Prefix field name with - for reversed sort order (DESC) i.e. sort=-updatedAt. Default sorting is by id ASC",
           "required": false,
           "schema": {
             "type": "string"
@@ -120,7 +120,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Flow"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Flow" }
+                    },
+                    "meta": { "$ref": "#/components/schemas/Meta" }
+                  }
                 }
               }
             }
@@ -202,7 +209,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Flow"
+                  "type": "object",
+                  "properties": {
+                    "data": { "$ref": "#/components/schemas/Flow" },
+                    "meta": {
+                      "type": "object"
+                    }
+                  }
                 }
               }
             }

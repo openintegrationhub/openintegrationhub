@@ -38,7 +38,7 @@ router.get('/', jsonParser, async (req, res) => {
 
   const sortableFields = { createdAt: 1, updatedAt: 1, name: 1 };
   let sortField = 'id';
-  let sortOrder = '-1';
+  let sortOrder = '1';
 
   // page[size]
   if (req.query.page && (req.query.page.size !== undefined && pageSize > 1)) {
