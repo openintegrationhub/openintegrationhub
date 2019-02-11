@@ -18,7 +18,7 @@ There are 2 different types of API Gateways. Generally speaking, in both cases t
 ### Type1: Simple API Gateway ###
 Common usage: simply 1 Proxy for all API requests. A simple API Gateway only abstracts/masks the APIs behind it. This type of API Gateway can be implemented by nearly every proxy you could imagine (Apache, Nginx, Varnish ...)
 
-![ApiGateway1](assets/ApiGateway1.png)
+![ApiGateway1](Assets/ApiGateway1.png)
 
 **Pros**: 
 * Easy to manage in a Kubernetes Cluster. An Ingress Controller could do that job
@@ -33,7 +33,7 @@ Common usage: simply 1 Proxy for all API requests. A simple API Gateway only abs
 This gateway could do more than just proxy requests. For instance, it could support Authentication, Autorisation, WAF Functions, Caching. One could take existing proxy solutions and extend them with additional modules.
 Exampels: Nginx Plus, Varnish, Kong, apiumbrella, Tyk
 
-![ApiGateway2](assets/ApiGateway2.png)
+![ApiGateway2](Assets/ApiGateway2.png)
 
 **Pros**: 
 * A lot of features are already implemeted (Cache, Auth, Autor. , WAF)
