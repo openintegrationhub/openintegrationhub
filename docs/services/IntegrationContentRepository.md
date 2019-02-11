@@ -1,3 +1,13 @@
+
+---
+
+**Creator:** Hansjörg ([@hschmidthh](github.com/hschmidthh)), Wice GmbH <br>
+**Last Modified:** - <br>
+**Last Modifier:** - <br>
+**Version:** -  <br>
+
+---
+
 # Integration Content Repository
 
 # Introduction
