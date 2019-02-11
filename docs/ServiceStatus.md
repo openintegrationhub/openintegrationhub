@@ -5,15 +5,15 @@
 
 |Framework|Microservice Name|Responsibility|Official Deadline|Current Overall Status|Link to documentation|
 |---|---|---|---|---|---|
-|Integration Framework|Integration Framework API|Elastic.io GmbH|31.03.2018|**Description:** Initial <br> **Development:** -|- [OIH APIs](/services/OihApis.md)|
-|Smart Data Framework|Smart Data Framework API|Elastic.io GmbH|31.03.2018|**Description:** Initial <br> **Development:** -|- [YAML file for swagger documentation](/SmartDataFramework/oih-sdf-api-0.0.1.yaml)|
+|Integration Framework|Integration Framework API|Elastic.io GmbH|31.03.2018|**Description:** Initial <br> **Development:** -|- [OIH APIs](services/OihApis.md)|
+|Smart Data Framework|Smart Data Framework API|Elastic.io GmbH|31.03.2018|**Description:** Initial <br> **Development:** -||
 
 ## Secure Access Control
 **Workgroup Manager: Selim (Basaas)**
 
 |Framework|Microservice Name|Responsibility|Official Deadline|Current Overall Status|Link to documentation|
 |---|---|---|---|---|---|
-|Integration Framework|Authentication / Authorisation / User Management|Basaas GmbH|30.06.2018|**Description:** Finished <br> **Development:** [Published](https://github.com/openintegrationhub/services/IAM)|- [ApiGateway](/services/IAM/ApiGateway.md) <br> - [AccessControlManagement](/services//IAMAccessControlManagement.md) <br> - [AuthenticationAuthorisation]/services//IAMAuthenticationAuthorisationFlow.md) <br>|
+|Integration Framework|Authentication / Authorisation / User Management|Basaas GmbH|30.06.2018|**Description:** Finished <br> **Development:** [Published](https://github.com/openintegrationhub/services/IAM)|- [ApiGateway](services/IAM/ApiGateway.md) <br> - [AccessControlManagement](services//IAMAccessControlManagement.md) <br> - [AuthenticationAuthorisation](services/IAM/AuthenticationAuthorisationFlow.md) <br>|
 |Integration Framework|Identity Management|Basaas GmbH|31.03.2018|**Description:** Finished <br> **Development:** [Published](https://github.com/openintegrationhub/services/IAM)|- [IAMConcept](/services//IAMIAMConcept.md) <br> - [Identity Management](/services//IAMIdentityManagement.md)|
 |Integration Framework|Secure-Key-Management|Elastic.io GmbH|30.06.2019|**Description:** Initial <br> **Development:** [Published](https://github.com/openintegrationhub/services/secret-service)|- [Secure-Key-Management](/services/SecureKeyManagement.md)|
 
