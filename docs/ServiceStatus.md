@@ -47,4 +47,4 @@
 |---|---|---|---|---|---|
 |Integration Framework|Logging & Monitoring|Elastic.io GmbH|30.06.2019|**Description:** Initial <br> **Development:** -|See: [Logging and Monitoring](services/LoggingMonitoring.md)|
 |Smart Data Framework|Reporting and Analytics APIs|Basaas GmbH|30.06.2019|**Description:** - <br> **Development:** -|-|
-|Smart Data Framework|CRUD Monitoring|Wice GmbH|31.12.2018|**Description:** Initial <br> **Development:** -|See [Audit Log](services/AuditLog/AuditLog.md), [Audit Log Requirements](services/AuditLog/AuditLogRequirements.md) and [Message Format](services/AuditLog/MessageFormat.md) |
+|Smart Data Framework|CRUD Monitoring|Wice GmbH|31.12.2018|**Description:** Initial <br> **Development:** -|See [Audit Log](services/AuditLog/AuditLog.md), [Audit Log Requirements](services/AuditLog/AuditLogRequirements.md) and [Message Format](services/AuditLog/MessageFormat.md)|
