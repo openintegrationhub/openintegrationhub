@@ -154,16 +154,16 @@ router.post('/:id/users', auth.isTenantAdmin, async (req, res, next) => {
     const reqBody = req.body;
     const tenantID = req.params.id;
 
-    if (!reqBody.role || !reqBody.user) {
-        return next({ status: 400, message: 'Missing role or user id' });
+    if (!reqBody.user) {
+        return next({ status: 400, message: 'Missing user id' });
     }
 
-    if (await !roleBelongsToTenant({ role: reqBody.role, tenant: tenantID })) {
-        return next({ status: 400, message: `Role ${reqBody.role} does not belong to tenant ${tenantID}.` });
-    }
+    // if (await !roleBelongsToTenant({ role: reqBody.role, tenant: tenantID })) {
+    //     return next({ status: 400, message: `Role ${reqBody.role} does not belong to tenant ${tenantID}.` });
+    // }
 
     if (reqBody.permissions && !permissionsAreCommon(reqBody.permissions)) {
-        log.warn(`An attempt to assign a restricted permission to a role by user ${req.user.userid}`);
+        log.warn(`An attempt to assign a restricted permission to user ${req.user.userid}`);
         return next({
             status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN, details: 'Restricted permission used',
         });
@@ -172,9 +172,9 @@ router.post('/:id/users', auth.isTenantAdmin, async (req, res, next) => {
     try {
         const doc = await UserDAO.assignUserToTenantWithRole({
             tenantId: tenantID,
-            role: reqBody.role,
+            roles: reqBody.roles,
             userId: reqBody.user,
-            permissions: reqBody.permissions,
+            permissions: reqBody.permissions || [],
         });
         return res.send(doc);
     } catch (err) {
@@ -210,9 +210,11 @@ router.post('/:id/key/', auth.can([RESTRICTED_PERMISSIONS['iam.key.create']]), a
 
 router.get('/:id/key/', auth.can([RESTRICTED_PERMISSIONS['iam.key.read']]), async (req, res, next) => {
     try {
-        res.send(await KeyDAO.findByTenant(
-            req.params.id,
-        ));
+        res.send({
+            key: await KeyDAO.findByTenant(
+                req.params.id,
+            ),
+        });
     } catch (err) {
         next(err);
     }
