@@ -1,7 +1,7 @@
 {
-  "name": "backend-commons-lib",
+  "name": "@openintegrationhub/event-bus",
   "version": "1.0.0",
-  "description": "Common part for all services",
+  "description": "A library for working with the Event Bus",
   "main": "index.js",
   "scripts": {
     "lint": "eslint ./index.js ./src",
@@ -11,11 +11,7 @@
   "license": "APL-2.0",
   "dependencies": {
     "amqplib": "0.5.2",
-    "awilix": "4.1.0",
-    "bunyan": "1.8.12",
-    "kubernetes-client": "6.1.0",
-    "lodash": "4.17.11",
-    "nconf": "0.10.0"
+    "lodash": "4.17.11"
   },
   "devDependencies": {
     "eslint": "4.5.0",
