@@ -9,15 +9,21 @@ const validateEmail = function(email) {
 };
 
 const membershipsSchema = new Schema({
-    role: {
+    roles: [{
         type: Schema.ObjectId, ref: 'role',
+    }],
+    tenant: {
+        type: Schema.ObjectId,
+        ref: 'tenant',
     },
-    tenant: { type: Schema.ObjectId, ref: 'tenant' },
     scope: String,
     permissions: [String],
+    active: Boolean,
 }, {
     _id: false,
 });
+
+membershipsSchema.index({ active: 1 }, { unique: true, partialFilterExpression: { active: true } });
 
 const schema = {
     username: {
@@ -54,7 +60,6 @@ const schema = {
         
     },
     memberships: [membershipsSchema],
-    currentContext: membershipsSchema,
     permissions: [String],
 };
 

@@ -57,15 +57,9 @@ const RolesDAO = {
     delete: async ({ id, tenant }) => {
 
         await Account.updateMany({
-            memberships: { $elemMatch: { tenant, role: id } },
+            memberships: { $elemMatch: { tenant } },
         }, {
-            $unset: { 'memberships.$.role': 1 },
-        });
-
-        await Account.updateMany({
-            'currentContext.role': id,
-        }, {
-            $unset: { currentContext: 1 },
+            $pull: { 'memberships.$.roles': id },
         });
 
         await Role.deleteOne({ _id: id, tenant });
