@@ -1,6 +1,7 @@
 /* eslint no-unused-expressions: "off" */
 /* eslint max-len: "off" */
 /* eslint no-underscore-dangle: "off" */
+/* eslint no-unused-vars: "off" */
 
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
@@ -76,6 +77,7 @@ let flowId2;
 let app;
 
 beforeAll(async () => {
+  mainServer.setupMiddleware();
   mainServer.setupRoutes();
   mainServer.setupSwagger();
   mainServer.setup(mongoose);
@@ -97,14 +99,14 @@ describe('Documentation', () => {
 
 describe('Login Security', () => {
   test('should not be able to get flows without login', async () => {
-    const res = await request.get('/flows/');
+    const res = await request.get('/flows');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
     expect(res.text).toEqual('Missing authorization header.');
   });
 
   test('should not be able to get specific flows without login', async () => {
-    const res = await request.get('/flows/123456789012/');
+    const res = await request.get('/flows/123456789012');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
     expect(res.text).toEqual('Missing authorization header.');
@@ -112,7 +114,7 @@ describe('Login Security', () => {
 
   test('should not be able to add flows without login', async () => {
     const res = await request
-      .post('/flows/')
+      .post('/flows')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
@@ -142,7 +144,7 @@ describe('Flow Operations', () => {
   test('should add a flow', async () => {
     try {
       const res = await request
-        .post('/flows/')
+        .post('/flows')
         .set('Authorization', `Bearer ${adminToken}`)
         .set('accept', 'application/json')
         .set('Content-Type', 'application/json')
@@ -152,7 +154,6 @@ describe('Flow Operations', () => {
           status: 'active',
           description: 'A description',
         });
-
       expect(res.status).toEqual(201);
       expect(res.text).not.toHaveLength(0);
       const j = JSON.parse(res.text);
@@ -216,7 +217,7 @@ describe('Flow Operations', () => {
 
   test('should add a second flow', async () => {
     const res = await request
-      .post('/flows/')
+      .post('/flows')
       .set('Authorization', `Bearer ${guestToken}`)
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -237,7 +238,7 @@ describe('Flow Operations', () => {
 
   test('should get all flows, filtered by status', async () => {
     const res = await request
-      .get('/flows/')
+      .get('/flows')
       .query({
         'page[size]': 5,
         'page[number]': 1,
@@ -256,7 +257,7 @@ describe('Flow Operations', () => {
 
   test('should get all flows, filtered by user', async () => {
     const res = await request
-      .get('/flows/')
+      .get('/flows')
       .query({
         'page[size]': 5,
         'page[number]': 1,
@@ -274,7 +275,7 @@ describe('Flow Operations', () => {
 
   test('should get all flows, filtered by type', async () => {
     const res = await request
-      .get('/flows/')
+      .get('/flows')
       .query({
         'page[size]': 5,
         'page[number]': 1,
@@ -292,7 +293,7 @@ describe('Flow Operations', () => {
 
   test('should get all flows, using a search', async () => {
     const res = await request
-      .get('/flows/')
+      .get('/flows')
       .query({
         'page[size]': 5,
         'page[number]': 1,
