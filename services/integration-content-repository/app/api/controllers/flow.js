@@ -1,6 +1,8 @@
 /* eslint no-underscore-dangle: "off" */
 /* eslint max-len: "off" */
 /* eslint func-names: "off" */
+/* eslint consistent-return: "off" */
+
 // const path = require('path');
 // const _ = require('lodash');
 const express = require('express');
@@ -118,8 +120,8 @@ router.get('/', jsonParser, async (req, res) => {
   }
 
   if (response.data.length === 0 && !res.headersSent) {
-    res.status(404).send('No flows found');
-  } else if (!res.headersSent) {
+    return res.status(404).send('No flows found');
+  } if (!res.headersSent) {
     response.meta.page = pageNumber;
     response.meta.perPage = pageSize;
     response.meta.totalPages = response.meta.total / pageSize;
@@ -135,7 +137,7 @@ router.post('/', jsonParser, async (req, res) => {
   const timestamp = now.toString();
 
   if (!res.locals.admin && credentials.length <= 0) {
-    res.status(403).send('User does not have permissions to write flows');
+    return res.status(403).send('User does not have permissions to write flows');
   }
 
   newFlow.createdAt = timestamp;
@@ -151,9 +153,10 @@ router.post('/', jsonParser, async (req, res) => {
   if (!res.headersSent) {
     try {
       const response = await storage.addFlow(storeFlow);
-      res.status(201).send(response);
+      return res.status(201).send(response);
     } catch (err) {
-      res.status(500).send(err);
+      log.error(err);
+      return res.status(500).send(err);
     }
   }
 });

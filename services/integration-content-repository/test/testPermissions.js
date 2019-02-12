@@ -103,6 +103,7 @@ let flowId2;
 let app;
 
 beforeAll(async () => {
+  mainServer.setupMiddleware();
   mainServer.setupRoutes();
   mainServer.setupSwagger();
   mainServer.setup(mongoose);
