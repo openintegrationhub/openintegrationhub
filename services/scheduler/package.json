@@ -15,10 +15,13 @@
     "build:docker": "docker build -t openintegrationhub/scheduler:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
+    "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/scheduler": "*",
     "awilix": "4.1.0",
     "backend-commons-lib": "*",
+    "cron-parser": "2.7.3",
     "express": "4.16.3",
+    "mongoose": "5.4.11",
     "nconf": "0.10.0",
     "uuid": "3.3.2"
   },
