@@ -10,12 +10,12 @@ class OIH_MessagePublisher extends MessagePublishers.Base {
     }
 
     async publish(flow, msg, msgOpts) {
-        const step = flow.getFirstNode();
-        if (!step) {
-            throw new ResourceNotFoundError('Flow has no input step node'); //@todo: figure out with status
+        const node = flow.getFirstNode();
+        if (!node) {
+            throw new ResourceNotFoundError('Flow has no first node'); //@todo: figure out with status
         }
 
-        const queue = this._queueCreator.getAmqpStepConfig(flow, step.id).messagesQueue;
+        const queue = this._queueCreator.getAmqpStepConfig(flow, node.id).messagesQueue;
         await this._channel.sendToQueue(
             queue,
             Buffer.from(JSON.stringify(msg)),

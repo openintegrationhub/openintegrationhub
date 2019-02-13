@@ -17,9 +17,7 @@ class SchedulerApp extends App {
         const config = container.resolve('config');
         const logger = container.resolve('logger');
         const amqp = container.resolve('amqp');
-        // const k8s = container.resolve('k8s');
         await amqp.start();
-        // await k8s.start();
         this._initHealthcheckApi(config.get('LISTEN_PORT'));
         const channel = await amqp.getConnection().createChannel();
         const queueCreator = new QueueCreator(channel);
@@ -27,11 +25,10 @@ class SchedulerApp extends App {
         await mongoose.connect(config.get('MONGODB_URI'), {useNewUrlParser: true});
 
         const transport = new RabbitMqTransport({rabbitmqUri: config.get('RABBITMQ_URI')});
-        const eventBus = new EventBus({transport, serviceName: this.constructor.NAME});
-        await eventBus.connect();
+        const eventBus = new EventBus({logger, transport, serviceName: this.constructor.NAME});
 
         //@todo: provide some specific topic
-        await eventBus.subscribe({topic: '*.*'}, async (event) => {
+        eventBus.subscribe('flow.started', async (event) => {
             logger.trace({event}, 'Received event');
 
             try {
@@ -47,7 +44,6 @@ class SchedulerApp extends App {
                 if (flow.cron) {
                     //@todo: some validation?
                     flow.updateDueExecutionAccordingToCron();
-                    //@todo: delete if wrong status
                     await flow.save();
                 } else {
                     await Flow.deleteOne({_id: flow.id});
@@ -58,6 +54,18 @@ class SchedulerApp extends App {
                 await event.nack();
             }
         });
+
+        eventBus.subscribe('flow.stopped', async (event) => {
+            try {
+                await Flow.deleteOne({_id: event.payload.id});
+                await event.ack();
+            } catch (err) {
+                logger.error({ err, event }, 'Unable to process event');
+                await event.nack();
+            }
+        });
+
+        await eventBus.connect();
 
         container.register({
             // crdClient: asValue(k8s.getCRDClient()),

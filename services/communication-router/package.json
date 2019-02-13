@@ -13,11 +13,13 @@
   "author": "elastic.io",
   "license": "APL-2.0",
   "dependencies": {
+    "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/webhooks": "*",
     "awilix": "4.2.0",
     "backend-commons-lib": "*",
     "body-parser": "1.18.3",
-    "express": "4.16.3"
+    "express": "4.16.3",
+    "mongoose": "5.4.11"
   },
   "devDependencies": {
     "eslint": "4.5.0",

@@ -1,5 +1,6 @@
 {
   "LISTEN_PORT": 1234,
+  "MONGODB_URI": "mongodb://localhost/communication-router",
   "NAMESPACE": "flows",
   "PAYLOAD_SIZE_LIMIT": "10mb",
   "RABBITMQ_URI": "amqp://guest:guest@127.0.0.1:5672/"
