@@ -6,14 +6,6 @@
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
-
-// Sets the environment variables for the iam middleware.
-// This has to happen before server.js is required
-process.env.IAM_UPDATE_USERDATA = false;
-process.env.IAM_JWT_ISSUER = 'Test_Issuer';
-process.env.IAM_JWT_AUDIENCE = 'Test_Audience';
-process.env.IAM_JWT_HMAC_SECRET = 'Test_Secret';
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.MONGODB_URL = global.__MONGO_URI__;
 
 const hostUrl = 'http://localhost';
@@ -34,7 +26,7 @@ const now = Math.round(new Date().getTime() / 1000);
 
 // Creates two user objects that will be used as payloads for the authorisation tokens
 const adminUser = {
-  sub: adminId,
+  sub: 'TestAdmin',
   username: 'admin@example.com',
   role: 'ADMIN',
   memberships: [
