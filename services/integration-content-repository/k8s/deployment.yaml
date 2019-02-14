@@ -30,7 +30,7 @@ spec:
             - name: "INTROSPECT_TYPE"
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"
-              value: "https://iam.openintegrationhub.com/api/v1/tokens/introspect"
+              value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
           resources:
             limits:
               cpu: '0.1'
