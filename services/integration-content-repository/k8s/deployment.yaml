@@ -20,8 +20,13 @@ spec:
             - name: MONGODB_URL
               valueFrom:
                 secretKeyRef:
-                  name: mongosecret-oih-icr
-                  key: 'url'
+                  name: icr
+                  key: 'mongourl'
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: icr
+                  key: 'iamtoken'
             - name: "INTROSPECT_TYPE"
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"
