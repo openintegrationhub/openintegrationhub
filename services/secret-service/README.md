@@ -30,27 +30,22 @@ Create env-file under "./.env.local"
 ```console
 PORT=3000
 MONGODB_CONNECTION=mongodb://host.docker.internal:27017/secrets-service
-INTROSPECT_TYPE=basic
-INTROSPECT_ENDPOINT=https://iam.openintegrationhub.com/api/v1/tokens/introspect
-IAM_TOKEN=4582c07f-46e4-44b6-8e2c-1b8b858643e5
+INTROSPECT_ENDPOINT_BASIC=http://iam.openintegrationhub.com/api/v1/tokens/introspect
+IAM_TOKEN=YOUR_IAM_TOKEN
 API_BASE=/api/v1
 TTL_AUTHFLOW=2m
-IAM_OIDC_SERVICE_CLIENT_ID=lynx
-IAM_OIDC_SERVICE_CLIENT_SECRET=lynx
 LOGGING_LEVEL=error
 TTL_AUTHFLOW=2m
 DEBUG_MODE=false
-IAM_OIDC_SERVICE_CLIENT_ID=lynx
-IAM_OIDC_SERVICE_CLIENT_SECRET=lynx
 ALLOW_SELF_SIGNED=true
 ```
 
 If you are using the IAM OpenId Connect feature, you can also use the following env vars for token introspection
 ```console
-INTROSPECT_TYPE=OIDC
-INTROSPECT_ENDPOINT=https://host.docker.internal:3002/op/token/introspection
-IAM_OIDC_SERVICE_CLIENT_ID=your_client_id
-IAM_OIDC_SERVICE_CLIENT_SECRET=your_client_secret
+INTROSPECT_TYPE=oidc
+INTROSPECT_ENDPOINT_OIDC=https://host.docker.internal:3002/op/token/introspection
+OIDC_CLIENT_ID=your_client_id
+OIDC_CLIENT_SECRET=your_client_secret
 ```
 
 Create docker image

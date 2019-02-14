@@ -21,24 +21,24 @@ spec:
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
-              name: oih-secret-service-dev
+              name: secret-service
               key: iamtoken
         - name: MONGODB_CONNECTION
           valueFrom:
             secretKeyRef:
-              name: oih-secret-service-dev
+              name: secret-service
               key: mongourl
         # - name: IAM_OIDC_SERVICE_CLIENT_ID
         #   value: 8ce00058-5f75-435f-9026-ad952480e15a
         # - name: IAM_OIDC_SERVICE_CLIENT_SECRET
         #   valueFrom:
         #     secretKeyRef:
-        #       name: oih-secret-service-dev
+        #       name: secret-service
         #       key: 'client-secret'
         - name: "INTROSPECT_TYPE"
           value: "basic"
         - name: "INTROSPECT_ENDPOINT_BASIC"
-          value: "https://iam.openintegrationhub.com/api/v1/tokens/introspect"
+          value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
         - name: PORT
           value: '3000'
         - name: API_BASE
