@@ -3,7 +3,6 @@
 /* eslint no-underscore-dangle: "off" */
 /* eslint no-unused-vars: "off" */
 
-const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
 process.env.MONGODB_URL = global.__MONGO_URI__;
@@ -11,6 +10,8 @@ process.env.MONGODB_URL = global.__MONGO_URI__;
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3001;
 const request = require('supertest')(`${hostUrl}:${port}`);
+const iamMock = require('./utils/iamMock.js');
+const token = require('./utils/tokens');
 
 const Server = require('../app/server');
 
@@ -19,56 +20,15 @@ const mainServer = new Server();
 const log = require('../app/config/logger'); // eslint-disable-line
 
 
-const adminId = 'TestAdmin';
-const guestId = 'TestGuest';
+const adminId = token.adminToken.value.sub;
+const guestId = token.guestToken.value.sub;
 
-const now = Math.round(new Date().getTime() / 1000);
-
-// Creates two user objects that will be used as payloads for the authorisation tokens
-const adminUser = {
-  sub: 'TestAdmin',
-  username: 'admin@example.com',
-  role: 'ADMIN',
-  memberships: [
-    {
-      role: 'TENANT_ADMIN',
-      tenant: 'testTenant1',
-    },
-    {
-      role: 'TENANT_ADMIN',
-      tenant: 'testTenant2',
-    },
-  ],
-  iat: now,
-  exp: now + 1000,
-  aud: 'Test_Audience',
-  iss: 'Test_Issuer',
-};
-
-const guestUser = {
-  sub: guestId,
-  username: 'guest@example.com',
-  role: 'GUEST',
-  memberships: [
-    {
-      role: 'TENANT_Guest',
-      tenant: 'testTenant1',
-    },
-  ],
-  iat: now,
-  exp: now + 1000,
-  aud: 'Test_Audience',
-  iss: 'Test_Issuer',
-};
-
-// Converts the payloads into json web tokens
-const adminToken = jwt.sign(adminUser, 'Test_Secret');
-const guestToken = jwt.sign(guestUser, 'Test_Secret');
 let flowId1;
 let flowId2;
 let app;
 
 beforeAll(async () => {
+  iamMock.setup();
   mainServer.setupMiddleware();
   mainServer.setupRoutes();
   mainServer.setupSwagger();
@@ -137,7 +97,7 @@ describe('Flow Operations', () => {
     try {
       const res = await request
         .post('/flows')
-        .set('Authorization', `Bearer ${adminToken}`)
+        .set('Authorization', 'Bearer adminToken')
         .set('accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send({
@@ -162,7 +122,7 @@ describe('Flow Operations', () => {
   test('should get the new flow', async () => {
     const res = await request
       .get(`/flows/${flowId1}`)
-      .set('Authorization', `Bearer ${adminToken}`);
+      .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
     const j = JSON.parse(res.text);
@@ -180,7 +140,7 @@ describe('Flow Operations', () => {
   test('should not show the flow to another users getAll', async () => {
     const res = await request
       .get('/flows/')
-      .set('Authorization', `Bearer ${guestToken}`);
+      .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
@@ -190,7 +150,7 @@ describe('Flow Operations', () => {
   test('should not show the flow to another users get', async () => {
     const res = await request
       .get('/flows/123456789012')
-      .set('Authorization', `Bearer ${guestToken}`);
+      .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
@@ -200,7 +160,7 @@ describe('Flow Operations', () => {
   test('should return 404 when getting a non-existent flow', async () => {
     const res = await request
       .get('/flows/123456789012')
-      .set('Authorization', `Bearer ${adminToken}`);
+      .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
@@ -210,7 +170,7 @@ describe('Flow Operations', () => {
   test('should add a second flow', async () => {
     const res = await request
       .post('/flows')
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', 'Bearer guestToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
@@ -236,7 +196,7 @@ describe('Flow Operations', () => {
         'page[number]': 1,
         'filter[status]': 1,
       })
-      .set('Authorization', `Bearer ${adminToken}`);
+      .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -255,7 +215,7 @@ describe('Flow Operations', () => {
         'page[number]': 1,
         'filter[user]': guestId,
       })
-      .set('Authorization', `Bearer ${adminToken}`);
+      .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -273,7 +233,7 @@ describe('Flow Operations', () => {
         'page[number]': 1,
         'filter[type]': 'ordinary',
       })
-      .set('Authorization', `Bearer ${adminToken}`);
+      .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -291,7 +251,7 @@ describe('Flow Operations', () => {
         'page[number]': 1,
         search: 'desc',
       })
-      .set('Authorization', `Bearer ${adminToken}`);
+      .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -305,7 +265,7 @@ describe('Flow Operations', () => {
   test('should update flow', async () => {
     const res = await request
       .patch(`/flows/${flowId1}`)
-      .set('Authorization', `Bearer ${adminToken}`)
+      .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
@@ -331,7 +291,7 @@ describe('Flow Operations', () => {
   test('should not be able to update a non-existent flow', async () => {
     const res = await request
       .patch('/flows/123456789012')
-      .set('Authorization', `Bearer ${adminToken}`)
+      .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
@@ -350,7 +310,7 @@ describe('Cleanup', () => {
   test('should delete the first flow', async () => {
     const res = await request
       .delete(`/flows/${flowId1}`)
-      .set('Authorization', `Bearer ${adminToken}`)
+      .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(200);
@@ -361,7 +321,7 @@ describe('Cleanup', () => {
   test('should delete the second flow', async () => {
     const res = await request
       .delete(`/flows/${flowId2}`)
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', 'Bearer guestToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(200);
@@ -372,7 +332,7 @@ describe('Cleanup', () => {
   test('should return 404 when attempting to get the just deleted flow', async () => {
     const res = await request
       .get(`/flows/${flowId1}`)
-      .set('Authorization', `Bearer ${adminToken}`);
+      .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
     expect(res.text).toEqual('No flows found');

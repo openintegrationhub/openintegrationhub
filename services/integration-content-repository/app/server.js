@@ -58,12 +58,12 @@ class Server {
       let credentials = [[], []];
 
       if (config.usePermissions) {
-        if (user.auth.permissions.includes(config.flowReadPermission)) {
-          credentials[1].push(user.userid);
+        if (user.permissions.includes(config.flowReadPermission)) {
+          credentials[1].push(user.sub);
         }
 
-        if (user.auth.permissions.includes(config.flowWritePermission)) {
-          credentials[0].push(user.userid);
+        if (user.permissions.includes(config.flowWritePermission)) {
+          credentials[0].push(user.sub);
         }
 
         // Pushes the ids of the tenants to the credentials array. If the user role allows writing of tenant flows, the id is pushed to the read/write and the read rows of the array. Otherwise the id is pushed only to the read row.
@@ -78,7 +78,7 @@ class Server {
       } else {
         // Adds the user's id to the credentials array, meaning that the user can always create flows, and view and edit those they have personally created.
 
-        credentials = [[user.userid], [user.userid]];
+        credentials = [[user.sub], [user.sub]];
 
         // Pushes the ids of the tenants to the credentials array. If the user role allows writing of tenant flows, the id is pushed to the read/write and the read rows of the array. Otherwise the id is pushed only to the read row.
         for (let i = 0; i < user.memberships.length; i += 1) {
