@@ -2,7 +2,14 @@ const NodeEnvironment = require('jest-environment-node');
 const path = require('path');
 const fs = require('fs');
 const {
-    userToken1, adminToken1, adminToken2, userToken2, userFork, connectorToken, userToken1ExtraPerm,
+    userToken1,
+    adminToken1,
+    adminToken2,
+    userToken2,
+    userFork,
+    connectorToken,
+    userToken1ExtraPerm,
+    serviceAccount,
 } = require('./tokens');
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');
@@ -26,6 +33,7 @@ module.exports = class MongoEnvironment extends NodeEnvironment {
 
         this.global.userFork = ['Authorization', `bearer ${userFork.token}`];
         this.global.connector = ['Authorization', `bearer ${connectorToken.token}`];
+        this.global.serviceAccount = ['Authorization', `bearer ${serviceAccount.token}`];
 
         await super.setup();
     }

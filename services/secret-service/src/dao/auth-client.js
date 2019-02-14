@@ -4,6 +4,7 @@ const AuthClient = require('../model/AuthClient');
 const conf = require('./../conf');
 
 const log = Logger.getLogger(`${conf.logging.namespace}/authClientDao`);
+const auditLog = Logger.getAuditLogger(`${conf.logging.namespace}/authClientDao`);
 
 module.exports = {
 
@@ -49,4 +50,8 @@ module.exports = {
         log.info('deleted.client', { id });
     },
 
+    async deleteAll(query) {
+        await AuthClient.full.deleteMany(query);
+        auditLog.info('authClient.deleteAll', { data: { ...query } });
+    },
 };

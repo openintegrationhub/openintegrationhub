@@ -62,6 +62,35 @@ module.exports = {
 
     },
 
+    serviceAccount: {
+        token: 'serviceAccount',
+        value: {
+            sub: 's1',
+            name: 'Service Account',
+            role: 'SERVICE_ACCOUNT',
+            permissions: [
+                'secrets.any.delete',
+                'auth-clients.any.delete',
+            ],
+            iat: 1337,
+            memberships: [
+                {
+                    tenant: '5c507eb60838f1f976e5f2a4',
+                    permissions: [
+                        'tenant.all',
+                    ],
+                },
+            ],
+            currentContext: {
+                tenant: '5c507eb60838f1f976e5f2a4',
+                permissions: [
+                    'tenant.all',
+                ],
+            },
+        },
+
+    },
+
     connectorToken: {
         token: 'connectorToken',
         value: {

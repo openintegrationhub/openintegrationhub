@@ -6,7 +6,9 @@ const AuthClientDAO = require('../../dao/auth-client');
 const AuthFlowDAO = require('../../dao/auth-flow');
 const auth = require('../../middleware/auth');
 const { getKeyParameter } = require('../../middleware/key');
+const { can } = require('../../middleware/permission');
 const conf = require('../../conf');
+const { restricted } = require('../../constant').PERMISSIONS;
 const { ROLE } = require('../../constant');
 const authFlowManager = require('../../auth-flow-manager');
 const Pagination = require('../../util/pagination');
@@ -130,6 +132,26 @@ router.delete('/:id', auth.userIsOwnerOfAuthClient, async (req, res, next) => {
     }
 });
 
+router.delete('/', can([restricted['auth-clients.any.delete']]), async (req, res, next) => {
+    const { userId, type } = req.query;
+
+    try {
+        await AuthClientDAO.deleteAll({
+            owners: {
+                id: userId,
+                type,
+            },
+        });
+
+        res.sendStatus(200);
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 500,
+        });
+    }
+});
+
 router.post('/:id/start-flow', getKeyParameter, /* auth.userIsOwnerOfAuthClient, */ jsonParser, async (req, res, next) => {
     const authClient = await AuthClientDAO.findOne({ _id: req.params.id });
     const { data } = req.body;
@@ -143,6 +165,7 @@ router.post('/:id/start-flow', getKeyParameter, /* auth.userIsOwnerOfAuthClient,
             authClientId: authClient._id,
             type: authClient.type,
             keyParameter: req.keyParameter,
+            successUrl: data.successUrl,
         });
 
         const authUrl = await authFlowManager.start(

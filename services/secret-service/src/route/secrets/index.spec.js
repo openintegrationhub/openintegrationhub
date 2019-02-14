@@ -2,8 +2,10 @@ const getPort = require('get-port');
 const { fork } = require('child_process');
 const supertest = require('supertest');
 const nock = require('nock');
+const iamMock = require('../../test/iamMock');
 const mongoose = require('mongoose');
 const base64url = require('base64url');
+const qs = require('qs');
 const token = require('../../test/tokens');
 const AuthFlow = require('../../model/AuthFlow');
 const Secret = require('../../model/Secret');
@@ -27,17 +29,7 @@ describe('secrets', () => {
             port,
         });
         await server.start();
-        const iamEndpointPrefix = conf.iam.introspectEndpoint.substr(0, conf.iam.introspectEndpoint.lastIndexOf('/'));
-        const iamEndpointSuffix = conf.iam.introspectEndpoint.substr(conf.iam.introspectEndpoint.lastIndexOf('/'));
-        nock(iamEndpointPrefix)
-            .persist()
-            .post(iamEndpointSuffix)
-            .reply((uri, requestBody, cb) => {
-                const tokenName = requestBody.token;
-
-                cb(null, [200, token[tokenName].value]);
-                // ...
-            });
+        iamMock.setup();
         done();
     });
 
@@ -73,6 +65,32 @@ describe('secrets', () => {
                 },
             })
             .expect(400);
+
+        // invalid: auth client not existing
+        await request.post('/secrets')
+            .set(...global.userAuth1)
+            .send({
+                data: {
+                    name: 'example microsoft oAuth2',
+                    owners: [
+                        {
+                            id: '5bc75b5ff231301b6642c854',
+                            type: 'USER',
+                        },
+                    ],
+                    type: OA2_AUTHORIZATION_CODE,
+                    value: {
+                        authClientId: '5c091b70e0b1772eb68f3e4e',
+                        accessToken: 'EwCIA8l6BAAURSN/FHlDW5xN74t6GzbtsBBeBUYAAROJkdD+LUXGCK8KQoDhVH8thlfggU1B116/aX81ygM6LclD3Fw+CKhQZT7jCSRMTA0BNkISBGq8gvtcq6ISTBW3lv/USBECIItwE91EK3jVaTNAqCcu4DXZJNE0iiT64qKWJlY8LBPkLdKcpZVB8VIOTMMKuwbjyYrhhj+Nb6kmhY4cC7hvFSU9f8SiIsLhPweQfCo/uLXsgLfFcv8lEXBzvQKgNUdYLAhMQylNA5sdSLd10m2pTs6c/ab2WzogV0z4A70Q/UBJjkX4JcBigJnVeEH+Tja4jwK96mo0KtZLAfI9qjEUXLCLh9oXm6ZOgzq5upY82NMDWu65s7zNHG0DZgAACNE6Ra/4URopWAJKx2DKE2/0mdEJbz5ij6BKs65ucnw2fzmdqogwODyx2dA7Gn4fBwvfZPmyCtrGj0V9oy/dRbaR39DXF3LrJVLA1sBEewEoKnp8zoS4OS2IDune6F8B8l26Ykm8dJHjLDDKecYuHGXKuwFtdex0aaTyORlUpnmgATdUCoCAOJ26G0CxvYQcgXyt1vgbD7ME2al7SAME4wiAV+q4Le/Hb3qQG968wJK2hdMJ3TrP84qJzjPEOJTR/bi3iOFYBNyTd9V+nrkNNse8zyifTbtMEq8GN9ZlRaHt432sV5v0cmGdU2ENtIPc9l80c8gk8Gw5JJFspCPugjRdBbFIQEA7eWuNxc4MruNEmzC15KVDAtfzb55xuDSxMSI+crXrrMsQM2qQbPdQcgRN/oPP21sUj3Z2a/CxdQB14Vd0jbN9wYelScW6oaKBhsuuDFhxKWFrzrN3CwXCiyI5tmFu0l34GUAsnEOATHmjLjnL2jF5rmm1cl62ZbVuGhNnZ3ONgm/L+OcCgQQJSdODqURY6zBpjgb36U7EOD0pJbhnzgm6Jt+Ck1MjsLq69oiwxyExaar2pETHGFflDxQS6BVPkxgB/DfQHb0ChIt3RumsKSVODZVxslwP2ixBBTEzfp4vVsgUlk2MshtTj+Oro5JOvmaKm6vZ0HdKPw+L3Cn8aMYqeN01tNdHjuDhhvzATDu3kScC3upPm8E35/cBWe2J4MkdN22IVIO6844huEveI6YV0ZkTOhlMr8k67ttNg7HJmEWtV9S5sewrgoFTxCNimnMtIn6R/tkKTliKELiSAg==',
+                        scope: 'openid email profile https://graph.microsoft.com/Mail.Send https://graph.microsoft.com/Calendars.Read https://graph.microsoft.com/Mail.Read https://graph.microsoft.com/Files.Read.All',
+                        externalId: '1f348de4a17dd44b09e71142fdf57121',
+                        expires: '2019-01-28T14:09:52.428Z',
+                        refreshToken: 'MCd9JD0aSfwqzvhmtspstSJa7MMbT7MSLR7!dZxQm1jJLVb7UgQCMJv*aAYShdhqqNSM27Xp*o2e9t!*2YThnkjaTJa9tzY87CpsWdWtQ9d2YIQxpoHY7c6UZ8iTokUCUViogvNpPxpJYb1f60nQy6cXWRXurg9aHtRj38RDjZn*kv5spGnBVLQh2dA6ps4Uq0TtAIK5ISQ2Gdn15HDX9kjBYOiB1r*INECl5xk8qNaLi34*epNDAkDZiBSaFNoQnLLY3LYzejNgOlZyNPHu8RyVc5vP!NGVoIj9F8*QvIFgqXbZBh6!yad8SHlhpQnpVvSb*3!amZKykhrEWPgLwzrcY6n596VixI*L7RJSV*6OlvyM2AxMG0s7ZgwAYILzWc!!t7VGZhIyxUyPBseNS6yMihD4ECVKhxtN2oZGLRv9!aBQ9eewSITfXU7BMAmJF6hXpmtPYqRcuES8NXHksCeW5elfrcGC8ngvHRu49X3Y6XpoP6bZTUfP9wnd81WuEVw$$',
+                    },
+                },
+            })
+            .expect(400);
+
         // add example secrets
         await request.post('/secrets')
             .set(...global.userAuth1)
@@ -563,4 +581,33 @@ describe('secrets', () => {
             done();
         });
     }, 1000000);
+
+    test('Delete secrets with service account', async () => {
+        let meta = (await request.get('/secrets/')
+            .set(...global.userAuth1)
+            .expect(200)).body.meta;
+
+        expect(meta.total).toBeGreaterThan(0);
+        // regular user is not allowed
+        await request.delete(`/secrets?${qs.stringify({
+            creator: token.userToken1.value.sub,
+            creatorType: token.userToken1.value.role,
+        })}`)
+            .set(...global.userAuth1)
+            .expect(403);
+
+        // service account has permissions
+        await request.delete(`/secrets?${qs.stringify({
+            userId: token.userToken1.value.sub,
+            type: token.userToken1.value.role,
+        })}`)
+            .set(...global.serviceAccount)
+            .expect(200);
+
+        meta = (await request.get('/secrets/')
+            .set(...global.userAuth1)
+            .expect(200)).body.meta;
+
+        expect(meta.total).toBe(0);
+    });
 });

@@ -2,6 +2,7 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
 const nock = require('nock');
+const iamMock = require('../../test/iamMock');
 const base64url = require('base64url');
 const Secret = require('../../model/Secret');
 const AuthFlow = require('../../model/AuthFlow');
@@ -27,15 +28,7 @@ describe('key adapter', () => {
             port,
         });
         await server.start();
-        const iamEndpointPrefix = conf.iam.introspectEndpoint.substr(0, conf.iam.introspectEndpoint.lastIndexOf('/'));
-        const iamEndpointSuffix = conf.iam.introspectEndpoint.substr(conf.iam.introspectEndpoint.lastIndexOf('/'));
-        nock(iamEndpointPrefix)
-            .persist()
-            .post(iamEndpointSuffix)
-            .reply((uri, requestBody, cb) => {
-                const tokenName = requestBody.token;
-                cb(null, [200, token[tokenName].value]);
-            });
+        iamMock.setup();
     });
 
     afterAll(async () => {
@@ -48,11 +41,13 @@ describe('key adapter', () => {
         const key = 'shhhhhh';
         const refreshToken = 'my refresh token';
 
-        nock('https://accounts.basaas.com')
+        nock(conf.iam.apiBase.substr(0, conf.iam.apiBase.indexOf('/api')))
             .persist()
             .get('/api/v1/tenants/5c507eb60838f1f976e5f2a4/key')
             .reply((uri, requestBody, cb) => {
-                cb(null, [200, key]);
+                cb(null, [200, {
+                    key,
+                }]);
             });
 
         const example = nock('https://example.com');

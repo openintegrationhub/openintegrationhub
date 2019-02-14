@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "watch": "yarn watch-scss & nodemon src/index.js --watch ./ ",
-    "watch-scss": "yarn build-css -- --watch",
+    "watch-scss": "yarn build -- --watch",
     "watch-test": "jest --watch --runInBand",
     "start": "node src/index.js",
     "build": "node-sass-chokidar ./src/views/style -o ./src/views/style",

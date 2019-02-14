@@ -5,6 +5,7 @@ const skmInstances = require('os').cpus().length;
 const getPort = require('get-port');
 const supertest = require('supertest');
 const nock = require('nock');
+const iamMock = require('../../../test/iamMock');
 const conf = require('../../../conf');
 const token = require('../../../test/tokens');
 const Server = require('../../../server');
@@ -47,21 +48,7 @@ global.__MONGO_URI__ = process.env.__MONGO_URI__;
         }
     }
 
-    const endpointPrefix = conf.iam.introspectEndpoint.substr(0, conf.iam.introspectEndpoint.lastIndexOf('/'));
-    const endpointSuffix = conf.iam.introspectEndpoint.substr(conf.iam.introspectEndpoint.lastIndexOf('/'));
-
-    nock(endpointPrefix)
-        .persist()
-        .post(endpointSuffix)
-        .reply((uri, requestBody, cb) => {
-            // console.log('path:', this.req.path);
-            // console.log('headers:', this.req.headers);
-            // console.log('body:', requestBody);
-            const tokenName = requestBody.token;
-
-            cb(null, [200, token[tokenName].value]);
-            // ...
-        });
+    iamMock.setup();
 
     if (cluster.isMaster) {
         console.log(`Master ${process.pid} is running`);

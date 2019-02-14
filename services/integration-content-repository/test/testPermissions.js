@@ -2,19 +2,10 @@
 /* eslint max-len: "off" */
 /* eslint no-underscore-dangle: "off" */
 
-const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
 // Enables use of permission system
 process.env.USE_PERMISSIONS = true;
-
-// Sets the environment variables for the iam middleware.
-// This has to happen before server.js is required
-process.env.IAM_UPDATE_USERDATA = false;
-process.env.IAM_JWT_ISSUER = 'Test_Issuer';
-process.env.IAM_JWT_AUDIENCE = 'Test_Audience';
-process.env.IAM_JWT_HMAC_SECRET = 'Test_Secret';
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 process.env.MONGODB_URL = global.__MONGO_URI__;
 
 const hostUrl = 'http://localhost';
@@ -22,87 +13,18 @@ const port = process.env.PORT || 3001;
 const request = require('supertest')(`${hostUrl}:${port}`);
 
 const Server = require('../app/server');
+const iamMock = require('./utils/iamMock.js');
 
 const mainServer = new Server();
 
 const log = require('../app/config/logger'); // eslint-disable-line
 
-const permittedId = 'PermitGuy';
-const unpermittedId = 'UnpermitGuy';
-const partpermittedId = 'PartpermitGuy';
-
-const now = Math.round(new Date().getTime() / 1000);
-
-// Creates two user objects that will be used as payloads for the authorisation tokens
-const permittedUser = {
-  sub: permittedId,
-  username: 'admin@example.com',
-  role: 'GUEST',
-  permissions: ['flows.read', 'flows.write'],
-  memberships: [
-    {
-      role: 'TENANT_ADMIN',
-      tenant: 'testTenant1',
-      permissions: ['flows.read', 'flows.write'],
-    },
-    {
-      role: 'TENANT_ADMIN',
-      tenant: 'testTenant2',
-      permissions: ['flows.read', 'flows.write'],
-    },
-  ],
-  iat: now,
-  exp: now + 1000,
-  aud: 'Test_Audience',
-  iss: 'Test_Issuer',
-};
-
-const unpermittedUser = {
-  sub: unpermittedId,
-  username: 'guest@example.com',
-  role: 'GUEST',
-  permissions: ['schoko.riegel'],
-  memberships: [
-    {
-      role: 'TENANT_Guest',
-      tenant: 'testTenant1',
-      permissions: ['müsli.riegel'],
-    },
-  ],
-  iat: now,
-  exp: now + 1000,
-  aud: 'Test_Audience',
-  iss: 'Test_Issuer',
-};
-
-const partpermittedUser = {
-  sub: partpermittedId,
-  username: 'guest@example.com',
-  role: 'GUEST',
-  permissions: ['schoko.riegel'],
-  memberships: [
-    {
-      role: 'TENANT_Guest',
-      tenant: 'testTenant1',
-      permissions: ['flows.read'],
-    },
-  ],
-  iat: now,
-  exp: now + 1000,
-  aud: 'Test_Audience',
-  iss: 'Test_Issuer',
-};
-
-
-// Converts the payloads into json web tokens
-const permitToken = jwt.sign(permittedUser, 'Test_Secret');
-const unpermitToken = jwt.sign(unpermittedUser, 'Test_Secret');
-const partpermitToken = jwt.sign(partpermittedUser, 'Test_Secret');
 let flowId1;
 let flowId2;
 let app;
 
 beforeAll(async () => {
+  iamMock.setup();
   mainServer.setupMiddleware();
   mainServer.setupRoutes();
   mainServer.setupSwagger();
@@ -121,7 +43,7 @@ describe('Permissions', () => {
     try {
       const res = await request
         .post('/flows/')
-        .set('Authorization', `Bearer ${permitToken}`)
+        .set('Authorization', 'Bearer permitToken')
         .set('accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send({
@@ -146,7 +68,7 @@ describe('Permissions', () => {
   test('should get the new flow when permissions are present', async () => {
     const res = await request
       .get(`/flows/${flowId1}`)
-      .set('Authorization', `Bearer ${permitToken}`);
+      .set('Authorization', 'Bearer permitToken');
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
     const j = JSON.parse(res.text);
@@ -167,7 +89,7 @@ describe('Permissions', () => {
         'page[number]': 1,
         'filter[status]': 1,
       })
-      .set('Authorization', `Bearer ${permitToken}`);
+      .set('Authorization', 'Bearer permitToken');
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -181,7 +103,7 @@ describe('Permissions', () => {
   test('should not get a particular flows when permissions are absent', async () => {
     const res = await request
       .get(`/flows/${flowId1}`)
-      .set('Authorization', `Bearer ${unpermitToken}`);
+      .set('Authorization', 'Bearer unpermitToken');
     expect(res.status).toEqual(403);
     expect(res.text).not.toBeNull();
   });
@@ -194,7 +116,7 @@ describe('Permissions', () => {
         'page[number]': 1,
         'filter[status]': 1,
       })
-      .set('Authorization', `Bearer ${unpermitToken}`);
+      .set('Authorization', 'Bearer unpermitToken');
 
     expect(res.status).toEqual(403);
   });
@@ -203,7 +125,7 @@ describe('Permissions', () => {
     try {
       const res = await request
         .post('/flows/')
-        .set('Authorization', `Bearer ${partpermitToken}`)
+        .set('Authorization', 'Bearer partpermitToken')
         .set('accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send({
@@ -226,7 +148,7 @@ describe('Permissions', () => {
     try {
       const res = await request
         .post('/flows/')
-        .set('Authorization', `Bearer ${permitToken}`)
+        .set('Authorization', 'Bearer permitToken')
         .set('accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send({
@@ -254,7 +176,7 @@ describe('Permissions', () => {
   test('should get the second flow through tenant permissions', async () => {
     const res = await request
       .get(`/flows/${flowId2}`)
-      .set('Authorization', `Bearer ${partpermitToken}`);
+      .set('Authorization', 'Bearer partpermitToken');
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
     const j = JSON.parse(res.text);
@@ -271,7 +193,7 @@ describe('Permissions', () => {
     try {
       const res = await request
         .patch(`/flows/${flowId2}`)
-        .set('Authorization', `Bearer ${partpermitToken}`)
+        .set('Authorization', 'Bearer partpermitToken')
         .set('accept', 'application/json')
         .set('Content-Type', 'application/json')
         .send({
@@ -295,7 +217,7 @@ describe('Permissions', () => {
     try {
       const res = await request
         .delete(`/flows/${flowId2}`)
-        .set('Authorization', `Bearer ${partpermitToken}`)
+        .set('Authorization', 'Bearer partpermitToken')
         .set('accept', 'application/json')
         .set('Content-Type', 'application/json');
 
