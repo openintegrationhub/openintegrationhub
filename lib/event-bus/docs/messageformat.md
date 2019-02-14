@@ -1,13 +1,16 @@
 # Messageformat
 
+
 ```
 {
-  eventId: String,
-  timeStamp: String,
-  causalId: String,
-  eventSource: String,
-  eventName: String,
-  payload: {}
+    headers:{
+        eventId: String,
+        createdAt: String,
+        causalId: String,
+        eventSource: String,
+        eventName: String,
+    },
+    payload: {}
 }
 ```
 
