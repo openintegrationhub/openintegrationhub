@@ -22,19 +22,10 @@ spec:
                 secretKeyRef:
                   name: mongosecret-oih-icr
                   key: 'url'
-            - name: IAM_JWT_HMAC_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: oidc-oih-iam-dev
-                  key: 'jwtsecret'
-            - name: IAM_JWT_AUDIENCE
-              value: 'openintegrationhub.com'
-            - name: IAM_JWT_ISSUER
-              value: 'https://www.example.com'
-            - name: IAM_BASE_URL
-              value: 'https://iam.openintegrationhub.com'
-            - name: IAM_API_BASE_URL
-              value: 'https://iam.openintegrationhub.com/api/v1/'
+            - name: "INTROSPECT_TYPE"
+              value: "basic"
+            - name: "INTROSPECT_ENDPOINT_BASIC"
+              value: "https://iam.openintegrationhub.com/api/v1/tokens/introspect"
           resources:
             limits:
               cpu: '0.1'
