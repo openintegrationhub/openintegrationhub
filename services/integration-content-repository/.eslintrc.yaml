@@ -1,0 +1,18 @@
+---
+plugins:
+- json
+- mocha
+- jest
+extends: 
+- airbnb-base
+env: 
+  es6: 1
+  node: 1
+  mocha: 1 
+  jest/globals: 0
+parserOptions:
+  ecmaVersion: 8
+  sourceType: module
+rules:
+  no-console: 0
+  prefer-destructuring: 0  
