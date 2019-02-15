@@ -6,10 +6,9 @@ const {
 const { Scheduler } = require('@openintegrationhub/scheduler');
 const FlowsDao = require('./FlowsDao');
 const SchedulePublisher = require('./SchedulePublisher');
-const { asValue, asClass } = require('awilix');
+const { asValue, asClass, asFunction, InjectionMode } = require('awilix');
 const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
 const mongoose = require('mongoose');
-const Flow = require('./models/Flow');
 
 class SchedulerApp extends App {
     async _run() {
@@ -24,58 +23,28 @@ class SchedulerApp extends App {
 
         await mongoose.connect(config.get('MONGODB_URI'), {useNewUrlParser: true});
 
-        const transport = new RabbitMqTransport({rabbitmqUri: config.get('RABBITMQ_URI')});
-        const eventBus = new EventBus({logger, transport, serviceName: this.constructor.NAME});
-
-        //@todo: provide some specific topic
-        eventBus.subscribe('flow.started', async (event) => {
-            logger.trace({event}, 'Received event');
-
-            try {
-                let flow = await Flow.findById(event.payload.id);
-                if (!flow) {
-                    flow = new Flow({_id: event.payload.id});
-                }
-                if (!event.payload.cron) {
-                    event.payload.cron = undefined; // in order to delete the cron field
-                }
-                Object.assign(flow, event.payload);
-
-                if (flow.cron) {
-                    //@todo: some validation?
-                    flow.updateDueExecutionAccordingToCron();
-                    await flow.save();
-                } else {
-                    await Flow.deleteOne({_id: flow.id});
-                }
-                await event.ack();
-            } catch (err) {
-                logger.error({ err, event }, 'Unable to process event');
-                await event.nack();
-            }
-        });
-
-        eventBus.subscribe('flow.stopped', async (event) => {
-            try {
-                await Flow.deleteOne({_id: event.payload.id});
-                await event.ack();
-            } catch (err) {
-                logger.error({ err, event }, 'Unable to process event');
-                await event.nack();
-            }
-        });
-
-        await eventBus.connect();
-
         container.register({
-            // crdClient: asValue(k8s.getCRDClient()),
             channel: asValue(channel),
             queueCreator: asValue(queueCreator),
             flowsDao: asClass(FlowsDao),
             schedulePublisher: asClass(SchedulePublisher),
+            transport: asClass(RabbitMqTransport, {
+                injector: () => ({rabbitmqUri: config.get('RABBITMQ_URI')})
+            }),
+            eventBus: asClass(EventBus, {
+                injector: () => ({serviceName: this.constructor.NAME})
+            }).singleton(),
             scheduler: asClass(Scheduler).singleton()
         });
 
+        container.loadModules(['./src/event-handlers/**/*.js'], {
+            formatName: 'camelCase',
+            resolverOptions: {
+                register: asFunction
+            }
+        });
+
+        await container.resolve('eventHandlers').connect();
         const scheduler = container.resolve('scheduler');
         await scheduler.run();
     }
