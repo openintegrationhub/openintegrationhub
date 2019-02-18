@@ -157,6 +157,15 @@ describe('Flow Operations', () => {
     expect(res.text).toEqual('No flows found');
   });
 
+  test('should return 400 when attempting to get an invalid id', async () => {
+    const res = await request
+      .get('/flows/SDSADGSDGH')
+      .set('Authorization', 'Bearer guestToken');
+
+    expect(res.status).toEqual(400);
+    expect(res.text).not.toBeNull();
+  });
+
   test('should return 404 when getting a non-existent flow', async () => {
     const res = await request
       .get('/flows/123456789012')
@@ -288,6 +297,15 @@ describe('Flow Operations', () => {
     expect(j).toHaveProperty('_id');
   });
 
+  test('should return 400 when attempting to update an invalid id', async () => {
+    const res = await request
+      .patch('/flows/SDSADGSDGH')
+      .set('Authorization', 'Bearer guestToken');
+
+    expect(res.status).toEqual(400);
+    expect(res.text).not.toBeNull();
+  });
+
   test('should not be able to update a non-existent flow', async () => {
     const res = await request
       .patch('/flows/123456789012')
@@ -307,6 +325,15 @@ describe('Flow Operations', () => {
 });
 
 describe('Cleanup', () => {
+  test('should return 400 when attempting to delete an invalid id', async () => {
+    const res = await request
+      .delete('/flows/SDSADGSDGH')
+      .set('Authorization', 'Bearer guestToken');
+
+    expect(res.status).toEqual(400);
+    expect(res.text).not.toBeNull();
+  });
+
   test('should delete the first flow', async () => {
     const res = await request
       .delete(`/flows/${flowId1}`)
