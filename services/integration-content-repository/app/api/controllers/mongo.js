@@ -3,7 +3,7 @@
 /* eslint quote-props: "off" */
 
 // require our MongoDB-Model
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const log = require('../../config/logger');
 const Flow = require('../../models/flow');
 
@@ -75,19 +75,20 @@ const getFlows = async ( // eslint-disable-line
       resolve({ data: doc, meta: { total: count } });
     })
     .catch((err) => {
-      log.debug(err);
+      log.error(err);
     });
 });
 
 // Retrieves a specific flow by id, irrespective of ownership.
 // Should only be available to internal methods or OIH-Admin
 const getAnyFlowById = flowId => new Promise((resolve) => {
-  Flow.find({ '_id': flowId })
+  const findId = mongoose.Types.ObjectId(flowId);
+  Flow.find({ '_id': findId })
     .then((doc) => {
       resolve(doc[0]);
     })
     .catch((err) => {
-      log.debug(err);
+      log.error(err);
     });
 });
 
@@ -98,13 +99,14 @@ const addFlow = storeFlow => new Promise((resolve) => {
       resolve(doc._doc);
     })
     .catch((err) => {
-      log.debug(err);
+      log.error(err);
     });
 });
 
 const updateFlow = (storeFlow, credentials) => new Promise((resolve) => {
+  const findId = mongoose.Types.ObjectId(storeFlow.id);
   Flow.findOneAndUpdate({
-    $and: [{ '_id': storeFlow.id },
+    $and: [{ '_id': findId },
       { 'owners.id': { $in: credentials } },
     ],
   }, storeFlow,
@@ -113,14 +115,15 @@ const updateFlow = (storeFlow, credentials) => new Promise((resolve) => {
       resolve(doc._doc);
     })
     .catch((err) => {
-      log.debug(err);
+      log.error(err);
     });
 });
 
 
 const getFlowById = (flowId, credentials) => new Promise((resolve) => {
+  const findId = mongoose.Types.ObjectId(flowId);
   Flow.findOne({
-    $and: [{ '_id': flowId },
+    $and: [{ '_id': findId },
       { 'owners.id': { $in: credentials } },
     ],
   }).lean()
@@ -128,15 +131,16 @@ const getFlowById = (flowId, credentials) => new Promise((resolve) => {
       resolve(doc);
     })
     .catch((err) => {
-      log.debug(err);
+      log.error(err);
     });
 });
 
 
 const deleteFlow = (flowId, credentials) => new Promise((resolve) => {
+  const findId = mongoose.Types.ObjectId(flowId);
   Flow.findOneAndRemove({
     $and: [
-      { '_id': flowId },
+      { '_id': findId },
       { 'owners.id': { $in: credentials } },
     ],
   })
@@ -144,7 +148,7 @@ const deleteFlow = (flowId, credentials) => new Promise((resolve) => {
       resolve(response);
     })
     .catch((err) => {
-      log.debug(err);
+      log.error(err);
     });
 });
 
