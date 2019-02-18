@@ -5,6 +5,7 @@
 
 // const path = require('path');
 // const _ = require('lodash');
+const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../../config/index');
@@ -169,6 +170,10 @@ router.patch('/:id', jsonParser, async (req, res) => {
   const now = new Date();
   const timestamp = now.toString();
 
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).send('Invalid id');
+  }
+
   // Get the flow to retrieve the updated version and version history
   const oldFlow = await storage.getFlowById(req.params.id, readCredentials);
   if (!oldFlow) {
@@ -220,8 +225,12 @@ router.get('/:id', jsonParser, async (req, res) => {
   const credentials = res.locals.credentials[1];
   let response;
 
+  if (!mongoose.Types.ObjectId.isValid(flowId)) {
+    return res.status(400).send('Invalid id');
+  }
+
   if (!res.locals.admin && credentials.length <= 0) {
-    res.status(403).send('User does not have permissions to view flows');
+    return res.status(403).send('User does not have permissions to view flows');
   }
 
   if (res.locals.admin) {
@@ -246,33 +255,36 @@ router.delete('/:id', jsonParser, async (req, res) => {
   const readCredentials = res.locals.credentials[1];
   const writeCredentials = res.locals.credentials[0];
 
+  if (!mongoose.Types.ObjectId.isValid(flowId)) {
+    return res.status(400).send('Invalid id');
+  }
+
   const oldFlow = await storage.getFlowById(flowId, readCredentials);
   if (!oldFlow) {
-    res.status(404).send('Flow not found');
-  } else {
-    if (config.usePermissions) {
-      let permitted = false;
+    return res.status(404).send('Flow not found');
+  }
+  if (config.usePermissions) {
+    let permitted = false;
 
-      // Checks whether the user has write permissions for this flow by attempting to match credentials to the flow's owners.
-      for (let i = 0; i < oldFlow.owners.length; i += 1) {
-        if (writeCredentials.includes(oldFlow.owners[i].id)) {
-          permitted = true;
-          break;
-        }
-      }
-      if (!permitted) {
-        res.status(403).send('User does not have write permissions for this flow');
+    // Checks whether the user has write permissions for this flow by attempting to match credentials to the flow's owners.
+    for (let i = 0; i < oldFlow.owners.length; i += 1) {
+      if (writeCredentials.includes(oldFlow.owners[i].id)) {
+        permitted = true;
+        break;
       }
     }
+    if (!permitted) {
+      return res.status(403).send('User does not have write permissions for this flow');
+    }
+  }
 
-    if (!res.headersSent) {
-      const response = await storage.deleteFlow(flowId, writeCredentials);
+  if (!res.headersSent) {
+    const response = await storage.deleteFlow(flowId, writeCredentials);
 
-      if (!response) {
-        res.status(404).send('Flow not found');
-      } else {
-        res.status(200).send('Flow was successfully deleted');
-      }
+    if (!response) {
+      res.status(404).send('Flow not found');
+    } else {
+      res.status(200).send('Flow was successfully deleted');
     }
   }
 });
