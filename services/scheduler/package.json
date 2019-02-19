@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "eslint": "4.18.2",
+    "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-mocha": "4.12.1",
     "eslint-plugin-node": "6.0.1"
   },
