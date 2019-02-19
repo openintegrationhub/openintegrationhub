@@ -48,6 +48,8 @@ _Which dataset should be stored?_
 4. Manual Intervention: Operations stuff has to resolve the conflict.
 5. Logging Conflicts: Conflicts can be qirten on a queue (Some sort of resolution software could attempt to resolve the conflicts automatically. For conflicts that couldn't be resolved option **4** could be used).
 
+---
+
 ### Changes on a dataset that does not exist
 
 **Problem:**
@@ -58,6 +60,8 @@ _Which dataset should be stored?_
 #### Solution Strategies Changes on non-existent dataset
 
 - Tbd
+
+---
 
 ### Circular Updates
 
@@ -83,4 +87,6 @@ _How to prevent such loops? _
   - Disadvantage: Changes made by an end user in the target system are not recognized in certain cases e.g. end user updates dataset X (lastModified and modifier updated) --> OIH sends update for dataset X (lastModified and modifier updated) --> connectors polls for new and updated data.
 - Implement a sync flag for changes made by an end-user. This ensures that changes by an end-user are not overwritten. Polling trigger could fetch for lastModified and syncFlag === true.
   - Requires the target system to implement a syncFlac column
-  - Requires the target systems API to provide a filter for syncFlag field
+  - Requires the target systems API to provide a filter for syncFlag field#
+
+---
