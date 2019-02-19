@@ -28,7 +28,7 @@ Changes 3 & 4 only changes values in one of the system, so there is no conflict.
 
 Canges 1 & 2 are changes on the same value of the dataset. The subsequent question is:
 
-_Which dataset is propagated?_
+_Which dataset should be stored?_
 
 #### Solution Strategies Simultaneous Changes
 
