@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app/index.js",
-    "pretest": "eslint app test --ext .js --ext .json .yaml",
+    "pretest": "eslint app test --ext .js --ext .json",
     "test": "jest --runInBand",
     "lint_fix": "eslint app test --fix",
     "build": "echo \"No Build defined\"",
