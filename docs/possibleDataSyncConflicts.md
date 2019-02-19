@@ -12,6 +12,15 @@
 
 This document is designed to list possible data synchronization conflicts and possible solution strategies.
 
+- [Introduction](#introduction)
+  - [Conficts](#conficts)
+    - [Simultaneous Changes in differnt Systems](#simultaneous-changes-in-differnt-systems)
+      - [Solution Strategies Simultaneous Changes](#solution-strategies-simultaneous-changes)
+    - [Changes on a dataset that does not exist](#changes-on-a-dataset-that-does-not-exist)
+      - [Solution Strategies Changes on non-existent dataset](#solution-strategies-changes-on-non-existent-dataset)
+    - [Circular Updates](#circular-updates)
+  - [Solution Strategies Circular Updates](#solution-strategies-circular-updates)
+
 ## Conficts
 
 ### Simultaneous Changes in differnt Systems
