@@ -1,0 +1,15 @@
+---
+plugins:
+- node
+- mocha
+extends:
+- airbnb-base
+- eslint:recommended
+- plugin:node/recommended
+rules:
+  mocha/no-exclusive-tests: error
+  mocha/no-skipped-tests: error
+  quotes:
+  - error
+  - single
+  no-trailing-spaces: error
