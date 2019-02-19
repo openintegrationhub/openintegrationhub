@@ -1,7 +1,7 @@
 
 ---
 
-**Creator:** Philipp Hoegner ([philecs](www.github.com/philecs)), Cloud Ecosystem e.V. <br>
+**Creator:** Philipp Hoegner ([philecs](https://github.com/philecs)), Cloud Ecosystem e.V. <br>
 **Last revised by:** -  <br>
 **Last update:** 19-02-2019<br>
 **Version:** 0.2<br>
