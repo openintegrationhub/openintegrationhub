@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "bunyan": "1.8.12",
+    "eslint-config-airbnb-base": "13.1.0",
     "chai": "4.2.0",
     "eslint": "4.5.0",
     "eslint-plugin-mocha": "4.12.1",
