@@ -9,7 +9,10 @@ class OIH_FlowsDao extends FlowsDao {
      */
     findById(id) {
         //@todo: check if ID is a valid MongoID
-        return Flow.findById(id);
+        return Flow.findOne({
+            _id: id,
+            status: 'started'
+        });
     }
 }
 

@@ -1,7 +1,8 @@
-module.exports = ({eventBus, flowStarted, flowStopped}) => {
+module.exports = ({eventBus, flowStarting, flowStarted, flowStopping}) => {
     const handlers = {
+        'flow.starting': flowStarting,
         'flow.started': flowStarted,
-        'flow.stopped': flowStopped
+        'flow.stopping': flowStopping
     };
 
     for (let [topic, handler] of Object.entries(handlers)) {

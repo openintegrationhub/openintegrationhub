@@ -14,6 +14,7 @@ Object.assign(schema.statics, {
     findForScheduling({limit = 20} = {}) {
         const currentDateTime = new Date();
         const query = {
+            status: 'started',
             dueExecution: {
                 $exists: true,
                 $lt: currentDateTime

@@ -6,7 +6,7 @@ const {
 const { Scheduler } = require('@openintegrationhub/scheduler');
 const FlowsDao = require('./FlowsDao');
 const SchedulePublisher = require('./SchedulePublisher');
-const { asValue, asClass, asFunction, InjectionMode } = require('awilix');
+const { asValue, asClass, asFunction } = require('awilix');
 const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
 const mongoose = require('mongoose');
 
@@ -14,7 +14,6 @@ class SchedulerApp extends App {
     async _run() {
         const container = this.getContainer();
         const config = container.resolve('config');
-        const logger = container.resolve('logger');
         const amqp = container.resolve('amqp');
         await amqp.start();
         this._initHealthcheckApi(config.get('LISTEN_PORT'));
