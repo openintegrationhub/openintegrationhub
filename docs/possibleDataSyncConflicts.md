@@ -54,6 +54,8 @@ _Which dataset should be stored?_
 4. Manual Intervention: Operations stuff has to resolve the conflict.
 5. Logging Conflicts: Conflicts can be qirten on a queue (Some sort of resolution software could attempt to resolve the conflicts automatically. For conflicts that couldn't be resolved option **4** could be used).
 
+For distributed systems without usage of a data storage it is possible to use a vector clock in order to secure sequential processing of the changes.
+
 ## Changes on a dataset that does not exist
 
 **Problem:**
