@@ -82,7 +82,7 @@ For distributed systems without usage of a data storage it is possible to use a 
 
 These circular updates lead to a loop. The subsequent question is:
 
-_How to prevent such loops? _
+_How to prevent such loops?_
 
 ### Solution Strategies Circular Updates
 
