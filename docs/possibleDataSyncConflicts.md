@@ -20,7 +20,7 @@ This document is designed to list possible data synchronization conflicts and po
   - [Circular Updates](#circular-updates)
     - [Solution Strategies Circular Updates](#solution-strategies-circular-updates)
 
-## Simultaneous Changes in differnt Systems
+## Simultaneous Changes in different Systems
 
 **Problem**:
 
