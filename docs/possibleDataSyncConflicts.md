@@ -13,12 +13,14 @@
 This document is designed to list possible data synchronization conflicts and possible solution strategies.
 
 - [Introduction](#introduction)
-  - [Simultaneous Changes in differnt Systems](#simultaneous-changes-in-differnt-systems)
+  - [Simultaneous Changes in different Systems](#simultaneous-changes-in-different-systems)
     - [Solution Strategies Simultaneous Changes](#solution-strategies-simultaneous-changes)
   - [Changes on a dataset that does not exist](#changes-on-a-dataset-that-does-not-exist)
     - [Solution Strategies Changes on non-existent dataset](#solution-strategies-changes-on-non-existent-dataset)
   - [Circular Updates](#circular-updates)
     - [Solution Strategies Circular Updates](#solution-strategies-circular-updates)
+  - [Handling Denied Responses](#handling-denied-responses)
+    - [Solution Strategies Handling Denied Responses](#solution-strategies-handling-denied-responses)
 
 ## Simultaneous Changes in different Systems
 
@@ -49,7 +51,7 @@ _Which dataset should be stored?_
 ### Solution Strategies Simultaneous Changes
 
 1. First-Writer-Wins: The first change is propagated. `First` can be determined in different ways e.g. by comparing _lastChanged_ timestamps (granulartity of timestamps must be considered) or taking the dataset that is first propagated to the hub
-  - All following changes must be discarded and somehow handled (e.g. response to source system)
+   1. All following changes must be discarded and somehow handled (e.g. response to source system)
 2. Last-Writer-Wins: The last change is propagated. `Last` can be determined in different ways e.g. by comparing _lastChanged_ timestamps (granulartity of timestamps must be considered)  or taking the dataset that is last propagated to the hub.
 3. One of the systems is declared to be the `master`. Thus, the `master` systems record is propagated.
 4. Manual Intervention: Operations stuff has to resolve the conflict.
@@ -94,3 +96,28 @@ _How to prevent such loops?_
 - Implement a sync flag for changes made by an end-user. This ensures that changes by an end-user are not overwritten. Polling trigger could fetch for lastModified and syncFlag === true.
   - Requires the target system to implement a syncFlac column
   - Requires the target systems API to provide a filter for syncFlag field#
+
+## Handling Denied Responses
+
+**Problem:**
+
+- An update is made on dataset X in system A
+- An update is made on dataset X in system B
+- The update of system A is propagated via OIH
+- Now several options are possible:
+
+**Two Options:**
+
+1. If its an state based approach its an `dirty read`. Means: System B read an outdated dataset and made changes to this dataset.
+   1. Either system B is able to discard its own changes (or merge if no conflicts occured) or
+   2. System B thrwows an error message `update denied because of local changes`
+2. If its an operation based approach system B could process the update (if its not made on the same value or if its an realtiv operation) and now error is thrown
+
+**Question:**
+
+In case of 1.2: _How should OIH handle this response?_
+
+### Solution Strategies Handling Denied Responses
+
+- OIH could send a new `create object` event to system B so that two concurrent datasets exist in system B
+- Operation based approach with relativ operation so that changes are processed
