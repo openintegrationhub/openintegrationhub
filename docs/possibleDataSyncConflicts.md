@@ -87,6 +87,7 @@ _How to prevent such loops?_
 ### Solution Strategies Circular Updates
 
 - Central last modified timestamp within the OIH which compares the last modified timestamp of system B with OIH last timestamp (depending on timestamp granularity the timestamps could differ and loop still occurs)
+  - Optionally compare the incoming dataset to the one stored in the datahub and decide if a sync is needed
 - Additionally store a value for `last modified by` to prevent OIH updates to be propagated multiple times (e.g. _if lastModified equals OIh, ignore the change_)
   - Disadvantage: Changes made by an end user in the target system are not recognized in certain cases e.g. end user updates dataset X (lastModified and modifier updated) --> OIH sends update for dataset X (lastModified and modifier updated) --> connectors polls for new and updated data.
 - Implement a sync flag for changes made by an end-user. This ensures that changes by an end-user are not overwritten. Polling trigger could fetch for lastModified and syncFlag === true.
