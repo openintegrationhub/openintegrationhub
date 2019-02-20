@@ -49,6 +49,7 @@ _Which dataset should be stored?_
 ### Solution Strategies Simultaneous Changes
 
 1. First-Writer-Wins: The first change is propagated. `First` can be determined in different ways e.g. by comparing _lastChanged_ timestamps (granulartity of timestamps must be considered) or taking the dataset that is first propagated to the hub
+  - All following changes must be discarded and somehow handled (e.g. response to source system)
 2. Last-Writer-Wins: The last change is propagated. `Last` can be determined in different ways e.g. by comparing _lastChanged_ timestamps (granulartity of timestamps must be considered)  or taking the dataset that is last propagated to the hub.
 3. One of the systems is declared to be the `master`. Thus, the `master` systems record is propagated.
 4. Manual Intervention: Operations stuff has to resolve the conflict.
