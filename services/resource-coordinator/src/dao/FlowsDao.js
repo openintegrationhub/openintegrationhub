@@ -28,7 +28,7 @@ class OIHFlowsDao extends FlowsDao {
         return Flow.find({});
     }
 
-    async ensureFinalizer(flow) {
+    async ensureFinalizer() {
         //left blank intentionally
     }
 

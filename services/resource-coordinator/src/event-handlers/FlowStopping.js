@@ -3,7 +3,11 @@ const Flow = require('../models/Flow');
 module.exports = ({logger}) => async (event) => {
     try {
         const { payload } = event;
-        await Flow.deleteOne({_id: payload.id});
+        const flow = await Flow.findById(payload.id);
+        if (flow) {
+            flow.status = 'stopping';
+            await flow.save();
+        }
         await event.ack();
     } catch (err) {
         logger.error({ err, event }, 'Unable to process event');
