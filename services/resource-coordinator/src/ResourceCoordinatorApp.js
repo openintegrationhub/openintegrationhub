@@ -14,7 +14,9 @@ class ResourceCoordinatorApp extends App {
         const container = this.getContainer();
         const config = container.resolve('config');
         const amqp = container.resolve('amqp');
+        const k8s = container.resolve('k8s');
         await amqp.start();
+        await k8s.start();
 
         const channel = await amqp.getConnection().createChannel();
         const queueCreator = new QueueCreator(channel);

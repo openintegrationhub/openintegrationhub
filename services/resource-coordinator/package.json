@@ -4,7 +4,7 @@
   "description": "Resource coodinator",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint index.js src spec",
     "pretest": "npm run lint",
     "test": "mocha spec --recursive",
     "start": "node index.js",

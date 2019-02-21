@@ -14,7 +14,7 @@ class OIHFlowsDao extends FlowsDao {
     /**
      * Updates a flow.
      * @param flow
-     * @returns {*}
+     * @returns {Promise<Flow>}
      */
     update(flow) {
         return flow.save();
