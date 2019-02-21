@@ -3,7 +3,7 @@
 
 **Creator:** Philipp ([philecs](https://github.com/philecs)), Cloud Ecosystem e.V. <br>
 **Last revised by:** -  <br>
-**Last update:** 20-02-2019<br>
+**Last update:** 21-02-2019<br>
 **Version:** 0.2<br>
 
 ---
@@ -28,6 +28,12 @@ This document is designed to list possible data synchronization conflicts and po
 
 - Two systems change a specific value of a given dataset at the same time
   - In this case `same time` can also mean inbetween two flow executions (polling flow)
+
+**Assumption:**
+
+- It is possible to updated a dataset partially e.g. at some point a comparison of the old and updated dataset takes place. Instead of the whole dataset only new values are updated.
+
+_Note:_ If a partial update is not possible changes 3 & 4 (described in the following) also lead to conflicts.
 
 **Example:**
 
