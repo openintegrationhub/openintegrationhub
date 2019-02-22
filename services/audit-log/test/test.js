@@ -12,8 +12,7 @@ const port = process.env.PORT || 3007;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
-const Log = require('../app/models/log.js');
-
+const validator = require('../app/api/utils/validator.js');
 const Server = require('../app/server');
 
 const mainServer = new Server();
@@ -66,8 +65,20 @@ const log3 = {
   },
 };
 
-const storeLog1 = new Log(log1);
-const storeLog2 = new Log(log2);
+
+const invalidSchema = {
+  service: 'InvalidService',
+  timeSagagtamp: '1236',
+  payload: {
+    tenant: '4',
+    source: '400',
+    additionalKey: 'ADBljhasf',
+    object: 'y',
+    action: 'noaction',
+    subject: 'Test subject',
+    details: 'This should be refused by the validator.',
+  },
+};
 
 beforeAll(async () => {
   iamMock.setup();
@@ -76,8 +87,10 @@ beforeAll(async () => {
   mainServer.setupSwagger();
   await mainServer.setup(mongoose);
   app = mainServer.listen();
-  await storeLog1.save();
-  await storeLog2.save();
+  // Pass on messages to the validator as if they had been received by the receive module
+  await validator.validate(JSON.stringify(log1));
+  await validator.validate(JSON.stringify(log2));
+  await validator.validate(JSON.stringify(invalidSchema));
 });
 
 afterAll(async () => {

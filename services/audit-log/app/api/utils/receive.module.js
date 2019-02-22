@@ -2,18 +2,9 @@
 // listen and receive events
 
 const amqp = require('amqplib/callback_api');
-const Ajv = require('ajv');
-
 const config = require('../../config/index');
 const log = require('../../config/logger');
-
-const storage = require('../controllers/' + config.storage); // eslint-disable-line
-const schema = require('../../models/log.json');
-const payloadSchema = require('../../models/payload.json');
-
-const ajv = new Ajv();
-ajv.addSchema(payloadSchema);
-const validator = ajv.compile(schema);
+const validator = require('./validator');
 
 // Set url for amqp
 const amqpUrl = config.amqpUrl; // eslint-disable-line
@@ -43,35 +34,9 @@ const makeQueues = function () { // eslint-disable-line
         log.info(" [x] Received: %s:'%s'", msg.fields.routingKey, msg.content.toString());
 
         // @todo: check if mongo connection is ok before acking and if not Ch.nack(msg);
-        Channel.ack(msg);
+        Channel.ack(msg.content.toString());
 
-        let message;
-        try {
-          message = JSON.parse(msg.content.toString());
-        } catch (e) {
-          log.error('Received message that is not valid JSON');
-          log.error(e);
-          return false;
-        }
-
-        const valid = validator(message);
-
-        if (!valid) {
-          if (process.env.NODE_ENV !== 'test') {
-            log.error('Message format is not valid!');
-            log.error(ajv.errors);
-          }
-          return false;
-        }
-
-        try {
-          log.info('Saving event to DB...');
-          await storage.addEvent(message);
-          log.info('Successfully Saved');
-        } catch (error) {
-          log.error('Save failed:');
-          log.error(error);
-        }
+        validator.validate(msg);
       }, { noAck: false });
     });
   } catch (err) {
