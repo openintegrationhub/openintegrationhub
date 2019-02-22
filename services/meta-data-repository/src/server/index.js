@@ -2,13 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const conf = require('../conf');
 const iamLib = require('@openintegrationhub/iam-utils');
+const conf = require('../conf');
 
 const jsonParser = bodyParser.json();
 
 module.exports = class Server {
-    constructor({ port, mongoDbConnection, adapter }) {
+    constructor({ port, mongoDbConnection }) {
         this.port = port || conf.port;
         this.app = express();
         this.app.disable('x-powered-by');
@@ -23,9 +23,9 @@ module.exports = class Server {
 
 
         this.app.use(jsonParser);
-
+        // base routes
         this.app.use('/', require('./../route/root'));
-        this.app.get('/healthcheck',  require('./../route/healtcheck'));
+        this.app.use('/healthcheck', require('./../route/healtcheck'));
 
         const apiBase = express.Router();
 

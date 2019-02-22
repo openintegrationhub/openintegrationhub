@@ -20,7 +20,7 @@ function exitHandler(options, err) {
 
 process.on('SIGINT', exitHandler.bind(null));
 
-const server = new Server();
+const server = new Server({});
 
 (async () => {
     try {
