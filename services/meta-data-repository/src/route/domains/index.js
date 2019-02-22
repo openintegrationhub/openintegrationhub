@@ -1,13 +1,16 @@
 const express = require('express');
+const logger = require('@basaas/node-logger');
+
+const conf = require('../../conf');
+const { USER } = require('../../constant').ENTITY_TYPE;
+const DomainDAO = require('../../dao/domain');
+const { isOwnerOfDomain } = require('../../middleware/is-owner');
+const Pagination = require('../../util/pagination');
+
+const log = logger.getLogger(`${conf.logging.namespace}/domains`);
 
 const router = express.Router();
 
-// GET
-// /domains
-// Retrieve the available domains for the authenticated user
-// POST
-// /domains
-// Create a new Domain.
 // GET
 // /domains/{domainId}
 // Retrieve a domain with given ID.
@@ -31,7 +34,59 @@ const router = express.Router();
 // Delete a schema by uri
 
 router.get('/', async (req, res) => {
-    res.sendStatus(200);
+    const pagination = new Pagination(
+        req.originalUrl,
+        DomainDAO,
+        req.user.sub,
+    );
+    res.send({
+        data: await DomainDAO.findByEntityWithPagination(
+            req.user.sub,
+            pagination.props(),
+        ),
+        meta: {
+            ...await pagination.calc(),
+        },
+    });
+});
+
+router.get('/:id', isOwnerOfDomain, async (req, res, next) => {
+    try {
+        const domain = req.obj;
+
+        if (domain) {
+            res.send({
+                data: domain,
+            });
+        } else {
+            res.sendStatus(403);
+        }
+    } catch (err) {
+        log.error(err, { 'x-request-id': req.headers['x-request-id'] });
+        next({
+            status: 500,
+        });
+    }
+});
+
+router.post('/', async (req, res, next) => {
+    const { data } = req.body;
+    try {
+        res.send({
+            data: await DomainDAO.create({
+                ...data,
+                owners: {
+                    id: req.user.sub.toString(),
+                    type: USER,
+                },
+            }),
+        });
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 400,
+        });
+    }
 });
 
 module.exports = router;

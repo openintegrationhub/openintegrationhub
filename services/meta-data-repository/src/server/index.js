@@ -30,7 +30,9 @@ module.exports = class Server {
         const apiBase = express.Router();
 
         apiBase.use(iamLib.middleware);
+
         // setup routes
+        apiBase.use('/domains', require('./../route/domains'));
 
         this.app.use(conf.apiBase, apiBase);
 

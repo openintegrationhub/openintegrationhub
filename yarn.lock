@@ -246,7 +246,7 @@
     uuid "3.1.0"
     winston "2.4.0"
 
-"@basaas/node-logger@^1.1.5":
+"@basaas/node-logger@1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@basaas/node-logger/-/node-logger-1.1.5.tgz#f2ffae7078f57b2687f11b72d7cc7d28a1a39033"
   integrity sha512-wZm7Uw98qA+vbA4hSXYH0XSEyAlQ/ViUnsfrDrafBgTDCTjCqMpf8AnDykv7rcTpoVHFIYacyo90gMaLgkuqDw==
@@ -269,6 +269,16 @@
   resolved "https://registry.yarnpkg.com/@openintegrationhub/iam-utils/-/iam-utils-1.3.0.tgz#d8d4c4bc0431b524b152ccff3af926bec67a7555"
   dependencies:
     "@basaas/node-logger" "1.1.2"
+    request "2.87.0"
+    request-promise "^4.2.2"
+
+"@openintegrationhub/iam-utils@1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@openintegrationhub/iam-utils/-/iam-utils-1.3.2.tgz#55e5d6bab2de8f83cd655ceadff55c45c57d1b9e"
+  integrity sha512-qhpod3n/i2jLxb6ySPm0AuADmbkk2x89JiY/ez51k7X/x1FgwJKNLd/p2BWectOZ8acaXgDmlsyrayiKgBx7FA==
+  dependencies:
+    "@basaas/node-logger" "1.1.5"
+    base64url "3.0.1"
     request "2.87.0"
     request-promise "^4.2.2"
 
@@ -2841,7 +2851,7 @@ escodegen@^1.9.1:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-config-airbnb-base@13.1.0, eslint-config-airbnb-base@^13.1.0:
+eslint-config-airbnb-base@13.1.0:
   version "13.1.0"
   resolved "https://registry.yarnpkg.com/eslint-config-airbnb-base/-/eslint-config-airbnb-base-13.1.0.tgz#b5a1b480b80dfad16433d6c4ad84e6605052c05c"
   dependencies:
@@ -2908,14 +2918,14 @@ eslint-plugin-jest@22.2.2:
   version "22.2.2"
   resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-22.2.2.tgz#2a80d70a20c27dfb1503a6f32cdcb647fe5476df"
 
-eslint-plugin-jest@^22.1.0:
-  version "22.1.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-22.1.2.tgz#1ea36cc3faedbdb788e702ca633d635ca14e91e8"
-
-eslint-plugin-jest@^22.3.0:
+eslint-plugin-jest@22.3.0:
   version "22.3.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-22.3.0.tgz#a10f10dedfc92def774ec9bb5bfbd2fb8e1c96d2"
   integrity sha512-P1mYVRNlOEoO5T9yTqOfucjOYf1ktmJ26NjwjH8sxpCFQa6IhBGr5TpKl3hcAAT29hOsRJVuMWmTsHoUVo9FoA==
+
+eslint-plugin-jest@^22.1.0:
+  version "22.1.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-22.1.2.tgz#1ea36cc3faedbdb788e702ca633d635ca14e91e8"
 
 eslint-plugin-json@^1.2.1:
   version "1.3.2"
@@ -3095,7 +3105,7 @@ eslint@5.13.0:
     table "^5.0.2"
     text-table "^0.2.0"
 
-eslint@^5.14.1:
+eslint@5.14.1:
   version "5.14.1"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.14.1.tgz#490a28906be313685c55ccd43a39e8d22efc04ba"
   integrity sha512-CyUMbmsjxedx8B0mr79mNOqetvkbij/zrXnFeK2zc3pGRn3/tibjiNAv/3UxFEyfMDjh+ZqTrJrEGBFiGfD5Og==
@@ -3454,7 +3464,7 @@ express@4.16.3, express@^4.16.3:
     utils-merge "1.0.1"
     vary "~1.1.2"
 
-express@4.16.4, express@^4.16.4:
+express@4.16.4:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
   dependencies:
@@ -5908,7 +5918,7 @@ jest@24.0.0:
     import-local "^2.0.0"
     jest-cli "^24.0.0"
 
-jest@24.1.0, jest@^24.1.0:
+jest@24.1.0:
   version "24.1.0"
   resolved "https://registry.yarnpkg.com/jest/-/jest-24.1.0.tgz#b1e1135caefcf2397950ecf7f90e395fde866fd2"
   dependencies:
@@ -6905,7 +6915,7 @@ moment@2.10.6:
   version "2.10.6"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.10.6.tgz#6cb21967c79cba7b0ca5e66644f173662b3efa77"
 
-moment@2.24.0, moment@^2.24.0:
+moment@2.24.0:
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
 
@@ -6978,25 +6988,7 @@ mongodb-memory-server@3.0.0:
     tmp "^0.0.33"
     uuid "^3.2.1"
 
-mongodb-memory-server@^2.9.1:
-  version "2.9.3"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-2.9.3.tgz#96ee5a10743b3209ff5d6cf836889017d306c935"
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    debug "^4.1.0"
-    decompress "^4.2.0"
-    dedent "^0.7.0"
-    find-cache-dir "^2.0.0"
-    get-port "^4.0.0"
-    getos "^3.1.1"
-    https-proxy-agent "^2.2.1"
-    lockfile "^1.0.4"
-    md5-file "^4.0.0"
-    mkdirp "^0.5.1"
-    tmp "^0.0.33"
-    uuid "^3.2.1"
-
-mongodb-memory-server@^3.1.1:
+mongodb-memory-server@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-3.1.1.tgz#259118b4ebc3e55c460e4714ac9b91edd755b150"
   integrity sha512-sOkqhOMUBjZlMU68GbAPrSr97aYy2veOZqy8j3UYLWks1DQXS3Almmz/GGDmp0E8I6MaPacar66wRBwWdBqY9w==
@@ -7007,6 +6999,24 @@ mongodb-memory-server@^3.1.1:
     dedent "^0.7.0"
     find-cache-dir "^2.0.0"
     get-port "^4.1.0"
+    getos "^3.1.1"
+    https-proxy-agent "^2.2.1"
+    lockfile "^1.0.4"
+    md5-file "^4.0.0"
+    mkdirp "^0.5.1"
+    tmp "^0.0.33"
+    uuid "^3.2.1"
+
+mongodb-memory-server@^2.9.1:
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-2.9.3.tgz#96ee5a10743b3209ff5d6cf836889017d306c935"
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    debug "^4.1.0"
+    decompress "^4.2.0"
+    dedent "^0.7.0"
+    find-cache-dir "^2.0.0"
+    get-port "^4.0.0"
     getos "^3.1.1"
     https-proxy-agent "^2.2.1"
     lockfile "^1.0.4"
@@ -7032,7 +7042,7 @@ mongodb@3.1.10, mongodb@^3.0.10:
     mongodb-core "3.1.9"
     safe-buffer "^5.1.2"
 
-mongodb@3.1.13, mongodb@^3.1.13:
+mongodb@3.1.13:
   version "3.1.13"
   resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.1.13.tgz#f8cdcbb36ad7a08b570bd1271c8525753f75f9f4"
   dependencies:
@@ -7068,6 +7078,24 @@ mongoose@5.4.11:
     safe-buffer "5.1.2"
     sliced "1.0.1"
 
+mongoose@5.4.14, mongoose@^5.4.13:
+  version "5.4.14"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.4.14.tgz#8cc074c9990db0a26062a779f461abb91c9c483c"
+  integrity sha512-lAISH4xdx0/o0bVWPB4bxApP3bA1b08oHPEjTBq3/mIr4R494hepDJJowByBgpGYf8tj/oe6VkFCx8wbRcOciA==
+  dependencies:
+    async "2.6.1"
+    bson "~1.1.0"
+    kareem "2.3.0"
+    mongodb "3.1.13"
+    mongodb-core "3.1.11"
+    mongoose-legacy-pluralize "1.0.2"
+    mpath "0.5.1"
+    mquery "3.2.0"
+    ms "2.1.1"
+    regexp-clone "0.0.1"
+    safe-buffer "5.1.2"
+    sliced "1.0.1"
+
 mongoose@5.4.7:
   version "5.4.7"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.4.7.tgz#eac012b38636a4b9075f66480263dd426e65c5c1"
@@ -7098,24 +7126,6 @@ mongoose@5.4.9:
     mpath "0.5.1"
     mquery "3.2.0"
     ms "2.0.0"
-    regexp-clone "0.0.1"
-    safe-buffer "5.1.2"
-    sliced "1.0.1"
-
-mongoose@^5.4.13, mongoose@^5.4.14:
-  version "5.4.14"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.4.14.tgz#8cc074c9990db0a26062a779f461abb91c9c483c"
-  integrity sha512-lAISH4xdx0/o0bVWPB4bxApP3bA1b08oHPEjTBq3/mIr4R494hepDJJowByBgpGYf8tj/oe6VkFCx8wbRcOciA==
-  dependencies:
-    async "2.6.1"
-    bson "~1.1.0"
-    kareem "2.3.0"
-    mongodb "3.1.13"
-    mongodb-core "3.1.11"
-    mongoose-legacy-pluralize "1.0.2"
-    mpath "0.5.1"
-    mquery "3.2.0"
-    ms "2.1.1"
     regexp-clone "0.0.1"
     safe-buffer "5.1.2"
     sliced "1.0.1"
@@ -8419,7 +8429,7 @@ qs@6.5.2, qs@^6.5.1, qs@~6.5.1, qs@~6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
 
-qs@6.6.0, qs@^6.6.0:
+qs@6.6.0:
   version "6.6.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.6.0.tgz#a99c0f69a8d26bf7ef012f871cdabb0aee4424c2"
 
@@ -9706,7 +9716,7 @@ swagger-ui-dist@^3.18.1:
   version "3.20.1"
   resolved "https://registry.yarnpkg.com/swagger-ui-dist/-/swagger-ui-dist-3.20.1.tgz#2e871faf29984bc5f253b8641ba38b244001cfa4"
 
-swagger-ui-express@4.0.2, swagger-ui-express@^4.0.2:
+swagger-ui-express@4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-4.0.2.tgz#8fae60038b990258dc14e07ea3427e93fb621622"
   dependencies:

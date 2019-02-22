@@ -17,4 +17,4 @@ const domain = new Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('auth-client', domain);
+module.exports = mongoose.model('domain', domain);
