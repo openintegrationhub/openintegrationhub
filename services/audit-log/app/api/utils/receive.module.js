@@ -2,6 +2,8 @@
 // listen and receive events
 
 const amqp = require('amqplib/callback_api');
+const mongoose = require('mongoose');
+
 const config = require('../../config/index');
 const log = require('../../config/logger');
 const validator = require('./validator');
@@ -33,10 +35,13 @@ const makeQueues = function () { // eslint-disable-line
       Channel.consume(q.queue, async (msg) => {
         log.info(" [x] Received: %s:'%s'", msg.fields.routingKey, msg.content.toString());
 
-        // @todo: check if mongo connection is ok before acking and if not Ch.nack(msg);
-        Channel.ack(msg.content.toString());
-
-        validator.validate(msg);
+        // checking if mongo connection is ok before acking and save;
+        if (mongoose.connection.readyState === 1) {
+          Channel.ack(msg.content.toString());
+          validator.validate(msg);
+        } else {
+          Channel.nack(msg.content.toString());
+        }
       }, { noAck: false });
     });
   } catch (err) {
