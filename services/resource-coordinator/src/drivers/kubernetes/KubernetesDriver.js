@@ -71,16 +71,7 @@ class KubernetesDriver extends BaseDriver {
         const flowSecret = new FlowSecret({
             metadata: {
                 name: secretName,
-                namespace: this._config.get('NAMESPACE'),
-                ownerReferences: [
-                    {
-                        apiVersion: 'elastic.io/v1',
-                        kind: 'Flow',
-                        controller: true,
-                        name: flow.id,
-                        uid: flow.metadata.uid
-                    }
-                ]
+                namespace: this._config.get('NAMESPACE')
             },
             data
         });
@@ -132,19 +123,10 @@ class KubernetesDriver extends BaseDriver {
                 name: appId,
                 namespace: this._config.get('NAMESPACE'),
                 annotations: {
-                    [KubernetesRunningFlowNode.ANNOTATION_KEY]: flow.metadata.resourceVersion,
+                    // [KubernetesRunningFlowNode.ANNOTATION_KEY]: flow.metadata.resourceVersion,
                     flowId: flow.id,
                     nodeId: node.id
-                },
-                ownerReferences: [
-                    {
-                        apiVersion: 'elastic.io/v1',
-                        kind: 'Flow',
-                        controller: true,
-                        name: flow.metadata.name,
-                        uid: flow.metadata.uid
-                    }
-                ]
+                }
             },
             spec: {
                 template: {

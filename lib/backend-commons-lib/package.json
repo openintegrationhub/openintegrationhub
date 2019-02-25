@@ -7,7 +7,7 @@
     "lint": "eslint ./index.js ./src",
     "test": "npm run lint"
   },
-  "author": "elastic.io",
+  "author": "Open Integration Hub",
   "license": "APL-2.0",
   "dependencies": {
     "amqplib": "0.5.2",
