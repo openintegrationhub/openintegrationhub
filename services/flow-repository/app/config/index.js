@@ -2,6 +2,7 @@
 
 const general = {
   mongoUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/icrdev',
+  amqpUrl: process.env.QUEUE_URL || 'amqp://guest:guest@localhost:5672',
   oihViewerRoles: ['ADMIN'],
   tenantWriterRoles: ['TENANT_ADMIN', 'TENANT_INTEGRATOR'],
 

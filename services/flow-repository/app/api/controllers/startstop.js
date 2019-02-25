@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../../config/index');
+const publisher = require('../../utils/publish');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
@@ -43,16 +44,14 @@ router.post('/:id/start', jsonParser, async (req, res) => {
     return res.status(404).send('No flow with this ID found');
   }
 
-  const now = new Date();
-
   const ev = {
     headers: {
       name: 'flow.starting',
-      createdAt: now.toISOString(),
     },
     payload: flow,
   };
 
+  await publisher.publish(ev);
   return res.status(200).send(ev);
 });
 
@@ -80,16 +79,14 @@ router.post('/:id/stop', jsonParser, async (req, res) => {
     return res.status(404).send('No flow with this ID found');
   }
 
-  const now = new Date();
-
   const ev = {
     headers: {
       name: 'flow.stopping',
-      createdAt: now.toISOString(),
     },
     payload: flow,
   };
 
+  await publisher.publish(ev);
   return res.status(200).send(ev);
 });
 
