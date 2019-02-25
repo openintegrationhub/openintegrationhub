@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "This is the API for the Open Integration Hub Microservice \"Integration Content Repository\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "description": "This is the API for the Open Integration Hub Microservice \"Flow Repository\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
     "version": "0.0.1",
-    "title": "Integration Content Repository",
+    "title": "Flow Repository",
     "termsOfService": "http://openintegrationhub.de/terms/",
     "contact": {
       "email": "hschmidt@wice.de"
