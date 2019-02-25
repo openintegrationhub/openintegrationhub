@@ -1,7 +1,7 @@
 {
   "name": "resource-coordinator",
   "version": "1.0.0",
-  "description": "Resource coodinator",
+  "description": "Resource coordinator",
   "main": "index.js",
   "scripts": {
     "lint": "eslint index.js src spec",
