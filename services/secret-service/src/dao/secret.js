@@ -11,8 +11,8 @@ const AuthClientDAO = require('../dao/auth-client');
 const Secret = require('../model/Secret');
 const conf = require('../conf');
 
-const log = Logger.getLogger(`${conf.logging.namespace}/secretsDao`);
-
+const log = Logger.getLogger(`${conf.logging.namespace}/secretDao`);
+const auditLog = Logger.getAuditLogger(`${conf.logging.namespace}/secretDao`);
 
 // retry refresh procedure after ms
 const waitBeforeRetry = 1000;
@@ -22,7 +22,7 @@ const shouldAssumeRefreshTimeout = secret => moment().diff(secret.lockedAt) >= c
 const shouldRefreshToken = secret => moment().diff(secret.value.expires) >= conf.expirationOffset;
 
 function cryptoSecret(secret, key, method = ENCRYPT, selection = []) {
-    if (!key) {
+    if (!key || typeof key !== 'string') {
         return secret;
     }
     const fields = selection.length ? selection : SENSITIVE_FIELDS;
@@ -121,6 +121,12 @@ const refresh = (secret, key) => new Promise(async (resolve, reject) => {
 
 
 module.exports = {
+
+    async countByEntity(id) {
+        return await Secret.full.countDocuments({
+            'owners.id': id,
+        });
+    },
     async create(data, key = null) {
         if (data.encryptedFields) {
             delete data.encryptedFields;
@@ -131,6 +137,17 @@ module.exports = {
 
         return secret.toObject();
     },
+
+    async getRefreshed(secret, key) {
+        // refresh secrets with refreshToken only
+        let _secret = secret;
+        if (secret.type === OA2_AUTHORIZATION_CODE && secret.value.refreshToken) {
+            _secret = await refresh(secret, key);
+            _secret = _secret.encryptedFields.indexOf('accessToken') !== -1
+                ? cryptoSecret(_secret, key, DECRYPT, ['accessToken']) : _secret;
+        }
+        return _secret;
+    },
     async findByEntityWithPagination(
         id,
         props,
@@ -138,14 +155,8 @@ module.exports = {
         return await Secret.full.find({
             'owners.id': id,
         },
-        'name type value.scope value.expires owners',
+        'name type value.authClientId value.scope value.expires owners',
         props);
-    },
-
-    async countByEntity(id) {
-        return await Secret.full.countDocuments({
-            'owners.id': id,
-        });
     },
 
     async findByExternalId(externalId, authClientId) {
@@ -201,15 +212,10 @@ module.exports = {
         await Secret.full.deleteOne({ _id: id });
         log.info('deleted.secret', { id });
     },
-    async getRefreshed(secret, key) {
-        // refresh secrets with refreshToken only
-        let _secret = secret;
-        if (secret.type === OA2_AUTHORIZATION_CODE && secret.value.refreshToken) {
-            _secret = await refresh(secret, key);
-            _secret = _secret.encryptedFields.indexOf('accessToken') !== -1
-                ? cryptoSecret(_secret, key, DECRYPT, ['accessToken']) : _secret;
-        }
-        return _secret;
+
+    async deleteAll(query) {
+        await Secret.full.deleteMany(query);
+        auditLog.info('secret.deleteAll', { data: { ...query } });
     },
 
     cryptoSecret,

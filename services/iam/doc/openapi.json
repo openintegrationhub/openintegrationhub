@@ -691,16 +691,14 @@
             }
           }
         }
-      }
-    },
-    "/tokens/ephemeral": {
+      },
       "post": {
         "tags": [
           "token"
         ],
-        "summary": "Create an ephemeral token",
-        "description": "This can only be done by a privileged service account or an admin.",
-        "operationId": "createEphemeralToken",
+        "summary": "Create a token",
+        "description": "This can only be done by a privileged service account or an admin with the 'iam.token.create' permission.",
+        "operationId": "createToken",
         "requestBody": {
           "description": "Creates and stores an ephemeral token",
           "required": true,
@@ -711,12 +709,15 @@
                   "accountId": {
                     "type": "string"
                   },
-                  "consumerServiceId": {
+                  "inquirer": {
                     "type": "string"
                   },
                   "expiresIn": {
                     "type": "string",
-                    "description": "time in ms"
+                    "description": "time in written format, e.g. 1m, 12h. -1 for infinity"
+                  },
+                  "customPermissions": {
+                    "type": "array"
                   }
                 },
                 "required": [

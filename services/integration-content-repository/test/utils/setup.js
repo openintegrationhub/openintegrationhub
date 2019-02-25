@@ -3,6 +3,7 @@
 
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') });
 const MongodbMemoryServer = require('mongodb-memory-server');
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');

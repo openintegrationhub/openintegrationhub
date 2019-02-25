@@ -86,7 +86,8 @@ module.exports = {
         /* requester is either admin, or a service account with correct permissions or a user in context of a tenant with her permissions */
         if (currentContext
             && currentContext.permissions.length
-            && (currentContext.permissions.find(perm => perm === PERMISSIONS['tenant.all']) || allRequiredElemsExistsInArray(currentContext.permissions, requiredPermissions))
+            && (currentContext.permissions.find(perm => perm === PERMISSIONS['tenant.all'])
+                || allRequiredElemsExistsInArray(currentContext.permissions, requiredPermissions))
         ) {
             return next();
         } else {
@@ -235,20 +236,20 @@ module.exports = {
         }
         if (payload) {
             req.user = req.user || {};
-            // req.user.token = req.headers.authorization;
             req.user.token = token;
             req.user.auth = payload;
             req.user.username = payload.username;
             req.user.userid = payload._id && payload._id.toString();
-            req.user.memberships = payload.memberships;
-            req.user.currentContext = payload.currentContext;
+            req.user.memberships = payload.memberships || [];
+            req.user.currentContext = req.user.memberships.find(elem => elem.active === true);
             req.user.permissions = payload.permissions;
             req.user.role = payload.role;
 
             if (req.user.currentContext && req.user.currentContext.tenant) {
-                if (req.user.currentContext.role) {
-                    const { permissions } = await RolesDAO.findOne({
-                        _id: req.user.currentContext.role,
+                if (req.user.currentContext.roles) {
+                    let permissions = [];
+                    req.user.currentContext.roles.forEach((role) => {
+                        permissions = permissions.concat(role.permissions);
                     });
                     req.user.currentContext.permissions = req.user.currentContext.permissions.concat(permissions);
                 }

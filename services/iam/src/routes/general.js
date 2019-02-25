@@ -57,9 +57,12 @@ router.post('/login', authMiddleware.authenticate, authMiddleware.accountIsEnabl
 router.get('/context', authMiddleware.validateAuthentication, async (req, res, next) => {
 
     try {
-        const { memberships, currentContext } = await AccountDAO.findOne({ _id: req.user.userid });
+        const { memberships } = await AccountDAO.findOne({ _id: req.user.userid });
 
-        res.status(200).send({ memberships, currentContext });
+        res.status(200).send({
+            memberships,
+            currentContext: req.user.currentContext,
+        });
 
     } catch (err) {
         logger.error(err);
@@ -73,12 +76,20 @@ router.post('/context', authMiddleware.validateAuthentication,
 
         const { tenant } = req.body;
 
+        if (!tenant) {
+            return next({ status: 400, message: 'Missing tenant in body' });
+        }
+
         try {
 
             if (await AccountDAO.userHasContext({ userId: req.user.userid, tenantId: tenant })) {
 
                 const { currentContext } = await AccountDAO.setCurrentContext({ userId: req.user.userid, tenantId: tenant });
-                
+
+                // const jwtpayload = jwtUtils.getJwtPayload(await AccountDAO.findOne({ _id: req.user.userid }));
+                //
+                // const token = await jwtUtils.basic.sign(jwtpayload);
+                // req.headers.authorization = `Bearer ${token}`;
                 res.status(200).send({ currentContext });
 
             } else {

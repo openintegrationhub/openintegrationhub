@@ -1,0 +1,25 @@
+{
+  "name": "@openintegrationhub/iam-utils",
+  "version": "1.3.2",
+  "description": "Utils and express middleware for OIH IAM service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Basaas GmbH",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "engineStrict": true,
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@basaas/node-logger": "1.1.5",
+    "base64url": "3.0.1",
+    "request": "2.87.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "express": "4.16.3"
+  }
+}
