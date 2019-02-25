@@ -10,7 +10,11 @@ async function publish(ev) {
     const newEvent = new Event(ev);
     await eventBus.publish(newEvent);
     log.info(`Published event: ${JSON.stringify(ev)}`);
-    await eventBus.disconnect();
+
+    // Interim solution to keep tests from hanging up
+    if (process.env.NODE_ENV === 'test') {
+      await eventBus.disconnect();
+    }
   } catch (err) {
     log.error(err);
   }
