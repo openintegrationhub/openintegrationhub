@@ -36,6 +36,8 @@ const config = {
         ] : [
 
         ]),
+
+        keystoreFile: optional('IAM_OIDC_KEYSTORE_PATH') || path.join(__dirname, '../../', 'keystore/keystore.json'),
     },
     accounts: {
         admin: {
@@ -100,13 +102,15 @@ const config = {
             pkce: true,
             clientCredentials: true,
             backchannelLogout: true,
-            claimsParameter: true,
             encryption: true,
             frontchannelLogout: true,
             introspection: true,
             request: true,
             revocation: true,
-            sessionManagement: true,
+            sessionManagement: {
+                // thirdPartyCheckUrl: 'https://mindmup.github.io/3rdpartycookiecheck/start.html',
+            },
+            claimsParameter: true,
             conformIdTokenClaims: false,
             // ...{
             //     registration: true,

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const AuthClient = require('../AuthClient');
 const owners = require('../schema/owners');
 const { AUTH_TYPE } = require('../../constant');
 
@@ -67,23 +68,37 @@ module.exports = {
                 expiresAt: String,
             },
         })),
-    [OA2_AUTHORIZATION_CODE]:
-        Secret.discriminator(`S_${OA2_AUTHORIZATION_CODE}`, new Schema({
-            value: {
-                authClientId: {
-                    type: Schema.Types.ObjectId,
-                    required: true,
+    [OA2_AUTHORIZATION_CODE]: Secret.discriminator(`S_${OA2_AUTHORIZATION_CODE}`, new Schema({
+        value: {
+            authClientId: {
+                type: Schema.Types.ObjectId,
+                required: true,
+                validate: {
+                    isAsync: true,
+                    validator(v, cb) {
+                        AuthClient.full.findOne({ _id: v }, (err, doc) => {
+                            if (err || !doc) {
+                                cb(false);
+                            } else {
+                                cb(true);
+                            }
+                        });
+                    },
+                    // Default error message, overridden by 2nd argument to `cb()` above
+                    message: 'Auth client is not existing',
                 },
-                refreshToken: {
-                    type: String,
-                },
-                accessToken: {
-                    type: String,
-                    required: true,
-                },
-                scope: String,
-                expires: String,
-                externalId: String,
             },
-        })),
+            refreshToken: {
+                type: String,
+            },
+            accessToken: {
+                type: String,
+                required: true,
+            },
+            scope: String,
+            expires: String,
+            externalId: String,
+        },
+    })),
+
 };

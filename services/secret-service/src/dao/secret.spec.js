@@ -1,11 +1,14 @@
 const getPort = require('get-port');
 const { ENCRYPT, DECRYPT } = require('../constant').CRYPTO.METHODS;
 const { SIMPLE, OA2_AUTHORIZATION_CODE } = require('../constant').AUTH_TYPE;
+const AuthClientDAO = require('./auth-client');
 const SecretDAO = require('./secret');
 const Server = require('../server');
 
 let port;
 let server;
+let authClient;
+
 
 describe('SecretDAO', () => {
     beforeAll(async () => {
@@ -15,6 +18,30 @@ describe('SecretDAO', () => {
             port,
         });
         await server.start();
+
+        const data = {
+            type: OA2_AUTHORIZATION_CODE,
+            name: 'oAuth2',
+            clientId: 'string',
+            clientSecret: 'string',
+            redirectUri: '/dev/null',
+            endpoints: {
+                auth: 'http://',
+                token: 'http://',
+                userinfo: 'http://',
+            },
+            mappings: {
+                externalId: {
+                    source: 'id_token',
+                    key: 'sub',
+                },
+                scope: {
+                    key: 'scope',
+                },
+            },
+        };
+
+        authClient = await AuthClientDAO.create(data);
     });
 
     afterAll(async () => {
@@ -30,7 +57,7 @@ describe('SecretDAO', () => {
             name: 'secret',
             type: OA2_AUTHORIZATION_CODE,
             value: {
-                authClientId: '5c0a4f796731613b7d10e73e',
+                authClientId: authClient._id,
                 accessToken,
                 refreshToken,
                 scope: 'asd',
@@ -55,7 +82,7 @@ describe('SecretDAO', () => {
             name: 'secret',
             type: OA2_AUTHORIZATION_CODE,
             value: {
-                authClientId: '5c0a4f796731613b7d10e73e',
+                authClientId: authClient._id,
                 accessToken,
                 refreshToken,
                 scope: 'asd',

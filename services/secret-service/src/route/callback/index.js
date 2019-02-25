@@ -88,7 +88,12 @@ router.get('/', async (req, res, next) => {
         }
         // clean up flow data
         await AuthFlowDAO.delete(flow._id);
-        res.sendStatus(200);
+        // res.sendStatus(200);
+        res.send({
+            data: {
+                successUrl: flow.successUrl,
+            },
+        });
     } catch (err) {
         log.error(err);
         next({

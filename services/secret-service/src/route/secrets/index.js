@@ -2,7 +2,9 @@ const express = require('express');
 const logger = require('@basaas/node-logger');
 const auth = require('../../middleware/auth');
 const { getKeyParameter, getKey } = require('../../middleware/key');
+const { can } = require('../../middleware/permission');
 const conf = require('../../conf');
+const { restricted } = require('../../constant').PERMISSIONS;
 const SecretDAO = require('../../dao/secret');
 const { ROLE, AUTH_TYPE } = require('../../constant');
 const { maskString } = require('../../util/common');
@@ -141,6 +143,26 @@ router.delete('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
             id: req.params.id,
         });
         res.sendStatus(204);
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 500,
+        });
+    }
+});
+
+router.delete('/', can([restricted['secrets.any.delete']]), async (req, res, next) => {
+    const { userId, type } = req.query;
+
+    try {
+        await SecretDAO.deleteAll({
+            owners: {
+                id: userId,
+                type,
+            },
+        });
+
+        res.sendStatus(200);
     } catch (err) {
         log.error(err);
         next({

@@ -72,6 +72,7 @@ describe('Role Routes', () => {
                     permissions: [
                         PERMISSIONS['tenant.all'],
                     ],
+                    active: true,
                 }],
             };
             const userResponse = await request.post('/api/v1/users')
@@ -257,7 +258,7 @@ describe('Role Routes', () => {
 
         const jsonPayload = {
             user: userId,
-            role: roleResp.body._id,
+            roles: [roleResp.body._id],
             permissions: [PERMISSIONS['tenant.roles.read']],
         };
 
@@ -495,7 +496,7 @@ describe('Role Routes', () => {
 
         const jsonPayload = {
             user: userId,
-            role: roleResp.body._id,
+            roles: [roleResp.body._id],
             permissions: [PERMISSIONS['tenant.roles.read']],
         };
 
@@ -532,7 +533,7 @@ describe('Role Routes', () => {
             .set('Authorization', userToken)
             .expect(200);
         expect(userProfileResponse.body).toBeDefined();
-        expect(userProfileResponse.body.memberships[0].role).toBeDefined();
+        expect(userProfileResponse.body.memberships[0].roles).toBeDefined();
         console.log('USER MEMBERSHIP', userProfileResponse.body.memberships);
 
         // Tenant Admin deletes role. All users with this role should now loose the role
@@ -546,7 +547,7 @@ describe('Role Routes', () => {
             .set('Authorization', userToken)
             .expect(200);
         expect(userProfileResponse.body).toBeDefined();
-        expect(userProfileResponse.body.memberships[0].role).not.toBeDefined();
+        expect(userProfileResponse.body.memberships[0].roles.length).toBe(0);
         console.log('USER MEMBERSHIP #2', userProfileResponse.body.memberships);
 
         await request.get(`/api/v1/roles/${roleResp.body._id}`)
@@ -585,6 +586,7 @@ describe('Role Routes', () => {
                 permissions: [
                     PERMISSIONS['tenant.all'],
                 ],
+                active: true,
             }],
         };
         const userResponse = await request.post('/api/v1/users')

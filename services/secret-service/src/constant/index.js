@@ -22,6 +22,7 @@ module.exports = {
     ROLE: {
         ADMIN: 'ADMIN',
         USER: 'USER',
+        SERVICE_ACCOUNT: 'SERVICE_ACCOUNT',
     },
     CRYPTO: {
         METHODS: {
@@ -34,5 +35,14 @@ module.exports = {
             'passphrase',
             'username',
         ],
+    },
+    ERROR_CODE: {
+        MISSING_PERMISSION: 'MISSING_PERMISSION',
+    },
+    PERMISSIONS: {
+        restricted: {
+            'auth-clients.any.delete': 'auth-clients.any.delete',
+            'secrets.any.delete': 'secrets.any.delete',
+        },
     },
 };

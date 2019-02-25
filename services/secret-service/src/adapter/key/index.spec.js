@@ -1,17 +1,22 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
 const nock = require('nock');
+const iamMock = require('../../test/iamMock');
 const crypto = require('crypto');
 const token = require('../../test/tokens');
 const conf = require('../../conf');
 const Server = require('../../server');
+const {
+    OA2_AUTHORIZATION_CODE,
+} = require('../../constant').AUTH_TYPE;
 
 let port;
 let request;
 let server;
+let authClient;
 
 describe('key adapter', () => {
-    beforeAll(async (done) => {
+    beforeAll(async () => {
         port = await getPort();
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         conf.crypto.isDisabled = false;
@@ -20,21 +25,38 @@ describe('key adapter', () => {
             port,
         });
         await server.start();
-        const iamEndpointPrefix = conf.iam.introspectEndpoint.substr(0, conf.iam.introspectEndpoint.lastIndexOf('/'));
-        const iamEndpointSuffix = conf.iam.introspectEndpoint.substr(conf.iam.introspectEndpoint.lastIndexOf('/'));
-        nock(iamEndpointPrefix)
-            .persist()
-            .post(iamEndpointSuffix)
-            .reply((uri, requestBody, cb) => {
-                const tokenName = requestBody.token;
-                cb(null, [200, token[tokenName].value]);
-            });
-        done();
+        iamMock.setup();
+
+        const data = {
+            type: OA2_AUTHORIZATION_CODE,
+            name: 'oAuth2',
+            clientId: 'string',
+            clientSecret: 'string',
+            redirectUri: '/dev/null',
+            endpoints: {
+                auth: 'http://',
+                token: 'http://',
+                userinfo: 'http://',
+            },
+            mappings: {
+                externalId: {
+                    source: 'id_token',
+                    key: 'sub',
+                },
+                scope: {
+                    key: 'scope',
+                },
+            },
+        };
+
+        authClient = (await request.post('/auth-clients')
+            .set(...global.userAuth1)
+            .send({ data })
+            .expect(200)).body.data;
     });
 
-    afterAll(async (done) => {
+    afterAll(async () => {
         await server.stop();
-        done();
     });
 
     test('Encrypts secret with key', async () => {
@@ -42,10 +64,12 @@ describe('key adapter', () => {
         const accessToken = 'my access_token';
         const refreshToken = 'my refresh_token';
 
-        nock('https://accounts.basaas.com')
+        nock(conf.iam.apiBase.substr(0, conf.iam.apiBase.indexOf('/api')))
             .get('/api/v1/tenants/5c507eb60838f1f976e5f2a4/key')
             .reply((uri, requestBody, cb) => {
-                cb(null, [200, key]);
+                cb(null, [200, {
+                    key,
+                }]);
             });
 
         const secret = (await request.post('/secrets')
@@ -53,9 +77,9 @@ describe('key adapter', () => {
             .send({
                 data: {
                     name: 'secret',
-                    type: 'OA2_AUTHORIZATION_CODE',
+                    type: OA2_AUTHORIZATION_CODE,
                     value: {
-                        authClientId: '5c0a4f796731613b7d10e73e',
+                        authClientId: authClient._id,
                         accessToken,
                         refreshToken,
                         scope: 'asd',
@@ -83,11 +107,13 @@ describe('key adapter', () => {
         const accessToken = 'my access_token';
         const refreshToken = 'my refresh_token';
 
-        nock('https://accounts.basaas.com')
+        nock(conf.iam.apiBase.substr(0, conf.iam.apiBase.indexOf('/api')))
             .persist()
             .get('/api/v1/tenants/5c507eb60838f1f976e5f2a4/key')
             .reply((uri, requestBody, cb) => {
-                cb(null, [200, key]);
+                cb(null, [200, {
+                    key,
+                }]);
             });
 
         const secret = (await request.post('/secrets')
@@ -95,9 +121,9 @@ describe('key adapter', () => {
             .send({
                 data: {
                     name: 'secret',
-                    type: 'OA2_AUTHORIZATION_CODE',
+                    type: OA2_AUTHORIZATION_CODE,
                     value: {
-                        authClientId: '5c0a4f796731613b7d10e73e',
+                        authClientId: authClient._id,
                         accessToken,
                         refreshToken,
                         scope: 'asd',

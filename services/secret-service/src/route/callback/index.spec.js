@@ -1,6 +1,7 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
 const nock = require('nock');
+const iamMock = require('../../test/iamMock');
 const base64url = require('base64url');
 const Secret = require('../../model/Secret');
 const { AUTH_TYPE } = require('../../constant');
@@ -25,17 +26,7 @@ describe('callback', () => {
             port,
         });
 
-        const endpointPrefix = conf.iam.introspectEndpoint.substr(0, conf.iam.introspectEndpoint.lastIndexOf('/'));
-        const endpointSuffix = conf.iam.introspectEndpoint.substr(conf.iam.introspectEndpoint.lastIndexOf('/'));
-        nock(endpointPrefix)
-            .persist()
-            .post(endpointSuffix)
-            .reply((uri, requestBody, cb) => {
-                const tokenName = requestBody.token;
-
-                cb(null, [200, token[tokenName].value]);
-                // ...
-            });
+        iamMock.setup();
 
         await server.start();
         done();

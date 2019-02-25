@@ -23,6 +23,7 @@ const authFlow = new Schema({
         type: String,
     },
     keyParameter: String,
+    successUrl: String,
     createdAt: {
         type: Date,
         default: Date.now,

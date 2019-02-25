@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const conf = require('../conf');
-const { getUserData } = require('../middleware/auth');
+const iamLib = require('@openintegrationhub/iam-utils');
 
 const jsonParser = bodyParser.json();
 
@@ -33,7 +33,7 @@ module.exports = class Server {
         const apiBase = express.Router();
 
         apiBase.use('/callback', require('./../route/callback'));
-        apiBase.use(getUserData);
+        apiBase.use(iamLib.middleware);
         // setup routes
         apiBase.use('/secrets', require('./../route/secrets'));
         apiBase.use('/auth-clients', require('./../route/auth-clients'));

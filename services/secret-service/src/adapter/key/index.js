@@ -11,7 +11,7 @@ module.exports = {
             },
             json: true,
         });
-        return body;
+        return body.key;
     },
     getKeyParameter(user) {
         return user.currentContext.tenant;

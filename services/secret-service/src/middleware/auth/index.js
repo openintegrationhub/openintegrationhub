@@ -76,13 +76,11 @@ module.exports = {
                 json: true,
             });
 
-            req.user = {};
-            req.user.sub = req.user.sub || body._id;
-
             req.user = {
                 ...body,
                 ...body.claims,
             };
+            req.user.sub = req.user.sub || body._id;
 
             return next();
         } catch (err) {

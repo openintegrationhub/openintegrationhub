@@ -1,6 +1,7 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
-const nock = require('nock');
+const iamMock = require('../../test/iamMock');
+const qs = require('qs');
 const conf = require('../../conf');
 const Server = require('../../server');
 const token = require('../../test/tokens');
@@ -20,17 +21,7 @@ describe('auth-clients', () => {
             mongoDbConnection: `${global.__MONGO_URI__}-auth-client`,
             port,
         });
-        const endpointPrefix = conf.iam.introspectEndpoint.substr(0, conf.iam.introspectEndpoint.lastIndexOf('/'));
-        const endpointSuffix = conf.iam.introspectEndpoint.substr(conf.iam.introspectEndpoint.lastIndexOf('/'));
-        nock(endpointPrefix)
-            .persist()
-            .post(endpointSuffix)
-            .reply((uri, requestBody, cb) => {
-                const tokenName = requestBody.token;
-
-                cb(null, [200, token[tokenName].value]);
-                // ...
-            });
+        iamMock.setup();
         await server.start();
         done();
     });
@@ -263,5 +254,35 @@ describe('auth-clients', () => {
             .expect(200);
 
         expect(body.data.authUrl).not.toMatch('undefined');
+    });
+
+
+    test('Delete auth clients with service account', async () => {
+        let meta = (await request.get('/auth-clients')
+            .set(...global.userAuth1)
+            .expect(200)).body.meta;
+
+        expect(meta.total).toBeGreaterThan(0);
+        // regular user is not allowed
+        await request.delete(`/auth-clients?${qs.stringify({
+            creator: token.userToken1.value.sub,
+            creatorType: token.userToken1.value.role,
+        })}`)
+            .set(...global.userAuth1)
+            .expect(403);
+
+        // service account has permissions
+        await request.delete(`/auth-clients?${qs.stringify({
+            userId: token.userToken1.value.sub,
+            type: token.userToken1.value.role,
+        })}`)
+            .set(...global.serviceAccount)
+            .expect(200);
+
+        meta = (await request.get('/auth-clients')
+            .set(...global.userAuth1)
+            .expect(200)).body.meta;
+
+        expect(meta.total).toBe(0);
     });
 });
