@@ -10,6 +10,7 @@ const iamMiddleware = require('@openintegrationhub/iam-utils');
 const cors = require('cors');
 const config = require('./config/index');
 const flow = require('./api/controllers/flow');
+const startstop = require('./api/controllers/startstop');
 const healthcheck = require('./api/controllers/healthcheck');
 const swaggerDocument = require('./api/swagger/swagger.json');
 
@@ -101,6 +102,7 @@ class Server {
 
     // configure routes
     this.app.use('/flows', flow);
+    this.app.use('/flows', startstop);
     this.app.use('/healthcheck', healthcheck);
 
     // Reroute to docs

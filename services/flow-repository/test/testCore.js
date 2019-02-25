@@ -297,6 +297,40 @@ describe('Flow Operations', () => {
     expect(j).toHaveProperty('_id');
   });
 
+  test('should start a flow', async () => {
+    const res = await request
+      .post(`/flows/${flowId1}/start`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+    expect(j).not.toBeNull();
+    expect(j).toHaveProperty('headers');
+    expect(j).toHaveProperty('payload');
+    expect(j.headers.name).toEqual('flow.starting');
+    expect(j.payload.status).toEqual('active');
+  });
+
+  test('should stop a flow', async () => {
+    const res = await request
+      .post(`/flows/${flowId1}/stop`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+    expect(j).not.toBeNull();
+    expect(j).toHaveProperty('headers');
+    expect(j).toHaveProperty('payload');
+    expect(j.headers.name).toEqual('flow.stopping');
+    expect(j.payload.status).toEqual('inactive');
+  });
+
   test('should return 400 when attempting to update an invalid id', async () => {
     const res = await request
       .patch('/flows/SDSADGSDGH')

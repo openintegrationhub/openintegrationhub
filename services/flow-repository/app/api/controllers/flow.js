@@ -135,7 +135,7 @@ router.post('/', jsonParser, async (req, res) => {
   const newFlow = req.body;
   const credentials = res.locals.credentials[0];
   const now = new Date();
-  const timestamp = now.toString();
+  const timestamp = now.toISOString();
 
   if (!res.locals.admin && credentials.length <= 0) {
     return res.status(403).send('User does not have permissions to write flows');
@@ -168,7 +168,7 @@ router.patch('/:id', jsonParser, async (req, res) => {
   const readCredentials = res.locals.credentials[1];
   const writeCredentials = res.locals.credentials[0];
   const now = new Date();
-  const timestamp = now.toString();
+  const timestamp = now.toISOString();
 
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).send('Invalid id');
