@@ -11,7 +11,8 @@
   "license": "APL-2.0",
   "dependencies": {
     "amqplib": "0.5.2",
-    "lodash": "4.17.11"
+    "lodash": "4.17.11",
+    "bunyan": "^1.8.12"
   },
   "devDependencies": {
     "eslint": "4.5.0",
