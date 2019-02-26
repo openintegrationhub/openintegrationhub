@@ -1,5 +1,5 @@
 FROM node:8.11.1-alpine
-LABEL NAME="oih-icr"
+LABEL NAME="oih-flow-repository"
 LABEL MAINTAINER Hansjörg Schmidt "hschmidt@wice.de"
 
 RUN apk --no-cache add \

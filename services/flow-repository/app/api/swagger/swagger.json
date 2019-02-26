@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "This is the API for the Open Integration Hub Microservice \"Integration Content Repository\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "description": "This is the API for the Open Integration Hub Microservice \"Flow Repository\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
     "version": "0.0.1",
-    "title": "Integration Content Repository",
+    "title": "Flow Repository",
     "termsOfService": "http://openintegrationhub.de/terms/",
     "contact": {
       "email": "hschmidt@wice.de"
@@ -54,15 +54,6 @@
           "name": "page[number]",
           "in": "query",
           "description": "Number of the page to be returned. Default is 1.",
-          "required": false,
-          "schema": {
-            "type": "integer"
-            }
-          },
-          {
-          "name": "filter[has_draft]",
-          "in": "query",
-          "description": "Filter results by flow draft. Draft = 1. No draft = 0",
           "required": false,
           "schema": {
             "type": "integer"
@@ -319,6 +310,104 @@
         }
       }
     },
+    "/flows/{id}/start": {
+      "post": {
+        "x-swagger-router-controller": "flow",
+        "security": [
+          {
+            "Bearer": [
+
+            ]
+          }
+        ],
+        "tags": [
+          "flows"
+        ],
+        "summary": "Start a flow",
+        "description": "Initiates the flow's integration process by publishing an appropriate event to the event bus-",
+        "operationId": "startFlow",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of flow to start, must be a valid MongoDB ID.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a copy of the published event",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Event"}
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format."
+          },
+          "403": {
+            "description": "User is not authorised to start flows."
+          },
+          "404": {
+            "description": "No Flow with this id was found."
+          }
+        }
+      }
+    },
+    "/flows/{id}/stop": {
+      "post": {
+        "x-swagger-router-controller": "flow",
+        "security": [
+          {
+            "Bearer": [
+
+            ]
+          }
+        ],
+        "tags": [
+          "flows"
+        ],
+        "summary": "Stop a flow",
+        "description": "Stops the flow's integration process by publishing an appropriate event to the event bus-",
+        "operationId": "stopFlow",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of flow to stop, must be a valid MongoDB ID.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a copy of the published event",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Event"}
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format."
+          },
+          "403": {
+            "description": "User is not authorised to stop flows."
+          },
+          "404": {
+            "description": "No Flow with this id was found."
+          }
+        }
+      }
+    },
     "/healthcheck": {
       "get": {
         "x-swagger-router-controller": "healthcheck",
@@ -350,12 +439,12 @@
     }
   },
   "externalDocs": {
-    "description": "Find out more about the Integration Content Repository",
+    "description": "Find out more about the Flow Repository",
     "url": "https://github.com/openintegrationhub"
   },
   "servers": [
     {
-      "url": "http://icr.openintegrationhub.com/"
+      "url": "http://flow-repository.openintegrationhub.com/"
     },
     {
       "url": "http://localhost:3001/"
@@ -598,6 +687,25 @@
             "description": "Total number of pages"
           }
         }
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "flow.starting"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "2019-02-25T09:37:42.811Z"
+              }
+            }
+          },
+          "payload": { "$ref": "#/components/schemas/MutableFlow"}
+          }
       },
       "Owner": {
 		    "type": "object",
