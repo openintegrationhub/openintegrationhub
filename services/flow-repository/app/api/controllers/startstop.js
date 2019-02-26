@@ -52,7 +52,7 @@ router.post('/:id/start', jsonParser, async (req, res) => {
   };
 
   await publishQueue(ev);
-  return res.status(200).send(ev);
+  return res.status(200).send({ id: flow._id, status: flow.status });
 });
 
 // Stop a flow
@@ -87,7 +87,7 @@ router.post('/:id/stop', jsonParser, async (req, res) => {
   };
 
   await publishQueue(ev);
-  return res.status(200).send(ev);
+  return res.status(200).send({ id: flow._id, status: flow.status });
 });
 
 

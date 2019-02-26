@@ -309,10 +309,10 @@ describe('Flow Operations', () => {
     expect(res.text).not.toBeNull();
     const j = JSON.parse(res.text);
     expect(j).not.toBeNull();
-    expect(j).toHaveProperty('headers');
-    expect(j).toHaveProperty('payload');
-    expect(j.headers.name).toEqual('flow.starting');
-    expect(j.payload.status).toEqual('active');
+    expect(j).toHaveProperty('id');
+    expect(j).toHaveProperty('status');
+    expect(j.id).toEqual(flowId1);
+    expect(j.status).toEqual('active');
   });
 
   test('should stop a flow', async () => {
@@ -326,10 +326,10 @@ describe('Flow Operations', () => {
     expect(res.text).not.toBeNull();
     const j = JSON.parse(res.text);
     expect(j).not.toBeNull();
-    expect(j).toHaveProperty('headers');
-    expect(j).toHaveProperty('payload');
-    expect(j.headers.name).toEqual('flow.stopping');
-    expect(j.payload.status).toEqual('inactive');
+    expect(j).toHaveProperty('id');
+    expect(j).toHaveProperty('status');
+    expect(j.id).toEqual(flowId1);
+    expect(j.status).toEqual('inactive');
   });
 
   test('should return 400 when attempting to update an invalid id', async () => {
