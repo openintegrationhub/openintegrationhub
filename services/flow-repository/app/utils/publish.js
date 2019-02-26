@@ -24,5 +24,11 @@ async function disconnectQueue() {
   await eventBus.disconnect();
 }
 
+async function reportHealth() {
+  return (eventBus);
+}
 
-module.exports = { connectQueue, publishQueue, disconnectQueue };
+
+module.exports = {
+  connectQueue, publishQueue, disconnectQueue, reportHealth,
+};

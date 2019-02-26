@@ -12,6 +12,7 @@ const port = process.env.PORT || 3001;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
+const { reportHealth } = require('../app/utils/publish');
 
 const Server = require('../app/server');
 
@@ -33,13 +34,11 @@ beforeAll(async () => {
   mainServer.setupRoutes();
   mainServer.setupSwagger();
   mainServer.setup(mongoose);
-  await mainServer.setupQueue();
   app = mainServer.listen();
 });
 
 afterAll(async () => {
   mongoose.connection.close();
-  await mainServer.terminateQueue();
   app.close();
 });
 

@@ -55,7 +55,7 @@ router.post('/:id/start', jsonParser, async (req, res) => {
   return res.status(200).send(ev);
 });
 
-// Start a flow
+// Stop a flow
 router.post('/:id/stop', jsonParser, async (req, res) => {
   const flowId = req.params.id;
   const credentials = res.locals.credentials[1];
