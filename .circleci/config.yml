@@ -63,7 +63,7 @@ jobs:
     working_directory: ~/oih
     steps: *deploy_steps
   communication-router-test:
-    docker: *node_env
+    docker: *node_mongo_env
     working_directory: ~/oih/services/communication-router
     steps: *yarn_test_steps
   iam-test:
@@ -71,11 +71,11 @@ jobs:
     working_directory: ~/oih/services/iam
     steps: *yarn_test_steps
   resource-coordinator-test:
-    docker: *node_env
+    docker: *node_mongo_env
     working_directory: ~/oih/services/resource-coordinator
     steps: *yarn_test_steps
   scheduler-test:
-    docker: *node_env
+    docker: *node_mongo_env
     working_directory: ~/oih/services/scheduler
     steps: *yarn_test_steps
   secret-service-test:
