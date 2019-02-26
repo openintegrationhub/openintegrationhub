@@ -33,11 +33,13 @@ beforeAll(async () => {
   mainServer.setupRoutes();
   mainServer.setupSwagger();
   mainServer.setup(mongoose);
+  await mainServer.setupQueue();
   app = mainServer.listen();
 });
 
 afterAll(async () => {
   mongoose.connection.close();
+  await mainServer.terminateQueue();
   app.close();
 });
 

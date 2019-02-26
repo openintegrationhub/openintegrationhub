@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../../config/index');
-const publisher = require('../../utils/publish');
+const { publishQueue } = require('../../utils/publish');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
@@ -51,7 +51,7 @@ router.post('/:id/start', jsonParser, async (req, res) => {
     payload: flow,
   };
 
-  await publisher.publish(ev);
+  await publishQueue(ev);
   return res.status(200).send(ev);
 });
 
@@ -86,7 +86,7 @@ router.post('/:id/stop', jsonParser, async (req, res) => {
     payload: flow,
   };
 
-  await publisher.publish(ev);
+  await publishQueue(ev);
   return res.status(200).send(ev);
 });
 
