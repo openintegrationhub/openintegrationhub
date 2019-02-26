@@ -9,6 +9,7 @@ module.exports = ({logger}) => async (event) => {
             return event.ack();
         }
         flow.updateDueExecutionAccordingToCron();
+        flow.status = 'started';
         await flow.save();
         await event.ack();
     } catch (err) {

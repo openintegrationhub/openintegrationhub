@@ -7,6 +7,14 @@ const schema = new Schema({
 });
 
 class Flow {
+    get isStarting() {
+        return this.status === 'starting';
+    }
+
+    get isStopping() {
+        return this.status === 'stopping';
+    }
+
     getFirstNode() {
         return this.getNodes().find(node => node.first); //@todo: edit this logic
     }
@@ -17,6 +25,15 @@ class Flow {
 
     getNodes() {
         return this.graph.nodes;
+    }
+
+    onStarted() {
+        this.status = 'started';
+        return this.save();
+    }
+
+    onStopped() {
+        return this.remove();
     }
 }
 

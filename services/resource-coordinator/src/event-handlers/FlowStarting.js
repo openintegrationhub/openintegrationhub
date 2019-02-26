@@ -10,6 +10,8 @@ module.exports = ({logger}) => async (event) => {
             flow = new Flow({_id: id});
         }
         Object.assign(flow, payload);
+        flow.status = 'starting';
+
         await flow.save();
         await event.ack();
     } catch (err) {
