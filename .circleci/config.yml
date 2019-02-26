@@ -98,7 +98,7 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/lib/webhooks
     steps: *yarn_test_steps
-  flow-repository:
+  flow-repository-test:
     docker: *node_env
     working_directory: ~/oih/services/integration-content-repository
     steps: *yarn_test_steps
