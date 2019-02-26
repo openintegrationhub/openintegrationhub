@@ -54,13 +54,4 @@ describe('Flow model', () => {
             expect(flow.getFirstNode()).to.be.undefined;
         });
     });
-
-    describe('isDeleted', () => {
-        it('should return true', () => {
-            const flow = new Flow({
-                status: 'stopping'
-            });
-            expect(flow.isDeleted).to.be.true;
-        });
-    });
 });
