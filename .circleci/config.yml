@@ -100,7 +100,7 @@ jobs:
     steps: *yarn_test_steps
   flow-repository-test:
     docker: *node_env
-    working_directory: ~/oih/services/integration-content-repository
+    working_directory: ~/oih/services/flow-repository
     steps: *yarn_test_steps
 workflows:
   pipeline:
