@@ -3,6 +3,7 @@ WORKDIR /usr/src/communication-router
 
 COPY package.json yarn.lock ./
 COPY lib/backend-commons-lib lib/backend-commons-lib
+COPY lib/event-bus lib/event-bus
 COPY lib/webhooks lib/webhooks
 COPY services/communication-router/package.json  services/communication-router/index.js ./services/communication-router/
 COPY services/communication-router/src services/communication-router/src

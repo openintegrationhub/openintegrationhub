@@ -3,6 +3,7 @@ WORKDIR /usr/lib/resource-coordinator
 
 COPY package.json yarn.lock ./
 COPY lib/backend-commons-lib lib/backend-commons-lib
+COPY lib/event-bus lib/event-bus
 COPY lib/resource-coordinator lib/resource-coordinator
 COPY services/resource-coordinator/package.json services/resource-coordinator/index.js ./services/resource-coordinator/
 COPY services/resource-coordinator/src ./services/resource-coordinator/src

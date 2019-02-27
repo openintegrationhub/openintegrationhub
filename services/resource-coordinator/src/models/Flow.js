@@ -16,7 +16,20 @@ class Flow {
     }
 
     getFirstNode() {
-        return this.getNodes().find(node => node.first); //@todo: edit this logic
+        const nodes = this.getNodes();
+        const edges = this.getEdges();
+
+        if (nodes.length === 0) {
+            return null;
+        } else if (nodes.length === 1) {
+            return nodes[0];
+        }
+
+        if (edges.length === 0) {
+            return null;
+        }
+
+        return nodes.find(node => !edges.find(edge => edge.target === node.id));
     }
 
     getNodeById(id) {
@@ -24,7 +37,11 @@ class Flow {
     }
 
     getNodes() {
-        return this.graph.nodes;
+        return this.graph.nodes || [];
+    }
+
+    getEdges() {
+        return this.graph.edges || [];
     }
 
     onStarted() {
