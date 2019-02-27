@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const log = require('../../config/logger');
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
