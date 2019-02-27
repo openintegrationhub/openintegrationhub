@@ -65,7 +65,7 @@ This `secrets-service`  is used to store and access securely client secrets/cred
 The service collaboration ist based on the [event collaboration](https://martinfowler.com/eaaDev/EventCollaboration.html) concept. We use rabbitMQ as our broker which supports [several protocols](https://www.rabbitmq.com/protocols.html).
 A published event has to be received by several interested services. There can be running several instances of a service at the same time but the event must only be sent to one instance of each service that is interested. A queue will be created for each kind of service. 
 
-Currently the collaboration concepts covers 4 services, namely: flow-repository, scheduler, webhooks and component orchestrator. The figure below shows how these services collaborate.
+Currently the collaboration concepts covers 4 services, namely: flow-repository, scheduler, webhooks and component orchestrator. The figure below shows an example how these services collaborate represented by the use case `starting a flow`:
 
 ![EventCollaboration](Assets/EventCollaborationStartFlow.png)
 
