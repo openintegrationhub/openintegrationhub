@@ -312,7 +312,7 @@ describe('Flow Operations', () => {
     expect(j).toHaveProperty('id');
     expect(j).toHaveProperty('status');
     expect(j.id).toEqual(flowId1);
-    expect(j.status).toEqual('active');
+    expect(j.status).toEqual('starting');
   });
 
   test('should stop a flow', async () => {
@@ -329,7 +329,7 @@ describe('Flow Operations', () => {
     expect(j).toHaveProperty('id');
     expect(j).toHaveProperty('status');
     expect(j.id).toEqual(flowId1);
-    expect(j.status).toEqual('inactive');
+    expect(j.status).toEqual('stopping');
   });
 
   test('should return 400 when attempting to update an invalid id', async () => {

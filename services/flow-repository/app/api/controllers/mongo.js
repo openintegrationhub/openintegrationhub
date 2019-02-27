@@ -119,7 +119,7 @@ const updateFlow = (storeFlow, credentials) => new Promise((resolve) => {
     });
 });
 
-const startFlow = (credentials, flowId) => new Promise((resolve) => {
+const startingFlow = (credentials, flowId) => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
 
   let qry;
@@ -132,47 +132,82 @@ const startFlow = (credentials, flowId) => new Promise((resolve) => {
       ],
     };
   }
+
+  Flow.findOneAndUpdate(
+    qry,
+    { $set: { status: 'starting' } },
+    { upsert: false, new: true },
+  ).lean()
+    .then((doc) => {
+      resolve(doc);
+    })
+    .catch((err) => {
+      log.error(err);
+    });
+});
+
+const stoppingFlow = (credentials, flowId) => new Promise((resolve) => {
+  const findId = mongoose.Types.ObjectId(flowId);
+
+  let qry;
+  if (credentials === 'admin') {
+    qry = { '_id': findId };
+  } else {
+    qry = {
+      $and: [{ '_id': findId },
+        { 'owners.id': { $in: credentials } },
+      ],
+    };
+  }
+
+  Flow.findOneAndUpdate(
+    qry,
+    { $set: { status: 'stopping' } },
+    { upsert: false, new: true },
+  ).lean()
+    .then((doc) => {
+      resolve(doc);
+    })
+    .catch((err) => {
+      log.error(err);
+    });
+});
+
+const startedFlow = flowId => new Promise((resolve) => {
+  const findId = mongoose.Types.ObjectId(flowId);
+
+  const qry = { '_id': findId };
 
   Flow.findOneAndUpdate(
     qry,
     { $set: { status: 'active' } },
     { upsert: false, new: true },
-  )
+  ).lean()
     .then((doc) => {
-      resolve(doc._doc);
+      resolve(doc);
     })
     .catch((err) => {
       log.error(err);
     });
 });
 
-const stopFlow = (credentials, flowId) => new Promise((resolve) => {
+const stoppedFlow = flowId => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
 
-  let qry;
-  if (credentials === 'admin') {
-    qry = { '_id': findId };
-  } else {
-    qry = {
-      $and: [{ '_id': findId },
-        { 'owners.id': { $in: credentials } },
-      ],
-    };
-  }
+  const qry = { '_id': findId };
 
   Flow.findOneAndUpdate(
     qry,
     { $set: { status: 'inactive' } },
     { upsert: false, new: true },
-  )
+  ).lean()
     .then((doc) => {
-      resolve(doc._doc);
+      resolve(doc);
     })
     .catch((err) => {
       log.error(err);
     });
 });
-
 
 const getFlowById = (flowId, credentials) => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
@@ -211,8 +246,10 @@ module.exports = {
   getAnyFlowById,
   getFlows,
   addFlow,
-  startFlow,
-  stopFlow,
+  startingFlow,
+  stoppingFlow,
+  startedFlow,
+  stoppedFlow,
   updateFlow,
   getFlowById,
   deleteFlow,

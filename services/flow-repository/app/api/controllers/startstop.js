@@ -35,9 +35,9 @@ router.post('/:id/start', jsonParser, async (req, res) => {
   }
 
   if (res.locals.admin) {
-    flow = await storage.startFlow('admin', flowId);
+    flow = await storage.startingFlow('admin', flowId);
   } else {
-    flow = await storage.startFlow(credentials, flowId);
+    flow = await storage.startingFlow(credentials, flowId);
   }
 
   if (!flow) {
@@ -70,9 +70,9 @@ router.post('/:id/stop', jsonParser, async (req, res) => {
   }
 
   if (res.locals.admin) {
-    flow = await storage.stopFlow('admin', flowId);
+    flow = await storage.stoppingFlow('admin', flowId);
   } else {
-    flow = await storage.stopFlow(credentials, flowId);
+    flow = await storage.stoppingFlow(credentials, flowId);
   }
 
   if (!flow) {
