@@ -21,6 +21,9 @@ Open Integration Hub requires only a single connection to the framework.
     - [Scheduler](#scheduler)
     - [Secrets-Service](#secrets-service)
   - [Service Collaboration](#service-collaboration)
+  - [Docs](#docs)
+  - [Contribution](#contribution)
+    - [Code of Conduct](#code-of-conduct)
 
 ## OIH microservices
 
@@ -64,4 +67,19 @@ A published event has to be received by several interested services. There can b
 
 Currently the collaboration concepts covers 4 services, namely: flow-repository, scheduler, webhooks and component orchestrator. The figure below shows how these services collaborate.
 
-![EventCollaboration](Assets/EventCollaborationExample.png)
+![EventCollaboration](Assets/EventCollaborationStartFlow.png)
+
+## Docs
+
+To find additional high level information about the architecture of the Open Integration Hub and functionalities of the microservices please visit the [documentation](docs).
+
+- Service documentation: [service folder](docs/services)
+- General architectural documentation: [architectural folder](docs/architecture)
+
+## Contribution
+
+Before you contribute please have a look at our [contribution guidelines](CONTRIBUTING.md).
+
+### Code of Conduct
+
+To see how members of the community are expected to behave, please read the [code of conduct](CODE_OF_CONDUCT.md). We apply the code of conduct defined by the Contributor Covenant, which is used across many open source projects, such as [NodeJS](https://github.com/nodejs/node), [Atom](https://github.com/atom/atom) and [Kubernetes](https://github.com/kubernetes/kubernetes).
