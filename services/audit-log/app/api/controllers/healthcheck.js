@@ -37,6 +37,7 @@ router.get('/', jsonParser, async (req, res) => {
   if (response.status === 'pass') {
     return res.status(200).send(response);
   }
+  log.error(response);
   return res.status(500).send(response);
 });
 
