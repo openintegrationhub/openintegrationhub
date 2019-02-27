@@ -1,9 +1,9 @@
+const bunyan = require('bunyan');
 const config = require('../config/index');
 const log = require('../config/logger');
 const { EventBus, RabbitMqTransport, Event } = require('../../../../lib/event-bus');
-const bunyan = require('bunyan');
 
-const logger = bunyan.createLogger({ name: 'test' });
+const logger = bunyan.createLogger({ name: 'events' });
 
 const storage = require(`../api/controllers/${config.storage}`); // eslint-disable-line
 
