@@ -84,8 +84,6 @@ spec:
           limits:
             cpu: '0.1'
             memory: 1000Mi
-          requests:
-            memory: 1000Mi
         volumeMounts:
           - name: oidc-certs
             mountPath: /usr/src/app/keystore
