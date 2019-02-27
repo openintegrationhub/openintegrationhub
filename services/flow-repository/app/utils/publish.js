@@ -1,4 +1,5 @@
 const bunyan = require('bunyan');
+const mongoose = require('mongoose');
 const config = require('../config/index');
 const log = require('../config/logger');
 const { EventBus, RabbitMqTransport, Event } = require('../../../../lib/event-bus');
@@ -11,19 +12,27 @@ let eventBus;
 
 
 async function flowStarted(id) {
-  const response = await storage.startedFlow(id);
-  if (response) {
-    return true;
+  if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+    return false;
   }
-  return false;
+
+  const response = await storage.startedFlow(id);
+  if (!response) {
+    log.error(`Flow with id ${id} could not be found.`);
+  }
+  return true;
 }
 
 async function flowStopped(id) {
-  const response = await storage.stoppedFlow(id);
-  if (response) {
-    return true;
+  if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+    return false;
   }
-  return false;
+
+  const response = await storage.stoppedFlow(id);
+  if (!response) {
+    log.error(`Flow with id ${id} could not be found.`);
+  }
+  return true;
 }
 
 async function connectQueue() {
@@ -32,7 +41,7 @@ async function connectQueue() {
 
   await eventBus.subscribe('flow.started', async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
-    const response = flowStarted(event.payload.id);
+    const response = await flowStarted(event.payload.id);
 
     if (response === true) {
       await event.ack();
@@ -43,7 +52,7 @@ async function connectQueue() {
 
   await eventBus.subscribe('flow.stopped', async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
-    const response = flowStopped(event.payload.id);
+    const response = await flowStopped(event.payload.id);
 
     if (response === true) {
       await event.ack();
