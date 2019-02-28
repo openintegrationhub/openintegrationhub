@@ -1,4 +1,4 @@
-const { optional } = require('./check-env');
+const { optional, required } = require('./check-env');
 const { version, name } = require('../../package.json');
 
 module.exports = {
@@ -14,7 +14,7 @@ module.exports = {
         introspectEndpoint: optional('INTROSPECT_ENDPOINT_OIDC', 'https://iam.openintegrationhub.com/op/userinfo'),
         introspectEndpointBasic: optional('INTROSPECT_ENDPOINT_BASIC', 'http://iam.openintegrationhub.com/api/v1/tokens/introspect'),
         tokenEndpoint: optional('IAM_TOKEN_API', 'http://iam.openintegrationhub.com/api/v1/tokens/ephemeral'),
-        token: optional('IAM_TOKEN', 'token'),
+        token: required('IAM_TOKEN', 'token'),
         oidcServiceClientId: optional('IAM_OIDC_SERVICE_CLIENT_ID', 'id'),
         oidcServiceClientSecret: optional('IAM_OIDC_SERVICE_CLIENT_SECRET', 'secret'),
     },
