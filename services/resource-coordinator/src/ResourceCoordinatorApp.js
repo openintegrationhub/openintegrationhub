@@ -1,13 +1,14 @@
 const { QueueCreator, App } = require('backend-commons-lib');
 const { ResourceCoordinator } = require('@openintegrationhub/resource-coordinator');
 const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
-const RabbitmqManagementService = require('./RabbitmqManagementService');
+const RabbitmqManagementService = require('./queues-manager/RabbitmqManagementService');
 const HttpApi = require('./HttpApi');
 const FlowsDao = require('./dao/FlowsDao');
-const InfrastructureManager = require('./InfrastructureManager');
+const RabbitMqQueuesManager = require('./queues-manager/RabbitMqQueuesManager');
 const { asValue, asClass, asFunction } = require('awilix');
 const mongoose = require('mongoose');
 const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
+const MongoDbCredentialsStorage = require('./queues-manager/credentials-storage/MongoDbCredentialsStorage');
 
 class ResourceCoordinatorApp extends App {
     async _run() {
@@ -29,7 +30,8 @@ class ResourceCoordinatorApp extends App {
             flowsDao: asClass(FlowsDao),
             httpApi: asClass(HttpApi).singleton(),
             driver: asClass(KubernetesDriver),
-            infrastructureManager: asClass(InfrastructureManager),
+            queuesManager: asClass(RabbitMqQueuesManager),
+            credentialsStorage: asClass(MongoDbCredentialsStorage),
             transport: asClass(RabbitMqTransport, {
                 injector: () => ({rabbitmqUri: config.get('RABBITMQ_URI')})
             }),

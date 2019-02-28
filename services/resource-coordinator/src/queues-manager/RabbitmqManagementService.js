@@ -88,7 +88,14 @@ class RabbitmqManagementService {
      * @returns {Promise<void>}
      */
     async deleteUser({ username }) {
-        await this._client.deleteUser(username);
+        try {
+            await this._client.deleteUser(username);
+        } catch (e) {
+            if (e.statusCode !== 404) {
+                e.message = `Failed to delete RabbitMQ user: ${e.message}`;
+                throw e;
+            }
+        }
     }
 }
 

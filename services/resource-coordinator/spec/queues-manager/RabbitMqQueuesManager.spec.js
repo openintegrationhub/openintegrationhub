@@ -4,15 +4,14 @@ const chai = require('chai');
 chai.use(require('sinon-chai'));
 const { expect } = chai;
 
-const InfrastructureManager = require('../src/InfrastructureManager');
+const RabbitMqQueuesManager = require('../../src/queues-manager/RabbitMqQueuesManager');
 
-describe('Infrastructure Manager', () => {
+describe('RabbitMqQueuesManager', () => {
     let im;
     let config;
     let rabbitmqManagement;
     let flowsDao;
     let driver;
-    let infrastructureManager;
     let queueCreator;
     let amqpChannel;
     let amqpConnection;
@@ -75,18 +74,7 @@ describe('Infrastructure Manager', () => {
         sinon.stub(driver, 'createApp').resolves();
         sinon.stub(driver, 'destroyApp').resolves();
 
-        infrastructureManager = {
-            createForFlow: () => {},
-            updateForFlow: () => {},
-            deleteForFlow: () => {},
-            getSettingsForNodeExecution: () => {}
-        };
-        sinon.stub(infrastructureManager, 'createForFlow').resolves();
-        sinon.stub(infrastructureManager, 'updateForFlow').resolves();
-        sinon.stub(infrastructureManager, 'deleteForFlow').resolves();
-        sinon.stub(infrastructureManager, 'getSettingsForNodeExecution').resolves();
-
-        im = new InfrastructureManager({
+        im = new RabbitMqQueuesManager({
             config,
             logger,
             rabbitmqManagement,
@@ -111,10 +99,9 @@ describe('Infrastructure Manager', () => {
     describe('#updateForFlow', () => {
         it('should re-create needed infrastructure', async () => {
             const flow = {id: 'flow1'};
-            const queuesStructure = {};
             sinon.stub(im, '_deleteQueuesForFlow').resolves();
             await im.updateForFlow(flow, {});
-            expect(im._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow, queuesStructure);
+            expect(im._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow);
             expect(queueCreator.makeQueuesForTheFlow).to.have.been.calledOnceWithExactly(flow);
         });
     });
@@ -122,13 +109,12 @@ describe('Infrastructure Manager', () => {
     describe('#deleteForFlow', () => {
         it('should delete infrastructure for the given flow', async () => {
             const flow = {id: 'flow1'};
-            const queuesStructure = {};
             sinon.stub(im, '_deleteQueuesForFlow').resolves();
             sinon.stub(im, '_deleteRabbitMqCredentialsForFlow').resolves();
 
-            await im.deleteForFlow(flow, queuesStructure);
+            await im.deleteForFlow(flow);
 
-            expect(im._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow, queuesStructure);
+            expect(im._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow);
             expect(im._deleteRabbitMqCredentialsForFlow).to.have.been.calledOnceWithExactly(flow);
         });
     });
@@ -166,7 +152,12 @@ describe('Infrastructure Manager', () => {
                     exchanges: ['flow1']
                 }
             };
-            await im._deleteQueuesForFlow(flow, queuesStructure);
+            sinon.stub(im, '_getQueuesStructure').resolves(queuesStructure);
+
+            await im._deleteQueuesForFlow(flow);
+
+            expect(im._getQueuesStructure).to.have.been.calledOnce;
+            //@todo: more expectations
         });
     });
 
@@ -201,7 +192,7 @@ describe('Infrastructure Manager', () => {
                 id: 'flow1',
                 nodes: [node1]
             };
-            await im._saveRabbitMqCredentials(flow, node1, {username: 'bob'});
+            await im._saveRabbitMqCredential(flow, node1, {username: 'bob'});
             const result = await im._ensureRabbitMqCredentialsForFlowNode(flow, node1);
             expect(result).to.deep.equal({username: 'bob'});
             expect(rabbitmqManagement.createFlowUser).not.to.have.been.called;
@@ -217,8 +208,8 @@ describe('Infrastructure Manager', () => {
                 nodes: [node1, node2]
             };
 
-            im._saveRabbitMqCredentials(flow, node1, {username: 'cred1'});
-            im._saveRabbitMqCredentials(flow, node2, {username: 'cred2'});
+            im._saveRabbitMqCredential(flow, node1, {username: 'cred1'});
+            im._saveRabbitMqCredential(flow, node2, {username: 'cred2'});
 
             await im._deleteRabbitMqCredentialsForFlow(flow);
 
@@ -227,6 +218,59 @@ describe('Infrastructure Manager', () => {
             expect(rabbitmqManagement.deleteUser.secondCall.args[0]).to.deep.equal({username: 'cred2'});
 
             //@todo: check that it has been removed from the store
+        });
+    });
+
+    describe('#_getQueuesStructure', () => {
+        it('should return queues structure', async () => {
+            const queues = [{name: 'flow1:step1'}];
+            const exchanges = [{name: 'flow1'}];
+            const bindings = [{destination: 'flow1:step2'}];
+
+            rabbitmqManagement.getQueues.resolves(queues);
+            rabbitmqManagement.getExchanges.resolves(exchanges);
+            rabbitmqManagement.getBindings.resolves(bindings);
+
+            const qs = await im._getQueuesStructure();
+            expect(qs).to.deep.equal({
+                flow1: {
+                    queues: ['flow1:step1'],
+                    exchanges: ['flow1'],
+                    bindings
+                }
+            });
+        });
+    });
+
+    describe('#_buildMQIndex', () => {
+        it('should return queues index', () => {
+            const queues = [
+                {
+                    name: 'flow1:step1'
+                },
+                {
+                    name: 'flow1:step2'
+                }
+            ];
+            const exchanges = [
+                {
+                    name: 'flow1'
+                }
+            ];
+            const bindings = [
+                {
+                    destination: 'flow1:step2'
+                }
+            ];
+            const result = im._buildMQIndex(queues, exchanges, bindings);
+
+            expect(result).to.deep.equal({
+                flow1: {
+                    queues: ['flow1:step1', 'flow1:step2'],
+                    exchanges: ['flow1'],
+                    bindings
+                }
+            });
         });
     });
 });
