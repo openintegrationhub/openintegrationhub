@@ -31,7 +31,7 @@ router.get('/', jsonParser, async (req, res) => {
   }
 
   // If all components are healthy, set overall health to pass
-  if ((response.details.mongoDB.status === 'pass') || (response.details.queue.status === 'pass')) {
+  if ((response.details.mongoDB.status === 'pass') && (response.details.queue.status === 'pass')) {
     response.status = 'pass';
   }
 
