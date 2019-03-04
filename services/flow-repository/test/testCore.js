@@ -12,7 +12,9 @@ const port = process.env.PORT || 3001;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
-const { reportHealth } = require('../app/utils/publish');
+const { reportHealth } = require('../app/utils/eventBus');
+const { flowStarted, flowStopped } = require('../app/utils/handlers');
+const Flow = require('../app/models/flow');
 
 const Server = require('../app/server');
 
@@ -315,6 +317,13 @@ describe('Flow Operations', () => {
     expect(j.status).toEqual('starting');
   });
 
+  test('handle a flow.started event', async () => {
+    await flowStarted(flowId1);
+
+    const flow = await Flow.findOne({ _id: flowId1 }).lean();
+    expect(flow.status).toEqual('active');
+  });
+
   test('should stop a flow', async () => {
     const res = await request
       .post(`/flows/${flowId1}/stop`)
@@ -330,6 +339,13 @@ describe('Flow Operations', () => {
     expect(j).toHaveProperty('status');
     expect(j.id).toEqual(flowId1);
     expect(j.status).toEqual('stopping');
+  });
+
+  test('handle a flow.stopped event', async () => {
+    await flowStopped(flowId1);
+
+    const flow = await Flow.findOne({ _id: flowId1 }).lean();
+    expect(flow.status).toEqual('inactive');
   });
 
   test('should return 400 when attempting to update an invalid id', async () => {

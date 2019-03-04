@@ -14,7 +14,7 @@ WORKDIR /usr/src/app
 # use changes to package.json to force Docker not to use cache
 COPY package.json /usr/src/app
 
-RUN npm install
+RUN npm install --only=prod
 
 COPY . /usr/src/app
 

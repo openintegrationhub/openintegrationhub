@@ -1,8 +1,8 @@
 const bunyan = require('bunyan');
-const mongoose = require('mongoose');
 const config = require('../config/index');
 const log = require('../config/logger');
 const { EventBus, RabbitMqTransport, Event } = require('../../../../lib/event-bus');
+const { flowStarted, flowStopped } = require('./handlers');
 
 const logger = bunyan.createLogger({ name: 'events' });
 
@@ -10,30 +10,6 @@ const storage = require(`../api/controllers/${config.storage}`); // eslint-disab
 
 let eventBus;
 
-
-async function flowStarted(id) {
-  if (!mongoose.connection || mongoose.connection.readyState !== 1) {
-    return false;
-  }
-
-  const response = await storage.startedFlow(id);
-  if (!response) {
-    log.error(`Flow with id ${id} could not be found.`);
-  }
-  return true;
-}
-
-async function flowStopped(id) {
-  if (!mongoose.connection || mongoose.connection.readyState !== 1) {
-    return false;
-  }
-
-  const response = await storage.stoppedFlow(id);
-  if (!response) {
-    log.error(`Flow with id ${id} could not be found.`);
-  }
-  return true;
-}
 
 async function connectQueue() {
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl });

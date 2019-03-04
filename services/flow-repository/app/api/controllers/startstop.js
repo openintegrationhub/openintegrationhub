@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../../config/index');
-const { publishQueue } = require('../../utils/publish');
+const { publishQueue } = require('../../utils/eventBus');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
