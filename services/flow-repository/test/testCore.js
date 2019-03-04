@@ -12,6 +12,9 @@ const port = process.env.PORT || 3001;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
+const { reportHealth } = require('../app/utils/eventBus');
+const { flowStarted, flowStopped } = require('../app/utils/handlers');
+const Flow = require('../app/models/flow');
 
 const Server = require('../app/server');
 
@@ -295,6 +298,54 @@ describe('Flow Operations', () => {
     expect(j).not.toBeNull();
 
     expect(j).toHaveProperty('_id');
+  });
+
+  test('should start a flow', async () => {
+    const res = await request
+      .post(`/flows/${flowId1}/start`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+    expect(j).not.toBeNull();
+    expect(j).toHaveProperty('id');
+    expect(j).toHaveProperty('status');
+    expect(j.id).toEqual(flowId1);
+    expect(j.status).toEqual('starting');
+  });
+
+  test('handle a flow.started event', async () => {
+    await flowStarted(flowId1);
+
+    const flow = await Flow.findOne({ _id: flowId1 }).lean();
+    expect(flow.status).toEqual('active');
+  });
+
+  test('should stop a flow', async () => {
+    const res = await request
+      .post(`/flows/${flowId1}/stop`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+    expect(j).not.toBeNull();
+    expect(j).toHaveProperty('id');
+    expect(j).toHaveProperty('status');
+    expect(j.id).toEqual(flowId1);
+    expect(j.status).toEqual('stopping');
+  });
+
+  test('handle a flow.stopped event', async () => {
+    await flowStopped(flowId1);
+
+    const flow = await Flow.findOne({ _id: flowId1 }).lean();
+    expect(flow.status).toEqual('inactive');
   });
 
   test('should return 400 when attempting to update an invalid id', async () => {

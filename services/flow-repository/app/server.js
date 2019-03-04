@@ -10,8 +10,11 @@ const iamMiddleware = require('@openintegrationhub/iam-utils');
 const cors = require('cors');
 const config = require('./config/index');
 const flow = require('./api/controllers/flow');
+const { connectQueue, disconnectQueue } = require('./utils/eventBus');
+const startstop = require('./api/controllers/startstop');
 const healthcheck = require('./api/controllers/healthcheck');
 const swaggerDocument = require('./api/swagger/swagger.json');
+
 
 const log = require('./config/logger');
 
@@ -23,8 +26,9 @@ class Server {
     this.app.options('*', cors());
   }
 
-  setupMiddleware() {
+  async setupMiddleware() {
     log.info('Setting up middleware');
+
     // This middleware simple calls the IAM middleware to add user data to req.
     this.app.use('/flows', async (req, res, next) => {
       try {
@@ -93,14 +97,23 @@ class Server {
       return next();
     });
 
-    log.info('Middlware set up');
+    log.info('Middleware set up');
+  }
+
+  async setupQueue() {  // eslint-disable-line
+    log.debug('Connecting to Queue');
+    await connectQueue();
+  }
+
+  async terminateQueue() {  // eslint-disable-line
+    log.debug('Disconnecting from Queue');
+    await disconnectQueue();
   }
 
   setupRoutes() {
-    log.info('setting routes...');
-
     // configure routes
     this.app.use('/flows', flow);
+    this.app.use('/flows', startstop);
     this.app.use('/healthcheck', healthcheck);
 
     // Reroute to docs

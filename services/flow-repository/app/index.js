@@ -14,6 +14,7 @@ const mainServer = new Server();
     mainServer.setupMiddleware();
     mainServer.setupRoutes();
     mainServer.setupSwagger();
+    mainServer.setupQueue();
 
     if (!module.parent) {
       mainServer.listen(process.env.PORT || 3001);

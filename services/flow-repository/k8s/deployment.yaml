@@ -1,18 +1,18 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: integration-content-repository
+  name: flow-repository
   namespace: oih-dev-ns
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: integration-content-repository
+        app: flow-repository
     spec:
       containers:
-        - name: integration-content-repository
-          image: openintegrationhub/integration-content-repository:latest
+        - name: flow-repository
+          image: openintegrationhub/flow-repository:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3001
@@ -20,13 +20,15 @@ spec:
             - name: MONGODB_URL
               valueFrom:
                 secretKeyRef:
-                  name: icr
+                  name: flow-repository
                   key: 'mongourl'
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: icr
+                  name: flow-repository
                   key: 'iamtoken'
+            - name: QUEUE_URL
+              value: 'amqp://guest:guest@rabbitmq-service.platform.svc.cluster.local:5672'
             - name: "INTROSPECT_TYPE"
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"
