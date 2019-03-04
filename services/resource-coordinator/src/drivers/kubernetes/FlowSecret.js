@@ -22,6 +22,26 @@ class FlowSecret {
         return _.get(this, 'metadata.name');
     }
 
+    setMetadataValue(key, value) {
+        this.metadata[key] = value;
+    }
+
+    getMetadataValue(key) {
+        return _.get(this, `metadata.${key}`);
+    }
+
+    setOwners(owners) {
+        this.setMetadataValue('ownerReferences', owners.map(owner => (
+            {
+                apiVersion: owner.apiVersion,
+                kind: owner.kind,
+                controller: true,
+                name: owner.name,
+                uid: owner.uid
+            }
+        )));
+    }
+
     /**
      * Return K8s descriptor representation.
      * @returns K8s descriptor

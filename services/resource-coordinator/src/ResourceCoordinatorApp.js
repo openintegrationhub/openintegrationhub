@@ -46,9 +46,6 @@ class ResourceCoordinatorApp extends App {
             }
         });
 
-        const rabbitmqManagement = container.resolve('rabbitmqManagement');
-        await rabbitmqManagement.start();
-
         const httpApi = container.resolve('httpApi');
         httpApi.listen(config.get('LISTEN_PORT'));
 
