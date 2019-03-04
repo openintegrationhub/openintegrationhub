@@ -1,13 +1,10 @@
 const url = require('url');
 const RabbitmqManagement = require('rabbitmq-stats');
 
-class RabbitmqManagementService {
+class RabbitMqManagementService {
     constructor({config, logger}) {
         this._config = config;
         this._logger = logger.child({service: 'RabbitmqManagement'});
-    }
-
-    async start() {
         this._client = this._createClient();
     }
 
@@ -99,4 +96,4 @@ class RabbitmqManagementService {
     }
 }
 
-module.exports = RabbitmqManagementService
+module.exports = RabbitMqManagementService;

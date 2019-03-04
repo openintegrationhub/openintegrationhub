@@ -3,13 +3,14 @@ const { URL } = require('url');
 
 const { QueuesManager } = require('@openintegrationhub/resource-coordinator');
 const InMemoryCredentialsStorage = require('./credentials-storage/InMemoryCredentialsStorage');
+const RabbitMqManagementService = require('./RabbitMqManagementService');
 
 class RabbitMqQueuesManager extends QueuesManager {
-    constructor({ rabbitmqManagement, amqpConnection, queueCreator, logger, config, credentialsStorage }) {
+    constructor({ amqpConnection, queueCreator, logger, config, credentialsStorage }) {
         super();
         this._config = config;
         this._logger = logger;
-        this._rabbitmqManagement = rabbitmqManagement;
+        this._rabbitmqManagement = new RabbitMqManagementService({config, logger});
         this._channelPromise = amqpConnection.createChannel();
         this._queueCreator = queueCreator;
         this._credentialsStorage = credentialsStorage || new InMemoryCredentialsStorage();

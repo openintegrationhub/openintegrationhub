@@ -1,7 +1,6 @@
 const { QueueCreator, App } = require('backend-commons-lib');
 const { ResourceCoordinator } = require('@openintegrationhub/resource-coordinator');
 const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
-const RabbitmqManagementService = require('./queues-manager/RabbitmqManagementService');
 const HttpApi = require('./HttpApi');
 const FlowsDao = require('./dao/FlowsDao');
 const RabbitMqQueuesManager = require('./queues-manager/RabbitMqQueuesManager');
@@ -26,7 +25,6 @@ class ResourceCoordinatorApp extends App {
 
         container.register({
             queueCreator: asValue(queueCreator),
-            rabbitmqManagement: asClass(RabbitmqManagementService).singleton(),
             flowsDao: asClass(FlowsDao),
             httpApi: asClass(HttpApi).singleton(),
             driver: asClass(KubernetesDriver),
