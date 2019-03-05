@@ -1,15 +1,19 @@
 const mongoose = require('mongoose');
-const owners = require('./schema/owners');
+const owners = require('../_schema/owners');
 
 const { Schema } = mongoose;
 
-const domain = new Schema({
+const schema = new Schema({
     name: {
         type: String,
         required: true,
     },
     description: String,
-    public: Boolean,
+    uri: {
+        type: String,
+        required: true,
+    },
+    value: Object,
     owners: {
         type: [owners],
     },
@@ -17,4 +21,4 @@ const domain = new Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('domain', domain);
+module.exports = mongoose.model('schema', schema);

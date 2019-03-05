@@ -1,4 +1,4 @@
-const Domain = require('../model/Domain');
+const Domain = require('../../model/Domain');
 
 module.exports = {
     async countByEntity(id) {

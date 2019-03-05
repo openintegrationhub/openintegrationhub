@@ -1,0 +1,45 @@
+const getPort = require('get-port');
+const supertest = require('supertest');
+const conf = require('../conf');
+const iamMock = require('../test/iamMock');
+const Server = require('../server');
+
+let port;
+let request;
+let server;
+
+describe('DAO adapter', () => {
+    beforeAll(async () => {
+        port = await getPort();
+        request = supertest(`http://localhost:${port}${conf.apiBase}`);
+        server = new Server({
+            mongoDbConnection: `${global.__MONGO_URI__}-dao`,
+            port,
+            dao: {
+                DomainDAO: {
+                    async countByEntity() {
+                        return 1337;
+                    },
+                    async findByEntityWithPagination() {
+                        return 'fooo';
+                    },
+                },
+            },
+        });
+        iamMock.setup();
+        await server.start();
+    });
+
+    afterAll(async () => {
+        await server.stop();
+    });
+
+    test('Overwritten dao', async () => {
+        const result = (await request.get('/domains')
+            .set(...global.user1)
+            .expect(200)).body;
+
+        console.log(result);
+        expect(true).toBe(true);
+    });
+});

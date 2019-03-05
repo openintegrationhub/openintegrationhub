@@ -3,15 +3,24 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const iamLib = require('@openintegrationhub/iam-utils');
+const DAO = require('../dao');
 const conf = require('../conf');
 
 const jsonParser = bodyParser.json();
 
 module.exports = class Server {
-    constructor({ port, mongoDbConnection }) {
+    constructor({ port, mongoDbConnection, dao }) {
         this.port = port || conf.port;
         this.app = express();
         this.app.disable('x-powered-by');
+
+        // apply adapter
+        // dao
+        if (dao) {
+            for (const key of Object.keys(dao)) {
+                DAO[key] = dao[key];
+            }
+        }
 
         // setup database
         Server.setupDatabase(mongoDbConnection);
@@ -20,7 +29,6 @@ module.exports = class Server {
         if (conf.debugMode) {
             this.app.use(morgan('combined'));
         }
-
 
         this.app.use(jsonParser);
         // base routes

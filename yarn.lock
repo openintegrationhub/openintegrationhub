@@ -474,6 +474,16 @@ ajv@^6.0.1:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
+ajv@^6.10.0:
+  version "6.10.0"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.10.0.tgz#90d0d54439da587cd7e843bfb7045f50bd22bdf1"
+  integrity sha512-nffhOpkymDECQyR0mnsUtoCE8RlX38G0rYP+wgLWFyZuUyuuojSSvi/+euOiQBIn63whYwYVIIH1TvE3tu4OEg==
+  dependencies:
+    fast-deep-equal "^2.0.1"
+    fast-json-stable-stringify "^2.0.0"
+    json-schema-traverse "^0.4.1"
+    uri-js "^4.2.2"
+
 ajv@^6.5.3, ajv@^6.6.1:
   version "6.6.1"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.6.1.tgz#6360f5ed0d80f232cc2b294c362d5dc2e538dd61"
@@ -1613,6 +1623,11 @@ call-matcher@^1.0.0:
     espurify "^1.6.0"
     estraverse "^4.0.0"
 
+call-me-maybe@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/call-me-maybe/-/call-me-maybe-1.0.1.tgz#26d208ea89e37b5cbde60250a15f031c16a4d66b"
+  integrity sha1-JtII6onje1y95gJQoV8DHBak1ms=
+
 call-signature@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/call-signature/-/call-signature-0.0.2.tgz#a84abc825a55ef4cb2b028bd74e205a65b9a4996"
@@ -1997,6 +2012,11 @@ commander@2.15.1:
 commander@^2.9.0:
   version "2.18.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.18.0.tgz#2bf063ddee7c7891176981a2cc798e5754bc6970"
+
+commander@~2.11.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
+  integrity sha512-b0553uYA5YAEGgyYIGYROzKQ7X5RAqedkfjiZxwi0kL1g3bOaBNNZfYkzt/CL0umgD5wc9Jec2FbB98CjkMRvQ==
 
 commander@~2.17.1:
   version "2.17.1"
@@ -3785,6 +3805,11 @@ for-own@^0.1.4:
   dependencies:
     for-in "^1.0.1"
 
+foreach@^2.0.4:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/foreach/-/foreach-2.0.5.tgz#0bee005018aeb260d0a3af3ae658dd0136ec1b99"
+  integrity sha1-C+4AUBiusmDQo6865ljdATbsG5k=
+
 foreground-child@^1.5.3, foreground-child@^1.5.6:
   version "1.5.6"
   resolved "https://registry.yarnpkg.com/foreground-child/-/foreground-child-1.5.6.tgz#4fd71ad2dfde96789b980a5c0a295937cb2f5ce9"
@@ -3811,6 +3836,11 @@ form-data@~1.0.0-rc4:
     async "^2.0.1"
     combined-stream "^1.0.5"
     mime-types "^2.1.11"
+
+format-util@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/format-util/-/format-util-1.0.3.tgz#032dca4a116262a12c43f4c3ec8566416c5b2d95"
+  integrity sha1-Ay3KShFiYqEsQ/TD7IVmQWxbLZU=
 
 formidable@^1.2.0:
   version "1.2.1"
@@ -4215,6 +4245,13 @@ graceful-fs@^4.1.15:
 "graceful-readlink@>= 1.0.0":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
+
+graphlib@^2.1.1:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/graphlib/-/graphlib-2.1.7.tgz#b6a69f9f44bd9de3963ce6804a2fc9e73d86aecc"
+  integrity sha512-TyI9jIy2J4j0qgPmOOrHTCtpPqJGN/aurBwc6ZT+bRii+di1I+Wv3obRhVrmBEXet+qkMaEX67dXrwsd3QQM6w==
+  dependencies:
+    lodash "^4.17.5"
 
 growl@1.10.5:
   version "1.10.5"
@@ -5959,6 +5996,14 @@ js-yaml@^3.10.0, js-yaml@^3.12.0, js-yaml@^3.7.0, js-yaml@^3.8.2, js-yaml@^3.9.1
     argparse "^1.0.7"
     esprima "^4.0.0"
 
+js-yaml@^3.12.1:
+  version "3.12.2"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.2.tgz#ef1d067c5a9d9cb65bd72f285b5d8105c77f14fc"
+  integrity sha512-QHn/Lh/7HhZ/Twc7vJYQTkjuCa0kaCcDcjK5Zlk2rvnUpy7DxMJ23+Jc2dcyvltwQVg1nygAVlB2oRDFHoRS5Q==
+  dependencies:
+    argparse "^1.0.7"
+    esprima "^4.0.0"
+
 jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
@@ -6017,6 +6062,36 @@ json-buffer@3.0.0:
 json-parse-better-errors@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
+
+json-pointer@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/json-pointer/-/json-pointer-0.6.0.tgz#8e500550a6aac5464a473377da57aa6cc22828d7"
+  integrity sha1-jlAFUKaqxUZKRzN32leqbMIoKNc=
+  dependencies:
+    foreach "^2.0.4"
+
+json-refs@^3.0.12:
+  version "3.0.12"
+  resolved "https://registry.yarnpkg.com/json-refs/-/json-refs-3.0.12.tgz#949435968974bcc9f4b515a97036aa912700d067"
+  integrity sha512-6RbO1Y3e0Hty/tEpXtQG6jUx7g1G8e39GIOuPugobPC8BX1gZ0OGZQpBn1FLWGkuWF35GRGADvhwdEIFpwIjyA==
+  dependencies:
+    commander "~2.11.0"
+    graphlib "^2.1.1"
+    js-yaml "^3.10.0"
+    lodash "^4.17.4"
+    native-promise-only "^0.8.1"
+    path-loader "^1.0.5"
+    slash "^1.0.0"
+    uri-js "^3.0.2"
+
+json-schema-ref-parser@6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/json-schema-ref-parser/-/json-schema-ref-parser-6.1.0.tgz#30af34aeab5bee0431da805dac0eb21b574bf63d"
+  integrity sha512-pXe9H1m6IgIpXmE5JSb8epilNTGsmTb2iPohAXpOdhqGFbQjNeHHsZxU+C8w6T81GZxSPFLeUoqDJmzxx5IGuw==
+  dependencies:
+    call-me-maybe "^1.0.1"
+    js-yaml "^3.12.1"
+    ono "^4.0.11"
 
 json-schema-traverse@^0.3.0:
   version "0.3.1"
@@ -7078,24 +7153,6 @@ mongoose@5.4.11:
     safe-buffer "5.1.2"
     sliced "1.0.1"
 
-mongoose@5.4.14, mongoose@^5.4.13:
-  version "5.4.14"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.4.14.tgz#8cc074c9990db0a26062a779f461abb91c9c483c"
-  integrity sha512-lAISH4xdx0/o0bVWPB4bxApP3bA1b08oHPEjTBq3/mIr4R494hepDJJowByBgpGYf8tj/oe6VkFCx8wbRcOciA==
-  dependencies:
-    async "2.6.1"
-    bson "~1.1.0"
-    kareem "2.3.0"
-    mongodb "3.1.13"
-    mongodb-core "3.1.11"
-    mongoose-legacy-pluralize "1.0.2"
-    mpath "0.5.1"
-    mquery "3.2.0"
-    ms "2.1.1"
-    regexp-clone "0.0.1"
-    safe-buffer "5.1.2"
-    sliced "1.0.1"
-
 mongoose@5.4.7:
   version "5.4.7"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.4.7.tgz#eac012b38636a4b9075f66480263dd426e65c5c1"
@@ -7126,6 +7183,42 @@ mongoose@5.4.9:
     mpath "0.5.1"
     mquery "3.2.0"
     ms "2.0.0"
+    regexp-clone "0.0.1"
+    safe-buffer "5.1.2"
+    sliced "1.0.1"
+
+mongoose@^5.4.13:
+  version "5.4.14"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.4.14.tgz#8cc074c9990db0a26062a779f461abb91c9c483c"
+  integrity sha512-lAISH4xdx0/o0bVWPB4bxApP3bA1b08oHPEjTBq3/mIr4R494hepDJJowByBgpGYf8tj/oe6VkFCx8wbRcOciA==
+  dependencies:
+    async "2.6.1"
+    bson "~1.1.0"
+    kareem "2.3.0"
+    mongodb "3.1.13"
+    mongodb-core "3.1.11"
+    mongoose-legacy-pluralize "1.0.2"
+    mpath "0.5.1"
+    mquery "3.2.0"
+    ms "2.1.1"
+    regexp-clone "0.0.1"
+    safe-buffer "5.1.2"
+    sliced "1.0.1"
+
+mongoose@^5.4.17:
+  version "5.4.17"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.4.17.tgz#354c4fef04ea7a3d10ddbd0dd9cb4a40d9d135b8"
+  integrity sha512-9aAg8M0YUmGHQRDYvsKJ02wx/Qaof1Jn2iDH21ZtWGAZpQt9uVLNEOdcBuzi+lPJwGbLYh2dphdKX0sZ+dXAJQ==
+  dependencies:
+    async "2.6.1"
+    bson "~1.1.0"
+    kareem "2.3.0"
+    mongodb "3.1.13"
+    mongodb-core "3.1.11"
+    mongoose-legacy-pluralize "1.0.2"
+    mpath "0.5.1"
+    mquery "3.2.0"
+    ms "2.1.1"
     regexp-clone "0.0.1"
     safe-buffer "5.1.2"
     sliced "1.0.1"
@@ -7220,6 +7313,11 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+native-promise-only@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/native-promise-only/-/native-promise-only-0.8.1.tgz#20a318c30cb45f71fe7adfbf7b21c99c1472ef11"
+  integrity sha1-IKMYwwy0X3H+et+/eyHJnBRy7xE=
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -7740,6 +7838,13 @@ only@~0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/only/-/only-0.0.2.tgz#2afde84d03e50b9a8edc444e30610a70295edfb4"
 
+ono@^4.0.11:
+  version "4.0.11"
+  resolved "https://registry.yarnpkg.com/ono/-/ono-4.0.11.tgz#c7f4209b3e396e8a44ef43b9cedc7f5d791d221d"
+  integrity sha512-jQ31cORBFE6td25deYeD80wxKBMj+zBmHTrVxnc6CKhx8gho6ipmWM5zj/oeoqioZ99yqBls9Z/9Nss7J26G2g==
+  dependencies:
+    format-util "^1.0.3"
+
 openid-client@^2.0.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/openid-client/-/openid-client-2.4.1.tgz#9020878af24c57bbdc19eaba23cf16642a3a4ade"
@@ -8035,6 +8140,14 @@ path-is-inside@^1.0.1, path-is-inside@^1.0.2:
 path-key@^2.0.0, path-key@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/path-key/-/path-key-2.0.1.tgz#411cadb574c5a140d3a4b1910d40d80cc9f40b40"
+
+path-loader@^1.0.5:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/path-loader/-/path-loader-1.0.9.tgz#4f204ada1a477db2a572fce382029c3f24dc5237"
+  integrity sha512-pD37gArtr+/72Tst9oJoDB9k7gB9A09Efj7yyBi5HDUqaxqULXBWW8Rnw2TfNF+3sN7QZv0ZNdW1Qx2pFGW5Jg==
+  dependencies:
+    native-promise-only "^0.8.1"
+    superagent "^3.8.3"
 
 path-parse@^1.0.5, path-parse@^1.0.6:
   version "1.0.6"
@@ -10170,6 +10283,13 @@ update-notifier@^2.1.0, update-notifier@^2.5.0:
 upper-case@^1.1.1:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/upper-case/-/upper-case-1.1.3.tgz#f6b4501c2ec4cdd26ba78be7222961de77621598"
+
+uri-js@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/uri-js/-/uri-js-3.0.2.tgz#f90b858507f81dea4dcfbb3c4c3dbfa2b557faaa"
+  integrity sha1-+QuFhQf4HepNz7s8TD2/orVX+qo=
+  dependencies:
+    punycode "^2.1.0"
 
 uri-js@^4.2.2:
   version "4.2.2"

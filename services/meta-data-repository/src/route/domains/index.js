@@ -3,7 +3,7 @@ const logger = require('@basaas/node-logger');
 
 const conf = require('../../conf');
 const { USER } = require('../../constant').ENTITY_TYPE;
-const DomainDAO = require('../../dao/domain');
+const { DomainDAO } = require('../../dao');
 const { isOwnerOfDomain } = require('../../middleware/is-owner');
 const Pagination = require('../../util/pagination');
 
