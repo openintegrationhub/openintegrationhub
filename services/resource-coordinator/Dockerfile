@@ -1,6 +1,8 @@
 FROM node:8.12-alpine AS base
 WORKDIR /usr/lib/resource-coordinator
 
+RUN apk add --no-cache bash
+
 COPY package.json yarn.lock ./
 COPY lib/backend-commons-lib lib/backend-commons-lib
 COPY lib/event-bus lib/event-bus

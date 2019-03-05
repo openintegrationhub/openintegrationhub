@@ -18,9 +18,7 @@ class KubernetesDriver extends BaseDriver {
         try {
             const env = this._prepareEnvVars(flow, node, envVars);
             const flowNodeSecret = await this._ensureFlowNodeSecret(flow, node, env);
-            const runningFlowNode = await this._createRunningFlowNode(flow, node, flowNodeSecret);
-            flowNodeSecret.setOwners([runningFlowNode]);
-            await this._updateFlowNodeSecret(flowNodeSecret);
+            await this._createRunningFlowNode(flow, node, flowNodeSecret);
         } catch (e) {
             this._logger.error(e, 'Failed to deploy the job');
         }
@@ -104,6 +102,20 @@ class KubernetesDriver extends BaseDriver {
         } catch (e) {
             if (e.statusCode !== 404) {
                 this._logger.error(e, 'failed to undeploy job');
+            }
+        }
+
+        await this._deleteFlowNodeSecret(app.flowId, app.nodeId);
+    }
+
+    async _deleteFlowNodeSecret(flowId, nodeId) {
+        try {
+            const secretName = this._getFlowNodeSecretName({id: flowId}, {id: nodeId});
+            this._logger.trace({secretName}, 'Deleting flow secret');
+            await this._coreClient.secrets(secretName).delete();
+        } catch (e) {
+            if (e.statusCode !== 404) {
+                this._logger.error(e, 'failed to delete secret');
             }
         }
     }
