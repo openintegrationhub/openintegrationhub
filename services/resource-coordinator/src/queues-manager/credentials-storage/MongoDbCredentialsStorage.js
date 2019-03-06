@@ -25,7 +25,7 @@ class MongoDbCredentialsStorage extends CredentialsStorage {
             nodeId
         };
         const found = await RabbitMqCredential.findOne(query);
-        return found ? found.credential : null;
+        return found ? found.credential.toObject() : null;
     }
 
     async set(flowId, nodeId, credential) {
@@ -47,7 +47,14 @@ class MongoDbCredentialsStorage extends CredentialsStorage {
     }
 
     async getAllForFlow(flowId) {
-        return (await RabbitMqCredential.find({flowId}) || []);
+        return (await RabbitMqCredential.find({flowId}) || []).map(({nodeId, credential}) => ({
+            nodeId,
+            credential: credential.toObject()
+        }));
+    }
+
+    async clear() {
+        await RabbitMqCredential.deleteMany();
     }
 }
 
