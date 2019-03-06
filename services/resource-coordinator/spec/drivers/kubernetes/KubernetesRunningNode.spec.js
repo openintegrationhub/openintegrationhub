@@ -16,7 +16,6 @@ describe('KubernetesRunningNode', () => {
                     name: 'Test node 1',
                     namespace: 'test-namespace',
                     annotations: {
-                        [KubernetesRunningNode.ANNOTATION_KEY]: '1.0.1',
                         flowId: 'flow1',
                         nodeId: 'step_1'
                     },
@@ -64,10 +63,6 @@ describe('KubernetesRunningNode', () => {
 
         it('nodeId', () => {
             expect(rn.nodeId).to.equal('step_1');
-        });
-
-        it('flowVersion', () => {
-            expect(rn.flowVersion).to.equal('1.0.1');
         });
     });
 });
