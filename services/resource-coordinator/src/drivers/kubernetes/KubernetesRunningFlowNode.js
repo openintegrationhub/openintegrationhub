@@ -55,16 +55,12 @@ class KubernetesRunningFlowNode extends RunningFlowNode {
         return _.get(this._getContainerSpec(), 'env', []);
     }
 
-    _getEnvVar(name) {
+    getEnvVar(name) {
         const pair = this._getContainerEnv().find(pair => pair.name === name);
         if (!pair) {
             return null;
         }
         return pair.value;
-    }
-
-    static get ANNOTATION_KEY() {
-        return 'annotation.flows.elastic.io';
     }
 }
 

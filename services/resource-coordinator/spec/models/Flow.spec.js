@@ -1,8 +1,49 @@
 const Flow = require('../../src/models/Flow');
 const chai = require('chai');
 const { expect } = chai;
+const mongoose = require('mongoose');
 
 describe('Flow model', () => {
+    before(async () => {
+        await mongoose.connect('mongodb://localhost/test');
+    });
+
+    after(async () => {
+        await mongoose.disconnect();
+    });
+
+    describe('isStarting', () => {
+        it('should return true', () => {
+            const flow = new Flow({
+                status: 'starting'
+            });
+            expect(flow.isStarting).to.be.true;
+        });
+
+        it('should return false', () => {
+            const flow = new Flow({
+                status: 'started'
+            });
+            expect(flow.isStarting).to.be.false;
+        });
+    });
+
+    describe('isStopping', () => {
+        it('should return true', () => {
+            const flow = new Flow({
+                status: 'stopping'
+            });
+            expect(flow.isStopping).to.be.true;
+        });
+
+        it('should return false', () => {
+            const flow = new Flow({
+                status: 'started'
+            });
+            expect(flow.isStopping).to.be.false;
+        });
+    });
+
     describe('#getNodeById', () => {
         it('should find a node', () => {
             const flow = new Flow({
@@ -99,6 +140,25 @@ describe('Flow model', () => {
             });
 
             expect(flow.getFirstNode()).to.be.undefined;
+        });
+    });
+
+    describe('#onStarted', () => {
+        it('should set status to started', async () => {
+            const flow = await Flow.create({});
+            await flow.onStarted();
+            const foundFlow = await Flow.findById(flow.id);
+            expect(foundFlow).not.to.be.null;
+            expect(foundFlow.status).to.equal('started');
+        });
+    });
+
+    describe('#onStopped', () => {
+        it('should remove the flow', async () => {
+            const flow = await Flow.create({});
+            await flow.onStopped();
+            const foundFlow = await Flow.findById(flow.id);
+            expect(foundFlow).to.be.null;
         });
     });
 });
