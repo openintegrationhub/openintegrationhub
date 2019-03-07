@@ -15,7 +15,7 @@ class FlowSecret {
     }
 
     get id() {
-        return this.id;
+        return this.name;
     }
 
     get name() {
