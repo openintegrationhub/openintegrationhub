@@ -1,8 +1,5 @@
 {
     "FLOWS_PER_TICK_LIMIT": 20,
     "LISTEN_PORT": 1234,
-    "MONGODB_URI": "mongodb://localhost/scheduler",
-    "NAMESPACE": "flows",
-    "POLLING_INTERVAL": 20000,
-    "RABBITMQ_URI": "amqp://guest:guest@127.0.0.1:5672/"
+    "POLLING_INTERVAL": 20000
 }
