@@ -55,7 +55,7 @@ async function disconnectQueue() {
 }
 
 async function reportHealth() {
-  return (eventBus);
+  return (eventBus._connected); // eslint-disable-line
 }
 
 

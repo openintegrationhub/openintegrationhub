@@ -27,7 +27,7 @@ router.get('/', jsonParser, async (req, res) => {
     response.details.mongoDB.status = 'pass';
   }
 
-  if (reportHealth()) {
+  if (await reportHealth() === true) {
     response.details.queue.status = 'pass';
   }
 
