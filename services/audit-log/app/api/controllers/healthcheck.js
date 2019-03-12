@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const log = require('../../config/logger');
+const { reportHealth } = require('../utils/eventBus');
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
@@ -26,7 +27,7 @@ router.get('/', jsonParser, async (req, res) => {
     response.details.mongoDB.status = 'pass';
   }
 
-  if (global.queueHealth === true) {
+  if (reportHealth()) {
     response.details.queue.status = 'pass';
   }
 
