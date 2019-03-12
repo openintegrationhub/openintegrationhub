@@ -6,11 +6,13 @@
   "scripts": {
     "lint": "eslint src spec",
     "pretest": "npm run lint",
-    "test": "mocha spec --recursive"
+    "test": "mocha spec --recursive",
+    "start:dev": "node index.js | banyan"
   },
   "author": "Open Integration Hub",
   "license": "APL-2.0",
   "dependencies": {
+    "@openintegrationhub/event-bus": "*",
     "lodash": "4.17.11",
     "uuid": "3.3.2"
   },

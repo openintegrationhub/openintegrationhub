@@ -264,6 +264,9 @@ items:
             - name: scheduler
               image: 'openintegrationhub/scheduler:latest'
               env:
+                - name: MONGODB_URI
+                  value: >-
+                    mongodb://mongodb-service.platform.svc.cluster.local/scheduler
                 - name: RABBITMQ_URI
                   value: >-
                     amqp://guest:guest@rabbitmq-service.platform.svc.cluster.local
@@ -313,6 +316,9 @@ items:
             - name: communication-router
               image: 'openintegrationhub/communication-router:latest'
               env:
+                - name: MONGODB_URI
+                  value: >-
+                    mongodb://mongodb-service.platform.svc.cluster.local/webhooks
                 - name: RABBITMQ_URI
                   value: >-
                     amqp://guest:guest@rabbitmq-service.platform.svc.cluster.local
