@@ -63,7 +63,7 @@ jobs:
     working_directory: ~/oih
     steps: *deploy_steps
   communication-router-test:
-    docker: *node_env
+    docker: *node_mongo_env
     working_directory: ~/oih/services/communication-router
     steps: *yarn_test_steps
   iam-test:
@@ -71,11 +71,11 @@ jobs:
     working_directory: ~/oih/services/iam
     steps: *yarn_test_steps
   resource-coordinator-test:
-    docker: *node_env
+    docker: *node_mongo_env
     working_directory: ~/oih/services/resource-coordinator
     steps: *yarn_test_steps
   scheduler-test:
-    docker: *node_env
+    docker: *node_mongo_env
     working_directory: ~/oih/services/scheduler
     steps: *yarn_test_steps
   secret-service-test:
@@ -98,9 +98,9 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/lib/webhooks
     steps: *yarn_test_steps
-  icr-test:
+  flow-repository-test:
     docker: *node_env
-    working_directory: ~/oih/services/integration-content-repository
+    working_directory: ~/oih/services/flow-repository
     steps: *yarn_test_steps
   audit-log-test:
     docker: *node_env
@@ -125,7 +125,7 @@ workflows:
       - secret-service-test:
           requires:
             - deps
-      - icr-test:
+      - flow-repository-test:
           requires:
             - deps
       - audit-log-test:
@@ -150,7 +150,7 @@ workflows:
             - resource-coordinator-test
             - scheduler-test
             - secret-service-test
-            - icr-test
+            - flow-repository-test
             - audit-log-test
       - build:
           requires:
@@ -159,4 +159,4 @@ workflows:
       - deploy:
           requires:
             - build
-         filters: *only_master_filter
+          filters: *only_master_filter

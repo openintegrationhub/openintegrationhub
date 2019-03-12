@@ -18,7 +18,7 @@ _Question: At which steps of the execution is the transformer located?_
 Transformer is located between source adapter and sdf adapter.
 Graphical representation:
 <p align="center">
-  <img src="../../SmartDataFramework/Assets/SDF_Overview_draft_0.7.png" alt="Sublime's custom image" width="400"/>
+  <img src="../../assets/SDF_Overview_draft_0.7.png" alt="Sublime's custom image" width="400"/>
 </p>
 
 ### Consequences
@@ -33,7 +33,7 @@ Graphical representation:
 Transformer is located within the SDF and not between source adapter and SDF adapter.
 Graphical representation:
 <p align="center">
-  <img src="../../SmartDataFramework/Assets/SDF_Services.png" alt="Sublime's custom image" width="600"/>
+  <img src="../../assets/SDF_Services.png" alt="Sublime's custom image" width="600"/>
 </p>
 
 ### Consequences

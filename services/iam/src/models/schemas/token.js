@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const CONSTANTS = require('./../../constants');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const TokenSchema = new Schema({
     inquirer: { type: Schema.ObjectId, ref: 'account', index: true }, // user or a a service running on behalf of the user

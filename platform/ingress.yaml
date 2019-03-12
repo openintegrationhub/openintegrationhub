@@ -32,3 +32,9 @@ spec:
       - backend:
           serviceName: integration-content-repository
           servicePort: 3001
+  - host: auditlog.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: audit-log
+          servicePort: 3007
