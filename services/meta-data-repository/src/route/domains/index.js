@@ -3,9 +3,10 @@ const logger = require('@basaas/node-logger');
 
 const conf = require('../../conf');
 const { USER } = require('../../constant').ENTITY_TYPE;
-const { DomainDAO } = require('../../dao');
+const { DomainDAO, SchemaDAO } = require('../../dao');
 const { isOwnerOfDomain } = require('../../middleware/is-owner');
 const Pagination = require('../../util/pagination');
+const { transformSchema, validateSchema, URIfromId } = require('../../transform');
 
 const log = logger.getLogger(`${conf.logging.namespace}/domains`);
 
@@ -88,5 +89,100 @@ router.post('/', async (req, res, next) => {
         });
     }
 });
+
+// schema
+
+router.post('/:id/schemas/import', async (req, res, next) => {
+    const { data } = req.body;
+
+    try {
+        validateSchema({
+            schema: data,
+        });
+
+        const transformed = await transformSchema({
+            domain: req.params.id,
+            schema: data,
+        });
+
+        await SchemaDAO.createUpdate({
+            name: 'foo',
+            uri: URIfromId(transformed.$id),
+            value: JSON.stringify(transformed),
+            owners: {
+                id: req.user.sub.toString(),
+                type: USER,
+            },
+        });
+
+        res.sendStatus(200);
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 400,
+        });
+    }
+});
+
+
+router.get('/:id/schemas/:uri', async (req, res, next) => {
+    try {
+        const schema = await SchemaDAO.findByURI(`${conf.apiBase}/domains/${req.params.id}/schemas/${req.params.uri}`);
+
+        if (req.header('content-type') === 'application/schema+json') {
+            return res.send(schema.value);
+        }
+
+        res.send({
+            data: {
+                ...schema,
+            },
+        });
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 400,
+        });
+    }
+});
+
+// router.put('/:id/schemas/:uri', async (req, res, next) => {
+//     try {
+//         res.send({
+//             // data: await DomainDAO.create({
+//             //     ...data,
+//             //     owners: {
+//             //         id: req.user.sub.toString(),
+//             //         type: USER,
+//             //     },
+//             // }),
+//         });
+//     } catch (err) {
+//         log.error(err);
+//         next({
+//             status: 400,
+//         });
+//     }
+// });
+
+// router.delete('/:id/schemas/:uri', async (req, res, next) => {
+//     try {
+//         res.send({
+//             // data: await DomainDAO.create({
+//             //     ...data,
+//             //     owners: {
+//             //         id: req.user.sub.toString(),
+//             //         type: USER,
+//             //     },
+//             // }),
+//         });
+//     } catch (err) {
+//         log.error(err);
+//         next({
+//             status: 400,
+//         });
+//     }
+// });
+
 
 module.exports = router;

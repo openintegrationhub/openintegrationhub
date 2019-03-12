@@ -9,10 +9,10 @@ async function isOwnerOf(dao, req, res, next) {
         const doc = await dao.findOne({
             _id: req.params.id,
         });
-
         if (!doc) {
             return next({ status: 404 });
         }
+
         const userIsOwner = doc.owners.find(
             elem => elem.id === req.user.sub,
         );

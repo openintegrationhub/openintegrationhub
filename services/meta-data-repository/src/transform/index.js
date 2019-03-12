@@ -2,6 +2,10 @@ const fs = require('fs');
 const JsonRefs = require('json-refs');
 const JsonPointer = require('json-pointer');
 const Ajv = require('ajv');
+const url = require('url');
+const path = require('path');
+const { SchemaReferenceError, SchemaValidationError } = require('../error');
+const conf = require('../conf');
 
 const ajv = new Ajv({
     schemaId: 'auto',
@@ -24,46 +28,101 @@ function readFile(path) {
     });
 }
 
+function URIfromId(id) {
+    return url.parse(id).path;
+}
+
+function transformURI({ domain, id }) {
+    let { pathname } = url.parse(id);
+    // remove first slash if existing
+    pathname = pathname[0] === '/' ? pathname.substr(1, pathname.length) : pathname;
+    return `domains/${domain}/schemas/${pathname}`;
+}
+
+function resolveRelativePath({ filePath, location, root }) {
+    // resolve dots
+    const dots = filePath.match(/(\.\.\/)+/);
+    const fileName = filePath.substr(filePath.lastIndexOf('/') + 1);
+    return path
+        .resolve(
+            location,
+            '../',
+            dots ? dots[0] : '',
+            filePath.substr(0, filePath.lastIndexOf('/') + 1).replace(/\.\.\//g, ''),
+            fileName,
+        )
+        .replace(root, '');
+}
+
 module.exports = {
-    validateSchema(schema, path) {
+    validateSchema({ schema, filePath }) {
         ajv.validateSchema(schema);
         if (ajv.errors) {
-            throw new Error(`Validation failed for ${path} ${JSON.stringify(ajv.errors)}`);
+            throw new SchemaValidationError(`Validation failed for ${filePath || '/temp'} ${JSON.stringify(ajv.errors)}`);
         }
     },
 
-    async transformSchema(schema, options) {
-        const { refs } = await JsonRefs.resolveRefs(schema, options);
+    async transformSchema({
+        schema,
+        domain,
+        jsonRefsOptions = {},
+        isVirtual,
+    }) {
+        const baseUrl = `http://localhost:${conf.port}${conf.apiBase}`;
+
+        jsonRefsOptions.loaderOptions = {
+            ...{
+                prepareRequest(req, callback) {
+                    req.header['content-type'] = 'application/schema+json';
+                    callback(undefined, req);
+                },
+            },
+            ...jsonRefsOptions.loaderOptions,
+        };
+
+        const { refs } = await JsonRefs.resolveRefs(schema, jsonRefsOptions);
         const copy = { ...schema };
+        let uri = '';
+        // rewrite id
+        if (copy.$id) {
+            uri = transformURI({ id: copy.$id, domain });
+            copy.$id = `${baseUrl}/${uri}`;
+        } else if (copy.id) {
+            uri = transformURI({ id: copy.$id, domain });
+            copy.id = `${baseUrl}/${uri}`;
+        }
+
         for (const key of Object.keys(refs)) {
             const refObj = refs[key];
             if (refObj.error) {
-                throw (new Error(`${refObj.error} in ${options.location}`));
+                throw (new SchemaReferenceError(`${refObj.error} in ${jsonRefsOptions.location || '/temp'}`));
             } else if (!refObj.uriDetails.scheme && refObj.uriDetails.path) {
-                JsonPointer.set(copy, key.replace('#', ''), {
-                    $ref: `http://localhost/domain/schema/${refObj.uriDetails.path}${refObj.uriDetails.fragment ? `#${refObj.uriDetails.fragment}` : ''}`,
-                });
+                let transformedPath = refObj.uriDetails.path;
+
+                if (!isVirtual) {
+                    const normalizedPath = path.normalize(refObj.uriDetails.path);
+
+                    transformedPath = `${baseUrl}/domains/${domain}/schemas${resolveRelativePath({
+                        filePath: normalizedPath,
+                        location: jsonRefsOptions.location,
+                        root: jsonRefsOptions.root,
+                    })}`;
+                }
+
+                JsonPointer.set(
+                    copy,
+                    key.replace('#', ''),
+                    {
+                        $ref: `${transformedPath}${refObj.uriDetails.fragment ? `#${refObj.uriDetails.fragment}` : ''}`,
+                    },
+                );
             }
         }
+
         return copy;
     },
-
-    async processSchema(schema, path, options) {
-        module.exports.validateSchema(schema, path);
-        return await module.exports.transformSchema(schema, {
-            ...options,
-        });
-    },
-    async processSchemaFiles(paths) {
-        const results = {};
-        for (const path of paths) {
-            const schema = await readFile(path);
-            results[path] = await module.exports.processSchema(schema, path, {
-                location: path,
-            });
-        }
-
-        return results;
-    },
+    resolveRelativePath,
+    transformURI,
+    URIfromId,
     readFile,
 };

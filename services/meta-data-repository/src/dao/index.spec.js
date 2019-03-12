@@ -34,12 +34,12 @@ describe('DAO adapter', () => {
         await server.stop();
     });
 
-    test('Overwritten dao', async () => {
+    test('overwritten', async () => {
         const result = (await request.get('/domains')
             .set(...global.user1)
             .expect(200)).body;
 
-        console.log(result);
-        expect(true).toBe(true);
+        expect(result.data).toEqual('fooo');
+        expect(result.meta.total).toEqual(1337);
     });
 });

@@ -37,7 +37,14 @@ module.exports = class Server {
 
         const apiBase = express.Router();
 
-        apiBase.use(iamLib.middleware);
+        apiBase.use((req, res, next) => {
+            if (req.connection.remoteAddress === req.connection.localAddress) {
+                if (req.method === 'GET' && req.originalUrl.match('schema')) {
+                    return next();
+                }
+            }
+            iamLib.middleware(req, res, next);
+        });
 
         // setup routes
         apiBase.use('/domains', require('./../route/domains'));
