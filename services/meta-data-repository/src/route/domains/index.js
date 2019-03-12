@@ -92,7 +92,28 @@ router.post('/', async (req, res, next) => {
 
 // schema
 
-router.post('/:id/schemas/import', async (req, res, next) => {
+router.get('/:id/schemas/:uri', async (req, res, next) => {
+    try {
+        const schema = await SchemaDAO.findByURI(`${conf.apiBase}/domains/${req.params.id}/schemas/${req.params.uri}`);
+
+        if (req.header('content-type') === 'application/schema+json') {
+            return res.send(schema.value);
+        }
+
+        res.send({
+            data: {
+                ...schema,
+            },
+        });
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 400,
+        });
+    }
+});
+
+router.post('/:id/schemas', async (req, res, next) => {
     const { data } = req.body;
 
     try {
@@ -116,28 +137,6 @@ router.post('/:id/schemas/import', async (req, res, next) => {
         });
 
         res.sendStatus(200);
-    } catch (err) {
-        log.error(err);
-        next({
-            status: 400,
-        });
-    }
-});
-
-
-router.get('/:id/schemas/:uri', async (req, res, next) => {
-    try {
-        const schema = await SchemaDAO.findByURI(`${conf.apiBase}/domains/${req.params.id}/schemas/${req.params.uri}`);
-
-        if (req.header('content-type') === 'application/schema+json') {
-            return res.send(schema.value);
-        }
-
-        res.send({
-            data: {
-                ...schema,
-            },
-        });
     } catch (err) {
         log.error(err);
         next({

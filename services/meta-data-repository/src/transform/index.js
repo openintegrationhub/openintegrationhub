@@ -66,9 +66,8 @@ module.exports = {
         schema,
         domain,
         jsonRefsOptions = {},
-        isVirtual,
     }) {
-        const baseUrl = `http://localhost:${conf.port}${conf.apiBase}`;
+        const fullBase = `${conf.baseUrl}:${conf.port}${conf.apiBase}`;
 
         jsonRefsOptions.loaderOptions = {
             ...{
@@ -83,42 +82,44 @@ module.exports = {
         const { refs } = await JsonRefs.resolveRefs(schema, jsonRefsOptions);
         const copy = { ...schema };
         let uri = '';
+        const backReferences = [];
         // rewrite id
         if (copy.$id) {
             uri = transformURI({ id: copy.$id, domain });
-            copy.$id = `${baseUrl}/${uri}`;
+            copy.$id = `${fullBase}/${uri}`;
         } else if (copy.id) {
             uri = transformURI({ id: copy.$id, domain });
-            copy.id = `${baseUrl}/${uri}`;
+            copy.id = `${fullBase}/${uri}`;
         }
 
         for (const key of Object.keys(refs)) {
             const refObj = refs[key];
+            const { uriDetails } = refObj;
             if (refObj.error) {
                 throw (new SchemaReferenceError(`${refObj.error} in ${jsonRefsOptions.location || '/temp'}`));
-            } else if (!refObj.uriDetails.scheme && refObj.uriDetails.path) {
-                let transformedPath = refObj.uriDetails.path;
+            } else if (!uriDetails.scheme && uriDetails.path) {
+                let transformedPath = uriDetails.path;
 
-                if (!isVirtual) {
-                    const normalizedPath = path.normalize(refObj.uriDetails.path);
+                const normalizedPath = path.normalize(uriDetails.path);
 
-                    transformedPath = `${baseUrl}/domains/${domain}/schemas${resolveRelativePath({
-                        filePath: normalizedPath,
-                        location: jsonRefsOptions.location,
-                        root: jsonRefsOptions.root,
-                    })}`;
-                }
+                transformedPath = `${conf.apiBase}/domains/${domain}/schemas${resolveRelativePath({
+                    filePath: normalizedPath,
+                    location: jsonRefsOptions.location,
+                    root: jsonRefsOptions.root,
+                })}`;
 
                 JsonPointer.set(
                     copy,
                     key.replace('#', ''),
                     {
-                        $ref: `${transformedPath}${refObj.uriDetails.fragment ? `#${refObj.uriDetails.fragment}` : ''}`,
+                        $ref: `${conf.baseUrl}:${conf.port}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
                     },
                 );
+                backReferences.push(transformedPath);
+            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${conf.baseUrl}:${conf.port}`) {
+                backReferences.push(uriDetails.path);
             }
         }
-
         return copy;
     },
     resolveRelativePath,

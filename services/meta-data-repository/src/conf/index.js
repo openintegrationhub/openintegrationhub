@@ -3,9 +3,7 @@ const { version, name } = require('../../package.json');
 
 module.exports = {
     port: optional('PORT', 3000),
-    wellKnown: {
-        version,
-    },
+    baseUrl: optional('BASE_URL', 'http://localhost'),
     apiBase: optional('API_BASE', '/api/v1'),
     userAuthType: optional('AUTH_TYPE', 'basic'),
     iam: {
@@ -28,5 +26,8 @@ module.exports = {
     pagination: {
         defaultPage: parseInt(optional('PAGINATION_DEFAULT_PAGE', 1), 10), // default page is 1
         pageSize: parseInt(optional('PAGINATION_PAGE_SIZE', 30), 10), // show 10 items per page
+    },
+    wellKnown: {
+        version,
     },
 };

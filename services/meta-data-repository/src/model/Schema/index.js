@@ -17,6 +17,9 @@ const schema = new Schema({
     owners: {
         type: [owners],
     },
+    refs: {
+        type: [String],
+    },
 }, {
     timestamps: true,
 });
