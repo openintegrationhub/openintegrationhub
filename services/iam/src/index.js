@@ -6,12 +6,11 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const App = require('./app');
 const pjson = require('../package.json');
 const conf = require('./conf');
+process.title = `node ${require('./../package.json').name} ${require('./../package.json').version}`;
 
 const log = Logger.getLogger(`${conf.general.loggingNameSpace}/init`, {
     level: 'info',
 });
-
-log.info('Startup');
 
 memwatch.on('leak', (info) => {
     log.warn('POTENTIAL MEMORY LEAK', info);

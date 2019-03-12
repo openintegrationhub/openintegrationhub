@@ -5,15 +5,18 @@ const CONSTANTS = require('./../../constants');
 
 const TenantSchema = new Schema({
     name: { type: String, index: true },
-    confirmed: { type: Boolean, 'default': false },
+    confirmed: { 
+        type: Boolean, 
+        default: true, 
+    },
     status: {
         type: String,
-        'enum': [
+        enum: [
             CONSTANTS.STATUS.ACTIVE,
             CONSTANTS.STATUS.DISABLED,
             CONSTANTS.STATUS.PENDING,
         ],
-        'default': CONSTANTS.STATUS.ACTIVE,
+        default: CONSTANTS.STATUS.ACTIVE,
     },
 
 }, {
