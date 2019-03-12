@@ -155,8 +155,8 @@ workflows:
       - build:
           requires:
             - test
-          #filters: *only_master_filter
+          filters: *only_master_filter
       - deploy:
           requires:
             - build
-        #  filters: *only_master_filter
+         filters: *only_master_filter
