@@ -159,4 +159,4 @@ workflows:
       - deploy:
           requires:
             - build
-         filters: *only_master_filter
+          filters: *only_master_filter
