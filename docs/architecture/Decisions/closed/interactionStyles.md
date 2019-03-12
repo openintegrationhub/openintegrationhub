@@ -16,7 +16,7 @@ _Question: Which interaction styles should be supported by the Open Integration 
 
 Graphical overview:
 <p align="center">
-  <img src="../../SmartDataFramework/Assets/InteractionStylesV2.0.png" alt="Sublime's custom image" width="500" heigth=700/>
+  <img src="../../assets/InteractionStylesV2.0.png" alt="Sublime's custom image" width="500" heigth=700/>
 </p>
 
 ## Usecase 1: Message sent from ISV application to OIH
