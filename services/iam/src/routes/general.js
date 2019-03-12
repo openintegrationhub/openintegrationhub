@@ -103,10 +103,19 @@ router.post('/context', authMiddleware.validateAuthentication,
 
     });
 
-router.post('/logout', (req, res) => {
+router.post('/logout', authMiddleware.validateAuthentication, async (req, res) => {
+
+    const accountId = req.user.userid;
+
     req.logout();
     res.clearCookie(CONF.jwt.cookieName);
     res.send({ loggedOut: true });
+
+    try {
+        await TokenUtils.deleteSessionToken({ accountId });
+    } catch (e) {
+        logger.error('Failed to delete session token');
+    }
 });
 
 module.exports = router;

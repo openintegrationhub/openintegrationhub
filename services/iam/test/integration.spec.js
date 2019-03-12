@@ -47,6 +47,8 @@ describe('routes', () => {
     
     describe('General Routes', () => {
 
+        let tempLoginToken = '';
+
         test('login successful', async () => {
             const jsonPayload = {
                 username: conf.accounts.admin.username,
@@ -55,8 +57,8 @@ describe('routes', () => {
             const response = await request.post('/login')
                 .send(jsonPayload)
                 .set('Accept', /application\/json/)
-                .expect(200); 
-            tokenAdmin = `Bearer ${response.body.token}`;
+                .expect(200);
+            tempLoginToken = `Bearer ${response.body.token}`;
             
         });
 
@@ -86,13 +88,6 @@ describe('routes', () => {
     
         });
 
-        test('logout is successful', async () => {
-            await request.post('/logout')
-                .set('Accept', /application\/json/)
-                .expect(200);
-    
-        });
-
         test('get redirect for error call', async () => {
             await request.get('/')
                 .set('Accept', 'text/html')
@@ -106,6 +101,49 @@ describe('routes', () => {
             // expect(response.body).toBe(0);
     
         });
+
+        test('logout is successful', async () => {
+
+            const testUserData = {
+                'username': 'logout@basaas.com',
+                'firstname': 'blubb',
+                'lastname': 'blubb',
+                'status': 'ACTIVE',
+                'password': 'blubb',
+                'role': CONSTANTS.ROLES.USER,
+            };
+
+            await request.post('/api/v1/users')
+                .send(testUserData)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            const response = await request.post('/login')
+                .send({
+                    username: testUserData.username,
+                    password: testUserData.password,
+                })
+                .set('Accept', /application\/json/)
+                .expect(200);
+            tempLoginToken = `Bearer ${response.body.token}`;
+
+            await request.get('/api/v1/users/me')
+                .set('Authorization', tempLoginToken)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            await request.post('/logout')
+                .set('Accept', /application\/json/)
+                .set('Authorization', tempLoginToken)
+                .expect(200);
+
+            await request.get('/api/v1/users/me')
+                .set('Authorization', tempLoginToken)
+                .set('Accept', /application\/json/)
+                .expect(401);
+        });
+
     });
 
     describe('Integration between all Routes', () => {
