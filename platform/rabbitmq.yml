@@ -18,7 +18,7 @@ spec:
   selector:
     app: rabbitmq
   sessionAffinity: None
-  type: ClusterIP
+  type: NodePort
 ---
 kind: Deployment
 apiVersion: apps/v1

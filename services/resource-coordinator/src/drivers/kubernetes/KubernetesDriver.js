@@ -15,15 +15,20 @@ class KubernetesDriver extends BaseDriver {
 
     async createApp(flow, node, envVars) {
         this._logger.info({flow: flow.id}, 'Going to deploy job to k8s');
-        const env = this._prepareEnvVars(flow, node, envVars);
-        const nodeSecret = await this._ensureFlowNodeSecret(flow, node, env);
-        const descriptor = this._buildDescriptor(flow, node, nodeSecret);
-        this._logger.trace(descriptor, 'going to deploy a job to k8s');
         try {
-            await this._batchClient.jobs.post({body: descriptor});
+            const env = this._prepareEnvVars(flow, node, envVars);
+            const flowNodeSecret = await this._ensureFlowNodeSecret(flow, node, env);
+            await this._createRunningFlowNode(flow, node, flowNodeSecret);
         } catch (e) {
             this._logger.error(e, 'Failed to deploy the job');
         }
+    }
+
+    async _createRunningFlowNode(flow, node, flowNodeSecret) {
+        const descriptor = this._buildDescriptor(flow, node, flowNodeSecret);
+        this._logger.trace(descriptor, 'going to deploy a job to k8s');
+        const result = await this._batchClient.jobs.post({body: descriptor});
+        return new KubernetesRunningFlowNode(result.body);
     }
 
     async _ensureFlowNodeSecret(flow, node, secretEnvVars) {
@@ -33,18 +38,16 @@ class KubernetesDriver extends BaseDriver {
         }
 
         flowSecret.data = secretEnvVars;
-        await this._updateFlowNodeSecret(flowSecret);
-
-        return flowSecret;
+        return this._updateFlowNodeSecret(flowSecret);
     }
 
     async _updateFlowNodeSecret(flowSecret) {
-        const secretName = flowSecret.metadata.name;
+        const secretName = flowSecret.name;
         this._logger.debug({secretName}, 'About to update the secret');
-        await this._coreClient.secrets(secretName).put({
+        const response = await this._coreClient.secrets(secretName).put({
             body: flowSecret.toDescriptor()
         });
-        return flowSecret;
+        return new FlowSecret(response.body);
     }
 
     async _getFlowNodeSecret(flow, node) {
@@ -71,35 +74,25 @@ class KubernetesDriver extends BaseDriver {
         const flowSecret = new FlowSecret({
             metadata: {
                 name: secretName,
-                namespace: this._config.get('NAMESPACE'),
-                ownerReferences: [
-                    {
-                        apiVersion: 'elastic.io/v1',
-                        kind: 'Flow',
-                        controller: true,
-                        name: flow.id,
-                        uid: flow.metadata.uid
-                    }
-                ]
+                namespace: this._config.get('NAMESPACE')
             },
             data
         });
 
-        await this._coreClient.secrets.post({
+        const response = await this._coreClient.secrets.post({
             body: flowSecret.toDescriptor()
         });
-
         this._logger.debug('Secret has been created');
 
-        return flowSecret;
+        return new FlowSecret(response.body);
     }
 
-    async destroyApp(appId) {
+    async destroyApp(app) {
         //TODO wait until job really will be deleted
-        this._logger.info({name: appId}, 'going to undeploy job from k8s');
+        this._logger.info({name: app.name}, 'going to undeploy job from k8s');
         try {
             await this._batchClient.jobs.delete({
-                name: appId,
+                name: app.name,
                 body: {
                     kind: 'DeleteOptions',
                     apiVersion: 'batch/v1',
@@ -109,6 +102,20 @@ class KubernetesDriver extends BaseDriver {
         } catch (e) {
             if (e.statusCode !== 404) {
                 this._logger.error(e, 'failed to undeploy job');
+            }
+        }
+
+        await this._deleteFlowNodeSecret(app.flowId, app.nodeId);
+    }
+
+    async _deleteFlowNodeSecret(flowId, nodeId) {
+        try {
+            const secretName = this._getFlowNodeSecretName({id: flowId}, {id: nodeId});
+            this._logger.trace({secretName}, 'Deleting flow secret');
+            await this._coreClient.secrets(secretName).delete();
+        } catch (e) {
+            if (e.statusCode !== 404) {
+                this._logger.error(e, 'failed to delete secret');
             }
         }
     }
@@ -132,19 +139,9 @@ class KubernetesDriver extends BaseDriver {
                 name: appId,
                 namespace: this._config.get('NAMESPACE'),
                 annotations: {
-                    [KubernetesRunningFlowNode.ANNOTATION_KEY]: flow.metadata.resourceVersion,
                     flowId: flow.id,
                     nodeId: node.id
-                },
-                ownerReferences: [
-                    {
-                        apiVersion: 'elastic.io/v1',
-                        kind: 'Flow',
-                        controller: true,
-                        name: flow.metadata.name,
-                        uid: flow.metadata.uid
-                    }
-                ]
+                }
             },
             spec: {
                 template: {
