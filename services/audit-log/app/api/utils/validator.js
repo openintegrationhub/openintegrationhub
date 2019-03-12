@@ -15,16 +15,8 @@ ajv.addSchema(payloadSchema);
 const validator = ajv.compile(schema);
 
 const validate = async function (msg) { // eslint-disable-line
-  let message;
-  try {
-    message = JSON.parse(msg);
-  } catch (e) {
-    log.error('Received message that is not valid JSON');
-    log.error(e);
-    return false;
-  }
 
-  const valid = validator(message);
+  const valid = validator(msg);
 
   if (!valid) {
     log.error('Message format is not valid!');
@@ -34,7 +26,7 @@ const validate = async function (msg) { // eslint-disable-line
 
   try {
     log.info('Saving event to DB...');
-    await storage.addEvent(message);
+    await storage.addEvent(msg);
     log.info('Successfully Saved');
   } catch (error) {
     log.error('Save failed:');

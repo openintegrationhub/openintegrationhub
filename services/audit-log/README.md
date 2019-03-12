@@ -13,9 +13,9 @@ The OIH Audit Log serves to receive, store, and return logging information about
 Stored Logs can be retrieved by authorized users through a simple REST API. The Audit Log offers several functions to filter and search through the accumulated logs.
 
 ## Technical description
-The Audit Log receives messages either via POST or by publishing them to the appropriate RabbitMQ exchange and topic. Received logs will be stored in MongoDB instance. Retrieving logs can be done via a single GET endpoint with a variety of filters and options. See the provided Swagger-documentation for further information.
+The Audit Log receives messages either via POST or by publishing them to the appropriate RabbitMQ exchange and topic, using the OIH Event Bus. Received logs will be stored in MongoDB instance. Retrieving logs can be done via a single GET endpoint with a variety of filters and options. See the provided Swagger-documentation for further information.
 
-Incoming messages are expected to adhere to the specified OIH message format:
+Incoming message payload is expected to adhere to the specified OIH message format:
 ```json
 {
   "service": "string",
@@ -48,6 +48,8 @@ Messages will be validated against this format, and only stored if they are vali
 - Build (with `docker build . -t [IMAGENAME]`) or download the docker image
 - Run the image with `docker run --network="host" [IMAGENAME]`
 - If using the IAM middleware/features, set the environment variables to match those used by your IAM instance by using the `-e` option for `docker run`. For example: `docker run -e "INTROSPECT_ENDPOINT_BASIC=http://localhost:3099/api/v1/tokens/introspect" -t --network="host" [IMAGENAME]`
+
+The folder `examples` contains an example script that will publish a log event to a local RabbitMQ server, where a local instance of the Audit Log should be able to receive it.
 
 ## REST-API documentation
 

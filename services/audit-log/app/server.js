@@ -17,7 +17,8 @@ const swaggerDocument = require('./api/swagger/swagger.json');
 
 const log = require('./config/logger');
 
-const Receiver = require('./api/utils/receive.module.js');
+// const receiver = require('./api/utils/receive.module.js');
+const eventBus = require('./api/utils/eventBus.js');
 
 class Server {
   constructor() {
@@ -151,7 +152,8 @@ class Server {
     log.info('Establishing connection to queue...');
 
     try {
-      Receiver.connect();
+      // receiver.connect();
+      eventBus.connectQueue();
     } catch (error) {
       log.error(error);
     }

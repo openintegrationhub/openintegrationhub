@@ -41,7 +41,7 @@ class HttpApi {
             if (!flow) {
                 throw new errors.ResourceNotFoundError('Flow is not found');
             }
-            const node = flow.getRecipeNodeByStepId(req.params.stepId);
+            const node = await flow.getNodeById(req.params.stepId);
             if (!node) {
                 throw new errors.ResourceNotFoundError('Node is not found');
             }

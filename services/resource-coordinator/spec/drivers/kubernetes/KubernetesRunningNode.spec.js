@@ -15,8 +15,8 @@ describe('KubernetesRunningNode', () => {
                 metadata: {
                     name: 'Test node 1',
                     namespace: 'test-namespace',
+                    uid: 'my-awesome-uid',
                     annotations: {
-                        [KubernetesRunningNode.ANNOTATION_KEY]: '1.0.1',
                         flowId: 'flow1',
                         nodeId: 'step_1'
                     },
@@ -46,6 +46,9 @@ describe('KubernetesRunningNode', () => {
                                         name: 'secret-name'
                                     }
                                 }],
+                                env: [
+                                    {name: 'MY_ENV', value: 'my-secret-value'}
+                                ],
                                 resources: {}
                             }]
                         }
@@ -66,8 +69,30 @@ describe('KubernetesRunningNode', () => {
             expect(rn.nodeId).to.equal('step_1');
         });
 
-        it('flowVersion', () => {
-            expect(rn.flowVersion).to.equal('1.0.1');
+        it('name', () => {
+            expect(rn.name).to.equal('Test node 1');
+        });
+
+        it('uid', () => {
+            expect(rn.uid).to.equal('my-awesome-uid');
+        });
+
+        it('kind', () => {
+            expect(rn.kind).to.equal('Job');
+        });
+
+        it('apiVersion', () => {
+            expect(rn.apiVersion).to.equal('batch/v1');
+        });
+
+        describe('#getEnvVar', () => {
+            it('should return env var', () => {
+                expect(rn.getEnvVar('MY_ENV')).to.equal('my-secret-value');
+            });
+
+            it('should return null if not found', () => {
+                expect(rn.getEnvVar('NOT_EXISTS')).to.be.null;
+            });
         });
     });
 });

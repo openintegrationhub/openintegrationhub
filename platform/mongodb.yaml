@@ -14,7 +14,7 @@ spec:
   selector:
     app: mongodb
   sessionAffinity: None
-  type: ClusterIP
+  type: NodePort
 ---
 kind: Deployment
 apiVersion: apps/v1
