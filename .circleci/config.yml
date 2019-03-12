@@ -102,6 +102,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/flow-repository
     steps: *yarn_test_steps
+  audit-log-test:
+    docker: *node_env
+    working_directory: ~/oih/services/audit-log
+    steps: *yarn_test_steps
 workflows:
   pipeline:
     jobs:
@@ -124,6 +128,9 @@ workflows:
       - flow-repository-test:
           requires:
             - deps
+      - audit-log-test:
+          requires:
+            - deps
       - lib-backend-commons-lib-test:
           requires:
             - deps
@@ -144,6 +151,7 @@ workflows:
             - scheduler-test
             - secret-service-test
             - flow-repository-test
+            - audit-log-test
       - build:
           requires:
             - test

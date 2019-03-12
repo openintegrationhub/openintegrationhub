@@ -29,7 +29,7 @@ It is not possible to request missing transformation from SDF.
 It is possible to request missing information from Open Integration Hub.
 
 <p align="center">
-  <img src="../../SmartDataFramework/Assets/RequestInformationConnector.png" alt="Sublime's custom image" width="500" heigth=700/>
+  <img src="../../assets/RequestInformationConnector.png" alt="Sublime's custom image" width="500" heigth=700/>
 </p>
 
 ### Consequences
