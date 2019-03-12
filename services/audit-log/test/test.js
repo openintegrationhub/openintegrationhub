@@ -88,9 +88,9 @@ beforeAll(async () => {
   await mainServer.setup(mongoose);
   app = mainServer.listen();
   // Pass on messages to the validator as if they had been received by the receive module
-  await validator.validate(JSON.stringify(log1));
-  await validator.validate(JSON.stringify(log2));
-  await validator.validate(JSON.stringify(invalidSchema));
+  await validator.validate(log1);
+  await validator.validate(log2);
+  await validator.validate(invalidSchema);
 });
 
 afterAll(async () => {
