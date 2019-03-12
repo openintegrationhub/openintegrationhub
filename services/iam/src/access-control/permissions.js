@@ -16,6 +16,7 @@ const PERMISSIONS = {
 
         'iam.key.create': 'iam.key.create',
         'iam.key.read': 'iam.key.read',
+        'iam.key.delete': 'iam.key.delete',
 
         'iam.account.create': 'iam.account.create',
         'iam.account.read': 'iam.account.read',

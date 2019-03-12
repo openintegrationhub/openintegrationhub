@@ -208,7 +208,7 @@ class App {
             });
             await serviceaccount.setPassword(conf.accounts.serviceAccount.password);
             await serviceaccount.save();
-            log.info('Initial db setup done');
+            log.debug('Initial db setup done');
         } 
     }
 

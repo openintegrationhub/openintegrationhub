@@ -8,6 +8,7 @@ const CONF = require('./../conf');
 const CONSTANTS = require('./../constants');
 const auth = require('./../util/auth');
 const UserDAO = require('../dao/accounts');
+const TokenDAO = require('../dao/tokens');
 const { RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/user`, {
@@ -143,6 +144,7 @@ router.delete('/:id/tenant/:tenantId', auth.paramsMatchesUserId, async (req, res
 router.delete('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
     try {
         await UserDAO.delete({ id: req.params.id });
+        await TokenDAO.deleteAllAccountTokens({ accountId: req.params.id });
         return res.sendStatus(200);
     } catch (err) {
         log.error(err);

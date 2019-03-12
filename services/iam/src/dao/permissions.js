@@ -40,7 +40,7 @@ const PermissionsDAO = {
             _id: id,
         }, { $set: props });
 
-        log.info('updated.permission', { id, props });
+        log.debug('updated.permission', { id, props });
         auditLog.info('update.permission', { data: props, id });
 
     },

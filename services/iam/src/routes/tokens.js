@@ -89,7 +89,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
 router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspect']]), async (req, res, next) => {
 
     try {
-        log.info('token.introspect', {
+        log.debug('token.introspect', {
             data: {
                 token: req.body.token,
                 'x-request-id': req.headers['x-request-id'],

@@ -102,7 +102,7 @@ module.exports = {
             return null;
         }
 
-        log.info(`fetching account data for id ${existingToken.accountId}`);
+        log.debug(`fetching account data for id ${existingToken.accountId}`);
         const AccountData = await AccountsDAO.findOne({
             _id: existingToken.accountId,
         });
@@ -116,5 +116,9 @@ module.exports = {
         return AccountData;
 
     },
+
+    deleteSessionToken: async ({ accountId }) => TokensDAO.deleteSessionToken({
+        accountId,
+    }),
 
 };
