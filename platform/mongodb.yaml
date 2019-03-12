@@ -4,7 +4,7 @@ metadata:
   labels:
     app: mongodb-service
   name: mongodb-service
-  namespace: platform
+  namespace: oih-dev-ns
 spec:
   ports:
     - name: '27017'
@@ -20,7 +20,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: mongodb
-  namespace: platform
+  namespace: oih-dev-ns
   labels:
     app: mongodb
 spec:
