@@ -4,7 +4,7 @@ metadata:
   labels:
     app: rabbitmq-service
   name: rabbitmq-service
-  namespace: platform
+  namespace: oih-dev-ns
 spec:
   ports:
     - name: '5672'
@@ -24,7 +24,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: rabbitmq
-  namespace: platform
+  namespace: oih-dev-ns
   labels:
     app: rabbitmq
 spec:
