@@ -9,7 +9,7 @@
     "test": "jest --runInBand",
     "lint_fix": "eslint app test --fix",
     "build": "echo \"No Build defined\"",
-    "build:docker": "docker build -t openintegrationhub/audit-log:${VERSION} -f Dockerfile ."
+    "build:docker": "docker build -t openintegrationhub/audit-log -f Dockerfile ../../"
   },
   "dependencies": {
     "@openintegrationhub/event-bus": "*",

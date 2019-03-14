@@ -30,7 +30,7 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: integration-content-repository
+          serviceName: flow-repository
           servicePort: 3001
   - host: auditlog.openintegrationhub.com
     http:
