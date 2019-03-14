@@ -13,6 +13,7 @@ WORKDIR /usr/src/app
 
 # use changes to package.json to force Docker not to use cache
 COPY package.json /usr/src/app
+COPY lib/event-bus lib/event-bus
 
 RUN npm install --only=prod
 

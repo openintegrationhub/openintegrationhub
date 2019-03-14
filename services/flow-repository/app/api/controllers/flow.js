@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../../config/index');
+const { publishQueue } = require('../../utils/eventBus');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
@@ -154,6 +155,28 @@ router.post('/', jsonParser, async (req, res) => {
   if (!res.headersSent) {
     try {
       const response = await storage.addFlow(storeFlow);
+
+      const ev = {
+        headers: {
+          name: 'audit.flowCreated',
+        },
+        payload: {
+          service: 'flow-repository',
+          timeStamp: timestamp,
+          nameSpace: 'oih-dev-ns',
+          payload: {
+            tenant: (credentials[1] ? credentials[1] : ''),
+            source: credentials[0],
+            object: 'flow',
+            action: 'createFlow',
+            subject: response._id,
+            details: `A new flow with the id ${response._id} was created`,
+          },
+        },
+      };
+
+      await publishQueue(ev);
+
       return res.status(201).send(response);
     } catch (err) {
       log.error(err);
