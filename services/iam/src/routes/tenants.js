@@ -220,4 +220,13 @@ router.get('/:id/key/', auth.can([RESTRICTED_PERMISSIONS['iam.key.read']]), asyn
     }
 });
 
+router.delete('/:id/key/', auth.can([RESTRICTED_PERMISSIONS['iam.key.delete']]), async (req, res, next) => {
+    try {
+        await KeyDAO.deleteByTenant(req.params.id);
+        res.sendStatus(200);
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

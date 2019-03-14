@@ -7,7 +7,9 @@ const {
 const FlowsDao = require('./FlowsDao');
 const MessagePublisher = require('./MessagePublisher');
 const { RequestHandlers, HttpApi } = require('@openintegrationhub/webhooks');
-const { asValue, asClass } = require('awilix');
+const { asValue, asClass, asFunction } = require('awilix');
+const mongoose = require('mongoose');
+const { RabbitMqTransport, EventBus } = require('@openintegrationhub/event-bus');
 
 class CommunicationRouterApp extends App {
     async _run () {
@@ -15,21 +17,33 @@ class CommunicationRouterApp extends App {
         const config = container.resolve('config');
         const logger = container.resolve('logger');
         const amqp = container.resolve('amqp');
-        const k8s = container.resolve('k8s');
-
         await amqp.start();
-        await k8s.start();
         const channel = await amqp.getConnection().createChannel();
         const queueCreator = new QueueCreator(channel);
+        await mongoose.connect(config.get('MONGODB_URI'), {useNewUrlParser: true});
 
         container.register({
             channel: asValue(channel),
             queueCreator: asValue(queueCreator),
-            crdClient: asValue(k8s.getCRDClient()),
             flowsDao: asClass(FlowsDao),
             messagePublisher: asClass(MessagePublisher),
-            httpApi: asClass(HttpApi).singleton()
+            httpApi: asClass(HttpApi).singleton(),
+            transport: asClass(RabbitMqTransport, {
+                injector: () => ({rabbitmqUri: config.get('RABBITMQ_URI')})
+            }),
+            eventBus: asClass(EventBus, {
+                injector: () => ({serviceName: this.constructor.NAME})
+            }).singleton(),
         });
+
+        container.loadModules(['./src/event-handlers/**/*.js'], {
+            formatName: 'camelCase',
+            resolverOptions: {
+                register: asFunction
+            }
+        });
+
+        await container.resolve('eventHandlers').connect();
 
         const httpApi = container.resolve('httpApi');
         const messagePublisher = container.resolve('messagePublisher');

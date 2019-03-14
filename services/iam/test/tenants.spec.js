@@ -10,7 +10,6 @@ const CONSTANTS = require('./../src/constants');
 let conf = null;
 
 describe('Tenant Routes', () => {
-    console.log(process.env.DEBUG);
     let TenantID = null;
     const tenantKey = 'sshhhhhh';
     // Token will be set via Login and is valid 3h
@@ -77,6 +76,17 @@ describe('Tenant Routes', () => {
         const { body } = await request.get(`/api/v1/tenants/${TenantID}/key`)
             .set('Authorization', tokenAdmin);
         expect(body.key).toEqual(tenantKey);
+    });
+
+    test('delete tenant key', async () => {
+
+        await request.delete(`/api/v1/tenants/${TenantID}/key`)
+            .set('Authorization', tokenAdmin)
+            .expect(200);
+
+        const { body } = await request.get(`/api/v1/tenants/${TenantID}/key`)
+            .set('Authorization', tokenAdmin);
+        expect(body.key).toEqual(null);
     });
 
     // test('create tenant fails for wrong or missing request body', async () => {

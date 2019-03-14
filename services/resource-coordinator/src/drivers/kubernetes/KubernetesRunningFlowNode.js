@@ -7,29 +7,44 @@ class KubernetesRunningFlowNode extends RunningFlowNode {
         this._app = app;
     }
 
+    get uid() {
+        return this.getMetadataValue('uid')
+    }
+
+    get kind() {
+        return this.getRootValue('kind');
+    }
+
+    get apiVersion() {
+        return this.getRootValue('apiVersion');
+    }
+
+    get name() {
+        return this.getMetadataValue('name');
+    }
+
     getId() {
-        return this._getMetadataValue('name');
+        return this.getMetadataValue('name');
     }
 
     getFlowId() {
-        return this._getAnnotationsValue('flowId');
+        return this.getAnnotationsValue('flowId');
     }
 
     getNodeId() {
-        return this._getAnnotationsValue('nodeId');
+        return this.getAnnotationsValue('nodeId');
     }
 
-    // @todo: not sure yet if we need to expose this API
-    get flowVersion() {
-        return _.get(this._getMetadataValue('annotations'), this.constructor.ANNOTATION_KEY);
-    }
-
-    _getAnnotationsValue(key) {
+    getAnnotationsValue(key) {
         return _.get(this, `_app.metadata.annotations.${key}`);
     }
 
-    _getMetadataValue(key) {
+    getMetadataValue(key) {
         return _.get(this, `_app.metadata.${key}`);
+    }
+
+    getRootValue(key) {
+        return _.get(this, `_app.${key}`);
     }
 
     _getContainerSpec() {
@@ -40,16 +55,12 @@ class KubernetesRunningFlowNode extends RunningFlowNode {
         return _.get(this._getContainerSpec(), 'env', []);
     }
 
-    _getEnvVar(name) {
+    getEnvVar(name) {
         const pair = this._getContainerEnv().find(pair => pair.name === name);
         if (!pair) {
             return null;
         }
         return pair.value;
-    }
-
-    static get ANNOTATION_KEY() {
-        return 'annotation.flows.elastic.io';
     }
 }
 
