@@ -2,7 +2,7 @@ const bunyan = require('bunyan');
 const mongoose = require('mongoose');
 const config = require('../../config/index');
 const log = require('../../config/logger');
-const { EventBus, RabbitMqTransport } = require('../../../../../lib/event-bus');
+const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
 const { validate } = require('./validator');
 
 const logger = bunyan.createLogger({ name: 'auditlogs' });

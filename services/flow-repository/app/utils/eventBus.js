@@ -1,7 +1,7 @@
 const bunyan = require('bunyan');
 const config = require('../config/index');
 const log = require('../config/logger');
-const { EventBus, RabbitMqTransport, Event } = require('../../../../lib/event-bus');
+const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/event-bus');
 const { flowStarted, flowStopped } = require('./handlers');
 
 const logger = bunyan.createLogger({ name: 'events' });
