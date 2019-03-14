@@ -5,6 +5,6 @@
     "DEFAULT_MEM_REQUEST": "256Mi",
     "LISTEN_PORT": 1234,
     "NAMESPACE": "flows",
-    "SELF_API_URI": "http://api-service.platform.svc.cluster.local:1234",
+    "SELF_API_URI": "http://api-service.oih-dev-ns.svc.cluster.local:1234",
     "TICK_INTERVAL": 10000
 }
