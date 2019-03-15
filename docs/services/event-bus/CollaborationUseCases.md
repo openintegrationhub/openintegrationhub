@@ -153,7 +153,7 @@ The following example shows the message format of Webhooks messages:
 }
 ```
 
-![webhookPost](assets/ExecuteWebhookFlowGET.png)
+![webhookPost](assets/ExecuteWebhookFlowPost.png)
 
 ### GET Request
 
@@ -177,7 +177,7 @@ The following example shows the message format of Webhooks messages:
 
 An examplary webhook GET request could look like the following: `GET /hook/<flow-id>?param1=value&param2=value`
 
-![webhookPost](assets/ExecuteWebhookFlowPost.png)
+![webhookPost](assets/ExecuteWebhookFlowGET.png)
 
 ### Healtcheck Request
 
