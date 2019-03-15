@@ -146,15 +146,15 @@ Once Webhooks receives a GET request it takes the url parameters and request hea
 
 The following example shows the message format of Webhooks messages:
 
-```json
+```js
 {
   "headers": {
-    <GET request headers>
+    //GET request headers
   },
   "body": {
-    <GET request query string parameters>
+    //GET request query string parameters
   },
-  <other properties>
+  //other properties
 }
 ```
 
