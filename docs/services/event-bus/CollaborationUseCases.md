@@ -125,6 +125,27 @@ Upon receiving the `flow.stopping` event, the service deletes the record for the
 
 As described in [scheduler section](#scheduler) when a flow is started the service starts scheduling the flow executions. Once the scheduler finds a flow that is ready for execution it pushed a message including the relating flow ID to the queue. The recipient is the first node of the flow which is the application specific adapter. This adapter then makes a GET request to the aplications API to get the payload. Afterwards it pushes the message including the payload onto the queue.
 
+The message format of the messages emitted by scheduler have the following structure:
+
+```js
+
+{
+    "id" : //some record uuid,
+    "attachments":{
+        //empty
+    },
+    "body": {
+        //empty
+    },
+    "headers": {
+        //empty
+    },
+    "metadata": {
+        //empty
+    }
+}
+```
+
 ![webhookPost](assets/ExecutePollingFlow.png)
 
 ## Execute Webhook Flow
