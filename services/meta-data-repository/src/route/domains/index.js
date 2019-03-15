@@ -145,6 +145,19 @@ router.post('/:id/schemas', async (req, res, next) => {
     }
 });
 
+// bulk upload
+
+router.post('/:id/schemas/import', async (req, res, next) => {
+    try {
+        res.sendStatus(200);
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 400,
+        });
+    }
+});
+
 // router.put('/:id/schemas/:uri', async (req, res, next) => {
 //     try {
 //         res.send({
