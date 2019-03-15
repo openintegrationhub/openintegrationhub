@@ -1,8 +1,30 @@
+
+
+---
+
+**Creator:** Philipp ([philecs](https://github.com/philecs)), Cloud Ecosystem e.V. <br>
+**Last revised by:** - <br>
+**Last update:** 15-03-2019
+
+---
+
 # Introduction
 
 This document is designed to describe different service collaboration use cases.
 
 Each use case is described through a graphical overview, a textual description and pre-conditions.
+
+- [Introduction](#introduction)
+  - [Starting a flow](#starting-a-flow)
+    - [Detailed Service Consideration](#detailed-service-consideration)
+      - [Flow repository](#flow-repository)
+      - [Webhooks](#webhooks)
+      - [Scheduler](#scheduler)
+  - [Execute Polling Flow](#execute-polling-flow)
+  - [Execute Webhook Flow](#execute-webhook-flow)
+    - [POST Request](#post-request)
+    - [GET Request](#get-request)
+    - [Healtcheck Request](#healtcheck-request)
 
 ## Starting a flow
 
