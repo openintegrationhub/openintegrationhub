@@ -136,6 +136,23 @@ As described in [scheduler section](#scheduler) when a flow is started the servi
 Once Webhooks receives a GET request it pushes the message to the queue. The recipient is the first node of the flow which is the application specific adapter.
 In contrast to the GET request, this request already includes the payload.
 
+The following example shows the message format of Webhooks messages:
+
+```js
+{
+  "headers": {
+    //GET request headers
+  },
+  "query": {
+    //POST request query parameters
+  },
+  "body": {
+    //POST request body
+  },
+  //other properties
+}
+```
+
 ![webhookPost](assets/ExecuteWebhookFlowGET.png)
 
 ### GET Request
