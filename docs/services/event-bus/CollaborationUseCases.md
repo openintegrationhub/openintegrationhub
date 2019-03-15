@@ -121,6 +121,8 @@ Upon receiving the `flow.stopping` event, the service deletes the record for the
 
 ## Execute Polling Flow
 
+**Pre-Conditions:** Starting a flow.
+
 As described in [scheduler section](#scheduler) when a flow is started the service starts scheduling the flow executions. Once the scheduler finds a flow that is ready for execution it pushed a message including the relating flow ID to the queue. The recipient is the first node of the flow which is the application specific adapter. This adapter then makes a GET request to the aplications API to get the payload. Afterwards it pushes the message including the payload onto the queue.
 
 ![webhookPost](assets/ExecutePollingFlow.png)
