@@ -1,3 +1,4 @@
+const path = require('path');
 const { optional, required } = require('./check-env');
 const { version, name } = require('../../package.json');
 
@@ -6,6 +7,7 @@ module.exports = {
     baseUrl: optional('BASE_URL', 'http://localhost'),
     apiBase: optional('API_BASE', '/api/v1'),
     userAuthType: optional('AUTH_TYPE', 'basic'),
+    importFilePath: path.resolve(optional('IMPORT_FILE_PATH', 'temp')),
     iam: {
         apiBase: optional('IAM_API_BASE', 'http://iam.openintegrationhub.com/api/v1'),
         introspectType: optional('INTROSPECT_TYPE', 'basic'),

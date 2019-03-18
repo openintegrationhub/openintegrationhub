@@ -1,5 +1,9 @@
 const express = require('express');
 const logger = require('@basaas/node-logger');
+const multer = require('multer');
+const uuid = require('uuid');
+const path = require('path');
+const mkdirp = require('mkdirp');
 
 const conf = require('../../conf');
 const { USER } = require('../../constant').ENTITY_TYPE;
@@ -11,6 +15,21 @@ const { transformSchema, validateSchema, URIfromId } = require('../../transform'
 const log = logger.getLogger(`${conf.logging.namespace}/domains`);
 
 const router = express.Router();
+
+// create upload path
+mkdirp.sync(conf.importFilePath);
+
+// SET STORAGE
+const storage = multer.diskStorage({
+    destination(req, file, cb) {
+        cb(null, conf.importFilePath);
+    },
+    filename(req, file, cb) {
+        cb(null, `${uuid.v4()}-${file.originalname}`);
+    },
+});
+
+const upload = multer({ storage });
 
 // GET
 // /domains/{domainId}
@@ -147,8 +166,12 @@ router.post('/:id/schemas', async (req, res, next) => {
 
 // bulk upload
 
-router.post('/:id/schemas/import', async (req, res, next) => {
+router.post('/:id/schemas/import', upload.single('zip'), async (req, res, next) => {
     try {
+        const file = req.file;
+        if (!file) {
+            throw (new Error('No file submitted'));
+        }
         res.sendStatus(200);
     } catch (err) {
         log.error(err);

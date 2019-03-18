@@ -42,3 +42,5 @@ basaas-queue.json
 certs/
 
 clients.json
+
+temp/

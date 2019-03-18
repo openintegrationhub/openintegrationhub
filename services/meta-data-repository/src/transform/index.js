@@ -122,6 +122,7 @@ module.exports = {
         }
         return copy;
     },
+
     resolveRelativePath,
     transformURI,
     URIfromId,
