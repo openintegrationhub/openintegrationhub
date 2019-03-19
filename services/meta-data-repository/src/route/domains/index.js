@@ -4,6 +4,7 @@ const multer = require('multer');
 const uuid = require('uuid');
 const path = require('path');
 const mkdirp = require('mkdirp');
+const fs = require('fs-extra');
 
 const conf = require('../../conf');
 const { USER } = require('../../constant').ENTITY_TYPE;
@@ -11,6 +12,7 @@ const { DomainDAO, SchemaDAO } = require('../../dao');
 const { isOwnerOfDomain } = require('../../middleware/is-owner');
 const Pagination = require('../../util/pagination');
 const { transformSchema, validateSchema, URIfromId } = require('../../transform');
+const { processArchive } = require('../../bulk');
 
 const log = logger.getLogger(`${conf.logging.namespace}/domains`);
 
@@ -21,11 +23,13 @@ mkdirp.sync(conf.importFilePath);
 
 // SET STORAGE
 const storage = multer.diskStorage({
-    destination(req, file, cb) {
-        cb(null, conf.importFilePath);
+    async destination(req, file, cb) {
+        const dest = `${conf.importFilePath}/${uuid.v4()}`;
+        await fs.ensureDir(dest);
+        cb(null, dest);
     },
     filename(req, file, cb) {
-        cb(null, `${uuid.v4()}-${file.originalname}`);
+        cb(null, file.originalname);
     },
 });
 
@@ -110,6 +114,22 @@ router.post('/', async (req, res, next) => {
 });
 
 // schema
+router.get('/:id/schemas', async (req, res) => {
+    const pagination = new Pagination(
+        req.originalUrl,
+        SchemaDAO,
+        req.user.sub,
+    );
+    res.send({
+        data: await SchemaDAO.findByEntityWithPagination(
+            req.user.sub,
+            pagination.props(),
+        ),
+        meta: {
+            ...await pagination.calc(),
+        },
+    });
+});
 
 router.get('/:id/schemas/:uri', async (req, res, next) => {
     try {
@@ -131,6 +151,7 @@ router.get('/:id/schemas/:uri', async (req, res, next) => {
         });
     }
 });
+
 
 router.post('/:id/schemas', async (req, res, next) => {
     const { data } = req.body;
@@ -167,11 +188,25 @@ router.post('/:id/schemas', async (req, res, next) => {
 
 // bulk upload
 
-router.post('/:id/schemas/import', upload.single('zip'), async (req, res, next) => {
+router.post('/:id/schemas/import', upload.single('archive'), async (req, res, next) => {
     try {
         const file = req.file;
         if (!file) {
             throw (new Error('No file submitted'));
+        } else {
+            const transformedSchemas = await processArchive(file.path);
+            for (const schema of transformedSchemas) {
+                await SchemaDAO.createUpdate({
+                    name: 'foo',
+                    uri: URIfromId(schema.schema.$id),
+                    value: JSON.stringify(schema.schema),
+                    refs: schema.backReferences,
+                    owners: {
+                        id: req.user.sub.toString(),
+                        type: USER,
+                    },
+                });
+            }
         }
         res.sendStatus(200);
     } catch (err) {
@@ -179,6 +214,10 @@ router.post('/:id/schemas/import', upload.single('zip'), async (req, res, next) 
         next({
             status: 400,
         });
+    } finally {
+        if (req.file) {
+            await fs.remove(req.file.destination);
+        }
     }
 });
 

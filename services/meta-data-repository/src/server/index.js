@@ -39,7 +39,7 @@ module.exports = class Server {
 
         apiBase.use((req, res, next) => {
             if (req.connection.remoteAddress === req.connection.localAddress) {
-                if (req.method === 'GET' && req.originalUrl.match('schema')) {
+                if (req.method === 'GET' && req.originalUrl.match(/schemas.+/)) {
                     return next();
                 }
             }

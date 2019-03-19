@@ -1,19 +1,15 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
-const JSZip = require('jszip');
 const path = require('path');
-const readdirp = require('readdirp');
-const fs = require('fs');
 
 const conf = require('../../conf');
+const { pack } = require('../../packing');
 const iamMock = require('../../../test/iamMock');
 const Server = require('../../server');
 
 let port;
 let request;
 let server;
-
-const zipFile = 'temp.zip';
 
 describe('import', () => {
     beforeAll(async () => {
@@ -33,7 +29,7 @@ describe('import', () => {
         await server.stop();
     });
 
-    test('Bulk upload - zip', async (done) => {
+    test('Bulk upload - no media', async () => {
         const domain = {
             name: 'test',
             description: 'bar',
@@ -48,36 +44,85 @@ describe('import', () => {
 
         const domain_ = result;
 
+        await request.post(`/domains/${domain_.data._id}/schemas/import`)
+            .set(...global.user1)
+            .expect(400);
+    });
+
+    test('Bulk upload - zip', async () => {
+        const domain = {
+            name: 'test',
+            description: 'bar',
+            public: true,
+        };
+
+        // create a domain
+        let result = (await request.post('/domains')
+            .set(...global.user1)
+            .send({ data: domain })
+            .expect(200)).body;
+
+        const domain_ = result;
+
         // create zip file
+        // create archive
+        const src = path.resolve(__dirname, '../../../test/data/valid');
+        const packDest = path.resolve(__dirname, '../../test-temp/temp.zip');
 
-        const zip = new JSZip();
+        // pack
+        await pack(
+            'zip',
+            src,
+            packDest,
+        );
 
-        readdirp({ root: path.resolve(__dirname, '../../../test/data/valid'), fileFilter: '*.json' }, async (err, res) => {
-            for (const file of res.files) {
-                zip.file(file.path, fs.readFileSync(file.fullPath));
-            }
+        await request.post(`/domains/${domain_.data._id}/schemas/import`)
+            .set(...global.user1)
+            .attach('archive', packDest)
+            .expect(200);
 
-            zip
-                .generateNodeStream({ streamFiles: true })
-                .pipe(fs.createWriteStream(path.resolve(__dirname, '../../../test', zipFile)))
-                .on('finish', async () => {
-                    await request.post(`/domains/${domain_.data._id}/schemas/import`)
-                        .set(...global.user1)
-                        .set('content-type', 'application/zip')
-                        .attach('zip', path.resolve(__dirname, '../../../test', zipFile))
-                        .expect(200);
-                    done();
-                });
+        result = (await request.get(`/domains/${domain_.data._id}/schemas`)
+            .set(...global.user1)
+            .expect(200)).body;
 
-            // const content = await zip.generateAsync({ type: 'nodebuffer' });
+        expect(result.meta.total).toEqual(20);
+    });
 
-            // const wstream = fs.createWriteStream('foo.zip');
-            // // creates random Buffer of 100 bytes
+    test('Bulk upload - tgz', async () => {
+        const domain = {
+            name: 'test',
+            description: 'bar',
+            public: true,
+        };
 
-            // wstream.write(content);
-            // wstream.end();
+        // create a domain
+        let result = (await request.post('/domains')
+            .set(...global.user1)
+            .send({ data: domain })
+            .expect(200)).body;
 
-            // console.log(content);
-        });
+        const domain_ = result;
+
+        // create archive
+        const src = path.resolve(__dirname, '../../../test/data/valid');
+        const packDest = path.resolve(__dirname, '../../test-temp/temp.tgz');
+
+        // pack
+        await pack(
+            'tgz',
+            src,
+            packDest,
+        );
+
+        await request.post(`/domains/${domain_.data._id}/schemas/import`)
+            .set(...global.user1)
+            .attach('archive', packDest)
+            .expect(200);
+
+        result = (await request.get(`/domains/${domain_.data._id}/schemas`)
+            .set(...global.user1)
+            .expect(200)).body;
+
+        expect(result.meta.total).toEqual(20);
     });
 });
