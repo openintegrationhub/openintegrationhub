@@ -248,7 +248,7 @@ router.patch('/:id', jsonParser, async (req, res) => {
 router.get('/:id', jsonParser, async (req, res) => {
   const flowId = req.params.id;
   const credentials = res.locals.credentials[1];
-  let response;
+  let flow;
 
   if (!mongoose.Types.ObjectId.isValid(flowId)) {
     return res.status(400).send('Invalid id');
@@ -259,15 +259,19 @@ router.get('/:id', jsonParser, async (req, res) => {
   }
 
   if (res.locals.admin) {
-    response = await storage.getAnyFlowById(flowId);
+    flow = await storage.getAnyFlowById(flowId);
   } else {
-    response = await storage.getFlowById(flowId, credentials);
+    flow = await storage.getFlowById(flowId, credentials);
   }
 
   if (!res.headersSent) {
-    if (!response) {
-      res.status(404).send('No flows found');
+    if (!flow) {
+      res.status(404).send('No flow found');
     } else {
+      const response = {
+        data: flow,
+        meta: {},
+      };
       res.status(200).send(response);
     }
   }

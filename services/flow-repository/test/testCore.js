@@ -131,13 +131,13 @@ describe('Flow Operations', () => {
     const j = JSON.parse(res.text);
 
     expect(j).not.toBeNull();
-    expect(j.name).toEqual('WiceToSnazzy');
-    expect(j).toHaveProperty('id');
-    expect(j).toHaveProperty('graph');
-    expect(j.graph).toHaveProperty('nodes');
-    expect(j.graph).toHaveProperty('edges');
-    expect(j.owners[0].id).toEqual('TestAdmin');
-    expect(j.owners[0].type).toEqual('user');
+    expect(j.data.name).toEqual('WiceToSnazzy');
+    expect(j.data).toHaveProperty('id');
+    expect(j.data).toHaveProperty('graph');
+    expect(j.data.graph).toHaveProperty('nodes');
+    expect(j.data.graph).toHaveProperty('edges');
+    expect(j.data.owners[0].id).toEqual('TestAdmin');
+    expect(j.data.owners[0].type).toEqual('user');
   });
 
   test('should not show the flow to another users getAll', async () => {
@@ -157,7 +157,7 @@ describe('Flow Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('No flows found');
+    expect(res.text).toEqual('No flow found');
   });
 
   test('should return 400 when attempting to get an invalid id', async () => {
@@ -176,7 +176,7 @@ describe('Flow Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('No flows found');
+    expect(res.text).toEqual('No flow found');
   });
 
   test('should add a second flow', async () => {
@@ -413,6 +413,6 @@ describe('Cleanup', () => {
       .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('No flows found');
+    expect(res.text).toEqual('No flow found');
   });
 });
