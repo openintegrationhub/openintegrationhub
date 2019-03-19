@@ -101,8 +101,6 @@ describe('Role Routes', () => {
 
             // Fetch new token
             // tokenUser = `Bearer ${contextResponse.body.token}`;
-            console.log(tenantAdminToken);
-
             done();
 
         }, 200);

@@ -1,8 +1,11 @@
 FROM node:8.12-alpine AS base
 WORKDIR /usr/lib/scheduler
 
+RUN apk add --no-cache bash
+
 COPY package.json yarn.lock ./
 COPY lib/backend-commons-lib lib/backend-commons-lib
+COPY lib/event-bus lib/event-bus
 COPY lib/scheduler lib/scheduler
 COPY services/scheduler/package.json services/scheduler/index.js ./services/scheduler/
 COPY services/scheduler/src ./services/scheduler/src

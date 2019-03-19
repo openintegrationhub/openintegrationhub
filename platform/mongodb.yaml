@@ -4,7 +4,7 @@ metadata:
   labels:
     app: mongodb-service
   name: mongodb-service
-  namespace: platform
+  namespace: oih-dev-ns
 spec:
   ports:
     - name: '27017'
@@ -14,13 +14,13 @@ spec:
   selector:
     app: mongodb
   sessionAffinity: None
-  type: ClusterIP
+  type: NodePort
 ---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: mongodb
-  namespace: platform
+  namespace: oih-dev-ns
   labels:
     app: mongodb
 spec:

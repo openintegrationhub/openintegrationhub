@@ -1,11 +1,13 @@
 const { QueueCreator, App } = require('backend-commons-lib');
 const { ResourceCoordinator } = require('@openintegrationhub/resource-coordinator');
 const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
-const RabbitmqManagementService = require('./RabbitmqManagementService');
 const HttpApi = require('./HttpApi');
-const FlowsK8sDao = require('./dao/FlowsK8sDao');
-const InfrastructureManager = require('./InfrastructureManager');
-const { asValue, asClass } = require('awilix');
+const FlowsDao = require('./dao/FlowsDao');
+const RabbitMqQueuesManager = require('./queues-manager/RabbitMqQueuesManager');
+const { asValue, asClass, asFunction } = require('awilix');
+const mongoose = require('mongoose');
+const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
+const MongoDbCredentialsStorage = require('./queues-manager/credentials-storage/MongoDbCredentialsStorage');
 
 class ResourceCoordinatorApp extends App {
     async _run() {
@@ -19,22 +21,35 @@ class ResourceCoordinatorApp extends App {
         const channel = await amqp.getConnection().createChannel();
         const queueCreator = new QueueCreator(channel);
 
+        await mongoose.connect(config.get('MONGODB_URI'), {useNewUrlParser: true});
+
         container.register({
             queueCreator: asValue(queueCreator),
-            rabbitmqManagement: asClass(RabbitmqManagementService).singleton(),
-            flowsDao: asClass(FlowsK8sDao),
+            flowsDao: asClass(FlowsDao),
             httpApi: asClass(HttpApi).singleton(),
             driver: asClass(KubernetesDriver),
-            infrastructureManager: asClass(InfrastructureManager),
+            queuesManager: asClass(RabbitMqQueuesManager),
+            credentialsStorage: asClass(MongoDbCredentialsStorage),
+            transport: asClass(RabbitMqTransport, {
+                injector: () => ({rabbitmqUri: config.get('RABBITMQ_URI')})
+            }),
+            eventBus: asClass(EventBus, {
+                injector: () => ({serviceName: this.constructor.NAME})
+            }).singleton(),
             resourceCoordinator: asClass(ResourceCoordinator)
         });
 
-        const rabbitmqManagement = container.resolve('rabbitmqManagement');
-        await rabbitmqManagement.start();
+        container.loadModules(['./src/event-handlers/**/*.js'], {
+            formatName: 'camelCase',
+            resolverOptions: {
+                register: asFunction
+            }
+        });
 
         const httpApi = container.resolve('httpApi');
         httpApi.listen(config.get('LISTEN_PORT'));
 
+        await container.resolve('eventHandlers').connect();
         const resourceCoordinator = container.resolve('resourceCoordinator');
         await resourceCoordinator.start();
     }

@@ -24,7 +24,7 @@ For some systems such as CRM systems these information are sufficient. For other
 SDF does not decide if an object is complete but the connector is responsible for a contentual validation. That means, if the object passes internal technical validation (all required fields are provided) the data is sent to target connector.
 
 <p align="center">
-  <img src="../../SmartDataFramework/Assets/q1Alt1.png" alt="Sublime's custom image" width="500" heigth=700/>
+  <img src="../../assets/q1Alt1.png" alt="Sublime's custom image" width="500" heigth=700/>
 </p>
 
 ### Consequences
@@ -42,7 +42,7 @@ Some possible mechanisms could be:
 SDF has mechasnisms to decide if an object is complete and ready to be sent to the target system.
 
 <p align="center">
-  <img src="../../SmartDataFramework/Assets/q1Alt2.png" alt="Sublime's custom image" width="500" heigth=700/>
+  <img src="../../assets/q1Alt2.png" alt="Sublime's custom image" width="500" heigth=700/>
 </p>
 
 ### Consequences
@@ -57,7 +57,7 @@ Each application has to communicate its restriction (minimal required attributes
 Logic regarding contententual completeness-checks and aggregation are tasks of the applications themselves. I.e. the Open Integration Hub does not decide whether an object is complete in the sense of a specific application. Technical validatation remains within the Open Integration Hub.
 
 <p align="center">
-  <img src="../../SmartDataFramework/Assets/q1Alt3.png" alt="Sublime's custom image" width="500" heigth=700/>
+  <img src="../../assets/q1Alt3.png" alt="Sublime's custom image" width="500" heigth=700/>
 </p>
 
 ### Consequences

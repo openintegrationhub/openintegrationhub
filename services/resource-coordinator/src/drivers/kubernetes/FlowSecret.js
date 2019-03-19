@@ -15,11 +15,19 @@ class FlowSecret {
     }
 
     get id() {
-        return this.id;
+        return this.name;
     }
 
     get name() {
         return _.get(this, 'metadata.name');
+    }
+
+    setMetadataValue(key, value) {
+        this.metadata[key] = value;
+    }
+
+    getMetadataValue(key) {
+        return _.get(this, `metadata.${key}`);
     }
 
     /**
