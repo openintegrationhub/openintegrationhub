@@ -1,6 +1,7 @@
 const JSZip = require('jszip');
 const readdirp = require('readdirp');
 const fs = require('fs-extra');
+const path = require('path');
 const tar = require('tar');
 
 module.exports = {
@@ -15,10 +16,11 @@ module.exports = {
         return null;
     },
     pack(type, src, dest) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (type === 'zip') {
                 const zip = new JSZip();
-                readdirp({ root: src /** __dirname, '../../../test/data/valid') */, fileFilter: '*.json' }, async (err, res) => {
+                await fs.ensureDir(path.dirname(dest));
+                readdirp({ root: src, fileFilter: '*.json' }, async (err, res) => {
                     for (const file of res.files) {
                         zip.file(file.path, fs.readFileSync(file.fullPath));
                     }
@@ -26,19 +28,19 @@ module.exports = {
                     zip
                         .generateNodeStream({ streamFiles: true })
                         .pipe(fs.createWriteStream(dest))
-                        .on('finish', async () => {
+                        .on('finish', () => {
                             resolve();
                         });
                 });
             } else if (type === 'tgz') {
-                tar.c(
-                    {
-                        gzip: true,
-                        file: dest,
-                        C: src,
-                    },
-                    [...fs.readdirSync(src)],
-                ).then(resolve);
+                await fs.ensureDir(path.dirname(dest));
+                await tar.c({
+                    gzip: true,
+                    file: dest,
+                    C: src,
+                },
+                [...fs.readdirSync(src)]);
+                resolve();
             } else {
                 reject(new Error('Invalid Archive Type. Use tgz or zip'));
             }
@@ -50,7 +52,13 @@ module.exports = {
                 fs.readFile(src, async (err, data) => {
                     if (!err) {
                         const promises = [];
-                        const contents = await JSZip.loadAsync(data);
+                        let contents = {};
+                        try {
+                            contents = await JSZip.loadAsync(data);
+                        } catch (err) {
+                            return reject(err);
+                        }
+
                         Object.keys(contents.files).forEach((fileName) => {
                             if (!contents.files[fileName].dir) {
                                 promises.push(new Promise(async (resolve) => {
@@ -67,13 +75,17 @@ module.exports = {
                     }
                 });
             } else if (type === 'tgz') {
-                await fs.ensureDir(dest);
-                tar.x( // or tar.extract(
-                    {
+                try {
+                    await fs.ensureDir(dest);
+                    await tar.x({
                         file: src,
-                        C: dest, // alias for cwd:'some-dir', also ok
-                    },
-                ).then(resolve);
+                        C: dest,
+                        strict: true,
+                    });
+                    resolve();
+                } catch (err) {
+                    reject(err);
+                }
             } else {
                 reject(new Error('Invalid Archive Type. Use tgz or zip'));
             }

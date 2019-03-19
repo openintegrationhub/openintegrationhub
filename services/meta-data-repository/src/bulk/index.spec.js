@@ -7,10 +7,10 @@ const {
 const { pack } = require('../packing');
 
 describe('bulk', () => {
-    test('processArchive', async () => {
+    test('processArchive - tgz', async () => {
         // create archive
         const src = path.resolve(__dirname, '../../test/data/valid');
-        const packDest = path.resolve(__dirname, '../../test/temp.tgz');
+        const packDest = path.resolve(__dirname, '../../test-temp/temp.tgz');
 
         // pack
         await pack(
@@ -19,28 +19,34 @@ describe('bulk', () => {
             packDest,
         );
 
-        await processArchive(packDest);
-        // const src = path.resolve(__dirname, '../../test/data/valid');
-        // const packDest = path.resolve(__dirname, '../../test/temp.zip');
-        // const unpackDest = path.resolve(__dirname, '../../test/fooo');
+        const transformedSchemas = await processArchive(packDest);
+        expect(transformedSchemas).toHaveLength(20);
 
-        // // pack
-        // await pack(
-        //     'zip',
-        //     src,
-        //     packDest,
-        // );
+        await fs.remove(path.dirname(packDest));
+    });
 
-        // // unpack
-        // await unpack(
-        //     'zip',
-        //     packDest,
-        //     unpackDest,
-        // );
+    test('processArchive - zip', async () => {
+        // create archive
+        const src = path.resolve(__dirname, '../../test/data/valid');
+        const packDest = path.resolve(__dirname, '../../test-temp/temp.zip');
 
-        // expect(fs.readdirSync(unpackDest)).toHaveLength(fs.readdirSync(src).length);
+        // pack
+        await pack(
+            'zip',
+            src,
+            packDest,
+        );
 
-        // await fs.remove(packDest);
-        // await fs.remove(unpackDest);
+        const transformedSchemas = await processArchive(packDest);
+        expect(transformedSchemas).toHaveLength(20);
+
+        await fs.remove(path.dirname(packDest));
+    });
+
+    test('processArchive - invalid', async () => {
+        let packDest = path.resolve(__dirname, '../../test/data/invalid.zip');
+        await expect(processArchive(packDest)).rejects.toThrow();
+        packDest = path.resolve(__dirname, '../../test/data/invalid.tgz');
+        await expect(processArchive(packDest)).rejects.toThrow();
     });
 });

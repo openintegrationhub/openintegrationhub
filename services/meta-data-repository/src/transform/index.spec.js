@@ -3,7 +3,6 @@ const readdirp = require('readdirp');
 const { SchemaValidationError, SchemaReferenceError } = require('../error');
 
 const {
-    readFile,
     transformSchema,
     validateSchema,
     resolveRelativePath,

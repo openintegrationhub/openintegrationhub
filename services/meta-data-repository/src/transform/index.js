@@ -1,4 +1,3 @@
-const fs = require('fs');
 const JsonRefs = require('json-refs');
 const JsonPointer = require('json-pointer');
 const Ajv = require('ajv');
@@ -16,17 +15,17 @@ const ajv = new Ajv({
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
 
-function readFile(path) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(path, 'utf8', async (err, contents) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(JSON.parse(contents));
-            }
-        });
-    });
-}
+// function readFile(path) {
+//     return new Promise((resolve, reject) => {
+//         fs.readFile(path, 'utf8', async (err, contents) => {
+//             if (err) {
+//                 reject(err);
+//             } else {
+//                 resolve(JSON.parse(contents));
+//             }
+//         });
+//     });
+// }
 
 function URIfromId(id) {
     return url.parse(id).path;
@@ -68,7 +67,6 @@ module.exports = {
         jsonRefsOptions = {},
     }) {
         const fullBase = `${conf.baseUrl}:${conf.port}${conf.apiBase}`;
-
         jsonRefsOptions.loaderOptions = {
             ...{
                 prepareRequest(req, callback) {
@@ -96,7 +94,8 @@ module.exports = {
             const refObj = refs[key];
             const { uriDetails } = refObj;
             if (refObj.error) {
-                throw (new SchemaReferenceError(`${refObj.error} in ${jsonRefsOptions.location || '/temp'}`));
+                const id = schema.$id || schema.id || 'no-id';
+                throw (new SchemaReferenceError(`${refObj.error} in ${id}`));
             } else if (!uriDetails.scheme && uriDetails.path) {
                 let transformedPath = uriDetails.path;
 
@@ -120,11 +119,14 @@ module.exports = {
                 backReferences.push(uriDetails.path);
             }
         }
-        return copy;
+
+        return {
+            schema: copy,
+            backReferences,
+        };
     },
 
     resolveRelativePath,
     transformURI,
     URIfromId,
-    readFile,
 };
