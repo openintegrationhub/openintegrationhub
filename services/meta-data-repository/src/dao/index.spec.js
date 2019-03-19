@@ -1,7 +1,7 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
 const conf = require('../conf');
-const iamMock = require('../test/iamMock');
+const iamMock = require('../../test/iamMock');
 const Server = require('../server');
 
 let port;

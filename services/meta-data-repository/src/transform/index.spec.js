@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs-extra');
 const readdirp = require('readdirp');
 const { SchemaValidationError, SchemaReferenceError } = require('../error');
 
@@ -46,10 +47,10 @@ describe('transform', () => {
     });
 
     test('validateSchema - valid', async (done) => {
-        readdirp({ root: path.resolve(__dirname, 'test/valid'), fileFilter: '*.json' }, async (err, res) => {
+        readdirp({ root: path.resolve(__dirname, '../../test/data/valid'), fileFilter: '*.json' }, async (err, res) => {
             for (const file of res.files) {
                 validateSchema({
-                    schema: await readFile(file.fullPath),
+                    schema: await fs.readFile(file.fullPath, 'utf-8'),
                     filePath: file.fullPath,
                 });
             }
@@ -59,8 +60,8 @@ describe('transform', () => {
     });
 
     test('validateSchema - invalid', async () => {
-        const filePath = path.resolve(__dirname, 'test/invalid/addresses/V1/person.json');
-        const file = await readFile(filePath);
+        const filePath = path.resolve(__dirname, '../../test/data/invalid/addresses/V1/person.json');
+        const file = await fs.readFile(filePath, 'utf-8');
         expect(() => validateSchema({ schema: file, filePath })).toThrow(SchemaValidationError);
     });
 
@@ -94,11 +95,11 @@ describe('transform', () => {
     });
 
     test('transformSchema - valid', async (done) => {
-        const root = path.resolve(__dirname, 'test/valid/');
+        const root = path.resolve(__dirname, '../../test/data/valid/');
         readdirp({ root, fileFilter: '*.json' }, async (err, res) => {
             for (const file of res.files) {
                 await transformSchema({
-                    schema: await readFile(file.fullPath),
+                    schema: await fs.readFile(file.fullPath, 'utf-8'),
                     jsonRefsOptions: {
                         location: file.fullPath,
                         root,
@@ -111,9 +112,9 @@ describe('transform', () => {
     });
 
     test('transformSchema - invalid', async () => {
-        const root = path.resolve(__dirname, 'test/invalid/');
+        const root = path.resolve(__dirname, '../../test/data/invalid/');
         const filePath = path.resolve(root, 'addresses/V1/person.json');
-        const file = await readFile(filePath);
+        const file = await fs.readFile(filePath, 'utf-8');
         await expect(
             transformSchema({
                 schema: file,
@@ -150,12 +151,12 @@ describe('transform', () => {
 
             },
         });
-        expect(transformed.$id).toContain('organizationV2.json');
-        expect(transformed.$id).not.toContain('https://github.com');
+        expect(transformed.schema.$id).toContain('organizationV2.json');
+        expect(transformed.schema.$id).not.toContain('https://github.com');
     });
 
     test('resolveRelativePath', async () => {
-        const root = path.resolve(__dirname, 'test/valid/');
+        const root = path.resolve(__dirname, '../../test/data/valid/');
         expect(resolveRelativePath({
             filePath: 'organization.json',
             location: path.resolve(root, 'addresses/V1/organization.json'),

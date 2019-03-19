@@ -147,8 +147,9 @@ router.post('/:id/schemas', async (req, res, next) => {
 
         await SchemaDAO.createUpdate({
             name: 'foo',
-            uri: URIfromId(transformed.$id),
-            value: JSON.stringify(transformed),
+            uri: URIfromId(transformed.schema.$id),
+            value: JSON.stringify(transformed.schema),
+            refs: transformed.backReferences,
             owners: {
                 id: req.user.sub.toString(),
                 type: USER,

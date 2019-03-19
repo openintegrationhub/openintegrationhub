@@ -15,18 +15,6 @@ const ajv = new Ajv({
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
 
-// function readFile(path) {
-//     return new Promise((resolve, reject) => {
-//         fs.readFile(path, 'utf8', async (err, contents) => {
-//             if (err) {
-//                 reject(err);
-//             } else {
-//                 resolve(JSON.parse(contents));
-//             }
-//         });
-//     });
-// }
-
 function URIfromId(id) {
     return url.parse(id).path;
 }
@@ -55,6 +43,7 @@ function resolveRelativePath({ filePath, location, root }) {
 
 module.exports = {
     validateSchema({ schema, filePath }) {
+        schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
         ajv.validateSchema(schema);
         if (ajv.errors) {
             throw new SchemaValidationError(`Validation failed for ${filePath || '/temp'} ${JSON.stringify(ajv.errors)}`);
@@ -66,6 +55,7 @@ module.exports = {
         domain,
         jsonRefsOptions = {},
     }) {
+        schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
         const fullBase = `${conf.baseUrl}:${conf.port}${conf.apiBase}`;
         jsonRefsOptions.loaderOptions = {
             ...{

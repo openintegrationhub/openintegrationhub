@@ -17,7 +17,7 @@ module.exports = {
 
                     readdirp({ root, fileFilter: '*.json' }, async (err, res) => {
                         for (const file of res.files) {
-                            const schema = JSON.parse(await fs.readFile(file.fullPath, 'utf-8'));
+                            const schema = await fs.readFile(file.fullPath, 'utf-8');
 
                             validateSchema({
                                 schema,

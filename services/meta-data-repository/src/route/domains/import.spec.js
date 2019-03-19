@@ -61,7 +61,6 @@ describe('import', () => {
                 .generateNodeStream({ streamFiles: true })
                 .pipe(fs.createWriteStream(path.resolve(__dirname, '../../../test', zipFile)))
                 .on('finish', async () => {
-                    console.log(path.resolve(__dirname, '../../../test', zipFile));
                     await request.post(`/domains/${domain_.data._id}/schemas/import`)
                         .set(...global.user1)
                         .set('content-type', 'application/zip')
