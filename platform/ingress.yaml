@@ -26,7 +26,7 @@ spec:
       - backend:
           serviceName: secret-service
           servicePort: 3000
-  - host: flowrepository.openintegrationhub.com
+  - host: flow-repository.openintegrationhub.com
     http:
       paths:
       - backend:
