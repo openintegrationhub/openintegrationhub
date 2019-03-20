@@ -151,7 +151,7 @@ class KubernetesDriver extends BaseDriver {
                     spec: {
                         restartPolicy: 'Never',
                         containers: [{
-                            image: node.image,
+                            image: this._constructDockerImageName(node),
                             name: 'apprunner',
                             imagePullPolicy: 'Always',
                             envFrom: [{
@@ -197,7 +197,7 @@ class KubernetesDriver extends BaseDriver {
         envVars.FLOW_ID = flow.id;
         envVars.USER_ID = 'FIXME hardcode smth here';
         envVars.COMP_ID = 'does not matter';
-        envVars.FUNCTION = node.function;
+        envVars.FUNCTION = this._parseNodeCommand(node.command).method;
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
         envVars.API_USERNAME = 'does not matter';
         envVars.API_KEY = 'does not matter';
@@ -206,6 +206,24 @@ class KubernetesDriver extends BaseDriver {
             return env;
         }, {});
         return Object.assign(envVars, node.env);
+    }
+
+    _parseNodeCommand(command) {
+        const [teamRepoMethod, version] = command.split('@');
+        const [reamRepo, method] = teamRepoMethod.split(':');
+        const [team, repo] = reamRepo.split('/');
+
+        return {
+            team,
+            repo,
+            method,
+            version: version || 'latest'
+        };
+    }
+
+    _constructDockerImageName(node) {
+        const { team, repo, version } = this._parseNodeCommand(node.command);
+        return `${team}/${repo}:${version}`;
     }
 }
 
