@@ -73,7 +73,7 @@ describe('KubernetesDriver', () => {
     });
 
     describe('#_createRunningFlowNode', () => {
-        it('should ', async () => {
+        it('should create RunningFlowNode instance', async () => {
             sinon.stub(driver, '_buildDescriptor').returns({kind: 'Job'});
             batchClient.jobs.post.resolves({
                 body: {
@@ -90,6 +90,38 @@ describe('KubernetesDriver', () => {
             const result = await driver._createRunningFlowNode(flow, node, flowNodeSecret);
             expect(result instanceof KubernetesRunningFlowNode).to.be.true;
             expect(result.name).to.equal('new-job');
+        });
+    });
+
+    describe('#_parseNodeCommand', () => {
+        it('should parse command', () => {
+            const command = 'elasticio/mapper:jsonataMap@c9e011cf7866a2e82771b62cfd96cd75868f5b90';
+            expect(driver._parseNodeCommand(command)).to.deep.equal({
+                team: 'elasticio',
+                repo: 'mapper',
+                method: 'jsonataMap',
+                version: 'c9e011cf7866a2e82771b62cfd96cd75868f5b90'
+            });
+        });
+
+        it('should parse command without version', () => {
+            const command = 'elasticio/mapper:jsonataMap';
+            expect(driver._parseNodeCommand(command)).to.deep.equal({
+                team: 'elasticio',
+                repo: 'mapper',
+                method: 'jsonataMap',
+                version: 'latest'
+            });
+        });
+    });
+
+    describe('#_constructDockerImageName', () => {
+        it('should return docker image name', () => {
+            const node = {
+                command: 'elasticio/mapper:jsonataMap@c9e011cf7866a2e82771b62cfd96cd75868f5b90'
+            };
+            const expectedImageName = 'elasticio/mapper:c9e011cf7866a2e82771b62cfd96cd75868f5b90';
+            expect(driver._constructDockerImageName(node)).to.equal(expectedImageName);
         });
     });
 });
