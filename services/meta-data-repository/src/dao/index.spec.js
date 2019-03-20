@@ -17,7 +17,7 @@ describe('DAO adapter', () => {
             port,
             dao: {
                 DomainDAO: {
-                    async countByEntity() {
+                    async countBy() {
                         return 1337;
                     },
                     async findByEntityWithPagination() {

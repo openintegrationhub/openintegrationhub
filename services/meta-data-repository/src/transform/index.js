@@ -19,11 +19,16 @@ function URIfromId(id) {
     return url.parse(id).path;
 }
 
-function transformURI({ domain, id }) {
+function transformURI({ domain, id, options = {} }) {
     let { pathname } = url.parse(id);
     // remove first slash if existing
-    pathname = pathname[0] === '/' ? pathname.substr(1, pathname.length) : pathname;
-    return `domains/${domain}/schemas/${pathname}`;
+    if (options.location) {
+        pathname = options.location.replace(options.root, '');
+    } else {
+        pathname = path.basename(pathname);
+    }
+
+    return `domains/${domain}/schemas/${pathname}`.replace('//', '/');
 }
 
 function resolveRelativePath({ filePath, location, root }) {
@@ -73,10 +78,10 @@ module.exports = {
         const backReferences = [];
         // rewrite id
         if (copy.$id) {
-            uri = transformURI({ id: copy.$id, domain });
+            uri = transformURI({ id: copy.$id, domain, options: jsonRefsOptions });
             copy.$id = `${fullBase}/${uri}`;
         } else if (copy.id) {
-            uri = transformURI({ id: copy.$id, domain });
+            uri = transformURI({ id: copy.id, domain, options: jsonRefsOptions });
             copy.id = `${fullBase}/${uri}`;
         }
 
@@ -84,9 +89,13 @@ module.exports = {
             const refObj = refs[key];
             const { uriDetails } = refObj;
             if (refObj.error) {
+                // return original id
                 const id = schema.$id || schema.id || 'no-id';
                 throw (new SchemaReferenceError(`${refObj.error} in ${id}`));
             } else if (!uriDetails.scheme && uriDetails.path) {
+                if (!jsonRefsOptions.root) {
+                    throw (new SchemaReferenceError(`${uriDetails.path} invalid. No relative refs allowed.`));
+                }
                 let transformedPath = uriDetails.path;
 
                 const normalizedPath = path.normalize(uriDetails.path);

@@ -1,10 +1,8 @@
 const Domain = require('../../model/Domain');
 
 module.exports = {
-    async countByEntity(id) {
-        return await Domain.countDocuments({
-            'owners.id': id,
-        });
+    async countBy(query) {
+        return await Domain.countDocuments(query);
     },
     async create(obj) {
         const domain = new Domain({ ...obj });

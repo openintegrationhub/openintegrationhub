@@ -30,20 +30,50 @@ describe('transform', () => {
         ).toBe('domains/foo/schemas/Fooo');
 
         expect(
+            transformURI({ domain: 'foo', id: 'https://github.com/bar/blub/bar/0/Fooo.json' }),
+        ).toBe('domains/foo/schemas/Fooo.json');
+
+        expect(
             transformURI({ domain: 'foo', id: 'Fooo' }),
         ).toBe('domains/foo/schemas/Fooo');
 
         expect(
             transformURI({ domain: 'foo', id: 'Fooo/blub' }),
-        ).toBe('domains/foo/schemas/Fooo/blub');
+        ).toBe('domains/foo/schemas/blub');
 
         expect(
             transformURI({ domain: 'foo', id: 'file:///Fooo/bar' }),
-        ).toBe('domains/foo/schemas/Fooo/bar');
+        ).toBe('domains/foo/schemas/bar');
 
         expect(
             transformURI({ domain: 'foo', id: 'C:\\Fooo\\bar' }),
-        ).toBe('domains/foo/schemas/Fooo/bar');
+        ).toBe('domains/foo/schemas/bar');
+
+        expect(
+            transformURI({ domain: 'foo', id: 'C:\\Fooo\\bar' }),
+        ).toBe('domains/foo/schemas/bar');
+
+        expect(
+            transformURI({
+                domain: 'foo',
+                id: 'Relation',
+                options: {
+                    location: '/absolute/path/documents/extended/Relation.json',
+                    root: '/absolute/path/documents',
+                },
+            }),
+        ).toBe('domains/foo/schemas/extended/Relation.json');
+
+        expect(
+            transformURI({
+                domain: 'foo',
+                id: 'Relation',
+                options: {
+                    location: '/absolute/path/documents/Relation.json',
+                    root: '/absolute/path/documents',
+                },
+            }),
+        ).toBe('domains/foo/schemas/Relation.json');
     });
 
     test('validateSchema - valid', async (done) => {

@@ -2,7 +2,6 @@ const express = require('express');
 const logger = require('@basaas/node-logger');
 const multer = require('multer');
 const uuid = require('uuid');
-const path = require('path');
 const mkdirp = require('mkdirp');
 const fs = require('fs-extra');
 
@@ -69,7 +68,9 @@ router.get('/', async (req, res) => {
             pagination.props(),
         ),
         meta: {
-            ...await pagination.calc(),
+            ...await pagination.calc({
+                'owners.id': req.user.sub,
+            }),
         },
     });
 });
@@ -121,19 +122,23 @@ router.get('/:id/schemas', async (req, res) => {
         req.user.sub,
     );
     res.send({
-        data: await SchemaDAO.findByEntityWithPagination(
-            req.user.sub,
-            pagination.props(),
-        ),
+        data: await SchemaDAO.findByDomainWithPagination({
+            entity: req.user.sub,
+            domain: req.params.id,
+            options: pagination.props(),
+        }),
         meta: {
-            ...await pagination.calc(),
+            ...await pagination.calc({
+                domainId: req.params.id,
+                'owners.id': req.user.sub,
+            }),
         },
     });
 });
 
-router.get('/:id/schemas/:uri', async (req, res, next) => {
+router.get('/:id/schemas/:uri*', async (req, res, next) => {
     try {
-        const schema = await SchemaDAO.findByURI(`${conf.apiBase}/domains/${req.params.id}/schemas/${req.params.uri}`);
+        const schema = await SchemaDAO.findByURI(`${conf.apiBase}/domains/${req.params.id}/schemas/${req.params.uri}${req.params[0]}`);
 
         if (req.header('content-type') === 'application/schema+json') {
             return res.send(schema.value);
@@ -168,6 +173,7 @@ router.post('/:id/schemas', async (req, res, next) => {
 
         await SchemaDAO.createUpdate({
             name: 'foo',
+            domainId: req.params.id,
             uri: URIfromId(transformed.schema.$id),
             value: JSON.stringify(transformed.schema),
             refs: transformed.backReferences,
@@ -194,10 +200,11 @@ router.post('/:id/schemas/import', upload.single('archive'), async (req, res, ne
         if (!file) {
             throw (new Error('No file submitted'));
         } else {
-            const transformedSchemas = await processArchive(file.path);
+            const transformedSchemas = await processArchive(file.path, req.params.id);
             for (const schema of transformedSchemas) {
                 await SchemaDAO.createUpdate({
                     name: 'foo',
+                    domainId: req.params.id,
                     uri: URIfromId(schema.schema.$id),
                     value: JSON.stringify(schema.schema),
                     refs: schema.backReferences,

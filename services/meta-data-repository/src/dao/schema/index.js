@@ -2,24 +2,24 @@ const Schema = require('../../model/Schema');
 
 module.exports = {
 
-    async countByEntity(id) {
-        return await Schema.countDocuments({
-            'owners.id': id,
-        });
+    async countBy(query) {
+        return await Schema.countDocuments(query);
     },
     async createUpdate(obj) {
         await Schema.updateOne({ uri: obj.uri }, obj, { upsert: true });
     },
 
-    async findByEntityWithPagination(
-        id,
-        props,
-    ) {
+    async findByDomainWithPagination({
+        domainId,
+        entityId,
+        options,
+    }) {
         return await Schema.find({
-            'owners.id': id,
+            domainId,
+            'owners.id': entityId,
         },
-        'name description uri value owners',
-        props);
+        'name domainId description uri value owners',
+        options);
     },
     async findByURI(uri) {
         const schema = await Schema.findOne({

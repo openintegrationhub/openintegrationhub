@@ -5,7 +5,7 @@ const { unpack, getFileType } = require('../packing');
 const { validateSchema, transformSchema } = require('../transform');
 
 module.exports = {
-    processArchive(archivePath) {
+    processArchive(archivePath, domainId) {
         return new Promise(async (resolve, reject) => {
             try {
                 const fileType = getFileType(archivePath);
@@ -24,7 +24,7 @@ module.exports = {
                             });
 
                             transformedSchemas.push(await transformSchema({
-                                // domain: req.params.id,
+                                domain: domainId,
                                 schema,
                                 jsonRefsOptions: {
                                     location: file.fullPath,
