@@ -1,14 +1,16 @@
 const Schema = require('../../model/Schema');
 
-module.exports = {
+async function getReferences(uri) {
+    return (await Schema.find({ refs: uri })).map(elem => elem.uri);
+}
 
+module.exports = {
     async countBy(query) {
         return await Schema.countDocuments(query);
     },
     async createUpdate(obj) {
-        await Schema.updateOne({ uri: obj.uri }, obj, { upsert: true });
+        return await Schema.updateOne({ uri: obj.uri }, obj, { upsert: true });
     },
-
     async findByDomainWithPagination({
         domainId,
         entityId,
@@ -27,5 +29,16 @@ module.exports = {
         });
         schema.value = JSON.parse(schema.value);
         return schema.toObject();
+    },
+    async delete(uri) {
+        const refs = await getReferences(uri);
+
+        if (!refs.length) {
+            await Schema.deleteOne({
+                uri,
+            });
+        } else {
+            throw new Error(`${uri} referenced by ${refs.toString()}`);
+        }
     },
 };

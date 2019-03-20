@@ -11,14 +11,14 @@ let port;
 let request;
 let server;
 
-describe('import', () => {
+describe('schemas', () => {
     beforeAll(async () => {
         port = await getPort();
         conf.port = port;
 
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-import`,
+            mongoDbConnection: `${global.__MONGO_URI__}-schemas-import`,
             port,
         });
         iamMock.setup();
@@ -29,7 +29,7 @@ describe('import', () => {
         await server.stop();
     });
 
-    test('Bulk upload - no media', async () => {
+    test('import - no media', async () => {
         const domain = {
             name: 'test',
             description: 'bar',
@@ -49,7 +49,7 @@ describe('import', () => {
             .expect(400);
     });
 
-    test('Bulk upload - zip', async () => {
+    test('import - zip', async () => {
         const domain = {
             name: 'test',
             description: 'bar',
@@ -88,7 +88,7 @@ describe('import', () => {
         expect(result.meta.total).toEqual(20);
     });
 
-    test('Bulk upload - tgz', async () => {
+    test('import - tgz', async () => {
         const domain = {
             name: 'test',
             description: 'bar',

@@ -34,27 +34,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// GET
-// /domains/{domainId}
-// Retrieve a domain with given ID.
-// PUT
-// /domains/{domainId}
-// Update a domain by ID.
-// POST
-// /domains/{domainId}/import
-// Import models.
-// GET
-// /domains/{domainId}/schemas
-// Retrieve the available models for the authenticated user.
-// GET
-// /domains/{domainId}/schemas/{uri}
-// Retrieve a schema by URI.
-// PUT
-// /domains/{domainId}/schemas/{uri}
-// Update a schema with given URI.
-// DELETE
-// /domains/{domainId}/schemas/{uri}
-// Delete a schema by uri
+function buildURI(params) {
+    return `${conf.apiBase}/domains/${params.id}/schemas/${params.uri}${params[0]}`;
+}
 
 router.get('/', async (req, res) => {
     const pagination = new Pagination(
@@ -138,7 +120,7 @@ router.get('/:id/schemas', async (req, res) => {
 
 router.get('/:id/schemas/:uri*', async (req, res, next) => {
     try {
-        const schema = await SchemaDAO.findByURI(`${conf.apiBase}/domains/${req.params.id}/schemas/${req.params.uri}${req.params[0]}`);
+        const schema = await SchemaDAO.findByURI(buildURI(req.params));
 
         if (req.header('content-type') === 'application/schema+json') {
             return res.send(schema.value);
@@ -228,43 +210,16 @@ router.post('/:id/schemas/import', upload.single('archive'), async (req, res, ne
     }
 });
 
-// router.put('/:id/schemas/:uri', async (req, res, next) => {
-//     try {
-//         res.send({
-//             // data: await DomainDAO.create({
-//             //     ...data,
-//             //     owners: {
-//             //         id: req.user.sub.toString(),
-//             //         type: USER,
-//             //     },
-//             // }),
-//         });
-//     } catch (err) {
-//         log.error(err);
-//         next({
-//             status: 400,
-//         });
-//     }
-// });
-
-// router.delete('/:id/schemas/:uri', async (req, res, next) => {
-//     try {
-//         res.send({
-//             // data: await DomainDAO.create({
-//             //     ...data,
-//             //     owners: {
-//             //         id: req.user.sub.toString(),
-//             //         type: USER,
-//             //     },
-//             // }),
-//         });
-//     } catch (err) {
-//         log.error(err);
-//         next({
-//             status: 400,
-//         });
-//     }
-// });
-
+router.delete('/:id/schemas/:uri*', async (req, res, next) => {
+    try {
+        await SchemaDAO.delete(buildURI(req.params));
+        res.sendStatus(204);
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 400,
+        });
+    }
+});
 
 module.exports = router;

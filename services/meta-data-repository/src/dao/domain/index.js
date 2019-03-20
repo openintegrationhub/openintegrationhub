@@ -13,6 +13,7 @@ module.exports = {
     async findOne(query) {
         return await Domain.findOne(query);
     },
+
     async findByEntityWithPagination(
         id,
         props,
@@ -28,5 +29,4 @@ module.exports = {
             _id: id,
         });
     },
-
 };

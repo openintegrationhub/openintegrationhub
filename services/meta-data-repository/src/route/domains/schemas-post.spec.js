@@ -8,14 +8,14 @@ let port;
 let request;
 let server;
 
-describe('domains', () => {
+describe('schemas', () => {
     beforeAll(async () => {
         port = await getPort();
         conf.port = port;
 
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-schemas`,
+            mongoDbConnection: `${global.__MONGO_URI__}-schemas-post`,
             port,
         });
         iamMock.setup();
@@ -26,7 +26,7 @@ describe('domains', () => {
         await server.stop();
     });
 
-    test('Post models.', async () => {
+    test('post', async () => {
         const baseUrl = `http://localhost:${port}/api/v1`;
         const domain = {
             name: 'test',
