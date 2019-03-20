@@ -9,6 +9,10 @@ class OIHFlowsDao extends FlowsDao {
     findAll() {
         return Flow.find({});
     }
+
+    findById(id) {
+        return Flow.findById(id);
+    }
 }
 
 module.exports = OIHFlowsDao;
