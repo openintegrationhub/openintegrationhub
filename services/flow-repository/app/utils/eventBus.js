@@ -12,7 +12,7 @@ let eventBus;
 
 
 async function connectQueue() {
-  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl });
+  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'flow-repository' });
 
   await eventBus.subscribe('flow.started', async (event) => {
