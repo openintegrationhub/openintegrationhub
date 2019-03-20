@@ -27,11 +27,11 @@ router.post('/:id/start', jsonParser, async (req, res) => {
   let flow;
 
   if (!mongoose.Types.ObjectId.isValid(flowId)) {
-    return res.status(400).send('Invalid id');
+    return res.status(400).send({ msg: 'Invalid id' });
   }
 
   if (!res.locals.admin && credentials.length <= 0) {
-    return res.status(403).send('User does not have permissions to view flows');
+    return res.status(403).send({ msg: 'User does not have permissions to view flows' });
   }
 
   if (res.locals.admin) {
@@ -41,7 +41,7 @@ router.post('/:id/start', jsonParser, async (req, res) => {
   }
 
   if (!flow) {
-    return res.status(404).send('No flow with this ID found');
+    return res.status(404).send({ msg: 'No flow with this ID found' });
   }
 
   const ev = {
@@ -52,7 +52,7 @@ router.post('/:id/start', jsonParser, async (req, res) => {
   };
 
   await publishQueue(ev);
-  return res.status(200).send({ id: flow.id, status: flow.status });
+  return res.status(200).send({ data: { id: flow.id, status: flow.status }, meta: {} });
 });
 
 // Stop a flow
@@ -62,11 +62,11 @@ router.post('/:id/stop', jsonParser, async (req, res) => {
   let flow;
 
   if (!mongoose.Types.ObjectId.isValid(flowId)) {
-    return res.status(400).send('Invalid id');
+    return res.status(400).send({ msg: 'Invalid id' });
   }
 
   if (!res.locals.admin && credentials.length <= 0) {
-    return res.status(403).send('User does not have permissions to view flows');
+    return res.status(403).send({ msg: 'User does not have permissions to view flows' });
   }
 
   if (res.locals.admin) {
@@ -76,7 +76,7 @@ router.post('/:id/stop', jsonParser, async (req, res) => {
   }
 
   if (!flow) {
-    return res.status(404).send('No flow with this ID found');
+    return res.status(404).send({ msg: 'No flow with this ID found' });
   }
 
   const ev = {
@@ -87,7 +87,7 @@ router.post('/:id/stop', jsonParser, async (req, res) => {
   };
 
   await publishQueue(ev);
-  return res.status(200).send({ id: flow.id, status: flow.status });
+  return res.status(200).send({ data: { id: flow.id, status: flow.status }, meta: {} });
 });
 
 

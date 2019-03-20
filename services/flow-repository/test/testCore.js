@@ -111,11 +111,11 @@ describe('Flow Operations', () => {
         });
       expect(res.status).toEqual(201);
       expect(res.text).not.toHaveLength(0);
-      const j = JSON.parse(res.text);
+      const j = res.body;
       expect(j).not.toBeNull();
+      expect(j.data).toHaveProperty('id');
 
-      expect(j).toHaveProperty('id');
-      flowId1 = j.id;
+      flowId1 = j.data.id;
     } catch (e) {
       log.error(e);
     }
@@ -127,13 +127,17 @@ describe('Flow Operations', () => {
       .get(`/flows/${flowId1}`)
       .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(200);
-    expect(res.text).not.toBeNull();
-    const j = JSON.parse(res.text);
+    expect(res.body).not.toBeNull();
+    const j = res.body;
 
     expect(j).not.toBeNull();
     expect(j.data.name).toEqual('WiceToSnazzy');
     expect(j.data).toHaveProperty('id');
     expect(j.data).toHaveProperty('graph');
+    expect(j.data).toHaveProperty('createdAt');
+    expect(j.data).toHaveProperty('updatedAt');
+    expect(j.data.createdAt).not.toBeNull();
+    expect(j.data.updatedAt).not.toBeNull();
     expect(j.data.graph).toHaveProperty('nodes');
     expect(j.data.graph).toHaveProperty('edges');
     expect(j.data.owners[0].id).toEqual('TestAdmin');
@@ -146,8 +150,8 @@ describe('Flow Operations', () => {
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(404);
-    expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('No flows found');
+    expect(res.body).not.toBeNull();
+    expect(res.body.msg).toEqual('No flows found');
   });
 
   test('should not show the flow to another users get', async () => {
@@ -156,8 +160,8 @@ describe('Flow Operations', () => {
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(404);
-    expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('No flow found');
+    expect(res.body).not.toBeNull();
+    expect(res.body.msg).toEqual('No flow found');
   });
 
   test('should return 400 when attempting to get an invalid id', async () => {
@@ -166,7 +170,7 @@ describe('Flow Operations', () => {
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(400);
-    expect(res.text).not.toBeNull();
+    expect(res.body).not.toBeNull();
   });
 
   test('should return 404 when getting a non-existent flow', async () => {
@@ -175,8 +179,8 @@ describe('Flow Operations', () => {
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(404);
-    expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('No flow found');
+    expect(res.body).not.toBeNull();
+    expect(res.body.msg).toEqual('No flow found');
   });
 
   test('should add a second flow', async () => {
@@ -193,11 +197,11 @@ describe('Flow Operations', () => {
       });
     expect(res.status).toEqual(201);
     expect(res.text).not.toBeNull();
-    const j = JSON.parse(res.text);
+    const j = res.body;
     expect(j).not.toBeNull();
 
-    expect(j).toHaveProperty('id');
-    flowId2 = j.id;
+    expect(j.data).toHaveProperty('id');
+    flowId2 = j.data.id;
   });
 
   test('should get all flows, filtered by status', async () => {
@@ -294,10 +298,10 @@ describe('Flow Operations', () => {
       });
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
-    const j = JSON.parse(res.text);
+    const j = res.body;
     expect(j).not.toBeNull();
 
-    expect(j).toHaveProperty('id');
+    expect(j.data).toHaveProperty('id');
   });
 
   test('should start a flow', async () => {
@@ -308,13 +312,13 @@ describe('Flow Operations', () => {
       .set('Content-Type', 'application/json');
 
     expect(res.status).toEqual(200);
-    expect(res.text).not.toBeNull();
-    const j = JSON.parse(res.text);
+    expect(res.body).not.toBeNull();
+    const j = res.body;
     expect(j).not.toBeNull();
-    expect(j).toHaveProperty('id');
-    expect(j).toHaveProperty('status');
-    expect(j.id).toEqual(flowId1);
-    expect(j.status).toEqual('starting');
+    expect(j.data).toHaveProperty('id');
+    expect(j.data).toHaveProperty('status');
+    expect(j.data.id).toEqual(flowId1);
+    expect(j.data.status).toEqual('starting');
   });
 
   test('handle a flow.started event', async () => {
@@ -333,12 +337,12 @@ describe('Flow Operations', () => {
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
-    const j = JSON.parse(res.text);
+    const j = res.body;
     expect(j).not.toBeNull();
-    expect(j).toHaveProperty('id');
-    expect(j).toHaveProperty('status');
-    expect(j.id).toEqual(flowId1);
-    expect(j.status).toEqual('stopping');
+    expect(j.data).toHaveProperty('id');
+    expect(j.data).toHaveProperty('status');
+    expect(j.data.id).toEqual(flowId1);
+    expect(j.data.status).toEqual('stopping');
   });
 
   test('handle a flow.stopped event', async () => {
@@ -354,7 +358,7 @@ describe('Flow Operations', () => {
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(400);
-    expect(res.text).not.toBeNull();
+    expect(res.body).not.toBeNull();
   });
 
   test('should not be able to update a non-existent flow', async () => {
@@ -370,8 +374,8 @@ describe('Flow Operations', () => {
         description: 'A description',
       });
     expect(res.status).toEqual(404);
-    expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('Flow not found');
+    expect(res.body).not.toBeNull();
+    expect(res.body.msg).toEqual('Flow not found');
   });
 });
 
@@ -392,8 +396,8 @@ describe('Cleanup', () => {
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(200);
-    expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('Flow was successfully deleted');
+    expect(res.body).not.toBeNull();
+    expect(res.body.msg).toEqual('Flow was successfully deleted');
   });
 
   test('should delete the second flow', async () => {
@@ -403,8 +407,8 @@ describe('Cleanup', () => {
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(200);
-    expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('Flow was successfully deleted');
+    expect(res.body).not.toBeNull();
+    expect(res.body.msg).toEqual('Flow was successfully deleted');
   });
 
   test('should return 404 when attempting to get the just deleted flow', async () => {
@@ -412,7 +416,7 @@ describe('Cleanup', () => {
       .get(`/flows/${flowId1}`)
       .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(404);
-    expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('No flow found');
+    expect(res.body).not.toBeNull();
+    expect(res.body.msg).toEqual('No flow found');
   });
 });
