@@ -1,0 +1,341 @@
+{
+	"info": {
+		"_postman_id": "411f2eb0-7c75-4e4c-b29b-2053eee8e089",
+		"name": "OIH",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "IAM",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3fb2944d-6654-4c8b-a4da-bec783da5bd1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"\",\n    \"password\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{iam-base-url}}/login",
+							"host": [
+								"{{iam-base-url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Flow Repository",
+			"item": [
+				{
+					"name": "Get all flows",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{flow-repository-base-url}}/flows?page[number]=2",
+							"host": [
+								"{{flow-repository-base-url}}"
+							],
+							"path": [
+								"flows"
+							],
+							"query": [
+								{
+									"key": "page[number]",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{flow-repository-base-url}}/flows/:flow_id",
+							"host": [
+								"{{flow-repository-base-url}}"
+							],
+							"path": [
+								"flows",
+								":flow_id"
+							],
+							"variable": [
+								{
+									"key": "flow_id",
+									"value": "5c9244fc62278a001ad3a831"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a flow",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{flow-repository-base-url}}/flows/:flow_id",
+							"host": [
+								"{{flow-repository-base-url}}"
+							],
+							"path": [
+								"flows",
+								":flow_id"
+							],
+							"variable": [
+								{
+									"key": "flow_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a flow",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Pavels timer\",\n    \"graph\" : {\n        \"nodes\" : [\n            {\n                \"id\": \"step_1\",\n                \"command\": \"elasticio/timer:timer@ca9a6fea391ffa8f7c8593bd2a04143212ab63f6\",\n                \"data\" : {\n                    \"interval\" : \"minute\"\n                }\n            }\n        ],\n        \"edges\" : []\n    },\n    \"cron\": \"*/2 * * * *\"\n}"
+						},
+						"url": {
+							"raw": "{{flow-repository-base-url}}/flows",
+							"host": [
+								"{{flow-repository-base-url}}"
+							],
+							"path": [
+								"flows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start a flow",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{flow-repository-base-url}}/flows/:flow_id/start",
+							"host": [
+								"{{flow-repository-base-url}}"
+							],
+							"path": [
+								"flows",
+								":flow_id",
+								"start"
+							],
+							"variable": [
+								{
+									"key": "flow_id",
+									"value": "5c9244fc62278a001ad3a831"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Stop a flow",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{flow-repository-base-url}}/flows/:flow_id/stop",
+							"host": [
+								"{{flow-repository-base-url}}"
+							],
+							"path": [
+								"flows",
+								":flow_id",
+								"stop"
+							],
+							"variable": [
+								{
+									"key": "flow_id",
+									"value": "5c9244fc62278a001ad3a831"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit a flow",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Pavels timer\",\n    \"graph\": {\n        \"nodes\": [\n            {\n                \"id\": \"step_1\",\n                \"command\": \"elasticio/timer:timer@ca9a6fea391ffa8f7c8593bd2a04143212ab63f6\"\n            },\n            {\n                \"id\": \"step_2\",\n                \"command\": \"elasticio/code-component:execute@7bc2535df2f8a35c3653455e5becc701b010d681\",\n                \"fields\": {\n                \t\"code\": \"function* run() {console.log('Calling external URL');yield request.post({uri: 'http://requestbin.fullcontact.com/zrh5a0zr', body: msg, json: true});}\"\n                }\n            }\n        ],\n        \"edges\": [\n        \t{\"source\": \"step_1\", \"target\": \"step_2\"}\n        ]\n    },\n    \"cron\": \"*/2 * * * *\",\n    \"id\": \"5c9244fc62278a001ad3a831\"\n}"
+						},
+						"url": {
+							"raw": "{{flow-repository-base-url}}/flows/:flow_id",
+							"host": [
+								"{{flow-repository-base-url}}"
+							],
+							"path": [
+								"flows",
+								":flow_id"
+							],
+							"variable": [
+								{
+									"key": "flow_id",
+									"value": "5c9244fc62278a001ad3a831"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "fa78899a-d2d0-49ff-a205-cd442b2a803c",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "bf87a294-a86d-4e61-bfe3-7579861f44fb",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "6e26b09a-b666-4964-85de-b56e61afd18f",
+				"type": "text/javascript",
+				"exec": [
+					"const echoPostRequest = {",
+					"  url: pm.variables.get('iam-base-url') + '/login',",
+					"  method: 'POST',",
+					"  json: true,",
+					"  header: {",
+					"    'Content-Type': 'application/json'",
+					"  },",
+					"  body: {",
+					"    mode: 'raw',",
+					"    raw: JSON.stringify({",
+					"        username: pm.variables.get('username'),",
+					"        password: pm.variables.get('password')",
+					"    })",
+					"  }",
+					"};",
+					"",
+					"",
+					"console.log('Getting IAM token');",
+					"pm.sendRequest(echoPostRequest, function (err, res) {",
+					"    if (err) {",
+					"        return console.error(err);",
+					"    }",
+					"    const response = res.json();",
+					"    pm.variables.set('token', response.token);",
+					"});"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "a8b1e204-3a14-426a-bbf0-a852bd6f9152",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
