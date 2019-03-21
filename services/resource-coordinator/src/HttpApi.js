@@ -45,16 +45,19 @@ class HttpApi {
             if (!node) {
                 throw new errors.ResourceNotFoundError('Node is not found');
             }
+
+            const nodeConfig = node.fields || {};
+
             res.status(200);
             res.json({
                 id: node.id,
                 function: node.function,
-                config: node.data || {}
+                config: nodeConfig
             });
         } catch (e) {
             this._logger.error(e, req.params, 'Node info request failed');
             res.status(500);
-            res.end(e.message);
+            res.json({error: e.message});
             return;
         }
     }
