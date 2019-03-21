@@ -6,7 +6,6 @@ const { Schema } = mongoose;
 const domain = new Schema({
     name: {
         type: String,
-        required: true,
     },
     description: String,
     public: Boolean,

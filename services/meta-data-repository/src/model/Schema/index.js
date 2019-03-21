@@ -6,7 +6,6 @@ const { ObjectId } = Schema;
 const schema = new Schema({
     name: {
         type: String,
-        required: true,
     },
     domainId: {
         type: ObjectId,
@@ -15,6 +14,7 @@ const schema = new Schema({
     description: String,
     uri: {
         type: String,
+        unique: true,
         required: true,
     },
     value: Object,

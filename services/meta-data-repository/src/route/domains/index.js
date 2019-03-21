@@ -104,7 +104,7 @@ router.get('/:id/schemas', async (req, res) => {
         req.user.sub,
     );
     res.send({
-        data: await SchemaDAO.findByDomainWithPagination({
+        data: await SchemaDAO.findByDomainAndEntity({
             entity: req.user.sub,
             domain: req.params.id,
             options: pagination.props(),
@@ -120,7 +120,9 @@ router.get('/:id/schemas', async (req, res) => {
 
 router.get('/:id/schemas/:uri*', async (req, res, next) => {
     try {
-        const schema = await SchemaDAO.findByURI(buildURI(req.params));
+        const schema = await SchemaDAO.findByURI({
+            uri: buildURI(req.params),
+        });
 
         if (req.header('content-type') === 'application/schema+json') {
             return res.send(schema.value);
@@ -154,14 +156,16 @@ router.post('/:id/schemas', async (req, res, next) => {
         });
 
         await SchemaDAO.createUpdate({
-            name: 'foo',
-            domainId: req.params.id,
-            uri: URIfromId(transformed.schema.$id),
-            value: JSON.stringify(transformed.schema),
-            refs: transformed.backReferences,
-            owners: {
-                id: req.user.sub.toString(),
-                type: USER,
+            obj: {
+                name: 'foo',
+                domainId: req.params.id,
+                uri: URIfromId(transformed.schema.$id),
+                value: JSON.stringify(transformed.schema),
+                refs: transformed.backReferences,
+                owners: {
+                    id: req.user.sub.toString(),
+                    type: USER,
+                },
             },
         });
 
@@ -177,28 +181,42 @@ router.post('/:id/schemas', async (req, res, next) => {
 // bulk upload
 
 router.post('/:id/schemas/import', upload.single('archive'), async (req, res, next) => {
+    let session = null;
     try {
         const file = req.file;
         if (!file) {
             throw (new Error('No file submitted'));
         } else {
             const transformedSchemas = await processArchive(file.path, req.params.id);
+            // start transaction
+            session = await SchemaDAO.startTransaction();
             for (const schema of transformedSchemas) {
                 await SchemaDAO.createUpdate({
-                    name: 'foo',
-                    domainId: req.params.id,
-                    uri: URIfromId(schema.schema.$id),
-                    value: JSON.stringify(schema.schema),
-                    refs: schema.backReferences,
-                    owners: {
-                        id: req.user.sub.toString(),
-                        type: USER,
+                    obj: {
+                        name: 'foo',
+                        domainId: req.params.id,
+                        uri: URIfromId(schema.schema.$id),
+                        value: JSON.stringify(schema.schema),
+                        refs: schema.backReferences,
+                        owners: {
+                            id: req.user.sub.toString(),
+                            type: USER,
+                        },
+                    },
+                    options: {
+                        session,
                     },
                 });
             }
+            // end transaction
+            await SchemaDAO.endTransaction(session);
         }
         res.sendStatus(200);
     } catch (err) {
+        // abort transaction if session exists
+        if (session) {
+            await SchemaDAO.abortTransaction();
+        }
         log.error(err);
         next({
             status: 400,

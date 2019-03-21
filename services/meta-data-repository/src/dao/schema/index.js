@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Schema = require('../../model/Schema');
 
 async function getReferences(uri) {
@@ -5,16 +6,40 @@ async function getReferences(uri) {
 }
 
 module.exports = {
+    async startTransaction() {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        return session;
+    },
+
+    async abortTransaction(session) {
+        await session.abortTransaction();
+    },
+    async endTransaction(session) {
+        await session.commitTransaction();
+    },
+
+    async createCollection() {
+        await Schema.createCollection();
+    },
     async countBy(query) {
         return await Schema.countDocuments(query);
     },
-    async createUpdate(obj) {
-        return await Schema.updateOne({ uri: obj.uri }, obj, { upsert: true });
+
+    async create({ obj, options = {} }) {
+        return await Schema.create([obj], options);
     },
-    async findByDomainWithPagination({
+    async createUpdate({ obj, options = {} }) {
+        options = {
+            upsert: true,
+            ...options,
+        };
+        return await Schema.updateOne({ uri: obj.uri }, obj, options);
+    },
+    async findByDomainAndEntity({
         domainId,
         entityId,
-        options,
+        options = {},
     }) {
         return await Schema.find({
             domainId,
@@ -23,10 +48,18 @@ module.exports = {
         'name domainId description uri value owners',
         options);
     },
-    async findByURI(uri) {
+    async findByURI({
+        uri,
+        options = {},
+    }) {
         const schema = await Schema.findOne({
             uri,
-        });
+        }, null, options);
+
+        if (!schema) {
+            return null;
+        }
+
         schema.value = JSON.parse(schema.value);
         return schema.toObject();
     },
