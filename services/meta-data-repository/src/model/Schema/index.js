@@ -25,6 +25,7 @@ const schema = new Schema({
         type: [String],
     },
 }, {
+    autoCreate: true,
     timestamps: true,
 });
 

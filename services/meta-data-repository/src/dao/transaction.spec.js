@@ -30,9 +30,6 @@ describe('Transaction', () => {
             public: true,
         });
 
-        // create empty collection
-        await SchemaDAO.createCollection();
-
         // start session
         const session = await mongoose.startSession();
         session.startTransaction();

@@ -8,11 +8,22 @@ const conf = require('../conf');
 
 const jsonParser = bodyParser.json();
 
+async function createCollections() {
+    for (const key of Object.keys(DAO)) {
+        try {
+            await DAO[key].createCollection();
+        } catch (err) {
+
+        }
+    }
+}
+
 module.exports = class Server {
     constructor({ port, mongoDbConnection, dao }) {
         this.port = port || conf.port;
         this.app = express();
         this.app.disable('x-powered-by');
+        this.mongoDbConnection = mongoDbConnection;
 
         // apply adapter
         // dao
@@ -21,9 +32,6 @@ module.exports = class Server {
                 DAO[key] = dao[key];
             }
         }
-
-        // setup database
-        Server.setupDatabase(mongoDbConnection);
 
         // enable advanced stdout logging
         if (conf.debugMode) {
@@ -55,12 +63,12 @@ module.exports = class Server {
         this.app.use(require('./../middleware/error').default);
     }
 
-    static setupDatabase(mongoDbConnection) {
-        const connectionString = mongoDbConnection
+    async setupDatabase() {
+        const connectionString = this.mongoDbConnection
         || global.__MONGO_URI__
         || conf.mongoDbConnection;
 
-        mongoose.connect(connectionString, {
+        await mongoose.connect(connectionString, {
             poolSize: 50,
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
@@ -71,6 +79,10 @@ module.exports = class Server {
     }
 
     async start() {
+        // setup database
+
+        await this.setupDatabase();
+        await createCollections();
         this.server = await this.app.listen(this.port);
     }
 

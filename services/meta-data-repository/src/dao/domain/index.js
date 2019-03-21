@@ -1,6 +1,10 @@
 const Domain = require('../../model/Domain');
 
 module.exports = {
+
+    async createCollection() {
+        await Domain.createCollection();
+    },
     async countBy(query) {
         return await Domain.countDocuments(query);
     },

@@ -13,6 +13,7 @@ const domain = new Schema({
         type: [owners],
     },
 }, {
+    autoCreate: true,
     timestamps: true,
 });
 
