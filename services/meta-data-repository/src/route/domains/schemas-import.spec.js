@@ -18,7 +18,7 @@ describe('schemas', () => {
 
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-schemas-import`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'schemas-import'),
             port,
         });
         iamMock.setup();

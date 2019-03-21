@@ -15,7 +15,7 @@ describe('domains', () => {
 
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-domains`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'domains'),
             port,
         });
         iamMock.setup();

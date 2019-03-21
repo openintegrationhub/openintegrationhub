@@ -13,7 +13,7 @@ describe('DAO adapter', () => {
         port = await getPort();
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-dao`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'dao'),
             port,
             dao: {
                 DomainDAO: {

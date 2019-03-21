@@ -1,17 +1,26 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') });
 const fs = require('fs');
-const MongodbMemoryServer = require('mongodb-memory-server');
+const { MongoMemoryReplSet } = require('mongodb-memory-server');
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');
 
-const mongod = new MongodbMemoryServer.default({
-    instance: {
-        dbName: 'jest',
-    },
+const dbName = 'changeme';
+const setName = 'jestset';
+
+const mongod = new MongoMemoryReplSet({
     binary: {
         version: 'latest',
     },
+    instanceOpts: [
+        { storageEngine: 'wiredTiger' },
+        { storageEngine: 'wiredTiger' },
+    ],
+    replSet: {
+        dbName,
+        name: setName,
+    },
+    // debug: true,
     autoStart: false,
 });
 
@@ -21,8 +30,8 @@ module.exports = async () => {
     }
 
     const mongoConfig = {
-        mongoDBName: 'jest',
-        mongoUri: await mongod.getConnectionString(),
+        mongoDBName: dbName,
+        mongoUri: `${await mongod.getConnectionString()}?replicaSet=${setName}`,
     };
 
     // Write global config to disk because all tests run in different contexts.

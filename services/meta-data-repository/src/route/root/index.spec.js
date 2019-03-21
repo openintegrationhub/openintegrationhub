@@ -12,7 +12,7 @@ describe('root', () => {
         port = await getPort();
         request = supertest(`http://localhost:${port}`);
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-root`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'root'),
             port,
         });
         await server.start();
