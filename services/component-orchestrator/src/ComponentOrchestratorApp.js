@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
 const MongoDbCredentialsStorage = require('./queues-manager/credentials-storage/MongoDbCredentialsStorage');
 
-class ResourceCoordinatorApp extends App {
+class ComponentOrchestratorApp extends App {
     async _run() {
         const container = this.getContainer();
         const config = container.resolve('config');
@@ -58,4 +58,4 @@ class ResourceCoordinatorApp extends App {
         return 'component-orchestrator';
     }
 }
-module.exports = ResourceCoordinatorApp;
+module.exports = ComponentOrchestratorApp;

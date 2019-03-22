@@ -1,8 +1,8 @@
-const ResourceCoordinatorApp = require('./src/ResourceCoordinatorApp.js');
+const ComponentOrchestratorApp = require('./src/ComponentOrchestratorApp.js');
 
 (async () => {
     try {
-        const app = new ResourceCoordinatorApp();
+        const app = new ComponentOrchestratorApp();
         await app.start();
     } catch (e) {
         console.error('Critical error, going to die', e, e && e.stack); //eslint-disable-line
