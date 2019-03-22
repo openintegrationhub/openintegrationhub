@@ -1,38 +1,48 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: communication-router
+  name: component-orchestrator
   namespace: oih-dev-ns
   labels:
-    app: communication-router
+    app: component-orchestrator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: communication-router
+      app: component-orchestrator
   template:
     metadata:
-      name: communication-router
+      name: component-orchestrator
       labels:
-        app: communication-router
+        app: component-orchestrator
     spec:
       containers:
-        - name: communication-router
-          image: 'openintegrationhub/communication-router:latest'
+        - name: component-orchestrator
+          image: 'openintegrationhub/component-orchestrator:latest'
           env:
+            - name: LISTEN_PORT
+              value: '1234'
             - name: MONGODB_URI
               value: >-
-                mongodb://mongodb-service.oih-dev-ns.svc.cluster.local/webhooks
+                mongodb://mongodb-service.oih-dev-ns.svc.cluster.local/component-orchestrator
             - name: RABBITMQ_URI
               value: >-
                 amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local
-            - name: LISTEN_PORT
-              value: '1234'
+            - name: RABBITMQ_URI_FLOWS
+              value: >-
+                amqp://rabbitmq-service.oih-dev-ns.svc.cluster.local
+            - name: RABBITMQ_MANAGEMENT_URI
+              value: >-
+                http://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:15672/
+            - name: SELF_URL
+              value: 'http://api-service.oih-dev-ns.svc.cluster.local'
             - name: LOG_LEVEL
               value: trace
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
           livenessProbe:
             httpGet:
               path: /healthcheck
@@ -41,9 +51,7 @@ spec:
             httpGet:
               path: /healthcheck
               port: 1234
-          securityContext:
-            privileged: false
-      serviceAccountName: resource-coordinator-account
+      serviceAccountName: component-orchestrator-account
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:

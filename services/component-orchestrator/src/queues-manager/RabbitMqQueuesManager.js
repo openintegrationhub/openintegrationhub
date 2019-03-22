@@ -1,7 +1,7 @@
 const uuid = require('uuid/v4');
 const { URL } = require('url');
 
-const { QueuesManager } = require('@openintegrationhub/resource-coordinator');
+const { QueuesManager } = require('@openintegrationhub/component-orchestrator');
 const InMemoryCredentialsStorage = require('./credentials-storage/InMemoryCredentialsStorage');
 const RabbitMqManagementService = require('./RabbitMqManagementService');
 

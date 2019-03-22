@@ -1,4 +1,4 @@
-const { FlowsDao } = require('@openintegrationhub/resource-coordinator');
+const { FlowsDao } = require('@openintegrationhub/component-orchestrator');
 const Flow = require('../models/Flow');
 
 class OIHFlowsDao extends FlowsDao {

@@ -12,6 +12,6 @@ spec:
       protocol: TCP
       targetPort: 1234
   selector:
-    app: resource-coordinator
+    app: component-orchestrator
   sessionAffinity: None
   type: ClusterIP

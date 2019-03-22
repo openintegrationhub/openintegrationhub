@@ -1,7 +1,7 @@
-const CommunicationRouterApp = require('./src/CommunicationRouterApp.js');
+const WebhooksAppApp = require('./src/WebhooksApp.js');
 (async () => {
     try {
-        const app = new CommunicationRouterApp();
+        const app = new WebhooksAppApp();
         await app.start();
     } catch (e) {
         console.error('Critical error, going to die', e, e && e.stack); //eslint-disable-line

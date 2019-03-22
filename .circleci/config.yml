@@ -62,17 +62,17 @@ jobs:
     docker: *node_env
     working_directory: ~/oih
     steps: *deploy_steps
-  communication-router-test:
+  webhooks-test:
     docker: *node_mongo_env
-    working_directory: ~/oih/services/communication-router
+    working_directory: ~/oih/services/webhooks
     steps: *yarn_test_steps
   iam-test:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *yarn_test_steps
-  resource-coordinator-test:
+  component-orchestrator-test:
     docker: *node_mongo_env
-    working_directory: ~/oih/services/resource-coordinator
+    working_directory: ~/oih/services/component-orchestrator
     steps: *yarn_test_steps
   scheduler-test:
     docker: *node_mongo_env
@@ -86,9 +86,9 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/lib/backend-commons-lib
     steps: *yarn_test_steps
-  lib-resource-coordinator-test:
+  lib-component-orchestrator-test:
     docker: *node_env
-    working_directory: ~/oih/lib/resource-coordinator
+    working_directory: ~/oih/lib/component-orchestrator
     steps: *yarn_test_steps
   lib-scheduler-test:
     docker: *node_env
@@ -110,15 +110,15 @@ workflows:
   pipeline:
     jobs:
       - deps
-      - communication-router-test:
+      - webhooks-test:
           requires:
             - lib-webhooks-test
       - iam-test:
           requires:
             - deps
-      - resource-coordinator-test:
+      - component-orchestrator-test:
           requires:
-            - lib-resource-coordinator-test
+            - lib-component-orchestrator-test
       - scheduler-test:
           requires:
             - lib-scheduler-test
@@ -134,7 +134,7 @@ workflows:
       - lib-backend-commons-lib-test:
           requires:
             - deps
-      - lib-resource-coordinator-test:
+      - lib-component-orchestrator-test:
           requires:
             - lib-backend-commons-lib-test
       - lib-scheduler-test:
@@ -145,9 +145,9 @@ workflows:
             - lib-backend-commons-lib-test
       - test:
           requires:
-            - communication-router-test
+            - webhooks-test
             - iam-test
-            - resource-coordinator-test
+            - component-orchestrator-test
             - scheduler-test
             - secret-service-test
             - flow-repository-test

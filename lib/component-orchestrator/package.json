@@ -1,5 +1,5 @@
 {
-  "name": "@openintegrationhub/resource-coordinator",
+  "name": "@openintegrationhub/component-orchestrator",
   "version": "1.0.0",
   "description": "Orchestrates cluster resources",
   "main": "src/index.js",

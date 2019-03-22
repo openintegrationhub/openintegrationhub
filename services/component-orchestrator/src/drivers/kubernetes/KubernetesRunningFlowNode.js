@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { RunningFlowNode } = require('@openintegrationhub/resource-coordinator');
+const { RunningFlowNode } = require('@openintegrationhub/component-orchestrator');
 
 class KubernetesRunningFlowNode extends RunningFlowNode {
     constructor(app) {

@@ -7,7 +7,7 @@ Orchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Doc
 
 ## How to build
 ```
-docker build -t openintegrationhub/resource-coordinator:latest -f Dockerfile ../../
+docker build -t openintegrationhub/component-orchestrator:latest -f Dockerfile ../../
 ```
 or
 ```

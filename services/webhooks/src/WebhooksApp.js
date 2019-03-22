@@ -1,42 +1,39 @@
-const { QueueCreator, App } = require('backend-commons-lib');
-const { ResourceCoordinator } = require('@openintegrationhub/resource-coordinator');
-const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
-const HttpApi = require('./HttpApi');
-const FlowsDao = require('./dao/FlowsDao');
-const RabbitMqQueuesManager = require('./queues-manager/RabbitMqQueuesManager');
+const Lib = require('backend-commons-lib');
+const {
+    QueueCreator,
+    App
+} = Lib;
+
+const FlowsDao = require('./FlowsDao');
+const MessagePublisher = require('./MessagePublisher');
+const { RequestHandlers, HttpApi } = require('@openintegrationhub/webhooks');
 const { asValue, asClass, asFunction } = require('awilix');
 const mongoose = require('mongoose');
-const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
-const MongoDbCredentialsStorage = require('./queues-manager/credentials-storage/MongoDbCredentialsStorage');
+const { RabbitMqTransport, EventBus } = require('@openintegrationhub/event-bus');
 
-class ResourceCoordinatorApp extends App {
-    async _run() {
+class WebhooksApp extends App {
+    async _run () {
         const container = this.getContainer();
         const config = container.resolve('config');
+        const logger = container.resolve('logger');
         const amqp = container.resolve('amqp');
-        const k8s = container.resolve('k8s');
         await amqp.start();
-        await k8s.start();
-
         const channel = await amqp.getConnection().createChannel();
         const queueCreator = new QueueCreator(channel);
-
         await mongoose.connect(config.get('MONGODB_URI'), {useNewUrlParser: true});
 
         container.register({
+            channel: asValue(channel),
             queueCreator: asValue(queueCreator),
             flowsDao: asClass(FlowsDao),
+            messagePublisher: asClass(MessagePublisher),
             httpApi: asClass(HttpApi).singleton(),
-            driver: asClass(KubernetesDriver),
-            queuesManager: asClass(RabbitMqQueuesManager),
-            credentialsStorage: asClass(MongoDbCredentialsStorage),
             transport: asClass(RabbitMqTransport, {
                 injector: () => ({rabbitmqUri: config.get('RABBITMQ_URI')})
             }),
             eventBus: asClass(EventBus, {
                 injector: () => ({serviceName: this.constructor.NAME})
             }).singleton(),
-            resourceCoordinator: asClass(ResourceCoordinator)
         });
 
         container.loadModules(['./src/event-handlers/**/*.js'], {
@@ -46,16 +43,20 @@ class ResourceCoordinatorApp extends App {
             }
         });
 
-        const httpApi = container.resolve('httpApi');
-        httpApi.listen(config.get('LISTEN_PORT'));
-
         await container.resolve('eventHandlers').connect();
-        const resourceCoordinator = container.resolve('resourceCoordinator');
-        await resourceCoordinator.start();
+
+        const httpApi = container.resolve('httpApi');
+        const messagePublisher = container.resolve('messagePublisher');
+        httpApi.setLogger(logger);
+        httpApi.setHeadHandler((req, res) => new RequestHandlers.Head(req, res).handle());
+        httpApi.setGetHandler((req, res) => new RequestHandlers.Get(req, res, messagePublisher).handle());
+        httpApi.setPostHandler((req, res) => new RequestHandlers.Post(req, res, messagePublisher).handle());
+        httpApi.listen(config.get('LISTEN_PORT'));
     }
 
     static get NAME() {
-        return 'resource-coordinator';
+        return 'webhooks';
     }
 }
-module.exports = ResourceCoordinatorApp;
+
+module.exports = WebhooksApp;
