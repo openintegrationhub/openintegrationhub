@@ -93,6 +93,14 @@ Whereby
 
 The format of the content of any every error message must be `application/json`
 
+The following structure must be used:
+
+```json
+{
+    "errors": 
+}
+```
+
 ## May: Any object may have many owners
 
 Any object may have owners. For example a `Flow` may belong to a `User`. Regardless of whether the object has a single owner or multiple, the owners must be defined as an `array` as shown below:
