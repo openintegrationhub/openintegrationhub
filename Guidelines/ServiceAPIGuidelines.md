@@ -97,7 +97,7 @@ The following structure must be used:
 
 ```json
 {
-    "errors": 
+    "errors": string
 }
 ```
 
