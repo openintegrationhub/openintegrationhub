@@ -91,13 +91,13 @@ Whereby
 
 ## Must: Error message content format must be json
 
-The format of the content of any every error message must be `application/json`
+The format of the content of any every error message must be `application/json`. Response must be of type `object`.
 
 The following structure must be used:
 
-```json
+```js
 {
-    "errors": string
+    "errors": // Type: string
 }
 ```
 
