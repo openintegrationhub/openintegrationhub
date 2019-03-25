@@ -1,5 +1,5 @@
 const { QueueCreator, App } = require('backend-commons-lib');
-const { ResourceCoordinator } = require('@openintegrationhub/component-orchestrator');
+const { ComponentOrchestrator } = require('@openintegrationhub/component-orchestrator');
 const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
 const HttpApi = require('./HttpApi');
 const FlowsDao = require('./dao/FlowsDao');
@@ -36,7 +36,7 @@ class ComponentOrchestratorApp extends App {
             eventBus: asClass(EventBus, {
                 injector: () => ({serviceName: this.constructor.NAME})
             }).singleton(),
-            resourceCoordinator: asClass(ResourceCoordinator)
+            componentOrchestrator: asClass(ComponentOrchestrator)
         });
 
         container.loadModules(['./src/event-handlers/**/*.js'], {
@@ -50,8 +50,8 @@ class ComponentOrchestratorApp extends App {
         httpApi.listen(config.get('LISTEN_PORT'));
 
         await container.resolve('eventHandlers').connect();
-        const resourceCoordinator = container.resolve('resourceCoordinator');
-        await resourceCoordinator.start();
+        const componentOrchestrator = container.resolve('componentOrchestrator');
+        await componentOrchestrator.start();
     }
 
     static get NAME() {
