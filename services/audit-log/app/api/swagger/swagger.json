@@ -186,6 +186,29 @@
                     "status": {
                       "type": "string",
                       "example": "pass"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "MongoDB": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "example": "pass"
+                            }
+                          }
+                        },
+                        "queue": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "example": "pass"
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -193,7 +216,7 @@
             }
           },
           "500": {
-            "description": "At least one component is not ready",
+            "description": "At least one component is unhealthy",
             "content": {
               "application/json": {
                 "schema": {
@@ -202,6 +225,29 @@
                     "status": {
                       "type": "string",
                       "example": "fail"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "MongoDB": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "example": "fail"
+                            }
+                          }
+                        },
+                        "queue": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "example": "pass"
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
