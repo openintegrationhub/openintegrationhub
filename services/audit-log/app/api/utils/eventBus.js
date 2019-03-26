@@ -10,7 +10,7 @@ const logger = bunyan.createLogger({ name: 'auditlogs' });
 let eventBus;
 
 async function connectQueue() {
-  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl });
+  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'audit-log' });
 
   await eventBus.subscribe('audit.*', async (event) => {
