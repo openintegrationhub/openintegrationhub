@@ -154,7 +154,7 @@ The message format of the messages emitted by scheduler have the following struc
 
 **Pre-Conditions:** Starting a flow.
 
-Once Webhooks receives a GET request it pushes the message to the queue. The recipient is the first node of the flow which is the application specific adapter.
+Once Webhooks receives a POST request it pushes the message to the queue. The recipient is the first node of the flow which is the application specific adapter.
 In contrast to the GET request, this request already includes the payload.
 
 The following example shows the message format of Webhooks messages:
