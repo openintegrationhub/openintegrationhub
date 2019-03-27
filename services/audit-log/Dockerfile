@@ -22,4 +22,8 @@ RUN yarn install --production
 FROM base AS release
 COPY --from=dependencies /usr/src/audit-log/node_modules ./node_modules
 RUN rm yarn.lock
+
+RUN chown -R node:node .
+USER node
+
 CMD ["yarn", "--cwd", "services/audit-log", "start"]
