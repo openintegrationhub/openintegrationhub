@@ -41,7 +41,6 @@ spec:
               port: 1234
           securityContext:
             privileged: false
-      serviceAccountName: resource-coordinator-account
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:

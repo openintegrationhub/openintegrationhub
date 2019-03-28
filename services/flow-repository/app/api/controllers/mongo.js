@@ -11,6 +11,16 @@ const Flow = require('../../models/flow');
 
 // Retrieves all flows for authorized owner or for admin irrespective of ownership.
 
+const format = (flow) => {
+  const newFlow = flow;
+  if (newFlow) {
+    newFlow.id = newFlow._id.toString();
+    delete newFlow._id;
+    delete newFlow.__v;
+  }
+  return newFlow;
+};
+
 const getFlows = async ( // eslint-disable-line
   credentials,
   pageSize,
@@ -72,6 +82,12 @@ const getFlows = async ( // eslint-disable-line
   Flow.find(qry).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
     .lean()
     .then((doc) => {
+      const flows = doc;
+      for (let i = 0; i < flows.length; i += 1) {
+        flows[i].id = flows[i]._id;
+        delete flows[i]._id;
+        delete flows[i].__v;
+      }
       resolve({ data: doc, meta: { total: count } });
     })
     .catch((err) => {
@@ -83,9 +99,10 @@ const getFlows = async ( // eslint-disable-line
 // Should only be available to internal methods or OIH-Admin
 const getAnyFlowById = flowId => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
-  Flow.find({ '_id': findId })
+  Flow.findOne({ '_id': findId }).lean()
     .then((doc) => {
-      resolve(doc[0]);
+      const flow = format(doc);
+      resolve(flow);
     })
     .catch((err) => {
       log.error(err);
@@ -96,7 +113,8 @@ const getAnyFlowById = flowId => new Promise((resolve) => {
 const addFlow = storeFlow => new Promise((resolve) => {
   storeFlow.save()
     .then((doc) => {
-      resolve(doc._doc);
+      const flow = format(doc._doc);
+      resolve(flow);
     })
     .catch((err) => {
       log.error(err);
@@ -110,9 +128,10 @@ const updateFlow = (storeFlow, credentials) => new Promise((resolve) => {
       { 'owners.id': { $in: credentials } },
     ],
   }, storeFlow,
-  { upsert: false, new: true })
+  { upsert: false, new: true }).lean()
     .then((doc) => {
-      resolve(doc._doc);
+      const flow = format(doc);
+      resolve(flow);
     })
     .catch((err) => {
       log.error(err);
@@ -139,7 +158,9 @@ const startingFlow = (credentials, flowId) => new Promise((resolve) => {
     { upsert: false, new: true },
   ).lean()
     .then((doc) => {
-      resolve(doc);
+      const flow = format(doc);
+
+      resolve(flow);
     })
     .catch((err) => {
       log.error(err);
@@ -166,7 +187,9 @@ const stoppingFlow = (credentials, flowId) => new Promise((resolve) => {
     { upsert: false, new: true },
   ).lean()
     .then((doc) => {
-      resolve(doc);
+      const flow = format(doc);
+
+      resolve(flow);
     })
     .catch((err) => {
       log.error(err);
@@ -217,7 +240,8 @@ const getFlowById = (flowId, credentials) => new Promise((resolve) => {
     ],
   }).lean()
     .then((doc) => {
-      resolve(doc);
+      const flow = format(doc);
+      resolve(flow);
     })
     .catch((err) => {
       log.error(err);
