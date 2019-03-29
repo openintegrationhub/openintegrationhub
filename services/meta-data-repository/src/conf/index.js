@@ -22,7 +22,7 @@ module.exports = {
         namespace: optional('LOGGING_NAMESPACE', name),
         level: optional('LOGGING_LEVEL', 'error'),
     },
-    mongoDbConnection: optional('MONGODB_CONNECTION', `mongodb://localhost:27017/${name}`),
+    mongoDbConnection: optional('MONGODB_CONNECTION', `mongodb://localhost:27017/${name}?replicaSet=rs`),
     debugMode: optional('DEBUG_MODE', 'false') === 'true',
     // token refreshing
     pagination: {

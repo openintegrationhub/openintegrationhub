@@ -45,3 +45,6 @@ clients.json
 
 temp/
 test-temp/
+
+# mongo data
+data/
