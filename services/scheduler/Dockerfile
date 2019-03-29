@@ -1,7 +1,7 @@
-FROM node:8.12-alpine AS base
+FROM node:10-alpine AS base
 WORKDIR /usr/lib/scheduler
 
-RUN apk add --no-cache bash
+RUN apk update && apk add --no-cache bash
 
 COPY package.json yarn.lock ./
 COPY lib/backend-commons-lib lib/backend-commons-lib
@@ -16,11 +16,19 @@ COPY services/scheduler/config services/scheduler/config
 # but node-gyp requires in build time python, build-essential, ....
 # that's not required in runtime
 FROM base AS dependencies
-RUN apk add --no-cache make gcc g++ python
+RUN apk update && apk add --no-cache \
+    make \
+    gcc \
+    g++ \
+    python
 RUN yarn install --production
 
 FROM base AS release
 COPY --from=dependencies /usr/lib/scheduler/node_modules ./node_modules
 RUN rm yarn.lock
+
+RUN chown -R node:node .
+USER node
+
 CMD ["yarn", "--cwd", "services/scheduler", "start"]
 

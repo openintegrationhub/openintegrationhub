@@ -41,9 +41,7 @@ const flow = new Schema({
   oihid: String,
   status: { type: String, default: 'inactive' },
   cron: String,
-  createdAt: String,
-  updatedAt: String,
 },
-{ collection: 'flows' });
+{ collection: 'flows', timestamps: true });
 
 module.exports.flow = flow;
