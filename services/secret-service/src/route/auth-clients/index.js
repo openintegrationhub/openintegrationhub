@@ -2,13 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('@basaas/node-logger');
 const base64url = require('base64url');
+const { can } = require('@openintegrationhub/iam-utils');
+const { restricted, common } = require('../../constant/permission');
 const AuthClientDAO = require('../../dao/auth-client');
 const AuthFlowDAO = require('../../dao/auth-flow');
 const auth = require('../../middleware/auth');
 const { getKeyParameter } = require('../../middleware/key');
-const { can } = require('../../middleware/permission');
 const conf = require('../../conf');
-const { restricted } = require('../../constant').PERMISSIONS;
+
 const { ROLE } = require('../../constant');
 const authFlowManager = require('../../auth-flow-manager');
 const Pagination = require('../../util/pagination');
@@ -36,7 +37,7 @@ const maskAuthClient = ({ requester, authClient }) => {
 
     let maskedAuthClient = authClient;
 
-    if (requester.permissions && requester.permissions.length && requester.permissions.indexOf('auth-clients.raw.read') >= 0) {
+    if (requester.permissions && requester.permissions.length && requester.permissions.indexOf(common['lynx.auth.client.read.raw']) >= 0) {
         return maskedAuthClient;
     }
 
@@ -76,10 +77,10 @@ router.post('/', async (req, res, next) => {
             data: maskAuthClient({
                 authClient: await AuthClientDAO.create({
                     ...data,
-                    owners: {
+                    owners: [{
                         id: req.user.sub.toString(),
                         type: ROLE.USER,
-                    },
+                    }],
                 }),
                 requester: req.user,
             }),
@@ -122,7 +123,10 @@ router.patch('/:id', auth.userIsOwnerOfAuthClient, async (req, res, next) => {
 
 router.delete('/:id', auth.userIsOwnerOfAuthClient, async (req, res, next) => {
     try {
-        await AuthClientDAO.delete(req.obj);
+        await AuthClientDAO.delete({
+            id: req.obj._id,
+            ownerId: req.obj.ownerId,
+        });
         res.sendStatus(204);
     } catch (err) {
         log.error(err);
@@ -132,15 +136,13 @@ router.delete('/:id', auth.userIsOwnerOfAuthClient, async (req, res, next) => {
     }
 });
 
-router.delete('/', can([restricted['auth-clients.any.delete']]), async (req, res, next) => {
+router.delete('/', can([restricted['lynx.auth.client.delete']]), async (req, res, next) => {
     const { userId, type } = req.query;
 
     try {
         await AuthClientDAO.deleteAll({
-            owners: {
-                id: userId,
-                type,
-            },
+            ownerId: userId,
+            type,
         });
 
         res.sendStatus(200);
@@ -155,6 +157,7 @@ router.delete('/', can([restricted['auth-clients.any.delete']]), async (req, res
 router.post('/:id/start-flow', getKeyParameter, /* auth.userIsOwnerOfAuthClient, */ jsonParser, async (req, res, next) => {
     const authClient = await AuthClientDAO.findOne({ _id: req.params.id });
     const { data } = req.body;
+
     try {
         // const authClient = req.obj;
         const flow = await AuthFlowDAO.create({

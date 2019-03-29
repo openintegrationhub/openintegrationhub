@@ -1,17 +1,18 @@
 const express = require('express');
 const logger = require('@basaas/node-logger');
+const { can, hasOneOf } = require('@openintegrationhub/iam-utils');
+const { restricted, common } = require('../../constant/permission');
 const auth = require('../../middleware/auth');
 const { getKeyParameter, getKey } = require('../../middleware/key');
-const { can } = require('../../middleware/permission');
+
 const conf = require('../../conf');
-const { restricted } = require('../../constant').PERMISSIONS;
 const SecretDAO = require('../../dao/secret');
 const { ROLE, AUTH_TYPE } = require('../../constant');
 const { maskString } = require('../../util/common');
 const Pagination = require('../../util/pagination');
 
 const {
-    SIMPLE, API_KEY, OA2_AUTHORIZATION_CODE,
+    SIMPLE, MIXED, API_KEY, OA2_AUTHORIZATION_CODE,
 } = AUTH_TYPE;
 
 const log = logger.getLogger(`${conf.logging.namespace}/secrets`);
@@ -24,6 +25,14 @@ const secretObfuscator = {
         ...secretValue,
         passphrase: '***',
     }),
+
+    [MIXED]: (secretValue) => {
+        const newObj = {};
+        Object.keys(secretValue).forEach((key) => {
+            newObj[key] = maskString(secretValue[key]);
+        });
+        return newObj;
+    },
 
     [API_KEY]: secretValue => ({
         ...secretValue,
@@ -45,7 +54,12 @@ const maskSecret = ({ requester, secret }) => {
 
     const maskedSecret = secret;
 
-    if (requester.permissions && requester.permissions.length && requester.permissions.indexOf('secrets.raw.read') >= 0) {
+    if (
+        requester.permissions
+        && requester.permissions.length
+        && requester.permissions.indexOf(common['lynx.secret.read.raw']) >= 0
+        || hasOneOf({ user: requester, requiredPermissions: common['lynx.secret.read.raw'] })
+    ) {
         return maskedSecret;
     }
 
@@ -84,10 +98,10 @@ router.post('/', getKeyParameter, getKey, async (req, res, next) => {
         res.send({
             data: await SecretDAO.create({
                 ...data,
-                owners: {
+                owners: [{
                     id: req.user.sub.toString(),
                     type: ROLE.USER,
-                },
+                }],
             }, req.key),
         });
     } catch (err) {
@@ -141,6 +155,7 @@ router.delete('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     try {
         await SecretDAO.delete({
             id: req.params.id,
+            ownerId: req.user.sub.toString(),
         });
         res.sendStatus(204);
     } catch (err) {
@@ -151,15 +166,13 @@ router.delete('/:id', auth.userIsOwnerOfSecret, async (req, res, next) => {
     }
 });
 
-router.delete('/', can([restricted['secrets.any.delete']]), async (req, res, next) => {
+router.delete('/', can([restricted['lynx.secret.delete']]), async (req, res, next) => {
     const { userId, type } = req.query;
 
     try {
         await SecretDAO.deleteAll({
-            owners: {
-                id: userId,
-                type,
-            },
+            ownerId: userId,
+            type,
         });
 
         res.sendStatus(200);

@@ -1,8 +1,9 @@
-FROM node:8.11.1-alpine
-LABEL NAME="secret-service"
+FROM node:8.12.0-alpine
+LABEL NAME="lynx"
 ARG local
 
 ADD package.json /tmp/package.json
+ADD .npmrc /tmp/.npmrc
 RUN apk --no-cache add \
     python \
     make \
@@ -14,7 +15,7 @@ RUN if [ "$local" == "true" ]; \
     fi 
 WORKDIR /usr/src/app
 ADD . /usr/src/app
-RUN ln -s /tmp/node_modules /usr/src/app/ && chown -R 1000:1000 /usr/src/app
+RUN ln -s /tmp/node_modules /usr/src/app/
 # just for start
 USER node
 

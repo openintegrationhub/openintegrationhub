@@ -1,8 +1,8 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
 const nock = require('nock');
-const iamMock = require('../../test/iamMock');
 const crypto = require('crypto');
+const iamMock = require('../../test/iamMock');
 const token = require('../../test/tokens');
 const conf = require('../../conf');
 const Server = require('../../server');
@@ -42,9 +42,6 @@ describe('key adapter', () => {
                 externalId: {
                     source: 'id_token',
                     key: 'sub',
-                },
-                scope: {
-                    key: 'scope',
                 },
             },
         };

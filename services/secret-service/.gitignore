@@ -12,7 +12,6 @@ build
 # misc
 .DS_Store
 .env
-.env.local
 .idea
 npm-debug.log
 /nodemon*
@@ -42,3 +41,6 @@ basaas-queue.json
 certs/
 
 clients.json
+
+run-test-container
+.npmrc

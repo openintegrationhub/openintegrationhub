@@ -1,5 +1,6 @@
 const request = require('request');
 const jwt = require('jsonwebtoken');
+const dotProp = require('dot-prop');
 const { OA2_AUTHORIZATION_CODE } = require('../constant').AUTH_TYPE;
 const {
     ACCESS_TOKEN,
@@ -113,33 +114,36 @@ module.exports = {
         default:
         }
     },
-    async getExternalData(authClient, tokens, externalItem) {
+    async getExternalData(localMiddleware, authClient, tokens, externalItem) {
+        if (!authClient.mappings || !authClient.mappings[externalItem]) {
+            return null;
+        }
+
         const { source, key } = authClient.mappings[externalItem];
         const { userinfo } = authClient.endpoints;
-        switch (authClient.type) {
-        case OA2_AUTHORIZATION_CODE:
-            switch (source) {
-            case ACCESS_TOKEN:
-                return jwt.decode(tokens.access_token)[key];
-            case ID_TOKEN:
-                return jwt.decode(tokens.id_token)[key];
-            case USERINFO:
-                return (await userinfoRequest(userinfo, tokens.access_token))[key];
-            case TOKEN_RESPONSE:
-                return tokens[key];
-            default:
+
+        // load adapter if source references function in middleware
+        if (source.match(/^adapter\./)) {
+            const adapter = dotProp.get(localMiddleware, source.replace('adapter.', ''));
+            if (!adapter) {
                 return null;
             }
-        default:
-        }
-    },
 
-    getScope(authClient, tokens) {
-        const { key } = authClient.mappings.scope;
-        switch (authClient.type) {
-        case OA2_AUTHORIZATION_CODE:
+            return await adapter(tokens);
+        }
+
+        // use default
+        switch (source) {
+        case ACCESS_TOKEN:
+            return jwt.decode(tokens.access_token)[key];
+        case ID_TOKEN:
+            return jwt.decode(tokens.id_token)[key];
+        case USERINFO:
+            return (await userinfoRequest(userinfo, tokens.access_token))[key];
+        case TOKEN_RESPONSE:
             return tokens[key];
         default:
+            return null;
         }
     },
 };

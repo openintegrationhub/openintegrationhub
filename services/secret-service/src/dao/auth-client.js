@@ -45,13 +45,40 @@ module.exports = {
         return result;
     },
 
-    async delete({ id }) {
-        await AuthClient.full.deleteOne({ _id: id });
-        log.info('deleted.client', { id });
+    async delete({ id, ownerId }) {
+        const toBeDeleted = await AuthClient.full.findOne({ _id: id });
+
+        if (toBeDeleted.owners.length > 1) {
+            toBeDeleted.owners = toBeDeleted.owners.filter(owner => owner.id !== ownerId);
+            await toBeDeleted.save();
+            log.info('owner.deleted.client', { id, ownerId });
+        } else {
+            await AuthClient.full.deleteOne({ _id: id });
+            log.info('deleted.client', { id });
+        }
     },
 
-    async deleteAll(query) {
-        await AuthClient.full.deleteMany(query);
-        auditLog.info('authClient.deleteAll', { data: { ...query } });
+    async deleteAll({ ownerId, type }) {
+        const toBeDeleted = await AuthClient.full.find({ owners: { id: ownerId, type } });
+        for (const client of toBeDeleted) {
+            if (client.owners.length > 1) {
+                client.owners = client.owners.filter(owner => owner.id !== ownerId);
+                await client.save();
+                log.info('owner.deleted.client', { id: client._id, ownerId });
+            } else {
+                await AuthClient.full.deleteOne({ _id: client._id });
+                log.info('deleted.client', { id: client._id });
+            }
+        }
     },
+
+    // async delete({ id }) {
+    //     await AuthClient.full.deleteOne({ _id: id });
+    //     log.info('deleted.client', { id });
+    // },
+
+    // async deleteAll(query) {
+    //     await AuthClient.full.deleteMany(query);
+    //     auditLog.info('authClient.deleteAll', { data: { ...query } });
+    // },
 };

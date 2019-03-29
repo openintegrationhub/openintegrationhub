@@ -1,5 +1,4 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+require('dotenv').config();
 
 const logger = require('@basaas/node-logger');
 
@@ -7,6 +6,8 @@ const Server = require('./server');
 const conf = require('./conf');
 
 const log = logger.getLogger(`${conf.logging.namespace}/main`);
+
+process.title = `node ${require('./../package.json').name} ${require('./../package.json').version}`;
 
 function exitHandler(options, err) {
     let status = 0;
@@ -22,7 +23,13 @@ process.on('SIGINT', exitHandler.bind(null));
 
 const server = new Server({
     adapter: {
+        // encryption tenant key
         key: require('./adapter/key'),
+        // auth flow manager
+        externalId: {
+            slack: require('./adapter/external-id/slack'),
+            jira: require('./adapter/external-id/jira'),
+        },
     },
 });
 
@@ -33,6 +40,7 @@ const server = new Server({
 (async () => {
     try {
         await server.start();
+        log.debug('-- DEBUG LOG --');
         log.info(`Listening on port ${conf.port}`);
         log.info(`Introspect type ${conf.iam.introspectType}`);
     } catch (err) {

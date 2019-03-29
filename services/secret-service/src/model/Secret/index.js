@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const AuthClient = require('../AuthClient');
-const owners = require('../schema/owners');
+const owner = require('../schema/owner');
 const { AUTH_TYPE } = require('../../constant');
 
 const {
-    SIMPLE, API_KEY,
+    SIMPLE,
+    MIXED,
+    API_KEY,
     OA1_TWO_LEGGED,
     OA2_AUTHORIZATION_CODE,
 } = AUTH_TYPE;
@@ -17,7 +19,7 @@ const secretBaseSchema = new Schema({
         required: true,
     },
     owners: {
-        type: [owners],
+        type: [owner],
         required: true,
     },
     type: {
@@ -51,6 +53,13 @@ module.exports = {
                     required: true,
                 },
             },
+        })),
+    [MIXED]:
+        Secret.discriminator(`S_${MIXED}`, new Schema({
+            value: {
+                type: Schema.Types.Mixed,
+            },
+            subType: String, // e.g. IMAP
         })),
     [API_KEY]:
         Secret.discriminator(`S_${API_KEY}`, new Schema({

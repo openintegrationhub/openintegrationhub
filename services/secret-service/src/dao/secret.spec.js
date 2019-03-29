@@ -4,6 +4,7 @@ const { SIMPLE, OA2_AUTHORIZATION_CODE } = require('../constant').AUTH_TYPE;
 const AuthClientDAO = require('./auth-client');
 const SecretDAO = require('./secret');
 const Server = require('../server');
+const conf = require('../conf');
 
 let port;
 let server;
@@ -12,6 +13,7 @@ let authClient;
 
 describe('SecretDAO', () => {
     beforeAll(async () => {
+        conf.crypto.isDisabled = false;
         port = await getPort();
         server = new Server({
             mongoDbConnection: `${global.__MONGO_URI__}-secret-dao`,
@@ -34,9 +36,6 @@ describe('SecretDAO', () => {
                 externalId: {
                     source: 'id_token',
                     key: 'sub',
-                },
-                scope: {
-                    key: 'scope',
                 },
             },
         };

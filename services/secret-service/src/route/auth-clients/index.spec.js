@@ -1,7 +1,7 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
-const iamMock = require('../../test/iamMock');
 const qs = require('qs');
+const iamMock = require('../../test/iamMock');
 const conf = require('../../conf');
 const Server = require('../../server');
 const token = require('../../test/tokens');
@@ -67,9 +67,6 @@ describe('auth-clients', () => {
                             source: 'id_token',
                             key: 'sub',
                         },
-                        scope: {
-                            key: 'scope',
-                        },
                     },
                 },
             })
@@ -114,9 +111,6 @@ describe('auth-clients', () => {
                     source: 'id_token',
                     key: 'sub',
                 },
-                scope: {
-                    key: 'scope',
-                },
             },
         };
         const authClient = (await request.post('/auth-clients')
@@ -147,9 +141,6 @@ describe('auth-clients', () => {
                 externalId: {
                     source: 'id_token',
                     key: 'sub',
-                },
-                scope: {
-                    key: 'scope',
                 },
             },
         };
@@ -194,9 +185,6 @@ describe('auth-clients', () => {
                             source: 'id_token',
                             key: 'sub',
                         },
-                        scope: {
-                            key: 'scope',
-                        },
                     },
                 },
             })
@@ -235,9 +223,6 @@ describe('auth-clients', () => {
                         externalId: {
                             source: 'id_token',
                             key: 'sub',
-                        },
-                        scope: {
-                            key: 'scope',
                         },
                     },
                 },

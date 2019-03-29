@@ -10,6 +10,7 @@ module.exports = {
         OA1_TWO_LEGGED: 'OA1_TWO_LEGGED',
         OA2_AUTHORIZATION_CODE: 'OA2_AUTHORIZATION_CODE',
         SIMPLE: 'SIMPLE',
+        MIXED: 'MIXED',
 
     },
     ENTITY_TYPE: {
@@ -38,11 +39,5 @@ module.exports = {
     },
     ERROR_CODE: {
         MISSING_PERMISSION: 'MISSING_PERMISSION',
-    },
-    PERMISSIONS: {
-        restricted: {
-            'auth-clients.any.delete': 'auth-clients.any.delete',
-            'secrets.any.delete': 'secrets.any.delete',
-        },
     },
 };

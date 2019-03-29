@@ -1,6 +1,11 @@
 
 module.exports = {
 
-    maskString: string => (string ? string.replace(/.(?=.{4,}$)/g, '*') : ''),
+    maskString: (string = '') => {
+
+        const regex = string.length < 10 ? /./g : /.(?=.{4,}$)/g;
+
+        return string.replace(regex, '*');
+    }
 
 };

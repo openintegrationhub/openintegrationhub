@@ -23,7 +23,6 @@ module.exports = {
                     tenant: '5c507eb60838f1f976e5f2a4',
                     permissions: [
                         'tenant.all',
-                        'secrets.raw.read',
                     ],
                 },
             ],
@@ -42,7 +41,7 @@ module.exports = {
             sub: 'u2',
             name: 'User2',
             role: 'USER',
-            permissions: ['secrets.raw.read'],
+            permissions: ['lynx.secret.read.raw'],
             iat: 1337,
             memberships: [
                 {
@@ -69,8 +68,8 @@ module.exports = {
             name: 'Service Account',
             role: 'SERVICE_ACCOUNT',
             permissions: [
-                'secrets.any.delete',
-                'auth-clients.any.delete',
+                'lynx.secret.delete',
+                'lynx.auth.client.delete',
             ],
             iat: 1337,
             memberships: [
@@ -99,7 +98,7 @@ module.exports = {
             role: 'EPHEMERAL_SERVICE_ACCOUNT',
             memberships: ['t1'],
             permissions: [
-                'secrets.raw.read',
+                'lynx.secret.read.raw',
             ],
             iat: 1337,
         },

@@ -2,8 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const conf = require('../conf');
 const iamLib = require('@openintegrationhub/iam-utils');
+const conf = require('../conf');
 
 const jsonParser = bodyParser.json();
 
@@ -44,9 +44,10 @@ module.exports = class Server {
         this.app.use(require('./../middleware/error').default);
     }
 
-    setupAdapter({ key }) {
+    setupAdapter({ key, externalId }) {
         this.app.locals.middleware = {
             key: key || require('../adapter/key'),
+            externalId: externalId || {},
         };
     }
 

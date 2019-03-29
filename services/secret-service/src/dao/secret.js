@@ -12,17 +12,17 @@ const Secret = require('../model/Secret');
 const conf = require('../conf');
 
 const log = Logger.getLogger(`${conf.logging.namespace}/secretDao`);
-const auditLog = Logger.getAuditLogger(`${conf.logging.namespace}/secretDao`);
+// const auditLog = Logger.getAuditLogger(`${conf.logging.namespace}/secretDao`);
 
 // retry refresh procedure after ms
 const waitBeforeRetry = 1000;
 //
 
 const shouldAssumeRefreshTimeout = secret => moment().diff(secret.lockedAt) >= conf.refreshTimeout;
-const shouldRefreshToken = secret => moment().diff(secret.value.expires) >= conf.expirationOffset;
+const shouldRefreshToken = secret => moment().diff(secret.value.expires) >= -conf.expirationOffset;
 
 function cryptoSecret(secret, key, method = ENCRYPT, selection = []) {
-    if (!key || typeof key !== 'string') {
+    if (conf.crypto.isDisabled || !key || typeof key !== 'string') {
         return secret;
     }
     const fields = selection.length ? selection : SENSITIVE_FIELDS;
@@ -199,23 +199,42 @@ module.exports = {
             _id: id,
         }, {
             $set: data,
-            $addToSet: {
-                encryptedFields: sensitiveFields,
-            },
+            ...!conf.crypto.isDisabled ? {
+                $addToSet: {
+                    encryptedFields: sensitiveFields,
+                },
+            } : {},
         }, {
             new: true,
         }).lean();
 
         return result;
     },
-    async delete({ id }) {
-        await Secret.full.deleteOne({ _id: id });
-        log.info('deleted.secret', { id });
+    async delete({ id, ownerId }) {
+        const toBeDeleted = await Secret.full.findOne({ _id: id });
+        if (toBeDeleted.owners.length > 1) {
+            toBeDeleted.owners = toBeDeleted.owners.filter(owner => owner.id !== ownerId);
+            await toBeDeleted.save();
+            log.info('owner.deleted.secret', { id, ownerId });
+        } else {
+            await Secret.full.deleteOne({ _id: id });
+            log.info('deleted.secret', { id });
+        }
     },
 
-    async deleteAll(query) {
-        await Secret.full.deleteMany(query);
-        auditLog.info('secret.deleteAll', { data: { ...query } });
+    async deleteAll({ ownerId, type }) {
+        const toBeDeleted = await Secret.full.find({ owners: { id: ownerId, type } });
+        for (const secret of toBeDeleted) {
+            if (secret.owners.length > 1) {
+                // remove ownerid from owners
+                secret.owners = secret.owners.filter(owner => owner.id !== ownerId);
+                await secret.save();
+                log.info('owner.deleted.secret', { id: secret._id, ownerId });
+            } else {
+                await Secret.full.deleteOne({ _id: secret._id });
+                log.info('deleted.secret', { id: secret._id });
+            }
+        }
     },
 
     cryptoSecret,

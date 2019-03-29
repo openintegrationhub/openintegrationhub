@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const owners = require('../schema/owners');
+const owner = require('../schema/owner');
 
-const { OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE, EXTERNAL_SOURCE } = require('../../constant').AUTH_TYPE;
+const { OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE } = require('../../constant').AUTH_TYPE;
 
 const { Schema } = mongoose;
 
@@ -11,12 +11,11 @@ const authClientBaseSchema = new Schema({
         required: true,
     },
     owners: {
-        type: [owners],
+        type: [owner],
         required: true,
     },
     type: {
         type: String,
-        enum: [OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE],
         required: true,
     },
 }, {
@@ -83,12 +82,9 @@ module.exports = {
                 externalId: {
                     source: {
                         type: String,
-                        enum: EXTERNAL_SOURCE,
-                        required: true,
                     },
                     key: {
                         type: String,
-                        required: true,
                     },
                 },
             },

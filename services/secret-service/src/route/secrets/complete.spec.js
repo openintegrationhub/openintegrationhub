@@ -4,9 +4,9 @@ const supertest = require('supertest');
 const nock = require('nock');
 const base64url = require('base64url');
 const iamMock = require('../../test/iamMock');
-
 const Secret = require('../../model/Secret');
 const AuthFlow = require('../../model/AuthFlow');
+
 const conf = require('../../conf');
 const Server = require('../../server');
 const {
@@ -20,12 +20,11 @@ let server;
 
 describe('key adapter', () => {
     beforeAll(async () => {
-        conf.crypto.isDisabled = false;
         port = await getPort();
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         conf.crypto.isDisabled = false;
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-complete-encrypted`,
+            mongoDbConnection: `${global.__MONGO_URI__}-complete`,
             port,
         });
         await server.start();
@@ -40,6 +39,7 @@ describe('key adapter', () => {
         const scope = 'foo bar';
         const key = 'shhhhhh';
         const refreshToken = 'my refresh token';
+        conf.crypto.isDisabled = true;
 
         nock(conf.iam.apiBase.substr(0, conf.iam.apiBase.indexOf('/api')))
             .persist()
@@ -147,8 +147,8 @@ describe('key adapter', () => {
         expect(body.data.value.refreshToken).toEqual(refreshToken);
 
         const secret = await Secret.full.findById(_id);
-        expect(secret.value.accessToken).not.toEqual(newAccessToken);
-        expect(secret.value.refreshToken).not.toEqual(refreshToken);
-        expect(secret.encryptedFields).toHaveLength(2);
+        expect(secret.value.accessToken).toEqual(newAccessToken);
+        expect(secret.value.refreshToken).toEqual(refreshToken);
+        expect(secret.encryptedFields).toHaveLength(0);
     });
 });

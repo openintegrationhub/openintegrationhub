@@ -2,10 +2,11 @@ const getPort = require('get-port');
 const { fork } = require('child_process');
 const supertest = require('supertest');
 const nock = require('nock');
-const iamMock = require('../../test/iamMock');
 const mongoose = require('mongoose');
 const base64url = require('base64url');
+
 const qs = require('qs');
+const iamMock = require('../../test/iamMock');
 const token = require('../../test/tokens');
 const AuthFlow = require('../../model/AuthFlow');
 const Secret = require('../../model/Secret');
@@ -427,7 +428,7 @@ describe('secrets', () => {
         expect(updatedSecret.value.passphrase).toEqual('bar');
     });
 
-    test('Delete secret', async () => {
+    test('Delete secret - SIMPLE', async () => {
         const data = {
             name: 'string99',
             type: SIMPLE,
@@ -450,6 +451,40 @@ describe('secrets', () => {
         await request.get(`/secrets/${body.data._id}`)
             .set(...global.userAuth1)
             .expect(404);
+    });
+
+    test('Delete secret - OAuth2', async () => {
+        // create auth client
+        await request.post('/auth-clients')
+            .set(...global.userAuth1)
+            .send({
+                data: {
+                    type: OA2_AUTHORIZATION_CODE,
+                    name: 'google oAuth2',
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    redirectUri: `http://localhost:${conf.port}/callback`,
+                    endpoints: {
+                        auth: 'https://example.com/auth?'
+                                + 'scope={{scope}}&'
+                                + 'access_type=offline&'
+                                + 'include_granted_scopes=true&'
+                                + 'state={{state}}&'
+                                + 'redirect_uri={{redirectUri}}&'
+                                + 'response_type=code&'
+                                + 'client_id={{clientId}}',
+                        token: 'https://example.com/token',
+                        userinfo: 'https://example.com/userinfo',
+                    },
+                    mappings: {
+                        externalId: {
+                            source: 'id_token',
+                            key: 'sub',
+                        },
+                    },
+                },
+            })
+            .expect(200);
     });
 
     test('Full flow with new client initial request, access token request and auto refresh', async (done) => {
@@ -520,9 +555,6 @@ describe('secrets', () => {
                             source: 'id_token',
                             key: 'sub',
                         },
-                        scope: {
-                            key: 'scope',
-                        },
                     },
                 },
             })
@@ -560,7 +592,7 @@ describe('secrets', () => {
 
         // fetch access-token
         const { body } = await request.get(`/secrets/${_id}`)
-            .set(...global.userAuth1)
+            .set(...global.userToken1ExtraPerm)
             .expect(200);
 
         expect(body.data.value.accessToken).toEqual('new');
@@ -570,7 +602,7 @@ describe('secrets', () => {
             env: {
                 __MONGO_URI__: `${global.__MONGO_URI__}-secrets`,
                 secretId: _id,
-                auth: global.userAuth1,
+                auth: global.userToken1ExtraPerm,
                 IAM_TOKEN: 'SecretServiceIamToken',
             },
         });

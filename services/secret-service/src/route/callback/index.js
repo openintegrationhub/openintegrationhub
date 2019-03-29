@@ -4,7 +4,7 @@ const url = require('url');
 const qs = require('querystring');
 const moment = require('moment');
 const base64url = require('base64url');
-const crypto = require('crypto');
+const find = require('lodash/find');
 const AuthClientDAO = require('../../dao/auth-client');
 const AuthFlowDAO = require('../../dao/auth-flow');
 const SecretDAO = require('../../dao/secret');
@@ -19,6 +19,9 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
     try {
         const queryObject = qs.parse(url.parse(req.originalUrl).query);
+
+        log.debug(queryObject);
+
         const code = queryObject.code;
 
         const stateObject = JSON.parse(base64url.decode(queryObject.state));
@@ -36,18 +39,25 @@ router.get('/', async (req, res, next) => {
             authClient,
             code,
         );
+
         //
+        log.debug('NEW TOKENS');
+        log.debug(tokens);
 
-        const expires = !Number.isNaN(tokens.expires_in)
-            ? moment().add(tokens.expires_in, 'seconds').toISOString() : moment(1e15).toISOString();
+        const expires = (tokens.expires_in !== undefined && !Number.isNaN(tokens.expires_in))
+            ? moment().add(tokens.expires_in, 'seconds').format() : moment(1e15).format();
 
-        let externalId = await authFlowManager.getExternalData(authClient, tokens, 'externalId');
+        const externalId = await authFlowManager.getExternalData(
+            req.app.locals.middleware,
+            authClient,
+            tokens,
+            'externalId',
+        );
 
-        if (externalId) {
-            const hash = crypto.createHash(conf.crypto.alg.hash);
-            hash.update(externalId);
-            externalId = hash.digest('hex');
-        }
+        // // fallback to generated id if not existing
+        // if (!externalId) {
+        //     externalId = uuid.v4();
+        // }
 
         const scope = tokens.scope || tokens.scopes || flow.scope;
 
@@ -55,7 +65,7 @@ router.get('/', async (req, res, next) => {
         let secret = externalId && await SecretDAO.findByExternalId(externalId, flow.authClientId);
 
         if (secret) {
-            secret = await SecretDAO.update({
+            const updatedValues = {
                 id: secret._id,
                 data: {
                     value: {
@@ -66,15 +76,25 @@ router.get('/', async (req, res, next) => {
                         accessToken: tokens.access_token,
                     },
                 },
-            });
+            };
+
+            if (!find(secret.owners, { id: flow.creator })) {
+                updatedValues.data.owners = secret.owners;
+                updatedValues.data.owners.push({
+                    id: flow.creator,
+                    type: flow.creatorType,
+                });
+            }
+
+            secret = await SecretDAO.update(updatedValues);
         } else {
             // create new secret
             secret = await SecretDAO.create({
                 name: flow.secretName || authClient.name,
-                owners: {
+                owners: [{
                     id: flow.creator,
                     type: flow.creatorType,
-                },
+                }],
                 type: authClient.type,
                 value: {
                     authClientId: authClient._id,
