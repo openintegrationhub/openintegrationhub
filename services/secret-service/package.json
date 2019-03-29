@@ -7,6 +7,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "node index.js",
+    "test": "echo \"noop\"",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/secret-service:${VERSION} -f Dockerfile ."
   },
