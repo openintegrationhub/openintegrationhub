@@ -45,7 +45,7 @@ the decision was made in favor for alternative X
 ### Consequences
 
 * Bad scalability: Each new application requires exponential number of flow changes
-* Each integration must be explicitly modelled
+* Each integration must be explicitly modelled from end-to-end
 * Integration patterns must be applied on each flow. E.g. Integration patterns that have been used in a flow from application 1 to 2 must be configured in an integration from application 3 to application 2.
 
 #### Questions
