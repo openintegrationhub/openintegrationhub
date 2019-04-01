@@ -4,8 +4,8 @@ proposed
 
 # Context
 
-As we have to prioritize we need to decide wether we want to implement a proper hub and spoke technology now or postpone it.
-Therefore we mention two alternatives here (hub and spoke vs. flow definition). The decision indicates wether the hub and spoke implementation is postponed (alternative:peer-To-peer) or not (alternative:hub and spoke).
+As we have to prioritize we need to decide wether we want to implement a proper hub and spoke model now or postpone it.
+Therefore we describe two alternatives here (hub and spoke vs. flow definition). The decision indicates wether the hub and spoke implementation is postponed (alternative:peer-To-peer) or not (alternative:hub and spoke).
 
 # Alternatives
 
@@ -21,32 +21,35 @@ Figure 1 illustrates this definition:
 
 ### Decision
 
-the decision was made in favor for alternative X
+a decision is not yet made
 
 ### Consequences
 
 * A dispatcher service must be implented which stores routing information. This services knows which application subscribed to which events and therefore knows to which application certain messages must be forwarded to.
   * The incoming message must then be forwarded to certain message queues (Question: who forwards this message? dispatcher service itself or does it only inform another service which applications has to be served?)
-* Bidirectional communication is easier to realize: A new application only requires a single connections to the Open Integration Hub instead of an exponential number of connections compared to peer-to-peer.
+* Bidirectional communication is easier to implement: A new application only requires a single connections to the Open Integration Hub instead of an exponential number of connections compared to peer-to-peer.
 * Central conflict management is enabled?
+* A common data model is required. All connected applications use transformer components which transforms between the application specific data model and the common data model
 
 ## Peer-To-Peer
 
 Peer to peer definition: "With a point-to-point architecture, systems talk directly to one another. That means the complexity and cost of creating a fully integrated platform increase exponentially as you add new systems. Two systems require one connection. Four require six. Eight require twenty-eight. While initially simpler, the costs significantly outweigh the benefits as your business grows." _-_ [_nchannel.com_](https://www.nchannel.com/blog/4-business-benefits-hub-spoke-integration-architecture/)
 
-In the context of OIH this means that to realize a bidirectional integration between three different a total of 6 flows are required. 
+In the context of OIH this means that to implement a bidirectional integration between three different a total of 6 flows are required for full duplex communication (1 flow if a leading system is defined and the connection is oneway). 
 
 ![Figure2-PeerToPeer](../../assets/PeerToPeer.png)
 
 ### Decision
 
-the decision was made in favor for alternative X
+a decision was not yet made
 
 ### Consequences
 
 * Bad scalability: Each new application requires exponential number of flow changes
+* Fast and easy peer-to-peer integration
 * Each integration must be explicitly modelled from end-to-end
 * Integration patterns must be applied on each flow. E.g. Integration patterns that have been used in a flow from application 1 to 2 must be configured in an integration from application 3 to application 2.
+* Using a common data model is optional
 
 #### Questions
 
