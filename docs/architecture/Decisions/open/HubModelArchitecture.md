@@ -29,7 +29,7 @@ a decision is not yet made
   * The incoming message must then be forwarded to certain message queues (Question: who forwards this message? dispatcher service itself or does it only inform another service which applications has to be served?)
 * Bidirectional communication is easier to implement: A new application only requires a single connections to the Open Integration Hub instead of an exponential number of connections compared to peer-to-peer.
 * Central conflict management is enabled?
-* A common data model is required. All connected applications use transformer components which transform between the application specific data model and the common data model
+* A common data model is required. All connected applications use transformer components which transforms between the application specific data model and the common data model
 
 ## Peer-To-Peer
 
