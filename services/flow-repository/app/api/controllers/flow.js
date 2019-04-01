@@ -29,7 +29,7 @@ router.get('/', jsonParser, async (req, res) => {
   let error = false;
 
   if (!res.locals.admin && credentials.length <= 0) {
-    res.status(403).send({ errors: 'User does not have permissions to view flows' });
+    res.status(403).send({ errors: [{ message: 'User does not have permissions to view flows', code: 403 }] });
   }
 
   let pageSize = 10;
@@ -61,7 +61,7 @@ router.get('/', jsonParser, async (req, res) => {
     } else if (req.query.filter.status === '0') {
       filters.status = 'inactive';
     } else if (!res.headersSent) {
-      res.status(400).send({ errors: 'Invalid filter[status] parameter' });
+      res.status(400).send({ errors: [{ message: 'Invalid filter[status] parameter', code: 400 }] });
       return;
     }
   }
@@ -79,7 +79,7 @@ router.get('/', jsonParser, async (req, res) => {
   // filter[user]
   if (req.query.filter && req.query.filter.user !== undefined) {
     if (!res.locals.admin && (!res.headersSent)) {
-      res.status(403).send({ errors: 'Filtering by user is only available to admins' });
+      res.status(403).send({ errors: [{ message: 'Filtering by user is only available to admins', code: 403 }] });
       return;
     }
     filters.user = req.query.filter.user;
@@ -100,7 +100,7 @@ router.get('/', jsonParser, async (req, res) => {
     if (!(sortField in sortableFields)) error = true;
 
     if (error && !res.headersSent) {
-      res.status(400).send({ errors: 'Invalid sort parameter' });
+      res.status(400).send({ errors: [{ message: 'Invalid sort parameter', code: 400 }] });
       return;
     }
   }
@@ -118,7 +118,7 @@ router.get('/', jsonParser, async (req, res) => {
   }
 
   if (response.data.length === 0 && !res.headersSent) {
-    return res.status(404).send({ errors: 'No flows found' });
+    return res.status(404).send({ errors: [{ message: 'No flows found', code: 404 }] });
   } if (!res.headersSent) {
     response.meta.page = pageNumber;
     response.meta.perPage = pageSize;
@@ -133,7 +133,7 @@ router.post('/', jsonParser, async (req, res) => {
   const credentials = res.locals.credentials[0];
 
   if (!res.locals.admin && credentials.length <= 0) {
-    return res.status(403).send({ errors: 'User does not have permissions to write flows' });
+    return res.status(403).send({ errors: [{ message: 'User does not have permissions to write flows', code: 403 }] });
   }
 
   // Automatically adds the current user as an owner.
@@ -165,7 +165,7 @@ router.post('/', jsonParser, async (req, res) => {
       return res.status(201).send({ data: response, meta: {} });
     } catch (err) {
       log.error(err);
-      return res.status(500).send({ errors: err });
+      return res.status(500).send({ errors: [{ message: err }] });
     }
   }
 });
@@ -183,7 +183,7 @@ router.patch('/:id', jsonParser, async (req, res) => {
   // Get the flow to retrieve the updated version and version history
   const oldFlow = await storage.getFlowById(req.params.id, readCredentials);
   if (!oldFlow) {
-    res.status(404).send({ errors: 'Flow not found' });
+    res.status(404).send({ errors: [{ message: 'Flow not found', code: 404 }] });
   } else {
     if (config.usePermissions) {
       let permitted = false;
@@ -196,7 +196,7 @@ router.patch('/:id', jsonParser, async (req, res) => {
         }
       }
       if (!permitted) {
-        res.status(403).send({ errors: 'User does not have write permissions for this flow' });
+        res.status(403).send({ errors: [{ message: 'User does not have write permissions for this flow', code: 403 }] });
       }
     }
 
@@ -234,7 +234,7 @@ router.patch('/:id', jsonParser, async (req, res) => {
           res.status(200).send({ data: response, meta: {} });
         }
       } catch (err) {
-        res.status(500).send(err);
+        res.status(500).send({ errors: [{ message: err }] });
       }
     }
   }
@@ -247,11 +247,11 @@ router.get('/:id', jsonParser, async (req, res) => {
   let flow;
 
   if (!mongoose.Types.ObjectId.isValid(flowId)) {
-    return res.status(400).send({ errors: 'Invalid id' });
+    return res.status(400).send({ errors: [{ message: 'Invalid id', code: 400 }] });
   }
 
   if (!res.locals.admin && credentials.length <= 0) {
-    return res.status(403).send({ errors: 'User does not have permissions to view flows' });
+    return res.status(403).send({ errors: [{ message: 'User does not have permissions to view flows', code: 403 }] });
   }
 
   if (res.locals.admin) {
@@ -262,7 +262,7 @@ router.get('/:id', jsonParser, async (req, res) => {
 
   if (!res.headersSent) {
     if (!flow) {
-      res.status(404).send({ errors: 'No flow found' });
+      res.status(404).send({ errors: [{ message: 'No flow found', code: 404 }] });
     } else {
       const response = {
         data: flow,
@@ -286,7 +286,7 @@ router.delete('/:id', jsonParser, async (req, res) => {
 
   const oldFlow = await storage.getFlowById(flowId, readCredentials);
   if (!oldFlow) {
-    return res.status(404).send({ errors: 'Flow not found' });
+    return res.status(404).send({ errors: [{ message: 'Flow not found', code: 404 }] });
   }
   if (config.usePermissions) {
     let permitted = false;
@@ -299,7 +299,7 @@ router.delete('/:id', jsonParser, async (req, res) => {
       }
     }
     if (!permitted) {
-      return res.status(403).send({ errors: 'User does not have write permissions for this flow' });
+      return res.status(403).send({ errors: [{ message: 'User does not have write permissions for this flow', code: 403 }] });
     }
   }
 
@@ -307,7 +307,7 @@ router.delete('/:id', jsonParser, async (req, res) => {
     const response = await storage.deleteFlow(flowId, writeCredentials);
 
     if (!response) {
-      res.status(404).send({ errors: 'Flow not found' });
+      res.status(404).send({ errors: [{ message: 'Flow not found', code: 404 }] });
     } else {
       const ev = {
         name: 'flowDeleted',
