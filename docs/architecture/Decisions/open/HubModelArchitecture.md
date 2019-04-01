@@ -37,7 +37,7 @@ a decision is not yet made
 
 Peer to peer definition: "With a point-to-point architecture, systems talk directly to one another. That means the complexity and cost of creating a fully integrated platform increase exponentially as you add new systems. Two systems require one connection. Four require six. Eight require twenty-eight. While initially simpler, the costs significantly outweigh the benefits as your business grows." _-_ [_nchannel.com_](https://www.nchannel.com/blog/4-business-benefits-hub-spoke-integration-architecture/)
 
-In the context of OIH this means that to implement a bidirectional integration between three different a total of 6 flows are required for full duplex communication (1 flow if a leading system is defined and the connection is oneway). 
+In the context of OIH this means that to implement a bidirectional integration between three different a total of 6 flows are required for full duplex communication (1 flow if a leading system is defined and the connection is oneway). These flows can either be realized by single flows or by "branched" flows. Branched flows means that we define a flow with one source but explicilty define a set of targets as shown in the figure below.
 
 ![Figure2-PeerToPeer](../../assets/PeerToPeer.png)
 
