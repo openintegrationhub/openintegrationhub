@@ -151,7 +151,7 @@ describe('Flow Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('No flows found');
+    expect(res.body.errors[0].message).toEqual('No flows found');
   });
 
   test('should not show the flow to another users get', async () => {
@@ -161,7 +161,7 @@ describe('Flow Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('No flow found');
+    expect(res.body.errors[0].message).toEqual('No flow found');
   });
 
   test('should return 400 when attempting to get an invalid id', async () => {
@@ -180,7 +180,7 @@ describe('Flow Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('No flow found');
+    expect(res.body.errors[0].message).toEqual('No flow found');
   });
 
   test('should add a second flow', async () => {
@@ -375,7 +375,7 @@ describe('Flow Operations', () => {
       });
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('Flow not found');
+    expect(res.body.errors[0].message).toEqual('Flow not found');
   });
 });
 
@@ -417,6 +417,6 @@ describe('Cleanup', () => {
       .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('No flow found');
+    expect(res.body.errors[0].message).toEqual('No flow found');
   });
 });
