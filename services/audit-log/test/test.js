@@ -159,7 +159,7 @@ describe('Log Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
-    expect(res.text).toEqual('No logs found');
+    expect(res.body.errors[0].message).toEqual('No logs found');
   });
 
   test('should show only logs of the same tenant to a user', async () => {

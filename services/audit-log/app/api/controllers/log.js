@@ -20,7 +20,7 @@ router.get('/', jsonParser, async (req, res) => {
   let response;
 
   if (!res.locals.admin && credentials.length <= 0) {
-    res.status(403).send('User does not have permissions to view logs');
+    res.status(403).send({ errors: [{ message: 'User does not have permissions to view logs', code: 403 }] });
   }
 
   let pageSize = 10;
@@ -92,7 +92,7 @@ router.get('/', jsonParser, async (req, res) => {
   }
 
   if (response.data.length === 0 && !res.headersSent) {
-    return res.status(404).send('No logs found');
+    return res.status(404).send({ errors: [{ message: 'No logs found', code: 404 }] });
   } if (!res.headersSent) {
     response.meta.page = pageNumber;
     response.meta.perPage = pageSize;
