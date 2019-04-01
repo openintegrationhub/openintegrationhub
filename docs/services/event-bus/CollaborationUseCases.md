@@ -25,6 +25,7 @@ Each use case is described through a graphical overview, a textual description a
     - [POST Request](#post-request)
     - [GET Request](#get-request)
     - [Healtcheck Request](#healtcheck-request)
+  - [Request Resources](#request-resources)
 
 ## Starting a flow
 
@@ -42,6 +43,8 @@ This use cases describes the scenario of starting a flow. Once the user starts a
 8. When a client stops a running flow using flow repository's REST API, the event `flow.stopping` is raised which is causing an inverse reaction chain of events.
 
 ![startFlow](assets/EventCollaborationStartFlow.png)
+
+Figure: _startFlow_
 
 ### Detailed Service Consideration
 
@@ -82,8 +85,8 @@ The `payload` property is an arbitrary object to be sent with the event. Flow re
 
 We also need to extend the `flow` model in the API by the following properties:
 
-* `id`: required
-* `cron`: required for polling flows and defaults to `*/3 * * * *` if not set for a polling flow. Must not be set for a webhook flow.
+- `id`: required
+- `cron`: required for polling flows and defaults to `*/3 * * * *` if not set for a polling flow. Must not be set for a webhook flow.
 
 #### Webhooks
 
@@ -98,7 +101,7 @@ After receiving the `flow.started` event, the service starts accepting incoming 
 
 Please note that the webhooks service ignores the event if at least one of the following conditions is met:
 
-* `cron` property is present in the event
+- `cron` property is present in the event
 
 Upon receiving the `flow.stopping` event, the service deletes the record for the given flow and stops accepting requests.
 
@@ -115,7 +118,7 @@ Upon receiving the `flow.started` event the service starts scheduling the flow e
 
 Please note that the scheduler service ignores the event if at least one of the following conditions is met:
 
-* `cron` property is **not** present in the event
+- `cron` property is **not** present in the event
 
 Upon receiving the `flow.stopping` event, the service deletes the record for the given flow and stops scheduling flow executions.
 
@@ -148,6 +151,8 @@ The message format of the messages emitted by scheduler have the following struc
 
 ![webhookPost](assets/ExecutePollingFlow.png)
 
+Figure: _executePollingFlow_
+
 ## Execute Webhook Flow
 
 ### POST Request
@@ -176,6 +181,8 @@ The following example shows the message format of Webhooks messages:
 
 ![webhookPost](assets/ExecuteWebhookFlowPost.png)
 
+Figure: _executeWebhookFlowPost_
+
 ### GET Request
 
 **Pre-Conditions:** Starting a flow.
@@ -200,6 +207,24 @@ An examplary webhook GET request could look like the following: `GET /hook/<flow
 
 ![webhookPost](assets/ExecuteWebhookFlowGET.png)
 
+Figure: _executeWebhookFlowGet_
+
 ### Healtcheck Request
 
 Tbd
+
+## Request Resources
+
+Once a user logs in into IAM he receives an ephemeral token which can be used for requesting oih resources. When a user requests a certain resource (e.g. all user related flows) the target service introspects the users' token at IAM. This is done using IAM utils (middleware). The service then receives several user information related to this token. These information can be e.g. username, tenant, role and the permissions the user has. If the user has the permission to request the certain resource the service responds with the requested information (Figur _requestResourceSuccess_). If the user requests a resource without the permission to do so the service will response with an error message (Figur _requestResourceSuccess_).
+
+![requestResourceSuccess](assets/requestResourceSuccess.png)
+
+Figure: _requestResourceSuccess_
+
+![requestResourceSuccess](assets/requestResourceFail.png)
+
+Figure: _requestResourceSuccess_
+
+**1**: Ephemeral token<br>
+**2**: Service makes request with service account token<br>
+**3**: User information e.g.: username, tenant, tenant specific role, permissions
