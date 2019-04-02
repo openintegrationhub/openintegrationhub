@@ -23,6 +23,10 @@
     "emit_data": {
       "main": "./triggers/emit_data.js",
       "title": "emits data"
+    },
+    "async_trigger": {
+      "main": "./triggers/async.js",
+      "title": "async trigger"
     }
   },
   "actions": {

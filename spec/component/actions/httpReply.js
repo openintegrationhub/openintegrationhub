@@ -1,7 +1,7 @@
 exports.process = processAction;
 
-function processAction(msg, cfg) {
-    this.emit('httpReply', {
+async function processAction(msg, cfg) {
+    await this.emit('httpReply', {
         statusCode: 200,
         body: 'Ok',
         headers: {
@@ -9,8 +9,8 @@ function processAction(msg, cfg) {
         }
     });
 
-    this.emit('data', {
+    await this.emit('data', {
         body: {}
     });
-    this.emit('end');
+    await this.emit('end');
 }

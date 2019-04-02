@@ -400,7 +400,7 @@ describe('Sailor', () => {
             spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
                 expect(taskId).toEqual('5559edd38968ec0736000003');
                 expect(stepId).toEqual('step_1');
-                return Q({
+                return Promise.resolve({
                     config: {
                         _account: '1234567890'
                     }
@@ -410,25 +410,25 @@ describe('Sailor', () => {
             spyOn(sailor.apiClient.accounts, 'update').andCallFake((accountId, keys) => {
                 expect(accountId).toEqual('1234567890');
                 expect(keys).toEqual({ keys: { oauth: { access_token: 'newAccessToken' } } });
-                return Q.reject(new Error('Update keys error'));
+                return Promise.reject(new Error('Update keys error'));
             });
+            async function test() {
+                await sailor.prepare();
+                await sailor.connect();
+                await sailor.processMessage(payload, message);
+                // It will not throw an error because component
+                // process method is not `async`
+                expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+                expect(sailor.apiClient.accounts.update).toHaveBeenCalled();
 
-            sailor.prepare()
-                .then(() => sailor.connect())
-                .then(() => sailor.processMessage(payload, message))
-                .then(() => {
-                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
-                    expect(sailor.apiClient.accounts.update).toHaveBeenCalled();
-
-                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
-                    expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
-                    expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Update keys error');
-                    expect(fakeAMQPConnection.ack).toHaveBeenCalled();
-                    expect(fakeAMQPConnection.ack.callCount).toEqual(1);
-                    expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
-                    done();
-                })
-                .catch(done);
+                expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendError).toHaveBeenCalled();
+                expect(fakeAMQPConnection.sendError.calls[0].args[0].message).toEqual('Update keys error');
+                expect(fakeAMQPConnection.ack).toHaveBeenCalled();
+                expect(fakeAMQPConnection.ack.callCount).toEqual(1);
+                expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+            }
+            test().then(done,done);
         });
 
         it('should call sendRebound() and ack()', done => {

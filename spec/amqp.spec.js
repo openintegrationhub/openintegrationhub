@@ -28,6 +28,7 @@ describe('AMQP', () => {
     const settings = require('../lib/settings.js').readFrom(envVars);
     const encryptor = require('../lib/encryptor.js');
     const _ = require('lodash');
+    const pThrottle = require('p-throttle');
 
     const message = {
         fields: {
@@ -105,6 +106,64 @@ describe('AMQP', () => {
         });
     });
 
+    it('Should send message async to outgoing channel when process data', done => {
+        const amqp = new Amqp(settings);
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['on']);
+        amqp.publishChannel.publish = () => true;
+        spyOn(amqp.publishChannel, 'publish').andReturn(true);
+        amqp.publishChannel.waitForConfirms = () => Promise.resolve([null]);
+
+        const props = {
+            contentType: 'application/json',
+            contentEncoding: 'utf8',
+            mandatory: true,
+            headers: {
+                taskId: 'task1234567890',
+                stepId: 'step_456'
+            }
+        };
+        // One request every 500 ms
+        const throttle = pThrottle(() => Promise.resolve(), 1, 500);
+        const start = Date.now();
+        async function test() {
+            for (let i = 0; i < 3; i++) {
+                await amqp.sendData({
+                    headers: {
+                        'some-other-header': 'headerValue'
+                    },
+                    body: 'Message content'
+                }, props, throttle);
+            }
+        }
+        test().then(() => {
+            const duration = Math.round((Date.now() - start) / 1000);
+            // Total duration should be around 1 seconds, because
+            // first goes through
+            // second throttled for 500ms
+            // third throttled for another 500 ms
+            expect(duration).toEqual(1);
+            expect(amqp.publishChannel.publish).toHaveBeenCalled();
+            expect(amqp.publishChannel.publish.callCount).toEqual(3);
+
+            const publishParameters = amqp.publishChannel.publish.calls[0].args;
+            expect(publishParameters).toEqual([
+                settings.PUBLISH_MESSAGES_TO,
+                settings.DATA_ROUTING_KEY,
+                jasmine.any(Object),
+                props
+            ]);
+
+            const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+            expect(payload).toEqual({
+                headers: {
+                    'some-other-header': 'headerValue'
+                },
+                body: 'Message content'
+            });
+            done();
+        }, done);
+    });
+
     it('Should sendHttpReply to outgoing channel using routing key from headers when process data', () => {
 
         const amqp = new Amqp(settings);
@@ -143,7 +202,7 @@ describe('AMQP', () => {
         expect(payload).toEqual(msg);
     });
 
-    it('Should throw error in sendHttpReply if reply_to header not found', () => {
+    it('Should throw error in sendHttpReply if reply_to header not found', done => {
 
         const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
@@ -155,9 +214,8 @@ describe('AMQP', () => {
             },
             body: 'OK'
         };
-
-        expect(() => {
-            amqp.sendHttpReply(msg, {
+        async function test() {
+            await amqp.sendHttpReply(msg, {
                 contentType: 'application/json',
                 contentEncoding: 'utf8',
                 mandatory: true,
@@ -166,11 +224,12 @@ describe('AMQP', () => {
                     stepId: 'step_456'
                 }
             });
+        }
+        test().then(() => done(new Error('should throw')),(err) => {
+            expect(amqp.publishChannel.publish).not.toHaveBeenCalled();
+            done();
+        });
 
-        }).toThrow('Component emitted \'httpReply\' event but \'reply_to\' was not found in AMQP headers');
-
-
-        expect(amqp.publishChannel.publish).not.toHaveBeenCalled();
     });
 
     it('Should send message to outgoing channel using routing key from headers when process data', () => {
@@ -262,7 +321,7 @@ describe('AMQP', () => {
         });
     });
 
-    it('Should send message to errors using routing key from headers when process error', () => {
+    it('Should send message to errors using routing key from headers when process error', async () => {
 
         const expectedErrorPayload = {
             error: {
@@ -289,7 +348,7 @@ describe('AMQP', () => {
             }
         };
 
-        amqp.sendError(new Error('Test error'), props, message.content);
+        await amqp.sendError(new Error('Test error'), props, message.content);
 
         expect(amqp.publishChannel.publish).toHaveBeenCalled();
         expect(amqp.publishChannel.publish.callCount).toEqual(2);

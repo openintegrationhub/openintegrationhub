@@ -230,6 +230,104 @@ describe('Integration Test', () => {
             run = requireRun();
         });
 
+        it('should work well with async process function emitting data', done => {
+            process.env.ELASTICIO_STEP_ID = 'step_2';
+            process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
+            process.env.ELASTICIO_FUNCTION = 'async_trigger';
+            process.env.ELASTICIO_DATA_RATE_LIMIT = '1';
+            process.env.ELASTICIO_RATE_INTERVAL = '110';
+
+            helpers.mockApiTaskStepResponse({
+                is_passthrough: true
+            });
+
+            const psMsg = Object.assign(inputMessage, {
+                passthrough: {
+                    step_1: {
+                        id: '34',
+                        body: {},
+                        attachments: {}
+                    }
+                }
+            });
+
+            amqpHelper.publishMessage(psMsg, {
+                parentMessageId,
+                traceId
+            });
+
+            let counter = 0;
+            const start = Date.now();
+            amqpHelper.on('data', ({ properties, emittedMessage }, queueName) => {
+
+                expect(queueName).to.eql(amqpHelper.nextStepQueue);
+
+                expect(emittedMessage.passthrough).to.deep.eql({
+                    step_1: {
+                        id: '34',
+                        body: {},
+                        attachments: {}
+                    },
+                    step_2: {
+                        id: messageId,
+                        headers: {
+                            'x-custom-component-header': '123_abc'
+                        },
+                        body: {
+                            id: 'someId',
+                            hai: 'there'
+                        }
+                    }
+                });
+
+
+                delete properties.headers.start;
+                delete properties.headers.end;
+                delete properties.headers.cid;
+
+                expect(properties.headers).to.deep.equal({
+                    'taskId': process.env.ELASTICIO_FLOW_ID,
+                    'execId': process.env.ELASTICIO_EXEC_ID,
+                    'userId': process.env.ELASTICIO_USER_ID,
+                    'x-eio-meta-trace-id': traceId,
+                    'stepId': process.env.ELASTICIO_STEP_ID,
+                    'compId': process.env.ELASTICIO_COMP_ID,
+                    'function': process.env.ELASTICIO_FUNCTION,
+                    messageId,
+                    parentMessageId
+                });
+
+                delete properties.headers;
+
+                expect(properties).to.deep.eql({
+                    contentType: 'application/json',
+                    contentEncoding: 'utf8',
+                    deliveryMode: undefined,
+                    priority: undefined,
+                    correlationId: undefined,
+                    replyTo: undefined,
+                    expiration: undefined,
+                    messageId: undefined,
+                    timestamp: undefined,
+                    type: undefined,
+                    userId: undefined,
+                    appId: undefined,
+                    clusterId: undefined
+                });
+
+                counter++;
+                // We need 10 messages
+                if (counter > 10) {
+                    const duration = Date.now() - start;
+                    console.log(`Test duration was ${duration} milliseconds, it should be more than 1000`);
+                    expect(duration > 1000).to.be.ok;
+                    done();
+                }
+            });
+
+            run = requireRun();
+        });
+
         describe('when env ELASTICIO_STARTUP_REQUIRED is set', () => {
 
             beforeEach(() => {
