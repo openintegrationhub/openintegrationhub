@@ -13,6 +13,7 @@
 This document is designed to describe different service collaboration use cases.
 
 Each use case is described through a graphical overview, a textual description and pre-conditions.
+For further information for a specific version please have a look at the [services](../../../services) itself.
 
 - [Introduction](#introduction)
   - [Starting a flow](#starting-a-flow)
@@ -26,6 +27,7 @@ Each use case is described through a graphical overview, a textual description a
     - [GET Request](#get-request)
     - [Healtcheck Request](#healtcheck-request)
   - [Request Resources](#request-resources)
+  - [Creating audit log records](#creating-audit-log-records)
 
 ## Starting a flow
 
@@ -54,8 +56,8 @@ Now let's discuss the individual services in details.
 
 We need to extend the API by the following resources:
 
-* `POST /flows/{id}/start`: Used to start a flow
-* `POST /flows/{id}/stop`: Used to stop a flow
+- `POST /flows/{id}/start`: Used to start a flow
+- `POST /flows/{id}/stop`: Used to stop a flow
 
 Starting a flow means setting flow's `status` to `active` and raising `flow.starting` event. Stopping a flow means setting flow's `status` to `inactive` and raising `flow.stopping` event. The schema of the event payload is shown below.
 
@@ -215,16 +217,19 @@ Tbd
 
 ## Request Resources
 
-Once a user logs in into IAM he receives an ephemeral token which can be used for requesting oih resources. When a user requests a certain resource (e.g. all user related flows) the target service introspects the users' token at IAM. This is done using IAM utils (middleware). The service then receives several user information related to this token. These information can be e.g. username, tenant, role and the permissions the user has. If the user has the permission to request the certain resource the service responds with the requested information (Figur _requestResourceSuccess_). If the user requests a resource without the permission to do so the service will response with an error message (Figur _requestResourceSuccess_).
+Once a user logs in into IAM she receives an ephemeral token which can be used for requesting oih resources. When a user requests a certain resource (e.g. all user related flows) the target service introspects the users' token at IAM. This is done using IAM utils (middleware). The service then receives several user information related to this token. These information can be e.g. username, tenant, role and the permissions the user has. If the user has the permission to request the certain resource the service responds with the requested information (Figur _requestResourceSuccess_).
 
 ![requestResourceSuccess](assets/requestResourceSuccess.png)
-
-Figure: _requestResourceSuccess_
-
-![requestResourceSuccess](assets/requestResourceFail.png)
 
 Figure: _requestResourceSuccess_
 
 **1**: Ephemeral token<br>
 **2**: Service makes request with service account token<br>
 **3**: User information e.g.: username, tenant, tenant specific role, permissions
+
+## Creating audit log records
+
+To create a record that should be stored in the audit log a service simply has to put a message onto the queue with a predefined topic. Each service decides on its own, which events should be stored in the audit log service.
+Audit log listens to all events having `audit.*` as topic.
+
+![creatingAuditLogEvents](assets/CreatingAuditLog.png)
