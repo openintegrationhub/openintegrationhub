@@ -38,3 +38,9 @@ spec:
       - backend:
           serviceName: audit-log
           servicePort: 3007
+  - host: metadata.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: meta-data-repository
+          servicePort: 3000
