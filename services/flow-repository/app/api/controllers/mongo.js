@@ -84,11 +84,9 @@ const getFlows = async ( // eslint-disable-line
     .then((doc) => {
       const flows = doc;
       for (let i = 0; i < flows.length; i += 1) {
-        flows[i].id = flows[i]._id;
-        delete flows[i]._id;
-        delete flows[i].__v;
+        flows[i] = format(flows[i]);
       }
-      resolve({ data: doc, meta: { total: count } });
+      resolve({ data: flows, meta: { total: count } });
     })
     .catch((err) => {
       log.error(err);

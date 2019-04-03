@@ -71,7 +71,7 @@ router.get('/', jsonParser, async (req, res) => {
     if (req.query.filter.type in filterTypes) {
       filters.type = req.query.filter.type;
     } else if (!res.headersSent) {
-      res.status(400).send({ errors: 'Invalid filter[type] parameter' });
+      res.status(400).send({ errors: [{ message: 'Invalid filter[type] parameter' }] });
       return;
     }
   }

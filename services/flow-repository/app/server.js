@@ -34,7 +34,7 @@ class Server {
       try {
         await iamMiddleware.middleware(req, res, next);
       } catch (error) {
-        return res.status(401).send(`Authentication middleware failed with error: ${error}`);
+        return res.status(401).send({ errors: [{ message: `Authentication middleware failed with error: ${error}` }] });
       }
     });
 
@@ -43,11 +43,11 @@ class Server {
     this.app.use('/flows', async (req, res, next) => {
       // Checks whether iam middleare successfully added Heimdal object
       if (!req.__HEIMDAL__) {
-        return res.status(401).send('Authentication middleware did not find memberships');
+        return res.status(401).send({ errors: [{ message: 'Authentication middleware did not find data' }] });
       }
 
       if (this.mongoose.connection.readyState !== 1) {
-        return res.status(401).send(`NO DB. Please try again later [${this.mongoose.connection.readyState}] `);
+        return res.status(401).send({ errors: [{ message: `NO DB. Please try again later [${this.mongoose.connection.readyState}] ` }] });
       }
 
       // local copy of the user object
