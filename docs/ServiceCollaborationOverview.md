@@ -10,9 +10,10 @@
 
 # Introduction
 
-This document is designed to describe different service collaboration use cases.
+This document is designed to describe different service collaboration examples. It should act as a starting point to easily understanding the architecture of the Open Integration Hub.
+Most of the examples are triggered by user interactions (e.g. starting a flow) and only the "happy path" i.e. success scenario is described.
 
-Each use case is described through a graphical overview, a textual description and pre-conditions.
+Each example is described through a graphical overview, a textual description and pre-conditions.
 For further information for a specific version please have a look at the [services](../../../services) itself.
 
 - [Introduction](#introduction)
@@ -33,7 +34,7 @@ For further information for a specific version please have a look at the [servic
 
 **Pre-Conditions:** None.
 
-This use cases describes the scenario of starting a flow. Once the user starts a flow the following steps are processed:
+This example describes the scenario of starting a flow. Once the user starts a flow the following steps are processed:
 
 1. Client starts a flow using flow repository's REST API
 2. `Flow Repository` sets the flow's `status` to `starting` and raises the event `flow.starting` 
