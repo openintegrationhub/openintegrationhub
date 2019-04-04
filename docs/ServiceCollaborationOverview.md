@@ -54,12 +54,10 @@ Now let's discuss the individual services in details.
 
 #### Flow repository
 
-We need to extend the API by the following resources:
-
 - `POST /flows/{id}/start`: Used to start a flow
 - `POST /flows/{id}/stop`: Used to stop a flow
 
-Starting a flow means setting flow's `status` to `active` and raising `flow.starting` event. Stopping a flow means setting flow's `status` to `inactive` and raising `flow.stopping` event. The schema of the event payload is shown below.
+Upon receiving the HTTP call for starting a flow, Flow Repository sets the flows `status` to starting. Upon receiving stopping request it sets the status to `stopping`. If the flow has been started and flow repsitory receives `flow.started` event it sets the status to `active` while it sets it to `inactive` upon receiving `flow.stopped`. The schema of the event payload is shown below.
 
 ```yaml
 Event:
@@ -79,20 +77,17 @@ Event:
         createdAt:
           type: string
           format: date-time
+        serviceName:
+          type: string
     payload:
       type: object
 ```
 
-The `payload` property is an arbitrary object to be sent with the event. Flow repository will send the entire flow as `payload`. 
-
-We also need to extend the `flow` model in the API by the following properties:
-
-- `id`: required
-- `cron`: required for polling flows and defaults to `*/3 * * * *` if not set for a polling flow. Must not be set for a webhook flow.
+The `payload` property is an arbitrary object to be sent with the event. Flow repository will send the entire flow as `payload`.
 
 #### Webhooks
 
-Upon receiving `flow.starting` event the service checks if the `isWebhook` property is set. If so, the service persist a data record in his local DB but **doesn't start receiving HTTP requests** for the given flow yet. The following table demonstrates an example of such records.
+Upon receiving `flow.starting` event the service checks if the `cron` property is **not** set. If so, the service persist a data record in his local DB but **doesn't start receiving HTTP requests** for the given flow yet. The following table demonstrates an example of such records.
 
 | flowId        | queue           | 
 | ------------- |:-------------:|
@@ -101,9 +96,9 @@ Upon receiving `flow.starting` event the service checks if the `isWebhook` prope
 
 After receiving the `flow.started` event, the service starts accepting incoming messages from the flow's webhook URL and sends them to the corresponding queues to be handled by flow nodes. This is actually how it is accomplished today. The only difference is that webhooks service is retrieving all the required data about a webhook flow from its local DB.
 
-Please note that the webhooks service ignores the event if at least one of the following conditions is met:
+Please note that the webhooks service ignores the event if the following condition is met:
 
-- `cron` property is present in the event
+- `cron` property is set in the event
 
 Upon receiving the `flow.stopping` event, the service deletes the record for the given flow and stops accepting requests.
 
@@ -118,9 +113,9 @@ Upon receiving `flow.starting` event the service checks if the `cron` property i
 
 Upon receiving the `flow.started` event the service starts scheduling the flow executions by retrieving the flow data from its local DB.
 
-Please note that the scheduler service ignores the event if at least one of the following conditions is met:
+Please note that the scheduler service ignores the event if the following condition is met:
 
-- `cron` property is **not** present in the event
+- `cron` property is **not** set in the event
 
 Upon receiving the `flow.stopping` event, the service deletes the record for the given flow and stops scheduling flow executions.
 
