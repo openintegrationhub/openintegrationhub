@@ -26,7 +26,6 @@ For further information for a specific version please have a look at the [servic
   - [Execute Webhook Flow](#execute-webhook-flow)
     - [POST Request](#post-request)
     - [GET Request](#get-request)
-    - [Healtcheck Request](#healtcheck-request)
   - [Request Resources](#request-resources)
   - [Creating audit log records](#creating-audit-log-records)
 
@@ -36,8 +35,8 @@ For further information for a specific version please have a look at the [servic
 
 This example describes the scenario of starting a flow. Once the user starts a flow the following steps are processed:
 
-1. Client starts a flow using flow repository's REST API
-2. `Flow Repository` sets the flow's `status` to `starting` and raises the event `flow.starting` 
+1. Client starts a flow using flow repository's REST API.
+2. `Flow Repository` sets the flow's `status` to `starting` and raises the event `flow.starting`.
 3. There are 3 services listening to the event `flow.starting`:  Webhooks, Scheduler and Resource Coordinator. `Webhooks` and `Scheduler` examine the event's payload and decide if they need to react appropriately. We will discuss the exact reaction of both services later in this document.
 4. Upon receiving `flow.starting` event the `Resource Coordinator` starts deploying the containers. Once all containers were deployed, `Resource Coordinator` raises the `flow.started` event.
 5. `Flow Repository` receives the `flow.started` event and switches flow's `status` property from `starting` to `started`.
@@ -212,13 +211,19 @@ An examplary webhook GET request could look like the following: `GET /hook/<flow
 
 Figure: _executeWebhookFlowGet_
 
-### Healtcheck Request
-
-Tbd
-
 ## Request Resources
 
-Once a user logs in into IAM she receives an ephemeral token which can be used for requesting oih resources. When a user requests a certain resource (e.g. all user related flows) the target service introspects the users' token at IAM. This is done using IAM utils (middleware). The service then receives several user information related to this token. These information can be e.g. username, tenant, role and the permissions the user has. If the user has the permission to request the certain resource the service responds with the requested information (Figur _requestResourceSuccess_).
+The following example shows how a user can request a resource using IAM. The graphic below shows how this example would look like if a user request a resource from the flow repository.
+
+1. User logs in into IAM.
+2. IAM responds with an ephemeral token.
+3. User uses the ephemeral token to request a cetrain resource (e.g. a specific flow by id).
+4. Flow repository introspects the ephemeral token at IAM (services accounts receive a permanent token when they first register) using IAM utils (middleware).
+5. IAM responds with user information such as username, tenant, tenant specific role and user permissions related to this token.
+6. Flow Repsitory checks if the user has the user has the permission to request the resource.
+7. Flow repository responds with the requested information.
+
+Illustration of this process:  (Figur _requestResourceSuccess_).
 
 ![requestResourceSuccess](assets/requestResourceSuccess.png)
 
