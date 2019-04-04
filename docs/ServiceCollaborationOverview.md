@@ -71,6 +71,7 @@ Event:
        required:
          - name
          - createdAt
+         - serviceName
       properties:
         name:
           type: string
