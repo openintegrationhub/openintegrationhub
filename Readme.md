@@ -40,7 +40,7 @@ A description how to test the platform will follow soon.
 
 ### Audit Log
 
-The OIH `Audit Log` serves to receive, store, and return logging information about important user actions and system events. Other OIH Microservices can generate audit messages and pass them on to the Audit Log via the message and event bus or a simple HTTP POST request. For further information see: [audit log](services/audit-log) and [audit-log docs](docs/audit-log).
+The OIH `Audit Log` serves to receive, store, and return logging information about important user actions and system events. Other OIH Microservices can generate audit messages and pass them on to the Audit Log via the message and event bus or a simple HTTP POST request. For further information see: [audit log](services/audit-log) and [audit-log docs](docs/services/audit-log).
 
 ### Component Orchestrator
 
@@ -49,16 +49,16 @@ For further information see: [component orchestrator service](services/component
 
 ### Flow Respository
 
-The `flow repository` is responsible for storing, retrieving and updating the integration flows of the Open Integration Hub. For further information see: [flow repository](services/integration-content-repository) and [flow repository docs](docs/FlowRepository.md).
+The `flow repository` is responsible for storing, retrieving and updating the integration flows of the Open Integration Hub. For further information see: [flow repository](services/integration-content-repository) and [flow repository docs](docs/services/FlowRepository.md).
 
 ### IAM
 
 The `IAM` (Identity and Access Management) provides basic (JWT only) and advanced (OpenId-Connect compatible) Authentication, Authorization and User management as a service.
-For further information see: [IAM](services/iam) and [IAM docs](docs/IAM).
+For further information see: [IAM](services/iam) and [IAM docs](docs/services/IAM).
 
 ### Meta Data Repository
 
-The `meta data repository` is responsible for storing domains and their master data models. The models stored within this service are consulted for different tasks such as data validation. The meta models are also used by the transformer to map the incoming data onto the Open Integration Hub standard. For further information see: [meta data repository](services/meta-data-repository) and [meta data repository docs](docs/MetaDataRepository.md).
+The `meta data repository` is responsible for storing domains and their master data models. The models stored within this service are consulted for different tasks such as data validation. The meta models are also used by the transformer to map the incoming data onto the Open Integration Hub standard. For further information see: [meta data repository](services/meta-data-repository) and [meta data repository docs](docs/services/MetaDataRepository.md).
 
 ### Scheduler
 
