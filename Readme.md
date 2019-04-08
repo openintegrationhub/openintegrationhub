@@ -40,11 +40,11 @@ A description how to test the platform will follow soon.
 
 ### Audit Log
 
-The OIH Audit Log serves to receive, store, and return logging information about important user actions and system events. Other OIH Microservices can generate audit messages and pass them on to the Audit Log via the message and event bus or a simple HTTP POST request. For further information see: [audit log](services/audit-log) and [audit-log docs](docs/audit-log).
+The OIH `Audit Log` serves to receive, store, and return logging information about important user actions and system events. Other OIH Microservices can generate audit messages and pass them on to the Audit Log via the message and event bus or a simple HTTP POST request. For further information see: [audit log](services/audit-log) and [audit-log docs](docs/audit-log).
 
 ### Component Orchestrator
 
-The component orchestrator rchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Docker containers for each flow node on flow creation and cleans up on flow deletion.
+The `component orchestrator` orchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Docker containers for each flow node on flow creation and cleans up on flow deletion.
 For further information see: [component orchestrator service](services/component-orchestrator).
 
 ### Flow Respository
@@ -58,7 +58,7 @@ For further information see: [IAM](services/iam) and [IAM docs](docs/IAM).
 
 ### Meta Data Repository
 
-The meta data repository is responsible for storing domains and their master data models. The models stored within this service are consulted for different tasks such as data validation. The meta models are also used by the transformer to map the incoming data onto the Open Integration Hub standard. For further information see: [meta data repository](services/meta-data-repository) and [meta data repository docs](docs/MetaDataRepository.md).
+The `meta data repository` is responsible for storing domains and their master data models. The models stored within this service are consulted for different tasks such as data validation. The meta models are also used by the transformer to map the incoming data onto the Open Integration Hub standard. For further information see: [meta data repository](services/meta-data-repository) and [meta data repository docs](docs/MetaDataRepository.md).
 
 ### Scheduler
 
@@ -66,7 +66,7 @@ The `scheduler` services schedules integration flows for execution. For further 
 
 ### Secret Service
 
-This `secrets-service`  is used to store and access securely client secrets/credentials. For further information see: [secret service](services/secret-service).
+This `secret-service`  is used to store and access securely client secrets/credentials. For further information see: [secret service](services/secret-service).
 
 ### Webhooks
 
