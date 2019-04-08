@@ -12,20 +12,22 @@ The purpose of the Open Integration Hub is to enhance business by simplifying in
 Open Integration Hub requires only a single connection to the framework.
 
 - [Introduction](#introduction)
-  - [OIH microservices](#oih-microservices)
+  - [OIH Microservices](#oih-microservices)
     - [Installation](#installation)
-    - [Webhooks](#webhooks)
-    - [IAM](#iam)
-    - [Flow Resporitory](#flow-resporitory)
+    - [Audit Log](#audit-log)
     - [Component Orchestrator](#component-orchestrator)
+    - [Flow Respository](#flow-respository)
+    - [IAM](#iam)
+    - [Meta Data Repository](#meta-data-repository)
     - [Scheduler](#scheduler)
-    - [Secrets-Service](#secrets-service)
+    - [Secret Service](#secret-service)
+    - [Webhooks](#webhooks)
   - [Service Collaboration](#service-collaboration)
   - [Docs](#docs)
   - [Contribution](#contribution)
     - [Code of Conduct](#code-of-conduct)
 
-## OIH microservices
+## OIH Microservices
 
 Standalone platform that is based on a microservice architecure. In the following a short description of the service is provided. 
 
@@ -34,47 +36,52 @@ Standalone platform that is based on a microservice architecure. In the followin
 As the Open Integration Hub is still in development it can not be run as a whole right now.
 For further information on how to install and/or run a specific service please have a look at the service folders.
 
-### Webhooks
+A description how to test the platform will follow soon.
 
-The `Webhooks` service receives http calls and passes messages to execution. For further information see: [webhooks](services/communication-router).
+### Audit Log
 
-### IAM
-
-The `IAM` (Identity and Access Management) provides basic (JWT only) and advanced (OpenId-Connect compatible) Authentication, Authorization and User management as a service.
-For further information see: [IAM](services/iam).
-
-### Flow Resporitory
-
-The `flow repository` is responsible for storing, retrieving and updating the integration flows of the Open Integration Hub. For further information see: [flow repository](services/integration-content-repository).
+The OIH Audit Log serves to receive, store, and return logging information about important user actions and system events. Other OIH Microservices can generate audit messages and pass them on to the Audit Log via the message and event bus or a simple HTTP POST request. For further information see: [audit log](services/audit-log) and [audit-log docs](docs/audit-log).
 
 ### Component Orchestrator
 
 The component orchestrator rchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Docker containers for each flow node on flow creation and cleans up on flow deletion.
-For further information see: [component orchestrator](services/resource-coordinator).
+For further information see: [component orchestrator service](services/component-orchestrator).
+
+### Flow Respository
+
+The `flow repository` is responsible for storing, retrieving and updating the integration flows of the Open Integration Hub. For further information see: [flow repository](services/integration-content-repository) and [flow repository docs](docs/FlowRepository.md).
+
+### IAM
+
+The `IAM` (Identity and Access Management) provides basic (JWT only) and advanced (OpenId-Connect compatible) Authentication, Authorization and User management as a service.
+For further information see: [IAM](services/iam) and [IAM docs](docs/IAM).
+
+### Meta Data Repository
+
+The meta data repository is responsible for storing domains and their master data models. The models stored within this service are consulted for different tasks such as data validation. The meta models are also used by the transformer to map the incoming data onto the Open Integration Hub standard. For further information see: [meta data repository](services/meta-data-repository) and [meta data repository docs](docs/MetaDataRepository.md).
 
 ### Scheduler
 
 The `scheduler` services schedules integration flows for execution. For further information see: [scheduler](services/scheduler).
 
-### Secrets-Service
+### Secret Service
 
-This `secrets-service`  is used to store and access securely client secrets/credentials. For further information see: [secrets-service](services/secret-service).
+This `secrets-service`  is used to store and access securely client secrets/credentials. For further information see: [secret service](services/secret-service).
+
+### Webhooks
+
+The `Webhooks` service receives http calls and passes messages to execution. For further information see: [webhooks](services/communication-router).
 
 ## Service Collaboration
 
 The service collaboration ist based on the [event collaboration](https://martinfowler.com/eaaDev/EventCollaboration.html) concept. We use rabbitMQ as our broker which supports [several protocols](https://www.rabbitmq.com/protocols.html).
-A published event has to be received by several interested services. There can be running several instances of a service at the same time but the event must only be sent to one instance of each service that is interested. A queue will be created for each kind of service. 
+A published event is received by several interested services. There may exist several running instances of a service at the same time but the event must only be sent to one instance of each service that is interested. A queue will be created for each kind of service.
 
-Currently the collaboration concepts covers 4 services, namely: flow-repository, scheduler, webhooks and component orchestrator. The figure below shows an example how these services collaborate represented by the use case `starting a flow`:
-
-![EventCollaboration](Assets/EventCollaborationStartFlow.png)
+For further information on service collabortion in the open integration hub and some example please see: [docs/ServiceCollaborationOverview.md]
 
 ## Docs
 
 To find additional high level information about the architecture of the Open Integration Hub and functionalities of the microservices please visit the [documentation](docs).
-
-- Service documentation: [service folder](docs/services)
-- General architectural documentation: [architectural folder](docs/architecture)
 
 ## Contribution
 
