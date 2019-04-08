@@ -77,7 +77,7 @@ The `Webhooks` service receives http calls and passes messages to execution. For
 The service collaboration ist based on the [event collaboration](https://martinfowler.com/eaaDev/EventCollaboration.html) concept. We use rabbitMQ as our broker which supports [several protocols](https://www.rabbitmq.com/protocols.html).
 A published event is received by several interested services. There may exist several running instances of a service at the same time but the event must only be sent to one instance of each service that is interested. A queue will be created for each kind of service.
 
-For further information on service collabortion in the open integration hub and some example please see: [docs/ServiceCollaborationOverview.md]
+For further information on service collabortion in the open integration hub and some example please see: [service collaboration overview](docs/ServiceCollaborationOverview.md).
 
 ## Docs
 
