@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/openintegrationhub/Microservices/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
+  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
 </p>
 
 The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation.
@@ -8,7 +8,7 @@ Visit the official [Open Integration Hub homepage](https://www.openintegrationhu
 
 # Introduction
 
-The purpose of the Open Integration Hub is to enhance business by simplifying integration. Traditional integration means development and maintenance of multiple connections. 
+The purpose of the Open Integration Hub is to enhance business by simplifying integration. Traditional integration means development and maintenance of multiple connections.
 Open Integration Hub requires only a single connection to the framework.
 
 - [Introduction](#introduction)
