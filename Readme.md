@@ -40,7 +40,7 @@ A description how to test the platform will follow soon.
 
 ### Audit Log
 
-The OIH `Audit Log` serves to receive, store, and return logging information about important user actions and system events. Other OIH Microservices can generate audit messages and pass them on to the Audit Log via the message and event bus or a simple HTTP POST request. For further information see: [audit log](services/audit-log) and [audit-log docs](/docs/services/audit-log).
+The OIH `Audit Log` serves to receive, store, and return logging information about important user actions and system events. Other OIH Microservices can generate audit messages and pass them on to the Audit Log via the message and event bus or a simple HTTP POST request. For further information see: [audit log](services/audit-log) and [audit-log docs](docs/services/AuditLog).
 
 ### Component Orchestrator
 
