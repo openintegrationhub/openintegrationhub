@@ -89,6 +89,25 @@ Whereby
 * data: contains the primary payload. Maybe either a single object or an array
 * meta: a meta object that contains non-standard meta-information
 
+## Must: Error message content format must be json
+
+The format of the content of any every error message must be `application/json`. Response must be of type `object`.
+
+The following structure must be used:
+
+```js
+{
+  "errors": [
+    {
+      "message": "Required error message",
+      "code": "Optional error code"
+    }
+  ]
+}
+```
+
+As mentioned in the [http requests section](#http-requests) request have to return certain status codes. The status codes are based on [the official list of HTTP status codes](http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml). The `errors array` should only be returned if the request returns with an error code (i.e. 4xx or 5xx).
+
 ## May: Any object may have many owners
 
 Any object may have owners. For example a `Flow` may belong to a `User`. Regardless of whether the object has a single owner or multiple, the owners must be defined as an `array` as shown below:

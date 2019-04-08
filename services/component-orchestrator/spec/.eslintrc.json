@@ -1,0 +1,12 @@
+{
+    "extends": "../.eslintrc.json",
+    "env": {
+        "es6": true,
+        "node": true,
+        "mocha": true
+    },
+    "rules": {
+        "node/no-unpublished-require": "off",
+        "no-console": "off"
+    }
+}

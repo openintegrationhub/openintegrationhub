@@ -46,7 +46,7 @@ const TenantDAO = {
             _id: id,
         }, updateOperation);
 
-        log.info('updated.tenant', { id, props });
+        log.debug('updated.tenant', { id, props });
         auditLog.info('update.tenant', { data: props, id });
 
     },
@@ -56,7 +56,7 @@ const TenantDAO = {
         log.debug('delete.tenant', { id });
 
         await Tenant.deleteOne({ _id: id });
-        log.info('deleted.tenant', { id });
+        log.debug('deleted.tenant', { id });
         auditLog.info('delete.tenant', { data: { id } });
     },
 

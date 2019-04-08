@@ -1,6 +1,0 @@
-{
-  "LISTEN_PORT": 1234,
-  "NAMESPACE": "flows",
-  "PAYLOAD_SIZE_LIMIT": "10mb",
-  "RABBITMQ_URI": "amqp://guest:guest@127.0.0.1:5672/"
-}

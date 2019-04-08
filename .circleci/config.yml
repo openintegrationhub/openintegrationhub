@@ -62,33 +62,37 @@ jobs:
     docker: *node_env
     working_directory: ~/oih
     steps: *deploy_steps
-  communication-router-test:
-    docker: *node_env
-    working_directory: ~/oih/services/communication-router
+  webhooks-test:
+    docker: *node_mongo_env
+    working_directory: ~/oih/services/webhooks
     steps: *yarn_test_steps
   iam-test:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *yarn_test_steps
-  resource-coordinator-test:
+  meta-data-repository-test:
     docker: *node_env
-    working_directory: ~/oih/services/resource-coordinator
+    working_directory: ~/oih/services/meta-data-repository
+    steps: *yarn_test_steps
+  component-orchestrator-test:
+    docker: *node_mongo_env
+    working_directory: ~/oih/services/component-orchestrator
     steps: *yarn_test_steps
   scheduler-test:
-    docker: *node_env
+    docker: *node_mongo_env
     working_directory: ~/oih/services/scheduler
     steps: *yarn_test_steps
-  secret-service-test:
+  secret-service-lib-test:
     docker: *node_env
-    working_directory: ~/oih/services/secret-service
+    working_directory: ~/oih/lib/secret-service
     steps: *yarn_test_steps
   lib-backend-commons-lib-test:
     docker: *node_env
     working_directory: ~/oih/lib/backend-commons-lib
     steps: *yarn_test_steps
-  lib-resource-coordinator-test:
+  lib-component-orchestrator-test:
     docker: *node_env
-    working_directory: ~/oih/lib/resource-coordinator
+    working_directory: ~/oih/lib/component-orchestrator
     steps: *yarn_test_steps
   lib-scheduler-test:
     docker: *node_env
@@ -98,36 +102,46 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/lib/webhooks
     steps: *yarn_test_steps
-  icr-test:
+  flow-repository-test:
     docker: *node_env
-    working_directory: ~/oih/services/integration-content-repository
+    working_directory: ~/oih/services/flow-repository
+    steps: *yarn_test_steps
+  audit-log-test:
+    docker: *node_env
+    working_directory: ~/oih/services/audit-log
     steps: *yarn_test_steps
 workflows:
   pipeline:
     jobs:
       - deps
-      - communication-router-test:
+      - webhooks-test:
           requires:
             - lib-webhooks-test
       - iam-test:
           requires:
             - deps
-      - resource-coordinator-test:
+      - meta-data-repository-test:
           requires:
-            - lib-resource-coordinator-test
+            - deps
+      - component-orchestrator-test:
+          requires:
+            - lib-component-orchestrator-test
       - scheduler-test:
           requires:
             - lib-scheduler-test
-      - secret-service-test:
+      - secret-service-lib-test:
           requires:
             - deps
-      - icr-test:
+      - flow-repository-test:
+          requires:
+            - deps
+      - audit-log-test:
           requires:
             - deps
       - lib-backend-commons-lib-test:
           requires:
             - deps
-      - lib-resource-coordinator-test:
+      - lib-component-orchestrator-test:
           requires:
             - lib-backend-commons-lib-test
       - lib-scheduler-test:
@@ -138,12 +152,14 @@ workflows:
             - lib-backend-commons-lib-test
       - test:
           requires:
-            - communication-router-test
+            - webhooks-test
             - iam-test
-            - resource-coordinator-test
+            - meta-data-repository-test
+            - component-orchestrator-test
             - scheduler-test
-            - secret-service-test
-            - icr-test
+            - secret-service-lib-test
+            - flow-repository-test
+            - audit-log-test
       - build:
           requires:
             - test

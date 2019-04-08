@@ -26,9 +26,21 @@ spec:
       - backend:
           serviceName: secret-service
           servicePort: 3000
-  - host: icr.openintegrationhub.com
+  - host: flow-repository.openintegrationhub.com
     http:
       paths:
       - backend:
-          serviceName: integration-content-repository
+          serviceName: flow-repository
           servicePort: 3001
+  - host: auditlog.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: audit-log
+          servicePort: 3007
+  - host: metadata.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: meta-data-repository
+          servicePort: 3000

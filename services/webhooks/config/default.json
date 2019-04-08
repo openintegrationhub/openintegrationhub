@@ -1,0 +1,4 @@
+{
+  "LISTEN_PORT": 1234,
+  "PAYLOAD_SIZE_LIMIT": "10mb"
+}

@@ -47,7 +47,7 @@ const RolesDAO = {
             _id: id,
         }, { $set: props });
 
-        log.info('updated.role', { id, props });
+        log.debug('updated.role', { id, props });
         auditLog.info('update.role', { data: props, id });
 
         return updatedEntity.toJSON();
