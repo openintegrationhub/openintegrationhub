@@ -12,20 +12,24 @@
 
 - [Introduction](#introduction)
 - [Description](#description)
+  - [Purpose of the Microservice Meta Data Service](#purpose-of-the-microservice-meta-data-service)
 - [Technologies used](#technologies-used)
-	- [Reasoning](#reasoning)
 - [Requirements](#requirements)
 - [Conceptional Elaborations](#conceptional-elaborations)
-	- [Basic Version](#basic-version)
-		- [Model Structure](#model-structure)
-			- [Domain Object](#domain-object)
-			- [Model Object](#model-object)
+  - [Basic Version](#basic-version)
+    - [Model Structure](#model-structure)
+      - [Domain Object](#domain-object)
+      - [Model Object](#model-object)
+- [Open questions / Discussion](#open-questions--discussion)
+    - [How does a transformer pass/reference the model from metadata service?](#how-does-a-transformer-passreference-the-model-from-metadata-service)
+    - [Where is the transfomer output validated](#where-is-the-transfomer-output-validated)
+    - [_oihdatarecord_](#oihdatarecord)
 - [User Stories](#user-stories)
 
 <!-- /TOC -->
 # Introduction
 
-The meta data service (original: meta data repository) is responsible for storing domains and their master data models. The models stored within this service are consulted for different tasks such as data validation. The meta models are also used by the transformer to map the incoming data onto the Open Integration Hub standard.
+The meta data repository is responsible for storing domains and their master data models. The models stored within this service are consulted for different tasks such as data validation. The meta models are also used by the transformer to map the incoming data onto the Open Integration Hub standard.
 
 In addition, this service also manages the _oihdatarecord_ and concatenates it with the master data models.
 
