@@ -8,7 +8,7 @@ Visit the official [Open Integration Hub homepage](https://www.openintegrationhu
 
 # Introduction
 
-The purpose of the Open Integration Hub is to enhance business by simplifying integration. Traditional integration means development and maintenance of multiple connections.
+The purpose of the Open Integration Hub is to enhance businesses by simplifying integration. Traditional integration means development and maintenance of multiple connections.
 Open Integration Hub requires only a single connection to the framework.
 
 - [Introduction](#introduction)
@@ -29,7 +29,7 @@ Open Integration Hub requires only a single connection to the framework.
 
 ## OIH Microservices
 
-Standalone platform that is based on a microservice architecure. In the following a short description of the service is provided. 
+Standalone platform that is based on a microservice architecure. In the following a short description of the services is provided. 
 
 ### Installation
 
@@ -44,16 +44,17 @@ The OIH `Audit Log` serves to receive, store, and return logging information abo
 
 ### Component Orchestrator
 
-The `component orchestrator` orchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Docker containers for each flow node on flow creation and cleans up on flow deletion.
+The `component orchestrator` orchestrates flow lifecycle. It creates queues in RabbitMQ and manages Docker containers (deploy/stop/remove) for each flow node whenever a flow is created, stopped or removed.
 For further information see: [component orchestrator service](services/component-orchestrator).
 
 ### Flow Respository
 
-The `flow repository` is responsible for storing, retrieving and updating the integration flows of the Open Integration Hub. For further information see: [flow repository](services/integration-content-repository) and [flow repository docs](docs/services/FlowRepository.md).
+The `flow repository` is responsible for storing, retrieving and updating the OIH integration flows. 
+For further information see: [flow repository](services/integration-content-repository) and [flow repository docs](docs/services/FlowRepository.md).
 
 ### IAM
 
-The `IAM` (Identity and Access Management) provides basic (JWT only) and advanced (OpenId-Connect compatible) Authentication, Authorization and User management as a service.
+The `IAM` (Identity and Access Management) provides token or OpenID-Connect based Authentication, Authorization and User management as a service.
 For further information see: [IAM](services/iam) and [IAM docs](docs/services/IAM).
 
 ### Meta Data Repository
@@ -62,11 +63,11 @@ The `meta data repository` is responsible for storing domains and their master d
 
 ### Scheduler
 
-The `scheduler` services schedules integration flows for execution. For further information see: [scheduler](services/scheduler).
+The `scheduler` service schedules integration flows for execution. For further information see: [scheduler](services/scheduler).
 
 ### Secret Service
 
-This `secret-service`  is used to store and access securely client secrets/credentials. For further information see: [secret service](services/secret-service).
+This `secret-service` is used to store and access securely client/user credentials. For further information see: [secret service](services/secret-service).
 
 ### Webhooks
 
@@ -74,10 +75,10 @@ The `Webhooks` service receives http calls and passes messages to execution. For
 
 ## Service Collaboration
 
-The service collaboration ist based on the [event collaboration](https://martinfowler.com/eaaDev/EventCollaboration.html) concept. We use rabbitMQ as our broker which supports [several protocols](https://www.rabbitmq.com/protocols.html).
+The service collaboration is based on the [event collaboration](https://martinfowler.com/eaaDev/EventCollaboration.html) concept. We use RabbitMQ as our broker which supports [several protocols](https://www.rabbitmq.com/protocols.html).
 A published event is received by several interested services. There may exist several running instances of a service at the same time but the event must only be sent to one instance of each service that is interested. A queue will be created for each kind of service.
 
-For further information on service collabortion in the open integration hub and some example please see: [service collaboration overview](docs/ServiceCollaborationOverview.md).
+For further information on service collabortion in OIH and further examples please see: [service collaboration overview](docs/ServiceCollaborationOverview.md).
 
 ## Docs
 
