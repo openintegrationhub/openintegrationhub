@@ -11,7 +11,7 @@ aliases:
     command: yarn
   - &only_master_filter
     branches:
-      only: master
+      only: mastery
   - &yarn_test_steps
       - restore_cache:
           keys:
@@ -38,6 +38,13 @@ aliases:
       - run: |
           cd ./scripts  # needed for compatible with travis implementation
           node deploy.js
+  - &deploy_steps_prod
+      - restore_cache:
+          keys:
+            - build-deps-{{ .Branch }}-{{ .Revision }}
+      - run: |
+          cd ./scripts  # needed for compatible with travis implementation
+          node deploy_prod.js     
 jobs:
   deps:
     docker: *node_env
@@ -62,6 +69,14 @@ jobs:
     docker: *node_env
     working_directory: ~/oih
     steps: *deploy_steps
+  deploy_prod:
+    docker: *node_env
+    working_directory: ~/oih
+    steps: *deploy_steps_prod
+  integration-test:
+    docker: *node_env
+    working_directory: ~/oih/integrationtests
+    steps: *jest_test_steps
   webhooks-test:
     docker: *node_mongo_env
     working_directory: ~/oih/services/webhooks
@@ -150,6 +165,9 @@ workflows:
       - lib-webhooks-test:
           requires:
             - lib-backend-commons-lib-test
+      - integration-test:
+          requires:
+            - deps
       - test:
           requires:
             - webhooks-test
@@ -160,6 +178,9 @@ workflows:
             - secret-service-lib-test
             - flow-repository-test
             - audit-log-test
+      - test_prod:
+          requires:
+            - integration-test
       - build:
           requires:
             - test
@@ -168,3 +189,7 @@ workflows:
           requires:
             - build
           filters: *only_master_filter
+      - deploy_prod:
+          requires:
+            - test_prod
+          filters: *only_master_filter 
