@@ -1,6 +1,6 @@
 process.env.AUTH_TYPE = 'basic';
 
-const request = require('supertest')('http://iam.openintegrationhub.com/login');
+const request = require('supertest')('iam.openintegrationhub.com/login');
 const username = process.env.username;
 const password = process.env.password;
 
