@@ -12,7 +12,7 @@ describe('User Routes', () => {
     let tokenAdmin = null;
     let app = null;
     
-    test(async (done) => {
+    test('Login test', async (done) => {
         process.env.IAM_AUTH_TYPE = 'basic';
         //setTimeout(async () => {
 
