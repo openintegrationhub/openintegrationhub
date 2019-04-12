@@ -3,28 +3,23 @@ const mongoose = require('mongoose');
 const Mockgoose = require('mockgoose').Mockgoose;
 
 const mockgoose = new Mockgoose(mongoose);
-const request = require('supertest')('http://localhost:3099'); //tbd
+const request = require('supertest')('http://iam.openintegrationhub.com/login');
 
-const CONSTANTS = require('./../src/constants'); //tbd 
+const CONSTANTS = require('./../src/constants');
 
 let conf = null;
 
 describe('User Routes', () => {
-    const testUser = {
-        id: '',
-        username: 'blubb@exmaple.com',
-        password: 'blubb',
-    };
-    let tokenUser = null;
 
-    // Token will be set via Login and is valid 3h
+    let tokenUser = null; 
     let tokenAdmin = null;
     let app = null;
+    
     beforeAll(async (done) => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;  //tbd 
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_AUTH_TYPE = 'basic';
-        conf = require('./../src/conf/index');   //tbd 
-        const App = require('../src/app');   //tbd 
+        conf = require('./services/iam/src/conf/index');   //tbd 
+        const App = require('..services/iam/src/app');   //tbd 
         app = new App();
         await mockgoose.prepareStorage();
         await app.setup(mongoose);
@@ -38,7 +33,7 @@ describe('User Routes', () => {
             };
             const response = await request.post('/login')
                 .send(jsonPayload)
-                .set('Accept', /application\/json/)
+                .set('Accept', /application/json/)
                 .expect(200);
             tokenAdmin = `Bearer ${response.body.token}`;
 
