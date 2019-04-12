@@ -178,9 +178,6 @@ workflows:
             - secret-service-lib-test
             - flow-repository-test
             - audit-log-test
-      - test_prod:
-          requires:
-            - integration-test
       - build:
           requires:
             - test
@@ -189,6 +186,9 @@ workflows:
           requires:
             - build
           filters: *only_master_filter
+      - test_prod:
+          requires:
+            - integration-test
       - deploy_prod:
           requires:
             - test_prod
