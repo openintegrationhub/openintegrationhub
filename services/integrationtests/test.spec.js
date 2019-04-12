@@ -25,11 +25,22 @@ describe('User Routes', () => {
             json: true,
             body: jsonPayload,
             };
-        
             const response = await request(Login);
+        
             expect(response.statusCode).toEqual(200);
             tokenAdmin = `Bearer ${response.body.token}`;
             done();
-        
-    });
+     });
+
+     test('Valid token', async (done) => {
+        const importOptions = {
+            method: 'POST',
+            uri: `${apiUrl}/import`,
+            headers: {
+                authorization: tokenAdmin,
+            },
+        };
+     done();
+     });
+      
 });
