@@ -75,12 +75,8 @@ jobs:
     steps: *deploy_steps_prod
   integration-test:
     docker: *node_env
-    working_directory: ~/oih/services
+    working_directory: ~/oih/services/integrationtests
     steps: *yarn_test_steps
-  test_prod:
-    docker: *node_env
-    working_directory: ~/oih/services
-    steps: *yarn_test_steps 
   webhooks-test:
     docker: *node_mongo_env
     working_directory: ~/oih/services/webhooks
@@ -135,30 +131,4 @@ workflows:
       - deps
       - integration-test:
           requires:
-            - deps
-      - test:
-           requires:
-            #- webhooks-test
-            #- iam-test
-            #- meta-data-repository-test
-            #- component-orchestrator-test
-            #- scheduler-test
-            #- secret-service-lib-test
-            #- flow-repository-test
-            #- audit-log-test
-            - integration-test
-      - build:
-          requires:
-            - test
-          filters: *only_master_filter
-      - deploy:
-          requires:
-            - build
-          filters: *only_master_filter
-      - test_prod:
-          requires:
-            - integration-test
-      - deploy_prod:
-          requires:
-            - test_prod
-          filters: *only_master_filter 
+            - deps 
