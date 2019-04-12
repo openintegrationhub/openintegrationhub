@@ -2,8 +2,6 @@ process.env.AUTH_TYPE = 'basic';
 const request = require('request-promise').defaults({ simple: false, resolveWithFullResponse: true });
 const username = process.env.username;
 const password = process.env.password;
-
-
 let conf = null;
 
 describe('User Routes', () => {
@@ -25,6 +23,7 @@ describe('User Routes', () => {
             json: true,
             body: jsonPayload,
             };
+        
             const response = await request(Login);
         
             expect(response.statusCode).toEqual(200);
@@ -32,15 +31,18 @@ describe('User Routes', () => {
             done();
      });
 
-     test('Valid token', async (done) => {
-        const importOptions = {
-            method: 'POST',
-            uri: `${apiUrl}/import`,
+     test('Get All Flows', async (done) => {
+        const getAllFlows = {
+            method: 'GET',
+            uri: `http://flow-repository.openintegrationhub.com/flows`,
             headers: {
                 authorization: tokenAdmin,
             },
         };
-     done();
+         
+        const response = await request(getAllFlows);
+        expect(response.statusCode).toEqual(200);
+        done();
      });
       
 });
