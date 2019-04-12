@@ -1,5 +1,4 @@
 {
-	"private": true,
 	"scripts": {
 		"test": "jest run test"
 	},
