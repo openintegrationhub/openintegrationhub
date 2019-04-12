@@ -1,13 +1,8 @@
 process.env.AUTH_TYPE = 'basic';
-
 const request = require('request-promise').defaults({ simple: false, resolveWithFullResponse: true });
-
-//const request = require('supertest')('iam.openintegrationhub.com/login');
-
 const username = process.env.username;
 const password = process.env.password;
 
-console.log(username);
 
 let conf = null;
 
@@ -19,8 +14,6 @@ describe('User Routes', () => {
     
     test('Login test', async (done) => {
         process.env.IAM_AUTH_TYPE = 'basic';
-        //setTimeout(async () => {
-
             const jsonPayload = {
                 username,
                 password,
@@ -32,10 +25,11 @@ describe('User Routes', () => {
             json: true,
             body: jsonPayload,
             };
+        
             const response = await request(Login);
+            expect(response.statusCode).toEqual(200);
             tokenAdmin = `Bearer ${response.body.token}`;
-            console.log(response);
             done();
-     //   }, 200); //timeout
+        
     });
 });
