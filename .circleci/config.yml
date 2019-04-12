@@ -133,55 +133,20 @@ workflows:
   pipeline:
     jobs:
       - deps
-      - webhooks-test:
-          requires:
-            - lib-webhooks-test
-      - iam-test:
-          requires:
-            - deps
-      - meta-data-repository-test:
-          requires:
-            - deps
-      - component-orchestrator-test:
-          requires:
-            - lib-component-orchestrator-test
-      - scheduler-test:
-          requires:
-            - lib-scheduler-test
-      - secret-service-lib-test:
-          requires:
-            - deps
-      - flow-repository-test:
-          requires:
-            - deps
-      - audit-log-test:
-          requires:
-            - deps
-      - lib-backend-commons-lib-test:
-          requires:
-            - deps
-      - lib-component-orchestrator-test:
-          requires:
-            - lib-backend-commons-lib-test
-      - lib-scheduler-test:
-          requires:
-            - lib-backend-commons-lib-test
-      - lib-webhooks-test:
-          requires:
-            - lib-backend-commons-lib-test
       - integration-test:
           requires:
             - deps
       - test:
-          requires:
-            - webhooks-test
-            - iam-test
-            - meta-data-repository-test
-            - component-orchestrator-test
-            - scheduler-test
-            - secret-service-lib-test
-            - flow-repository-test
-            - audit-log-test
+           requires:
+            #- webhooks-test
+            #- iam-test
+            #- meta-data-repository-test
+            #- component-orchestrator-test
+            #- scheduler-test
+            #- secret-service-lib-test
+            #- flow-repository-test
+            #- audit-log-test
+            - integration-test
       - build:
           requires:
             - test
