@@ -75,11 +75,11 @@ jobs:
     steps: *deploy_steps_prod
   integration-test:
     docker: *node_env
-    working_directory: ~/oih/integrationtests
+    working_directory: ~/oih/services
     steps: *yarn_test_steps
   test_prod:
     docker: *node_env
-    working_directory: ~/oih/integrationtests
+    working_directory: ~/oih/services
     steps: *yarn_test_steps 
   webhooks-test:
     docker: *node_mongo_env
