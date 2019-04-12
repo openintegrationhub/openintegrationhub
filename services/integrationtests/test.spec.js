@@ -4,6 +4,8 @@ const request = require('supertest')('http://iam.openintegrationhub.com/login');
 const username = process.env.username;
 const password = process.env.password;
 
+console.log(username);
+
 let conf = null;
 
 describe('User Routes', () => {
@@ -25,6 +27,7 @@ describe('User Routes', () => {
                 .set('Accept', '\/application\/json\/')
                 .expect(200);
             tokenAdmin = `Bearer ${response.body.token}`;
+            console.log(response);
             done();
      //   }, 200); //timeout
     });
