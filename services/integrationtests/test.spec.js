@@ -14,7 +14,7 @@ describe('User Routes', () => {
     
     test(async (done) => {
         process.env.IAM_AUTH_TYPE = 'basic';
-        setTimeout(async () => {
+        //setTimeout(async () => {
 
             const jsonPayload = {
                 username,
@@ -25,7 +25,7 @@ describe('User Routes', () => {
                 .set('Accept', '\/application\/json\/')
                 .expect(200);
             tokenAdmin = `Bearer ${response.body.token}`;
-                    done();
-        }, 200); //timeout
+            done();
+     //   }, 200); //timeout
     });
 });
