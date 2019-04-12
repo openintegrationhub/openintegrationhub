@@ -1,0 +1,9 @@
+{
+	"private": true,
+	"scripts": {
+		"test": "lerna run test",
+	},
+	"devDependencies": {
+    "supertest": "4.0.2"
+	},
+}
