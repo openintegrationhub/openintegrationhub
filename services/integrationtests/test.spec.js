@@ -38,12 +38,12 @@ describe('User Routes', () => {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
             headers: {
-                authorization: `Bearer ${tokenAdmin}`;
+                authorization: `Bearer ${tokenAdmin}`,
             },
         };
          
         const response = await request(getAllFlows);
-        expect(response.statusCode).toEqual(404);
+        expect(response.statusCode).toEqual(200);
      done();
      });
     
