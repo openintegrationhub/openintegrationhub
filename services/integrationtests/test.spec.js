@@ -31,18 +31,6 @@ describe('User Routes', () => {
             done();
      });
 
-     test('Get All Flows', async (done) => {
-        const getAllFlows = {
-            method: 'GET',
-            uri: `http://flow-repository.openintegrationhub.com/flows`,
-            headers: {
-                authorization: tokenAdmin,
-            },
-        };
-         
-        const response = await request(getAllFlows);
-        expect(response.statusCode).toEqual(200);
-        done();
-     });
+
       
 });
