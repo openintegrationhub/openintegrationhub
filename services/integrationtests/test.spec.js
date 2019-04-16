@@ -17,6 +17,7 @@ describe('User Routes', () => {
                 password,
             };
         
+        setTimeout(async () => {
             const Login = {
             method: 'POST',
             uri: `http://iam.openintegrationhub.com/login`,
@@ -29,8 +30,7 @@ describe('User Routes', () => {
             expect(response.statusCode).toEqual(200);
             tokenAdmin = `Bearer ${response.body.token}`;
             done();
-     });
-
-
-      
+            
+        });
+    });      
 });
