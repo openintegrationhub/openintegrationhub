@@ -29,8 +29,7 @@ describe('User Routes', () => {
         
             expect(response.statusCode).toEqual(200);
             tokenAdmin = `Bearer ${response.body.token}`;
-            done();
-            
         });
+    done();
     });      
 });
