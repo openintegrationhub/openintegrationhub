@@ -28,7 +28,7 @@ describe('User Routes', () => {
             const response = await request(Login);
         
             expect(response.statusCode).toEqual(200);
-            tokenAdmin = `Bearer ${response.body.token}`;
+            tokenAdmin : `Bearer ${response.body.token}`;
         });
     done();
     });
@@ -43,7 +43,7 @@ describe('User Routes', () => {
         };
          
         const response = await request(getAllFlows);
-        expect(response.statusCode).toEqual(200);
+        expect(response.statusCode).toEqual(404);
      done();
      });
     
