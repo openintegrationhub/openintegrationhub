@@ -25,7 +25,7 @@ describe('User Routes', () => {
             body: jsonPayload,
             };
         
-            //try{
+            try{
 	   // const reponse = await request(Login);
 	    request(Login).then(response => {
 	    	console.log(JSON.stringify(response));
@@ -33,10 +33,10 @@ describe('User Routes', () => {
                 tokenAdmin = "Bearer "+ response.body.token;
 		console.log(tokenAdmin);    
 	    });
-              //      }
-            //catch(error){
-	        //    console.log(error);
-            //}
+                    }
+            catch(error){
+	            console.log(error);
+            }
             //console.log(response);
         });
     done();
