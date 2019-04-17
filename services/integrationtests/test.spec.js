@@ -12,10 +12,10 @@ describe('User Routes', () => {
     
     test('Login test', async (done) => {
         process.env.IAM_AUTH_TYPE = 'basic';
-            const jsonPayload = {
-                username,
-                password,
-            };
+        const jsonPayload = {
+            username,
+            password,
+        };
         
         setTimeout(async () => {
             const Login = {
@@ -25,12 +25,17 @@ describe('User Routes', () => {
             body: jsonPayload,
             };
         
-            const response = await request(Login);
-        
+            try{
+	            const reponse = await request(Login);
+                    }
+            catch(error){
+	            console.log(error);
+            }
+            console.log(response);
+            
             expect(response.statusCode).toEqual(200);
             tokenAdmin : `Bearer ${response.body.token}`;
-            console.log(response.text);
-            console.log(tokenAdmin);
+
         });
     done();
     });
