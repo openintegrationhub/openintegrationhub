@@ -7,7 +7,7 @@ let conf = null;
 describe('User Routes', () => {
 
     let tokenUser = null; 
-    let tokenAdmin = "";
+    const tokenAdmin = "";
     let app = null;
     
     test('Login test', async (done) => {
@@ -29,9 +29,9 @@ describe('User Routes', () => {
 	   // const reponse = await request(Login);
 	    	request(Login).then(response => {
 	    	//console.log(JSON.stringify(response));
+		tokenAdmin = response.body.token;	
 		expect(response.statusCode).toEqual(200);
-                tokenAdmin = `${response.body.token}`;
-		//console.log(tokenAdmin);    
+		console.log("nur token" + tokenAdmin);    
 	    	});
             }
             catch(error){
