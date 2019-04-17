@@ -29,11 +29,15 @@ describe('User Routes', () => {
         
             expect(response.statusCode).toEqual(200);
             tokenAdmin : `Bearer ${response.body.token}`;
+            console.log(response.text);
+            console.log(tokenAdmin);
         });
     done();
     });
     
-    test('Get All Flows', async (done) => {
+    console.log(response.text);
+   
+    test('Get All Flows', async (done) => {  
         const getAllFlows = {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
@@ -45,7 +49,7 @@ describe('User Routes', () => {
          
         const response = await request(getAllFlows);
         expect(response.statusCode).toEqual(200);
-     done();
+        done();
      });
     
     
