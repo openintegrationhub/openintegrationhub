@@ -54,7 +54,7 @@ describe('User Routes', () => {
             },
         };
         try{
-		console.log(JSON.stringify(getAllFlows);
+		console.log(JSON.stringify(getAllFlows));
 		console.log("flows test " + tokenAdmin); 
         	
 	} catch(error){
