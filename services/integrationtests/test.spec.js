@@ -29,7 +29,7 @@ describe('User Routes', () => {
 	   // const reponse = await request(Login);
 	    	request(Login).then(response => {
 	    	console.log(JSON.stringify(response));
-		this.tokenAdmin = response.token;	
+		this.tokenAdmin = response.body.token;	
 		expect(response.statusCode).toEqual(200);
 		console.log("nur token" + this.tokenAdmin);    
 	    	});
