@@ -15,7 +15,7 @@ describe('User Routes', () => {
         const jsonPayload = {
         		username,
         		password,
-	}
+	};
         const Login = {
         	method: 'POST',
         	uri: `http://iam.openintegrationhub.com/login`,
@@ -26,7 +26,7 @@ describe('User Routes', () => {
 	
 	const tokenAdmin = async () => {
 		return await JSON.stringify(response.body.token),
-	}
+	};
 	expect(response.statusCode).toEqual(200);	
     	done();
     });
