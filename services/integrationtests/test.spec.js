@@ -37,19 +37,20 @@ describe('User Routes', () => {
             catch(error){
 	        console.log(error);
             }
-            //console.log(response);
-	    tokenAdmin = JSON.stringify(response.body.token);
+            //console.log(response)
         });
     done();
     });
-       
+	
+       console.log("zwischen: "tokenAdmin);
+	
     test('Get All Flows', async (done) => { 
 		
         const getAllFlows = {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
             headers: {
-                "Authorization" : " Bearer" + tokenAdmin,
+                "Authorization" : " Bearer " + tokenAdmin,
                 //header.set("Authorization :", "Bearer " + tokenAdmin);
             }
         };
