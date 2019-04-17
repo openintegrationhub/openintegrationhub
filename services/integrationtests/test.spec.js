@@ -17,7 +17,8 @@ describe('User Routes', () => {
             password,
         };
         
-        setTimeout(async () => {
+        //setTimeout(async () => {
+	async function callLogin(){
             const Login = {
             method: 'POST',
             uri: `http://iam.openintegrationhub.com/login`,
@@ -25,13 +26,11 @@ describe('User Routes', () => {
             body: jsonPayload,
             };
         
-	//request(Login).then(response => {
-	tokenAdmin = JSON.stringify(response.body.token);
-	//tokenAdmin = request(Login).response.body.token	
+	return await tokenAdmin = JSON.stringify(response.body.token);
+	
 	expect(response.statusCode).toEqual(200);
-	return tokenAdmin;
-        }, 5000);
-    done();
+	};
+    	done();
     });
 	
     console.log("3. nur token: " + tokenAdmin);
