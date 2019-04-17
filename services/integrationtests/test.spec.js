@@ -25,7 +25,7 @@ describe('User Routes', () => {
 	const response = await request(Login);
 	
 	const tokenAdmin = async () => {
-		return await JSON.stringify(response.body.token),
+		return await JSON.stringify(response.body.token);
 	};
 	expect(response.statusCode).toEqual(200);	
     	done();
