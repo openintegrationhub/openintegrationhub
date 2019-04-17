@@ -42,12 +42,13 @@ describe('User Routes', () => {
     done();
     });
        
-    test('Get All Flows', async (done) => {  
+    test('Get All Flows', async (done) => { 
+	console.log(tokenAdmin); 
         const getAllFlows = {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
             headers: {
-                Authorization : tokenAdmin,
+                "authorization" : tokenAdmin,
                 //header.set("Authorization :", "Bearer " + tokenAdmin);
             },
         };
