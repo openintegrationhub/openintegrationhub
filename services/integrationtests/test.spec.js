@@ -4,12 +4,12 @@ const username = process.env.username;
 const password = process.env.password;
 let conf = null;
 
-describe('User Routes', () => {
+let tokenUser = null; 
+let tokenAdmin = "";
+let app = null;
 
-    let tokenUser = null; 
-    let tokenAdmin = "";
-    let app = null;
-    
+describe('User Routes', () => {
+  
     test('Login test', async (done) => {
         process.env.IAM_AUTH_TYPE = 'basic';
         const jsonPayload = {
@@ -29,9 +29,9 @@ describe('User Routes', () => {
 	   // const reponse = await request(Login);
 	    	request(Login).then(response => {
 	    	console.log(JSON.stringify(response));
-		this.tokenAdmin = response.body.token;	
+		tokenAdmin = response.body.token;	
 		expect(response.statusCode).toEqual(200);
-		console.log("nur token" + this.tokenAdmin);    
+		console.log("nur token " + tokenAdmin);    
 	    	});
             }
             catch(error){
@@ -55,7 +55,7 @@ describe('User Routes', () => {
         };
         try{
 		console.log(JSON.stringify(getAllFlows)),
-		console.log("flows test " + this.tokenAdmin);
+		console.log("flows test " + tokenAdmin);
 	}
 	catch(error){
 		console.log(error);
