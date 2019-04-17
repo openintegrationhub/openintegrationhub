@@ -7,7 +7,7 @@ let conf = null;
 describe('User Routes', () => {
 
     let tokenUser = null; 
-    const tokenAdmin = "";
+    let tokenAdmin = "";
     let app = null;
     
     test('Login test', async (done) => {
@@ -29,9 +29,9 @@ describe('User Routes', () => {
 	   // const reponse = await request(Login);
 	    	request(Login).then(response => {
 	    	console.log(JSON.stringify(response));
-		tokenAdmin = response.token;	
+		this.tokenAdmin = response.token;	
 		expect(response.statusCode).toEqual(200);
-		console.log("nur token" + tokenAdmin);    
+		console.log("nur token" + this.tokenAdmin);    
 	    	});
             }
             catch(error){
@@ -55,7 +55,7 @@ describe('User Routes', () => {
         };
         try{
 		console.log(JSON.stringify(getAllFlows)),
-		console.log("flows test " + tokenAdmin);
+		console.log("flows test " + this.tokenAdmin);
 	}
 	catch(error){
 		console.log(error);
