@@ -5,7 +5,7 @@ const password = process.env.password;
 let conf = null;
 
 let tokenUser = null; 
-let tokenAdmin = "";
+let tokenAdmin = null;
 let app = null;
 
 describe('User Routes', () => {
@@ -28,41 +28,41 @@ describe('User Routes', () => {
             try{
 	   // const reponse = await request(Login);
 	    	request(Login).then(response => {
-	    	console.log(JSON.stringify(response));
-		tokenAdmin = response.body.token;	
-		expect(response.statusCode).toEqual(200);
-		console.log("nur token " + tokenAdmin);    
+	    	//console.log(JSON.stringify(response)); printed:yes
+			tokenAdmin = JSON.stringify(response.body.token);	
+			expect(response.statusCode).toEqual(200);
+		//console.log("nur token " + tokenAdmin); printed:yes    
 	    	});
             }
             catch(error){
 	        console.log(error);
             }
             //console.log(response);
+	    tokenAdmin = JSON.stringify(response.body.token);
         });
     done();
     });
        
     test('Get All Flows', async (done) => { 
-	
-	
+		
         const getAllFlows = {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
             headers: {
                 "Authorization" : " Bearer" + tokenAdmin,
                 //header.set("Authorization :", "Bearer " + tokenAdmin);
-            },
+            }
         };
         try{
-		console.log(JSON.stringify(getAllFlows)),
-		console.log("flows test " + tokenAdmin);
+	    console.log(JSON.stringify(getAllFlows)),
+	    console.log("flows test " + tokenAdmin);
 	}
 	catch(error){
-		console.log(error);
+	    console.log(error);
       	}
 	    const response = await request(getAllFlows);
-        	expect(response.statusCode).toEqual(200);
-		done();
+            expect(response.statusCode).toEqual(200);
+	    done();
      });
     
     
