@@ -26,7 +26,7 @@ describe('User Routes', () => {
             body: jsonPayload,
             };
         
-	return await tokenAdmin = JSON.stringify(response.body.token);
+	return tokenAdmin = await JSON.stringify(response.body.token);
 	
 	expect(response.statusCode).toEqual(200);
 	};
