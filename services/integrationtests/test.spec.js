@@ -55,11 +55,12 @@ describe('User Routes', () => {
         };
         try{
 		console.log("flows test " + tokenAdmin); 
-        	const response = await request(getAllFlows);
-        	expect(response.statusCode).toEqual(200);
+        	
 	} catch(error){
 		console.log(error);
       }
+	    const response = await request(getAllFlows);
+        	expect(response.statusCode).toEqual(200);
 		done();
      });
     
