@@ -42,7 +42,7 @@ describe('User Routes', () => {
     done();
     });
 	
-       console.log("zwischen: "tokenAdmin);
+       console.log("zwischen: " + tokenAdmin);
 	
     test('Get All Flows', async (done) => { 
 		
