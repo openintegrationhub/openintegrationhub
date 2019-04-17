@@ -28,14 +28,14 @@ describe('User Routes', () => {
             try{
 	   // const reponse = await request(Login);
 	    request(Login).then(response => {
-	    	console.log(JSON.stringify(response));
+	    	//console.log(JSON.stringify(response));
 		expect(response.statusCode).toEqual(200);
                 tokenAdmin = "Bearer "+ response.body.token;
-		console.log(tokenAdmin);    
+		//console.log(tokenAdmin);    
 	    });
                     }
             catch(error){
-	            console.log(error);
+	        console.log(error);
             }
             //console.log(response);
         });
@@ -43,7 +43,7 @@ describe('User Routes', () => {
     });
        
     test('Get All Flows', async (done) => { 
-	console.log(tokenAdmin); 
+	console.log("flows test " + tokenAdmin); 
         const getAllFlows = {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
