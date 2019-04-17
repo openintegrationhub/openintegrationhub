@@ -7,7 +7,7 @@ let conf = null;
 describe('User Routes', () => {
 
     let tokenUser = null; 
-    let tokenAdmin = null;
+    let tokenAdmin = "";
     let app = null;
     
     test('Login test', async (done) => {
@@ -25,17 +25,19 @@ describe('User Routes', () => {
             body: jsonPayload,
             };
         
-            try{
-	            const reponse = await request(Login);
-                    }
-            catch(error){
-	            console.log(error);
-            }
-            console.log(response);
-            
-            expect(response.statusCode).toEqual(200);
-            tokenAdmin : `Bearer ${response.body.token}`;
-
+            //try{
+	   // const reponse = await request(Login);
+	    request(Login).then(response => {
+	    	console.log(JSON.stringify(response));
+		expect(response.statusCode).toEqual(200);
+                tokenAdmin = "Bearer "+ response.body.token;
+		console.log(tokenAdmin);    
+	    });
+              //      }
+            //catch(error){
+	        //    console.log(error);
+            //}
+            //console.log(response);
         });
     done();
     });
