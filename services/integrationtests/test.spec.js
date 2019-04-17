@@ -28,8 +28,8 @@ describe('User Routes', () => {
             try{
 	   // const reponse = await request(Login);
 	    	request(Login).then(response => {
-	    	//console.log(JSON.stringify(response));
-		tokenAdmin = response.body.token;	
+	    	console.log(JSON.stringify(response));
+		tokenAdmin = response.token;	
 		expect(response.statusCode).toEqual(200);
 		console.log("nur token" + tokenAdmin);    
 	    	});
