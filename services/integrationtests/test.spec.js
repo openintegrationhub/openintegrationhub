@@ -26,26 +26,25 @@ describe('User Routes', () => {
             };
         
             try{
-	   // const reponse = await request(Login);
+	    // const reponse = await request(Login);
 	    	request(Login).then(response => {
-	    	//console.log(JSON.stringify(response)); printed:yes
+	    	console.log("1. response: " JSON.stringify(response)); printed:yes
 			tokenAdmin = JSON.stringify(response.body.token);	
 			expect(response.statusCode).toEqual(200);
-		//console.log("nur token " + tokenAdmin); printed:yes    
+		console.log("2. nur token: " + tokenAdmin); printed:yes    
 	    	});
             }
             catch(error){
-	        console.log(error);
+	        console.log("3 Error: " + error);
             }
-            //console.log(response)
         });
     done();
     });
 	
-       console.log("zwischen: " + tokenAdmin);
+       console.log("4. nur token: " + tokenAdmin);
 	
     test('Get All Flows', async (done) => { 
-		
+	console.log("5. nur token in neuer funktion: " + tokenAdmin);	
         const getAllFlows = {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
