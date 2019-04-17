@@ -43,7 +43,8 @@ describe('User Routes', () => {
     });
        
     test('Get All Flows', async (done) => { 
-	console.log("flows test " + tokenAdmin); 
+	
+	
         const getAllFlows = {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
@@ -52,10 +53,14 @@ describe('User Routes', () => {
                 //header.set("Authorization :", "Bearer " + tokenAdmin);
             },
         };
-         
-        const response = await request(getAllFlows);
-        expect(response.statusCode).toEqual(200);
-        done();
+        try{
+		console.log("flows test " + tokenAdmin); 
+        	const response = await request(getAllFlows);
+        	expect(response.statusCode).toEqual(200);
+	} catch(error){
+		console.log(error);
+      }
+		done();
      });
     
     
