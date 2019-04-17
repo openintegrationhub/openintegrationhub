@@ -12,6 +12,7 @@
     "test": "mocha spec --recursive"
   },
   "dependencies": {
+    "@openintegrationhub/iam-utils": "*",
     "body-parser": "1.18.3",
     "express": "4.16.4",
     "express-async-handler": "1.1.4",
