@@ -49,11 +49,12 @@ describe('User Routes', () => {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
             headers: {
-                "Authorization" : tokenAdmin,
+                "Authorization: " : tokenAdmin,
                 //header.set("Authorization :", "Bearer " + tokenAdmin);
             },
         };
         try{
+		console.log(JSON.stringify(getAllFlows);
 		console.log("flows test " + tokenAdmin); 
         	
 	} catch(error){
