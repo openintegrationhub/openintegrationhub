@@ -11,25 +11,25 @@ let app = null;
 describe('User Routes', () => {
   
     test('Login test', async (done) => {
-        process.env.IAM_AUTH_TYPE = 'basic';
-        const jsonPayload = {
-            username,
-            password,
-        };
-        
-        //setTimeout(async () => {
-	async function callLogin(){
-            const Login = {
-            method: 'POST',
-            uri: `http://iam.openintegrationhub.com/login`,
-            json: true,
-            body: jsonPayload,
-            };
-        
-	return tokenAdmin = await JSON.stringify(response.body.token);
-	
-	expect(response.statusCode).toEqual(200);
-	};
+        try{
+		process.env.IAM_AUTH_TYPE = 'basic';
+        	const jsonPayload = {
+        		username,
+        		password,
+        	};    
+        	const Login = {
+        		method: 'POST',
+        		uri: `http://iam.openintegrationhub.com/login`,
+        		json: true,
+        		body: jsonPayload,
+        	};
+        	tokenAdmin = await JSON.stringify(response.body.token);
+	}
+	catch (error) {
+		console.log(error);
+	}
+	return tokenAdmin;
+	expect(response.statusCode).toEqual(200);	
     	done();
     });
 	
