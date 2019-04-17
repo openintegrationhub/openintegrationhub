@@ -25,20 +25,12 @@ describe('User Routes', () => {
             body: jsonPayload,
             };
         
-            try{
-	    // const reponse = await request(Login);
-	    	request(Login).then(response => {
-	    	//console.log("1. response: " + JSON.stringify(response)),
-		tokenAdmin = JSON.stringify(response.body.token),	
-		expect(response.statusCode).toEqual(200);
-		//console.log("2. nur token: " + tokenAdmin);   
-	    	});
-            }
-            catch(error){
-	        console.log("Error: " + error);
-            }
-	    return tokenAdmin;
-         }, 5000);
+	//request(Login).then(response => {
+	tokenAdmin = JSON.stringify(response.body.token);
+	//tokenAdmin = request(Login).response.body.token	
+	expect(response.statusCode).toEqual(200);
+	return tokenAdmin;
+        }, 5000);
     done();
     });
 	
