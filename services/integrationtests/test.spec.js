@@ -28,23 +28,24 @@ describe('User Routes', () => {
             try{
 	    // const reponse = await request(Login);
 	    	request(Login).then(response => {
-	    	console.log("1. response: " + JSON.stringify(response)),
-			tokenAdmin = JSON.stringify(response.body.token),	
-			expect(response.statusCode).toEqual(200),
-		console.log("2. nur token: " + tokenAdmin);   
+	    	//console.log("1. response: " + JSON.stringify(response)),
+		tokenAdmin = JSON.stringify(response.body.token),	
+		expect(response.statusCode).toEqual(200),
+		//console.log("2. nur token: " + tokenAdmin);   
 	    	});
             }
             catch(error){
-	        console.log("3 Error: " + error);
+	        console.log("Error: " + error);
             }
-        });
+         }, 5000);
     done();
     });
 	
-       console.log("4. nur token: " + tokenAdmin);
+    console.log("3. nur token: " + tokenAdmin);
 	
     test('Get All Flows', async (done) => { 
-	console.log("5. nur token in neuer funktion: " + tokenAdmin);	
+	//console.log("4. nur token in neuer funktion: " + tokenAdmin);
+	    
         const getAllFlows = {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
@@ -53,12 +54,13 @@ describe('User Routes', () => {
                 //header.set("Authorization :", "Bearer " + tokenAdmin);
             }
         };
+	    
         try{
-	    console.log(JSON.stringify(getAllFlows)),
-	    console.log("flows test " + tokenAdmin);
+	  //  console.log(JSON.stringify(getAllFlows)),
+	   // console.log("flows test " + tokenAdmin);
 	}
 	catch(error){
-	    console.log(error);
+	//    console.log(error);
       	}
 	    const response = await request(getAllFlows);
             expect(response.statusCode).toEqual(200);
