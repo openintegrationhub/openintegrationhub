@@ -1,0 +1,10 @@
+{
+    "plugins": ["node", "mocha"],
+    "extends": ["eslint:recommended", "plugin:node/recommended"],
+    "rules": {
+        "mocha/no-exclusive-tests": "error",
+        "mocha/no-skipped-tests": "error",
+        "quotes": ["error", "single"],
+        "no-trailing-spaces": "error"
+    }
+}

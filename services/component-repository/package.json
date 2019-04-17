@@ -17,6 +17,7 @@
     "build:docker": "docker build -t openintegrationhub/component-repository:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
+    "@openintegrationhub/component-repository": "*",
     "backend-commons-lib": "*"
   },
   "devDependencies": {
