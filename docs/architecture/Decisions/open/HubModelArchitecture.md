@@ -31,7 +31,7 @@ a decision is not yet made
 * Central conflict management is enabled?
 * A common data model is required. All connected applications use transformer components which transforms between the application specific data model and the common data model
 * Application specific Ids must be resolved in order to enable application overwhelming ID linking
- * E.g.: Same data record exists in multiple applications --> OIH must centrally manage these IDs in order to correclty synchronize these data records
+ + E.g.: Same data record exists in multiple applications --> OIH must centrally manage these IDs in order to correclty synchronize these data records
 
 ## Peer-To-Peer
 
