@@ -30,7 +30,7 @@ describe('User Routes', () => {
 	    request(Login).then(response => {
 	    	//console.log(JSON.stringify(response));
 		expect(response.statusCode).toEqual(200);
-                tokenAdmin = "Bearer "+ response.body.token;
+                tokenAdmin = response.body.token;
 		//console.log(tokenAdmin);    
 	    });
                     }
@@ -49,7 +49,7 @@ describe('User Routes', () => {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
             headers: {
-                "Authorization: " + tokenAdmin,
+                "Authorization" : " Bearer" + tokenAdmin,
                 //header.set("Authorization :", "Bearer " + tokenAdmin);
             },
         };
