@@ -27,13 +27,13 @@ describe('User Routes', () => {
         
             try{
 	   // const reponse = await request(Login);
-	    request(Login).then(response => {
+	    	request(Login).then(response => {
 	    	//console.log(JSON.stringify(response));
 		expect(response.statusCode).toEqual(200);
-                tokenAdmin = response.body.token;
+                tokenAdmin = `${response.body.token}`;
 		//console.log(tokenAdmin);    
-	    });
-                    }
+	    	});
+            }
             catch(error){
 	        console.log(error);
             }
@@ -55,11 +55,11 @@ describe('User Routes', () => {
         };
         try{
 		console.log(JSON.stringify(getAllFlows)),
-		console.log("flows test " + tokenAdmin); 
-        	
-	} catch(error){
+		console.log("flows test " + tokenAdmin);
+	}
+	catch(error){
 		console.log(error);
-      }
+      	}
 	    const response = await request(getAllFlows);
         	expect(response.statusCode).toEqual(200);
 		done();
