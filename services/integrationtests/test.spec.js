@@ -34,9 +34,7 @@ describe('User Routes', () => {
         });
     done();
     });
-    
-    console.log(response.text);
-   
+       
     test('Get All Flows', async (done) => {  
         const getAllFlows = {
             method: 'GET',
