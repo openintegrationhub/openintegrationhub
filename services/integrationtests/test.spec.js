@@ -20,7 +20,7 @@ describe('User Routes', () => {
         	method: 'POST',
         	uri: `http://iam.openintegrationhub.com/login`,
         	json: true,
-        	body: jsonPayload,
+        	body: jsonPayload
         };
 	const response = await request(Login);
 	
@@ -40,7 +40,7 @@ describe('User Routes', () => {
     	done();
     });
 	
-    //console.log("3. nur token: " + tokenAdmin);
+    console.log("2. nur token: " + tokenAdmin);
 	
     test('Get All Flows', async (done) => { 
 	console.log("3. nur token: " + tokenAdmin);
@@ -51,7 +51,7 @@ describe('User Routes', () => {
                 "Authorization" : " Bearer " + tokenAdmin, 
             }
         };
-	 
+	 console.log(JSON.stringify(getAllFlows));
 	 const response = await request(getAllFlows);
          expect(response.statusCode).toEqual(200);
 	 done();
