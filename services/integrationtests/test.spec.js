@@ -8,8 +8,7 @@ let tokenUser = null;
 let tokenAdmin = null;
 let app = null;
 
-describe('User Routes', () => {
-  
+describe('User Routes', () => { 
     test('Login test', async (done) => {
 	process.env.IAM_AUTH_TYPE = 'basic';
         const jsonPayload = {
@@ -22,8 +21,7 @@ describe('User Routes', () => {
         	json: true,
         	body: jsonPayload
         };
-	const response = await request(Login);
-	
+	const response = await request(Login);	
 	const getToken = async res => {
 		try {
 		token = await Promise.resolve(res.body.token);
@@ -32,13 +30,11 @@ describe('User Routes', () => {
 			console.log(error);
 		}
 		return token; 
-	};
-	
+	};	
 	tokenAdmin = await getToken(response); 
 	expect(response.statusCode).toEqual(200);	
     	done();
-    });
-		
+    });		
     test('Get All Flows', async (done) => { 
 	console.log("3. nur token: " + tokenAdmin);
         const getAllFlows = {
@@ -53,6 +49,9 @@ describe('User Routes', () => {
          expect(response.statusCode).toEqual(200);
 	 done();
      });
+	
+	
+	
 	
      test('Add a new flow to the repo', async (done) => { 
 	process.env.IAM_AUTH_TYPE = 'basic';
@@ -94,10 +93,14 @@ describe('User Routes', () => {
     			}
   			]
 		},
-	};  
+	};
+	const response = await request(addFlow);
 	expect(response.statusCode).toEqual(201);	
     	done();
     });
+	
+	
+	
 	
      test('Get Flow by Id', async (done) => { 
         const getFlowbyId = {
