@@ -21,10 +21,17 @@ spec:
           image: 'openintegrationhub/component-repository:latest'
           env:
             - name: MONGODB_URI
-              value: >-
-                mongodb://mongodb-service.oih-dev-ns.svc.cluster.local/component-repository
-            - name: LISTEN_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: component-repository
+                  key: MONGODB_URI
+            - name: PORT
               value: '1234'
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: component-repository
+                  key: IAM_TOKEN
             - name: LOG_LEVEL
               value: trace
           terminationMessagePath: /dev/termination-log
