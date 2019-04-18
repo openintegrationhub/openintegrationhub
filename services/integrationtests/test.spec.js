@@ -33,15 +33,17 @@ describe('User Routes', () => {
 		}
 		return token; 
 	};
-	tokenAdmin = await getToken(response);    
+	
+	tokenAdmin = await getToken(response); 
+	console.log("1 .: " + tokenAdmin);
 	expect(response.statusCode).toEqual(200);	
     	done();
     });
 	
-    console.log("3. nur token: " + tokenAdmin);
+    //console.log("3. nur token: " + tokenAdmin);
 	
     test('Get All Flows', async (done) => { 
-	    
+	console.log("3. nur token: " + tokenAdmin);
         const getAllFlows = {
             method: 'GET',
             uri: `http://flow-repository.openintegrationhub.com/flows`,
