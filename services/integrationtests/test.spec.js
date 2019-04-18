@@ -64,7 +64,7 @@ describe('User Routes', () => {
             }
         };
 	 //const response = await request(Login);    
-	 console.log(json.stringify(getFlowbyId);
+	 console.log(JSON.stringify(getFlowbyId));
 	 const response = await request(getFlowbyId);
          expect(response.statusCode).toEqual(200);
 	 done();
