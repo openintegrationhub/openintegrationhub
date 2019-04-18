@@ -54,6 +54,50 @@ describe('User Routes', () => {
 	 done();
      });
 	
+     test('Add a new flow to the repo', async (done) => { 
+	process.env.IAM_AUTH_TYPE = 'basic';
+        const addFlow = {
+        	method: 'POST',
+        	uri: `http://iam.openintegrationhub.com/flows`,
+        	json: true,
+        	body = {
+  			"name": "My Flow",
+  			"description": "My Flow",
+  			"graph": {
+    				"nodes": [
+      				{
+        				"id": "string",
+        				"componentId": "string",
+        				"command": "string",
+        				"name": "string",
+        				"description": "string",
+        				"fields": {}
+      				 }
+    				],
+    			"edges": [
+      				{
+        				"id": "string",
+        				"config": {
+          				"condition": "string",
+          				"mapper": {}
+        			},
+        				"source": "string",
+        				"target": "string"
+      				}
+    			]
+  			},
+          		"type": "ordinary",
+  			"owners": [
+    			{
+      				"id": "string",
+      				"type": "string"
+    			}
+  			]
+	}; 
+	expect(response.statusCode).toEqual(201);	
+    	done();
+    });
+	
      test('Get Flow by Id', async (done) => { 
         const getFlowbyId = {
             	method: 'GET',
