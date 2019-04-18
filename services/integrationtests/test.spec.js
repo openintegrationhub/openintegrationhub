@@ -24,7 +24,7 @@ describe('User Routes', () => {
         };
 	const response = await request(Login);
 	
-	const getToken = async () => {
+	const getToken = async response => {
 		try {
 		token = await Promise.resolve(response.body.token);
 		}
@@ -33,7 +33,7 @@ describe('User Routes', () => {
 		}
 		return token; 
 	};
-	tokenAdmin = await getToken();    
+	tokenAdmin = await getToken(response);    
 	expect(response.statusCode).toEqual(200);	
     	done();
     });
