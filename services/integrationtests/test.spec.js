@@ -13,8 +13,8 @@ describe('User Routes', () => {
     test('Login test', async (done) => {
 	process.env.IAM_AUTH_TYPE = 'basic';
         const jsonPayload = {
-        		username,
-        		password,
+        	username,
+        	password,
 	};
         const Login = {
         	method: 'POST',
@@ -35,27 +35,38 @@ describe('User Routes', () => {
 	};
 	
 	tokenAdmin = await getToken(response); 
-	console.log("1 .: " + tokenAdmin);
 	expect(response.statusCode).toEqual(200);	
     	done();
     });
-	
-    //console.log("2. nur token: " + tokenAdmin);
-	
+		
     test('Get All Flows', async (done) => { 
 	console.log("3. nur token: " + tokenAdmin);
         const getAllFlows = {
-            method: 'GET',
-            uri: `http://flow-repository.openintegrationhub.com/flows`,
-            headers: {
-                "Authorization" : " Bearer " + tokenAdmin, 
-            }
+        	method: 'GET',
+            	uri: `http://flow-repository.openintegrationhub.com/flows`,
+            	headers: {
+                	"Authorization" : " Bearer " + tokenAdmin, 
+            	}
+		
         };
-	 console.log("logging all" + JSON.stringify(getAllFlows));
 	 const response = await request(getAllFlows);
          expect(response.statusCode).toEqual(200);
 	 done();
      });
-    
-    
+	
+     test('Get Flow by Id', async (done) => { 
+        const getFlowbyId = {
+            	method: 'GET',
+            	uri: `http://flow-repository.openintegrationhub.com/flows`,
+            	headers: {
+                "Authorization" : " Bearer " + tokenAdmin,
+		page: 2
+            }
+        };
+	 //const response = await request(Login);    
+	 console.log(json.stringify(getFlowbyId);
+	 const response = await request(getFlowbyId);
+         expect(response.statusCode).toEqual(200);
+	 done();
+     });   
 });
