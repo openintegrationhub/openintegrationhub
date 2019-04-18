@@ -93,7 +93,8 @@ describe('User Routes', () => {
       				"type": "string"
     			}
   			]
-	}; 
+		};
+	};  
 	expect(response.statusCode).toEqual(201);	
     	done();
     });
