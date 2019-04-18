@@ -60,7 +60,7 @@ describe('User Routes', () => {
         	method: 'POST',
         	uri: `http://iam.openintegrationhub.com/flows`,
         	json: true,
-        	body = {
+        	body: {
   			"name": "My Flow",
   			"description": "My Flow",
   			"graph": {
