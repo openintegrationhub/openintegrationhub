@@ -55,12 +55,8 @@ describe('User Routes', () => {
 	
      test('Add a new flow to the repo', async (done) => { 
 	process.env.IAM_AUTH_TYPE = 'basic';
-        const addFlow = {
-        	method: 'POST',
-        	uri: `http://iam.openintegrationhub.com/flows`,
-        	json: true,
-        	body: {
-  			"name": "My Flow",
+	const createdFlow = {
+        	"name": "My Flow",
   			"description": "My Flow",
   			"graph": {
     				"nodes": [
@@ -93,6 +89,15 @@ describe('User Routes', () => {
     			}
   			]
 		},
+	};     
+        const addFlow = {
+        	method: 'POST',
+        	uri: `http://iam.openintegrationhub.com/flows`,
+        	json: true,
+		headers: {
+                	"Authorization" : " Bearer " + tokenAdmin, 
+            	},
+        	body: createdFlow		
 	};
 	const response = await request(addFlow);
 	expect(response.statusCode).toEqual(201);	
@@ -107,7 +112,8 @@ describe('User Routes', () => {
             	method: 'GET',
             	uri: `http://flow-repository.openintegrationhub.com/flows`,
             	headers: {
-                "Authorization" : " Bearer " + tokenAdmin,
+                	"Authorization" : " Bearer " + tokenAdmin,
+		},
 		page: 2
             }
         };
