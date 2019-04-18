@@ -43,7 +43,6 @@ describe('User Routes', () => {
             	headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
             	}
-		
         };
 	 const response = await request(getAllFlows);
          expect(response.statusCode).toEqual(200);
@@ -69,13 +68,14 @@ describe('User Routes', () => {
         				"fields": {}
       				 }
     				],
-    			"edges": [
+    				"edges": [
       				{
         				"id": "string",
         				"config": {
           				"condition": "string",
           				"mapper": {}
         			},
+				{
         				"source": "string",
         				"target": "string"
       				}
