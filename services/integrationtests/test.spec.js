@@ -72,12 +72,11 @@ describe('User Routes', () => {
       				{
         				"id": "string",
         				"config": {
-          				"condition": "string",
-          				"mapper": {}
-        			},
-				{
-        				"source": "string",
-        				"target": "string"
+          					"condition": "string",
+          					"mapper": {}
+        				},
+        			"source": "string",
+        			"target": "string"
       				}
     			]
   			},
