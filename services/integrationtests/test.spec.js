@@ -87,8 +87,7 @@ describe('User Routes', () => {
       				"type": "string"
     			}
   			]
-		},
-	};     
+	};    
         const addFlow = {
         	method: 'POST',
         	uri: `http://iam.openintegrationhub.com/flows`,
