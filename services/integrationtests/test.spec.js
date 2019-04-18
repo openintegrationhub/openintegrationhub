@@ -24,9 +24,9 @@ describe('User Routes', () => {
         };
 	const response = await request(Login);
 	
-	const getToken = async response => {
+	const getToken = async res => {
 		try {
-		token = await Promise.resolve(response.body.token);
+		token = await Promise.resolve(res.body.token);
 		}
 		catch (error) {
 			console.log(error);
