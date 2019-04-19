@@ -350,6 +350,7 @@ describe('Integration Test', () => {
                     // sailor persists startup data via sailor-support API
                     let hooksDataRequest;
                     const hooksDataNock = nock('https://apidotelasticidotio')
+                        .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                             subscriptionResult: {
                                 status: 'ok'
@@ -437,6 +438,7 @@ describe('Integration Test', () => {
                     let hooksDataRequest2;
                     // sailor persists startup data via sailor-support API
                     const hooksDataNock1 = nock('https://apidotelasticidotio')
+                        .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                             subscriptionResult: {
                                 status: 'ok'
@@ -452,11 +454,13 @@ describe('Integration Test', () => {
                         });
                         // sailor removes data in order to resolve conflict
                     const hooksDataDeleteNock = nock('https://apidotelasticidotio')
+                        .matchHeader('Connection', 'Keep-Alive')
                         .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                         .reply(204);
                         // sailor persists startup data via sailor-support API
 
                     const hooksDataNock2 = nock('https://apidotelasticidotio')
+                        .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                             subscriptionResult: {
                                 status: 'ok'
@@ -553,10 +557,12 @@ describe('Integration Test', () => {
 
                     // sailor persists startup data via sailor-support API
                     const hooksDataNock = nock('https://apidotelasticidotio')
+                        .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
                         .reply(201);
                         // sailor removes data in order to resolve conflict
                     const hooksDataDeleteNock = nock('https://apidotelasticidotio')
+                        .matchHeader('Connection', 'Keep-Alive')
                         .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                         .reply(400);
 
@@ -626,6 +632,7 @@ describe('Integration Test', () => {
 
                     // sailor persists startup data via sailor-support API
                     const hooksDataNock = nock('https://apidotelasticidotio')
+                        .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
                         .reply(201);
 
@@ -772,11 +779,13 @@ describe('Integration Test', () => {
 
                 // sailor retrieves startup data via sailor-support API
                 const hooksDataGetNock = nock('https://apidotelasticidotio')
+                    .matchHeader('Connection', 'Keep-Alive')
                     .get('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                     .reply(200, subsriptionResponse);
 
                 // sailor removes startup data via sailor-support API
                 const hooksDataDeleteNock = nock('https://apidotelasticidotio')
+                    .matchHeader('Connection', 'Keep-Alive')
                     .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                     .reply(204);
 

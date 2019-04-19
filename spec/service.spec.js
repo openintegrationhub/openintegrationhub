@@ -334,6 +334,7 @@ describe('Service', () => {
                     });
 
                     var nockScope = nock('http://apihost.com:80')
+                        .matchHeader('Connection', 'Keep-Alive')
                         .put('/v1/accounts/1234567890', { keys: { oauth: { access_token: 'newAccessToken' } } })
                         .reply(200, 'Success');
 
@@ -363,6 +364,7 @@ describe('Service', () => {
                     });
 
                     var nockScope = nock('http://apihost.com:80')
+                        .matchHeader('Connection', 'Keep-Alive')
                         .put('/v1/accounts/1234567890', { keys: { oauth: { access_token: 'newAccessToken' } } })
                         .reply(400, 'Success');
 
