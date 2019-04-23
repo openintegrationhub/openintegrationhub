@@ -53,8 +53,8 @@ describe('User Routes', () => {
      test('Add a new flow to the repo', async (done) => { 
 	process.env.IAM_AUTH_TYPE = 'basic';
 	const createdFlow = {
-        	"name": "My Flow",
-  			"description": "My Flow",
+        	"name": "Dennis' flow",
+  			"description": "My test Flow",
   			"graph": {
     				"nodes": [
       				{
