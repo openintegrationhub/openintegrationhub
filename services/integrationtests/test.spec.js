@@ -50,13 +50,13 @@ describe('User Routes', () => {
 	 done();
      });
 	
-let flowName = "Dennis' flow";
-//let flowID = null;
+//let flowName = "Dennis' flow";
+//let flowID = "47-11";
 	
      test('Add a new flow to the repo', async (done) => { 
 	process.env.IAM_AUTH_TYPE = 'basic';
 	const createdFlow = {
-        	"name": flowName,
+        	"name": "Dennis' flow",
   			"description": "My test Flow",
   			"graph": {
     				"nodes": [
@@ -100,10 +100,6 @@ let flowName = "Dennis' flow";
 	};
 	console.log(JSON.stringify(addFlow));     
 	const response = await request(addFlow);
-	const flowID = await request(addFlow.body.id);
-	const flowID2 = await request(addFlow.body.text.id);
-	console.log(flowID); 
-	console.log(flowID2);
 	expect(response.statusCode).toEqual(201);	
     	done();
     });  
