@@ -58,7 +58,7 @@ describe('User Routes', () => {
   			"graph": {
     				"nodes": [
       				{
-        				"id": "string",
+        				"id": "integration-tests",
         				"componentId": "string",
         				"command": "string",
         				"name": "string",
