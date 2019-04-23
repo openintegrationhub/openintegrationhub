@@ -88,13 +88,14 @@ describe('User Routes', () => {
 	};    
         const addFlow = {
         	method: 'POST',
-        	uri: `http://iam.openintegrationhub.com/flows`,
+        	uri: `http://flow-repository.openintegrationhub.com/flows`,
         	json: true,
 		headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
             	},
         	body: createdFlow		
 	};
+	console.log(JSON.stringify(addFlow));     
 	const response = await request(addFlow);
 	expect(response.statusCode).toEqual(201);	
     	done();
