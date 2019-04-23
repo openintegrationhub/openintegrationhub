@@ -35,8 +35,7 @@ describe('User Routes', () => {
 	expect(response.statusCode).toEqual(200);	
     	done();
     });	
-	
-//-----------------------------------------------------------	
+		
     test('Get All Flows', async (done) => { 
 	console.log("3. nur token: " + tokenAdmin);
         const getAllFlows = {
@@ -50,8 +49,7 @@ describe('User Routes', () => {
          expect(response.statusCode).toEqual(200);
 	 done();
      });
-	
-//-----------------------------------------------------------	
+		
      test('Add a new flow to the repo', async (done) => { 
 	process.env.IAM_AUTH_TYPE = 'basic';
 	const createdFlow = {
@@ -101,24 +99,5 @@ describe('User Routes', () => {
 	expect(response.statusCode).toEqual(201);	
     	done();
     });
-	
-	
-	
-	
-     //test('Get Flow by Id', async (done) => { 
-       // const getFlowbyId = {
-         //   	method: 'GET',
-           // 	uri: `http://flow-repository.openintegrationhub.com/flows`,
-            //	headers: {
-              //  	"Authorization" : " Bearer " + tokenAdmin,
-		//},
-		//page: 2
-            //}
-        //},
-	 //const response = await request(Login);    
-	 //console.log(JSON.stringify(getFlowbyId));
-	 //const response = await request(getFlowbyId);
-         //expect(response.statusCode).toEqual(200);
-	 //done();
-     //});   
+   
 });
