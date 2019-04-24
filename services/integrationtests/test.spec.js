@@ -9,19 +9,23 @@ let tokenAdmin = null;
 let app = null;
 let flowID = null;
 
-describe('User Routes', () => { 
-    test('--- Login & Token ---', async (done) => {
+describe('User Routes', () => {
+	beforeEach(() => {
+		jest.setTimeout(10000);
+	});
+
+    	test('--- Login & Token ---', async (done) => {
 		process.env.IAM_AUTH_TYPE = 'basic';
-        const jsonPayload = {
-        	username,
-        	password,
+        	const jsonPayload = {
+        		username,
+        		password,
 		};
-        const Login = {
-        	method: 'POST',
-        	uri: `http://iam.openintegrationhub.com/login`,
-        	json: true,
-        	body: jsonPayload
-        };
+        	const Login = {
+        		method: 'POST',
+        		uri: `http://iam.openintegrationhub.com/login`,
+        		json: true,
+        		body: jsonPayload
+        	};
 		const response = await request(Login);	
 		const getToken = async res => {
 		try {
@@ -128,6 +132,6 @@ describe('User Routes', () => {
 		console.log(JSON.stringify(getFlowById)); 
 		expect(response.statusCode).toEqual(200);
 		done();
-		});
+	});
 	
 });
