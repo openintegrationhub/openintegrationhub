@@ -98,10 +98,24 @@ describe('User Routes', () => {
             	},
         	body: createdFlow		
 	};
+	     
 	console.log(JSON.stringify(addFlow));     
 	const response = await request(addFlow);
-	//console.log(JSON.stringify(addFlow.data.id));
+	     
+	const getFlowID = async res => {
+		try {
+			id = await Promise.resolve(res.body.data.id);
+		}
+		catch (error) {
+			console.log(error);
+		}
+		return id; 
+	};	
+	const flowID = await getFlowID(response); 
+	     
+	console.log(JSON.stringify("flow id: " + flowID));
 	expect(response.statusCode).toEqual(201);
     	done();
+	
     });  
 });
