@@ -100,8 +100,7 @@ describe('User Routes', () => {
 	};
 	console.log(JSON.stringify(addFlow));     
 	const response = await request(addFlow);
-	const responseID = await request(addFlow.data.id);
-	console.log(responseID);
+	console.log(JSON.stringify(addFlow.body.data.id));
 	expect(response.statusCode).toEqual(201);
     	done();
     });  
