@@ -14,7 +14,7 @@ describe('User Routes', () => {
 		jest.setTimeout(10000);
 	});
 
-    	test('--- Login & Token ---', async (done) => {
+    	test('--- LOGIN & TOKEN ---', async (done) => {
 		process.env.IAM_AUTH_TYPE = 'basic';
         	const jsonPayload = {
         		username,
@@ -129,7 +129,7 @@ describe('User Routes', () => {
 					}
 			};
 		const response = await request(getFlowById);
-		console.log(JSON.stringify(response)); 
+		//console.log(JSON.stringify(response)); 
 		expect(response.statusCode).toEqual(200);
 	done();
 	});
