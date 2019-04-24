@@ -129,9 +129,9 @@ describe('User Routes', () => {
 					}
 			};
 		const response = await request(getFlowById);
-		console.log(JSON.stringify(getFlowById)); 
+		console.log(JSON.stringify(response)); 
 		expect(response.statusCode).toEqual(200);
-		done();
+	done();
 	});
 	
 });
