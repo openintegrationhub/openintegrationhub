@@ -7,37 +7,38 @@ let conf = null;
 let tokenUser = null; 
 let tokenAdmin = null;
 let app = null;
+let flowID = null;
 
 describe('User Routes', () => { 
-    test('Login test', async (done) => {
-	process.env.IAM_AUTH_TYPE = 'basic';
+    test('--- Login & Token ---', async (done) => {
+		process.env.IAM_AUTH_TYPE = 'basic';
         const jsonPayload = {
         	username,
         	password,
-	};
+		};
         const Login = {
         	method: 'POST',
         	uri: `http://iam.openintegrationhub.com/login`,
         	json: true,
         	body: jsonPayload
         };
-	const response = await request(Login);	
-	const getToken = async res => {
+		const response = await request(Login);	
+		const getToken = async res => {
 		try {
-		token = await Promise.resolve(res.body.token);
+			token = await Promise.resolve(res.body.token);
 		}
 		catch (error) {
 			console.log(error);
 		}
 		return token; 
-	};	
-	tokenAdmin = await getToken(response); 
-	expect(response.statusCode).toEqual(200);	
+		};	
+		tokenAdmin = await getToken(response); 
+		expect(response.statusCode).toEqual(200);	
     	done();
     });	
 		
-    test('Get All Flows', async (done) => { 
-	console.log("3. nur token: " + tokenAdmin);
+    test('--- GET All FLOWS ---', async (done) => { 
+		//console.log("3. nur token: " + tokenAdmin);
         const getAllFlows = {
         	method: 'GET',
             	uri: `http://flow-repository.openintegrationhub.com/flows`,
@@ -45,17 +46,14 @@ describe('User Routes', () => {
                 	"Authorization" : " Bearer " + tokenAdmin, 
             	}
         };
-	 const response = await request(getAllFlows);
-         expect(response.statusCode).toEqual(200);
+	 	const response = await request(getAllFlows);
+        expect(response.statusCode).toEqual(200);
 	 done();
      });
-	
-//let flowName = "Dennis' flow";
-//let flowID = "47-11";
-	
-     test('Add a new flow to the repo', async (done) => { 
-	process.env.IAM_AUTH_TYPE = 'basic';
-	const createdFlow = {
+
+    test('--- ADD NEW FLOW ---', async (done) => { 
+		process.env.IAM_AUTH_TYPE = 'basic';
+		const createdFlow = {
         	"name": "Dennis' flow",
   			"description": "My test Flow",
   			"graph": {
@@ -93,13 +91,13 @@ describe('User Routes', () => {
         	method: 'POST',
         	uri: `http://flow-repository.openintegrationhub.com/flows`,
         	json: true,
-		headers: {
+			headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
-            	},
+            },
         	body: createdFlow		
 	};
 	     
-	console.log(JSON.stringify(addFlow));     
+	//console.log(JSON.stringify(addFlow));     
 	const response = await request(addFlow);
 	     
 	const getFlowID = async res => {
@@ -111,11 +109,25 @@ describe('User Routes', () => {
 		}
 		return id; 
 	};	
-	const flowID = await getFlowID(response); 
+	flowID = await getFlowID(response); 
 	     
-	console.log(JSON.stringify("flow id: " + flowID));
+	//console.log(JSON.stringify("flow id: " + flowID));
 	expect(response.statusCode).toEqual(201);
     	done();
+	});
 	
-    });  
+	test('--- GET FLOW BY ID ---', async (done) => { 
+		const getFlowById = {
+				method: 'GET',
+					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
+					headers: {
+						"Authorization" : " Bearer " + tokenAdmin, 
+					}
+			};
+		const response = await request(getFlowById);
+		console.log(JSON.stringify(getFlowById)); 
+		expect(response.statusCode).toEqual(200);
+		done();
+		});
+	
 });
