@@ -14,18 +14,18 @@ describe('User Routes', () => {
 		jest.setTimeout(10000);
 	});
 
-    	test('--- LOGIN & TOKEN ---', async (done) => {
+    test('--- Login & Token ---', async (done) => {
 		process.env.IAM_AUTH_TYPE = 'basic';
-        	const jsonPayload = {
-        		username,
-        		password,
+        const jsonPayload = {
+        	username,
+        	password,
 		};
-        	const Login = {
-        		method: 'POST',
-        		uri: `http://iam.openintegrationhub.com/login`,
-        		json: true,
-        		body: jsonPayload
-        	};
+        const Login = {
+        	method: 'POST',
+        	uri: `http://iam.openintegrationhub.com/login`,
+        	json: true,
+        	body: jsonPayload
+        };
 		const response = await request(Login);	
 		const getToken = async res => {
 		try {
@@ -101,7 +101,7 @@ describe('User Routes', () => {
         	body: createdFlow		
 	};
 	     
-	//console.log(JSON.stringify(addFlow));     
+	console.log(JSON.stringify(addFlow));     
 	const response = await request(addFlow);
 	     
 	const getFlowID = async res => {
@@ -129,9 +129,23 @@ describe('User Routes', () => {
 					}
 			};
 		const response = await request(getFlowById);
-		//console.log(JSON.stringify(response)); 
+		console.log(JSON.stringify(getFlowById)); 
 		expect(response.statusCode).toEqual(200);
-	done();
+		done();
+	});
+
+	test('--- PATCH FLOW BY ID ---', async (done) => { 
+		const getFlowById = {
+				method: 'GET',
+					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
+					headers: {
+						"Authorization" : " Bearer " + tokenAdmin, 
+					}
+			};
+		const response = await request(getFlowById);
+		console.log(JSON.stringify(getFlowById)); 
+		expect(response.statusCode).toEqual(200);
+		done();
 	});
 	
 });
