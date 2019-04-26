@@ -166,7 +166,7 @@ describe('User Routes', () => {
 		
 		const newName = "new name " + currentFlowName;
 
-		getFlowById.body.data.name = newName;
+		response.body.data.name = newName;
 
 		
 		// oder "PATCH" statt POST?
@@ -177,11 +177,12 @@ describe('User Routes', () => {
 			headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
             },
-        	body: getFlowById 		
+        	body: response 		
 		};
 
 		console.log(JSON.stringify(getFlowById)); 
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
+	
 });
