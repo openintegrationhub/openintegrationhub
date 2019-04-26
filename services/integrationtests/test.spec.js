@@ -134,10 +134,13 @@ describe('User Routes', () => {
 		done();
 	});
 
-// ---------------------------------------------------------------
+
+
+	let flowName = null;
+
 
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
-		// get flow
+		// flow abrufen
 		const getFlowById = {
 				method: 'GET',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
@@ -145,9 +148,9 @@ describe('User Routes', () => {
 						"Authorization" : " Bearer " + tokenAdmin, 
 					}
 			};
-		// save flow
+		// flow speichern
 		const response = await request(getFlowById);
-		// get flow name
+		// flow Name auslesen
 		const getNameFromFlow = async res => {
 			try {
 				flowName = await Promise.resolve(res.body.data.name);
@@ -157,21 +160,23 @@ describe('User Routes', () => {
 			}
 			return flowName; 
 		};	
-		// save flow name
+		// flow Name speichern
 		currentFlowName = await getNameFromFlow(getFlowById);  
-		// edit to new name		
-		const newName = "new name " + currentFlowName;
-		// update flow-body
-		getFlowById.body.data.name = newName;
 		
-		// update flow
+		
+		const newName = "new name " + currentFlowName;
+
+		getFlowById.body.data.name = newName;
+
+		
+		// oder "PATCH" statt POST?
 		const patchFlow = {
         	method: 'PATCH',
         	uri: `http://flow-repository.openintegrationhub.com/flows`,
         	json: true,
 			headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
-            		},
+            },
         	body: getFlowById 		
 		};
 
@@ -179,5 +184,4 @@ describe('User Routes', () => {
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
-	
 });
