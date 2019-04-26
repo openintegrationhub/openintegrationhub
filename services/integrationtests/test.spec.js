@@ -161,8 +161,7 @@ describe('User Routes', () => {
 			return flowName; 
 		};	
 		// flow Name speichern
-		currentFlowName = await getNameFromFlow(getFlowById);  
-		
+		const currentFlowName = await getNameFromFlow(response);  
 		
 		const newName = "new name " + currentFlowName;
 
