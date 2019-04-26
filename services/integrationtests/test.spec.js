@@ -135,21 +135,22 @@ describe('User Routes', () => {
 	});
 
 	let flowName = null;
-
+	let currentFlowName = null;
+	let newName = null;
 
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
-		const getFlowById = {
-				method: 'GET',
-					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
-					headers: {
-						"Authorization" : " Bearer " + tokenAdmin, 
-					}
-		};
-		const response = await request(getFlowById);
+		//const getFlowById = {
+		//		method: 'GET',
+		//			uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
+		//			headers: {
+		//				"Authorization" : " Bearer " + tokenAdmin, 
+		//			}
+		//};
+		//const response = await request(getFlowById);
 
 		const getNameFromFlow = async res => {
 			try {
-				flowName = await Promise.resolve(res.body);
+				flowName = await Promise.resolve(res.body.name);
 			}
 			catch (error) {
 				console.log(error);
