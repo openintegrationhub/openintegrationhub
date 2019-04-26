@@ -119,7 +119,6 @@ describe('User Routes', () => {
 		};	
 		flowID = await getFlowID(response); 
 	     
-		//console.log(JSON.stringify("flow id: " + flowID));
 		expect(response.statusCode).toEqual(201);
     	done();
 	});
@@ -133,10 +132,12 @@ describe('User Routes', () => {
 					}
 			};
 		const response = await request(getFlowById);
-		//console.log(JSON.stringify(getFlowById)); 
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
+
+
+
 
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
 		const getFlowData = {
@@ -148,6 +149,9 @@ describe('User Routes', () => {
 		};
 		const response = await request(getFlowData);
 
+
+
+
 		const getNameFromFlow = async res => {
 			try {
 				flowName = await Promise.resolve(res.body.name);
@@ -157,8 +161,7 @@ describe('User Routes', () => {
 			}
 			return flowName; 
 		};	
-		
-		const currentFlowName = await getFlowData(response);  
+		const currentFlowName = await getNameFromFlow(response);  
 		
 		const newName = "new name " + currentFlowName.data.name;
 
@@ -168,7 +171,7 @@ describe('User Routes', () => {
         		method: 'PATCH',
         		uri: `http://flow-repository.openintegrationhub.com/flows`,
         		json: true,
-			headers: {
+				headers: {
                 		"Authorization" : " Bearer " + tokenAdmin, 
             		},
         		body: response 		
