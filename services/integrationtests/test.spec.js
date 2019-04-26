@@ -14,7 +14,7 @@ describe('User Routes', () => {
 		jest.setTimeout(10000);
 	});
 
-    test('--- Login & Token ---', async (done) => {
+    test('--- LOGIN & TOKEN ---', async (done) => {
 		process.env.IAM_AUTH_TYPE = 'basic';
         const jsonPayload = {
         	username,
@@ -90,7 +90,7 @@ describe('User Routes', () => {
       				"type": "string"
     			}
   			]
-	};    
+		};    
         const addFlow = {
         	method: 'POST',
         	uri: `http://flow-repository.openintegrationhub.com/flows`,
@@ -99,12 +99,12 @@ describe('User Routes', () => {
                 	"Authorization" : " Bearer " + tokenAdmin, 
             },
         	body: createdFlow		
-	};
+		};
 	     
-	console.log(JSON.stringify(addFlow));     
-	const response = await request(addFlow);
+		console.log(JSON.stringify(addFlow));     
+		const response = await request(addFlow);
 	     
-	const getFlowID = async res => {
+		const getFlowID = async res => {
 		try {
 			id = await Promise.resolve(res.body.data.id);
 		}
@@ -112,11 +112,11 @@ describe('User Routes', () => {
 			console.log(error);
 		}
 		return id; 
-	};	
-	flowID = await getFlowID(response); 
+		};	
+		flowID = await getFlowID(response); 
 	     
-	//console.log(JSON.stringify("flow id: " + flowID));
-	expect(response.statusCode).toEqual(201);
+		//console.log(JSON.stringify("flow id: " + flowID));
+		expect(response.statusCode).toEqual(201);
     	done();
 	});
 	
@@ -129,12 +129,15 @@ describe('User Routes', () => {
 					}
 			};
 		const response = await request(getFlowById);
-		console.log(JSON.stringify(getFlowById)); 
+		//console.log(JSON.stringify(getFlowById)); 
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
 
+// ---------------------------------------------------------------
+
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
+		// get flow
 		const getFlowById = {
 				method: 'GET',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
@@ -142,7 +145,36 @@ describe('User Routes', () => {
 						"Authorization" : " Bearer " + tokenAdmin, 
 					}
 			};
+		// save flow
 		const response = await request(getFlowById);
+		// get flow name
+		const getNameFromFlow = async res => {
+			try {
+				flowName = await Promise.resolve(res.body.data.name);
+			}
+			catch (error) {
+				console.log(error);
+			}
+			return name; 
+		};	
+		// save flow name
+		currentFlowName = await getNameFromFlow(getFlowById);  
+		// edit to new name		
+		const newName = "new name " + currentFlowName;
+		// update flow-body
+		getFlowById.body.data.name = newName;
+		
+		// update flow
+		const patchFlow = {
+        	method: 'PATCH',
+        	uri: `http://flow-repository.openintegrationhub.com/flows`,
+        	json: true,
+			headers: {
+                	"Authorization" : " Bearer " + tokenAdmin, 
+            		},
+        	body: getFlowById 		
+		};
+
 		console.log(JSON.stringify(getFlowById)); 
 		expect(response.statusCode).toEqual(200);
 		done();
