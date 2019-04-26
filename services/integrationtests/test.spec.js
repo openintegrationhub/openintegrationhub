@@ -154,7 +154,7 @@ describe('User Routes', () => {
 
 		const getNameFromFlow = async res => {
 			try {
-				flowName = await Promise.resolve(res.body.name);
+				flowName = await Promise.resolve(res.body.data.name);
 			}
 			catch (error) {
 				console.log(error);
@@ -163,7 +163,7 @@ describe('User Routes', () => {
 		};	
 		const currentFlowName = await getNameFromFlow(response);  
 		
-		const newName = "new name " + currentFlowName.data.name;
+		const newName = "new name " + currentFlowName;
 
 		response.data.name = newName;
 		
