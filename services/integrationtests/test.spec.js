@@ -140,43 +140,39 @@ describe('User Routes', () => {
 
 
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
-		// flow abrufen
 		const getFlowById = {
 				method: 'GET',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
 					headers: {
 						"Authorization" : " Bearer " + tokenAdmin, 
 					}
-			};
-		// flow speichern
+		};
 		const response = await request(getFlowById);
-		// flow Name auslesen
+
 		const getNameFromFlow = async res => {
 			try {
-				flowName = await Promise.resolve(res.body.data.name);
+				flowName = await Promise.resolve(res.body);
 			}
 			catch (error) {
 				console.log(error);
 			}
 			return flowName; 
 		};	
-		// flow Name speichern
+
 		const currentFlowName = await getNameFromFlow(response);  
 		
-		const newName = "new name " + currentFlowName;
+		const newName = "new name " + currentFlowName.data.name;
 
-		response.body.data.name = newName;
-
+		response.data.name = newName;
 		
-		// oder "PATCH" statt POST?
 		const patchFlow = {
         	method: 'PATCH',
         	uri: `http://flow-repository.openintegrationhub.com/flows`,
         	json: true,
 			headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
-            },
-        	body: response 		
+            		},
+        		body: response 		
 		};
 
 		console.log(JSON.stringify(getFlowById)); 
