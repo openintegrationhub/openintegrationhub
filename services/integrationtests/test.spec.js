@@ -134,8 +134,6 @@ describe('User Routes', () => {
 		done();
 	});
 
-
-
 	let flowName = null;
 
 
@@ -161,7 +159,7 @@ describe('User Routes', () => {
 
 		const currentFlowName = await getNameFromFlow(response);  
 		
-		const newName = "new name " + currentFlowName.data.name;
+		const newName = "new name " + Promise.resolve(currentFlowName.data.name);
 
 		response.data.name = newName;
 		
