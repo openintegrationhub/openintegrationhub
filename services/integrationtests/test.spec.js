@@ -6,6 +6,7 @@ let conf = null;
 
 let tokenUser = null; 
 let tokenAdmin = null;
+let response = null;
 let app = null;
 let flowID = null;
 
