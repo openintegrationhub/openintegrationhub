@@ -6,12 +6,11 @@ let conf = null;
 
 let tokenUser = null; 
 let tokenAdmin = null;
-let response = null;
+//let response = null;
 let app = null;
 let flowID = null;
 let flowData = null;
 let flowName = null;
-let currentFlowName = null;
 let newName = null;
 
 describe('User Routes', () => {
@@ -140,14 +139,14 @@ describe('User Routes', () => {
 	});
 
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
-		//const getFlowById = {
-		//		method: 'GET',
-		//			uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
-		//			headers: {
-		//				"Authorization" : " Bearer " + tokenAdmin, 
-		//			}
-		//};
-		//const response = await request(getFlowById);
+		const getFlow = {
+				method: 'GET',
+					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
+					headers: {
+						"Authorization" : " Bearer " + tokenAdmin, 
+					}
+		};
+		const response = await request(getFlow);
 
 		const getNameFromFlow = async res => {
 			try {
@@ -158,10 +157,10 @@ describe('User Routes', () => {
 			}
 			return flowName; 
 		};	
-
-		currentFlowName = await getNameFromFlow(response);  
 		
-		const newName = "new name " + Promise.resolve(currentFlowName.data.name);
+		const currentFlowName = await getFlow(response);  
+		
+		const newName = "new name " + currentFlowName.data.name;
 
 		response.data.name = newName;
 		
