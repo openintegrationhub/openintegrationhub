@@ -155,7 +155,7 @@ describe('User Routes', () => {
 			catch (error) {
 				console.log(error);
 			}
-			return name; 
+			return flowName; 
 		};	
 		// save flow name
 		currentFlowName = await getNameFromFlow(getFlowById);  
