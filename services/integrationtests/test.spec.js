@@ -9,6 +9,10 @@ let tokenAdmin = null;
 let response = null;
 let app = null;
 let flowID = null;
+let flowData = null;
+let flowName = null;
+let currentFlowName = null;
+let newName = null;
 
 describe('User Routes', () => {
 	beforeEach(() => {
@@ -135,10 +139,6 @@ describe('User Routes', () => {
 		done();
 	});
 
-	let flowName = null;
-	let currentFlowName = null;
-	let newName = null;
-
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
 		//const getFlowById = {
 		//		method: 'GET',
@@ -159,7 +159,7 @@ describe('User Routes', () => {
 			return flowName; 
 		};	
 
-		const currentFlowName = await getNameFromFlow(response);  
+		currentFlowName = await getNameFromFlow(response);  
 		
 		const newName = "new name " + Promise.resolve(currentFlowName.data.name);
 
