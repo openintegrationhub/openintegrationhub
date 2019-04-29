@@ -144,7 +144,7 @@ describe('User Routes', () => {
 		};
 		const response = await request(getFlowData);
 		
-		console.log(JSON.stringify(response.body.data));
+		console.log(JSON.stringify(response.body));
 	
 		const getNameFromFlow = async res => {
 			try {
@@ -158,7 +158,7 @@ describe('User Routes', () => {
 		
 		const currentFlowName = await getNameFromFlow(response);  
 		
-		console.log(JSON.stringify(currentFlowName.body));
+		console.log(JSON.stringify(currentFlowName));
 
 		//console.log("get flow data: " & JSON.stringify(response));
 		//console.log("get flow name: " & JSON.stringify(currentFlowName));
