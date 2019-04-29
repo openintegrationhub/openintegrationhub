@@ -125,6 +125,8 @@ describe('User Routes', () => {
 		};
 		flowName = await getFlowName(response); 
 
+		console.log('flowID= ' & flowID);
+		console.log('flowName= ' & flowName);
 		expect(response.statusCode).toEqual(201);
     	done();
 	});
