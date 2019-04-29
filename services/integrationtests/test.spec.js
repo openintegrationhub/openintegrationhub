@@ -149,7 +149,7 @@ describe('User Routes', () => {
 
 		var flowName = "";
 
-		const currentFlowName = await getNameFromFlow(response); 
+		//const currentFlowName = await getNameFromFlow(response); 
 
 		const getNameFromFlow = async res => {
 			try {
@@ -161,7 +161,7 @@ describe('User Routes', () => {
 			return flowName; 
 		};
 		
-		//const currentFlowName = await getNameFromFlow(response);  
+		const currentFlowName = await getNameFromFlow(response);  
 		
 		console.log(currentFlowName);
 
