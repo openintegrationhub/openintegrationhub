@@ -115,12 +115,12 @@ describe('User Routes', () => {
 
 		const getFlowName = async res => {
 			try {
-				id = await Promise.resolve(res.body.data.name);
+				name = await Promise.resolve(res.body.data.name);
 			}
 			catch (error) {
 				console.log(error);
 			}
-			return id; 
+			return name; 
 		};	
 		flowName = await getFlowName(response); 
 	    
