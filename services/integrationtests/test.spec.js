@@ -137,8 +137,6 @@ describe('User Routes', () => {
 	});
 
 
-
-
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
 		const getFlowData = {
 				method: 'GET',
@@ -148,8 +146,6 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(getFlowData);
-
-
 
 
 		const getNameFromFlow = async res => {
@@ -163,8 +159,10 @@ describe('User Routes', () => {
 		};	
 		const currentFlowName = await getNameFromFlow(response);  
 		
+		console.log("get flow data: " & JSON.stringify(response));
+		console.log("get flow name: " & JSON.stringify(currentFlowName));
+		
 		const newName = "new name " + currentFlowName;
-
 		response.data.name = newName;
 		
 		const patchFlow = {
