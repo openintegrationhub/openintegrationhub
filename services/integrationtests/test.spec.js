@@ -144,10 +144,12 @@ describe('User Routes', () => {
 		};
 		var response = await request(getFlowData);
 		
-		console.log(tokenAdmin);
-		console.log(JSON.stringify(response.body));
+		//console.log(tokenAdmin);
+		//console.log(JSON.stringify(response.body));
 
 		var flowName = "";
+
+		const currentFlowName = await getNameFromFlow(response); 
 
 		const getNameFromFlow = async res => {
 			try {
@@ -161,7 +163,7 @@ describe('User Routes', () => {
 		
 		const currentFlowName = await getNameFromFlow(response);  
 		
-		console.log(JSON.stringify(currentFlowName));
+		console.log(currentFlowName);
 
 		const newName = "new name " + currentFlowName;
 
@@ -179,7 +181,7 @@ describe('User Routes', () => {
         		body: response 		
 		};
 		
-		console.log(patchFlow); 
+		//console.log(patchFlow); 
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
