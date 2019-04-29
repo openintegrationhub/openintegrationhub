@@ -146,7 +146,9 @@ describe('User Routes', () => {
 		
 		console.log(tokenAdmin);
 		console.log(JSON.stringify(response.body));
-	
+
+		var flowName = "";
+		
 		const getNameFromFlow = async res => {
 			try {
 				flowName = await Promise.resolve(res.body.data.name);
@@ -177,6 +179,5 @@ describe('User Routes', () => {
 		console.log(patchFlow); 
 		expect(response.statusCode).toEqual(200);
 		done();
-	});
-	
+	});	
 });
