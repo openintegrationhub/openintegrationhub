@@ -165,7 +165,9 @@ describe('User Routes', () => {
 
 		const newName = "new name " + currentFlowName;
 
-		response.body.data.name = newName;
+		response = {
+			'name': newName
+		}; 
 		
 		const patchFlow = {
         		method: 'PATCH',
