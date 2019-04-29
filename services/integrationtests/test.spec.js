@@ -158,27 +158,6 @@ describe('User Routes', () => {
 			}
 		};
 		var response = await request(getFlowData);
-		
-		//console.log(tokenAdmin);
-		//console.log(JSON.stringify(response.body));
-
-		//var flowName = "";
-
-		//const currentFlowName = await getNameFromFlow(response); 
-
-		//const getNameFromFlow = async res => {
-		//	try {
-		//		flowName = await Promise.resolve(res.body);
-		//	}
-		//	catch (error) {
-		//		console.log(error);
-		//	}
-		//	return flowName; 
-		//};
-		
-		//const currentFlowName = await getNameFromFlow(response);  
-		
-		//console.log(typeof currentFlowName);
 
 		const newName = "new given name " + flowName;
 
@@ -197,6 +176,20 @@ describe('User Routes', () => {
 		};
 		
 		console.log(JSON.stringify(patchFlow.body)); 
+		expect(response.statusCode).toEqual(200);
+		done();
+	});
+
+	test('--- DELETE FLOW BY ID ---', async (done) => { 
+		const deleteFlowById = {
+				method: 'DELETE',
+					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
+					json:	true,
+					headers: {
+						"Authorization" : " Bearer " + tokenAdmin, 
+					}
+			};
+		const response = await request(deleteFlowById);
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
