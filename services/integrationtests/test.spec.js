@@ -144,6 +144,7 @@ describe('User Routes', () => {
 		};
 		const response = await request(getFlowData);
 		
+		console.log(tokenAdmin);
 		console.log(JSON.stringify(response.body));
 	
 		const getNameFromFlow = async res => {
@@ -154,7 +155,7 @@ describe('User Routes', () => {
 				console.log(error);
 			}
 			return flowName; 
-			};
+		};
 		
 		const currentFlowName = await getNameFromFlow(response);  
 		
