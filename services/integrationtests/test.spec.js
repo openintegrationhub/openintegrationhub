@@ -25,16 +25,18 @@ describe('User Routes', () => {
         	json: true,
         	body: jsonPayload
         };
-		const response = await request(Login);	
+		const response = await request(Login);
+
 		const getToken = async res => {
-		try {
-			token = await Promise.resolve(res.body.token);
-		}
-		catch (error) {
-			console.log(error);
-		}
-		return token; 
+			try {
+				token = await Promise.resolve(res.body.token);
+			}
+			catch (error) {
+				console.log(error);
+			}
+			return token; 
 		};	
+
 		tokenAdmin = await getToken(response); 
 		expect(response.statusCode).toEqual(200);	
     	done();
@@ -135,12 +137,13 @@ describe('User Routes', () => {
 
 
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
+		process.env.IAM_AUTH_TYPE = 'basic';
 		const getFlowData = {
-				method: 'GET',
-					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
-					headers: {
-						"Authorization" : " Bearer " + tokenAdmin, 
-					}
+			method: 'GET',
+			uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
+			headers: {
+				"Authorization" : " Bearer " + tokenAdmin, 
+			}
 		};
 		const response = await request(getFlowData);
 		
@@ -149,7 +152,7 @@ describe('User Routes', () => {
 	
 		const getNameFromFlow = async res => {
 			try {
-				flowName = await Promise.resolve(res.body);
+				flowName = await Promise.resolve(res.body.data.name);
 			}
 			catch (error) {
 				console.log(error);
