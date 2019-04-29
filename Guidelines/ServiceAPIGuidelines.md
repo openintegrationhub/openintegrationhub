@@ -151,7 +151,7 @@ Be compliant with the standardized HTTP method semantics summarized as follows:
 
 * GET requests are used to read either a single or a collection resource. GET with Body is forbidden.
 * GET requests for individual resources will usually generate a 404 if the resource does not exist
-* GET requests for collection resources may return either 200 (if the collection is empty) or 404 (if the collection is missing)
+* GET requests for collection resources may return either 200 (if the collection is empty) or 404 (if the collection does not exist)
 * GET requests must NOT have a request body payload
 
 ### POST
