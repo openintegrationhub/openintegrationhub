@@ -163,7 +163,7 @@ describe('User Routes', () => {
 		
 		const currentFlowName = await getNameFromFlow(response);  
 		
-		console.log(currentFlowName);
+		console.log(typeof currentFlowName);
 
 		const newName = "new name " + currentFlowName;
 
