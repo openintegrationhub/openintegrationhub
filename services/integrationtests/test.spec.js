@@ -171,11 +171,41 @@ describe('User Routes', () => {
         		json: true,
 				headers: {
                 		"Authorization" : " Bearer " + tokenAdmin, 
-            		},
+            	},
         		body: response 		
 		};
 		
-		console.log(JSON.stringify(patchFlow.body)); 
+		console.log("1:" & JSON.stringify(patchFlow.body)); 
+		expect(response.statusCode).toEqual(200);
+		done();
+	});
+
+	test('--- START FLOW BY ID ---', async (done) => { 
+		const startFlowById = {
+				method: 'POST',
+					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/start`,
+					json:	true,
+					headers: {
+						"Authorization" : " Bearer " + tokenAdmin, 
+					}
+		};
+		const response = await request(startFlowById);
+		console.log("start:" & JSON.stringify(startFlowById.body));
+		expect(response.statusCode).toEqual(200);
+		done();
+	});
+
+	test('--- STOP FLOW BY ID ---', async (done) => { 
+		const stopFlowById = {
+				method: 'POST',
+					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
+					json:	true,
+					headers: {
+						"Authorization" : " Bearer " + tokenAdmin, 
+					}
+		};
+		const response = await request(stopFlowById);
+		console.log("stop:" & JSON.stringify(stopFlowById.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -193,4 +223,5 @@ describe('User Routes', () => {
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
+
 });
