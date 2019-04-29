@@ -148,7 +148,7 @@ describe('User Routes', () => {
 		console.log(JSON.stringify(response.body));
 
 		var flowName = "";
-		
+
 		const getNameFromFlow = async res => {
 			try {
 				flowName = await Promise.resolve(res.body.data.name);
@@ -164,7 +164,8 @@ describe('User Routes', () => {
 		console.log(JSON.stringify(currentFlowName));
 
 		const newName = "new name " + currentFlowName;
-		response.data.name = newName;
+
+		response.body.data.name = newName;
 		
 		const patchFlow = {
         		method: 'PATCH',
@@ -175,9 +176,10 @@ describe('User Routes', () => {
             		},
         		body: response 		
 		};
-
+		
 		console.log(patchFlow); 
 		expect(response.statusCode).toEqual(200);
 		done();
-	});	
+	});
+	
 });
