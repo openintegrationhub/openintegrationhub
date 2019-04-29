@@ -103,7 +103,7 @@ describe('User Routes', () => {
 		};
 		const response = await request(addFlow);
 	     
-		const getFlowID = async res => {
+		const getFlowId = async res => {
 			try {
 				id = await Promise.resolve(res.body.data.id);
 			}
@@ -124,7 +124,7 @@ describe('User Routes', () => {
 			return name; 
 		};
 		flowName = await getFlowName(response); 
-			    
+
 		expect(response.statusCode).toEqual(201);
     	done();
 	});
