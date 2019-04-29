@@ -59,7 +59,7 @@ describe('User Routes', () => {
     test('--- ADD NEW FLOW ---', async (done) => { 
 		process.env.IAM_AUTH_TYPE = 'basic';
 		const createdFlow = {
-        	"name": "Dennis' flow",
+        	"name": "Added test flow",
   			"description": "My test Flow",
   			"graph": {
     				"nodes": [
@@ -182,10 +182,8 @@ describe('User Routes', () => {
 
 		const newName = "new given name " + flowName;
 
-		response = {
-			'name': newName
-		};
-		 
+		response.body.data.name = newName;
+
 		console.log(response);
 
 		const patchFlow = {
@@ -198,7 +196,7 @@ describe('User Routes', () => {
         		body: response 		
 		};
 		
-		console.log(patchFlow); 
+		//console.log(patchFlow); 
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
