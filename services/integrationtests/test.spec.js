@@ -7,6 +7,7 @@ let conf = null;
 let tokenUser = null; 
 let tokenAdmin = null;
 let flowID = null;
+let flowName = null;
 
 describe('User Routes', () => {
 	beforeEach(() => {
@@ -110,8 +111,18 @@ describe('User Routes', () => {
 				console.log(error);
 			}
 			return id; 
+		};
+
+		const getFlowName = async res => {
+			try {
+				id = await Promise.resolve(res.body.data.name);
+			}
+			catch (error) {
+				console.log(error);
+			}
+			return id; 
 		};	
-		flowID = await getFlowID(response); 
+		flowName = await getFlowName(response); 
 	    
 		expect(response.statusCode).toEqual(201);
     	done();
@@ -148,25 +159,25 @@ describe('User Routes', () => {
 		//console.log(tokenAdmin);
 		//console.log(JSON.stringify(response.body));
 
-		var flowName = "";
+		//var flowName = "";
 
 		//const currentFlowName = await getNameFromFlow(response); 
 
-		const getNameFromFlow = async res => {
-			try {
-				flowName = await Promise.resolve(res.body);
-			}
-			catch (error) {
-				console.log(error);
-			}
-			return flowName; 
-		};
+		//const getNameFromFlow = async res => {
+		//	try {
+		//		flowName = await Promise.resolve(res.body);
+		//	}
+		//	catch (error) {
+		//		console.log(error);
+		//	}
+		//	return flowName; 
+		//};
 		
-		const currentFlowName = await getNameFromFlow(response);  
+		//const currentFlowName = await getNameFromFlow(response);  
 		
 		console.log(typeof currentFlowName);
 
-		const newName = "new name " + currentFlowName;
+		const newName = "new given name " + flowName;
 
 		response = {
 			'name': newName
