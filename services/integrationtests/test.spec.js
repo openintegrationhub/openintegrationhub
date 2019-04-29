@@ -142,7 +142,7 @@ describe('User Routes', () => {
 				"Authorization" : " Bearer " + tokenAdmin, 
 			}
 		};
-		const response = await request(getFlowData);
+		var response = await request(getFlowData);
 		
 		console.log(tokenAdmin);
 		console.log(JSON.stringify(response.body));
