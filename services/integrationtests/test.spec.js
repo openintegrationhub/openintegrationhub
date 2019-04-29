@@ -131,9 +131,13 @@ describe('User Routes', () => {
 						"Authorization" : " Bearer " + tokenAdmin, 
 					}
 			};
+		
+		console.log(JSON.stringify(getFlowById));
+		console.log(JSON.stringify(tokenAdmin));
+		
 		const response = await request(getFlowById);
-		console.log("getFlowByIdCheck: " & JSON.stringify(getFlowById));
-		console.log("getFlowByIdCheckToken: " & JSON.stringify(tokenAdmin));
+		console.log(response);
+		
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
