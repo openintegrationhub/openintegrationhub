@@ -138,6 +138,7 @@ describe('User Routes', () => {
 		const getFlowData = {
 			method: 'GET',
 			uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
+			json: true,
 			headers: {
 				"Authorization" : " Bearer " + tokenAdmin, 
 			}
@@ -153,7 +154,7 @@ describe('User Routes', () => {
 
 		const getNameFromFlow = async res => {
 			try {
-				flowName = await Promise.resolve(res.body.data);
+				flowName = await Promise.resolve(res.body);
 			}
 			catch (error) {
 				console.log(error);
