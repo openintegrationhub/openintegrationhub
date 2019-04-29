@@ -6,7 +6,7 @@ let conf = null;
 
 let tokenUser = null; 
 let tokenAdmin = null;
-let response = null;
+//let response = null;
 let app = null;
 let flowID = null;
 let flowData = null;
@@ -105,7 +105,7 @@ describe('User Routes', () => {
         	body: createdFlow		
 		};
 	     
-		console.log(JSON.stringify(addFlow));     
+		//console.log(JSON.stringify(addFlow));     
 		const response = await request(addFlow);
 	     
 		const getFlowID = async res => {
@@ -132,7 +132,7 @@ describe('User Routes', () => {
 					}
 			};
 		const response = await request(getFlowById);
-		console.log("getFlowByIdCheck: " & JSON.stringify(response));
+		console.log("getFlowByIdCheck: " & JSON.stringify(getFlowById));
 		console.log("getFlowByIdCheckToken: " & JSON.stringify(tokenAdmin));
 		expect(response.statusCode).toEqual(200);
 		done();
@@ -180,5 +180,6 @@ describe('User Routes', () => {
 		//console.log(JSON.stringify(getFlowById)); 
 		expect(response.statusCode).toEqual(200);
 		done();
-	});	
+	});
+	
 });
