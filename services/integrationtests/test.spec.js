@@ -190,7 +190,7 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(startFlowById);
-		console.log(JSON.stringify(startFlowById.body));
+		console.log(JSON.stringify(response.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -205,7 +205,7 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(stopFlowById);
-		console.log(JSON.stringify(stopFlowById.body));
+		console.log(JSON.stringify(response.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
