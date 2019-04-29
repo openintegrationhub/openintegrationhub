@@ -175,7 +175,7 @@ describe('User Routes', () => {
         		body: response 		
 		};
 		
-		console.log("1:" & JSON.stringify(patchFlow.body)); 
+		console.log(JSON.stringify(patchFlow.body)); 
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -190,7 +190,7 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(startFlowById);
-		console.log("start:" & JSON.stringify(startFlowById.body));
+		console.log(JSON.stringify(startFlowById.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -205,7 +205,7 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(stopFlowById);
-		console.log("stop:" & JSON.stringify(stopFlowById.body));
+		console.log(JSON.stringify(stopFlowById.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
