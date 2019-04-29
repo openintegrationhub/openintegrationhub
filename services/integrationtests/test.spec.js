@@ -112,18 +112,19 @@ describe('User Routes', () => {
 			}
 			return id; 
 		};
+		flowID = await getFlowId(response);
 
 		const getFlowName = async res => {
 			try {
-				name = await Promise.resolve(res.body.data.name);
+				name = await Promise.resolve(res.body.data.id);
 			}
 			catch (error) {
 				console.log(error);
 			}
 			return name; 
-		};	
+		};
 		flowName = await getFlowName(response); 
-	    
+			    
 		expect(response.statusCode).toEqual(201);
     	done();
 	});
@@ -136,7 +137,6 @@ describe('User Routes', () => {
 						"Authorization" : " Bearer " + tokenAdmin, 
 					}
 			};
-
 		const response = await request(getFlowById);
 		
 		expect(response.statusCode).toEqual(200);
