@@ -184,7 +184,7 @@ describe('User Routes', () => {
 
 		response.body.data.name = newName;
 
-		console.log(response);
+		//console.log(response);
 
 		const patchFlow = {
         		method: 'PATCH',
@@ -196,7 +196,7 @@ describe('User Routes', () => {
         		body: response 		
 		};
 		
-		//console.log(patchFlow); 
+		console.log(patchFlow); 
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
