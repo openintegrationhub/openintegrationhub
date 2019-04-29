@@ -6,12 +6,7 @@ let conf = null;
 
 let tokenUser = null; 
 let tokenAdmin = null;
-//let response = null;
-let app = null;
 let flowID = null;
-let flowData = null;
-let flowName = null;
-let newName = null;
 
 describe('User Routes', () => {
 	beforeEach(() => {
@@ -131,12 +126,8 @@ describe('User Routes', () => {
 						"Authorization" : " Bearer " + tokenAdmin, 
 					}
 			};
-		
-		//console.log(JSON.stringify(getFlowById));  
-		//console.log(JSON.stringify(tokenAdmin));  
-		
-		const response = await request(getFlowById); 
-		//console.log(response);
+
+		const response = await request(getFlowById);
 		
 		expect(response.statusCode).toEqual(200);
 		done();
@@ -152,19 +143,22 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(getFlowData);
-		console.log(response);
-
+		
+		console.log(JSON.stringify(response.body));
+	
 		const getNameFromFlow = async res => {
 			try {
-				flowName = await Promise.resolve(res.body.data.name);
+				flowName = await Promise.resolve(res.body);
 			}
 			catch (error) {
 				console.log(error);
 			}
 			return flowName; 
-		};	
+			};
+		
 		const currentFlowName = await getNameFromFlow(response);  
-		console.log(currentFlowName);
+		
+		console.log(JSON.stringify(currentFlowName));
 
 		//console.log("get flow data: " & JSON.stringify(response));
 		//console.log("get flow name: " & JSON.stringify(currentFlowName));
@@ -185,6 +179,5 @@ describe('User Routes', () => {
 		console.log(patchFlow); 
 		expect(response.statusCode).toEqual(200);
 		done();
-	});
-	
+	});	
 });
