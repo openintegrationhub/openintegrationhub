@@ -43,7 +43,6 @@ describe('User Routes', () => {
     });	
 		
     test('--- GET All FLOWS ---', async (done) => { 
-		//console.log("3. nur token: " + tokenAdmin);
         const getAllFlows = {
         	method: 'GET',
             	uri: `http://flow-repository.openintegrationhub.com/flows`,
@@ -101,21 +100,19 @@ describe('User Routes', () => {
             },
         	body: createdFlow		
 		};
-	     
-		//console.log(JSON.stringify(addFlow));     
 		const response = await request(addFlow);
 	     
 		const getFlowID = async res => {
-		try {
-			id = await Promise.resolve(res.body.data.id);
-		}
-		catch (error) {
-			console.log(error);
-		}
-		return id; 
+			try {
+				id = await Promise.resolve(res.body.data.id);
+			}
+			catch (error) {
+				console.log(error);
+			}
+			return id; 
 		};	
 		flowID = await getFlowID(response); 
-	     
+	    
 		expect(response.statusCode).toEqual(201);
     	done();
 	});
@@ -163,9 +160,6 @@ describe('User Routes', () => {
 		const currentFlowName = await getNameFromFlow(response);  
 		
 		console.log(JSON.stringify(currentFlowName));
-
-		//console.log("get flow data: " & JSON.stringify(response));
-		//console.log("get flow name: " & JSON.stringify(currentFlowName));
 
 		const newName = "new name " + currentFlowName;
 		response.data.name = newName;
