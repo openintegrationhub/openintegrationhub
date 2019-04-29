@@ -196,9 +196,8 @@ describe('User Routes', () => {
         		body: response 		
 		};
 		
-		console.log(patchFlow); 
+		console.log(JSON.stringify(patchFlow.body)); 
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
-	
 });
