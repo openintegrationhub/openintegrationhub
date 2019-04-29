@@ -132,6 +132,8 @@ describe('User Routes', () => {
 					}
 			};
 		const response = await request(getFlowById);
+		console.log("getFlowByIdCheck: " & JSON.stringify(response));
+		console.log("getFlowByIdCheckToken: " & JSON.stringify(tokenAdmin));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -161,7 +163,7 @@ describe('User Routes', () => {
 		
 		console.log("get flow data: " & JSON.stringify(response));
 		console.log("get flow name: " & JSON.stringify(currentFlowName));
-		
+
 		const newName = "new name " + currentFlowName;
 		response.data.name = newName;
 		
@@ -178,6 +180,5 @@ describe('User Routes', () => {
 		//console.log(JSON.stringify(getFlowById)); 
 		expect(response.statusCode).toEqual(200);
 		done();
-	});
-	
+	});	
 });
