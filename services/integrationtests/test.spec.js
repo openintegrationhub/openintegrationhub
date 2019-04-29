@@ -114,18 +114,19 @@ describe('User Routes', () => {
 		};
 		flowID = await getFlowId(response);
 
-		//const getFlowName = async res => {
-		//	try {
-		//		name = await Promise.resolve(res.body.data.name);
-		//	}
-		//	catch (error) {
-		//		console.log(error);
-		//	}
-		//	return name; 
-		//};
-		//flowName = await getFlowName(response); 
+		const getFlowName = async res2 => {
+			try {
+				name = await Promise.resolve(res2.body.data.name);
+			}
+			catch (error) {
+				console.log(error);
+			}
+			return name; 
+		};
+		flowName = await getFlowName(response); 
 
 		console.log(flowID);
+		console.log(flowName);
 		//console.log(flowName);
 		expect(response.statusCode).toEqual(201);
     	done();
