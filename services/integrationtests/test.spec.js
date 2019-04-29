@@ -116,7 +116,7 @@ describe('User Routes', () => {
 
 		const getFlowName = async res => {
 			try {
-				name = await Promise.resolve(res.body.data.id);
+				name = await Promise.resolve(res.body.data.name);
 			}
 			catch (error) {
 				console.log(error);
