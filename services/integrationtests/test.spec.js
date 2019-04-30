@@ -272,8 +272,8 @@ describe('User Routes', () => {
 		//console.log(flowID);
 		//console.log(flowName);
 		console.log(JSON.stringify(response));
-		//console.log(flowName);
-		expect(response.statusCode).toEqual(201);
+
+		expect(response.statusCode).toEqual(200);
     	done();
 	});
 });
