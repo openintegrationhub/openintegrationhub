@@ -228,7 +228,7 @@ describe('User Routes', () => {
 	//--------------------------------------------------------------------------------------
 	
 	// This will only return logs that pertain to the current user's tenant -> zuweisbar über Token?
-	test('--- GET ALL LOGS ---', async (done) => {
+	test('---GET ALL LOGS ---', async (done) => {
 		const getAllLogs = {
 			method: 'GET',
 				uri: `http://auditlog.openintegrationhub.com/logs`,
@@ -258,7 +258,7 @@ describe('User Routes', () => {
     			"details": "A human-readable detailed description"
   			}
 		};    
-        	const addLog = {
+        const addLog = {
         	method: 'POST',
         	uri: `http://auditlog.openintegrationhub.com/logs`,
         	json: true,
@@ -273,7 +273,6 @@ describe('User Routes', () => {
 		//console.log(flowName);
 		console.log(JSON.stringify(response));
 		//console.log(flowName);
-		
 		expect(response.statusCode).toEqual(201);
     	done();
 	});
