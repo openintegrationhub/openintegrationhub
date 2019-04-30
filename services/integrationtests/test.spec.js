@@ -127,6 +127,7 @@ describe('User Routes', () => {
 
 		console.log(flowID);
 		console.log(flowName);
+		console.log(tokenAdmin)
 		//console.log(flowName);
 		expect(response.statusCode).toEqual(201);
     	done();
@@ -222,5 +223,23 @@ describe('User Routes', () => {
 		const response = await request(deleteFlowById);
 		expect(response.statusCode).toEqual(200);
 		done();
+	});
+
+	//--------------------------------------------------------------------------------------
+	
+	// This will only return logs that pertain to the current user's tenant -> zuweisbar über Token?
+	test('---GET ALL LOGS---', async (done) => {
+		const getAllLogs = {
+			method: 'GET',
+				uri: `http://auditlog.openintegrationhub.com/logs`,
+				json:	true,
+				headers: {
+					"Authorization" : " Bearer " + tokenAdmin, 
+				}
+		};
+	const response = await request(getAllLogs);
+	console.log(reponse);
+	expect(response.statusCode).toEqual(200);
+	done();
 	});
 });
