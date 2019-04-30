@@ -223,5 +223,4 @@ describe('User Routes', () => {
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
-
 });
