@@ -228,7 +228,7 @@ describe('User Routes', () => {
 	//--------------------------------------------------------------------------------------
 	
 	// This will only return logs that pertain to the current user's tenant -> zuweisbar über Token?
-	test('---GET ALL LOGS ---', async (done) => {
+	test('--- GET ALL LOGS ---', async (done) => {
 		const getAllLogs = {
 			method: 'GET',
 				uri: `http://auditlog.openintegrationhub.com/logs`,
