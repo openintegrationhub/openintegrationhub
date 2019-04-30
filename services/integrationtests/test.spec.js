@@ -228,7 +228,7 @@ describe('User Routes', () => {
 	//--------------------------------------------------------------------------------------
 	
 	// This will only return logs that pertain to the current user's tenant -> zuweisbar über Token?
-	test('---GET ALL LOGS ---', async (done) => {
+	test('--- GET ALL LOGS ---', async (done) => {
 		const getAllLogs = {
 			method: 'GET',
 				uri: `http://auditlog.openintegrationhub.com/logs`,
@@ -238,8 +238,43 @@ describe('User Routes', () => {
 				}
 		};
 	const response = await request(getAllLogs);
-	console.log(JSON.stringify(response.body));
+	console.log(response);
 	expect(response.statusCode).toEqual(200);
 	done();
+	});
+
+	test('--- ADD LOG ---', async (done) => { 
+		process.env.IAM_AUTH_TYPE = 'basic';
+		const createdFlow = {
+        	"service": "MyService",
+  			"timeStamp": "1234567",
+  			"nameSpace": "outerSpace",
+  			"payload": {
+    			"tenant": "1",
+    			"source": "SomeSource",
+    			"object": "SomeObject",
+    			"action": "foo",
+    			"subject": "Test Subject",
+    			"details": "A human-readable detailed description"
+  			}
+		};    
+        	const addLog = {
+        	method: 'POST',
+        	uri: `http://auditlog.openintegrationhub.com/logs`,
+        	json: true,
+			headers: {
+                	"Authorization" : " Bearer " + tokenAdmin, 
+            },
+        	body: createdFlow		
+		};
+		const response = await request(addLog);
+	     
+		//console.log(flowID);
+		//console.log(flowName);
+		console.log(JSON.stringify(response));
+		//console.log(flowName);
+		
+		expect(response.statusCode).toEqual(201);
+    	done();
 	});
 });
