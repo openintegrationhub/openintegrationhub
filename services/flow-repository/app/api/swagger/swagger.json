@@ -655,7 +655,7 @@
           },
           "description": {
             "type": "string",
-            "example": "This flow regularly POSTs requests to a particular requestbin"
+            "example": "This flow takes actions at regular invervals based on a set timer."
           },
           "graph": {
             "$ref": "#/components/schemas/FlowGraph"
@@ -743,7 +743,7 @@
                 "command": {
                   "type": "string",
                   "description": "The command or component that is executing at this node",
-                  "example": "elasticio/code-component:execute@7bc2535df2f8a35c3653455e5becc701b010d681"
+                  "example": "elasticio/timer:timer"
                 },
                 "name": {
                   "type": "string"
@@ -755,7 +755,7 @@
                   "type": "object",
                   "description": "Optional arguments passed on to the component",
                   "example": {
-                    "code": "function* run() {console.log('Calling external URL');yield request.post({uri: 'http://requestbin.fullcontact.com/abcde', body: msg, json: true});}"
+                    "interval":"minute"
                   }
                 }
               }
@@ -832,7 +832,7 @@
 			    },
 			    "type": {
 				    "type": "string",
-				    "description": "Type to discriminate owner's type"
+				    "description": "Type to discriminate between user or tenant"
 			    }
 		    }
 	    }
