@@ -34,7 +34,7 @@ class Server {
       try {
         await iamMiddleware.middleware(req, res, next);
       } catch (error) {
-        return res.status(401).send({ errors: [{ message: `Authentication middleware failed with error: ${error}` }] });
+        return res.status(401).send({ errors: [{ message: `Authentication middleware failed with error: ${error}`, code: 401 }] });
       }
     });
 
@@ -47,7 +47,7 @@ class Server {
       }
 
       if (this.mongoose.connection.readyState !== 1) {
-        return res.status(401).send({ errors: [{ message: `NO DB. Please try again later [${this.mongoose.connection.readyState}] ` }] });
+        return res.status(500).send({ errors: [{ message: `NO DB. Please try again later ${this.mongoose.connection.readyState}`, code: 500 }] });
       }
 
       // local copy of the user object
