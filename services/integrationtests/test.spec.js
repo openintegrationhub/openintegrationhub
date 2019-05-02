@@ -288,7 +288,7 @@ describe('User Routes', () => {
 				}
 		};
 	const response = await request(getAllLogs);
-	console.log(response);
+	//console.log(response.body);
 	expect(response.statusCode).toEqual(200);
 	done();
 	});
