@@ -9,6 +9,7 @@ let tokenAdmin = null;
 let flowID = null;
 let flowName = null;
 let flowStatus = null;
+let isRunning = null;
 
 describe('User Routes', () => {
 	beforeEach(() => {
@@ -210,7 +211,40 @@ describe('User Routes', () => {
 		done();
 	});
 
-	
+	test('--- FLOW IS RUNNING ---', async (done) => { 
+		process.env.IAM_AUTH_TYPE = 'basic';   
+        const getFlow = {
+			method: 'POST',
+				uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
+				headers: {
+					"Authorization" : " Bearer " + tokenAdmin, 
+				}
+		};
+		const response = await request(getFlow);
+
+		// hier auch mal Status ausgeben lassen: sollte sich nicht finden lassen
+		const getFlowStatus = async res4 => {
+			try {
+				statusIsRunning = await Promise.resolve(res4.body.data.status);
+			}
+			catch (error) {
+				console.log(error);
+			}
+			return statusIsRunning; 
+		};
+		flowStatus = await getFlowStatus(response);
+		
+		let isRunning = false;
+
+		if (flowStatus == "active"){
+			isRunning = true;
+		} else {
+			isRunning = false;
+		}
+		console.log("is running = " & isRunning);
+		expect(response.statusCode).toEqual(200);
+    	done();
+	});
 
 	test('--- STOP FLOW BY ID ---', async (done) => { 
 		const stopFlowById = {
