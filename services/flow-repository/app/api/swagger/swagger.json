@@ -256,6 +256,9 @@
           },
           "404": {
             "description": "No Flow with this id was found."
+          },
+          "409": {
+            "description": "Flow is currently not inactive. Only stopped, inactive flows may be deleted."
           }
         }
       },
@@ -303,6 +306,9 @@
           },
           "404": {
             "description": "Flow not found"
+          },
+          "409": {
+            "description": "Flow is currently not inactive. Only stopped, inactive flows may be updated."
           }
         },
         "requestBody": {
@@ -381,6 +387,9 @@
           },
           "404": {
             "description": "No Flow with this id was found."
+          },
+          "409": {
+            "description": "Flow is currently not inactive. Only inactive flows can be started."
           }
         }
       }
@@ -448,6 +457,9 @@
           },
           "404": {
             "description": "No Flow with this id was found."
+          },
+          "409": {
+            "description": "Flow is currently not active. Only active flows can be stopped."
           }
         }
       }
