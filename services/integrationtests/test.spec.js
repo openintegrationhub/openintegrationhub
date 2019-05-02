@@ -8,6 +8,7 @@ let tokenUser = null;
 let tokenAdmin = null;
 let flowID = null;
 let flowName = null;
+let flowStatus = null;
 
 describe('User Routes', () => {
 	beforeEach(() => {
@@ -84,7 +85,7 @@ describe('User Routes', () => {
       				}
     				]
   			},
-          		"type": "ordinary",
+          	"type": "ordinary",
   			"owners": [
     			{
       				"id": "string",
@@ -125,9 +126,22 @@ describe('User Routes', () => {
 		};
 		flowName = await getFlowName(response); 
 
+		// hier auch mal Status ausgeben lassen: sollte sich nicht finden lassen
+		const getFlowStatus = async res3 => {
+			try {
+				status = await Promise.resolve(res3.body.data.status);
+			}
+			catch (error) {
+				console.log(error);
+			}
+			return status; 
+		};
+		flowStatus = await getFlowStatus(response); 
+
 		console.log(flowID);
 		console.log(flowName);
-		console.log(tokenAdmin)
+		console.log(tokenAdmin);
+		console.log(flowStatus);
 		//console.log(flowName);
 		expect(response.statusCode).toEqual(201);
     	done();
@@ -238,7 +252,7 @@ describe('User Routes', () => {
 				}
 		};
 	const response = await request(getAllLogs);
-	//console.log(response);
+	console.log(response);
 	expect(response.statusCode).toEqual(200);
 	done();
 	});
@@ -271,9 +285,9 @@ describe('User Routes', () => {
 	     
 		//console.log(flowID);
 		//console.log(flowName);
-		console.log(JSON.stringify(response));
+		//console.log(JSON.stringify(response));
 
-		expect(response.statusCode).toEqual(200);
+		expect(response.statusCode).toEqual(201);
     	done();
 	});
 });
