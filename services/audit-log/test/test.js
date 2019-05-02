@@ -130,7 +130,7 @@ describe('Log Operations', () => {
       .set('Authorization', 'Bearer adminToken')
       .send(log3);
 
-    expect(res.status).toEqual(200);
+    expect(res.status).toEqual(201);
     expect(res.text).not.toBeNull();
   });
 

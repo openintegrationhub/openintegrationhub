@@ -742,7 +742,9 @@
                 "fields": {
                   "type": "object",
                   "description": "Optional arguments passed on to the component",
-                  "example": "code\": \"function* run() {console.log('Calling external URL');yield request.post({uri: 'http://requestbin.fullcontact.com/abcde', body: msg, json: true});}"
+                  "example": {
+                    "code": "function* run() {console.log('Calling external URL');yield request.post({uri: 'http://requestbin.fullcontact.com/abcde', body: msg, json: true});}"
+                  }
                 }
               }
             }
@@ -773,11 +775,11 @@
                 },
                 "source": {
                   "type": "string",
-                  "descrption": "The source node of this edge, referring to the id field of a node"
+                  "description": "The source node of this edge, referring to the id field of a node"
                 },
                 "target": {
                   "type": "string",
-                  "descrption": "The target node of this edge, referring to the id field of a node"
+                  "description": "The target node of this edge, referring to the id field of a node"
                 }
               }
             }

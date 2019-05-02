@@ -149,7 +149,7 @@ class Server {
     this.db = mongoose.connection;
     // Bind connection to error event (to get notification of connection errors)
     this.db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-    log.debug('connecting done');
+    log.info('Connecting done');
   }
 
   setupSwagger() {
@@ -178,7 +178,7 @@ class Server {
 
   listen(port) {
     const cport = typeof port !== 'undefined' ? port : 3001;
-    log.debug(`opening port ${cport}`);
+    log.info(`opening port ${cport}`);
     return this.app.listen(cport);
   }
 }
