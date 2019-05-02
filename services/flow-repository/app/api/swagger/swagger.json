@@ -634,7 +634,6 @@
         "required": [
           "name",
           "graph",
-          "status",
           "type"
         ],
         "properties": {
@@ -657,6 +656,11 @@
               "realtime"
             ]
           },
+          "cron": {
+            "type": "string",
+            "description": "A cron string describing the interval at which this flow is run. If unset, the flow uses webhooks instead",
+            "example": "* /2 * * * *"
+          },
           "owners":{
             "type": "array",
             "items":{
@@ -674,7 +678,6 @@
             "type": "object",
             "required": [
               "id",
-              "status",
               "createdAt",
               "updatedAt"
             ],
@@ -684,20 +687,22 @@
               },
               "status": {
                 "type": "string",
-                "description": "Flow status",
+                "description": "Flow status, set automatically in response to start/stop commands",
                 "enum": [
                   "active",
-                  "inactive"
+                  "inactive",
+                  "starting",
+                  "stopping"
                 ]
               },
               "createdAt": {
                 "type": "string",
-                "description": "Flow creation time",
+                "description": "Timestamp of flow creation",
                 "format": "date-time"
               },
               "updatedAt": {
                 "type": "string",
-                "description": "Flow update time",
+                "description": "Timestamp of most recent flow update",
                 "format": "date-time"
               }
             }
@@ -709,11 +714,11 @@
         "properties": {
           "nodes": {
             "type": "array",
+            "description": "An array of all components involved in this flow",
             "items": {
               "type": "object",
               "required": [
                 "id",
-                "componentId",
                 "command"
               ],
               "properties": {
@@ -724,7 +729,9 @@
                   "type": "string"
                 },
                 "command": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The command or component that is executing at this node",
+                  "example": "elasticio/timer:timer@ca9a6fea391ffa8f7c8593bd2a04143212ab63f6"
                 },
                 "name": {
                   "type": "string"
@@ -733,13 +740,15 @@
                   "type": "string"
                 },
                 "fields": {
-                  "type": "object"
+                  "type": "object",
+                  "description": "Optional arguments that can be passed on to the component"
                 }
               }
             }
           },
           "edges": {
             "type": "array",
+            "description": "An array of edges linking nodes together, determining the order in which nodes are activated",
             "items": {
               "type": "object",
               "required": [
