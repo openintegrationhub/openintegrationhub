@@ -643,7 +643,7 @@
           },
           "description": {
             "type": "string",
-            "example": "My Flow"
+            "example": "This flow regularly POSTs requests to a particular requestbin"
           },
           "graph": {
             "$ref": "#/components/schemas/FlowGraph"
@@ -731,7 +731,7 @@
                 "command": {
                   "type": "string",
                   "description": "The command or component that is executing at this node",
-                  "example": "elasticio/timer:timer@ca9a6fea391ffa8f7c8593bd2a04143212ab63f6"
+                  "example": "elasticio/code-component:execute@7bc2535df2f8a35c3653455e5becc701b010d681"
                 },
                 "name": {
                   "type": "string"
@@ -741,7 +741,8 @@
                 },
                 "fields": {
                   "type": "object",
-                  "description": "Optional arguments that can be passed on to the component"
+                  "description": "Optional arguments passed on to the component",
+                  "example": "code\": \"function* run() {console.log('Calling external URL');yield request.post({uri: 'http://requestbin.fullcontact.com/abcde', body: msg, json: true});}"
                 }
               }
             }
@@ -752,7 +753,6 @@
             "items": {
               "type": "object",
               "required": [
-                "id",
                 "source",
                 "target"
               ],
@@ -772,10 +772,12 @@
                   }
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "descrption": "The source node of this edge, referring to the id field of a node"
                 },
                 "target": {
-                  "type": "string"
+                  "type": "string",
+                  "descrption": "The target node of this edge, referring to the id field of a node"
                 }
               }
             }
