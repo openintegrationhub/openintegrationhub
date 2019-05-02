@@ -40,11 +40,11 @@ router.post('/', jsonParser, async (req, res) => {
     log.info('Saving event to DB...');
     const response = await storage.addEvent(message);
     log.info('Successfully Saved');
-    return res.status(200).send(response);
+    return res.status(201).send(response);
   } catch (error) {
     log.error('Save failed:');
     log.error(error);
-    return res.status(500).send({ errors: [{ message: error }] });
+    return res.status(500).send({ errors: [{ message: error, code: 500 }] });
   }
 });
 
