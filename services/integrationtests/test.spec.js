@@ -142,7 +142,7 @@ describe('User Routes', () => {
 		console.log(flowName);
 		console.log(tokenAdmin);
 		console.log(flowStatus);
-		//console.log(flowName);
+
 		expect(response.statusCode).toEqual(201);
     	done();
 	});
@@ -209,6 +209,8 @@ describe('User Routes', () => {
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
+
+	
 
 	test('--- STOP FLOW BY ID ---', async (done) => { 
 		const stopFlowById = {
@@ -287,7 +289,7 @@ describe('User Routes', () => {
 		//console.log(flowName);
 		//console.log(JSON.stringify(response));
 
-		expect(response.statusCode).toEqual(201);
+		expect(response.statusCode).toEqual(200);
     	done();
 	});
 });
