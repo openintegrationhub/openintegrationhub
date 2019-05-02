@@ -34,7 +34,7 @@ class Server {
       try {
         await iamMiddleware.middleware(req, res, next);
       } catch (error) {
-        return res.status(401).send(`Authentication middleware failed with error: ${error}`);
+        return res.status(401).send({ errors: [{ message: `Authentication middleware failed with error: ${error}`, code: 401 }] });
       }
     });
 
@@ -43,11 +43,11 @@ class Server {
     this.app.use('/flows', async (req, res, next) => {
       // Checks whether iam middleare successfully added Heimdal object
       if (!req.__HEIMDAL__) {
-        return res.status(401).send('Authentication middleware did not find memberships');
+        return res.status(401).send({ errors: [{ message: 'Authentication middleware did not find data' }] });
       }
 
       if (this.mongoose.connection.readyState !== 1) {
-        return res.status(401).send(`NO DB. Please try again later [${this.mongoose.connection.readyState}] `);
+        return res.status(500).send({ errors: [{ message: `NO DB. Please try again later ${this.mongoose.connection.readyState}`, code: 500 }] });
       }
 
       // local copy of the user object
@@ -101,12 +101,12 @@ class Server {
   }
 
   async setupQueue() {  // eslint-disable-line
-    log.debug('Connecting to Queue');
+    log.info('Connecting to Queue');
     await connectQueue();
   }
 
   async terminateQueue() {  // eslint-disable-line
-    log.debug('Disconnecting from Queue');
+    log.info('Disconnecting from Queue');
     await disconnectQueue();
   }
 
@@ -127,11 +127,11 @@ class Server {
       return res.status(err.status).send(err.message);
     });
 
-    log.info('routes set');
+    log.info('Routes set');
   }
 
   async setup(mongoose) {
-    log.info('connecting to mongoose');
+    log.info('Connecting to mongoose');
     // Configure MongoDB
     // Use the container_name, bec containers in the same network can communicate using their service name
     this.mongoose = mongoose;
@@ -149,7 +149,7 @@ class Server {
     this.db = mongoose.connection;
     // Bind connection to error event (to get notification of connection errors)
     this.db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-    log.debug('connecting done');
+    log.info('Connecting done');
   }
 
   setupSwagger() {
@@ -178,7 +178,7 @@ class Server {
 
   listen(port) {
     const cport = typeof port !== 'undefined' ? port : 3001;
-    log.debug(`opening port ${cport}`);
+    log.info(`opening port ${cport}`);
     return this.app.listen(cport);
   }
 }

@@ -634,7 +634,6 @@
         "required": [
           "name",
           "graph",
-          "status",
           "type"
         ],
         "properties": {
@@ -644,7 +643,7 @@
           },
           "description": {
             "type": "string",
-            "example": "My Flow"
+            "example": "This flow regularly POSTs requests to a particular requestbin"
           },
           "graph": {
             "$ref": "#/components/schemas/FlowGraph"
@@ -656,6 +655,11 @@
               "ordinary",
               "realtime"
             ]
+          },
+          "cron": {
+            "type": "string",
+            "description": "A cron string describing the interval at which this flow is run. If unset, the flow uses webhooks instead",
+            "example": "* /2 * * * *"
           },
           "owners":{
             "type": "array",
@@ -674,7 +678,6 @@
             "type": "object",
             "required": [
               "id",
-              "status",
               "createdAt",
               "updatedAt"
             ],
@@ -684,20 +687,22 @@
               },
               "status": {
                 "type": "string",
-                "description": "Flow status",
+                "description": "Flow status, set automatically in response to start/stop commands",
                 "enum": [
                   "active",
-                  "inactive"
+                  "inactive",
+                  "starting",
+                  "stopping"
                 ]
               },
               "createdAt": {
                 "type": "string",
-                "description": "Flow creation time",
+                "description": "Timestamp of flow creation",
                 "format": "date-time"
               },
               "updatedAt": {
                 "type": "string",
-                "description": "Flow update time",
+                "description": "Timestamp of most recent flow update",
                 "format": "date-time"
               }
             }
@@ -709,11 +714,11 @@
         "properties": {
           "nodes": {
             "type": "array",
+            "description": "An array of all components involved in this flow",
             "items": {
               "type": "object",
               "required": [
                 "id",
-                "componentId",
                 "command"
               ],
               "properties": {
@@ -724,7 +729,9 @@
                   "type": "string"
                 },
                 "command": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The command or component that is executing at this node",
+                  "example": "elasticio/code-component:execute@7bc2535df2f8a35c3653455e5becc701b010d681"
                 },
                 "name": {
                   "type": "string"
@@ -733,17 +740,21 @@
                   "type": "string"
                 },
                 "fields": {
-                  "type": "object"
+                  "type": "object",
+                  "description": "Optional arguments passed on to the component",
+                  "example": {
+                    "code": "function* run() {console.log('Calling external URL');yield request.post({uri: 'http://requestbin.fullcontact.com/abcde', body: msg, json: true});}"
+                  }
                 }
               }
             }
           },
           "edges": {
             "type": "array",
+            "description": "An array of edges linking nodes together, determining the order in which nodes are activated",
             "items": {
               "type": "object",
               "required": [
-                "id",
                 "source",
                 "target"
               ],
@@ -763,10 +774,12 @@
                   }
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The source node of this edge, referring to the id field of a node"
                 },
                 "target": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The target node of this edge, referring to the id field of a node"
                 }
               }
             }

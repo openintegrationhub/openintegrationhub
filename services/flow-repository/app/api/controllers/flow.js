@@ -71,7 +71,7 @@ router.get('/', jsonParser, async (req, res) => {
     if (req.query.filter.type in filterTypes) {
       filters.type = req.query.filter.type;
     } else if (!res.headersSent) {
-      res.status(400).send({ errors: 'Invalid filter[type] parameter' });
+      res.status(400).send({ errors: [{ message: 'Invalid filter[type] parameter' }] });
       return;
     }
   }
@@ -200,6 +200,10 @@ router.patch('/:id', jsonParser, async (req, res) => {
       }
     }
 
+    if (oldFlow.status !== 'inactive') {
+      return res.status(409).send({ errors: [{ message: `Flow is not inactive. Current status: ${oldFlow.status}`, code: 409 }] });
+    }
+
     const updateFlow = Object.assign(oldFlow, updateData);
     updateFlow._id = updateFlow.id;
     delete updateFlow.id;
@@ -288,6 +292,11 @@ router.delete('/:id', jsonParser, async (req, res) => {
   if (!oldFlow) {
     return res.status(404).send({ errors: [{ message: 'Flow not found', code: 404 }] });
   }
+
+  if (oldFlow.status !== 'inactive') {
+    return res.status(409).send({ errors: [{ message: `Flow is not inactive. Current status: ${oldFlow.status}`, code: 409 }] });
+  }
+
   if (config.usePermissions) {
     let permitted = false;
 
