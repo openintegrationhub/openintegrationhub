@@ -6,6 +6,7 @@ ADD package.json /tmp/package.json
 RUN apk --no-cache add \
     python \
     make \
+    tar \
     g++ \
     libc6-compat
 RUN if [ "$local" == "true" ]; \

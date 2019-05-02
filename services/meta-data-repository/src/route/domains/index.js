@@ -214,10 +214,10 @@ router.post('/:id/schemas/import', upload.single('archive'), async (req, res, ne
         res.sendStatus(200);
     } catch (err) {
         // abort transaction if session exists
-        if (session) {
-            await SchemaDAO.abortTransaction();
-        }
         log.error(err);
+        if (session) {
+            await SchemaDAO.abortTransaction(session);
+        }
         next({
             status: 400,
         });
