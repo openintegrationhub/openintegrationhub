@@ -35,13 +35,27 @@ router.post('/:id/start', jsonParser, async (req, res) => {
   }
 
   if (res.locals.admin) {
+    const currentFlow = await storage.getAnyFlowById(flowId);
+    if (!currentFlow) {
+      return res.status(404).send({ errors: [{ message: 'No flow with this ID found', code: 404 }] });
+    }
+
+    if (currentFlow.status !== 'inactive') {
+      return res.status(409).send({ errors: [{ message: `Flow is not inactive. Current status: ${currentFlow.status}`, code: 409 }] });
+    }
+
     flow = await storage.startingFlow('admin', flowId);
   } else {
-    flow = await storage.startingFlow(credentials, flowId);
-  }
+    const currentFlow = await storage.getFlowById(flowId, credentials);
+    if (!currentFlow) {
+      return res.status(404).send({ errors: [{ message: 'No flow with this ID found', code: 404 }] });
+    }
 
-  if (!flow) {
-    return res.status(404).send({ errors: [{ message: 'No flow with this ID found', code: 404 }] });
+    if (currentFlow.status !== 'inactive') {
+      return res.status(409).send({ errors: [{ message: `Flow is not inactive. Current status: ${currentFlow.status}`, code: 409 }] });
+    }
+
+    flow = await storage.startingFlow(credentials, flowId);
   }
 
   const ev = {
@@ -70,13 +84,27 @@ router.post('/:id/stop', jsonParser, async (req, res) => {
   }
 
   if (res.locals.admin) {
+    const currentFlow = await storage.getAnyFlowById(flowId);
+    if (!currentFlow) {
+      return res.status(404).send({ errors: [{ message: 'No flow with this ID found', code: 404 }] });
+    }
+
+    if (currentFlow.status !== 'active') {
+      return res.status(409).send({ errors: [{ message: `Flow is not active. Current status: ${currentFlow.status}`, code: 409 }] });
+    }
+
     flow = await storage.stoppingFlow('admin', flowId);
   } else {
-    flow = await storage.stoppingFlow(credentials, flowId);
-  }
+    const currentFlow = await storage.getFlowById(flowId, credentials);
+    if (!currentFlow) {
+      return res.status(404).send({ errors: [{ message: 'No flow with this ID found', code: 404 }] });
+    }
 
-  if (!flow) {
-    return res.status(404).send({ errors: [{ message: 'No flow with this ID found', code: 404 }] });
+    if (currentFlow.status !== 'active') {
+      return res.status(409).send({ errors: [{ message: `Flow is not active. Current status: ${currentFlow.status}`, code: 409 }] });
+    }
+
+    flow = await storage.stoppingFlow(credentials, flowId);
   }
 
   const ev = {

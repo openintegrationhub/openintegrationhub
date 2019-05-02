@@ -101,12 +101,12 @@ class Server {
   }
 
   async setupQueue() {  // eslint-disable-line
-    log.debug('Connecting to Queue');
+    log.info('Connecting to Queue');
     await connectQueue();
   }
 
   async terminateQueue() {  // eslint-disable-line
-    log.debug('Disconnecting from Queue');
+    log.info('Disconnecting from Queue');
     await disconnectQueue();
   }
 
@@ -127,11 +127,11 @@ class Server {
       return res.status(err.status).send(err.message);
     });
 
-    log.info('routes set');
+    log.info('Routes set');
   }
 
   async setup(mongoose) {
-    log.info('connecting to mongoose');
+    log.info('Connecting to mongoose');
     // Configure MongoDB
     // Use the container_name, bec containers in the same network can communicate using their service name
     this.mongoose = mongoose;
