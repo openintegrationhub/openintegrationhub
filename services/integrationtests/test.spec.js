@@ -9,7 +9,6 @@ let tokenAdmin = null;
 let flowID = null;
 let flowName = null;
 let flowStatus = null;
-let isRunning = null;
 
 describe('User Routes', () => {
 	beforeEach(() => {
@@ -126,24 +125,6 @@ describe('User Routes', () => {
 			return name; 
 		};
 		flowName = await getFlowName(response); 
-
-		// hier auch mal Status ausgeben lassen: sollte sich nicht finden lassen
-		const getFlowStatus = async res3 => {
-			try {
-				status = await Promise.resolve(res3.body.data.status);
-			}
-			catch (error) {
-				console.log(error);
-			}
-			return status; 
-		};
-		flowStatus = await getFlowStatus(response); 
-
-		console.log(flowID);
-		console.log(flowName);
-		console.log(tokenAdmin);
-		console.log(flowStatus);
-
 		expect(response.statusCode).toEqual(201);
     	done();
 	});
@@ -161,7 +142,6 @@ describe('User Routes', () => {
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
-
 
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
 		process.env.IAM_AUTH_TYPE = 'basic';
@@ -204,7 +184,7 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(startFlowById);
-		console.log(JSON.stringify(response.body));
+		//console.log(JSON.stringify(response.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -219,7 +199,7 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(stopFlowById);
-		console.log(JSON.stringify(response.body));
+		//console.log(JSON.stringify(response.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -281,10 +261,6 @@ describe('User Routes', () => {
         	body: createdFlow		
 		};
 		const response = await request(addLog);
-	     
-		//console.log(flowID);
-		//console.log(flowName);
-		//console.log(JSON.stringify(response));
 
 		expect(response.statusCode).toEqual(200);
     	done();
