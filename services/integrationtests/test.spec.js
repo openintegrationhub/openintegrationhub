@@ -183,7 +183,7 @@ describe('User Routes', () => {
 
 	test('--- START FLOW BY ID ---', async (done) => { 
 		const startFlowById = {
-				method: 'POST',
+				method: 'GET',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/start`,
 					json:	true,
 					headers: {
@@ -198,7 +198,7 @@ describe('User Routes', () => {
 
 	test('--- STOP FLOW BY ID ---', async (done) => { 
 		const stopFlowById = {
-				method: 'POST',
+				method: 'GET',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
 					json:	true,
 					headers: {
@@ -221,6 +221,7 @@ describe('User Routes', () => {
 					}
 			};
 		const response = await request(deleteFlowById);
+		console.log(JSON.stringify(response.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
