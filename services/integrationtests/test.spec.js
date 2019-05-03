@@ -183,7 +183,7 @@ describe('User Routes', () => {
 
 	test('--- START FLOW BY ID ---', async (done) => { 
 		const startFlowById = {
-				method: 'GET',
+				method: 'POST',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/start`,
 					json:	true,
 					headers: {
