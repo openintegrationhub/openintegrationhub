@@ -33,18 +33,18 @@ router.post('/', jsonParser, async (req, res) => {
       log.error('Messageformat is not valid!');
       log.error(ajv.errors);
     }
-    return res.status(400).send(`Messageformat is not valid: ${JSON.stringify(ajv.errors)}`);
+    return res.status(400).send({ errors: [{ message: `Messageformat is not valid: ${JSON.stringify(ajv.errors)}`, code: 400 }] });
   }
 
   try {
     log.info('Saving event to DB...');
     const response = await storage.addEvent(message);
     log.info('Successfully Saved');
-    return res.status(200).send(response);
+    return res.status(201).send(response);
   } catch (error) {
     log.error('Save failed:');
     log.error(error);
-    return res.status(500).send(error);
+    return res.status(500).send({ errors: [{ message: error, code: 500 }] });
   }
 });
 

@@ -1,6 +1,11 @@
 # Contributing to Open Integration Hub
-Contributions to the Open Integration Hub including code, documentation for all types of Open Integration Hub
+Contributions to the Open Integration Hub include code and documentation for all types of Open Integration Hub
 contributors.
+
+If you plan to make your first contribution, please start with the [**Contributor Guide**](https://github.com/openintegrationhub/BusinessCommittee/tree/master/Contributing/Guide) for general information about making contributions to the Open Integration Hub project.
+
+The following represent additional rules specifically for contributions in this workgroup and repository.
+
 
 ## [Code of Conduct](./CODE_OF_CONDUCT.md)
 

@@ -70,6 +70,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *yarn_test_steps
+  meta-data-repository-test:
+    docker: *node_env
+    working_directory: ~/oih/services/meta-data-repository
+    steps: *yarn_test_steps
   component-orchestrator-test:
     docker: *node_mongo_env
     working_directory: ~/oih/services/component-orchestrator
@@ -78,9 +82,9 @@ jobs:
     docker: *node_mongo_env
     working_directory: ~/oih/services/scheduler
     steps: *yarn_test_steps
-  secret-service-test:
+  secret-service-lib-test:
     docker: *node_env
-    working_directory: ~/oih/services/secret-service
+    working_directory: ~/oih/lib/secret-service
     steps: *yarn_test_steps
   lib-backend-commons-lib-test:
     docker: *node_env
@@ -116,13 +120,16 @@ workflows:
       - iam-test:
           requires:
             - deps
+      - meta-data-repository-test:
+          requires:
+            - deps
       - component-orchestrator-test:
           requires:
             - lib-component-orchestrator-test
       - scheduler-test:
           requires:
             - lib-scheduler-test
-      - secret-service-test:
+      - secret-service-lib-test:
           requires:
             - deps
       - flow-repository-test:
@@ -147,9 +154,10 @@ workflows:
           requires:
             - webhooks-test
             - iam-test
+            - meta-data-repository-test
             - component-orchestrator-test
             - scheduler-test
-            - secret-service-test
+            - secret-service-lib-test
             - flow-repository-test
             - audit-log-test
       - build:

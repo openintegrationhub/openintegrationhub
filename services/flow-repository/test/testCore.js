@@ -106,7 +106,6 @@ describe('Flow Operations', () => {
         .send({
           type: 'ordinary',
           name: 'WiceToSnazzy',
-          status: 'active',
           description: 'A description',
         });
       expect(res.status).toEqual(201);
@@ -151,7 +150,7 @@ describe('Flow Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('No flows found');
+    expect(res.body.errors[0].message).toEqual('No flows found');
   });
 
   test('should not show the flow to another users get', async () => {
@@ -161,7 +160,7 @@ describe('Flow Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('No flow found');
+    expect(res.body.errors[0].message).toEqual('No flow found');
   });
 
   test('should return 400 when attempting to get an invalid id', async () => {
@@ -180,7 +179,7 @@ describe('Flow Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('No flow found');
+    expect(res.body.errors[0].message).toEqual('No flow found');
   });
 
   test('should add a second flow', async () => {
@@ -192,7 +191,6 @@ describe('Flow Operations', () => {
       .send({
         type: 'long_running',
         name: 'SnazzyZoWice',
-        status: 'active',
         description: 'Different content',
       });
     expect(res.status).toEqual(201);
@@ -210,7 +208,7 @@ describe('Flow Operations', () => {
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        'filter[status]': 1,
+        'filter[status]': 0,
       })
       .set('Authorization', 'Bearer adminToken');
 
@@ -287,7 +285,6 @@ describe('Flow Operations', () => {
       .send({
         type: 'flow',
         name: 'NewName',
-        status: 'active',
         description: 'A description',
         owners: [
           {
@@ -321,12 +318,53 @@ describe('Flow Operations', () => {
     expect(j.data.status).toEqual('starting');
   });
 
+  test('should refuse to start an already starting flow', async () => {
+    const res = await request
+      .post(`/flows/${flowId1}/start`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(409);
+  });
+
   test('handle a flow.started event', async () => {
     await flowStarted(flowId1);
 
     const flow = await Flow.findOne({ _id: flowId1 }).lean();
     expect(flow.status).toEqual('active');
   });
+
+  test('should refuse to start an already active flow', async () => {
+    const res = await request
+      .post(`/flows/${flowId1}/start`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(409);
+  });
+
+  test('should refuse to update an active flow', async () => {
+    const res = await request
+      .patch(`/flows/${flowId1}`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        type: 'flow',
+        name: 'NewName',
+        description: 'A description',
+        owners: [
+          {
+            type: 'user',
+            id: 'dude',
+          },
+        ],
+      });
+    expect(res.status).toEqual(409);
+  });
+
 
   test('should stop a flow', async () => {
     const res = await request
@@ -345,11 +383,31 @@ describe('Flow Operations', () => {
     expect(j.data.status).toEqual('stopping');
   });
 
+  test('should refuse to stop an already stopping flow', async () => {
+    const res = await request
+      .post(`/flows/${flowId1}/stop`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(409);
+  });
+
   test('handle a flow.stopped event', async () => {
     await flowStopped(flowId1);
 
     const flow = await Flow.findOne({ _id: flowId1 }).lean();
     expect(flow.status).toEqual('inactive');
+  });
+
+  test('should refuse to stop an inactive flow', async () => {
+    const res = await request
+      .post(`/flows/${flowId1}/stop`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(409);
   });
 
   test('should return 400 when attempting to update an invalid id', async () => {
@@ -370,12 +428,11 @@ describe('Flow Operations', () => {
       .send({
         type: 'flow',
         name: 'NewName',
-        status: 'active',
         description: 'A description',
       });
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('Flow not found');
+    expect(res.body.errors[0].message).toEqual('Flow not found');
   });
 });
 
@@ -417,6 +474,6 @@ describe('Cleanup', () => {
       .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors).toEqual('No flow found');
+    expect(res.body.errors[0].message).toEqual('No flow found');
   });
 });
