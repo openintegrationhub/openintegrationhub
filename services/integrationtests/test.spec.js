@@ -14,7 +14,7 @@ describe('User Routes', () => {
 		jest.setTimeout(10000);
 	});
 
-    test('--- LOGIN & TOKEN ---', async (done) => {
+    	test('--- LOGIN & TOKEN ---', async (done) => {
 		process.env.IAM_AUTH_TYPE = 'basic';
         const jsonPayload = {
         	username,
@@ -42,21 +42,22 @@ describe('User Routes', () => {
 		expect(response.statusCode).toEqual(200);	
     	done();
     });	
-		
-    test('--- GET All FLOWS ---', async (done) => { 
-        const getAllFlows = {
+	
+    //-----------------------------------------FLOW-REPO------------------------------------------	
+   	test('--- GET All FLOWS ---', async (done) => { 
+        	const getAllFlows = {
         	method: 'GET',
             	uri: `http://flow-repository.openintegrationhub.com/flows`,
             	headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
             	}
         };
-	 	const response = await request(getAllFlows);
+	const response = await request(getAllFlows);
         expect(response.statusCode).toEqual(200);
-	 done();
+	done();
      });
 
-    test('--- ADD NEW FLOW ---', async (done) => { 
+    	test('--- ADD NEW FLOW ---', async (done) => { 
 		process.env.IAM_AUTH_TYPE = 'basic';
 		const createdFlow = {
         	"name": "Added test flow",
@@ -84,7 +85,7 @@ describe('User Routes', () => {
       				}
     				]
   			},
-          	"type": "ordinary",
+          		"type": "ordinary",
   			"owners": [
     			{
       				"id": "string",
@@ -124,6 +125,10 @@ describe('User Routes', () => {
 			return name; 
 		};
 		flowName = await getFlowName(response); 
+
+		console.log(flowID);
+		console.log(flowName);
+		//console.log(flowName);
 		expect(response.statusCode).toEqual(201);
     	done();
 	});
@@ -142,6 +147,7 @@ describe('User Routes', () => {
 		done();
 	});
 
+
 	test('--- PATCH FLOW BY ID ---', async (done) => { 
 		process.env.IAM_AUTH_TYPE = 'basic';
 		const getFlowData = {
@@ -157,6 +163,8 @@ describe('User Routes', () => {
 		const newName = "new given name " + flowName;
 
 		response.body.data.name = newName;
+
+		//console.log(response);
 
 		const patchFlow = {
         		method: 'PATCH',
@@ -183,7 +191,7 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(startFlowById);
-		//console.log(JSON.stringify(response.body));
+		console.log(JSON.stringify(response.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -198,7 +206,7 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(stopFlowById);
-		//console.log(JSON.stringify(response.body));
+		console.log(JSON.stringify(response.body));
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -216,8 +224,8 @@ describe('User Routes', () => {
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
-
-	//--------------------------------------------------------------------------------------
+	
+	//-----------------------------------------AUDITLOG-------------------------------------------
 	
 	// This will only return logs that pertain to the current user's tenant -> zuweisbar über Token?
 	test('--- GET ALL LOGS ---', async (done) => {
