@@ -8,7 +8,6 @@ let tokenUser = null;
 let tokenAdmin = null;
 let flowID = null;
 let flowName = null;
-let flowStatus = null;
 
 describe('User Routes', () => {
 	beforeEach(() => {
