@@ -46,6 +46,21 @@ function resolveRelativePath({ filePath, location, root }) {
         .replace(root, '');
 }
 
+async function processExternalSchema({ domain, schema, jsonRefsOptions }) {
+    console.log('processExternalSchema');
+    console.log(schema);
+    module.exports.validateSchema({
+        schema,
+    });
+
+    await module.exports.transformSchema({
+        domain,
+        schema,
+        jsonRefsOptions,
+    });
+    console.log('schema processed');
+}
+
 module.exports = {
     validateSchema({ schema, filePath }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
@@ -62,11 +77,33 @@ module.exports = {
     }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
         const fullBase = `${conf.baseUrl}:${conf.port}${conf.apiBase}`;
+
+        // default settings
+
         jsonRefsOptions.loaderOptions = {
             ...{
-                prepareRequest(req, callback) {
+                prepareRequest(req, cb) {
                     req.header['content-type'] = 'application/schema+json';
-                    callback(undefined, req);
+                    cb(undefined, req);
+                },
+                async processContent(res, cb) {
+                    let error;
+                    if (res.location.match('http')
+                        && !res.location.match(conf.baseUrl)
+                    ) {
+                        console.log('process content');
+
+                        try {
+                            await processExternalSchema({
+                                domain,
+                                schema: JSON.parse(res.text),
+                                jsonRefsOptions,
+                            });
+                        } catch (err) {
+                            error = err;
+                        }
+                    }
+                    cb(error, JSON.parse(res.text));
                 },
             },
             ...jsonRefsOptions.loaderOptions,

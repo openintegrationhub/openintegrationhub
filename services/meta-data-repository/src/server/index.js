@@ -68,7 +68,7 @@ module.exports = class Server {
         || global.__MONGO_URI__
         || conf.mongoDbConnection;
 
-        await mongoose.connect(connectionString, {
+        mongoose.connect(connectionString, {
             poolSize: 50,
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
