@@ -126,7 +126,7 @@ describe('User Routes', () => {
 		};
 		const getFlowStatus = async res3 => {
 			try {
-				status = await Promise.resolve(res3.body.data.name);
+				status = await Promise.resolve(res3.body.data.status);
 			}
 			catch (error) {
 				console.log(error);
@@ -135,11 +135,13 @@ describe('User Routes', () => {
 		};
 
 		flowName = await getFlowName(response);
-		flowName = await getFlowId(response);
-		flowName = await getFlowStatus(response); 
-		console.log(tokenAdmin);
+		flowID = await getFlowId(response);
+		flowStatus = await getFlowStatus(response); 
+		
+		console.log(tokenAdmin); //works
 		console.log(flowName);
-		console.log(flowStatus);
+		console.log(flowID); //work
+		console.log(flowStatus); // keiner? / Null
 
 		expect(response.statusCode).toEqual(201);
     	done();
@@ -205,7 +207,7 @@ describe('User Routes', () => {
 		done();
 	});
 
-	test('--- STOP FLOW BY ID ---', async (done) => { 
+	test('--- STOP FLOW BY ID ---', async (done) => { 		
 		const stopFlowById = {
 				method: 'POST',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
@@ -215,9 +217,20 @@ describe('User Routes', () => {
 					}
 		};
 		const response = await request(stopFlowById);
+		
+		const getRunningStatus = async res4 => {
+			try {
+				running = await Promise.resolve(res4.body.data.status);
+			}
+			catch (error) {
+				console.log(error);
+			}
+			return running; 
+		};
+		isActive = await getRunningStatus(response);
+		console.log(isActive);
 
 		console.log(JSON.stringify(response.body));
-		
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
@@ -283,4 +296,39 @@ describe('User Routes', () => {
 		expect(response.statusCode).toEqual(200);
     	done();
 	});
+});
+
+test('--- FLOW IS RUNNING ---', async (done) => { 
+	process.env.IAM_AUTH_TYPE = 'basic';   
+	const getFlow = {
+		method: 'POST',
+			uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
+			headers: {
+				"Authorization" : " Bearer " + tokenAdmin, 
+			}
+	};
+	const response = await request(getFlow);
+	
+	// hier auch mal Status ausgeben lassen: sollte sich nicht finden lassen
+	const getFlowStatus = async res4 => {
+		try {
+			statusIsRunning = await Promise.resolve(res4.body.data.status);
+		}
+		catch (error) {
+			console.log(error);
+		}
+		return statusIsRunning; 
+	};
+	flowStatus = await getFlowStatus(response);
+	
+	let isRunning = false;
+
+	if (flowStatus == "active"){
+		isRunning = true;
+	} else {
+		isRunning = false;
+	}
+	console.log("is running = " & isRunning);
+	expect(response.statusCode).toEqual(200);
+	done();
 });
