@@ -225,7 +225,7 @@ describe('User Routes', () => {
 	     
 		const getFlowStatus = async res => {
 			try {
-				status = await Promise.resolve(res.body.data.id);
+				status = await Promise.resolve(res.body);
 			}
 			catch (error) {
 				console.log(error);
@@ -235,7 +235,7 @@ describe('User Routes', () => {
 
 		flowStatus = await getFlowStatus(response); 
 		
-		console.log(flowStatus); // keiner? / Null
+		console.log(flowStatus); // = null / undefined 
 
 		expect(response.statusCode).toEqual(200);
     	done();
