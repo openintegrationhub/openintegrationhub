@@ -223,9 +223,9 @@ describe('User Routes', () => {
 		};
 		const response = await request(stopFlowById);
 	     
-		const getFlowStatus = async res4 => {
+		const getFlowStatus = async res => {
 			try {
-				status = await Promise.resolve(res4.body.data.status);
+				status = await Promise.resolve(res.body.data.id);
 			}
 			catch (error) {
 				console.log(error);
