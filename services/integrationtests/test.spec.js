@@ -209,31 +209,32 @@ describe('User Routes', () => {
 
 	test('--- STOP FLOW BY ID ---', async (done) => { 
 		process.env.IAM_AUTH_TYPE = 'basic';		
-		const stopFlowById = {
-				method: 'POST',
-					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
-					json:	true,
-					headers: {
-						"Authorization" : " Bearer " + tokenAdmin, 
-					}
+        const stopFlowById = {
+        	method: 'POST',
+        	uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
+        	json: true,
+			headers: {
+                	"Authorization" : " Bearer " + tokenAdmin, 
+            },	
 		};
 		const response = await request(stopFlowById);
-		
-		const getRunningStatus = async res4 => {
+	     
+		const getFlowStatus = async res4 => {
 			try {
-				running = await Promise.resolve(res4.body.data.status);
+				status = await Promise.resolve(res4.body.data.status);
 			}
 			catch (error) {
 				console.log(error);
 			}
-			return running; 
+			return status; 
 		};
-		isActive = await getRunningStatus(response);
-		console.log(isActive);
 
-		console.log(JSON.stringify(response.body));
+		flowStatus = await getFlowStatus(response); 
+		
+		console.log(flowStatus); // keiner? / Null
+
 		expect(response.statusCode).toEqual(200);
-		done();
+    	done();
 	});
 
 	test('--- DELETE FLOW BY ID ---', async (done) => { 
@@ -297,39 +298,4 @@ describe('User Routes', () => {
 		expect(response.statusCode).toEqual(200);
     	done();
 	});
-});
-
-test('--- FLOW IS RUNNING ---', async (done) => { 
-	process.env.IAM_AUTH_TYPE = 'basic';   
-	const getFlow = {
-		method: 'POST',
-			uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
-			headers: {
-				"Authorization" : " Bearer " + tokenAdmin, 
-			}
-	};
-	const response = await request(getFlow);
-	
-	// hier auch mal Status ausgeben lassen: sollte sich nicht finden lassen
-	const getFlowStatus = async res4 => {
-		try {
-			statusIsRunning = await Promise.resolve(res4.body.data.status);
-		}
-		catch (error) {
-			console.log(error);
-		}
-		return statusIsRunning; 
-	};
-	flowStatus = await getFlowStatus(response);
-	
-	let isRunning = false;
-
-	if (flowStatus == "active"){
-		isRunning = true;
-	} else {
-		isRunning = false;
-	}
-	console.log("is running = " & isRunning);
-	expect(response.statusCode).toEqual(200);
-	done();
 });
