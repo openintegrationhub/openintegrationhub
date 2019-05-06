@@ -208,14 +208,18 @@ describe('User Routes', () => {
 	});
 
 	test('--- STOP FLOW BY ID ---', async (done) => { 
-		process.env.IAM_AUTH_TYPE = 'basic';		
+		process.env.IAM_AUTH_TYPE = 'basic';
+		const createdFlow = {
+
+		};    		
         const stopFlowById = {
         	method: 'POST',
         	uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
         	json: true,
 			headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
-            },	
+			},
+			body: createdFlow	
 		};
 		const response = await request(stopFlowById);
 	     
