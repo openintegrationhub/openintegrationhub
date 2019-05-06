@@ -207,7 +207,8 @@ describe('User Routes', () => {
 		done();
 	});
 
-	test('--- STOP FLOW BY ID ---', async (done) => { 		
+	test('--- STOP FLOW BY ID ---', async (done) => { 
+		process.env.IAM_AUTH_TYPE = 'basic';		
 		const stopFlowById = {
 				method: 'POST',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
