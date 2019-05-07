@@ -214,13 +214,10 @@ describe('User Routes', () => {
 		console.log(flowID); // correct id
 		process.env.IAM_AUTH_TYPE = 'basic';
 
-		setTimeout(callApi, 10000)
-
-		function callApi(){
 		const createdFlow = {
 
 		}; 
-        	const stopFlowById = {
+        const stopFlowById = {
         		method: 'POST',
         		uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
         		json: true,
@@ -228,11 +225,11 @@ describe('User Routes', () => {
                 	"Authorization" : " Bearer " + tokenAdmin, 
 				},
 				body: createdFlow	
-			};
+		};
 
-			const response = await request(stopFlowById);
+		const response = await request(stopFlowById);
 	     
-			const getFlowStatus = async res => {
+		const getFlowStatus = async res => {
 				try {
 					status = await Promise.resolve(res.body);
 				}
@@ -240,11 +237,10 @@ describe('User Routes', () => {
 					console.log(error);
 				}
 				return status; 
-			};
-			flowStatus = await getFlowStatus(response); 
+		};
+		flowStatus = await getFlowStatus(response); 
 		
-			console.log(flowStatus); // = null / undefined 
-		};	
+		console.log(flowStatus); // = null / undefined 	
 		
 		expect(response.statusCode).toEqual(200);
     	done();
