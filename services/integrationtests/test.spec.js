@@ -238,7 +238,7 @@ describe('User Routes', () => {
 	     
 		const getFlowStatus = async res => {
 			try {
-				status = await Promise.resolve(res.body.status);
+				status = await Promise.resolve(res.body);
 			}
 			catch (error) {
 				console.log(error);
