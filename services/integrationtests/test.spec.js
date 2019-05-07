@@ -230,25 +230,27 @@ describe('User Routes', () => {
 				},
 				body: createdFlow	
 			};
-		};	
-		const response = await request(stopFlowById);
-	     
-		const getFlowStatus = async res => {
-			try {
-				status = await Promise.resolve(res.body);
-			}
-			catch (error) {
-				console.log(error);
-			}
-			return status; 
-		};
 
-		flowStatus = await getFlowStatus(response); 
+			const response = await request(stopFlowById);
+	     
+			const getFlowStatus = async res => {
+				try {
+					status = await Promise.resolve(res.body);
+				}
+				catch (error) {
+					console.log(error);
+				}
+				return status; 
+
+			flowStatus = await getFlowStatus(response); 
 		
-		console.log(flowStatus); // = null / undefined 
+			console.log(flowStatus); // = null / undefined 
+			};	
+		
 
 		expect(response.statusCode).toEqual(200);
     	done();
+		};
 	});
 
 	test('--- DELETE FLOW BY ID ---', async (done) => { 
