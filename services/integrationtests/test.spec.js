@@ -203,12 +203,7 @@ describe('User Routes', () => {
 		
 		console.log(JSON.stringify(response.body)); // status = starting 
 		
-		var start = new Date().getTime();
-		for (var i = 0; i < 1e7; i++) {
-		  if ((new Date().getTime() - start) > 10000){
-			break;
-		  }
-		}
+
 
 		console.log(JSON.stringify(response.body));
 
@@ -222,6 +217,14 @@ describe('User Routes', () => {
 	test('--- STOP FLOW BY ID ---', async (done) => { 
 		console.log(flowID); // correct id
 		process.env.IAM_AUTH_TYPE = 'basic';
+
+		var start = new Date().getTime();
+		for (var i = 0; i < 1e7; i++) {
+		  if ((new Date().getTime() - start) > 15000){
+			break;
+		  }
+		}
+		
 		const createdFlow = {
 
 		};    		
@@ -255,6 +258,7 @@ describe('User Routes', () => {
 	});
 
 	test('--- DELETE FLOW BY ID ---', async (done) => { 
+		console.log(JSON.stringify(response.body)); // already stopped?
 		const deleteFlowById = {
 				method: 'DELETE',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
