@@ -201,14 +201,21 @@ describe('User Routes', () => {
 		};
 		const response = await request(startFlowById);
 		
+		console.log(JSON.stringify(response.body)); // status = starting 
+		
+		sleep(10000);
+
 		console.log(JSON.stringify(response.body));
 		
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
 
+
+	//Test('check if flow is active', async)
+
 	test('--- STOP FLOW BY ID ---', async (done) => { 
-		console.log(flowID);
+		console.log(flowID); // correct id
 		process.env.IAM_AUTH_TYPE = 'basic';
 		const createdFlow = {
 
