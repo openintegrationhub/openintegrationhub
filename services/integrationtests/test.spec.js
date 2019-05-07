@@ -214,15 +214,14 @@ describe('User Routes', () => {
 		console.log(flowID); // correct id
 		process.env.IAM_AUTH_TYPE = 'basic';
 
-		for (var i = 1; i <= 5; i++) {
-			var tick = function(i) {
-				return function() {
-					//console.log(i);
-				}
-			};
-			setTimeout(tick(i), 5000 * i);
+		function Sleep(milliseconds) {
+			return new Promise(resolve => setTimeout(resolve, milliseconds));
 		};
+		async function justWait(){
+			await Sleep(15000);
+		}
 
+		
 		const createdFlow = {
 
 		}; 
@@ -256,7 +255,6 @@ describe('User Routes', () => {
 	});
 
 	test('--- DELETE FLOW BY ID ---', async (done) => { 
-		console.log(JSON.stringify(response.body)); // already stopped?
 		const deleteFlowById = {
 				method: 'DELETE',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
