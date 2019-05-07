@@ -214,13 +214,10 @@ describe('User Routes', () => {
 		console.log(flowID); // correct id
 		process.env.IAM_AUTH_TYPE = 'basic';
 
-		function sleep(delay) {
-			var start = new Date().getTime();
-			while (new Date().getTime() < start + delay);
+		function callback(){
+			console.log("warte....20 sekunden");
 		}
-
-		sleep(15000);
-		setTimeout(sleep(5000), 10000);
+		setTimeout(callback, 20000);
 
 		const createdFlow = {
 
