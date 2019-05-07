@@ -91,6 +91,7 @@ Users can create and modify secrets. The sensitive value of a secret (e.g. passw
 * Sensitive data in a secret (password, accessToken, refreshToken) are masked with stars `***` and aren't displayed plain in the response. To see the raw data, the requester must have the `secrets.raw.read` permission (see IAM).
 * When fetching an OAuth2 based secret, this service checks if the accessToken has expired or will expire in the next 10min (configurable). If so, the service will automatically refresh the access token, store it in the secret object and return this updated secret.
 * If a secret containing an OAuth2 token is being refreshed, the `lockedAt` flag is set with the current timestamp. When secret is updated, the `lockedAt` property is set to `null`. Parallel requests to this secret will undergo a back-off strategy, until a predefined threshold is reached (see `refreshTimeout` in the config, default: 10s). If the secret has not been refreshed in the mean time, a new attempt will be started. The number of retries is limited by `TBD`.
+* A secret can have more than one owner. There are two types of delete: one removes the owner from the secret owners array if there are more than one. The more privileged delete requires a special permission (see: `secretDeleteAny`). 
 
 ### Encryption
 * All `sensitive fields` (listed in src/constant) of every secret will be encrypted before they get stored into database. By default `aes-256-cbc` is used to provide fast and secure encryption. Therefore, you need to specify a `key adapter` to supply users with the keys and setup encryption. Users receive decrypted secrets only if lynx is able to find the valid key.
@@ -100,3 +101,42 @@ Users can create and modify secrets. The sensitive value of a secret (e.g. passw
 * CRYPTO_ALG_HASH: __sha256__ - Hashing of externalId to obfuscate private data.
 * CRYPTO_ALG_ENCRYPTION: __aes-256-cbc__ - Default algorithm used for encryption.
 * CRYPTO_OUTPUT_ENCODING: __latin1__ - Charset of encryption output.
+
+## Usage & Customization
+
+#### I want to use my own implementation of IAM
+
+When instantiating the server, provide your custom implementation:
+
+```javascript
+const server = new Server({
+    iam: require('my-iam-lib'),
+});
+```
+
+Make sure that your IAM implementation exposes methods exported by `secret-service/src/modules/iam.js`.
+
+
+#### I want to use my own implementation of secret encryption
+
+```javascript
+const server = new Server({
+    adapter: {
+        key: require('./your-implementation'),
+    },
+});
+```
+
+#### I want to use my own implementation to fetch user's external id
+
+```javascript
+const server = new Server({
+    adapter: {
+        preprocessor: {
+            slack: require('./adapter/preprocessor/slack'),
+            google: require('./adapter/preprocessor/google'),
+            microsoft: require('./adapter/preprocessor/microsoft'),
+        },
+    },
+});
+```
