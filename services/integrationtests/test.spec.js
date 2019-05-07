@@ -205,7 +205,7 @@ describe('User Routes', () => {
 		
 		var start = new Date().getTime();
 		for (var i = 0; i < 1e7; i++) {
-		  if ((new Date().getTime() - start) > 15000){
+		  if ((new Date().getTime() - start) > 10000){
 			break;
 		  }
 		}
@@ -255,7 +255,6 @@ describe('User Routes', () => {
 	});
 
 	test('--- DELETE FLOW BY ID ---', async (done) => { 
-		console.log(JSON.stringify(response.body)); // already stopped?
 		const deleteFlowById = {
 				method: 'DELETE',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
