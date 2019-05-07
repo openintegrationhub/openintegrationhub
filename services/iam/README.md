@@ -5,14 +5,14 @@ Heimdal provides basic (JWT only) and advanced (OpenId-Connect compatible) Authe
 
 ## General
 
-Heimdal supports two auth modes:
-* Simple (which is called internally **basic** mode)
+Heimdal supports two modes of authentication:
+* Simple (which is called internaly **basic** mode)
 * OIDC (OpenId-Connect)
 
 The default mode is **oidc** which can be overriden with the **process.env.AUTH_TYPE** (see section **Configuration**)
 
 
-A default admin account is also created. **!!! You should modify the password after the setup, as this is a major security issue !!!**
+==A default admin account is also created. **You should modify the password after the setup, as this is a major security issue!**==
 
 We currently use MongoDB as storage. The storage is abstracted through data access objects in src/dao directory. Our aim is to provide an interface to allow interchangeability of other storages via DAOs.
 
@@ -100,8 +100,7 @@ The following list contains the environment variables you can set to configure t
 * **IAM_OIDC_TTL_IDTOKEN** - value in s. *default*: 1h
 * **IAM_OIDC_TTL_REFRESHTOKEN** - value in s. *default*: 1d
 * **IAM_OIDC_TTL_REGACCESSTOKEN** - value in s. *default*: 1d
-* **KEYSTORE_PATH** - Full path to a keystore. If no path is provided, keystore will be auto generated and saved in project root. If you wish to preserve the generated keys in a production environment, then you should mount a directory and provide a full path to a json file, where the keys can be read and stored. (We are planing to store the keys in the database in the upcomming updates, as the mounted storage does has limitation when running in a cluster on public cloud infrastructure).
-
+* **KEYSTORE_PATH** - Full path to a keystore. If no path is provided, keystore will be auto generated and saved in project root. ==You should always mount a directory and provide a full path to a json file, where the keys should be read and stored.==
 
 
 ---
@@ -110,7 +109,8 @@ The following list contains the environment variables you can set to configure t
 * Create a MongoDB Database
 * Run `npm install` to install all dependencies
 * Rename the provided *nodemon_example.json* to *nodemon.json*
-* Run `npm run watch` to start the service locally
+* Run `npm run watch` to start the service locally 
+
 
 
 ---
@@ -139,11 +139,30 @@ It is planed to make roles more generic and extensible, which would allow this s
 
 ---
 
+## Usage
+#### Login
+POST: /login (see open api docs)
 
+#### Tokens
+**Create a token**
+
+POST /api/v1/tokens (see open api docs)
+
+*If you want to create a permanent token, pass the "tokenLifeSpan" of -1* 
+
+**Introspect a token**
+
+POST /api/v1/tokens/introspect (see open api docs)
+
+
+
+---
 
 ## Operations
-* This service can run in a replica set
+
+* This service can run in a replica set and has no session stickiness
 * All sessions are stored in the database, which should allow a HA setup
+
 * we provide a basic Configuration for Kubernetes under /k8s
 
 The Kubernetes YAML's (deployment and Service) relay on Secrets which need to created first and we RECOMMEND to use HASHES for the Secret Strings and   
@@ -170,5 +189,41 @@ policy proved Passwords for the Admin and Service Account.
   the generated file should be used to create the kubernetes Secret
 
 
+## Useful commands
 
+### Generate keystore
+```zsh 
+npm run generate-keystore
+```
 
+### Run tasks as examples
+
+Start local iam
+```zsh 
+npm run watch
+```
+
+Run a task
+```zsh 
+npm run task <path-to-example>
+```
+```zsh 
+npm run task ./src/tasks/oidc/update-user
+```
+
+* **PORT** - defaults to 3099
+* **IAM_BASEURL** - i.e. "https://127.0.0.1:3099"
+* **IAM_SERVICE_CLIENT_ID** - xxx
+* **IAM_SERVICE_CLIENT_SECRET** - xxx
+* **AUTH_TYPE** - "basic" or "oidc"
+* **IAM_ACC_ADMIN_USERNAME** - xxx
+* **IAM_ACC_ADMIN_PASSWORD** - xxx
+* **DEBUG** -  true/false
+
+## Build Docker and push to registry ###
+
+docker build -t eu.gcr.io/${GCP_PROJECT_ID}/iam
+gcloud docker -- push eu.gcr.io/${GCP_PROJECT_ID}/iam
+
+## Test run
+docker run --rm -ti -v $PWD/uploads:/home/uploads --name -p 80:3099 iam eu.gcr.io/${GCP_PROJECT_ID}/iam
