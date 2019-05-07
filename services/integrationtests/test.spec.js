@@ -208,6 +208,7 @@ describe('User Routes', () => {
 	});
 
 	test('--- STOP FLOW BY ID ---', async (done) => { 
+		console.log(flowID);
 		process.env.IAM_AUTH_TYPE = 'basic';
 		const createdFlow = {
 
