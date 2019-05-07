@@ -214,8 +214,13 @@ describe('User Routes', () => {
 		console.log(flowID); // correct id
 		process.env.IAM_AUTH_TYPE = 'basic';
 
-		const sleep = 10000 => {
-			return new Promise(resolve => setTimeout(resolve, 10000))
+		for (var i = 1; i <= 5; i++) {
+			var tick = function(i) {
+				return function() {
+					//console.log(i);
+				}
+			};
+			setTimeout(tick(i), 5000 * i);
 		};
 
 		const createdFlow = {
