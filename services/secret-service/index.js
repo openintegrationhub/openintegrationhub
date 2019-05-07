@@ -22,8 +22,9 @@ process.on('SIGINT', exitHandler.bind(null));
 
 const server = new Server({
     adapter: {
-        key: require('@openintegrationhub/secret-service/src/adapter/key'),
+        key: require('@openintegrationhub/secret-service/src/adapter/key/global'),
     },
+
 });
 
 // if (process.env.ALLOW_SELF_SIGNED) {

@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
-    "@openintegrationhub/secret-service": "1.0.0",
+    "@openintegrationhub/secret-service": "1.1.0",
     "dotenv": "7.0.0"
   }
 }
