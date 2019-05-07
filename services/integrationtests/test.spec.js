@@ -238,7 +238,7 @@ describe('User Routes', () => {
 	     
 		const getFlowStatus = async res => {
 			try {
-				status = await Promise.resolve(res.body);
+				status = await Promise.resolve(res.body.status);
 			}
 			catch (error) {
 				console.log(error);
@@ -255,6 +255,14 @@ describe('User Routes', () => {
 	});
 
 	test('--- DELETE FLOW BY ID ---', async (done) => { 
+		var start = new Date().getTime();
+		for (var i = 0; i < 1e7; i++) {
+		  if ((new Date().getTime() - start) > 10000){
+			break;
+		  }
+		}
+
+		console.log(JSON.stringify(response.body)); // already stopped?
 		const deleteFlowById = {
 				method: 'DELETE',
 					uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}`,
