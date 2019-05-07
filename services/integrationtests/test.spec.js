@@ -11,9 +11,9 @@ let flowName = null;
 let flowStatus = null;
 
 describe('User Routes', () => {
-	beforeEach(() => {
-		jest.setTimeout(10000);
-	});
+	//beforeEach(() => {
+	//	jest.setTimeout(10000);
+	//});
 
     test('--- LOGIN & TOKEN ---', async (done) => {
 		process.env.IAM_AUTH_TYPE = 'basic';
@@ -214,21 +214,23 @@ describe('User Routes', () => {
 		console.log(flowID); // correct id
 		process.env.IAM_AUTH_TYPE = 'basic';
 
-		sleep(5000).then(() => {
-			//do stuff
-		  })
-		const createdFlow = {
+		setTimeout(callApi, 10000)
 
-		};    		
-        const stopFlowById = {
-        	method: 'POST',
-        	uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
-        	json: true,
-			headers: {
+		function callApi()
+		{
+			const createdFlow = {
+
+			}; 
+        	const stopFlowById = {
+        		method: 'POST',
+        		uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
+        		json: true,
+				headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
-			},
-			body: createdFlow	
-		};
+				},
+				body: createdFlow	
+			};
+		};	
 		const response = await request(stopFlowById);
 	     
 		const getFlowStatus = async res => {
