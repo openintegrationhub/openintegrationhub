@@ -216,11 +216,10 @@ describe('User Routes', () => {
 
 		setTimeout(callApi, 10000)
 
-		function callApi()
-		{
-			const createdFlow = {
+		function callApi(){
+		const createdFlow = {
 
-			}; 
+		}; 
         	const stopFlowById = {
         		method: 'POST',
         		uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
@@ -241,16 +240,14 @@ describe('User Routes', () => {
 					console.log(error);
 				}
 				return status; 
-
+			};
 			flowStatus = await getFlowStatus(response); 
 		
 			console.log(flowStatus); // = null / undefined 
-			};	
+		};	
 		
-
 		expect(response.statusCode).toEqual(200);
     	done();
-		};
 	});
 
 	test('--- DELETE FLOW BY ID ---', async (done) => { 
