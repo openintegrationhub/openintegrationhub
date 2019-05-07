@@ -203,10 +203,15 @@ describe('User Routes', () => {
 		
 		console.log(JSON.stringify(response.body)); // status = starting 
 		
-		sleep(10000);
+		var start = new Date().getTime();
+		for (var i = 0; i < 1e7; i++) {
+		  if ((new Date().getTime() - start) > 5000){
+			break;
+		  }
+		}
 
 		console.log(JSON.stringify(response.body));
-		
+
 		expect(response.statusCode).toEqual(200);
 		done();
 	});
