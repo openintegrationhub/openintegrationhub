@@ -202,10 +202,6 @@ describe('User Routes', () => {
 		const response = await request(startFlowById);
 		
 		console.log(JSON.stringify(response.body)); // status = starting 
-		
-
-
-		console.log(JSON.stringify(response.body));
 
 		expect(response.statusCode).toEqual(200);
 		done();
@@ -218,13 +214,9 @@ describe('User Routes', () => {
 		console.log(flowID); // correct id
 		process.env.IAM_AUTH_TYPE = 'basic';
 
-		var start = new Date().getTime();
-		for (var i = 0; i < 1e7; i++) {
-		  if ((new Date().getTime() - start) > 15000){
-			break;
-		  }
-		}
-		
+		sleep(5000).then(() => {
+			//do stuff
+		  })
 		const createdFlow = {
 
 		};    		
