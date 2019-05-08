@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../../doc/openapi.json');
 const iamLib = require('./../module/iam');
 const DAO = require('../dao');
 const conf = require('../conf');
@@ -42,9 +44,12 @@ module.exports = class Server {
         }
 
         this.app.use(jsonParser);
+
         // base routes
         this.app.use('/', require('./../route/root'));
         this.app.use('/healthcheck', require('./../route/healtcheck'));
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: false }));
+
 
         const apiBase = express.Router();
 
