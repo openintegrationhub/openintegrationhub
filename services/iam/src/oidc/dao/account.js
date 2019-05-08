@@ -1,3 +1,4 @@
+const find = require('lodash/find');
 const AccountModel = require('../../models/account');
 
 class Account {
@@ -7,6 +8,7 @@ class Account {
     }
 
     claims() {
+
         const claims = {
             sub: this.data._id, 
             username: this.data.username,
@@ -16,7 +18,7 @@ class Account {
             role: this.data.role,
             memberships: this.data.memberships,
             permissions: this.data.permissions,
-            currentContext: this.data.currentContext,
+            currentContext: find(this.data.memberships, { active: true }),
             confirmed: this.data.confirmed,
         };
         return claims; 

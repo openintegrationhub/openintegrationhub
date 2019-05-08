@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: meta-data-repository
+  namespace: oih-dev-ns
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: meta-data-repository
+    spec:
+      containers:
+      - name: meta-data-repository
+        image: openintegrationhub/meta-data-repository:latest
+        env:
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: meta-data-repository
+              key: iamtoken
+        - name: MONGODB_CONNECTION
+          valueFrom:
+            secretKeyRef:
+              name: meta-data-repository
+              key: mongourl
+        - name: "INTROSPECT_TYPE"
+          value: "basic"
+        - name: "INTROSPECT_ENDPOINT_BASIC"
+          value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
+        - name: PORT
+          value: '3000'
+        - name: API_BASE
+          value: "/api/v1"
+        - name: LOGGING_LEVEL
+          value: "error"
+        - name: DEBUG_MODE
+          value: "false"
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: '0.1'
+            memory: 500Mi

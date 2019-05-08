@@ -75,4 +75,6 @@ CircleCi will be triggered automatically by active changes in those services sub
 
 We agreed on using a centralized pipeline, which means that every dev partner will provide their own ENV for their own test stage but build- and deploy stage will be used commonly by all
 
+### Update 10.04.2019
 
+We will continue using our existing cluster and add another namespace to differentiate our test and production versions of the single services while testing them with our integrationtests. Integrationtests will be using jest and supertest. Postman is only there to ensure that the integration tests themselves work without any problems.

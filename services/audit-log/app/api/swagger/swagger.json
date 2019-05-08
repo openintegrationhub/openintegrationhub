@@ -292,7 +292,7 @@
             "properties": {
               "service": {
                 "type": "string",
-                "description": "Name of the service",
+                "description": "Name of the service that spawned the log",
                 "example": "MyService"
               },
               "timeStamp": {
@@ -301,34 +301,41 @@
               },
               "nameSpace": {
                 "type": "string",
-                "example": "outerSpace"
+                "description": "The kubernetes namespace that the spawning service is in",
+                "example": "dev-oih-ns"
               },
               "payload": {
                 "type": "object",
                 "properties": {
                   "tenant": {
                     "type": "string",
-                    "example": "1"
+                    "description": "The tenant of the user or resource involved in this log, if applicable",
+                    "example": "12sfeasd978"
                   },
                   "source": {
                     "type": "string",
-                    "example": "SomeSource"
+                    "description": "The source of the cause of this log, such as a user of service",
+                    "example": "ExampleUser"
                   },
                   "object": {
                     "type": "string",
-                    "example": "SomeObject"
+                    "description": "The general type or class of object that was affected",
+                    "example": "flow"
                   },
                   "action": {
                     "type": "string",
-                    "example": "foo"
+                    "description": "The type of action that was taken",
+                    "example": "createFlow"
                   },
                   "subject": {
                     "type": "string",
-                    "example": "Test Subject"
+                    "description": "The unique id of the object that was affected, if applicable",
+                    "example": "ExampleFlow"
                   },
                   "details": {
                     "type": "string",
-                    "example": "A human-readable detailed description"
+                    "description": "A human-readable detailed description",
+                    "example": "A flow with the id ExampleFlow was created"
                   }
                 }
               }
