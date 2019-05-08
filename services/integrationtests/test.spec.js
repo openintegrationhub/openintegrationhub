@@ -137,10 +137,10 @@ describe('User Routes', () => {
 		flowName = await getFlowName(response);
 		flowStatus = await getFlowStatus(response); 
 		
-		console.log("token" & tokenAdmin); //works
-		console.log("name" &flowName);
-		console.log("id" &flowID); //work
-		console.log("status" &flowStatus); // keiner? / Null
+		console.log("token" + tokenAdmin); //works
+		console.log("name" + flowName);
+		console.log("id" + flowID); //work
+		console.log("status" + flowStatus); // keiner? / Null
 
 		expect(response.statusCode).toEqual(201);
     	done();
