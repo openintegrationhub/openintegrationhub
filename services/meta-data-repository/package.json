@@ -32,8 +32,8 @@
     "qs": "6.7.0",
     "readdirp": "2.2.1",
     "request": "2.88.0",
-    "request-promise": "^4.2.4",
-    "swagger-ui-express": "^4.0.2",
+    "request-promise": "4.2.4",
+    "swagger-ui-express": "4.0.2",
     "tar": "4.4.8",
     "uuid": "3.3.2"
   },
