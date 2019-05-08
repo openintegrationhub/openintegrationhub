@@ -1,19 +1,22 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 const CONSTANTS = require('./../../constants');
 
 const TenantSchema = new Schema({
-    name: { type: String, index: true, required: true },
-    confirmed: { type: Boolean, 'default': false },
+    name: { type: String, index: true },
+    confirmed: { 
+        type: Boolean, 
+        default: true, 
+    },
     status: {
         type: String,
-        'enum': [
+        enum: [
             CONSTANTS.STATUS.ACTIVE,
             CONSTANTS.STATUS.DISABLED,
             CONSTANTS.STATUS.PENDING,
         ],
-        'default': CONSTANTS.STATUS.ACTIVE,
+        default: CONSTANTS.STATUS.ACTIVE,
     },
 
 }, {

@@ -1,13 +1,12 @@
 const Provider = require('oidc-provider');
-// const Provider = require('../../../node-oidc-provider/lib');
 const { set } = require('lodash');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const Logger = require('@basaas/node-logger');
 const path = require('path');
 const fs = require('fs');
+// const Provider = require('../../../node-oidc-provider/lib');
 const { getKeystoreFile } = require('../util/keystore');
-
 const passwordGrant = require('./custom-grants/password');
 const conf = require('../conf');
 const getSessionIframe = require('./session-iframe');
@@ -45,6 +44,22 @@ module.exports.createOIDCProvider = async () => {
 
     const keystoreFile = await getKeystoreFile();
 
+    provider.use(async (ctx, next) => {
+        await next();
+        if (
+            ctx.method !== 'OPTIONS' 
+            && ctx._matchedRouteName === 'introspection'
+            && ctx.oidc.entities.AccessToken
+        ) {
+            try {
+                const acc = await Account.findById(ctx, ctx.oidc.entities.AccessToken.accountId);
+                ctx.body.claims = acc.claims();
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    });
+
     await provider.initialize({
         adapter: require('./adapters/mongodb'), // eslint-disable-line global-require
         keystore: keystoreFile, // eslint-disable-line global-require
@@ -64,7 +79,7 @@ module.exports.createOIDCProvider = async () => {
         await next();
         const debug = ctx.query.debug !== undefined;
         if (ctx._matchedRouteName === 'check_session') {
-            ctx.body = getSessionIframe(debug, provider);
+            ctx.body = getSessionIframe(debug, provider.cookieName('state'));
         }
     });
 
@@ -90,15 +105,24 @@ module.exports.addOIDCRoutes = async (app, provider, corsOptions) => {
             const client = await provider.Client.find(details.params.client_id);
 
             const view = (() => {
-                switch (details.interaction.reason) {
-                    case 'consent_prompt':
-                    case 'client_not_authorized':
-                        return 'interaction';
-                    default:
-                        return 'login';
-                }
+                if (details.params.client_id.includes('basaas-native')) {
+                    switch (details.interaction.reason) {
+                        case 'consent_prompt':
+                        case 'client_not_authorized':
+                            return 'interaction';
+                        default:
+                            return 'app-login';
+                    }
+                } else {
+                    switch (details.interaction.reason) {
+                        case 'consent_prompt':
+                        case 'client_not_authorized':
+                            return 'interaction';
+                        default:
+                            return 'login';
+                    }
+                }         
             })();
-    
             res.render(view, {
                 client,
                 details,

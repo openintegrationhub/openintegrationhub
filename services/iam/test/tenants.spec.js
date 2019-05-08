@@ -1,6 +1,6 @@
 process.env.AUTH_TYPE = 'basic';
 const mongoose = require('mongoose');
-const Mockgoose = require('mockgoose').Mockgoose;
+const { Mockgoose } = require('mockgoose');
 
 const mockgoose = new Mockgoose(mongoose);
 const request = require('supertest')('http://localhost:3099');
@@ -11,12 +11,12 @@ let conf = null;
 
 describe('Tenant Routes', () => {
     let TenantID = null;
+    const tenantKey = 'sshhhhhh';
     // Token will be set via Login and is valid 3h
     let tokenAdmin = null;
     let app = null;
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-        this.timeout(120000);
         process.env.IAM_AUTH_TYPE = 'basic';
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 
@@ -61,17 +61,43 @@ describe('Tenant Routes', () => {
         TenantID = response.body.id;
     });
 
-    test('create tenant fails for wrong or missing request body', async () => {
+    test('create tenant key', async () => {
         const jsonPayload = {
-            'confirmed': true,
-            'status': 'ACTIVE',
+            value: tenantKey,
         };
-        const response = await request.post('/api/v1/tenants')
+        await request.post(`/api/v1/tenants/${TenantID}/key`)
             .send(jsonPayload)
             .set('Authorization', tokenAdmin)
-            .set('Accept', /application\/json/);
-        expect(response.statusCode).toBe(400);
+            .expect(200);
     });
+
+    test('get tenant key', async () => {
+
+        const { body } = await request.get(`/api/v1/tenants/${TenantID}/key`)
+            .set('Authorization', tokenAdmin);
+        expect(body.key).toEqual(tenantKey);
+    });
+
+    test('delete tenant key', async () => {
+
+        await request.delete(`/api/v1/tenants/${TenantID}/key`)
+            .set('Authorization', tokenAdmin)
+            .expect(200);
+
+        const { body } = await request.get(`/api/v1/tenants/${TenantID}/key`)
+            .set('Authorization', tokenAdmin);
+        expect(body.key).toEqual(null);
+    });
+
+    // test('create tenant fails for wrong or missing request body', async () => {
+    //     const jsonPayload = {
+    //     };
+    //     const response = await request.post('/api/v1/tenants')
+    //         .send(jsonPayload)
+    //         .set('Authorization', tokenAdmin)
+    //         .set('Accept', /application\/json/);
+    //     expect(response.statusCode).toBe(400);
+    // });
 
     test('get all tenants is successful', async () => {
         const response = await request.get('/api/v1/tenants')

@@ -3,24 +3,22 @@ const mongoose = require('mongoose');
 const Mockgoose = require('mockgoose').Mockgoose;
 
 const mockgoose = new Mockgoose(mongoose);
-const request = require('supertest')('http://localhost:3099');
+const request = require('supertest')('http://127.0.0.1:3099');
 const CONSTANTS = require('./../src/constants');
 const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../src/access-control/permissions');
 
 let conf = null;
+
 // Token will be set via Login and is valid 3h
 let tokenAdmin = null;
 describe('routes', () => {
     let app = null;
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-        this.timeout(120000);
-
         process.env.IAM_AUTH_TYPE = 'basic';
-
-        process.env.IAM_BASEURL = 'http://localhost';
+        process.env.IAM_BASEURL = 'http://127.0.0.1';
         conf = require('./../src/conf/index');
-        const App = require('../src/app');
+        const App = require('../src/app'); 
         app = new App();
         await mockgoose.prepareStorage();
         await app.setup(mongoose);
@@ -44,10 +42,12 @@ describe('routes', () => {
     });
 
     afterAll(() => {
-        app.stop();
+        app.stop(); 
     });
-
+    
     describe('General Routes', () => {
+
+        let tempLoginToken = '';
 
         test('login successful', async () => {
             const jsonPayload = {
@@ -58,8 +58,8 @@ describe('routes', () => {
                 .send(jsonPayload)
                 .set('Accept', /application\/json/)
                 .expect(200);
-            tokenAdmin = `Bearer ${response.body.token}`;
-
+            tempLoginToken = `Bearer ${response.body.token}`;
+            
         });
 
         test('login fails for wrong username', async () => {
@@ -72,7 +72,7 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(401);
             expect(response.body.message).toBe(CONSTANTS.ERROR_CODES.USER_NOT_FOUND);
-
+    
         });
 
         test('login fails with wrong password', async () => {
@@ -85,19 +85,12 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(401);
             expect(response.body.message).toBe(CONSTANTS.ERROR_CODES.PASSWORD_INCORRECT);
-
-        });
-
-        test('logout is successful', async () => {
-            await request.post('/logout')
-                .set('Accept', /application\/json/)
-                .expect(200);
-
+    
         });
 
         test('get redirect for error call', async () => {
             await request.get('/')
-                .set('Accept', /\*\/*/)
+                .set('Accept', 'text/html')
                 .expect(200);
         });
 
@@ -106,8 +99,51 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(200);
             // expect(response.body).toBe(0);
-
+    
         });
+
+        test('logout is successful', async () => {
+
+            const testUserData = {
+                'username': 'logout@basaas.com',
+                'firstname': 'blubb',
+                'lastname': 'blubb',
+                'status': 'ACTIVE',
+                'password': 'blubb',
+                'role': CONSTANTS.ROLES.USER,
+            };
+
+            await request.post('/api/v1/users')
+                .send(testUserData)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            const response = await request.post('/login')
+                .send({
+                    username: testUserData.username,
+                    password: testUserData.password,
+                })
+                .set('Accept', /application\/json/)
+                .expect(200);
+            tempLoginToken = `Bearer ${response.body.token}`;
+
+            await request.get('/api/v1/users/me')
+                .set('Authorization', tempLoginToken)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            await request.post('/logout')
+                .set('Accept', /application\/json/)
+                .set('Authorization', tempLoginToken)
+                .expect(200);
+
+            await request.get('/api/v1/users/me')
+                .set('Authorization', tempLoginToken)
+                .set('Accept', /application\/json/)
+                .expect(401);
+        });
+
     });
 
     describe('Integration between all Routes', () => {
@@ -717,7 +753,7 @@ describe('routes', () => {
                 .expect(200);
 
             /* Admin deletes the token */
-            const tokenResp = await request.get(`/api/v1/tokens?tokenId=${portTokenResponse.body.token}`)
+            const tokenResp = await request.get(`/api/v1/tokens?token=${encodeURIComponent(portTokenResponse.body.token)}`)
                 .set('Authorization', tokenAdmin)
                 .set('Accept', /application\/json/)
                 .expect(200);

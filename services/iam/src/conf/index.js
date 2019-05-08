@@ -36,6 +36,8 @@ const config = {
         ] : [
 
         ]),
+
+        keystoreFile: optional('IAM_OIDC_KEYSTORE_PATH') || path.join(__dirname, '../../', 'keystore/keystore.json'),
     },
     accounts: {
         admin: {
@@ -88,6 +90,7 @@ const config = {
                 'role',
                 'memberships',
                 'permissions',
+                'currentContext',
                 'confirmed',
             ],
         },
@@ -99,13 +102,16 @@ const config = {
             pkce: true,
             clientCredentials: true,
             backchannelLogout: true,
-            claimsParameter: true,
             encryption: true,
             frontchannelLogout: true,
             introspection: true,
             request: true,
             revocation: true,
-            sessionManagement: true,
+            sessionManagement: {
+                // thirdPartyCheckUrl: 'https://mindmup.github.io/3rdpartycookiecheck/start.html',
+            },
+            claimsParameter: true,
+            conformIdTokenClaims: false,
             // ...{
             //     registration: true,
             //     registrationManagement: { rotateRegistrationAccessToken: true },
@@ -200,8 +206,6 @@ const config = {
         },
     },
 };
-
-// Accept self signed certificates. Use with caution!
 
 if (config.general.useHttps) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';

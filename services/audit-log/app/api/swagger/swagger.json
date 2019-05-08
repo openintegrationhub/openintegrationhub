@@ -1,0 +1,373 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is the API for the Open Integration Hub Microservice \"Audit Log\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "version": "0.0.1",
+    "title": "Audit Log",
+    "termsOfService": "http://openintegrationhub.de/terms/",
+    "contact": {
+      "email": "hschmidt@wice.de"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags": [
+    {
+      "name": "logs",
+      "description": "Retrieve audit logs",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://openintegrationhub.de"
+      }
+    }
+  ],
+  "paths": {
+    "/logs": {
+      "get": {
+        "x-swagger-router-controller": "logs",
+        "security": [
+          {
+            "Bearer": [
+
+            ]
+          }
+        ],
+        "tags": [
+          "logs"
+        ],
+        "summary": "Retrieve all logs",
+        "description": "This will only return Logs that pertain to the current user's tenant.",
+        "operationId": "getLogs",
+        "parameters": [
+          {
+          "name": "page[size]",
+          "in": "query",
+          "description": "Amount of logs per page returned. Default is 10.",
+          "required": false,
+          "schema": {
+            "type": "integer"
+            }
+          },
+          {
+          "name": "page[number]",
+          "in": "query",
+          "description": "Number of the page to be returned. Default is 1.",
+          "required": false,
+          "schema": {
+            "type": "integer"
+            }
+          },
+          {
+          "name": "filter[tenant]",
+          "in": "query",
+          "description": "Filter by tenant.",
+          "required": false,
+          "schema": {
+            "type": "string"
+            }
+          },
+          {
+          "name": "filter[service]",
+          "in": "query",
+          "description": "Filter by service.",
+          "required": false,
+          "schema": {
+            "type": "string"
+            }
+          },
+          {
+          "name": "filter[nameSpace]",
+          "in": "query",
+          "description": "Filter by namespace.",
+          "required": false,
+          "schema": {
+            "type": "string"
+            }
+          },
+          {
+          "name": "search",
+          "in": "query",
+          "description": "Search logs by a word or a phrase contained in the log details or action (case-insensitive). Behavior is similar to operator LIKE in SQL but case insensitive.",
+          "required": false,
+          "schema": {
+            "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of logs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Log" }
+                    },
+                    "meta": { "$ref": "#/components/schemas/Meta" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing authorization header. Login via the IAM to receive a token."
+          },
+          "404": {
+            "description": "No logs associated with the current tenant could be found in the repository."
+          }
+        }
+      },
+      "post": {
+        "x-swagger-router-controller": "log",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "logs"
+        ],
+        "summary": "Post a log entry",
+        "description": "Optional endpoint to add a log entry via post instead as message",
+        "operationId": "addLog",
+        "responses": {
+          "201": {
+            "description": "The newly created Log.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Log"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid message format. Message must be in the provided format."
+          },
+          "401": {
+            "description": "Missing authorization header. Login via the IAM to receive a token."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Log"
+              }
+            }
+          },
+          "description": "A Log object to be added to the repository.",
+          "required": true
+        }
+      }
+    },
+    "/healthcheck": {
+      "get": {
+        "x-swagger-router-controller": "healthcheck",
+        "security": [],
+        "tags": [
+          "healthcheck"
+        ],
+        "summary": "Performs a healthcheck",
+        "description": "This will return 200 and a JSON object with relevant status information when the service is running and healthy.",
+        "responses": {
+          "200": {
+            "description": "An object detailing the system and component status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "pass"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "MongoDB": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "example": "pass"
+                            }
+                          }
+                        },
+                        "queue": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "example": "pass"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "At least one component is unhealthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "fail"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "MongoDB": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "example": "fail"
+                            }
+                          }
+                        },
+                        "queue": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "example": "pass"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about the Audit-Log",
+    "url": "https://github.com/openintegrationhub"
+  },
+  "servers": [
+    {
+      "url": "http://auditlog.openintegrationhub.com/"
+    },
+    {
+      "url": "http://localhost:3007/"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Enter the bearer token received from the IAM"
+      }
+    },
+    "schemas": {
+      "Log": {
+        "allOf": [
+          {
+            "type": "object",
+            "required": [
+              "service",
+              "timeStamp",
+              "nameSpace",
+              "payload"
+            ],
+            "properties": {
+              "service": {
+                "type": "string",
+                "description": "Name of the service that spawned the log",
+                "example": "MyService"
+              },
+              "timeStamp": {
+                "type": "string",
+                "example": "1234567"
+              },
+              "nameSpace": {
+                "type": "string",
+                "description": "The kubernetes namespace that the spawning service is in",
+                "example": "dev-oih-ns"
+              },
+              "payload": {
+                "type": "object",
+                "properties": {
+                  "tenant": {
+                    "type": "string",
+                    "description": "The tenant of the user or resource involved in this log, if applicable",
+                    "example": "12sfeasd978"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "The source of the cause of this log, such as a user of service",
+                    "example": "ExampleUser"
+                  },
+                  "object": {
+                    "type": "string",
+                    "description": "The general type or class of object that was affected",
+                    "example": "flow"
+                  },
+                  "action": {
+                    "type": "string",
+                    "description": "The type of action that was taken",
+                    "example": "createFlow"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "description": "The unique id of the object that was affected, if applicable",
+                    "example": "ExampleFlow"
+                  },
+                  "details": {
+                    "type": "string",
+                    "description": "A human-readable detailed description",
+                    "example": "A flow with the id ExampleFlow was created"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page (1-based numbering)",
+            "example": 1
+          },
+          "perPage": {
+            "type": "integer",
+            "description": "Number of objects per page",
+            "example": 10
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of objects",
+            "example": 1
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 1
+          }
+        }
+      }
+    }
+  }
+}

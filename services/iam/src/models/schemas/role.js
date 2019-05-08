@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../../access-control/permissions');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const RoleSchema = new Schema({
     name: {
@@ -26,6 +26,7 @@ const RoleSchema = new Schema({
     tenant: {
         type: Schema.ObjectId, ref: 'tenant',
     },
+    scope: String,
 }, {
     timestamps: true,
 });

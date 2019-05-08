@@ -6,68 +6,14 @@
   "author": "Basaas GmbH",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node index.js",
+    "test": "echo \"noop\"",
     "build": "echo \"No Build defined\"",
-    "test": "jest",
-    "watch": "nodemon src/index.js",
-    "coverage": "yarn test --coverage",
     "build:docker": "docker build -t openintegrationhub/secret-service:${VERSION} -f Dockerfile ."
   },
   "dependencies": {
-    "@basaas/node-logger": "1.1.2",
-    "@openintegrationhub/iam-utils": "1.2.0",
-    "base64url": "3.0.1",
-    "dotenv": "6.2.0",
-    "express": "4.16.4",
-    "jsonwebtoken": "8.4.0",
-    "lru-cache": "5.1.1",
-    "moment": "2.24.0",
-    "mongoose": "5.4.9",
-    "morgan": "1.9.1",
-    "qs": "6.6.0",
-    "request": "2.88.0",
-    "request-promise": "4.2.2"
-  },
-  "devDependencies": {
-    "eslint": "5.13.0",
-    "eslint-config-airbnb-base": "13.1.0",
-    "eslint-plugin-import": "2.16.0",
-    "eslint-plugin-jest": "22.2.2",
-    "get-port": "4.1.0",
-    "jest": "24.0.0",
-    "mongodb": "3.1.13",
-    "mongodb-memory-server": "3.0.0",
-    "nock": "10.0.6",
-    "nodemon": "1.18.9",
-    "supertest": "3.4.2"
-  },
-  "jest": {
-    "globalSetup": "./src/test/setup.js",
-    "globalTeardown": "./src/test/teardown.js",
-    "testEnvironment": "./src/test/mongo-environment.js",
-    "setupFilesAfterEnv": [
-      "./src/test/jest.setup.js"
-    ],
-    "silent": false,
-    "verbose": true
-  },
-  "nodemonConfig": {
-    "restartable": "rs",
-    "ignore": [
-      ".git",
-      "node_modules/**/node_modules"
-    ],
-    "verbose": true,
-    "execMap": {
-      "js": "node --harmony"
-    },
-    "events": {
-      "restart": ""
-    },
-    "watch": [
-      "src/",
-      "doc/"
-    ],
-    "ext": "js json yaml"
+    "@basaas/node-logger": "1.1.5",
+    "@openintegrationhub/secret-service": "1.1.0",
+    "dotenv": "7.0.0"
   }
 }

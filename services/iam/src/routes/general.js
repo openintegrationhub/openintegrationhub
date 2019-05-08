@@ -16,15 +16,17 @@ const logger = Logger.getLogger(`${CONF.general.loggingNameSpace}/general`, {
     level: 'debug',
 });
 
-router.get('/', (req, res) => {
-    
-    res
-        .send(
+router.get('/', (req, res, next) => {
+    try {
+        res.send(
             pug.renderFile(
                 path.join(__dirname, '../views/home.pug'), {
                 },
             ),
         );
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get('/.well-known/jwks.json', async (req, res) => {
@@ -55,9 +57,12 @@ router.post('/login', authMiddleware.authenticate, authMiddleware.accountIsEnabl
 router.get('/context', authMiddleware.validateAuthentication, async (req, res, next) => {
 
     try {
-        const { memberships, currentContext } = await AccountDAO.findOne({ _id: req.user.userid });
+        const { memberships } = await AccountDAO.findOne({ _id: req.user.userid });
 
-        res.status(200).send({ memberships, currentContext });
+        res.status(200).send({
+            memberships,
+            currentContext: req.user.currentContext,
+        });
 
     } catch (err) {
         logger.error(err);
@@ -71,12 +76,20 @@ router.post('/context', authMiddleware.validateAuthentication,
 
         const { tenant } = req.body;
 
+        if (!tenant) {
+            return next({ status: 400, message: 'Missing tenant in body' });
+        }
+
         try {
 
             if (await AccountDAO.userHasContext({ userId: req.user.userid, tenantId: tenant })) {
 
                 const { currentContext } = await AccountDAO.setCurrentContext({ userId: req.user.userid, tenantId: tenant });
-                
+
+                // const jwtpayload = jwtUtils.getJwtPayload(await AccountDAO.findOne({ _id: req.user.userid }));
+                //
+                // const token = await jwtUtils.basic.sign(jwtpayload);
+                // req.headers.authorization = `Bearer ${token}`;
                 res.status(200).send({ currentContext });
 
             } else {
@@ -90,10 +103,19 @@ router.post('/context', authMiddleware.validateAuthentication,
 
     });
 
-router.post('/logout', (req, res) => {
+router.post('/logout', authMiddleware.validateAuthentication, async (req, res) => {
+
+    const accountId = req.user.userid;
+
     req.logout();
     res.clearCookie(CONF.jwt.cookieName);
     res.send({ loggedOut: true });
+
+    try {
+        await TokenUtils.deleteSessionToken({ accountId });
+    } catch (e) {
+        logger.error('Failed to delete session token');
+    }
 });
 
 module.exports = router;

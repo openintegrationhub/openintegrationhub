@@ -24,8 +24,8 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
 
     const query = {};
 
-    if (req.query.tokenId) {
-        query.tokenId = req.query.tokenId;
+    if (req.query.token) {
+        query.token = decodeURIComponent(req.query.token);
     }
 
     try {
@@ -87,7 +87,14 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
  * Get all Tokens
  */
 router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspect']]), async (req, res, next) => {
+
     try {
+        log.debug('token.introspect', {
+            data: {
+                token: req.body.token,
+                'x-request-id': req.headers['x-request-id'],
+            },
+        });
         const accountData = await TokenUtils.getAccountData(req.body.token);
 
         if (accountData) {
@@ -98,6 +105,13 @@ router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspec
             });
             return res.send(accountData);
         } else {
+            log.warn('token.introspect', {
+                data: {
+                    token: req.body.token,
+                    'x-request-id': req.headers['x-request-id'],
+                    status: 404,
+                },
+            });
             return res.sendStatus(404);
         }
 
@@ -113,16 +127,16 @@ router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspec
 router.get('/refresh', async (req, res, next) => {
 
     try {
-        const newToken = await TokenUtils.fetchAndProlongToken(req.user.tokenId);
+        const newToken = await TokenUtils.fetchAndProlongToken(req.user.token);
 
         if (newToken) {
             auditLog.info('token.refresh', {
-                newToken: newToken.tokenId.replace(/.(?=.{4,}$)/g, '*'),
+                newToken: newToken.token.replace(/.(?=.{4,}$)/g, '*'),
                 accountId: req.user.userid,
                 'x-request-id': req.headers['x-request-id'],
             });
-            req.headers.authorization = `Bearer ${newToken.tokenId}`;
-            return res.send({ token: newToken.tokenId });
+            req.headers.authorization = `Bearer ${newToken.token}`;
+            return res.send({ token: newToken.token });
         } else {
             return next({ status: 401, message: CONSTANTS.ERROR_CODES.SESSION_EXPIRED });
         }

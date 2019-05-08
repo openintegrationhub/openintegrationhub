@@ -6,11 +6,17 @@ const PERMISSIONS = {
     restricted: {
 
         'all': 'all',
-
         'iam.tenant.create': 'iam.tenant.create',
         'iam.tenant.read': 'iam.tenant.read',
         'iam.tenant.update': 'iam.tenant.update',
         'iam.tenant.delete': 'iam.tenant.delete',
+
+        'iam.secret.create': 'iam.secret.create',
+        'iam.secret.read': 'iam.secret.read',
+
+        'iam.key.create': 'iam.key.create',
+        'iam.key.read': 'iam.key.read',
+        'iam.key.delete': 'iam.key.delete',
 
         'iam.account.create': 'iam.account.create',
         'iam.account.read': 'iam.account.read',

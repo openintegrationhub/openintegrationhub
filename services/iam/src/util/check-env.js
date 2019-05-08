@@ -11,7 +11,7 @@ module.exports.required = (env) => {
 
 module.exports.optional = (env, defaultValue) => {
     if (process.env[env]) { return process.env[env]; }
-    log.info(`Missing ${env}, using "${defaultValue}"`);
+    log.debug(`Missing ${env}, using "${defaultValue}"`);
 
     return defaultValue;
 };

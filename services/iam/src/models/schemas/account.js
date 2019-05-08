@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 const passportLocalMongoose = require('passport-local-mongoose');
 const CONSTANTS = require('./../../constants');
 
@@ -9,14 +9,21 @@ const validateEmail = function(email) {
 };
 
 const membershipsSchema = new Schema({
-    role: {
+    roles: [{
         type: Schema.ObjectId, ref: 'role',
+    }],
+    tenant: {
+        type: Schema.ObjectId,
+        ref: 'tenant',
     },
-    tenant: { type: Schema.ObjectId, ref: 'tenant' },
+    scope: String,
     permissions: [String],
+    active: Boolean,
 }, {
     _id: false,
 });
+
+membershipsSchema.index({ active: 1 }, { unique: true, partialFilterExpression: { active: true } });
 
 const schema = {
     username: {
@@ -27,8 +34,8 @@ const schema = {
         validate: [validateEmail, CONSTANTS.ERROR_CODES.EMAIL_NOT_VALID],
     },
     
-    firstname: { type: String, required: true, index: true },
-    lastname: { type: String, required: true, index: true },
+    firstname: { type: String, index: true },
+    lastname: { type: String, index: true },
     phone: String,
     avatar: String,
     status: {
@@ -53,7 +60,6 @@ const schema = {
         
     },
     memberships: [membershipsSchema],
-    currentContext: membershipsSchema,
     permissions: [String],
 };
 

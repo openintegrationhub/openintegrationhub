@@ -17,7 +17,9 @@ const AccountDAO = {
     findOne: (filter) => {
         const query = filter || {};
 
-        return Account.findOne(query).lean();
+        return Account.findOne(query)
+            .populate('memberships.roles')
+            .lean();
     },
 
     create: async ({ userObj }) => {
@@ -74,7 +76,7 @@ const AccountDAO = {
     },
 
     assignUserToTenantWithRole: async ({
-        userId, tenantId, role, permissions, 
+        userId, tenantId, roles, permissions,
     }) => {
         const userAccount = await Account.findOne({
             _id: userId,
@@ -82,11 +84,13 @@ const AccountDAO = {
         userAccount.memberships = userAccount.memberships.filter(elem => elem.tenant.toString() !== tenantId);
         const newMembership = {
             tenant: tenantId,
-            role,
+            roles,
             permissions,
         };
+        if (!userAccount.memberships.find(elem => elem.active === true)) {
+            newMembership.active = true;
+        }
         userAccount.memberships.push(newMembership);
-        userAccount.currentContext = userAccount.currentContext || newMembership;
         await userAccount.save();
         return userAccount.toJSON();
     },
@@ -97,9 +101,6 @@ const AccountDAO = {
             _id: userId,
         });
         userAccount.memberships = userAccount.memberships.filter(elem => elem.tenant.toString() !== tenantId);
-        if (userAccount.currentContext && userAccount.currentContext.tenant === tenantId) {
-            userAccount.currentContext = {};
-        }
         await userAccount.save();
         return userAccount.toJSON();
     },
@@ -114,7 +115,7 @@ const AccountDAO = {
     getCurrentContext: async ({ userId }) => Account.findOne({
         _id: userId,
     }, {
-        currentContext: 1,
+        'memberships.active': true,
     }).lean(),
 
     userHasContext: async ({ userId, tenantId }) => Account.findOne({
@@ -128,7 +129,14 @@ const AccountDAO = {
             _id: userId,
         });
 
-        userAccount.currentContext = userAccount.memberships.find(elem => elem.tenant.toString() === tenantId) || {};
+        userAccount.memberships.forEach((membership) => {
+            if (membership.tenant !== tenantId) {
+                delete membership.active;
+            } else {
+                membership.active = true;
+            }
+        });
+
         await userAccount.save();
         return userAccount.toJSON();
 
@@ -137,8 +145,8 @@ const AccountDAO = {
     removeTenantRoleFromAllAffectedUsers: async ({ tenant, role }) => {
 
         await Account.update({
-            memberships: { $elemMatch: { tenant, role } },
-        }, { $pull: { role: 1 } }, { multi: true });
+            memberships: { $elemMatch: { tenant } },
+        }, { $pull: { 'memberships.$.roles': role } }, { multi: true });
 
         logger.debug('deleted.membership.role', { tenant, role });
         auditLog.info('delete.membership.role', { data: { tenant, role } });

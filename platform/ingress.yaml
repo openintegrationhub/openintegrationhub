@@ -14,21 +14,39 @@ spec:
       - backend:
           serviceName: iam
           servicePort: 3099
-  - host: api.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: example-api
-          servicePort: 8080
   - host: skm.openintegrationhub.com
     http:
       paths:
       - backend:
           serviceName: secret-service
           servicePort: 3000
-  - host: icr.openintegrationhub.com
+  - host: flow-repository.openintegrationhub.com
     http:
       paths:
       - backend:
-          serviceName: integration-content-repository
+          serviceName: flow-repository
           servicePort: 3001
+  - host: auditlog.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: audit-log
+          servicePort: 3007
+  - host: metadata.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: meta-data-repository
+          servicePort: 3000
+  - host: component-repository.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: component-repository-service
+          servicePort: 1234
+  - host: webhooks.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: webhooks-service
+          servicePort: 1234

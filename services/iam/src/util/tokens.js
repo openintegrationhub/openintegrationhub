@@ -1,12 +1,17 @@
 
 const uuid = require('uuid');
+const base64Url = require('base64-url');
+const crypto = require('crypto');
 const ms = require('ms');
+const Logger = require('@basaas/node-logger');
 
 const CONF = require('./../conf');
 const CONSTANTS = require('./../constants');
 
 const AccountsDAO = require('./../dao/accounts');
 const TokensDAO = require('./../dao/tokens');
+
+const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/util-token`);
 
 module.exports = {
 
@@ -46,27 +51,28 @@ module.exports = {
                 id: existingToken._id,
                 props: module.exports._getNewExpireAt(opts.lifespan || existingToken.tokenLifeSpan),
             });
-            return existingToken.tokenId;
+            return existingToken.token;
         }
 
-        const tokenId = uuid.v4();
+        const token = base64Url.encode(crypto.randomBytes(128));
+
         await TokensDAO.create({
             ...query,
             description: accountPayload.description,
-            tokenId,
+            token,
             initiator: accountPayload.initiator,
             tokenLifeSpan: opts.lifespan || CONF.jwt.expiresIn,
             permissions: accountPayload.permissions || [],
             ...tokenExpireAt,
         });
 
-        return tokenId;
+        return token;
     },
 
     fetchAndProlongToken: async (token) => {
 
         const existingToken = await TokensDAO.findOne({
-            tokenId: token,
+            token,
         }).lean();
 
         if (existingToken) {
@@ -96,6 +102,7 @@ module.exports = {
             return null;
         }
 
+        log.debug(`fetching account data for id ${existingToken.accountId}`);
         const AccountData = await AccountsDAO.findOne({
             _id: existingToken.accountId,
         });
@@ -109,5 +116,9 @@ module.exports = {
         return AccountData;
 
     },
+
+    deleteSessionToken: async ({ accountId }) => TokensDAO.deleteSessionToken({
+        accountId,
+    }),
 
 };
