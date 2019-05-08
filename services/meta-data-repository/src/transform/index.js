@@ -46,18 +46,28 @@ function resolveRelativePath({ filePath, location, root }) {
         .replace(root, '');
 }
 
-async function processExternalSchema({ domain, schema, jsonRefsOptions }) {
-    console.log('processExternalSchema');
-    console.log(schema);
+async function processExternalSchema({
+    location,
+    domain,
+    schema,
+    jsonRefsOptions,
+}) {
     module.exports.validateSchema({
         schema,
     });
 
-    await module.exports.transformSchema({
+    console.log(location);
+    jsonRefsOptions.root = url.resolve(location, './');
+    console.log(url.resolve(location, '../'));
+    jsonRefsOptions.location = location;
+    console.log(jsonRefsOptions);
+
+    // jsonRefsOptions.root =
+    console.log(await module.exports.transformSchema({
         domain,
         schema,
         jsonRefsOptions,
-    });
+    }));
     console.log('schema processed');
 }
 
@@ -91,14 +101,13 @@ module.exports = {
                     if (res.location.match('http')
                         && !res.location.match(conf.baseUrl)
                     ) {
-                        console.log('process content');
-
                         try {
-                            await processExternalSchema({
-                                domain,
-                                schema: JSON.parse(res.text),
-                                jsonRefsOptions,
-                            });
+                            // await processExternalSchema({
+                            //     location: res.location,
+                            //     domain,
+                            //     schema: JSON.parse(res.text),
+                            //     jsonRefsOptions,
+                            // });
                         } catch (err) {
                             error = err;
                         }
