@@ -93,7 +93,7 @@ describe('User Routes', () => {
     			}
   			]
 		};    
-        const addFlow = {
+        	const addFlow = {
         	method: 'POST',
         	uri: `http://flow-repository.openintegrationhub.com/flows`,
         	json: true,
@@ -217,19 +217,14 @@ describe('User Routes', () => {
 		function callback(){
 			console.log("warte....20 sekunden");
 		}
-		setTimeout(callback, 20000);
-
-		const createdFlow = {
-
-		}; 
-        const stopFlowById = {
+		setTimeout(callback, 20000); 
+        	const stopFlowById = {
         		method: 'POST',
         		uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
         		json: true,
 				headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
-				},
-				body: createdFlow	
+				}	
 		};
 
 		const response = await request(stopFlowById);
