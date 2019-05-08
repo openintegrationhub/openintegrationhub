@@ -31,7 +31,7 @@ const config = {
         originWhitelist: originwhitelist.concat(optional('NODE_ENV') !== 'production' ? [
             // development only
             '127.0.0.1', 
-            'localhost'
+            'localhost',
         ] : [
 
         ]),
