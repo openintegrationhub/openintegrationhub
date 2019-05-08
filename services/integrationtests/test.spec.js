@@ -215,7 +215,7 @@ describe('User Routes', () => {
 
 		setTimeout(function() {
 			console.log("Callback Funktion wird aufgerufen");
-		}, 3000);
+		}, 10000);
 		
         	const stopFlowById = {
         		method: 'POST',
