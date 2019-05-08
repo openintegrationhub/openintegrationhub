@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 const node = new Schema({
   id: String,
   componentId: String,
-  function: String,
+  command: String,
   name: String,
   description: String,
   fields: {},
