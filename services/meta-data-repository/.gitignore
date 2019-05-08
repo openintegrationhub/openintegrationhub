@@ -43,6 +43,11 @@ certs/
 
 clients.json
 
+# testing
+*.zip
+*.tar.gz
+*.tgz
+
 temp/
 test-temp/
 

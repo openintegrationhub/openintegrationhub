@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const iamLib = require('@openintegrationhub/iam-utils');
+const iamLib = require('./../module/iam');
 const DAO = require('../dao');
 const conf = require('../conf');
 
@@ -19,10 +19,13 @@ async function createCollections() {
 }
 
 module.exports = class Server {
-    constructor({ port, mongoDbConnection, dao }) {
+    constructor({
+        port, mongoDbConnection, dao, iam,
+    }) {
         this.port = port || conf.port;
         this.app = express();
         this.app.disable('x-powered-by');
+        this.iam = iam || iamLib;
         this.mongoDbConnection = mongoDbConnection;
 
         // apply adapter
@@ -51,7 +54,7 @@ module.exports = class Server {
                     return next();
                 }
             }
-            iamLib.middleware(req, res, next);
+            this.iam.middleware(req, res, next);
         });
 
         // setup routes
@@ -68,7 +71,7 @@ module.exports = class Server {
         || global.__MONGO_URI__
         || conf.mongoDbConnection;
 
-        await mongoose.connect(connectionString, {
+        mongoose.connect(connectionString, {
             poolSize: 50,
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
