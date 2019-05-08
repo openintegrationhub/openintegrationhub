@@ -17,7 +17,8 @@
     "express": "4.16.4",
     "express-async-handler": "1.1.4",
     "lodash": "4.17.11",
-    "mongoose": "5.5.1"
+    "mongoose": "5.5.1",
+    "swagger-ui-express": "4.0.2"
   },
   "devDependencies": {
     "chai": "4.2.0",
