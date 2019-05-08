@@ -42,7 +42,7 @@ module.exports = {
                 [...fs.readdirSync(src)]);
                 resolve();
             } else {
-                reject(new Error('Invalid Archive Type. Use tgz or zip'));
+                reject(new Error('Invalid archive Type. Use tgz or zip'));
             }
         });
     },
@@ -87,7 +87,7 @@ module.exports = {
                     reject(err);
                 }
             } else {
-                reject(new Error('Invalid Archive Type. Use tgz or zip'));
+                reject(new Error('Invalid archive Type. Use tgz or zip'));
             }
         });
     },
