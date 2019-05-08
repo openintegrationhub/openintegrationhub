@@ -33,7 +33,7 @@ In addition to simple data synchronization, the hub and spoke model also provide
 
 ### Decision
 
-There is no explicit decision needed as the OIH supports both alternatives. The Hub and Spoke as well as the peer-to-peer model work with flows stored within the flow repository. It depends on the way the flows are model which model is applied. To implement the hub and spoke model there would be e.g. one central application independent flow which only mentions the domain but not a specific application within this domain. Depending on the tenant specific configuration, different spoked (applications) are targeted. Nevertheless, to implement the hub and spoke model several parts must be planned and developed in the near future. These missing parts e.g. include a dispatcher service and a domain specific smart data framework adapter.
+The decision is that the Open Integration Hub supports both alternatives. The Hub and Spoke as well as the peer-to-peer model work with flows stored within the flow repository. It depends on the way the flows are model which model is applied. To implement the hub and spoke model there would be e.g. one central application independent flow which only mentions the domain but not a specific application within this domain. Depending on the tenant specific configuration, different spoked (applications) are targeted. Nevertheless, to implement the hub and spoke model several parts must be planned and developed in the near future. These missing parts e.g. include a dispatcher service and a domain specific smart data framework adapter.
 
 ### Consequences
 
@@ -55,7 +55,7 @@ In the context of OIH this means that to implement a bidirectional integration b
 
 ### Decision
 
-There is no explicit decision needed as the OIH supports both alternatives. The Hub and Spoke as well as the peer-to-peer model work with flows stored within the flow repository. It depends on the way the flows are model which model is applied. To implement the peer-to-peer model it is sufficient to explicitly mention the source and target(s) instead of only using generic domain information.
+The decision is that the Open Integration Hub supports both alternatives The Hub and Spoke as well as the peer-to-peer model work with flows stored within the flow repository. It depends on the way the flows are model which model is applied. To implement the peer-to-peer model it is sufficient to explicitly mention the source and target(s) instead of only using generic domain information.
 
 ### Consequences
 
