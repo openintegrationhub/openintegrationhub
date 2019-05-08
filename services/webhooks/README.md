@@ -23,7 +23,7 @@ VERSION=latest npm run build:docker
 ```
 
 ## How to deploy
-Kubernetes descriptors for Communication Router along with the other core platform microservices can be found in the [platform](../../platform) directory.
+Kubernetes descriptors for Communication Router along with the other core platform microservices can be found in the [k8s](./k8s) directory.
 
 ## Environment variables
 
@@ -32,6 +32,6 @@ Kubernetes descriptors for Communication Router along with the other core platfo
 | --- | --- |
 | LISTEN_PORT | Port for HTTP interface. |
 | LOG_LEVEL | Log level for logger. |
-| NAMESPACE | Kubernetes namespace, where flows are stored as CRD. |
+| MONGODB_URI | MongoDB connection string. |
 | PAYLOAD_SIZE_LIMIT | Maximum request's payload size that could be handled. |
 | RABBITMQ_URI | RabbitMQ connection URI for the Resource Coordinator application. |

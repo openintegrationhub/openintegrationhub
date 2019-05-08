@@ -18,7 +18,7 @@ VERSION=latest npm run build:docker
 ```
 
 ## How to deploy
-Kubernetes descriptors for Scheduler along with the other core platform microservices can be found in the [platform](../../platform) directory.
+Kubernetes descriptors for Scheduler along with the other core platform microservices can be found in the [k8s](./k8s) directory.
 
 ## Environment variables
 
@@ -27,6 +27,6 @@ Kubernetes descriptors for Scheduler along with the other core platform microser
 | --- | --- |
 | LISTEN_PORT | Port for HTTP interface. |
 | LOG_LEVEL | Log level for logger. |
-| NAMESPACE | Kubernetes namespace, where flows are stored as CRD. |
+| MONGODB_URI | MongoDB connection string. |
 | POLLING_INTERVAL | Time interval of the scheduler's "tick". |
 | RABBITMQ_URI | RabbitMQ connection URI for the Resource Coordinator application. |
