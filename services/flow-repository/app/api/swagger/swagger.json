@@ -738,19 +738,15 @@
                   "type": "string"
                 },
                 "componentId": {
-                  "type": "string",
-                  "description": "The component repository id of the component (e.g. adapter/transformer) to be used in this step.",
-                  "example": "5ca5c44c187c040010a9bb8b"
+                  "type": "string"
                 },
-                "function": {
+                "command": {
                   "type": "string",
-                  "description": "The function that the component will be executing.",
-                  "example": "getPersonsPolling"
+                  "description": "The command or component that is executing at this node",
+                  "example": "elasticio/timer:timer"
                 },
                 "name": {
-                  "type": "string",
-                  "description": "Name of this node, which will be referenced by edges",
-                  "example": "step_1"
+                  "type": "string"
                 },
                 "description": {
                   "type": "string"
@@ -791,13 +787,11 @@
                 },
                 "source": {
                   "type": "string",
-                  "description": "The source node of this edge, referring to the id field of a node",
-                  "example": "step_1"
+                  "description": "The source node of this edge, referring to the id field of a node"
                 },
                 "target": {
                   "type": "string",
-                  "description": "The target node of this edge, referring to the id field of a node",
-                  "example": "step_2"
+                  "description": "The target node of this edge, referring to the id field of a node"
                 }
               }
             }

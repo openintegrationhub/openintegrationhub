@@ -107,30 +107,6 @@ describe('Flow Operations', () => {
           type: 'ordinary',
           name: 'WiceToSnazzy',
           description: 'A description',
-          graph: {
-            nodes: [
-              {
-                id: 'NodeOne',
-                componentId: '123456',
-                function: 'getPersonsPolling',
-                fields: {
-                  username: 'TestName',
-                  password: 'TestPass',
-                },
-              },
-              {
-                id: 'NodeTwo',
-                componentId: '654321',
-                function: 'transformTestToOih',
-              },
-            ],
-            edges: [
-              {
-                source: 'NodeOne',
-                target: 'NodeTwo',
-              },
-            ],
-          },
         });
       expect(res.status).toEqual(201);
       expect(res.text).not.toHaveLength(0);
@@ -163,13 +139,6 @@ describe('Flow Operations', () => {
     expect(j.data.updatedAt).not.toBeNull();
     expect(j.data.graph).toHaveProperty('nodes');
     expect(j.data.graph).toHaveProperty('edges');
-    expect(j.data.graph.nodes[0].id).toEqual('NodeOne');
-    expect(j.data.graph.nodes[0].componentId).toEqual('123456');
-    expect(j.data.graph.nodes[0].function).toEqual('getPersonsPolling');
-    expect(j.data.graph.nodes[0].fields.username).toEqual('TestName');
-    expect(j.data.graph.nodes[0].fields.password).toEqual('TestPass');
-    expect(j.data.graph.edges[0].source).toEqual('NodeOne');
-    expect(j.data.graph.edges[0].target).toEqual('NodeTwo');
     expect(j.data.owners[0].id).toEqual('TestAdmin');
     expect(j.data.owners[0].type).toEqual('user');
   });
