@@ -1,0 +1,602 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "OIH MetaData Service REST API",
+    "description" : "REST API for the OIH MetaData Service.",
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version" : "0.0.2"
+  },
+  "servers" : [ {
+    "url" : "/"
+  } ],
+  "tags" : [ {
+    "name" : "Domains",
+    "description" : "Domain management"
+  }, {
+    "name" : "Config",
+    "description" : "Configuration"
+  } ],
+  "paths" : {
+    "/config" : {
+      "get" : {
+        "tags" : [ "Config" ],
+        "summary" : "Retrieve the configuration",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/domains" : {
+      "get" : {
+        "tags" : [ "Domains" ],
+        "summary" : "Retrieve the available domains for the authenticated user",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200_1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Domains" ],
+        "summary" : "Create a new Domain.",
+        "description" : "Creates a new Domain for the authenticated user.",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/body"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200_2"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/domains/{domainId}" : {
+      "get" : {
+        "tags" : [ "Domains" ],
+        "summary" : "Retrieve a domain with given ID.",
+        "description" : "Provides details of a domain with a given ID.",
+        "parameters" : [ {
+          "name" : "domainId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200_2"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Domains" ],
+        "summary" : "Update a domain by ID.",
+        "description" : "Updates details of a domain with a given ID.",
+        "parameters" : [ {
+          "name" : "domainId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/body_1"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200_2"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/domains/{domainId}/import" : {
+      "post" : {
+        "tags" : [ "Domains" ],
+        "summary" : "Import models.",
+        "description" : "This endpoint is used to upload multiple new models for a given domain.",
+        "parameters" : [ {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "ID of the domain to import models into",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              },
+              "example" : {
+                "address" : {
+                  "type" : "object",
+                  "required" : [ "street_address", "city", "state" ],
+                  "properties" : {
+                    "street_address" : {
+                      "type" : "string"
+                    },
+                    "city" : {
+                      "type" : "string"
+                    },
+                    "state" : {
+                      "type" : "string"
+                    }
+                  }
+                },
+                "person" : {
+                  "type" : "object",
+                  "required" : [ "first_name", "last_name" ],
+                  "properties" : {
+                    "first_name" : {
+                      "type" : "string"
+                    },
+                    "last_name" : {
+                      "type" : "string"
+                    }
+                  }
+                }
+              }
+            },
+            "application/xml" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "202" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/domains/{domainId}/schemas" : {
+      "get" : {
+        "tags" : [ "Domains" ],
+        "summary" : "Retrieve the available models for the authenticated user.",
+        "parameters" : [ {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "ID of the domain to retrieve models of",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200_3"
+                },
+                "example" : {
+                  "definitions" : {
+                    "address" : {
+                      "type" : "object",
+                      "$id" : "#address",
+                      "required" : [ "street_address", "city", "state" ],
+                      "properties" : {
+                        "street_address" : {
+                          "type" : "string"
+                        },
+                        "city" : {
+                          "type" : "string"
+                        },
+                        "state" : {
+                          "type" : "string"
+                        }
+                      }
+                    },
+                    "person" : {
+                      "type" : "object",
+                      "$id" : "#person",
+                      "required" : [ "first_name", "last_name" ],
+                      "properties" : {
+                        "first_name" : {
+                          "type" : "string"
+                        },
+                        "last_name" : {
+                          "type" : "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/domains/{domainId}/schemas/{uri}" : {
+      "get" : {
+        "tags" : [ "Domains" ],
+        "summary" : "Retrieve a schema by URI.",
+        "description" : "Provides details of a schema with a given URI.",
+        "parameters" : [ {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "ID of the domain to retrieve schema of",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "uri",
+          "in" : "path",
+          "description" : "URI of the schema",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "#address"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Domains" ],
+        "summary" : "Update a schema with given URI.",
+        "description" : "Updates a schema with given URI.",
+        "parameters" : [ {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "ID of the domain to update schema for",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "uri",
+          "in" : "path",
+          "description" : "URI of the schema to update",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              },
+              "example" : {
+                "address" : {
+                  "type" : "object",
+                  "required" : [ "street_address", "city", "state" ],
+                  "properties" : {
+                    "street_address" : {
+                      "type" : "string"
+                    },
+                    "city" : {
+                      "type" : "string"
+                    },
+                    "state" : {
+                      "type" : "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                },
+                "example" : {
+                  "address" : {
+                    "type" : "object",
+                    "$id" : "#address",
+                    "required" : [ "street_address", "city", "state" ],
+                    "properties" : {
+                      "street_address" : {
+                        "type" : "string"
+                      },
+                      "city" : {
+                        "type" : "string"
+                      },
+                      "state" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Domains" ],
+        "summary" : "Delete a schema by uri",
+        "parameters" : [ {
+          "name" : "domainId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "uri",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The model was successfully deleted"
+          },
+          "404" : {
+            "description" : "Model with given ID not found"
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Domain" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/MutableDomain"
+        }, {
+          "required" : [ "createdAt", "id" ],
+          "type" : "object",
+          "properties" : {
+            "id" : {
+              "type" : "string"
+            },
+            "createdAt" : {
+              "type" : "string",
+              "description" : "Client creation time",
+              "format" : "date-time"
+            },
+            "updatedAt" : {
+              "type" : "string",
+              "description" : "Client update time",
+              "format" : "date-time"
+            }
+          }
+        } ]
+      },
+      "MutableDomain" : {
+        "required" : [ "name" ],
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "public" : {
+            "type" : "boolean"
+          },
+          "owners" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Owner"
+            }
+          }
+        }
+      },
+      "SchemaBase" : {
+        "required" : [ "name", "payload", "uri" ],
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "uri" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "object",
+            "example" : {
+              "address" : {
+                "type" : "object",
+                "$id" : "#address",
+                "required" : [ "street_address", "city", "state" ],
+                "properties" : {
+                  "street_address" : {
+                    "type" : "string"
+                  },
+                  "city" : {
+                    "type" : "string"
+                  },
+                  "state" : {
+                    "type" : "string"
+                  }
+                }
+              },
+              "person" : {
+                "type" : "object",
+                "$id" : "#person",
+                "required" : [ "first_name", "last_name" ],
+                "properties" : {
+                  "first_name" : {
+                    "type" : "string"
+                  },
+                  "last_name" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MutableSchema" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/SchemaBase"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "owners" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/Owner"
+              }
+            }
+          }
+        } ]
+      },
+      "Schema" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/MutableSchema"
+        }, {
+          "required" : [ "createdAt", "id" ],
+          "type" : "object",
+          "properties" : {
+            "id" : {
+              "type" : "string"
+            },
+            "createdAt" : {
+              "type" : "string",
+              "description" : "Client creation time",
+              "format" : "date-time"
+            },
+            "updatedAt" : {
+              "type" : "string",
+              "description" : "Client update time",
+              "format" : "date-time"
+            }
+          }
+        } ]
+      },
+      "Owner" : {
+        "required" : [ "entityId", "entityType" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "Type of Owner entity, e.g. GROUP, TENANT, USER, etc."
+          }
+        }
+      },
+      "Definitons" : {
+        "type" : "object"
+      },
+      "Meta" : {
+        "type" : "object",
+        "properties" : {
+          "page" : {
+            "type" : "integer"
+          },
+          "perPage" : {
+            "type" : "integer"
+          },
+          "total" : {
+            "type" : "integer"
+          },
+          "totalPages" : {
+            "type" : "integer"
+          }
+        }
+      }
+    }
+  }
+}
