@@ -217,7 +217,7 @@ describe('User Routes', () => {
 		function callback(){
 			console.log("warte....20 sekunden");
 		}
-		setTimeout(callback, 20000); 
+		setTimeout(callback, 10000); 
         	const stopFlowById = {
         		method: 'POST',
         		uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
