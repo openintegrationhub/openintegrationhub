@@ -256,6 +256,9 @@
           },
           "404": {
             "description": "No Flow with this id was found."
+          },
+          "409": {
+            "description": "Flow is currently not inactive. Only stopped, inactive flows may be deleted."
           }
         }
       },
@@ -303,6 +306,9 @@
           },
           "404": {
             "description": "Flow not found"
+          },
+          "409": {
+            "description": "Flow is currently not inactive. Only stopped, inactive flows may be updated."
           }
         },
         "requestBody": {
@@ -381,6 +387,9 @@
           },
           "404": {
             "description": "No Flow with this id was found."
+          },
+          "409": {
+            "description": "Flow is currently not inactive. Only inactive flows can be started."
           }
         }
       }
@@ -448,6 +457,9 @@
           },
           "404": {
             "description": "No Flow with this id was found."
+          },
+          "409": {
+            "description": "Flow is currently not active. Only active flows can be stopped."
           }
         }
       }
@@ -634,7 +646,6 @@
         "required": [
           "name",
           "graph",
-          "status",
           "type"
         ],
         "properties": {
@@ -644,7 +655,7 @@
           },
           "description": {
             "type": "string",
-            "example": "My Flow"
+            "example": "This flow takes actions at regular invervals based on a set timer."
           },
           "graph": {
             "$ref": "#/components/schemas/FlowGraph"
@@ -656,6 +667,11 @@
               "ordinary",
               "realtime"
             ]
+          },
+          "cron": {
+            "type": "string",
+            "description": "A cron string describing the interval at which this flow is run. If unset, the flow uses webhooks instead",
+            "example": "* /2 * * * *"
           },
           "owners":{
             "type": "array",
@@ -674,7 +690,6 @@
             "type": "object",
             "required": [
               "id",
-              "status",
               "createdAt",
               "updatedAt"
             ],
@@ -684,20 +699,22 @@
               },
               "status": {
                 "type": "string",
-                "description": "Flow status",
+                "description": "Flow status, set automatically in response to start/stop commands",
                 "enum": [
                   "active",
-                  "inactive"
+                  "inactive",
+                  "starting",
+                  "stopping"
                 ]
               },
               "createdAt": {
                 "type": "string",
-                "description": "Flow creation time",
+                "description": "Timestamp of flow creation",
                 "format": "date-time"
               },
               "updatedAt": {
                 "type": "string",
-                "description": "Flow update time",
+                "description": "Timestamp of most recent flow update",
                 "format": "date-time"
               }
             }
@@ -709,11 +726,11 @@
         "properties": {
           "nodes": {
             "type": "array",
+            "description": "An array of all components involved in this flow",
             "items": {
               "type": "object",
               "required": [
                 "id",
-                "componentId",
                 "command"
               ],
               "properties": {
@@ -721,29 +738,39 @@
                   "type": "string"
                 },
                 "componentId": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The component repository id of the component (e.g. adapter/transformer) to be used in this step.",
+                  "example": "5ca5c44c187c040010a9bb8b"
                 },
-                "command": {
-                  "type": "string"
+                "function": {
+                  "type": "string",
+                  "description": "The function that the component will be executing.",
+                  "example": "getPersonsPolling"
                 },
                 "name": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Name of this node, which will be referenced by edges",
+                  "example": "step_1"
                 },
                 "description": {
                   "type": "string"
                 },
                 "fields": {
-                  "type": "object"
+                  "type": "object",
+                  "description": "Optional arguments passed on to the component",
+                  "example": {
+                    "interval":"minute"
+                  }
                 }
               }
             }
           },
           "edges": {
             "type": "array",
+            "description": "An array of edges linking nodes together, determining the order in which nodes are activated",
             "items": {
               "type": "object",
               "required": [
-                "id",
                 "source",
                 "target"
               ],
@@ -763,10 +790,14 @@
                   }
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The source node of this edge, referring to the id field of a node",
+                  "example": "step_1"
                 },
                 "target": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The target node of this edge, referring to the id field of a node",
+                  "example": "step_2"
                 }
               }
             }
@@ -807,7 +838,7 @@
 			    },
 			    "type": {
 				    "type": "string",
-				    "description": "Type to discriminate owner's type"
+				    "description": "Type to discriminate between user or tenant"
 			    }
 		    }
 	    }

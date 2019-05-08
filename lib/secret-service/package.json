@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/secret-service",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "ExpressJS based service to manage credentials and secrets.",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -10,10 +10,11 @@
     "coverage": "yarn test --coverage"
   },
   "dependencies": {
-    "@openintegrationhub/iam-utils": "1.3.3",
+    "@openintegrationhub/iam-utils": "1.3.4",
     "@basaas/node-logger": "1.1.5",
+    "assert": "1.4.1",
     "base64url": "3.0.1",
-    "dot-prop": "^4.2.0",
+    "dot-prop": "4.2.0",
     "dotenv": "7.0.0",
     "express": "4.16.4",
     "jsonwebtoken": "8.5.1",
@@ -26,12 +27,12 @@
     "request-promise": "4.2.4"
   },
   "devDependencies": {
-    "eslint": "5.15.3",
+    "eslint": "5.16.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.16.0",
     "eslint-plugin-jest": "22.4.1",
     "get-port": "4.2.0",
-    "jest": "24.5.0",
+    "jest": "24.7.1",
     "mongodb": "3.2.2",
     "mongodb-memory-server": "4.2.1",
     "nock": "10.0.6",
