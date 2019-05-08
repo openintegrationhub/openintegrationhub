@@ -7,6 +7,10 @@ const { SchemaDAO, DomainDAO } = require('./');
 let port;
 let server;
 
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 describe('Transaction', () => {
     beforeAll(async () => {
         port = await getPort();
@@ -16,13 +20,17 @@ describe('Transaction', () => {
         });
         iamMock.setup();
         await server.start();
+
+        // wait until mongodb fully initialized
+        await timeout(1000);
+        //
     });
 
     afterAll(async () => {
         await server.stop();
     });
 
-    test('just a test', async () => {
+    test('just a transaction test', async () => {
         // create dummy domain first
         const domain = await DomainDAO.create({
             name: 'foo',
