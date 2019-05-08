@@ -99,8 +99,8 @@ describe('User Routes', () => {
         	json: true,
 			headers: {
                 	"Authorization" : " Bearer " + tokenAdmin, 
-            },
-        	body: createdFlow		
+            		},
+        		body: createdFlow		
 		};
 		const response = await request(addFlow);
 	     
@@ -135,13 +135,12 @@ describe('User Routes', () => {
 		};
 
 		flowName = await getFlowName(response);
-		flowID = await getFlowId(response);
 		flowStatus = await getFlowStatus(response); 
 		
-		console.log(tokenAdmin); //works
-		console.log(flowName);
-		console.log(flowID); //work
-		console.log(flowStatus); // keiner? / Null
+		console.log("token" & tokenAdmin); //works
+		console.log("name" &flowName);
+		console.log("id" &flowID); //work
+		console.log("status" &flowStatus); // keiner? / Null
 
 		expect(response.statusCode).toEqual(201);
     	done();
@@ -214,10 +213,10 @@ describe('User Routes', () => {
 		console.log(flowID); // correct id
 		process.env.IAM_AUTH_TYPE = 'basic';
 
-		function callback(){
-			console.log("warte....20 sekunden");
-		}
-		setTimeout(callback, 10000); 
+		setTimeout(function() {
+			console.log("Callback Funktion wird aufgerufen");
+		}, 3000);
+		
         	const stopFlowById = {
         		method: 'POST',
         		uri: `http://flow-repository.openintegrationhub.com/flows/${flowID}/stop`,
