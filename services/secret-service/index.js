@@ -26,7 +26,7 @@ process.on('SIGINT', exitHandler.bind(null));
 
     try {
         // configuring the EventBus
-        const eventBus = new EventBus({ serviceName: conf.logging.namespace, rabbitmqUri: process.env.RABBITMQ_URI || 'amqp://guest:guest@localhost:5672' });
+        const eventBus = new EventBus({ serviceName: conf.logging.namespace, rabbitmqUri: process.env.RABBITMQ_URI });
 
         const server = new Server({
             adapter: {
