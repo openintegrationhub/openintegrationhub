@@ -49,6 +49,8 @@ spec:
           value: "2m"
         - name: DEBUG_MODE
           value: "false"
+        - name: RABBITMQ_URI
+          value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
         ports:
         - containerPort: 3000
         livenessProbe:
