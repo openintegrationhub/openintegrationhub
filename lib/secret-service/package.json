@@ -25,7 +25,8 @@
     "morgan": "1.9.1",
     "qs": "6.7.0",
     "request": "2.88.0",
-    "request-promise": "4.2.4"
+    "request-promise": "4.2.4",
+    "swagger-ui-express": "4.0.2"
   },
   "devDependencies": {
     "eslint": "5.16.0",
