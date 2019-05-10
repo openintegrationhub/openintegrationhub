@@ -3,14 +3,16 @@ const { ComponentOrchestrator } = require('@openintegrationhub/component-orchest
 const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
 const HttpApi = require('./HttpApi');
 const FlowsDao = require('./dao/FlowsDao');
+const ComponentsDao = require('./dao/ComponentsDao');
 const RabbitMqQueuesManager = require('./queues-manager/RabbitMqQueuesManager');
-const { asValue, asClass, asFunction } = require('awilix');
+
 const mongoose = require('mongoose');
 const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
 const MongoDbCredentialsStorage = require('./queues-manager/credentials-storage/MongoDbCredentialsStorage');
 
 class ComponentOrchestratorApp extends App {
     async _run() {
+        const { asValue, asClass, asFunction } = this.awilix;
         const container = this.getContainer();
         const config = container.resolve('config');
         const amqp = container.resolve('amqp');
@@ -24,15 +26,15 @@ class ComponentOrchestratorApp extends App {
         await mongoose.connect(config.get('MONGODB_URI'), {useNewUrlParser: true});
 
         container.register({
+            rabbitmqUri: asValue(config.get('RABBITMQ_URI')),
             queueCreator: asValue(queueCreator),
             flowsDao: asClass(FlowsDao),
+            componentsDao: asClass(ComponentsDao),
             httpApi: asClass(HttpApi).singleton(),
             driver: asClass(KubernetesDriver),
             queuesManager: asClass(RabbitMqQueuesManager),
             credentialsStorage: asClass(MongoDbCredentialsStorage),
-            transport: asClass(RabbitMqTransport, {
-                injector: () => ({rabbitmqUri: config.get('RABBITMQ_URI')})
-            }),
+            transport: asClass(RabbitMqTransport),
             eventBus: asClass(EventBus, {
                 injector: () => ({serviceName: this.constructor.NAME})
             }).singleton(),
