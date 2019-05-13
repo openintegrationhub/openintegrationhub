@@ -36,6 +36,7 @@ mockgoose*
 .env
 .gccreds
 .nodemon-env
+.npmrc
 keystore.json
 
 basaas-queue.json
