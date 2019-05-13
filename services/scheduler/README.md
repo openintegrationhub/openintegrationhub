@@ -5,8 +5,8 @@ Schedules flows for execution. Based on [@openintegrationhub/scheduler](../../li
 It's looking for polling flows ready for the next execution cycle and triggers a flow execution by sending a message to the queue of the first node in the flow.
 
 ## Prerequisites
-- Kubernetes cluster
 - RabbitMQ
+- MongoDB
 
 ## How to build
 ```

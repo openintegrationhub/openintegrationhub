@@ -3,7 +3,7 @@ const { Server } = require('@openintegrationhub/component-repository');
 
 class ComponentRepositoryApp extends App {
     async _run() {
-        const { asClass} = this.awilix;
+        const { asClass } = this.awilix;
         const container = this.getContainer();
 
         container.register({
