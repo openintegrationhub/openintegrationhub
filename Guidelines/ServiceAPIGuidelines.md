@@ -10,7 +10,7 @@ The requirement level keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL N
 
 # JSON Guidelines
 
-## MustProperty names must be always camelCase
+## Must: Property names must be always camelCase
 
 ## Should: Array names should be pluralized
 
@@ -42,7 +42,7 @@ The following example demonstrates how arrays must not be returned:
 
 For example:
 
-````
+````json
 /auth-clients/{client-id}
 ````
 
@@ -50,7 +50,7 @@ For example:
 
 For example:
 
-````
+````json
 id, flow_id, secret_id
 ````
 
@@ -58,13 +58,13 @@ id, flow_id, secret_id
 
 For example:
 
-````
+````json
 page[number]=2&page[size]=10
 ````
 
 ## Must: Pluralize Resource Names
 
-````
+````json
 /flows
 /auth-clients
 /secrets
@@ -84,6 +84,7 @@ The trailing slash must not have specific semantics. Resource paths must deliver
     "meta": {} 
 }
 ````
+
 Whereby
 
 * data: contains the primary payload. Maybe either a single object or an array
@@ -112,7 +113,7 @@ As mentioned in the [http requests section](#http-requests) request have to retu
 
 Any object may have owners. For example a `Flow` may belong to a `User`. Regardless of whether the object has a single owner or multiple, the owners must be defined as an `array` as shown below:
 
-````jaml
+````yaml
     MutableFlow:
       type: "object"
       required:
@@ -126,7 +127,7 @@ Any object may have owners. For example a `Flow` may belong to a `User`. Regardl
 
 Here is the definion of the `Owner` object:
 
-````jaml
+````yaml
     Owner:
       type: object
       required:
@@ -155,6 +156,7 @@ Be compliant with the standardized HTTP method semantics summarized as follows:
 * GET requests must NOT have a request body payload
 
 ### POST
+
 POST requests are idiomatically used to create single resources on a collection resource endpoint, 
 
 ### PUT
@@ -167,6 +169,7 @@ on successful PUT requests, the server will replace the entire resource addresse
 * successful PUT requests will usually generate 200 or 204 (if the resource was updated - with or without actual content returned), and 201 (if the resource was created)
 
 ### PATCH
+
 PATCH requests are used to update parts of single resources, i.e. where only a specific subset of resource fields should be replaced.
 
 * PATCH requests are usually applied to single resources as patching entire collection is challenging
@@ -189,7 +192,7 @@ Mutable objects define properties that may be changed by clients through the API
 
 Here is an example of a mutable object:
 
-````jaml
+````yaml
     MutableFlow:
       type: "object"
       required:
@@ -212,7 +215,7 @@ Here is an example of a mutable object:
 
 The immutable version of a `Flow` is an extension of `MutableFlow`:
 
-````jaml
+````yaml
     Flow:
       allOf:
         - $ref: "#/components/schemas/MutableFlow"
@@ -239,7 +242,7 @@ The immutable version of a `Flow` is an extension of `MutableFlow`:
 
 If a resource responds with an array, it must define the `array` in the resource definition locally and not contribute to a schema explosion. The following example demonstrates a valid definition:
 
-````jaml
+````yaml
       responses:
         200:
           description: "successful operation"
@@ -258,7 +261,7 @@ If a resource responds with an array, it must define the `array` in the resource
 
 While the following definition is forbidden:
 
-````jaml
+````yaml
       responses:
         200:
           description: "successful operation"
@@ -281,13 +284,13 @@ Any access to lists of data items must support pagination to protect the service
 
 ````json
 {
-    "data": {}, 
+    "data": {},
     "meta": {
         "page": 1,
         "perPage": 10,
         "total": 123,
         "totalPages": 13
-    } 
+    }
 }
 ````
 
@@ -305,11 +308,11 @@ The query parameters for pagingations to be used by API clients:
 
 Please use the following schema in your API definition:
 
-````jaml
+````yaml
     Meta:
       type: object
       properties:
-        page: 
+        page:
           type: integer
           description: Current page (1-based numbering)
         perPage:
@@ -325,7 +328,7 @@ Please use the following schema in your API definition:
 
 Here is an example how to use `Meta` in your reponse definition:
 
-````jaml
+````yaml
      responses:
         200:
           description: "successful operation"
@@ -348,7 +351,7 @@ Here is an example how to use `Meta` in your reponse definition:
 
 If so, the `sort` Query Parameter must be used. For example, sorting by the property `updatedAt` would be accomplished as follows:
 
-````
+````json
 /flows?sort=updatedAt
 ````
 
@@ -356,6 +359,6 @@ If so, the `sort` Query Parameter must be used. For example, sorting by the prop
 
 If sorting is supported, the default sort order is ascending. To invert the sorting order, the property must be prefixed with a minus (`-`). For example:
 
-````
+````json
 /flows?sort=-updatedAt
 ````
