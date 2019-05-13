@@ -2,7 +2,7 @@
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const bodyParser = require('body-parser');
-
+const { Event, EventBus, EventBusManager } = require('@openintegrationhub/event-bus');
 const passport = require('passport');
 // const cors = require('cors');
 const Promise = require('bluebird');
@@ -51,8 +51,9 @@ const checkProto = (req, res, next) => {
 
 class App {
 
-    constructor() {
+    constructor(opts) {
         this.server = null;
+        this.eventBus = opts && opts.eventBus;
         this.app = express();
         this.app.set('port', conf.general.port);
         this.app.disable('x-powered-by');
@@ -71,6 +72,8 @@ class App {
             useNewUrlParser: true,
             useCreateIndex: true,
         });
+
+        EventBusManager.init({ eventBus: this.eventBus, serviceName: conf.general.loggingNameSpace });
 
         registerModels();
         this.setupCors();
@@ -243,9 +246,10 @@ class App {
         this.server = await httpsServer.listen(this.app.get('port'));
     }
 
-    stop() {
+    async stop() {
         if (this.server) {
             this.server.close();
+            await EventBusManager.destroy();
         }
     } 
 }

@@ -2,7 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const iamLib = require('@openintegrationhub/iam-utils');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../../doc/openapi');
+const iamLib = require('./../module/iam');
 const DAO = require('../dao');
 const conf = require('../conf');
 
@@ -19,10 +21,13 @@ async function createCollections() {
 }
 
 module.exports = class Server {
-    constructor({ port, mongoDbConnection, dao }) {
+    constructor({
+        port, mongoDbConnection, dao, iam,
+    }) {
         this.port = port || conf.port;
         this.app = express();
         this.app.disable('x-powered-by');
+        this.iam = iam || iamLib;
         this.mongoDbConnection = mongoDbConnection;
 
         // apply adapter
@@ -39,9 +44,12 @@ module.exports = class Server {
         }
 
         this.app.use(jsonParser);
+
         // base routes
         this.app.use('/', require('./../route/root'));
         this.app.use('/healthcheck', require('./../route/healtcheck'));
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: false }));
+
 
         const apiBase = express.Router();
 
@@ -51,7 +59,7 @@ module.exports = class Server {
                     return next();
                 }
             }
-            iamLib.middleware(req, res, next);
+            this.iam.middleware(req, res, next);
         });
 
         // setup routes

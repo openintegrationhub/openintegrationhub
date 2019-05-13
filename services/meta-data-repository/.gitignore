@@ -36,12 +36,18 @@ mockgoose*
 .env
 .gccreds
 .nodemon-env
+.npmrc
 keystore.json
 
 basaas-queue.json
 certs/
 
 clients.json
+
+# testing
+*.zip
+*.tar.gz
+*.tgz
 
 temp/
 test-temp/

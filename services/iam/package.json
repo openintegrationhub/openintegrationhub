@@ -29,6 +29,7 @@
   "author": "Basaas GmbH",
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
+    "@openintegrationhub/event-bus": "1.0.2",
     "base64-url": "2.2.0",
     "bluebird": "3.5.3",
     "body-parser": "1.18.3",
@@ -53,7 +54,7 @@
     "passport-local-mongoose": "5.0.1",
     "pug": "2.0.3",
     "request": "2.88.0",
-    "request-promise": "4.2.2",
+    "request-promise": "4.2.4",
     "swagger-ui-express": "4.0.2",
     "uuid": "3.3.2"
   },
