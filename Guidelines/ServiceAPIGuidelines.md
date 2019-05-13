@@ -5,11 +5,12 @@ Open Integration Hub architecture centers around decoupled microservices that pr
 The API is described using [Open API Spec](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md) v3.0.2 or higher.
 
 ## Conventions Used in These Guidelines
+
 The requirement level keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" used in this document (case insensitive) are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
 # JSON Guidelines
 
-## Must: Property names must be always camelCase
+## MustProperty names must be always camelCase
 
 ## Should: Array names should be pluralized
 
@@ -18,7 +19,6 @@ The requirement level keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL N
 ## Should: Empty array values should not be null
 
 Empty array values can unambiguously be represented as the empty list, []. The following example demonstrates a valid empty array
-
 
 ```json
 {
