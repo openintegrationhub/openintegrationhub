@@ -7,12 +7,12 @@ const {
 const FlowsDao = require('./FlowsDao');
 const MessagePublisher = require('./MessagePublisher');
 const { RequestHandlers, HttpApi } = require('@openintegrationhub/webhooks');
-const { asValue, asClass, asFunction } = require('awilix');
 const mongoose = require('mongoose');
 const { EventBus } = require('@openintegrationhub/event-bus');
 
 class WebhooksApp extends App {
     async _run () {
+        const { asValue, asClass, asFunction } = this.awilix;
         const container = this.getContainer();
         const config = container.resolve('config');
         const logger = container.resolve('logger');

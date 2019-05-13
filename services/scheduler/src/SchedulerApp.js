@@ -6,12 +6,12 @@ const {
 const { Scheduler } = require('@openintegrationhub/scheduler');
 const FlowsDao = require('./FlowsDao');
 const SchedulePublisher = require('./SchedulePublisher');
-const { asValue, asClass, asFunction } = require('awilix');
 const { EventBus } = require('@openintegrationhub/event-bus');
 const mongoose = require('mongoose');
 
 class SchedulerApp extends App {
     async _run() {
+        const { asValue, asClass, asFunction } = this.awilix;
         const container = this.getContainer();
         const config = container.resolve('config');
         const amqp = container.resolve('amqp');
