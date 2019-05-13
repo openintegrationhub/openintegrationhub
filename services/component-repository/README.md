@@ -7,6 +7,10 @@ Stores information about integration components. Based on [@openintegrationhub/c
 ## Prerequisites
 - MongoDB
 
+## Service Account
+This service requires a service account with the following permissions:
+- `iam.token.introspect`
+
 ## How to build
 ```
 docker build -t openintegrationhub/component-repository:latest -f Dockerfile ../../
@@ -24,6 +28,7 @@ Kubernetes descriptors for Component Repository along with the other core platfo
 #### General
 | Name | Description |
 | --- | --- |
+| IAM_TOKEN | Token of the service account. |
 | LOG_LEVEL | Log level for logger. |
 | MONGODB_URI | MongoDB connection string. |
 | PORT | Port for HTTP interface. |

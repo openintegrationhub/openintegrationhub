@@ -23,7 +23,7 @@ class OIHComponentsDao extends ComponentsDao {
         });
 
         if (statusCode === 200) {
-            return _.get(body, 'data'); //@todo: return model
+            return _.get(body, 'data');
         }
 
         if (statusCode === 404) {

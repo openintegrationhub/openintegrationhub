@@ -13,6 +13,10 @@ If a container is running an outdated version of node, it will be redeployed.
 - RabbitMQ with enabled [Management plugin](https://www.rabbitmq.com/management.html).
 - MongoDB
 
+## Service Account
+This service requires a service account with the following permissions:
+- `components.get`
+
 ## How to build
 ```
 docker build -t openintegrationhub/component-orchestrator:latest -f Dockerfile ../../
@@ -37,6 +41,7 @@ kubectl apply -f ./k8s
 #### General
 | Name | Description |
 | --- | --- |
+| COMPONENT_REPOSITORY_BASE_URL | Base URL of the Component Repository. |
 | LISTEN_PORT | Port for HTTP interface. |
 | LOG_LEVEL | Log level for logger. |
 | MONGODB_URI | MongoDB connection string. |
