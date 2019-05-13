@@ -11,7 +11,7 @@ aliases:
     command: yarn
   - &only_master_filter
     branches:
-      only: master
+      only: mastery
   - &yarn_test_steps
       - restore_cache:
           keys:
@@ -38,6 +38,13 @@ aliases:
       - run: |
           cd ./scripts  # needed for compatible with travis implementation
           node deploy.js
+  - &deploy_steps_prod
+      - restore_cache:
+          keys:
+            - build-deps-{{ .Branch }}-{{ .Revision }}
+      - run: |
+          cd ./scripts  # needed for compatible with travis implementation
+          node deploy_prod.js     
 jobs:
   deps:
     docker: *node_env
@@ -62,6 +69,14 @@ jobs:
     docker: *node_env
     working_directory: ~/oih
     steps: *deploy_steps
+  deploy_prod:
+    docker: *node_env
+    working_directory: ~/oih
+    steps: *deploy_steps_prod
+  integration-test:
+    docker: *node_env
+    working_directory: ~/oih/services/integrationtests
+    steps: *yarn_test_steps
   webhooks-test:
     docker: *node_mongo_env
     working_directory: ~/oih/services/webhooks
@@ -114,57 +129,6 @@ workflows:
   pipeline:
     jobs:
       - deps
-      - webhooks-test:
+      - integration-test:
           requires:
-            - lib-webhooks-test
-      - iam-test:
-          requires:
-            - deps
-      - meta-data-repository-test:
-          requires:
-            - deps
-      - component-orchestrator-test:
-          requires:
-            - lib-component-orchestrator-test
-      - scheduler-test:
-          requires:
-            - lib-scheduler-test
-      - secret-service-lib-test:
-          requires:
-            - deps
-      - flow-repository-test:
-          requires:
-            - deps
-      - audit-log-test:
-          requires:
-            - deps
-      - lib-backend-commons-lib-test:
-          requires:
-            - deps
-      - lib-component-orchestrator-test:
-          requires:
-            - lib-backend-commons-lib-test
-      - lib-scheduler-test:
-          requires:
-            - lib-backend-commons-lib-test
-      - lib-webhooks-test:
-          requires:
-            - lib-backend-commons-lib-test
-      - test:
-          requires:
-            - webhooks-test
-            - iam-test
-            - meta-data-repository-test
-            - component-orchestrator-test
-            - scheduler-test
-            - secret-service-lib-test
-            - flow-repository-test
-            - audit-log-test
-      - build:
-          requires:
-            - test
-          filters: *only_master_filter
-      - deploy:
-          requires:
-            - build
-          filters: *only_master_filter
+            - deps 
