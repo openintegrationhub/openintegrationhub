@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/event-bus",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A library for working with the Event Bus",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,8 @@
   "license": "APL-2.0",
   "dependencies": {
     "amqplib": "0.5.2",
+    "assert": "1.4.1",
+    "bunyan": "1.8.12",
     "lodash": "4.17.11"
   },
   "devDependencies": {

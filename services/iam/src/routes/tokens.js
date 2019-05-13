@@ -43,6 +43,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
 
     const account = await AccountDAO.findOne({ _id: req.body.accountId, status: CONSTANTS.STATUS.ACTIVE });
     const tokenLifespan = req.body.expiresIn;
+    const inquirer = req.body.inquirer || req.user.userid;
 
     if (!account) {
         // User is either disabled or does not exist anymore
@@ -64,7 +65,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
         ...account,
         purpose: req.body.purpose || 'accountToken',
         initiator: req.user.userid,
-        inquirer: req.body.inquirer,
+        inquirer,
         accountId: account._id.toString(),
         description: req.body.description || '',
         permissions: Array.from(new Set((account.permissions || []).concat(req.body.customPermissions || []))),
@@ -116,7 +117,7 @@ router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspec
         }
 
     } catch (err) {
-        console.log(err);
+        log.error(err);
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
     }
 });

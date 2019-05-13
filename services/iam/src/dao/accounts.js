@@ -1,4 +1,5 @@
 const Logger = require('@basaas/node-logger');
+const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
 const Account = require('./../models/account');
 const CONF = require('./../conf');
 
@@ -36,6 +37,15 @@ const AccountDAO = {
         logger.debug('created.account', Object.assign({}, userObj, { password: '***' }));
 
         auditLog.info('create.account', { data: { username: userObj.username } });
+
+        const event = new Event({
+            headers: {
+                name: 'account.created',
+            },
+            payload: { username: userObj.username, id: account._id.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
+
         return account.toJSON();
     },
 
@@ -73,6 +83,15 @@ const AccountDAO = {
         await Account.deleteOne({ _id: id });
         logger.debug('deleted.account', { id });
         auditLog.info('delete.account', { data: { userId: id } });
+
+        const event = new Event({
+            headers: {
+                name: 'account.deleted',
+            },
+            payload: { id: id.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
+
     },
 
     assignUserToTenantWithRole: async ({
