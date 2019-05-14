@@ -1,4 +1,4 @@
-# Communication Router
+# Webhooks
 Receives http calls and passes messages to execution. Based on [@openintegrationhub/webhooks](../../lib/webhooks).
 
 ## How it works
@@ -10,8 +10,8 @@ It listens for incoming HTTP connections, serializes incoming data and puts it t
 - `POST /hook/{flowId}` - this endpoint processes incoming data. It allows to pass data in request body, headers or query params.
 
 ## Prerequisites
-- Kubernetes cluster
 - RabbitMQ
+- MongoDB
 
 ## How to build
 ```
