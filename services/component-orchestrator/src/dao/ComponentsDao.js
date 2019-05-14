@@ -14,6 +14,11 @@ class OIHComponentsDao extends ComponentsDao {
 
     async findById(compId) {
         const url = this._getComponentRepoUrl(`/components/${compId}`);
+        this._logger.trace({
+            url,
+            auth: `Bearer ${this._config.get('IAM_TOKEN')}`
+        }, 'Fetching component info');
+
         const { body, statusCode } = await promisify(request.get)({
             url,
             json: true,
