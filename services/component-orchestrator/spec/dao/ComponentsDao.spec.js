@@ -17,7 +17,8 @@ describe('ComponentsDao', () => {
         const logger = {
             info: () => {},
             debug: () => {},
-            error: () => {}
+            error: () => {},
+            trace: () => {}
         };
 
         cd = new ComponentsDao({config, logger});
