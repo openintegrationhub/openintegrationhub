@@ -26,6 +26,11 @@ class OIHComponentsDao extends ComponentsDao {
             this._logger.trace(opts, 'Fetching component info');
 
             request.get(opts, (err, response, body) => {
+                if (err) {
+                    this._logger.error({err}, 'Got error');
+                    return reject(err);
+                }
+
                 const { statusCode } = response;
                 this._logger.trace({body, statusCode}, 'Got response');
 
