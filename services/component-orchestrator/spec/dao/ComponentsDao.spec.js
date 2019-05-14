@@ -30,7 +30,7 @@ describe('ComponentsDao', () => {
     });
 
     describe('#findById', () => {
-        it('should call Component Repository', async () => {
+        it('should return component data', async () => {
             const scope = compRepo
                 .get('/components/123')
                 .reply(200, {
@@ -44,6 +44,30 @@ describe('ComponentsDao', () => {
                 id: '123',
                 some: 'data'
             });
+            expect(scope.isDone()).to.be.true;
+        });
+
+        it('should return null if not found', async () => {
+            const scope = compRepo
+                .get('/components/123')
+                .reply(404);
+
+            expect(await cd.findById('123')).to.be.null;
+            expect(scope.isDone()).to.be.true;
+        });
+
+        it('should throw an error if unexpected status code is returned', async () => {
+            const scope = compRepo
+                .get('/components/123')
+                .reply(500);
+
+            try {
+                await cd.findById('123');
+                throw new Error('Error is expected');
+            } catch (e) {
+                expect(e.message).to.equal('Failed to fetch a component');
+            }
+
             expect(scope.isDone()).to.be.true;
         });
     });

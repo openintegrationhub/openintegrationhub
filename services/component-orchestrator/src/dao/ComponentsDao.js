@@ -1,6 +1,5 @@
 const { ComponentsDao } = require('@openintegrationhub/component-orchestrator');
 const request = require('request');
-const { promisify } = require('util');
 const { URL } = require('url');
 const path = require('path');
 const _ = require('lodash');
@@ -14,30 +13,33 @@ class OIHComponentsDao extends ComponentsDao {
 
     async findById(compId) {
         const url = this._getComponentRepoUrl(`/components/${compId}`);
-        this._logger.trace({
-            url,
-            auth: `Bearer ${this._config.get('IAM_TOKEN')}`
-        }, 'Fetching component info');
 
-        const { body, statusCode } = await promisify(request.get)({
-            url,
-            json: true,
-            headers: {
-                authorization: `Bearer ${this._config.get('IAM_TOKEN')}`
-            }
+        return new Promise((resolve, reject) => {
+            const opts = {
+                url,
+                json: true,
+                headers: {
+                    authorization: `Bearer ${this._config.get('IAM_TOKEN')}`
+                }
+            };
+
+            this._logger.trace(opts, 'Fetching component info');
+
+            request.get(opts, (err, response, body) => {
+                const { statusCode } = response;
+                this._logger.trace({body, statusCode}, 'Got response');
+
+                if (statusCode === 200) {
+                    return resolve(_.get(body, 'data'));
+                }
+
+                if (statusCode === 404) {
+                    return resolve(null);
+                }
+
+                return reject(new Error('Failed to fetch a component'));
+            });
         });
-
-        this._logger.trace({body, statusCode}, 'Got response');
-
-        if (statusCode === 200) {
-            return _.get(body, 'data');
-        }
-
-        if (statusCode === 404) {
-            return null;
-        }
-
-        throw new Error('Failed to fetch a component');
     }
 
     _getComponentRepoUrl(p) {
