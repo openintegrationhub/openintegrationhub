@@ -3,15 +3,12 @@
   "info" : {
     "title" : "OIH MetaData Service REST API",
     "description" : "REST API for the OIH MetaData Service.",
+    "version" : "0.0.2",
     "license" : {
       "name" : "Apache 2.0",
       "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    },
-    "version" : "0.0.2"
+    }
   },
-  "servers" : [ {
-    "url" : "/"
-  } ],
   "tags" : [ {
     "name" : "Domains",
     "description" : "Domain management"
@@ -30,7 +27,55 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200"
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "type" : "object",
+                      "properties" : {
+                        "recordBaseSchema" : {
+                          "type" : "object",
+                          "properties" : {
+                            "oihUid" : {
+                              "type" : "string"
+                            },
+                            "oihCreated" : {
+                              "type" : "object"
+                            },
+                            "oihLastModified" : {
+                              "type" : "object"
+                            },
+                            "modificationHistory" : {
+                              "type" : "array",
+                              "items" : {
+                                "type" : "object"
+                              }
+                            },
+                            "oihApplicationRecords" : {
+                              "type" : "array",
+                              "items" : {
+                                "type" : "object"
+                              },
+                              "minItems" : 1
+                            }
+                          }
+                        },
+                        "supportedSchemas" : {
+                          "type" : "object",
+                          "example" : {
+                            "addressV1" : {
+                              "ref" : "https://github.com/openintegrationhub/Data-and-Domain-Models/blob/master/src/main/schema/addresses/personV1.json"
+                            },
+                            "addressV2" : {
+                              "ref" : "https://github.com/openintegrationhub/Data-and-Domain-Models/blob/master/src/main/schema/addresses/personV2.json"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "meta" : {
+                      "$ref" : "#/components/schemas/Meta"
+                    }
+                  }
                 }
               }
             }
@@ -48,7 +93,18 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200_1"
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/MutableDomain"
+                      }
+                    },
+                    "meta" : {
+                      "$ref" : "#/components/schemas/Meta"
+                    }
+                  }
                 }
               }
             }
@@ -63,7 +119,12 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/body"
+                "type" : "object",
+                "properties" : {
+                  "data" : {
+                    "$ref" : "#/components/schemas/Domain"
+                  }
+                }
               }
             }
           }
@@ -74,7 +135,12 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200_2"
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "$ref" : "#/components/schemas/MutableDomain"
+                    }
+                  }
                 }
               }
             }
@@ -88,11 +154,9 @@
         "summary" : "Retrieve a domain with given ID.",
         "description" : "Provides details of a domain with a given ID.",
         "parameters" : [ {
-          "name" : "domainId",
           "in" : "path",
+          "name" : "domainId",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
           "schema" : {
             "type" : "string"
           }
@@ -103,7 +167,12 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200_2"
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "$ref" : "#/components/schemas/MutableDomain"
+                    }
+                  }
                 }
               }
             }
@@ -115,11 +184,9 @@
         "summary" : "Update a domain by ID.",
         "description" : "Updates details of a domain with a given ID.",
         "parameters" : [ {
-          "name" : "domainId",
           "in" : "path",
+          "name" : "domainId",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
           "schema" : {
             "type" : "string"
           }
@@ -128,7 +195,12 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/body_1"
+                "type" : "object",
+                "properties" : {
+                  "data" : {
+                    "$ref" : "#/components/schemas/Domain"
+                  }
+                }
               }
             }
           }
@@ -139,7 +211,12 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200_2"
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "$ref" : "#/components/schemas/MutableDomain"
+                    }
+                  }
                 }
               }
             }
@@ -153,12 +230,10 @@
         "summary" : "Import models.",
         "description" : "This endpoint is used to upload multiple new models for a given domain.",
         "parameters" : [ {
-          "name" : "domainId",
           "in" : "path",
-          "description" : "ID of the domain to import models into",
+          "name" : "domainId",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
+          "description" : "ID of the domain to import models into",
           "schema" : {
             "type" : "string"
           }
@@ -218,12 +293,10 @@
         "tags" : [ "Domains" ],
         "summary" : "Retrieve the available models for the authenticated user.",
         "parameters" : [ {
-          "name" : "domainId",
           "in" : "path",
-          "description" : "ID of the domain to retrieve models of",
+          "name" : "domainId",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
+          "description" : "ID of the domain to retrieve models of",
           "schema" : {
             "type" : "string"
           }
@@ -234,7 +307,12 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200_3"
+                  "type" : "object",
+                  "properties" : {
+                    "definitons" : {
+                      "$ref" : "#/components/schemas/Definitons"
+                    }
+                  }
                 },
                 "example" : {
                   "definitions" : {
@@ -281,22 +359,18 @@
         "summary" : "Retrieve a schema by URI.",
         "description" : "Provides details of a schema with a given URI.",
         "parameters" : [ {
-          "name" : "domainId",
           "in" : "path",
-          "description" : "ID of the domain to retrieve schema of",
+          "name" : "domainId",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
+          "description" : "ID of the domain to retrieve schema of",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "name" : "uri",
           "in" : "path",
-          "description" : "URI of the schema",
+          "name" : "uri",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
+          "description" : "URI of the schema",
           "schema" : {
             "type" : "string"
           },
@@ -320,22 +394,18 @@
         "summary" : "Update a schema with given URI.",
         "description" : "Updates a schema with given URI.",
         "parameters" : [ {
-          "name" : "domainId",
           "in" : "path",
-          "description" : "ID of the domain to update schema for",
+          "name" : "domainId",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
+          "description" : "ID of the domain to update schema for",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "name" : "uri",
           "in" : "path",
-          "description" : "URI of the schema to update",
+          "name" : "uri",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
+          "description" : "URI of the schema to update",
           "schema" : {
             "type" : "string"
           }
@@ -404,8 +474,6 @@
           "name" : "domainId",
           "in" : "path",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
           "schema" : {
             "type" : "string"
           }
@@ -413,8 +481,6 @@
           "name" : "uri",
           "in" : "path",
           "required" : true,
-          "style" : "simple",
-          "explode" : false,
           "schema" : {
             "type" : "string"
           }
@@ -439,8 +505,8 @@
         "allOf" : [ {
           "$ref" : "#/components/schemas/MutableDomain"
         }, {
-          "required" : [ "createdAt", "id" ],
           "type" : "object",
+          "required" : [ "id", "createdAt" ],
           "properties" : {
             "id" : {
               "type" : "string"
@@ -479,7 +545,7 @@
         }
       },
       "SchemaBase" : {
-        "required" : [ "name", "payload", "uri" ],
+        "required" : [ "name", "uri", "payload" ],
         "properties" : {
           "name" : {
             "type" : "string"
@@ -545,8 +611,8 @@
         "allOf" : [ {
           "$ref" : "#/components/schemas/MutableSchema"
         }, {
-          "required" : [ "createdAt", "id" ],
           "type" : "object",
+          "required" : [ "id", "createdAt" ],
           "properties" : {
             "id" : {
               "type" : "string"
@@ -565,8 +631,8 @@
         } ]
       },
       "Owner" : {
-        "required" : [ "entityId", "entityType" ],
         "type" : "object",
+        "required" : [ "entityId", "entityType" ],
         "properties" : {
           "id" : {
             "type" : "string"
