@@ -27,7 +27,7 @@ class OIHComponentsDao extends ComponentsDao {
 
             request.get(opts, (err, response, body) => {
                 if (err) {
-                    this._logger.error({err}, 'Got error');
+                    this._logger.error(err, 'Got error: ' + err.message);
                     return reject(err);
                 }
 
