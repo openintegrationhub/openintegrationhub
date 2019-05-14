@@ -27,6 +27,8 @@ class OIHComponentsDao extends ComponentsDao {
             }
         });
 
+        this._logger.trace({body, statusCode}, 'Got response');
+
         if (statusCode === 200) {
             return _.get(body, 'data');
         }
