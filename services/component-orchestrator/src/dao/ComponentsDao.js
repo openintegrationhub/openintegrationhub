@@ -34,7 +34,7 @@ class OIHComponentsDao extends ComponentsDao {
             return null;
         }
 
-        throw new Error(`Failed to fetch a component ${compId}`);
+        throw new Error(`Failed to fetch the component ${compId}`);
     }
 
     _getComponentRepoUrl(p) {
