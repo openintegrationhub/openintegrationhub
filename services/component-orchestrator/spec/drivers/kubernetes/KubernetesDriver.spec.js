@@ -14,6 +14,10 @@ describe('KubernetesDriver', () => {
     beforeEach(() => {
         const config = {
             NAMESPACE: 'flows-ns',
+            DEFAULT_CPU_LIMIT: '0.1',
+            DEFAULT_MEM_LIMIT: '512',
+            DEFAULT_CPU_REQUEST: '0.1',
+            DEFAULT_MEM_REQUEST: '256',
             get(key) {
                 return this[key];
             }
@@ -74,7 +78,7 @@ describe('KubernetesDriver', () => {
 
     describe('#_createRunningFlowNode', () => {
         it('should create RunningFlowNode instance', async () => {
-            sinon.stub(driver, '_buildDescriptor').returns({kind: 'Job'});
+            sinon.stub(driver, '_generateAppDefinition').returns({kind: 'Job'});
             batchClient.jobs.post.resolves({
                 body: {
                     kind: 'Job',
@@ -93,35 +97,76 @@ describe('KubernetesDriver', () => {
         });
     });
 
-    describe('#_parseNodeCommand', () => {
-        it('should parse command', () => {
-            const command = 'elasticio/mapper:jsonataMap@c9e011cf7866a2e82771b62cfd96cd75868f5b90';
-            expect(driver._parseNodeCommand(command)).to.deep.equal({
-                team: 'elasticio',
-                repo: 'mapper',
-                method: 'jsonataMap',
-                version: 'c9e011cf7866a2e82771b62cfd96cd75868f5b90'
-            });
-        });
-
-        it('should parse command without version', () => {
-            const command = 'elasticio/mapper:jsonataMap';
-            expect(driver._parseNodeCommand(command)).to.deep.equal({
-                team: 'elasticio',
-                repo: 'mapper',
-                method: 'jsonataMap',
-                version: 'latest'
-            });
-        });
-    });
-
-    describe('#_constructDockerImageName', () => {
-        it('should return docker image name', () => {
-            const node = {
-                command: 'elasticio/mapper:jsonataMap@c9e011cf7866a2e82771b62cfd96cd75868f5b90'
+    describe('#_generateAppDefinition', () => {
+        it('should generate app descriptor', async () => {
+            const flow = {
+                id: 'flow1'
             };
-            const expectedImageName = 'elasticio/mapper:c9e011cf7866a2e82771b62cfd96cd75868f5b90';
-            expect(driver._constructDockerImageName(node)).to.equal(expectedImageName);
+            const node = {
+                id: 'step1',
+                componentId: '123',
+                'function': 'testAction'
+            };
+            const secret = {
+                metadata: {
+                    name: 'my-secret'
+                }
+            };
+            const component = {
+                id: 'comp1',
+                distribution: {
+                    type: 'docker',
+                    image: 'openintegrationhub/email'
+                }
+            };
+
+            const result = await driver._generateAppDefinition(flow, node, secret, component);
+            expect(result).to.deep.equal({
+                'apiVersion': 'batch/v1',
+                'kind': 'Job',
+                'metadata': {
+                    'annotations': {
+                        'flowId': 'flow1',
+                        'nodeId': 'step1',
+                    },
+                    'name': 'flow1step1',
+                    'namespace': 'flows-ns'
+                },
+                'spec': {
+                    'template': {
+                        'metadata': {
+                            'labels': {}
+                        },
+                        'spec': {
+                            'containers': [
+                                {
+                                    'envFrom': [
+                                        {
+                                            'secretRef': {
+                                                'name': 'my-secret'
+                                            }
+                                        }
+                                    ],
+                                    'image': 'openintegrationhub/email',
+                                    'imagePullPolicy': 'Always',
+                                    'name': 'apprunner',
+                                    'resources': {
+                                        'limits': {
+                                            'cpu': '0.1',
+                                            'memory': '512'
+                                        },
+                                        'requests': {
+                                            'cpu': '0.1',
+                                            'memory': '256'
+                                        }
+                                    }
+                                }
+                            ],
+                            'restartPolicy': 'Never'
+                        }
+                    }
+                }
+            });
         });
     });
 });

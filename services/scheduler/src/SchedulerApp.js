@@ -6,12 +6,12 @@ const {
 const { Scheduler } = require('@openintegrationhub/scheduler');
 const FlowsDao = require('./FlowsDao');
 const SchedulePublisher = require('./SchedulePublisher');
-const { asValue, asClass, asFunction } = require('awilix');
-const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
+const { EventBus } = require('@openintegrationhub/event-bus');
 const mongoose = require('mongoose');
 
 class SchedulerApp extends App {
     async _run() {
+        const { asValue, asClass, asFunction } = this.awilix;
         const container = this.getContainer();
         const config = container.resolve('config');
         const amqp = container.resolve('amqp');
@@ -27,11 +27,12 @@ class SchedulerApp extends App {
             queueCreator: asValue(queueCreator),
             flowsDao: asClass(FlowsDao),
             schedulePublisher: asClass(SchedulePublisher),
-            transport: asClass(RabbitMqTransport, {
-                injector: () => ({rabbitmqUri: config.get('RABBITMQ_URI')})
-            }),
             eventBus: asClass(EventBus, {
-                injector: () => ({serviceName: this.constructor.NAME})
+                injector: () => ({
+                    serviceName: this.constructor.NAME,
+                    rabbitmqUri: config.get('RABBITMQ_URI'),
+                    transport: undefined
+                })
             }).singleton(),
             scheduler: asClass(Scheduler).singleton()
         });

@@ -26,8 +26,10 @@
     "eslint-plugin-mocha": "4.12.1",
     "eslint-plugin-node": "6.0.1",
     "mocha": "6.0.1",
+    "nock": "10.0.6",
     "sinon": "7.2.4",
-    "sinon-chai": "3.3.0"
+    "sinon-chai": "3.3.0",
+    "supertest": "4.0.2"
   },
   "main": "src/index.js"
 }

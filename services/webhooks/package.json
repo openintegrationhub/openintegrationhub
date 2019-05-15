@@ -8,6 +8,7 @@
     "pretest": "npm run lint",
     "test": "mocha spec --recursive",
     "start": "node index.js",
+    "start:dev": "LOG_LEVEL=trace NODE_ENV=development npm start | bunyan",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/webhooks:${VERSION} -f Dockerfile ../../"
   },
@@ -16,7 +17,6 @@
   "dependencies": {
     "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/webhooks": "*",
-    "awilix": "4.2.0",
     "backend-commons-lib": "*",
     "body-parser": "1.18.3",
     "express": "4.16.3",
