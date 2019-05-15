@@ -65,7 +65,7 @@ describe('ComponentsDao', () => {
                 await cd.findById('123');
                 throw new Error('Error is expected');
             } catch (e) {
-                expect(e.message).to.equal('Failed to fetch a component');
+                expect(e.message).to.equal('Failed to fetch the component 123');
             }
 
             expect(scope.isDone()).to.be.true;

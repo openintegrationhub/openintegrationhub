@@ -3,6 +3,8 @@ const request = require('request');
 const { URL } = require('url');
 const path = require('path');
 const _ = require('lodash');
+const { promisify } = require('util');
+const getAsync = promisify(request.get);
 
 class OIHComponentsDao extends ComponentsDao {
     constructor({config, logger}) {
@@ -13,38 +15,26 @@ class OIHComponentsDao extends ComponentsDao {
 
     async findById(compId) {
         const url = this._getComponentRepoUrl(`/components/${compId}`);
+        const opts = {
+            url,
+            json: true,
+            headers: {
+                authorization: `Bearer ${this._config.get('IAM_TOKEN')}`
+            }
+        };
 
-        return new Promise((resolve, reject) => {
-            const opts = {
-                url,
-                json: true,
-                headers: {
-                    authorization: `Bearer ${this._config.get('IAM_TOKEN')}`
-                }
-            };
+        this._logger.trace({compId}, 'Fetching component info');
+        const { body, statusCode } = await getAsync(opts);
 
-            this._logger.trace(opts, 'Fetching component info');
+        if (statusCode === 200) {
+            return _.get(body, 'data');
+        }
 
-            request.get(opts, (err, response, body) => {
-                if (err) {
-                    this._logger.error(err, 'Got error: ' + err.message);
-                    return reject(err);
-                }
+        if (statusCode === 404) {
+            return null;
+        }
 
-                const { statusCode } = response;
-                this._logger.trace({body, statusCode}, 'Got response');
-
-                if (statusCode === 200) {
-                    return resolve(_.get(body, 'data'));
-                }
-
-                if (statusCode === 404) {
-                    return resolve(null);
-                }
-
-                return reject(new Error('Failed to fetch a component'));
-            });
-        });
+        throw new Error(`Failed to fetch the component ${compId}`);
     }
 
     _getComponentRepoUrl(p) {
