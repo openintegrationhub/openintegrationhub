@@ -13,19 +13,19 @@ class KubernetesDriver extends BaseDriver {
         this._batchClient = k8s.getBatchClient();
     }
 
-    async createApp(flow, node, envVars) {
+    async createApp(flow, node, envVars, component) {
         this._logger.info({flow: flow.id}, 'Going to deploy job to k8s');
         try {
             const env = this._prepareEnvVars(flow, node, envVars);
             const flowNodeSecret = await this._ensureFlowNodeSecret(flow, node, env);
-            await this._createRunningFlowNode(flow, node, flowNodeSecret);
+            await this._createRunningFlowNode(flow, node, flowNodeSecret, component);
         } catch (e) {
             this._logger.error(e, 'Failed to deploy the job');
         }
     }
 
-    async _createRunningFlowNode(flow, node, flowNodeSecret) {
-        const descriptor = this._buildDescriptor(flow, node, flowNodeSecret);
+    async _createRunningFlowNode(flow, node, flowNodeSecret, component) {
+        const descriptor = await this._generateAppDefinition(flow, node, flowNodeSecret, component);
         this._logger.trace(descriptor, 'going to deploy a job to k8s');
         const result = await this._batchClient.jobs.post({body: descriptor});
         return new KubernetesRunningFlowNode(result.body);
@@ -124,13 +124,10 @@ class KubernetesDriver extends BaseDriver {
         return ((await this._batchClient.jobs.get()).body.items || []).map(i => new KubernetesRunningFlowNode(i));
     }
 
-    _buildDescriptor(flow, node, nodeSecret) {
-        return this._generateAppDefinition(flow, node, nodeSecret);
-    }
-
-    _generateAppDefinition(flow, node, nodeSecret) {
+    async _generateAppDefinition(flow, node, nodeSecret, component) {
         let appId = flow.id +'.'+ node.id;
         appId = appId.toLowerCase().replace(/[^0-9a-z]/g, '');
+        const image = _.get(component, 'distribution.image');
 
         return {
             apiVersion: 'batch/v1',
@@ -151,7 +148,7 @@ class KubernetesDriver extends BaseDriver {
                     spec: {
                         restartPolicy: 'Never',
                         containers: [{
-                            image: this._constructDockerImageName(node),
+                            image,
                             name: 'apprunner',
                             imagePullPolicy: 'Always',
                             envFrom: [{
@@ -196,8 +193,8 @@ class KubernetesDriver extends BaseDriver {
         envVars.STEP_ID = node.id;
         envVars.FLOW_ID = flow.id;
         envVars.USER_ID = 'FIXME hardcode smth here';
-        envVars.COMP_ID = 'does not matter';
-        envVars.FUNCTION = this._parseNodeCommand(node.command).method;
+        envVars.COMP_ID = node.componentId;
+        envVars.FUNCTION = node.function;
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
         envVars.API_USERNAME = 'does not matter';
         envVars.API_KEY = 'does not matter';
@@ -206,24 +203,6 @@ class KubernetesDriver extends BaseDriver {
             return env;
         }, {});
         return Object.assign(envVars, node.env);
-    }
-
-    _parseNodeCommand(command) {
-        const [teamRepoMethod, version] = command.split('@');
-        const [reamRepo, method] = teamRepoMethod.split(':');
-        const [team, repo] = reamRepo.split('/');
-
-        return {
-            team,
-            repo,
-            method,
-            version: version || 'latest'
-        };
-    }
-
-    _constructDockerImageName(node) {
-        const { team, repo, version } = this._parseNodeCommand(node.command);
-        return `${team}/${repo}:${version}`;
     }
 }
 
