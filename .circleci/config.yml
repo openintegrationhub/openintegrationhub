@@ -102,6 +102,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/lib/webhooks
     steps: *yarn_test_steps
+  lib-component-repository-test:
+    docker: *node_mongo_env
+    working_directory: ~/oih/lib/component-repository
+    steps: *yarn_test_steps
   flow-repository-test:
     docker: *node_env
     working_directory: ~/oih/services/flow-repository
@@ -150,6 +154,9 @@ workflows:
       - lib-webhooks-test:
           requires:
             - lib-backend-commons-lib-test
+      - lib-component-repository-test:
+          requires:
+            - lib-backend-commons-lib-test
       - test:
           requires:
             - webhooks-test
@@ -160,6 +167,7 @@ workflows:
             - secret-service-lib-test
             - flow-repository-test
             - audit-log-test
+            - lib-component-repository-test
       - build:
           requires:
             - test
