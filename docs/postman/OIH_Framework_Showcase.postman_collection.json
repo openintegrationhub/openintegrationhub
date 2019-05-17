@@ -1,0 +1,451 @@
+{
+	"info": {
+		"_postman_id": "ae133d77-d0d5-4eb7-b0ba-3323f44cb09f",
+		"name": "OIH_Framework_Showcase",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Flows",
+			"item": [
+				{
+					"name": "Get user flows",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows"
+							]
+						},
+						"description": "Use this request to receive all flows for the authenticated user.\nPlease use the token generated in the POST login request for authorization."
+					},
+					"response": []
+				},
+				{
+					"name": "Start a flow by id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}/start",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"{FLOW_ID}",
+								"start"
+							]
+						},
+						"description": "Use this request to start a certain flow by id"
+					},
+					"response": []
+				},
+				{
+					"name": "Stop a flow by id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}/stop",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"{FLOW_ID}",
+								"stop"
+							]
+						},
+						"description": "Use this request to stop a certain flow."
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"{FLOW_ID}"
+							]
+						},
+						"description": "Use this request to receive a cetrain flow by id."
+					},
+					"response": []
+				},
+				{
+					"name": "Post a new flow",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"My Timer To Code Test Flow\",\r\n  \"description\": \"This flow takes actions at regular invervals based on a set timer.\",\r\n      \"graph\":{\r\n         \"nodes\":[\r\n            {\r\n               \"id\":\"step_1\",\r\n               \"componentId\":\"5cdd6176055d50001af66cc7\",\r\n               \"name\":\"\",\r\n               \"function\":\"timer\",\r\n               \"description\":\"\",\r\n               \"fields\":{\r\n                  \"interval\":\"minute\"\r\n               }\r\n            },\r\n            {\r\n               \"id\":\"step_2\",\r\n               \"componentId\":\"5cde85443860ff001a034273\",\r\n               \"name\":\"\",\r\n               \"function\":\"execute\",\r\n               \"description\":\"\",\r\n               \"fields\": {\r\n                        \"code\": \"function* run() {console.log('Calling external URL');yield request.post({uri: 'http://webhook.site/ae17e5b3-1da6-4d2b-b664-4787ad5953d5', body: msg, json: true});}\"\r\n                    }\r\n            }\r\n         ],\r\n         \"edges\":[\r\n            {\r\n               \"source\":\"step_1\",\r\n               \"target\":\"step_2\"\r\n            }\r\n         ]\r\n      },\r\n  \"type\": \"ordinary\",\r\n  \"cron\": \"* /1 * * * *\"\r\n}"
+						},
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows"
+							]
+						},
+						"description": "Use this request to post a new flow."
+					},
+					"response": []
+				},
+				{
+					"name": "Update a flow by id",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"graph\": {\n        \"nodes\": [\n            {\n                \"id\": \"step_1\",\n                \"componentId\": \"5cdd6176055d50001af66cc7\",\n                \"name\": \"\",\n                \"function\": \"timer\",\n                \"description\": \"\",\n                \"fields\": {\n                    \"interval\": \"minute\"\n                }\n            },\n            {\n                \"id\": \"step_2\",\n                \"componentId\": \"5cde85443860ff001a034273\",\n                \"name\": \"\",\n                \"function\": \"execute\",\n                \"description\": \"\",\n                \"fields\": {\n                    \"code\": \"function* run() {console.log('Calling external URL');yield request.post({uri: 'http://webhook.site/ae17e5b3-1da6-4d2b-b664-4787ad5953d5', body: {'msg':'Congratz you made it.'}, json: true});}\"\n                }\n            }\n        ],\n        \"edges\": [\n            {\n                \"source\": \"step_1\",\n                \"target\": \"step_2\"\n            }\n        ]\n    }\n}"
+						},
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"{FLOW_ID}"
+							]
+						},
+						"description": "Use this request to update an existing flow."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a flow by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"{FLOW_ID}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "All flow relating requests. "
+		},
+		{
+			"name": "Components",
+			"item": [
+				{
+					"name": "Get user components",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://component-repository.openintegrationhub.com/components",
+							"protocol": "http",
+							"host": [
+								"component-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"components"
+							]
+						},
+						"description": "Use this request to receive all available components for the authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Post a new component",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"data\": {\r\n    \"name\": \"My Code Component\",\r\n    \"description\": \"My code component for test  purposes\",\r\n    \"access\": \"public\",\r\n    \"descriptor\": {},\r\n    \"distribution\": {\r\n      \"type\": \"docker\",\r\n      \"image\": \"elasticio/code-component:7bc2535df2f8a35c3653455e5becc701b010d681\"\r\n    }\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "http://component-repository.openintegrationhub.com/components",
+							"protocol": "http",
+							"host": [
+								"component-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"components"
+							]
+						},
+						"description": "Use this request to post a new component."
+					},
+					"response": []
+				},
+				{
+					"name": "Update a component by id",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"distribution\": {\n            \"type\": \"docker\",\n            \"image\": \"elasticio/timer:ca9a6fea391ffa8f7c8593bd2a04143212ab63f6\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "http://component-repository.openintegrationhub.com/components/{COMPONENT_ID}",
+							"protocol": "http",
+							"host": [
+								"component-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"components",
+								"{COMPONENT_ID}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a component by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://component-repository.openintegrationhub.com/components/{COMPONENT_ID}",
+							"protocol": "http",
+							"host": [
+								"component-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"components",
+								"{COMPONENT_ID}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a component by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						},
+						"description": "Use this request to get a component by its id."
+					},
+					"response": []
+				}
+			],
+			"description": "All component relating requests."
+		},
+		{
+			"name": "Login",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "accessToken",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "tokenType",
+							"value": "Bearer",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"disabled": false
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"\",\n\t\"password\": \"\"\n}"
+				},
+				"url": {
+					"raw": "http://iam.openintegrationhub.com/login?",
+					"protocol": "http",
+					"host": [
+						"iam",
+						"openintegrationhub",
+						"com"
+					],
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "philipp.hoegner@cloudecosystem.org",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "_uRFRDTxZf4BB",
+							"disabled": true
+						}
+					]
+				},
+				"description": "This request must be used to login and receive the token."
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{currentAccessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "cb3e5496-f966-4583-8d1a-665738b7b4a5",
+				"type": "text/javascript",
+				"exec": [
+					"const echoPostRequest = {",
+					"  url: 'http://iam.openintegrationhub.com/login?username={YOUR_USERNAME}&password={YOUR_PASSWORD}',",
+					"  method: 'POST',",
+					"  header: 'Content-Type:application/json'",
+					"};",
+					"",
+					"var getToken = true;",
+					"",
+					"if (!pm.environment.get('accessTokenExpiry') || ",
+					"    !pm.environment.get('currentAccessToken')) {",
+					"    console.log('Token or expiry date are missing')",
+					"} else if (pm.environment.get('accessTokenExpiry') <= (new Date()).getTime()) {",
+					"    console.log('Token is expired')",
+					"} else {",
+					"    getToken = false;",
+					"    console.log('Token and expiry date are all good');",
+					"}",
+					"    ",
+					"if (getToken === true) {",
+					"    pm.sendRequest(echoPostRequest, function (err, res) {",
+					"    console.log(err ? err : res.json());",
+					"        if (err === null) {",
+					"            console.log('Saving the token and expiry date')",
+					"            var responseJson = res.json();",
+					"            pm.environment.set('currentAccessToken', responseJson.token)",
+					"    ",
+					"            var expiryDate = new Date();",
+					"            expiryDate.setSeconds(expiryDate.getSeconds() + 7200);",
+					"            pm.environment.set('accessTokenExpiry', expiryDate.getTime());",
+					"        }",
+					"    });",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "0d550853-a164-4f9b-ba27-b9bcbcac460a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "54d6c000-6945-4753-8750-e877786be01c",
+			"key": "currentAccessToken",
+			"value": " ",
+			"type": "string"
+		},
+		{
+			"id": "892061f6-2d2f-440c-9c73-83f61a4be429",
+			"key": "accessTokenExpiry",
+			"value": " ",
+			"type": "string"
+		}
+	]
+}
