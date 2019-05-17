@@ -1,14 +1,13 @@
 const Logger = require('@basaas/node-logger');
 const passport = require('passport');
 const rp = require('request-promise');
-const jwtUtils = require('./../util/jwt');
 const TokenUtils = require('./../util/tokens');
+
+const Account = require('../models/account');
 
 const basic = require('../oidc/helper/basic-auth-header');
 const CONSTANTS = require('../constants');
 const conf = require('../conf');
-const RolesDAO = require('./../dao/roles');
-const AccountsDAO = require('./../dao/roles');
 const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
 
 const { oidc } = conf;
@@ -16,6 +15,16 @@ const { oidc } = conf;
 const log = Logger.getLogger(`${conf.general.loggingNameSpace}/auth`, {
     level: 'debug',
 });
+
+const removeEmptyProps = (obj) => {
+    /* eslint-disable-next-line no-restricted-syntax */
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && obj[key] === undefined) {
+            delete obj[key];
+        }
+    }
+    return obj;
+};
 
 // TODO: SERVICE_ACCOUNT shouldn't have admin privileges
 const isAdminRole = role => role === CONSTANTS.ROLES.ADMIN;
@@ -109,7 +118,7 @@ module.exports = {
     },
 
     authenticate: (req, res, next) => {
-        passport.authenticate('local', (err, user, passportErrorMsg) => {
+        passport.authenticate('local', async (err, user, passportErrorMsg) => {
 
             if (err) {
                 return next(err);
@@ -117,6 +126,13 @@ module.exports = {
 
             if (passportErrorMsg) {
                 if (passportErrorMsg.name === 'IncorrectPasswordError') {
+                    await Account.updateOne({
+                        username: req.body.username,
+                    }, {
+                        $inc: {
+                            'safeguard.failedLoginAttempts': 1,
+                        },
+                    });
                     return next({ status: 401, message: CONSTANTS.ERROR_CODES.PASSWORD_INCORRECT });
                 }
                 if (passportErrorMsg.name === 'IncorrectUsernameError') {
@@ -127,7 +143,7 @@ module.exports = {
                 return next({ status: 401, message: CONSTANTS.ERROR_CODES.DEFAULT });
             }
 
-            req.logIn(user, (err) => {
+            req.logIn(user, async (err) => {
                 if (err) {
                     log.error('Failed to login user', err);
                     return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -138,6 +154,15 @@ module.exports = {
                 } else {
                     req.session.cookie.expires = false; // Cookie expires at end of session
                 }
+
+                await Account.updateOne({
+                    username: req.body.username,
+                }, {
+                    $set: {
+                        'safeguard.lastLogin': new Date(),
+                        'safeguard.failedLoginAttempts': 0,
+                    },
+                });
 
                 req.session.save((err) => {
                     if (err) {
@@ -326,4 +351,18 @@ module.exports = {
         return next({ status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
 
     },
+
+    userIsAdmin: user => isAdminRole(user.role),
+
+    removeCriticalAccountFields: account => removeEmptyProps({
+        firstname: account.firstname,
+        lastname: account.lastname,
+        avatar: account.avatar,
+        phone: account.phone,
+    }),
+
+    removeCriticalTenantFields: tenant => removeEmptyProps({
+        name: tenant.name,
+    }),
+
 };
