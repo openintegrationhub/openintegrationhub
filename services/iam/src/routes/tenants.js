@@ -49,9 +49,9 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.tenant.create']]), async 
             log.error(err);
             return next(err);
         }
-            
+
     }
-    
+
 });
 
 /**
@@ -87,7 +87,7 @@ router.put('/:id', auth.isTenantAdmin, async (req, res, next) => {
     const props = req.body;
     try {
         await TenantDAO.update({ id: req.params.id, props, partialUpdate: false });
-    
+
         return res.sendStatus(200);
     } catch (err) {
         log.error(err);
@@ -100,7 +100,12 @@ router.put('/:id', auth.isTenantAdmin, async (req, res, next) => {
  *
  * */
 router.patch('/:id', auth.isTenantAdmin, async (req, res, next) => {
-    const props = req.body;
+    let props = req.body;
+
+    if (!auth.userIsAdmin(req.user)) {
+        props = auth.removeCriticalTenantFields(props);
+    }
+
     try {
         await TenantDAO.update({ id: req.params.id, props, partialUpdate: true });
 
@@ -124,7 +129,7 @@ router.delete('/:id', auth.can([RESTRICTED_PERMISSIONS['iam.tenant.delete']]), a
         log.error(err);
         return next({ status: 500, message: err });
     }
-    
+
 });
 
 /**
@@ -189,7 +194,7 @@ router.post('/:id/users', auth.isTenantAdmin, async (req, res, next) => {
 router.delete('/:id/user/:userId', auth.isTenantAdmin, async (req, res, next) => {
     try {
         const doc = await UserDAO.removeUserFromTenant({
-            tenantId: req.params.id, 
+            tenantId: req.params.id,
             userId: req.params.userId,
         });
         res.send(doc);
