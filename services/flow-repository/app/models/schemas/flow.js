@@ -18,6 +18,7 @@ const node = new Schema({
   },
   function: { type: String, required: [true, 'Flow nodes require a function.'], maxlength: 30 },
   name: { type: String, maxlength: 30 },
+  credentials_id: { type: String, maxlength: 30 },
   description: { type: String, maxlength: 100 },
   fields: {},
   _id: false,

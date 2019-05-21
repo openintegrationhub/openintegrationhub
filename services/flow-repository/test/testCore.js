@@ -406,6 +406,7 @@ describe('Flow Operations', () => {
               id: 'NodeOne',
               componentId: '5ca5c44c187c040010a9bb8b',
               function: 'getPersonsPolling',
+              credentials_id: 'SuperSecretCredential',
               fields: {
                 username: 'TestName',
                 password: 'TestPass',
@@ -456,6 +457,7 @@ describe('Flow Operations', () => {
     expect(j.data.graph.nodes[0].id).toEqual('NodeOne');
     expect(j.data.graph.nodes[0].componentId).toEqual('5ca5c44c187c040010a9bb8b');
     expect(j.data.graph.nodes[0].function).toEqual('getPersonsPolling');
+    expect(j.data.graph.nodes[0].credentials_id).toEqual('SuperSecretCredential');
     expect(j.data.graph.nodes[0].fields.username).toEqual('TestName');
     expect(j.data.graph.nodes[0].fields.password).toEqual('TestPass');
     expect(j.data.graph.edges[0].source).toEqual('NodeOne');
