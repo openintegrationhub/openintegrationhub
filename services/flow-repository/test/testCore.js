@@ -94,54 +94,67 @@ describe('Login Security', () => {
   });
 });
 
+describe('Flow Validation', () => {
+  test.only('should refuse a flow missing a graph', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'Should throw an error because there is no graph',
+      });
+    expect(res.status).toEqual(400);
+    expect(res.body.errors).toHaveLength(1);
+    expect(res.body.errors[0].message).toEqual('Path `graph` is required.');
+  });
+});
+
 
 describe('Flow Operations', () => {
   test('should add a flow', async () => {
-    try {
-      const res = await request
-        .post('/flows')
-        .set('Authorization', 'Bearer adminToken')
-        .set('accept', 'application/json')
-        .set('Content-Type', 'application/json')
-        .send({
-          type: 'ordinary',
-          name: 'WiceToSnazzy',
-          description: 'A description',
-          graph: {
-            nodes: [
-              {
-                id: 'NodeOne',
-                componentId: '123456',
-                function: 'getPersonsPolling',
-                fields: {
-                  username: 'TestName',
-                  password: 'TestPass',
-                },
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        type: 'ordinary',
+        name: 'WiceToSnazzy',
+        description: 'A description',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'getPersonsPolling',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
               },
-              {
-                id: 'NodeTwo',
-                componentId: '654321',
-                function: 'transformTestToOih',
-              },
-            ],
-            edges: [
-              {
-                source: 'NodeOne',
-                target: 'NodeTwo',
-              },
-            ],
-          },
-        });
-      expect(res.status).toEqual(201);
-      expect(res.text).not.toHaveLength(0);
-      const j = res.body;
-      expect(j).not.toBeNull();
-      expect(j.data).toHaveProperty('id');
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'transformTestToOih',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeOne',
+              target: 'NodeTwo',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(201);
+    expect(res.text).not.toHaveLength(0);
+    const j = res.body;
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveProperty('id');
 
-      flowId1 = j.data.id;
-    } catch (e) {
-      log.error(e);
-    }
+    flowId1 = j.data.id;
   });
 
 
@@ -164,7 +177,7 @@ describe('Flow Operations', () => {
     expect(j.data.graph).toHaveProperty('nodes');
     expect(j.data.graph).toHaveProperty('edges');
     expect(j.data.graph.nodes[0].id).toEqual('NodeOne');
-    expect(j.data.graph.nodes[0].componentId).toEqual('123456');
+    expect(j.data.graph.nodes[0].componentId).toEqual('5ca5c44c187c040010a9bb8b');
     expect(j.data.graph.nodes[0].function).toEqual('getPersonsPolling');
     expect(j.data.graph.nodes[0].fields.username).toEqual('TestName');
     expect(j.data.graph.nodes[0].fields.password).toEqual('TestPass');

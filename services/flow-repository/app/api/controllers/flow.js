@@ -10,6 +10,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('../../config/index');
 const { publishAuditLog } = require('../../utils/eventBus');
+const { validate } = require('../../utils/validator');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
@@ -136,37 +137,42 @@ router.post('/', jsonParser, async (req, res) => {
     return res.status(403).send({ errors: [{ message: 'User does not have permissions to write flows', code: 403 }] });
   }
 
-  // Automatically adds the current user as an owner.
+  // Automatically adds the current user as an owner, if not already included.
   if (!newFlow.owners) {
     newFlow.owners = [];
   }
-  newFlow.owners.push({ id: credentials[0], type: 'user' });
+  if (newFlow.owners.findIndex(o => (o.id === credentials[0])) === -1) {
+    newFlow.owners.push({ id: credentials[0], type: 'user' });
+  }
 
   const storeFlow = new Flow(newFlow);
+  const errors = validate(storeFlow);
 
-  if (!res.headersSent) {
-    try {
-      const response = await storage.addFlow(storeFlow);
+  if (errors && errors.length > 0) {
+    return res.status(400).send({ errors });
+  }
 
-      const ev = {
-        name: 'flowCreated',
-        payload: {
-          tenant: credentials[1] ? credentials[1] : '',
-          source: credentials[0] ? credentials[0] : '',
-          object: 'flow',
-          action: 'createFlow',
-          subject: response.id,
-          details: `A new flow with the id ${response.id} was created`,
-        },
-      };
+  try {
+    const response = await storage.addFlow(storeFlow);
 
-      await publishAuditLog(ev);
+    const ev = {
+      name: 'flowCreated',
+      payload: {
+        tenant: credentials[1] ? credentials[1] : '',
+        source: credentials[0] ? credentials[0] : '',
+        object: 'flow',
+        action: 'createFlow',
+        subject: response.id,
+        details: `A new flow with the id ${response.id} was created`,
+      },
+    };
 
-      return res.status(201).send({ data: response, meta: {} });
-    } catch (err) {
-      log.error(err);
-      return res.status(500).send({ errors: [{ message: err }] });
-    }
+    await publishAuditLog(ev);
+
+    return res.status(201).send({ data: response, meta: {} });
+  } catch (err) {
+    log.error(err);
+    return res.status(500).send({ errors: [{ message: err }] });
   }
 });
 
