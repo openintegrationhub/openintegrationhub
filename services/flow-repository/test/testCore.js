@@ -95,7 +95,7 @@ describe('Login Security', () => {
 });
 
 describe('Flow Validation', () => {
-  test.only('should refuse a flow missing a graph', async () => {
+  test('should refuse a flow missing a graph', async () => {
     const res = await request
       .post('/flows')
       .set('Authorization', 'Bearer adminToken')
@@ -107,7 +107,284 @@ describe('Flow Validation', () => {
       });
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(1);
-    expect(res.body.errors[0].message).toEqual('Path `graph` is required.');
+    expect(res.body.errors[0].message).toEqual('Flows require a graph.');
+  });
+
+  test('should refuse a flow missing nodes', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'Should throw an error because there are no nodes',
+        graph: {},
+      });
+    expect(res.status).toEqual(400);
+    expect(res.body.errors).toHaveLength(1);
+    expect(res.body.errors[0].message).toEqual('Flows require at least one node.');
+  });
+
+  test('should refuse a flow with malformed nodes', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'Should throw several errors because the node lacks required attributes',
+        graph: {
+          nodes: [
+            {
+              name: 'nodeName',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(400);
+    expect(res.body.errors).toHaveLength(3);
+    expect(res.body.errors[0].message).toEqual('Flow nodes require a function.');
+    expect(res.body.errors[1].message).toEqual('Flow nodes require a componentId.');
+    expect(res.body.errors[2].message).toEqual('Flow nodes require an id.');
+  });
+
+  test('should refuse a flow with several nodes but no edges', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'Should throw an error each for missing edges and invalid componentId',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeId',
+              name: 'nodeName',
+              function: 'function',
+              componentId: '5ca5c44c187c040010a9bb8b',
+            },
+            {
+              id: 'NodeId',
+              name: 'nodeName',
+              function: 'function',
+              componentId: 'abc',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(400);
+    expect(res.body.errors).toHaveLength(2);
+    expect(res.body.errors[0].message).toEqual('The componentId "abc" is not a valid ID for the component repository.');
+    expect(res.body.errors[1].message).toEqual('Flows with more than one node require edges.');
+  });
+
+  test('should refuse a flow with malformed edges', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'Should throw an error each for target/source and missing attributes',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeId',
+              name: 'nodeName',
+              function: 'function',
+              componentId: '5ca5c44c187c040010a9bb8b',
+            },
+            {
+              id: 'NodeId2',
+              name: 'nodeName',
+              function: 'function',
+              componentId: '5ca5c44c187c040010a9bb8c',
+            },
+          ],
+          edges: [
+            {
+              id: 'EmptyEdge',
+            },
+            {
+              source: 'NotANode',
+              target: 'NodeId',
+            },
+            {
+              source: 'NodeId2',
+              target: 'NotANode2',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(400);
+    expect(res.body.errors).toHaveLength(6);
+    expect(res.body.errors[0].message).toEqual('Flow edges require a target.');
+    expect(res.body.errors[1].message).toEqual('Flow edges require a source.');
+    expect(res.body.errors[2].message).toEqual('Edge source with id "undefined" could not be found among nodes.');
+    expect(res.body.errors[3].message).toEqual('Edge target with id "undefined" could not be found among nodes.');
+    expect(res.body.errors[4].message).toEqual('Edge source with id "NotANode" could not be found among nodes.');
+    expect(res.body.errors[5].message).toEqual('Edge target with id "NotANode2" could not be found among nodes.');
+  });
+
+  test('should refuse a flow with malformed minor attributes', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'Should throw an error each for cron, status, and owner',
+        cron: 'abcde',
+        status: 'active',
+        owners: [
+          { id: '12345' },
+          { type: 'user' },
+        ],
+        graph: {
+          nodes: [
+            {
+              id: 'NodeId',
+              name: 'nodeName',
+              function: 'function',
+              componentId: '5ca5c44c187c040010a9bb8b',
+            },
+            {
+              id: 'NodeId2',
+              name: 'nodeName',
+              function: 'function',
+              componentId: '5ca5c44c187c040010a9bb8c',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeId2',
+              target: 'NodeId',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(400);
+    expect(res.body.errors).toHaveLength(4);
+    expect(res.body.errors[0].message).toEqual('Flow owners require a type.');
+    expect(res.body.errors[1].message).toEqual('Flow owners require an id.');
+    expect(res.body.errors[2].message).toEqual('Flow status cannot be set manually. Use the flow start/stop end points instead.');
+    expect(res.body.errors[3].message).toEqual('Invalid cron expression.');
+  });
+
+  test('should refuse a flow with too long attribute values', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'Should throw an error for just about every single field due to length',
+        owners: [
+          { id: '01234567890123456789012345678901', type: '01234567890123456789012345678901' },
+        ],
+        graph: {
+          nodes: [
+            {
+              id: '01234567890123456789012345678901',
+              name: '01234567890123456789012345678901',
+              function: '01234567890123456789012345678901',
+              componentId: '5ca5c44c187c040010a9bb8b',
+            },
+            {
+              id: '01234567890123456789012345678901',
+              name: '01234567890123456789012345678901',
+              function: '01234567890123456789012345678901',
+              componentId: '5ca5c44c187c040010a9bb8c',
+            },
+          ],
+          edges: [
+            {
+              id: '01234567890123456789012345678901',
+              source: '01234567890123456789012345678901',
+              target: '01234567890123456789012345678901',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(400);
+    expect(res.body.errors).toHaveLength(11);
+    expect(res.body.errors[0].message).toEqual('Path `id` (`01234567890123456789012345678901`) is longer than the maximum allowed length (30).');
+  });
+
+  test('should refuse a flow according to the same rules when updating a flow', async () => {
+    const tempFlow = {
+      graph: {
+        nodes: [
+          {
+            id: 'Testnode',
+            function: 'function',
+            componentId: '5ca5c44c187c040010a9bb8b',
+          },
+        ],
+      },
+      owners: [
+        { id: 'TestAdmin', type: 'user' },
+      ],
+    };
+
+    const storeFlow = new Flow(tempFlow);
+    const result = await storeFlow.save();
+    const tempFlowId = (result._doc._id.toString());
+
+    const res = await request
+      .patch(`/flows/${tempFlowId}`)
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'Should throw a variety of errors for most fields',
+        cron: 'abcde',
+        status: 'active',
+        owners: [
+          { id: '12345' },
+          { type: 'user' },
+        ],
+        graph: {
+          nodes: [
+            {
+              id: 'NodeId',
+              name: 'nodeName',
+              componentId: 'abcd',
+            },
+            {
+              id: 'NodeId2',
+              name: 'nodeName',
+              function: 'function',
+              componentId: '5ca5c44c187c040010a9bb8c',
+            },
+          ],
+          edges: [
+            {
+              id: 'EmptyEdge',
+            },
+            {
+              source: 'NotANode',
+              target: 'NodeId',
+            },
+            {
+              source: 'NodeId2',
+              target: 'NotANode2',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(400);
+    expect(res.body.errors).toHaveLength(12);
+
+    const delResponse = await Flow.findOneAndDelete({ _id: tempFlowId }).lean();
   });
 });
 
@@ -233,9 +510,33 @@ describe('Flow Operations', () => {
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        type: 'long_running',
-        name: 'SnazzyZoWice',
+        type: 'long-running',
+        name: 'SnazzyToWice',
         description: 'Different content',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'upsertPerson',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
+              },
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'transformTestFromOih',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeTwo',
+              target: 'NodeOne',
+            },
+          ],
+        },
       });
     expect(res.status).toEqual(201);
     expect(res.text).not.toBeNull();

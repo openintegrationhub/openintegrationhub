@@ -215,11 +215,20 @@ router.patch('/:id', jsonParser, async (req, res) => {
     delete updateFlow.id;
 
     // Re-adds the current user to the owners array if they're missing
-    if (!updateFlow.owners.some(e => e.id === writeCredentials[0])) {
+    if (!updateFlow.owners) {
+      updateFlow.owners = [];
+    }
+    if (updateFlow.owners.findIndex(o => (o.id === writeCredentials[0])) === -1) {
       updateFlow.owners.push({ id: writeCredentials[0], type: 'user' });
     }
 
     const storeFlow = new Flow(updateFlow);
+
+    const errors = validate(storeFlow);
+
+    if (errors && errors.length > 0) {
+      return res.status(400).send({ errors });
+    }
 
     if (!res.headersSent) {
       try {
