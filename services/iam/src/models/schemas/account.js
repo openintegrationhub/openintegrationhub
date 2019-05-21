@@ -33,7 +33,7 @@ const schema = {
         required: true,
         validate: [validateEmail, CONSTANTS.ERROR_CODES.EMAIL_NOT_VALID],
     },
-    
+
     firstname: { type: String, index: true },
     lastname: { type: String, index: true },
     phone: String,
@@ -57,10 +57,14 @@ const schema = {
             CONSTANTS.ROLES.SERVICE_ACCOUNT,
         ],
         'default': CONSTANTS.ROLES.USER,
-        
+
     },
     memberships: [membershipsSchema],
     permissions: [String],
+    safeguard: {
+        lastLogin: Date,
+        failedLoginAttempts: Number,
+    },
 };
 
 const account = new Schema(schema, {
@@ -73,7 +77,7 @@ account.plugin(passportLocalMongoose);
 const accountFull = new Schema({
     ...schema,
     hash: String,
-    salt: String, 
+    salt: String,
 }, {
     timestamps: true,
     strict: true,
