@@ -22,6 +22,9 @@ This document is designed as a guide on _how to propely use the open integration
       - [Delete a Component](#delete-a-component)
     - [Identity and Access Management](#identity-and-access-management)
       - [Login](#login)
+  - [Examples](#examples)
+    - [Flow Examples](#flow-examples)
+    - [Component Examples](#component-examples)
 
 ## Prerequisites
 
@@ -63,6 +66,8 @@ Steps to perform:
 
 1. Click on `Send`
 
+---
+
 #### Get a Flow
 
 **Type of request:** GET
@@ -73,6 +78,8 @@ Steps to perform:
 
 1. Replace the `{FLOW_ID}` placeholder with an existing flow id
 2. Click on `Send`
+
+---
 
 #### Post a Flow
 
@@ -88,6 +95,8 @@ _Note:_ The property `componentId` must point to an existing component within th
 
 _Hint:_ There is a predefined body that can be used.
 
+---
+
 #### Update a Flow
 
 **Type of request:** PATCH
@@ -102,6 +111,8 @@ _Note:_ Partial updates to a flow are possible. If you want to change a property
 
 _Hint:_ There is a predefined body that can be used.
 
+---
+
 #### Delete a Flow
 
 **Type of request:** DELETE
@@ -110,6 +121,8 @@ _Hint:_ There is a predefined body that can be used.
 
 1. Replace the `{FLOW_ID}` placeholder with an existing flow id
 2. Click on `Send`
+
+---
 
 #### Start a Flow
 
@@ -120,6 +133,8 @@ _Hint:_ There is a predefined body that can be used.
 1. Replace the `{FLOW_ID}` placeholder with an existing flow id
 2. Click on `Send`
 
+---
+
 #### Stop a Flow
 
 **Type of request:** POST
@@ -128,6 +143,8 @@ _Hint:_ There is a predefined body that can be used.
 
 1. Replace the `{FLOW_ID}` placeholder with an existing flow id
 2. Click on `Send`
+
+---
 
 ### Components
 
@@ -141,6 +158,8 @@ Steps to perform:
 
 1. Click on `Send`
 
+---
+
 #### Get a Component
 
 **Type of request:** GET
@@ -151,6 +170,8 @@ Steps to perform:
 
 1. Replace the `{COMPONENT_ID}` placeholder with an existing component id
 2. Click on `Send`
+
+---
 
 #### Post a Component
 
@@ -166,6 +187,8 @@ _Note:_ The image must have a valid _tag_. E.g. openintegrationhub/ms-office-ada
 
 _Hint:_ There is a predefined body that can be used.
 
+---
+
 #### Update a Component
 
 **Type of request:** PATCH
@@ -179,6 +202,8 @@ _Hint:_ There is a predefined body that can be used.
 
 _Hint:_ There is a predefined body that can be used.
 
+---
+
 #### Delete a Component
 
 **Type of request:** DELETE
@@ -187,6 +212,8 @@ _Hint:_ There is a predefined body that can be used.
 
 1. Replace the `{COMPONENT_ID}` placeholder with an existing component id
 2. Click on `Send`
+
+---
 
 ### Identity and Access Management
 
@@ -202,3 +229,117 @@ _Hint:_ There is a predefined body that can be used.
 4. Click on send
 
 _Note_: As described in the [setup](#setup) section, there is no need to login manually as the pre-request script takes care of receiving and renewing the token.
+
+---
+
+## Examples
+
+### Flow Examples
+
+This example synchronizes contact data from SnazzyContacts to Wice and to Webhook.Site.
+
+In order to display your data correctly it is necessary that you perform the subsequent steps before you post the flow.
+
+1. Go to webhook.site
+2. Copy the link to the clipboard
+3. Exchange the predefined uri in the Code-Component with the one you copied to your clipboard
+4. Add username and password for the node with id `snazzy`
+5. Add username, password and client_name for the node with id `wice_adapter`
+
+_Note:_ If you don't have a test account for one (SnazzyContacts/WiceCRM) or both applications please request one from [hschmidthh](https://github.com/hschmidthh) EMail:<hschmidt@wice.de>
+
+Step3:
+![webhookSiteUri](assets/webhookSiteUri.PNG)
+
+Step4:
+
+![snazzyCredentials](assets/snazzyCredentials.PNG)
+
+Step5:
+
+![wiceCredentials](assets/wiceCredentials.PNG)
+
+Flow:
+
+```json
+{
+   "name":"SnazzyToWiceAndCodeComponent",
+   "description":"This flow polls for persons and pushed them to webhook.site and wice crm.",
+   "graph":{
+      "nodes":[
+         {
+            "id":"snazzy",
+            "componentId":"5ce27d453860ff001a034274",
+            "name":"",
+            "function":"getPersonsPolling",
+            "description":"",
+            "fields":{
+               "username":"",
+               "password":""
+            }
+         },
+         {
+            "id":"snazzy_transformer",
+            "componentId":"5ce27f4b3860ff001a034277",
+            "name":"",
+            "function":"transformPersonToOih",
+            "description":""
+         },
+         {
+            "id":"wice_transformer",
+            "componentId":"5ce27f2d3860ff001a034276",
+            "name":"",
+            "function":"transformPersonFromOih",
+            "description":""
+         },
+         {
+            "id":"wice_adapter",
+            "componentId":"5ce27d653860ff001a034275",
+            "name":"",
+            "function":"upsertPerson",
+            "description":"",
+            "fields":{
+               "username":"",
+               "password":"",
+               "client_name":""
+            }
+         },
+         {
+            "id":"code_component",
+            "componentId":"5cde85443860ff001a034273",
+            "name":"",
+            "function":"execute",
+            "description":"",
+            "fields":{
+               "code":"function* run() {console.log('Calling external URL');yield request.post({uri: 'http://webhook.site/ae17e5b3-1da6-4d2b-b664-4787ad5953d5', body: msg.body, json: true});}"
+            }
+         }
+      ],
+      "edges":[
+         {
+            "source":"snazzy",
+            "target":"snazzy_transformer"
+         },
+         {
+            "source":"snazzy_transformer",
+            "target":"wice_transformer"
+         },
+         {
+            "source":"wice_transformer",
+            "target":"code_component"
+         },
+         {
+            "source":"wice_transformer",
+            "target":"wice_adapter"
+         }
+      ]
+   },
+   "type":"ordinary",
+   "cron":"*/3 * * * *",
+   "owners":[
+
+   ]
+}
+```
+
+### Component Examples
