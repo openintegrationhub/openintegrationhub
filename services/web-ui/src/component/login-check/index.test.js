@@ -1,31 +1,15 @@
-import { Provider } from 'react-redux';
-
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { mount } from 'enzyme';
-import mock from 'xhr-mock';
-import { OidcProvider } from 'redux-oidc';
-import Container from '.';
-import store from '../../../../../shared/store/configureStore';
-import userManager from '../../../util/user-manager';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
+import App from '.';
 
-describe('<Container />', () => {
-
-    beforeEach(() => mock.setup());
-    afterEach(() => mock.teardown());
-    
-    it('calls rendered', () => {
-
-        mount(  
-            <Provider store={store}>
-                <OidcProvider store={store} userManager={userManager}>
-                    <MemoryRouter initialEntries={['/']}>
-                        <Container/>
-                    </MemoryRouter>
-                </OidcProvider>
-            </Provider>          
-        );
-
-        expect(true).toBe(true);
-    });
+it('renders without crashing', () => {
+    mount(
+        <Provider store={global.configureStore()}>
+            <MemoryRouter>
+                <App />
+            </MemoryRouter>
+        </Provider>,
+    );
 });
