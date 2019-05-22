@@ -1,7 +1,3 @@
-[![CircleCI](https://circleci.com/gh/openintegrationhub/openintegrationhub/tree/master.svg?style=svg)](https://circleci.com/gh/openintegrationhub/openintegrationhub/tree/master)
-[![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](LICENSE)
-
-
 <p align="center">
   <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
 </p>
@@ -11,6 +7,9 @@ The revolution in data synchronization — the Open Integration Hub enables simp
 Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
 
 # Introduction
+
+[![CircleCI](https://circleci.com/gh/openintegrationhub/openintegrationhub/tree/master.svg?style=svg)](https://circleci.com/gh/openintegrationhub/openintegrationhub/tree/master)
+[![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](LICENSE)
 
 The purpose of the Open Integration Hub is to enhance businesses by simplifying integration. Traditional integration means development and maintenance of multiple connections.
 Open Integration Hub requires only a single connection to the framework.
