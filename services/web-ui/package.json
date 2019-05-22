@@ -28,11 +28,15 @@
     ]
   },
   "devDependencies": {
+    "@material-ui/icons": "^3.0.2",
+    "axios": "^0.18.0",
+    "classnames": "^2.2.6",
     "@material-ui/core": "3.9.3",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.13.1",
     "react-test-renderer": "^16.8.6",
     "history": "^4.9.0",
+    "immutability-helper": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "16.8.6",
     "react-dom": "16.8.6",
