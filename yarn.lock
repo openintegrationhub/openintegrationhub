@@ -1069,7 +1069,7 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
-"@basaas/node-logger@1.1.5":
+"@basaas/node-logger@1.1.5", "@basaas/node-logger@^1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@basaas/node-logger/-/node-logger-1.1.5.tgz#f2ffae7078f57b2687f11b72d7cc7d28a1a39033"
   integrity sha512-wZm7Uw98qA+vbA4hSXYH0XSEyAlQ/ViUnsfrDrafBgTDCTjCqMpf8AnDykv7rcTpoVHFIYacyo90gMaLgkuqDw==
@@ -4286,7 +4286,7 @@ compressible@~2.0.16:
   dependencies:
     mime-db ">= 1.40.0 < 2"
 
-compression@^1.5.2:
+compression@^1.5.2, compression@^1.7.4:
   version "1.7.4"
   resolved "https://registry.yarnpkg.com/compression/-/compression-1.7.4.tgz#95523eff170ca57c29a0ca41e6fe131f41e5bb8f"
   integrity sha512-jaSIDzP9pZVS4ZfQ+TzvtiWhdpFhE2RDHz8QJkpX9SIpLq88VueF5jJw6t+6CUQcAoA6t+x89MLrWAqpfDE8iQ==
@@ -5617,6 +5617,11 @@ dotenv@7.0.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-7.0.0.tgz#a2be3cd52736673206e8a85fb5210eea29628e7c"
   integrity sha512-M3NhsLbV1i6HuGzBUH8vXrtxOk+tWmzWKDMbAVSUp3Zsjm7ywFeuwrUXhmhQyRK1q5B5GGy7hcXPbj3bnfZg2g==
 
+dotenv@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.0.0.tgz#ed310c165b4e8a97bb745b0a9d99c31bda566440"
+  integrity sha512-30xVGqjLjiUOArT4+M5q9sYdvuR4riM6yK9wMcas9Vbp6zZa+ocC9dp6QoftuhTPhFAiLK/0C5Ni2nou/Bk8lg==
+
 dtrace-provider@~0.8:
   version "0.8.7"
   resolved "https://registry.yarnpkg.com/dtrace-provider/-/dtrace-provider-0.8.7.tgz#dc939b4d3e0620cfe0c1cd803d0d2d7ed04ffd04"
@@ -6568,7 +6573,7 @@ express@4.16.4, express@^4.16.3:
     utils-merge "1.0.1"
     vary "~1.1.2"
 
-express@^4.16.2:
+express@^4.16.2, express@^4.17.0:
   version "4.17.0"
   resolved "https://registry.yarnpkg.com/express/-/express-4.17.0.tgz#288af62228a73f4c8ea2990ba3b791bb87cd4438"
   integrity sha512-1Z7/t3Z5ZnBG252gKUPyItc4xdeaA0X934ca2ewckAsVsw9EG71i++ZHZPYnus8g/s5Bty8IMpSVEuRkmwwPRQ==
