@@ -2,6 +2,7 @@ import { GET_USERS, LOGIN } from '../action/users';
 
 const initialState = {
     isLoggedIn: false,
+    token: '',
     all: [],
 };
 

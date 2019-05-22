@@ -1,5 +1,11 @@
+import axios from 'axios';
+
 export const GET_USERS = 'GET_USERS';
 export const LOGIN = 'LOGIN';
+
+const setAxiosAuth = (token) => {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+};
 
 export const getUsers = () => async (dispatch) => {
     dispatch({
@@ -10,9 +16,19 @@ export const getUsers = () => async (dispatch) => {
         ],
     });
 };
-export const login = () => async (dispatch) => {
-    dispatch({
-        type: LOGIN,
-        isLoggedIn: true,
+export const login = data => async (dispatch) => {
+    const result = await axios({
+        method: 'post',
+        url: '/login',
+        data,
     });
+    console.log(result);
+    if (result.status === 200) {
+        setAxiosAuth(result.body.token);
+        dispatch({
+            type: LOGIN,
+            isLoggedIn: true,
+            token: result.body.token,
+        });
+    }
 };

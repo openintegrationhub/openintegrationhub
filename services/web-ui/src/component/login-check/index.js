@@ -2,13 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Redirect } from 'react-router-dom';
-import axios from 'axios';
-import { login } from '../../action/users';
-
-
-// const setAxiosAuth = (token) => {
-//     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-// };
 
 
 class LoginCheck extends React.Component {
@@ -40,8 +33,7 @@ class LoginCheck extends React.Component {
     // }
 
     render() {
-        if (this.state.isLoggedIn) {
-            console.log('true');
+        if (this.props.isLoggedIn) {
             return <React.Fragment>
                 {this.props.children}
             </React.Fragment>;
@@ -57,9 +49,7 @@ const mapStateToProps = state => ({
     user: state.user,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-    login,
-}, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
 
 export default connect(
     mapStateToProps,
