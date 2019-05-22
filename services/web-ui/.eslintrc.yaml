@@ -15,6 +15,8 @@ extends:
 - plugin:react/recommended
 - plugin:jsx-a11y/recommended
 rules:
+  import/prefer-default-export: 0
+  indent: [1, 4]
   react/prop-types: 0
   react/no-find-dom-node: 1
   react/no-string-refs: 1
