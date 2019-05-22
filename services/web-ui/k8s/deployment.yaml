@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: web-ui
+  namespace: oih-dev-ns
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: web-ui
+    spec:
+      containers:
+      - name: web-ui
+        image: openintegrationhub/web-ui:latest
+        env:
+        - name: PORT
+          value: '3099'
+        - name: BASEURL
+          value: 'https://web-ui.openintegrationhub.com'
+        - name: ORIGINWHITELIST
+          value: 'openintegrationhub.com'
+        - name: NODE_ENV
+          value: "production"
+        - name: "INTROSPECT_TYPE"
+          value: "basic"
+        - name: "INTROSPECT_ENDPOINT_BASIC"
+          value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: web-ui
+              key: iamtoken
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 300
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: '0.1'
+            memory: 500Mi
