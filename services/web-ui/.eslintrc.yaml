@@ -15,6 +15,8 @@ extends:
 - plugin:react/recommended
 - plugin:jsx-a11y/recommended
 rules:
+  class-methods-use-this: 0
+  no-console: 0
   import/prefer-default-export: 0
   indent: [1, 4]
   react/prop-types: 0
