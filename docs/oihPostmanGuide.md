@@ -27,3 +27,157 @@ Here you can see where you should add the username and password:
 Now you can proceed and use the predefined requests.
 
 ## Use Cases
+
+### Flows
+
+For further information on the underlying flow repository please visit the [API docs](http://flow-repository.openintegrationhub.com/api-docs/) and [GitHub](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/flow-repository).
+
+#### Get All Flows
+
+**Type of request:** GET
+
+**Postman request name:** Get user flows
+
+Steps to perform:
+
+1. Click on `Send`
+
+#### Get a Flow
+
+**Type of request:** GET
+
+**Postman request name:** Get flow by id
+
+Steps to perform:
+
+1. Replace the `{FLOW_ID}` placeholder with an existing flow id
+2. Click on `Send`
+
+#### Post a Flow
+
+**Type of request:** POST
+
+**Postman request name:** Post a new flow
+
+1. Go to the `Body` tab
+2. Add a new flow (exemplary flows can be found at the end of this document)
+3. Click on `Send`
+
+_Note:_ The property `componentId` must point to an existing component within the component repository (See: [components](#components))
+
+_Hint:_ There is a predefined body that can be used.
+
+#### Update a Flow
+
+**Type of request:** PATCH
+
+**Postman request name:** Update a flow by id
+
+1. Go to the `Body` tab
+2. Add a the updated (exemplary flows can be found at the end of this document)
+3. Click on `Send`
+
+_Note:_ Partial updates to a flow are possible. If you want to change a property of a flow graph you must provide the whole `flow.graph` property.
+
+_Hint:_ There is a predefined body that can be used.
+
+#### Delete a Flow
+
+**Type of request:** DELETE
+
+**Postman request name:** Delete a flow by id
+
+1. Replace the `{FLOW_ID}` placeholder with an existing flow id
+2. Click on `Send`
+
+#### Start a Flow
+
+**Type of request:** POST
+
+**Postman request name:** Start a flow by id
+
+1. Replace the `{FLOW_ID}` placeholder with an existing flow id
+2. Click on `Send`
+
+#### Stop a Flow
+
+**Type of request:** POST
+
+**Postman request name:** Stop a flow by id
+
+1. Replace the `{FLOW_ID}` placeholder with an existing flow id
+2. Click on `Send`
+
+### Components
+
+#### Get All Components
+
+**Type of request:** GET
+
+**Postman request name:** Get user components
+
+Steps to perform:
+
+1. Click on `Send`
+
+#### Get a Component
+
+**Type of request:** GET
+
+**Postman request name:** Get a component by id
+
+Steps to perform:
+
+1. Replace the `{COMPONENT_ID}` placeholder with an existing component id
+2. Click on `Send`
+
+#### Post a Component
+
+**Type of request:** POST
+
+**Postman request name:** Post a new component
+
+1. Go to the `Body` tab
+2. Add a new flow (exemplary components can be found at the end of this document)
+3. Click on `Send`
+
+_Note:_ The image must have a valid _tag_. E.g. openintegrationhub/ms-office-adapter:latest
+
+_Hint:_ There is a predefined body that can be used.
+
+#### Update a Component
+
+**Type of request:** PATCH
+
+**Postman request name:** Update a component by id
+
+1. Replace the `{COMPONENT_ID}` placeholder with an existing component id
+2. Go to the `Body` tab
+3. Add a the updated (exemplary components can be found at the end of this document)
+4. Click on `Send`
+
+_Hint:_ There is a predefined body that can be used.
+
+#### Delete a Component
+
+**Type of request:** DELETE
+
+**Postman request name:** Delete a component by id
+
+1. Replace the `{COMPONENT_ID}` placeholder with an existing component id
+2. Click on `Send`
+
+### Identity and Access Management
+
+#### Login
+
+**Type of request:** Post
+
+**Postman request name:** Login
+
+1. Go to the `Params` tab
+2. Enter your username as the value for key:`username`
+3. Enter your password as the value for key:`password`
+4. Click on send
+
+_Note_: As described in the [setup](#setup) section, there is no need to login manually as the pre-request script takes care of receiving and renewing the token.
