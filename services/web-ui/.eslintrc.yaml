@@ -11,8 +11,8 @@ env:
   jasmine: true
 extends:
 - airbnb-base
-- react
-- jsx-a11y
+- plugin:react/recommended
+- plugin:jsx-a11y/recommended
 rules:
   class-methods-use-this: 0
   no-console: 0

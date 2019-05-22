@@ -1,9 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { mount } from 'enzyme';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import App from '.';
 
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
+    mount(
+        <Provider store={global.configureStore()}>
+            <MemoryRouter>
+                <App />
+            </MemoryRouter>
+        </Provider>,
+    );
 });
