@@ -1,6 +1,7 @@
-import { GET_USERS } from '../action/users';
+import { GET_USERS, LOGIN } from '../action/users';
 
 const initialState = {
+    isLoggedIn: false,
     all: [],
 };
 
@@ -9,6 +10,10 @@ export default (state = initialState, action) => {
     case GET_USERS:
         return {
             all: action.users,
+        };
+    case LOGIN:
+        return {
+            isLoggedIn: action.users,
         };
     default:
         return state;

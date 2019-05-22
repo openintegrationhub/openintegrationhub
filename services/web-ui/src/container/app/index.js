@@ -5,16 +5,22 @@ import { Route, Switch } from 'react-router-dom';
 import Home from '../home';
 import Login from '../login';
 import UserManagement from '../usermanagement';
+import LoginCheck from '../../component/login-check';
 
 import './index.css';
 
 function App() {
     return (
+
         <Switch>
             <Route exact path="/login" component={Login} />
-            <Route exact path="/user" component={UserManagement} />
-            <Route exact path="/" component={Home} />
+            <LoginCheck>
+                <Route exact path="/user" component={UserManagement} />
+                <Route exact path="/" component={Home} />
+            </LoginCheck>
         </Switch>
+
+
     );
 }
 

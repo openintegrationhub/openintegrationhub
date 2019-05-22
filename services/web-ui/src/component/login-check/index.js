@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
-import login from '../../action/users';
+import { login } from '../../action/users';
 
 
-const setAxiosAuth = (token) => {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-};
+// const setAxiosAuth = (token) => {
+//     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+// };
 
 
 class LoginCheck extends React.Component {
@@ -25,27 +25,27 @@ class LoginCheck extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.user !== prevProps.user) {
-            if (this.props.user !== null) {
-                setAxiosAuth(this.props.user.access_token);
-            }
-        }
+    // componentDidUpdate(prevProps) {
+    //     if (this.props.user !== prevProps.user) {
+    //         if (this.props.user !== null) {
+    //             setAxiosAuth(this.props.user.access_token);
+    //         }
+    //     }
 
-        // if (prevProps.tokenInvalid !== this.props.tokenInvalid) {
-        //     this.setState({
-        //         isLoggedIn: false,
-        //     });
-        // }
-    }
+    //     if (prevProps.tokenInvalid !== this.props.tokenInvalid) {
+    //         this.setState({
+    //             isLoggedIn: false,
+    //         });
+    //     }
+    // }
 
     render() {
         if (this.state.isLoggedIn) {
+            console.log('true');
             return <React.Fragment>
                 {this.props.children}
             </React.Fragment>;
         }
-
 
         return (
             <Redirect to="/login"></Redirect>

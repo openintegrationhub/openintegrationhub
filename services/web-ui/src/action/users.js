@@ -1,4 +1,5 @@
 export const GET_USERS = 'GET_USERS';
+export const LOGIN = 'LOGIN';
 
 export const getUsers = () => async (dispatch) => {
     dispatch({
@@ -7,5 +8,11 @@ export const getUsers = () => async (dispatch) => {
             {},
             {},
         ],
+    });
+};
+export const login = () => async (dispatch) => {
+    dispatch({
+        type: LOGIN,
+        isLoggedIn: true,
     });
 };
