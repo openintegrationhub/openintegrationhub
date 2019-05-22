@@ -2,6 +2,27 @@
 
 This document is designed as a guide on _how to propely use the open integration hub with postman_.
 
+- [Introduction](#introduction)
+  - [Prerequisites](#prerequisites)
+  - [SetUp](#setup)
+  - [Use Cases](#use-cases)
+    - [Flows](#flows)
+      - [Get All Flows](#get-all-flows)
+      - [Get a Flow](#get-a-flow)
+      - [Post a Flow](#post-a-flow)
+      - [Update a Flow](#update-a-flow)
+      - [Delete a Flow](#delete-a-flow)
+      - [Start a Flow](#start-a-flow)
+      - [Stop a Flow](#stop-a-flow)
+    - [Components](#components)
+      - [Get All Components](#get-all-components)
+      - [Get a Component](#get-a-component)
+      - [Post a Component](#post-a-component)
+      - [Update a Component](#update-a-component)
+      - [Delete a Component](#delete-a-component)
+    - [Identity and Access Management](#identity-and-access-management)
+      - [Login](#login)
+
 ## Prerequisites
 
 In order to use the Open Integration Hub we provided a [postman collection](postman/OIH_Framework_Showcase.postman_collection.json) and a [postman environment](OIH_Framework.postman_environment.json).
