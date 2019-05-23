@@ -26,26 +26,26 @@ let counter = 0;
 
 const rows = [
     {
-        id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)',
+        id: 'username', numeric: false, disablePadding: true, label: 'Username',
     },
     {
-        id: 'calories', numeric: true, disablePadding: false, label: 'Calories',
+        id: 'role', numeric: true, disablePadding: false, label: 'Role',
     },
     {
-        id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)',
+        id: 'created', numeric: true, disablePadding: false, label: 'Creaded At',
     },
     {
-        id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)',
+        id: 'status', numeric: true, disablePadding: false, label: 'Status',
     },
     {
-        id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)',
+        id: 'actions', numeric: true, disablePadding: false, label: 'Actions',
     },
 ];
 
-function createData(name, calories, fat, carbs, protein) {
+function createData(username, role, created, status, actions) {
     counter += 1;
     return {
-        id: counter, name, calories, fat, carbs, protein,
+        id: counter, username, role, created, status, actions,
     };
 }
 function desc(a, b, orderBy) {
@@ -220,14 +220,14 @@ class UserTable extends React.Component {
         selected: [],
         page: 0,
         data: [],
-        rowsPerPage: 5,
+        rowsPerPage: 10,
     };
 
     componentDidUpdate(prefProps) {
         const tempArr = [];
         if (prefProps.users !== this.props.users && this.props.users && this.props.users.length > 0) {
             this.props.users.forEach((user) => {
-                tempArr.push(createData(user.username, 305, 3.7, 67, 4.3));
+                tempArr.push(createData(user.username, user.role, user.createdAt, user.status, 'actions'));
             });
             this.setState({
                 data: tempArr,
@@ -328,12 +328,12 @@ class UserTable extends React.Component {
                                                                 <Checkbox checked={isSelected} />
                                                             </TableCell>
                                                             <TableCell component="th" scope="row" padding="none">
-                                                                {n.name}
+                                                                {n.username}
                                                             </TableCell>
-                                                            <TableCell align="right">{n.calories}</TableCell>
-                                                            <TableCell align="right">{n.fat}</TableCell>
-                                                            <TableCell align="right">{n.carbs}</TableCell>
-                                                            <TableCell align="right">{n.protein}</TableCell>
+                                                            <TableCell align="right">{n.role}</TableCell>
+                                                            <TableCell align="right">{n.creadted}</TableCell>
+                                                            <TableCell align="right">{n.status}</TableCell>
+                                                            <TableCell align="right">{n.actions}</TableCell>
                                                         </TableRow>
                                                     );
                                                 })}
