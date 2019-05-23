@@ -22,6 +22,10 @@ This document is designed as a guide on _test the open integration hub with post
       - [Delete a Component](#delete-a-component)
     - [Identity and Access Management](#identity-and-access-management)
       - [Login](#login)
+      - [Get all Users](#get-all-users)
+      - [Add a new User](#add-a-new-user)
+      - [Delete a User](#delete-a-user)
+      - [Update a User](#update-a-user)
   - [Examples](#examples)
     - [Flow Examples](#flow-examples)
     - [Component Examples](#component-examples)
@@ -60,8 +64,6 @@ For further information on the underlying flow repository please visit the [API 
 
 ![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
 
-**Type of request:** GET
-
 **Postman request name:** Get user flows
 
 Steps to perform:
@@ -73,8 +75,6 @@ Steps to perform:
 #### Get a Flow
 
 ![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
-
-**Type of request:** GET
 
 **Postman request name:** Get flow by id
 
@@ -88,8 +88,6 @@ Steps to perform:
 #### Post a Flow
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
-
-**Type of request:** POST
 
 **Postman request name:** Post a new flow
 
@@ -107,8 +105,6 @@ _Hint:_ There is a predefined body that can be used.
 
 ![PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)
 
-**Type of request:** PATCH
-
 **Postman request name:** Update a flow by id
 
 1. Go to the `Body` tab
@@ -125,8 +121,6 @@ _Hint:_ There is a predefined body that can be used.
 
 ![DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg)
 
-**Type of request:** DELETE
-
 **Postman request name:** Delete a flow by id
 
 1. Replace the `{FLOW_ID}` placeholder with an existing flow id
@@ -138,8 +132,6 @@ _Hint:_ There is a predefined body that can be used.
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
-**Type of request:** POST
-
 **Postman request name:** Start a flow by id
 
 1. Replace the `{FLOW_ID}` placeholder with an existing flow id
@@ -150,8 +142,6 @@ _Hint:_ There is a predefined body that can be used.
 #### Stop a Flow
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
-
-**Type of request:** POST
 
 **Postman request name:** Stop a flow by id
 
@@ -166,8 +156,6 @@ _Hint:_ There is a predefined body that can be used.
 
 ![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
 
-**Type of request:** GET
-
 **Postman request name:** Get user components
 
 Steps to perform:
@@ -179,8 +167,6 @@ Steps to perform:
 #### Get a Component
 
 ![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
-
-**Type of request:** GET
 
 **Postman request name:** Get a component by id
 
@@ -195,12 +181,10 @@ Steps to perform:
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
-**Type of request:** POST
-
 **Postman request name:** Post a new component
 
 1. Go to the `Body` tab
-2. Add a new flow (exemplary components can be found at the end of this document)
+2. Add a new component (exemplary components can be found at the end of this document)
 3. Click on `Send`
 
 _Note:_ The image must have a valid _tag_. E.g. openintegrationhub/ms-office-adapter:latest
@@ -213,14 +197,14 @@ _Hint:_ There is a predefined body that can be used.
 
 ![PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)
 
-**Type of request:** PATCH
-
 **Postman request name:** Update a component by id
 
 1. Replace the `{COMPONENT_ID}` placeholder with an existing component id
 2. Go to the `Body` tab
-3. Add a the updated (exemplary components can be found at the end of this document)
+3. Add a the updated component(exemplary components can be found at the end of this document)
 4. Click on `Send`
+
+_Hint:_ Partial updates are possible.
 
 _Hint:_ There is a predefined body that can be used.
 
@@ -229,8 +213,6 @@ _Hint:_ There is a predefined body that can be used.
 #### Delete a Component
 
 ![DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg)
-
-**Type of request:** DELETE
 
 **Postman request name:** Delete a component by id
 
@@ -245,8 +227,6 @@ _Hint:_ There is a predefined body that can be used.
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
-**Type of request:** Post
-
 **Postman request name:** Login
 
 1. Go to the `Params` tab
@@ -255,6 +235,58 @@ _Hint:_ There is a predefined body that can be used.
 4. Click on send
 
 _Note_: As described in the [setup](#setup) section, there is no need to login manually as the pre-request script takes care of receiving and renewing the token.
+
+---
+
+#### Get all Users
+
+![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
+
+**Postman request name:** Get All Users
+
+Steps to perform:
+
+1. Click on `Send`
+
+---
+
+#### Add a new User
+
+![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
+
+**Postman request name:** Post a new component
+
+1. Go to the `Body` tab
+2. Add a new user (exemplary components can be found at the end of this document)
+3. Click on `Send`
+
+_Hint:_ There is a predefined body that can be used.
+
+---
+
+#### Delete a User
+
+![DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg)
+
+**Postman request name:** Delete a user
+
+1. Replace the `{USER_ID}` placeholder with an existing user id
+2. Click on `Send`
+
+---
+
+#### Update a User
+
+![PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)
+
+**Postman request name:** Patch a user
+
+1. Replace the `{USER_ID}` placeholder with an existing component id
+2. Go to the `Body` tab
+3. Add a the updated user (exemplary components can be found at the end of this document)
+4. Click on `Send`
+
+_Hint:_ Partial updates are possible.
 
 ---
 
