@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 import Home from '../home';
 import Auth from '../auth';
-import UserManagement from '../usermanagement';
+import UserManagement from '../user-management';
 import LoginCheck from '../../component/login-check';
 
 import './index.css';

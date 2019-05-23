@@ -20,7 +20,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import OpenLock from '@material-ui/icons/LockOpen';
 import Person from '@material-ui/icons/Person';
 import { getUsers, logout } from '../../action/user';
-import UserManagement from '../usermanagement';
+import UserManagement from '../user-management';
 
 const drawerWidth = 240;
 
