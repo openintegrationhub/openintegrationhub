@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = {
-    loginContainer: {
+    main: {
         flexGrow: 1,
     },
     loading: {
@@ -18,7 +18,7 @@ class Loader extends React.Component {
     render() {
         const { classes } = this.props;
         return (
-            <div className={classes.loginContainer}>
+            <div className={classes.main}>
                 <div className={classes.loading}>
                     <CircularProgress size={200} color="secondary" style={{ marginLeft: '45%' }}/>
                 </div>
