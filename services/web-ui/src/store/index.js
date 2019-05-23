@@ -26,9 +26,18 @@ const composedEnhancers = compose(
 );
 
 export default function configureStore(initialState = {}) {
-    return createStore(
+    const store = createStore(
         rootReducer,
         initialState,
         composedEnhancers,
     );
+
+    if (process.env.NODE_ENV !== 'production') {
+        if (module.hot) {
+            console.log(rootReducer);
+            module.hot.accept('../reducer', () => store.replaceReducer(rootReducer)); // eslint-disable-line global-require
+        }
+    }
+
+    return store;
 }

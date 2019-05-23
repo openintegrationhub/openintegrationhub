@@ -10,21 +10,31 @@ import configureStore, { history } from './store';
 
 import * as serviceWorker from './serviceWorker';
 
-
-(async () => {
-    updateConfig((await axios.get('/config')).data);
-    ReactDOM.render(
-        <Provider store={configureStore()}>
-            <Router history={history}>
-                <App />
-            </Router>
-        </Provider>,
-        document.getElementById('root'),
-    );
-})();
-
-
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+const render = (Component) => {
+    ReactDOM.render(
+        <Provider store={configureStore()}>
+            <Router history={history}>
+                <Component />
+            </Router>
+        </Provider>,
+        document.getElementById('root'),
+    );
+};
+
+(async () => {
+    updateConfig((await axios.get('/config')).data);
+    render(App);
+})();
+
+if (module.hot) {
+    console.log('hot');
+    module.hot.accept('./container/app', () => {
+        const NextApp = require('./container/app').default; // eslint-disable-line global-require
+        render(NextApp);
+    });
+}

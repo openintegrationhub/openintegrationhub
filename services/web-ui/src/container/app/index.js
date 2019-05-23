@@ -2,6 +2,8 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
+import { hot } from 'react-hot-loader/root';
+import flow from 'lodash/flow';
 import Main from '../main';
 import Auth from '../auth';
 // import UserManagement from '../../component/user-management';
@@ -25,7 +27,10 @@ function App() {
 const mapStateToProps = () => ({});
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
+export default flow(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    ),
+    hot,
 )(App);
