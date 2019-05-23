@@ -1,14 +1,34 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import flow from 'lodash/flow';
+// import classNames from 'classnames';
+import { withStyles } from '@material-ui/styles';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import update from 'immutability-helper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { login } from '../../action/user';
 
-import './index.css';
+const useStyles = {
+    loginContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
+    form: {
+        width: 200,
+    },
+    lable: {
+        marginRight: 20,
+    },
+    button: {
+        paddingTop: '20px',
+    },
+};
 
 class Auth extends React.Component {
   state = {
@@ -49,6 +69,7 @@ class Auth extends React.Component {
   };
 
   render() {
+      const { classes } = this.props;
       if (this.state.pending) {
           return (
               <CircularProgress color="secondary"/>
@@ -56,22 +77,27 @@ class Auth extends React.Component {
       }
 
       return (
-          <div className="App">
-              <form onSubmit={this.login.bind(this)} >
-                  <div className="form-group">
-                      <label htmlFor="username">username</label>
+          <div className={classes.loginContainer}>
+              <form onSubmit={this.login.bind(this)} className={classes.form}>
+                  <FormGroup >
+                      <FormLabel htmlFor="username">username</FormLabel>
                       <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} />
-                  </div>
-                  <div className="form-group">
-                      <label htmlFor="password">password</label>
+                  </FormGroup>
+                  <FormGroup >
+                      <FormLabel htmlFor="password">password</FormLabel>
                       <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} />
-                  </div>
-                  <Button type='submit' variant="contained" color="primary">Login</Button>
+                  </FormGroup>
+                  <Button type='submit' className={classes.button} variant="contained" color="secondary">Login</Button>
               </form>
           </div>
       );
   }
 }
+
+Auth.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
+
 const mapStateToProps = state => ({
     user: state.user,
 });
@@ -80,7 +106,11 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     login,
 }, dispatch);
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(withRouter(Auth));
+export default flow(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    ),
+    withStyles(useStyles),
+    withRouter,
+)(Auth);
