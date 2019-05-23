@@ -6,6 +6,9 @@ module.exports = {
     logging: {
         namespace: optional('LOGGING_NAMESPACE', name),
     },
+    endpoints: {
+        iam: optional('ENDPOINT_IAM', 'http://iam.openintegrationhub.com'),
+    },
     wellKnown: {
         version,
     },

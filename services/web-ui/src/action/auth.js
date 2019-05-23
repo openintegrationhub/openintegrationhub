@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { getConfig } from '../conf';
+
+const conf = getConfig();
 
 export const LOGIN = 'LOGIN';
 
@@ -9,7 +12,7 @@ const setAxiosAuth = (token) => {
 export const login = data => async (dispatch) => {
     const result = await axios({
         method: 'post',
-        url: '/login',
+        url: `${conf.endpoints.iam}/login`,
         data,
     });
     if (result.status === 200) {
@@ -25,7 +28,7 @@ export const login = data => async (dispatch) => {
 export const logout = () => async (dispatch) => {
     const result = await axios({
         method: 'post',
-        url: '/logout',
+        url: `${conf.endpoints.iam}/logout`,
         withCredentials: true,
     });
     if (result.status === 200) {
