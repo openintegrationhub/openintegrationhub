@@ -19,6 +19,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import Input from '@material-ui/core/Input';
 
 import Loader from '../loader';
 
@@ -71,6 +72,71 @@ function stableSort(array, cmp) {
 function getSorting(order, orderBy) {
     return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
+
+const toolbarStyles = () => ({
+    root: {
+        paddingRight: 10,
+    },
+    highlight: {
+        color: 'secondary',
+    },
+    spacer: {
+        flex: '1 1 100%',
+    },
+    actions: {
+        flex: '0 0 auto',
+        color: 'secondary',
+    },
+    title: {
+        flex: '0 0 auto',
+    },
+});
+
+let TableToolbar = (props) => {
+    const { numSelected, classes } = props;
+
+    return (
+        <Toolbar
+            className={classNames(classes.root, {
+                [classes.highlight]: numSelected > 0,
+            })}
+        >
+            <div className={classes.title}>
+                {numSelected > 0 ? (
+                    <Typography color="inherit" variant="h6">
+                        {numSelected} Users selected
+                    </Typography>
+                ) : (
+                    <Typography variant="h6" id="tableTitle">
+              Users
+                    </Typography>
+                )}
+            </div>
+            <div className={classes.spacer} />
+            <div className={classes.actions}>
+                <Input id="filter" name="filter" value={props.filter} />
+                <Tooltip title="Filter list">
+                    <IconButton aria-label="Filter list">
+                        <FilterListIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                    <IconButton aria-label="Delete">
+                        <DeleteIcon />
+                    </IconButton>
+                </Tooltip>
+            </div>
+        </Toolbar>
+    );
+};
+
+TableToolbar.propTypes = {
+    classes: PropTypes.object.isRequired,
+    numSelected: PropTypes.number.isRequired,
+};
+
+TableToolbar = withStyles(toolbarStyles)(TableToolbar);
+
 
 class TableHeader extends React.Component {
     createSortHandler = property => (event) => {
@@ -132,71 +198,6 @@ TableHeader.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
-const toolbarStyles = () => ({
-    root: {
-        paddingRight: 10,
-    },
-    highlight: {
-        color: 'secondary',
-    },
-    spacer: {
-        flex: '1 1 100%',
-    },
-    actions: {
-        color: 'secondary',
-    },
-    title: {
-        flex: '0 0 auto',
-    },
-});
-
-let EnhancedTableToolbar = (props) => {
-    const { numSelected, classes } = props;
-
-    return (
-        <Toolbar
-            className={classNames(classes.root, {
-                [classes.highlight]: numSelected > 0,
-            })}
-        >
-            <div className={classes.title}>
-                {numSelected > 0 ? (
-                    <Typography color="inherit" variant="subtitle1">
-                        {numSelected} selected
-                    </Typography>
-                ) : (
-                    <Typography variant="h6" id="tableTitle">
-              Nutrition
-                    </Typography>
-                )}
-            </div>
-            <div className={classes.spacer} />
-            <div className={classes.actions}>
-                {numSelected > 0 ? (
-                    <Tooltip title="Delete">
-                        <IconButton aria-label="Delete">
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                ) : (
-                    <Tooltip title="Filter list">
-                        <IconButton aria-label="Filter list">
-                            <FilterListIcon />
-                        </IconButton>
-                    </Tooltip>
-                )}
-            </div>
-        </Toolbar>
-    );
-};
-
-EnhancedTableToolbar.propTypes = {
-    classes: PropTypes.object.isRequired,
-    numSelected: PropTypes.number.isRequired,
-};
-
-EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
-
 const useStyles = () => ({
     wrapper: {
         width: '100%',
@@ -216,7 +217,7 @@ const useStyles = () => ({
 class UserTable extends React.Component {
     state = {
         order: 'asc',
-        orderBy: 'calories',
+        orderBy: 'username',
         selected: [],
         page: 0,
         data: [],
@@ -298,7 +299,7 @@ class UserTable extends React.Component {
                     <Grid container >
                         <Grid item xs={12}>
                             <Paper className={classes.root}>
-                                <EnhancedTableToolbar numSelected={selected.length} />
+                                <TableToolbar numSelected={selected.length} setFilter={this.handleRequestSort} filter={this.state.orderBy}/>
                                 <div className={classes.tableWrapper}>
                                     <Table className={classes.table} aria-labelledby="tableTitle">
                                         <TableHeader
