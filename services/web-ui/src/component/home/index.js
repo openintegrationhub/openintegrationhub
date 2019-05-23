@@ -8,9 +8,6 @@ const useStyles = {
         float: 'none',
         margin: 'auto',
         padding: '15vh 25vw 10vh 25vw',
-        backgroundImage: 'url(https://www.openintegrationhub.org/wp-content/uploads/2018/06/headergrafik-1440-x-684-px.jpg)!important',
-        backgroundPosition: 'bottom center',
-        backgroundRepeat: 'no-repeat',
     },
     headline: {
         fontSize: '54px',
@@ -24,9 +21,10 @@ const useStyles = {
         color: '#fff!important',
     },
     wrapper: {
-        fontSize: '24px',
-        lineHeight: '1.33em',
-        color: '#fff!important',
+        backgroundSize: 'cover',
+        backgroundImage: 'url(https://www.openintegrationhub.org/wp-content/uploads/2018/06/headergrafik-1440-x-684-px.jpg)',
+        backgroundPosition: 'bottom center',
+        backgroundRepeat: 'no-repeat',
     },
 };
 
