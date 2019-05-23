@@ -10,8 +10,8 @@ import LoginCheck from '../../component/login-check';
 import './index.css';
 
 function App() {
+    document.title = 'Web UI';
     return (
-
         <Switch>
             <Route exact path="/auth" component={Auth} />
             <LoginCheck>
@@ -19,8 +19,6 @@ function App() {
                 <Route exact path="/" component={Home} />
             </LoginCheck>
         </Switch>
-
-
     );
 }
 
