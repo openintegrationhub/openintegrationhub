@@ -26,10 +26,6 @@ const useStyles = {
         padding: '40vh 0',
         width: 200,
     },
-    loading: {
-        padding: '40vh 0',
-        height: '100vh',
-    },
     frame: {
         height: '100vh',
     },
