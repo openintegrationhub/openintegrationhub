@@ -7,21 +7,14 @@ import { connect } from 'react-redux';
 import { getUsers } from '../../action/users';
 
 
+// components
+import Table from '../user-table';
+
+
 const useStyles = {
-    loginContainer: {
-        flexGrow: 1,
-    },
-    form: {
-        float: 'none',
-        margin: 'auto',
-        padding: '40vh 0',
-        width: 200,
-    },
-    frame: {
-        height: '100vh',
-    },
-    formGroup: {
-        padding: '30px 0 0 0 ',
+    wrapper: {
+        width: '100%',
+        padding: '10vh 0 0 0',
     },
 };
 
@@ -32,17 +25,15 @@ class Users extends React.Component {
     }
 
     render() {
-        const { classes } = this.props;
+        const {
+            classes,
+        } = this.props;
         return (
-            <div className={classes.loginContainer}>
+            <div className={classes.wrapper}>
                 <Grid container >
-                    <Grid item xs={4}></Grid>
-                    <Grid item xs={4}>
-                        <div className={classes.frame}>
-                            adsfsdf
-                        </div>
+                    <Grid item xs={12}>
+                        <Table />
                     </Grid>
-                    <Grid item xs={4}></Grid>
                 </Grid>
 
             </div>
