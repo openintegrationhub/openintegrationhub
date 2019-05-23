@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 import Home from '../home';
-import Login from '../login';
+import Auth from '../auth';
 import UserManagement from '../usermanagement';
 import LoginCheck from '../../component/login-check';
 
@@ -13,7 +13,7 @@ function App() {
     return (
 
         <Switch>
-            <Route exact path="/auth" component={Login} />
+            <Route exact path="/auth" component={Auth} />
             <LoginCheck>
                 <Route exact path="/user" component={UserManagement} />
                 <Route exact path="/" component={Home} />

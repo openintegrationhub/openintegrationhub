@@ -1,19 +1,31 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import update from 'immutability-helper';
-import { login } from '../../action/users';
+import { login } from '../../action/user';
 
 import './index.css';
 
-class Login extends React.Component {
+class Auth extends React.Component {
   state = {
       userData: {
           username: '',
           password: '',
       },
+  }
+
+  componentDidUpdate(prevProps) {
+      if (this.props.user !== prevProps.user && this.props.user.isLoggedIn) {
+          this.props.history.push('/');
+      }
+      // if (prevProps.tokenInvalid !== this.props.tokenInvalid) {
+      //     this.setState({
+      //         isLoggedIn: false,
+      //     });
+      // }
   }
 
   setVal = (fieldName, e) => {
@@ -62,4 +74,4 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(Login);
+)(withRouter(Auth));

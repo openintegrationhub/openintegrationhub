@@ -20,7 +20,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import OpenLock from '@material-ui/icons/LockOpen';
 import Person from '@material-ui/icons/Person';
-import { getUsers } from '../../action/users';
+import { getUsers, logout } from '../../action/user';
 import UserManagement from '../usermanagement';
 
 const drawerWidth = 240;
@@ -96,6 +96,10 @@ class Home extends React.Component {
       this.setState({ open: false });
   };
 
+  logout = () => {
+      this.props.logout();
+  };
+
   getMenuItems = () => <div>
       {
           this.state.menu.map((text) => {
@@ -106,7 +110,7 @@ class Home extends React.Component {
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Logout':
-                  return <ListItem button key={text}>
+                  return <ListItem button key={text} onClick={this.logout}>
                       <ListItemIcon><OpenLock /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
@@ -182,10 +186,11 @@ Home.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    users: state.users,
+    user: state.user,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     getUsers,
+    logout,
 }, dispatch);
 
 export default connect(

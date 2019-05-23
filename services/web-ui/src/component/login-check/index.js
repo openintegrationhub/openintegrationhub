@@ -5,35 +5,8 @@ import { Redirect } from 'react-router-dom';
 
 
 class LoginCheck extends React.Component {
-    state={
-        isLoggedIn: false,
-    }
-
-    constructor(props) {
-        super(props);
-        if (props.user) {
-            this.setState({
-                isLoggedIn: true,
-            });
-        }
-    }
-
-    // componentDidUpdate(prevProps) {
-    //     if (this.props.user !== prevProps.user) {
-    //         if (this.props.user !== null) {
-    //             setAxiosAuth(this.props.user.access_token);
-    //         }
-    //     }
-
-    //     if (prevProps.tokenInvalid !== this.props.tokenInvalid) {
-    //         this.setState({
-    //             isLoggedIn: false,
-    //         });
-    //     }
-    // }
-
     render() {
-        if (this.props.isLoggedIn) {
+        if (this.props.user.isLoggedIn) {
             return <React.Fragment>
                 {this.props.children}
             </React.Fragment>;
