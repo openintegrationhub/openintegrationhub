@@ -28,7 +28,7 @@ This document is designed as a guide on _how to propely use the open integration
 
 ## Prerequisites
 
-In order to use the Open Integration Hub we provided a [postman collection](postman/OIH_Framework_Showcase.postman_collection.json) and a [postman environment](OIH_Framework.postman_environment.json).
+In order to use the Open Integration Hub we provided a demo environment and a [postman collection](postman/OIH_Framework_Showcase.postman_collection.json) and a [postman environment](OIH_Framework.postman_environment.json) to test the functionalities of the Open Integration Hub.
 
 We suggest to download and import these files to easily process the steps described in the following.
 
