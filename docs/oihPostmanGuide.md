@@ -58,7 +58,7 @@ For further information on the underlying flow repository please visit the [API 
 
 #### Get All Flows
 
-![[GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)](GET)
+![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
 
 **Type of request:** GET
 
@@ -72,7 +72,7 @@ Steps to perform:
 
 #### Get a Flow
 
-![[GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)](GET)
+![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
 
 **Type of request:** GET
 
@@ -87,7 +87,7 @@ Steps to perform:
 
 #### Post a Flow
 
-![[POST](https://img.shields.io/badge/Operation-POST-yellow.svg)](POST)
+![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
 **Type of request:** POST
 
@@ -105,7 +105,7 @@ _Hint:_ There is a predefined body that can be used.
 
 #### Update a Flow
 
-![[PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)](PATCH)
+![PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)
 
 **Type of request:** PATCH
 
@@ -123,7 +123,7 @@ _Hint:_ There is a predefined body that can be used.
 
 #### Delete a Flow
 
-![[DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg](DELETE)
+![DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg)
 
 **Type of request:** DELETE
 
@@ -136,7 +136,7 @@ _Hint:_ There is a predefined body that can be used.
 
 #### Start a Flow
 
-![[POST](https://img.shields.io/badge/Operation-POST-yellow.svg)](POST)
+![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
 **Type of request:** POST
 
@@ -149,7 +149,7 @@ _Hint:_ There is a predefined body that can be used.
 
 #### Stop a Flow
 
-![[POST](https://img.shields.io/badge/Operation-POST-yellow.svg)](POST)
+![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
 **Type of request:** POST
 
@@ -164,7 +164,7 @@ _Hint:_ There is a predefined body that can be used.
 
 #### Get All Components
 
-![[GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)](GET)
+![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
 
 **Type of request:** GET
 
@@ -178,7 +178,7 @@ Steps to perform:
 
 #### Get a Component
 
-![[GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)](GET)
+![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
 
 **Type of request:** GET
 
@@ -193,7 +193,7 @@ Steps to perform:
 
 #### Post a Component
 
-![[POST](https://img.shields.io/badge/Operation-POST-yellow.svg)](POST)
+![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
 **Type of request:** POST
 
@@ -211,7 +211,7 @@ _Hint:_ There is a predefined body that can be used.
 
 #### Update a Component
 
-![[PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)](PATCH)
+![PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)
 
 **Type of request:** PATCH
 
@@ -228,7 +228,7 @@ _Hint:_ There is a predefined body that can be used.
 
 #### Delete a Component
 
-![[DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg](DELETE)
+![DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg)
 
 **Type of request:** DELETE
 
@@ -243,7 +243,7 @@ _Hint:_ There is a predefined body that can be used.
 
 #### Login
 
-![[POST](https://img.shields.io/badge/Operation-POST-yellow.svg)](POST)
+![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
 **Type of request:** Post
 
