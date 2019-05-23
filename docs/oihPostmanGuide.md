@@ -223,6 +223,8 @@ _Hint:_ There is a predefined body that can be used.
 
 ### Identity and Access Management
 
+**Attention:** IAM operations require admin rights.
+
 #### Login
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
