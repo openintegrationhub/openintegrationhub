@@ -17,28 +17,15 @@ spec:
         image: openintegrationhub/web-ui:latest
         env:
         - name: PORT
-          value: '3099'
-        - name: BASEURL
-          value: 'https://web-ui.openintegrationhub.com'
-        - name: ORIGINWHITELIST
-          value: 'openintegrationhub.com'
-        - name: NODE_ENV
-          value: "production"
-        - name: "INTROSPECT_TYPE"
-          value: "basic"
-        - name: "INTROSPECT_ENDPOINT_BASIC"
-          value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: web-ui
-              key: iamtoken
+          value: '3000'
+        - name: ENDPOINT_IAM
+          value: 'http://iam.openintegrationhub.com'
         ports:
         - containerPort: 3000
         livenessProbe:
           httpGet:
             path: /healthcheck
-            port: 300
+            port: 3000
           initialDelaySeconds: 120
           timeoutSeconds: 1
         readinessProbe:
