@@ -14,7 +14,7 @@ import Grid from '@material-ui/core/Grid';
 // Components
 import Loader from '../../component/loader';
 // Actions
-import { login } from '../../action/user';
+import { login } from '../../action/auth';
 
 const useStyles = {
     loginContainer: {
@@ -44,7 +44,7 @@ class Auth extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-      if (this.props.user !== prevProps.user && this.props.user.isLoggedIn) {
+      if (this.props.auth !== prevProps.auth && this.props.auth.isLoggedIn) {
           this.props.history.push('/');
       }
       // if (prevProps.tokenInvalid !== this.props.tokenInvalid) {
@@ -114,7 +114,7 @@ Auth.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    user: state.user,
+    auth: state.auth,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

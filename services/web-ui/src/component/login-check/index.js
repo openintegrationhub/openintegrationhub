@@ -6,7 +6,7 @@ import { Redirect } from 'react-router-dom';
 
 class LoginCheck extends React.Component {
     render() {
-        if (this.props.user.isLoggedIn) {
+        if (this.props.auth.isLoggedIn) {
             return <React.Fragment>
                 {this.props.children}
             </React.Fragment>;
@@ -19,7 +19,7 @@ class LoginCheck extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    user: state.user,
+    auth: state.auth,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
