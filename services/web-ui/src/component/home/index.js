@@ -14,11 +14,15 @@ const useStyles = {
         lineHeight: '52px',
         textShadow: '0em 0.03em 0.1em rgba(0,0,0,0.08)',
         color: '#fff!important',
+        fontFamily: '"Saira", sans-serif',
+        fontWeight: '300',
     },
     content: {
         fontSize: '24px',
         lineHeight: '1.33em',
         color: '#fff!important',
+        fontFamily: '"Saira", sans-serif',
+        fontWeight: '300',
     },
     wrapper: {
         backgroundSize: 'cover',
