@@ -16,7 +16,7 @@ function App() {
             <Route exact path="/auth" component={Auth} />
             <LoginCheck>
                 {/* <Route exact path="/user" component={UserManagement} /> */}
-                <Route exact path="/" component={Main} />
+                <Route path="/" component={Main} />
             </LoginCheck>
         </Switch>
     );

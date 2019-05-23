@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import './index.css';
+
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -20,11 +20,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import OpenLock from '@material-ui/icons/LockOpen';
 import Person from '@material-ui/icons/Person';
 import HomeIcon from '@material-ui/icons/Home';
-import { Route, Switch } from 'react-router-dom';
+import flow from 'lodash/flow';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import { getUsers, logout } from '../../action/user';
 import Home from '../../component/home';
 import User from '../../component/user';
-import { history } from '../../store';
+
+import './index.css';
 
 const drawerWidth = 240;
 
@@ -109,12 +111,12 @@ class Main extends React.Component {
           this.state.menu.map((text) => {
               switch (text) {
               case 'Start':
-                  return <ListItem button key={text} onClick={() => { history.push('/'); }}>
+                  return <ListItem button key={text} onClick={() => { this.props.history.push('/'); }}>
                       <ListItemIcon><HomeIcon /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'UserManagement':
-                  return <ListItem button key={text} onClick={() => { history.push('/user'); }}>
+                  return <ListItem button key={text} onClick={() => { this.props.history.push('/user'); }}>
                       <ListItemIcon><Person /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
@@ -203,7 +205,11 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     logout,
 }, dispatch);
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(withStyles(styles, { withTheme: true })(Main));
+export default flow(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    ),
+    withStyles(styles, { withTheme: true }),
+    withRouter,
+)(Main);
