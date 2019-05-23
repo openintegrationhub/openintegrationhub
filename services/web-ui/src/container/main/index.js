@@ -62,6 +62,7 @@ const styles = theme => ({
     },
     drawerPaper: {
         width: drawerWidth,
+
     },
     drawerHeader: {
         display: 'flex',
@@ -69,10 +70,11 @@ const styles = theme => ({
         padding: '0 8px',
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
+        backgroundColor: '#ff8200',
     },
     content: {
         flexGrow: 1,
-        padding: 64,
+        height: '100vh',
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
