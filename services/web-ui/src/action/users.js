@@ -1,16 +1,77 @@
 import axios from 'axios';
 
 export const GET_USERS = 'GET_USERS';
+export const UPDATE_USER = 'UPDATE_USER';
+export const CREATE_USER = 'CREATE_USER';
+export const DELETE_USER = 'DELETE_USER';
 
 export const getUsers = () => async (dispatch) => {
-    const result = await axios({
-        method: 'get',
-        url: '/api/v1/users',
-        withCredentials: true,
-    });
+    try {
+        const result = await axios({
+            method: 'get',
+            url: '/api/v1/users',
+            withCredentials: true,
+        });
 
-    dispatch({
-        type: GET_USERS,
-        users: result.data,
-    });
+        dispatch({
+            type: GET_USERS,
+            users: result.data,
+        });
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const updateUser = userId => async (dispatch) => {
+    try {
+        await axios({
+            method: 'patch',
+            url: `/api/v1/users/${userId}`,
+            withCredentials: true,
+        });
+
+        dispatch({
+            type: UPDATE_USER,
+        });
+        dispatch(getUsers());
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const createUser = user => async (dispatch) => {
+    try {
+        await axios({
+            method: 'post',
+            url: '/api/v1/users',
+            withCredentials: true,
+            data: {
+                ...user,
+            },
+        });
+
+        dispatch({
+            type: CREATE_USER,
+        });
+        dispatch(getUsers());
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const deleteUser = userId => async (dispatch) => {
+    try {
+        await axios({
+            method: 'delete',
+            url: `/api/v1/users/${userId}`,
+            withCredentials: true,
+        });
+
+        dispatch({
+            type: DELETE_USER,
+        });
+        dispatch(getUsers());
+    } catch (err) {
+        console.log(err);
+    }
 };
