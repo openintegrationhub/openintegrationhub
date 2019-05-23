@@ -30,6 +30,7 @@ const styles = theme => ({
         display: 'flex',
     },
     appBar: {
+        backgroundImage: 'linear-gradient(73deg, #ff8200, #ff2473)',
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -143,9 +144,7 @@ class Home extends React.Component {
                       >
                           <MenuIcon />
                       </IconButton>
-                      <Typography variant="h6" color="inherit" noWrap>
-                Open Integration Hub
-                      </Typography>
+                      <img src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg" alt="Open Integration Hub" id="logo" data-height-percentage="54" data-actual-width="271" data-actual-height="40"/>
                   </Toolbar>
               </AppBar>
               <Drawer
