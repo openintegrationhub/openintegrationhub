@@ -1,6 +1,6 @@
 # Introduction
 
-This document is designed as a guide on _how to propely use the open integration hub with postman_.
+This document is designed as a guide on _test the open integration hub with postman_.
 
 - [Introduction](#introduction)
   - [Prerequisites](#prerequisites)
