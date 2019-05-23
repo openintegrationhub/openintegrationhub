@@ -331,7 +331,7 @@ class UserTable extends React.Component {
                                                                 {n.username}
                                                             </TableCell>
                                                             <TableCell align="right">{n.role}</TableCell>
-                                                            <TableCell align="right">{n.creadted}</TableCell>
+                                                            <TableCell align="right">{n.created}</TableCell>
                                                             <TableCell align="right">{n.status}</TableCell>
                                                             <TableCell align="right">{n.actions}</TableCell>
                                                         </TableRow>
