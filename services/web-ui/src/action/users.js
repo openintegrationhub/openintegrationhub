@@ -19,7 +19,7 @@ export const getUsers = () => async (dispatch) => {
 export const login = data => async (dispatch) => {
     const result = await axios({
         method: 'post',
-        url: '/login',
+        url: '/iam-endpoint/login',
         data,
     });
     console.log(result);
