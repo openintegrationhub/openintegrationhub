@@ -1,15 +1,19 @@
 import axios from 'axios';
 
+import { getConfig } from '../conf';
+
+const conf = getConfig();
 export const GET_USERS = 'GET_USERS';
 export const UPDATE_USER = 'UPDATE_USER';
 export const CREATE_USER = 'CREATE_USER';
 export const DELETE_USER = 'DELETE_USER';
 
+
 export const getUsers = () => async (dispatch) => {
     try {
         const result = await axios({
             method: 'get',
-            url: '/api/v1/users',
+            url: `${conf.endpoints.iam}/api/v1/users`,
             withCredentials: true,
         });
 
@@ -26,7 +30,7 @@ export const updateUser = userId => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
-            url: `/api/v1/users/${userId}`,
+            url: `${conf.endpoints.iam}/api/v1/users/${userId}`,
             withCredentials: true,
         });
 
@@ -43,7 +47,7 @@ export const createUser = user => async (dispatch) => {
     try {
         await axios({
             method: 'post',
-            url: '/api/v1/users',
+            url: `${conf.endpoints.iam}/api/v1/users`,
             withCredentials: true,
             data: {
                 ...user,
@@ -63,7 +67,7 @@ export const deleteUser = userId => async (dispatch) => {
     try {
         await axios({
             method: 'delete',
-            url: `/api/v1/users/${userId}`,
+            url: `${conf.endpoints.iam}/api/v1/users/${userId}`,
             withCredentials: true,
         });
 
