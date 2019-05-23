@@ -24,10 +24,14 @@ const useStyles = {
         padding: '40vh 0',
         width: 200,
     },
+    loading: {
+        padding: '40vh 0',
+        height: '100vh',
+    },
     frame: {
         height: '100vh',
     },
-    FormGroup: {
+    formGroup: {
         padding: '30px 0 0 0 ',
     },
 };
@@ -75,7 +79,10 @@ class Auth extends React.Component {
       if (this.state.pending) {
           return (
               <div className={classes.loginContainer}>
-                  <CircularProgress color="secondary"/>
+                  <div className={classes.loading}>
+                      <CircularProgress size={200} color="secondary" style={{ marginLeft: '45%' }}/>
+                  </div>
+
               </div>
           );
       }
@@ -89,15 +96,15 @@ class Auth extends React.Component {
                   <Grid item xs={4}>
                       <div className={classes.frame}>
                           <form onSubmit={this.login.bind(this)} className={classes.form}>
-                              <FormGroup className={classes.FormGroup}>
+                              <FormGroup className={classes.formGroup}>
                                   <FormLabel htmlFor="username">username</FormLabel>
                                   <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} />
                               </FormGroup>
-                              <FormGroup className={classes.FormGroup}>
+                              <FormGroup className={classes.formGroup}>
                                   <FormLabel htmlFor="password">password</FormLabel>
                                   <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} />
                               </FormGroup>
-                              <FormGroup className={classes.FormGroup}>
+                              <FormGroup className={classes.formGroup}>
                                   <Button type='submit' variant="contained" color="secondary">Login</Button>
                               </FormGroup>
                           </form>
