@@ -343,3 +343,20 @@ Flow:
 ```
 
 ### Component Examples
+
+This is an example microsoft office component that can be used to test the POST endpoint for adding a new component.
+
+```json
+{
+  "data": {
+    "name": "MS Office transformer",
+    "description": "MS Office transformer for the OIH",
+    "access": "public",
+    "descriptor": {},
+    "distribution": {
+      "type": "docker",
+      "image": "openintegrationhub/ms-office-transformer:latest"
+    }
+  }
+}
+```
