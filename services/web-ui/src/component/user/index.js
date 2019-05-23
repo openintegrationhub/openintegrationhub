@@ -1,9 +1,5 @@
 import React from 'react';
 import { withStyles } from '@material-ui/styles';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
 import Grid from '@material-ui/core/Grid';
 import flow from 'lodash/flow';
 
