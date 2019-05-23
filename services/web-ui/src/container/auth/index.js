@@ -11,22 +11,20 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import update from 'immutability-helper';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress'; import Grid from '@material-ui/core/Grid';
 import { login } from '../../action/user';
 
 const useStyles = {
     loginContainer: {
-        display: 'flex',
-        flexWrap: 'wrap',
+        flexGrow: 1,
     },
     form: {
+        float: 'none',
+        margin: 'auto',
         width: 200,
     },
-    lable: {
-        marginRight: 20,
-    },
-    button: {
-        paddingTop: '20px',
+    FormGroup: {
+        padding: '30px 0 0 0 ',
     },
 };
 
@@ -72,23 +70,38 @@ class Auth extends React.Component {
       const { classes } = this.props;
       if (this.state.pending) {
           return (
-              <CircularProgress color="secondary"/>
+              <div className={classes.loginContainer}>
+                  <CircularProgress color="secondary"/>
+              </div>
           );
       }
 
       return (
           <div className={classes.loginContainer}>
-              <form onSubmit={this.login.bind(this)} className={classes.form}>
-                  <FormGroup >
-                      <FormLabel htmlFor="username">username</FormLabel>
-                      <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} />
-                  </FormGroup>
-                  <FormGroup >
-                      <FormLabel htmlFor="password">password</FormLabel>
-                      <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} />
-                  </FormGroup>
-                  <Button type='submit' className={classes.button} variant="contained" color="secondary">Login</Button>
-              </form>
+              <Grid container>
+                  <Grid item xs={4}>
+                      <div></div>
+                  </Grid>
+                  <Grid item xs={4}>
+                      <form onSubmit={this.login.bind(this)} className={classes.form}>
+                          <FormGroup className={classes.FormGroup}>
+                              <FormLabel htmlFor="username">username</FormLabel>
+                              <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} />
+                          </FormGroup>
+                          <FormGroup className={classes.FormGroup}>
+                              <FormLabel htmlFor="password">password</FormLabel>
+                              <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} />
+                          </FormGroup>
+                          <FormGroup className={classes.FormGroup}>
+                              <Button type='submit' variant="contained" color="secondary">Login</Button>
+                          </FormGroup>
+                      </form>
+                  </Grid>
+                  <Grid item xs={4}>
+                      <div></div>
+                  </Grid>
+              </Grid>
+
           </div>
       );
   }
