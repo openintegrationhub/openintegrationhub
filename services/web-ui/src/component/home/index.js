@@ -22,21 +22,29 @@ const useStyles = {
         lineHeight: '1.33em',
         color: '#fff!important',
     },
+    wrapper: {
+        fontSize: '24px',
+        lineHeight: '1.33em',
+        color: '#fff!important',
+    },
 };
 
 class Home extends React.Component {
     render() {
         const { classes } = this.props;
         return (
-            <div className={classes.container}>
-                <h1 className={classes.headline}>
+            <div className={classes.wrapper}>
+                <div className={classes.container}>
+                    <h1 className={classes.headline}>
                     Die Revolution der Daten-Synchronisation
-                </h1>
-                <span className={classes.content}>
+                    </h1>
+                    <span className={classes.content}>
                 Open Source Framework zum standardisierten Datenaustausch zwischen Geschäftsanwendungen.
-                </span>
+                    </span>
 
+                </div>
             </div>
+
         );
     }
 }
