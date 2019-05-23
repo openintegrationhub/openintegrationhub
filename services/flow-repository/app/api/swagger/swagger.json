@@ -735,7 +735,9 @@
               ],
               "properties": {
                 "id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "ID of this node, which will be referenced by edges",
+                  "example": "step_1"
                 },
                 "componentId": {
                   "type": "string",
@@ -749,8 +751,8 @@
                 },
                 "name": {
                   "type": "string",
-                  "description": "Name of this node, which will be referenced by edges",
-                  "example": "step_1"
+                  "description": "Descriptive name of this node",
+                  "example": "MS Office Adapter"
                 },
                 "description": {
                   "type": "string"
