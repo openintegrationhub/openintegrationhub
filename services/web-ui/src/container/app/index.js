@@ -13,7 +13,7 @@ function App() {
     return (
 
         <Switch>
-            <Route exact path="/login" component={Login} />
+            <Route exact path="/auth" component={Login} />
             <LoginCheck>
                 <Route exact path="/user" component={UserManagement} />
                 <Route exact path="/" component={Home} />

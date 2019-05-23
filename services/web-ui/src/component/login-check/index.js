@@ -40,7 +40,7 @@ class LoginCheck extends React.Component {
         }
 
         return (
-            <Redirect to="/login"></Redirect>
+            <Redirect to="/auth"></Redirect>
         );
     }
 }
