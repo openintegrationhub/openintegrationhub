@@ -2,7 +2,7 @@ import React from 'react';
 
 import './index.css';
 
-class UserManagement extends React.Component {
+class User extends React.Component {
     render() {
         return (
             <div className="App">
@@ -12,4 +12,4 @@ class UserManagement extends React.Component {
     }
 }
 
-export default UserManagement;
+export default User;

@@ -19,8 +19,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import OpenLock from '@material-ui/icons/LockOpen';
 import Person from '@material-ui/icons/Person';
+import HomeIcon from '@material-ui/icons/Home';
+import { Route, Switch } from 'react-router-dom';
 import { getUsers, logout } from '../../action/user';
-import UserManagement from '../user-management';
+import Home from '../../component/home';
+import User from '../../component/user';
+import { history } from '../../store';
 
 const drawerWidth = 240;
 
@@ -82,9 +86,9 @@ const styles = theme => ({
     },
 });
 
-class Home extends React.Component {
+class Main extends React.Component {
   state = {
-      menu: ['Login', 'UserManagement', 'Logout'],
+      menu: ['Start', 'Login', 'UserManagement', 'Logout'],
       open: false,
   };
 
@@ -104,8 +108,13 @@ class Home extends React.Component {
       {
           this.state.menu.map((text) => {
               switch (text) {
+              case 'Start':
+                  return <ListItem button key={text} onClick={() => { history.push('/'); }}>
+                      <ListItemIcon><HomeIcon /></ListItemIcon>
+                      <ListItemText primary={text} />
+                  </ListItem>;
               case 'UserManagement':
-                  return <ListItem button key={text}>
+                  return <ListItem button key={text} onClick={() => { history.push('/user'); }}>
                       <ListItemIcon><Person /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
@@ -170,15 +179,18 @@ class Home extends React.Component {
                       [classes.contentShift]: open,
                   })}
               >
-                  <UserManagement/>
-
+                  <Switch>
+                      {/* <Route exact path="/user" component={UserManagement} /> */}
+                      <Route exact path="/" component={Home} />
+                      <Route exact path="/user" component={User} />
+                  </Switch>
               </main>
           </div>
       );
   }
 }
 
-Home.propTypes = {
+Main.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
 };
@@ -194,4 +206,4 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(withStyles(styles, { withTheme: true })(Home));
+)(withStyles(styles, { withTheme: true })(Main));

@@ -2,9 +2,9 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
-import Home from '../home';
+import Main from '../main';
 import Auth from '../auth';
-import UserManagement from '../user-management';
+// import UserManagement from '../../component/user-management';
 import LoginCheck from '../../component/login-check';
 
 import './index.css';
@@ -15,8 +15,8 @@ function App() {
         <Switch>
             <Route exact path="/auth" component={Auth} />
             <LoginCheck>
-                <Route exact path="/user" component={UserManagement} />
-                <Route exact path="/" component={Home} />
+                {/* <Route exact path="/user" component={UserManagement} /> */}
+                <Route exact path="/" component={Main} />
             </LoginCheck>
         </Switch>
     );
