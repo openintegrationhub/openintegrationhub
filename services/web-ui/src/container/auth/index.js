@@ -35,8 +35,8 @@ const useStyles = {
 class Auth extends React.Component {
   state = {
       userData: {
-          username: '',
-          password: '',
+          username: process.env.REACT_APP_DEFAULT_USERNAME || '',
+          password: process.env.REACT_APP_DEFAULT_PASSWORD || '',
       },
       pending: false,
   }

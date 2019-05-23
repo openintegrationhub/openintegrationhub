@@ -16,7 +16,6 @@ import * as serviceWorker from './serviceWorker';
     ReactDOM.render(
         <Provider store={configureStore()}>
             <Router history={history}>
-
                 <App />
             </Router>
         </Provider>,
