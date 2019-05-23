@@ -3,7 +3,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import configureStore from './store';
 
 const initialState = {
-    user: {
+    auth: {
         isLoggedIn: true,
     },
 };

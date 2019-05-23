@@ -2,6 +2,10 @@ import React from 'react';
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import flow from 'lodash/flow';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { getUsers } from '../../action/users';
+
 
 // components
 import Table from '../user-table';
@@ -14,7 +18,12 @@ const useStyles = {
     },
 };
 
-class User extends React.Component {
+class Users extends React.Component {
+    constructor(props) {
+        super();
+        props.getUsers();
+    }
+
     render() {
         const {
             classes,
@@ -32,6 +41,17 @@ class User extends React.Component {
     }
 }
 
+const mapStateToProps = state => ({
+    users: state.users,
+});
+const mapDispatchToProps = dispatch => bindActionCreators({
+    getUsers,
+}, dispatch);
+
 export default flow(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    ),
     withStyles(useStyles),
-)(User);
+)(Users);

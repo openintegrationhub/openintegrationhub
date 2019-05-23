@@ -1,18 +1,12 @@
-import { GET_USERS, LOGIN } from '../action/user';
+import { LOGIN } from '../action/auth';
 
 const initialState = {
     isLoggedIn: false,
     token: '',
-    all: [],
 };
 
 export default (state = initialState, action) => {
     switch (action.type) {
-    case GET_USERS:
-        return {
-            ...state,
-            all: action.users,
-        };
     case LOGIN:
         return {
             ...state,

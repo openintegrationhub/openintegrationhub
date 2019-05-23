@@ -22,9 +22,10 @@ import Person from '@material-ui/icons/Person';
 import HomeIcon from '@material-ui/icons/Home';
 import flow from 'lodash/flow';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import { getUsers, logout } from '../../action/user';
+import { logout } from '../../action/auth';
+import { getUsers } from '../../action/users';
 import Home from '../../component/home';
-import User from '../../component/user';
+import Users from '../../component/users';
 
 import './index.css';
 
@@ -92,7 +93,7 @@ const styles = theme => ({
 
 class Main extends React.Component {
   state = {
-      menu: ['Start', 'Login', 'UserManagement', 'Logout'],
+      menu: ['Start', 'Login', 'Users', 'Logout'],
       open: false,
   };
 
@@ -117,8 +118,8 @@ class Main extends React.Component {
                       <ListItemIcon><HomeIcon /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
-              case 'UserManagement':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/user'); }}>
+              case 'Users':
+                  return <ListItem button key={text} onClick={() => { this.props.history.push('/users'); }}>
                       <ListItemIcon><Person /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
@@ -184,9 +185,8 @@ class Main extends React.Component {
                   })}
               >
                   <Switch>
-                      {/* <Route exact path="/user" component={UserManagement} /> */}
                       <Route exact path="/" component={Home} />
-                      <Route exact path="/user" component={User} />
+                      <Route exact path="/users" component={Users} />
                   </Switch>
               </main>
           </div>
@@ -200,7 +200,7 @@ Main.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    user: state.user,
+    auth: state.auth,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     getUsers,
