@@ -223,9 +223,9 @@ class UserTable extends React.Component {
         rowsPerPage: 5,
     };
 
-    componentDidMount() {
+    componentDidUpdate(prefProps) {
         const tempArr = [];
-        if (this.props.users && this.props.users.length > 0) {
+        if (prefProps.users !== this.props.users && this.props.users && this.props.users.length > 0) {
             this.props.users.forEach((user) => {
                 tempArr.push(createData(user.username, 305, 3.7, 67, 4.3));
             });
