@@ -32,7 +32,7 @@ class Users extends React.Component {
             <div className={classes.wrapper}>
                 <Grid container >
                     <Grid item xs={12}>
-                        <Table />
+                        <Table users={this.props.users}/>
                     </Grid>
                 </Grid>
 

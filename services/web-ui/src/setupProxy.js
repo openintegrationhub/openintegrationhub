@@ -6,7 +6,7 @@ module.exports = function (app) {
     app.use(proxy([
         '/login',
         '/logout',
-        '/api/v1/users/**',
+        '/api/v1',
     ], { target: 'http://iam.openintegrationhub.com', changeOrigin: true }));
     // proxy server config
     app.use('/config', (req, res) => {
