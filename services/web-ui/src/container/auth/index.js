@@ -21,7 +21,11 @@ const useStyles = {
     form: {
         float: 'none',
         margin: 'auto',
+        padding: '40vh 0',
         width: 200,
+    },
+    frame: {
+        height: '100vh',
     },
     FormGroup: {
         padding: '30px 0 0 0 ',
@@ -78,24 +82,26 @@ class Auth extends React.Component {
 
       return (
           <div className={classes.loginContainer}>
-              <Grid container>
+              <Grid container >
                   <Grid item xs={4}>
                       <div></div>
                   </Grid>
                   <Grid item xs={4}>
-                      <form onSubmit={this.login.bind(this)} className={classes.form}>
-                          <FormGroup className={classes.FormGroup}>
-                              <FormLabel htmlFor="username">username</FormLabel>
-                              <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} />
-                          </FormGroup>
-                          <FormGroup className={classes.FormGroup}>
-                              <FormLabel htmlFor="password">password</FormLabel>
-                              <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} />
-                          </FormGroup>
-                          <FormGroup className={classes.FormGroup}>
-                              <Button type='submit' variant="contained" color="secondary">Login</Button>
-                          </FormGroup>
-                      </form>
+                      <div className={classes.frame}>
+                          <form onSubmit={this.login.bind(this)} className={classes.form}>
+                              <FormGroup className={classes.FormGroup}>
+                                  <FormLabel htmlFor="username">username</FormLabel>
+                                  <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} />
+                              </FormGroup>
+                              <FormGroup className={classes.FormGroup}>
+                                  <FormLabel htmlFor="password">password</FormLabel>
+                                  <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} />
+                              </FormGroup>
+                              <FormGroup className={classes.FormGroup}>
+                                  <Button type='submit' variant="contained" color="secondary">Login</Button>
+                              </FormGroup>
+                          </form>
+                      </div>
                   </Grid>
                   <Grid item xs={4}>
                       <div></div>
