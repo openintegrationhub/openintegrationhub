@@ -30,11 +30,3 @@ const render = (Component) => {
     updateConfig((await axios.get('/config')).data);
     render(App);
 })();
-
-if (module.hot) {
-    console.log('hot');
-    module.hot.accept('./container/app', () => {
-        const NextApp = require('./container/app').default; // eslint-disable-line global-require
-        render(NextApp);
-    });
-}
