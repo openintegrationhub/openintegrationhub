@@ -4,15 +4,16 @@ import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import flow from 'lodash/flow';
-// import classNames from 'classnames';
 import { withStyles } from '@material-ui/styles';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import update from 'immutability-helper';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
+// Components
+import Loader from '../../component/loader';
+// Actions
 import { login } from '../../action/user';
 
 const useStyles = {
@@ -24,10 +25,6 @@ const useStyles = {
         margin: 'auto',
         padding: '40vh 0',
         width: 200,
-    },
-    loading: {
-        padding: '40vh 0',
-        height: '100vh',
     },
     frame: {
         height: '100vh',
@@ -79,21 +76,14 @@ class Auth extends React.Component {
       const { classes } = this.props;
       if (this.state.pending) {
           return (
-              <div className={classes.loginContainer}>
-                  <div className={classes.loading}>
-                      <CircularProgress size={200} color="secondary" style={{ marginLeft: '45%' }}/>
-                  </div>
-
-              </div>
+              <Loader />
           );
       }
 
       return (
           <div className={classes.loginContainer}>
               <Grid container >
-                  <Grid item xs={4}>
-                      <div></div>
-                  </Grid>
+                  <Grid item xs={4}></Grid>
                   <Grid item xs={4}>
                       <div className={classes.frame}>
                           <form onSubmit={this.login.bind(this)} className={classes.form}>
@@ -111,9 +101,7 @@ class Auth extends React.Component {
                           </form>
                       </div>
                   </Grid>
-                  <Grid item xs={4}>
-                      <div></div>
-                  </Grid>
+                  <Grid item xs={4}></Grid>
               </Grid>
 
           </div>
