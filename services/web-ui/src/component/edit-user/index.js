@@ -7,8 +7,9 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
-import update from 'immutability-helper';
 import withSideSheet from '../../hoc/with-side-sheet';
+import withForm from '../../hoc/with-form';
+
 
 const useStyles = {
     wrapper: {
@@ -31,22 +32,8 @@ const useStyles = {
 
 class EditUser extends React.Component {
     state = {
-        userData: {
-            username: process.env.REACT_APP_DEFAULT_USERNAME || '',
-            password: process.env.REACT_APP_DEFAULT_PASSWORD || '',
-        },
         pending: false,
     }
-
-    setVal = (fieldName, e) => {
-        this.setState({
-            userData: update(this.state.userData, {
-                [fieldName]: {
-                    $set: e.target.value,
-                },
-            }),
-        });
-    };
 
     submit = (e) => {
 
@@ -56,16 +43,18 @@ class EditUser extends React.Component {
         const {
             classes,
         } = this.props;
+
+        const { username, password } = this.props.formData;
         return (
             <div className={classes.frame}>
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>
                     <FormGroup className={classes.formGroup}>
                         <FormLabel htmlFor="username">username</FormLabel>
-                        <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} />
+                        <Input id="username" name="username" onChange={this.props.setVal.bind(this, 'username')} value={username || ''} />
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
                         <FormLabel htmlFor="password">password</FormLabel>
-                        <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} />
+                        <Input id="password" type="password" name="password" onChange={this.props.setVal.bind(this, 'password')} value={password || ''} />
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
                         <Button type='submit' variant="contained" color="secondary">Login</Button>
@@ -90,4 +79,5 @@ export default flow(
     ),
     withStyles(useStyles),
     withSideSheet,
+    withForm,
 )(EditUser);

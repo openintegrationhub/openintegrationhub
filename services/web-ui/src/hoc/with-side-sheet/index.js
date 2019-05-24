@@ -53,14 +53,13 @@ export default function withSideSheet(Component) {
         render() {
             const { classes, ...other } = this.props;
 
-            // Then spread only those unused props
             return (
                 <Drawer anchor={this.props.side} open={this.state[this.props.side]} onClose={this.toggleDrawerEventHandler(false)}>
                     <div
                         className={this.props.classes.list}
                         role="presentation"
-                        onClick={this.toggleDrawerEventHandler(false)}
-                        onKeyDown={this.toggleDrawerEventHandler(false)}
+                        // onClick={this.toggleDrawerEventHandler(false)}
+                        // onKeyDown={this.toggleDrawerEventHandler(false)}
                     >
                         <Component
                             onClose={this.onClose}
