@@ -8,7 +8,7 @@ import { getUsers } from '../../action/users';
 
 
 // components
-import Table from '../user-table';
+import Table from '../table';
 
 
 const useStyles = {
@@ -24,6 +24,10 @@ class Users extends React.Component {
         props.getUsers();
     }
 
+    editHandler = (username) => {
+        console.log(username);
+    };
+
     render() {
         const {
             classes,
@@ -32,7 +36,7 @@ class Users extends React.Component {
             <div className={classes.wrapper}>
                 <Grid container >
                     <Grid item xs={12}>
-                        <Table users={this.props.users}/>
+                        <Table data={this.props.users} editHandler={this.editHandler}/>
                     </Grid>
                 </Grid>
 
