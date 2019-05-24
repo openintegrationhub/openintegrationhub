@@ -5,6 +5,7 @@ import { getConfig } from '../conf';
 const conf = getConfig();
 export const GET_USERS = 'GET_USERS';
 export const UPDATE_USER = 'UPDATE_USER';
+export const UPDATE_USER_ERROR = 'UPDATE_USER_ERROR';
 export const CREATE_USER = 'CREATE_USER';
 export const DELETE_USER = 'DELETE_USER';
 
@@ -40,7 +41,10 @@ export const updateUser = user => async (dispatch) => {
         });
         dispatch(getUsers());
     } catch (err) {
-        console.log(err);
+        dispatch({
+            type: UPDATE_USER_ERROR,
+            err,
+        });
     }
 };
 
