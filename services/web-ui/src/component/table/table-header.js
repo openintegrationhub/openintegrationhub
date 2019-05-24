@@ -23,6 +23,12 @@ class TableHeader extends React.Component {
                     id: element, numeric: index !== 0, disablePadding: index === 0, label: element,
                 });
             });
+        } else if (props.type === 'tenant') {
+            CONF.tableConfig.tenant.forEach((element, index) => {
+                this.rows.push({
+                    id: element, numeric: index !== 0, disablePadding: index === 0, label: element,
+                });
+            });
         }
     }
 

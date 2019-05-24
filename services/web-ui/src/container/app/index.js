@@ -8,8 +8,6 @@ import Main from '../main';
 import Auth from '../auth';
 import LoginCheck from '../../component/login-check';
 
-import './index.css';
-
 function App() {
     document.title = 'Web UI';
     return (

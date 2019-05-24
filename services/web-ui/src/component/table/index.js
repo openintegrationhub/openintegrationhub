@@ -127,7 +127,7 @@ class UserTable extends React.Component {
                     <Grid container >
                         <Grid item xs={12}>
                             <Paper className={classes.root}>
-                                <TableToolbar numSelected={selected.length} setFilter={this.handleRequestSort} filter={this.state.orderBy}/>
+                                <TableToolbar type={this.props.type} numSelected={selected.length} setFilter={this.handleRequestSort} filter={this.state.orderBy}/>
                                 <div className={classes.tableWrapper}>
                                     <Table className={classes.table} aria-labelledby="tableTitle">
                                         <TableHeader

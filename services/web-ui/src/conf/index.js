@@ -9,7 +9,8 @@ let config = {
         ],
         tenant: [
             'organisations',
-            'created At',
+            'createdAt',
+            'updatedAt',
             'status',
         ],
     },
