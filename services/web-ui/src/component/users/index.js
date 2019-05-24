@@ -1,15 +1,19 @@
 import React from 'react';
-import { withStyles } from '@material-ui/styles';
-import Grid from '@material-ui/core/Grid';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { getUsers } from '../../action/users';
-import EditUser from '../edit-user';
+// Ui
+import { withStyles } from '@material-ui/styles';
+import Grid from '@material-ui/core/Grid';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
+// Actions
+import { getUsers } from '../../action/users';
 
 // components
 import Table from '../table';
+import EditUser from '../edit-user';
 
 
 const useStyles = {
@@ -17,11 +21,14 @@ const useStyles = {
         width: '100%',
         padding: '10vh 0 0 0',
     },
+    fab: {
+        margin: '10px 0 10px 30px',
+    },
 };
 
 class Users extends React.Component {
     state= {
-        editUserIsOpen: false,
+        drawerIsOpen: false,
     }
 
     constructor(props) {
@@ -31,8 +38,15 @@ class Users extends React.Component {
 
     editHandler = (userId) => {
         this.setState({
-            editUserIsOpen: true,
+            drawerIsOpen: true,
             editUserId: userId,
+        });
+    };
+
+    addUser = () => {
+        this.setState({
+            drawerIsOpen: true,
+            editUserId: '',
         });
     };
 
@@ -42,20 +56,21 @@ class Users extends React.Component {
         } = this.props;
         return (
             <div className={classes.wrapper}>
-                <Grid container >
-                    <Grid item xs={12}>
-                        <EditUser
-                            side={'right'}
-                            open={this.state.editUserIsOpen}
-                            userId={this.state.editUserId}
-                            onClose={() => {
-                                this.setState({
-                                    editUserIsOpen: false,
-                                });
-                            }}
-                        />
-                        <Table data={this.props.users} editHandler={this.editHandler} type='user'/>
-                    </Grid>
+                <Grid item xs={12}>
+                    <Fab color="primary" aria-label="Add" className={classes.fab} onClick={this.addUser.bind(this)}>
+                        <AddIcon />
+                    </Fab>
+                    <EditUser
+                        side={'right'}
+                        open={this.state.drawerIsOpen}
+                        userId={this.state.editUserId}
+                        onClose={() => {
+                            this.setState({
+                                drawerIsOpen: false,
+                            });
+                        }}
+                    />
+                    <Table data={this.props.users} editHandler={this.editHandler} type='user'/>
                 </Grid>
 
             </div>

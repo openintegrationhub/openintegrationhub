@@ -123,61 +123,57 @@ class UserTable extends React.Component {
         if (data) {
             emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
             return (
-                <div className={classes.wrapper}>
-                    <Grid container >
-                        <Grid item xs={12}>
-                            <Paper className={classes.root}>
-                                <TableToolbar type={this.props.type} numSelected={selected.length} setFilter={this.handleRequestSort} filter={this.state.orderBy}/>
-                                <div className={classes.tableWrapper}>
-                                    <Table className={classes.table} aria-labelledby="tableTitle">
-                                        <TableHeader
-                                            numSelected={selected.length}
-                                            order={order}
-                                            orderBy={orderBy}
-                                            onSelectAllClick={this.handleSelectAllClick}
-                                            onRequestSort={this.handleRequestSort}
-                                            rowCount={data.length}
-                                            type={this.props.type}
-                                        />
-                                        <TableBody>
-                                            {this.stableSort(data)
-                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                                .map(n => (<TableRowData
-                                                    key={`rowData-${n._id}`}
-                                                    data={n}
-                                                    type={this.props.type}
-                                                    isSelected={this.isSelected(n._id)}
-                                                    handleClick={this.handleClick.bind(this, n._id)}
-                                                    editHandler={this.props.editHandler.bind(this, n._id)}
-                                                />
-                                                ))}
-                                            {emptyRows > 0 && (
-                                                <TableRow style={{ height: 49 * emptyRows }}>
-                                                    <TableCell colSpan={6} />
-                                                </TableRow>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                                <TablePagination
-                                    rowsPerPageOptions={[5, 10, 25]}
-                                    component="div"
-                                    count={data.length}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    backIconButtonProps={{
-                                        'aria-label': 'Previous Page',
-                                    }}
-                                    nextIconButtonProps={{
-                                        'aria-label': 'Next Page',
-                                    }}
-                                    onChangePage={this.handleChangePage}
-                                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                <Grid item xs={12}>
+                    <Paper className={classes.root}>
+                        <TableToolbar type={this.props.type} numSelected={selected.length} setFilter={this.handleRequestSort} filter={this.state.orderBy}/>
+                        <div className={classes.tableWrapper}>
+                            <Table className={classes.table} aria-labelledby="tableTitle">
+                                <TableHeader
+                                    numSelected={selected.length}
+                                    order={order}
+                                    orderBy={orderBy}
+                                    onSelectAllClick={this.handleSelectAllClick}
+                                    onRequestSort={this.handleRequestSort}
+                                    rowCount={data.length}
+                                    type={this.props.type}
                                 />
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                </div>
+                                <TableBody>
+                                    {this.stableSort(data)
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map(n => (<TableRowData
+                                            key={`rowData-${n._id}`}
+                                            data={n}
+                                            type={this.props.type}
+                                            isSelected={this.isSelected(n._id)}
+                                            handleClick={this.handleClick.bind(this, n._id)}
+                                            editHandler={this.props.editHandler.bind(this, n._id)}
+                                        />
+                                        ))}
+                                    {emptyRows > 0 && (
+                                        <TableRow style={{ height: 49 * emptyRows }}>
+                                            <TableCell colSpan={6} />
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={data.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            backIconButtonProps={{
+                                'aria-label': 'Previous Page',
+                            }}
+                            nextIconButtonProps={{
+                                'aria-label': 'Next Page',
+                            }}
+                            onChangePage={this.handleChangePage}
+                            onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                        />
+                    </Paper>
+                </Grid>
             );
         }
 
