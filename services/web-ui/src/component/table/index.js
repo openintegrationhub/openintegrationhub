@@ -1,7 +1,10 @@
 import React from 'react';
+import flow from 'lodash/flow';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+// UI
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
-import flow from 'lodash/flow';
 import PropTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,6 +18,10 @@ import Loader from '../loader';
 import TableToolbar from './table-toolbar';
 import TableHeader from './table-header';
 import TableRowData from './table-row';
+
+// Actions
+
+import { deleteUser } from '../../action/users';
 
 const useStyles = () => ({
     wrapper: {
@@ -111,6 +118,15 @@ class UserTable extends React.Component {
 
     isSelected = id => this.state.selected.indexOf(id) !== -1;
 
+    onDelete = () => {
+        if (this.state.selected.length !== 0) {
+            this.state.selected.forEach((element) => {
+                this.props.deleteUser(element);
+            });
+        }
+        this.setState({ selected: [] });
+    } ;
+
     render() {
         const { classes } = this.props;
         let emptyRows;
@@ -125,7 +141,13 @@ class UserTable extends React.Component {
             return (
                 <Grid item xs={12}>
                     <Paper className={classes.root}>
-                        <TableToolbar type={this.props.type} numSelected={selected.length} setFilter={this.handleRequestSort} filter={this.state.orderBy}/>
+                        <TableToolbar
+                            type={this.props.type}
+                            numSelected={selected.length}
+                            setFilter={this.handleRequestSort}
+                            filter={this.state.orderBy}
+                            onDelete={this.onDelete}
+                        />
                         <div className={classes.tableWrapper}>
                             <Table className={classes.table} aria-labelledby="tableTitle">
                                 <TableHeader
@@ -147,6 +169,7 @@ class UserTable extends React.Component {
                                             isSelected={this.isSelected(n._id)}
                                             handleClick={this.handleClick.bind(this, n._id)}
                                             editHandler={this.props.editHandler.bind(this, n._id)}
+                                            disabled={this.props.auth._id === n._id}
                                         />
                                         ))}
                                     {emptyRows > 0 && (
@@ -187,6 +210,18 @@ UserTable.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
+const mapStateToProps = state => ({
+    users: state.users,
+    auth: state.auth,
+});
+const mapDispatchToProps = dispatch => bindActionCreators({
+    deleteUser,
+}, dispatch);
+
 export default flow(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    ),
     withStyles(useStyles),
 )(UserTable);

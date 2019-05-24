@@ -16,7 +16,7 @@ const TableRowData = (props) => {
             selected={props.isSelected}
         >
             <TableCell padding="checkbox">
-                <Checkbox checked={props.isSelected} onClick={props.handleClick}/>
+                <Checkbox checked={props.isSelected} onClick={props.handleClick} disabled={props.disabled}/>
             </TableCell>
             <TableCell
                 component="th"
