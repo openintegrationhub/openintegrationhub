@@ -50,9 +50,8 @@ const TableRowData = (props) => {
                 component="th"
                 scope="row"
                 padding="none">
-                {props.data.username}
+                {props.data.name}
             </TableCell>
-            <TableCell align="right">{props.data.role}</TableCell>
             <TableCell align="right">{props.data.createdAt}</TableCell>
             <TableCell align="right">{props.data.status}</TableCell>
             <TableCell align="right">

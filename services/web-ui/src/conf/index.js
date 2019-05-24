@@ -1,16 +1,17 @@
 let config = {
     tableConfig: {
-        user: {
-            username: 'Username',
-            role: 'Role',
-            createdAt: 'Created At',
-            status: 'Status',
-        },
-        tenant: {
-            tenantname: 'Organisations',
-            createdAt: 'Created At',
-            status: 'Status',
-        },
+        user: [
+            'username',
+            'role',
+            'createdAt',
+            'updatedAt',
+            'status',
+        ],
+        tenant: [
+            'organisations',
+            'created At',
+            'status',
+        ],
     },
 };
 

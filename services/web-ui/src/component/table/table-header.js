@@ -7,34 +7,37 @@ import Tooltip from '@material-ui/core/Tooltip';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import PropTypes from 'prop-types';
 
-
-const rows = [
-    {
-        id: 'username', numeric: false, disablePadding: true, label: 'Username',
-    },
-    {
-        id: 'role', numeric: true, disablePadding: false, label: 'Role',
-    },
-    {
-        id: 'created', numeric: true, disablePadding: false, label: 'Creaded At',
-    },
-    {
-        id: 'status', numeric: true, disablePadding: false, label: 'Status',
-    },
-    {
-        id: 'actions', numeric: true, disablePadding: false, label: 'Actions',
-    },
-];
+const CONF = require('../../conf').getConfig();
 
 
 class TableHeader extends React.Component {
-    createSortHandler = property => (event) => {
-        this.props.onRequestSort(event, property);
+    rows = [];
+
+    checked = false;
+
+    constructor(props) {
+        super(props);
+        if (props.type === 'user') {
+            CONF.tableConfig.user.forEach((element, index) => {
+                this.rows.push({
+                    id: element, numeric: index !== 0, disablePadding: index === 0, label: element,
+                });
+            });
+        }
+    }
+
+    createSortHandler = property => () => {
+        this.props.onRequestSort(property);
+    };
+
+    selectAll = () => {
+        this.checked = !this.checked;
+        this.props.onSelectAllClick(this.checked);
     };
 
     render() {
         const {
-            onSelectAllClick, order, orderBy, numSelected, rowCount,
+            order, orderBy, numSelected, rowCount,
         } = this.props;
         return (
 
@@ -44,10 +47,10 @@ class TableHeader extends React.Component {
                         <Checkbox
                             indeterminate={numSelected > 0 && numSelected < rowCount}
                             checked={numSelected === rowCount}
-                            onChange={onSelectAllClick}
+                            onChange={this.selectAll}
                         />
                     </TableCell>
-                    {rows.map(
+                    {this.rows.map(
                         row => (
                             <TableCell
                                 key={row.id}

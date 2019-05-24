@@ -41,42 +41,40 @@ class UserTable extends React.Component {
         rowsPerPage: 10,
     };
 
-    desc = (a, b, orderBy) => {
-        if (b[orderBy] < a[orderBy]) {
-            return -1;
+    desc = (a, b) => {
+        if (b[this.state.orderBy] < a[this.state.orderBy]) {
+            return this.state.order === 'desc' ? -1 : 1;
         }
-        if (b[orderBy] > a[orderBy]) {
-            return 1;
+        if (b[this.state.orderBy] > a[this.state.orderBy]) {
+            return this.state.order === 'desc' ? 1 : -1;
         }
         return 0;
     };
 
-    getSorting = (order, orderBy) => (order === 'desc' ? (a, b) => this.desc(a, b, orderBy) : (a, b) => -this.desc(a, b, orderBy));
-
-    stableSort = (array, cmp) => {
+    stableSort = (array) => {
         const stabilizedThis = array.map((el, index) => [el, index]);
+
         stabilizedThis.sort((a, b) => {
-            const order = cmp(a[0], b[0]);
+            const order = this.desc(a[0], b[0]);
             if (order !== 0) return order;
             return a[1] - b[1];
         });
         return stabilizedThis.map(el => el[0]);
     };
 
-    handleRequestSort = (event, property) => {
+    handleRequestSort = (property) => {
         const orderBy = property;
         let order = 'desc';
 
         if (this.state.orderBy === property && this.state.order === 'desc') {
             order = 'asc';
         }
-
         this.setState({ order, orderBy });
     };
 
-    handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            this.setState({ selected: this.props.data.map(n => n.id) });
+    handleSelectAllClick = (isChecked) => {
+        if (isChecked) {
+            this.setState({ selected: this.props.data.map(n => n._id) });
             return;
         }
         this.setState({ selected: [] });
@@ -139,9 +137,10 @@ class UserTable extends React.Component {
                                             onSelectAllClick={this.handleSelectAllClick}
                                             onRequestSort={this.handleRequestSort}
                                             rowCount={data.length}
+                                            type='user'
                                         />
                                         <TableBody>
-                                            {this.stableSort(data, this.getSorting(order, orderBy))
+                                            {this.stableSort(data)
                                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                                 .map(n => (<TableRowData
                                                     key={`rowData-${n._id}`}
