@@ -18,6 +18,7 @@ import Loader from '../loader';
 import TableToolbar from './table-toolbar';
 import TableHeader from './table-header';
 import TableRowData from './table-row';
+import Confirm from '../confirm';
 
 // Actions
 
@@ -46,6 +47,7 @@ class UserTable extends React.Component {
         selected: [],
         page: 0,
         rowsPerPage: 10,
+        confirmOpen: false,
     };
 
     desc = (a, b) => {
@@ -118,13 +120,13 @@ class UserTable extends React.Component {
 
     isSelected = id => this.state.selected.indexOf(id) !== -1;
 
-    onDelete = () => {
-        if (this.state.selected.length !== 0) {
+    onDelete = (result) => {
+        if (result && this.state.selected.length !== 0) {
             this.state.selected.forEach((element) => {
                 this.props.deleteUser(element);
             });
         }
-        this.setState({ selected: [] });
+        this.setState({ selected: [], confirmOpen: false });
     } ;
 
     render() {
@@ -141,12 +143,16 @@ class UserTable extends React.Component {
             return (
                 <Grid item xs={12}>
                     <Paper className={classes.root}>
+                        <Confirm
+                            open={this.state.confirmOpen}
+                            handleClose={this.onDelete}
+                        />
                         <TableToolbar
                             type={this.props.type}
                             numSelected={selected.length}
                             setFilter={this.handleRequestSort}
                             filter={this.state.orderBy}
-                            onDelete={this.onDelete}
+                            onDelete={() => { this.setState({ confirmOpen: true }); }}
                         />
                         <div className={classes.tableWrapper}>
                             <Table className={classes.table} aria-labelledby="tableTitle">
