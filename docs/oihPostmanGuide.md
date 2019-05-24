@@ -154,6 +154,8 @@ _Hint:_ There is a predefined body that can be used.
 
 ### Components
 
+For further information on the underlying component repository please visit the [API docs](http://component-repository.openintegrationhub.com/api-docs/) and [GitHub](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/component-repository).
+
 #### Get All Components
 
 ![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
@@ -226,6 +228,8 @@ _Hint:_ There is a predefined body that can be used.
 ### Identity and Access Management
 
 **Attention:** IAM operations require admin rights.
+
+For further information on the underlying identity and access management please visit the [API docs](http://iam.openintegrationhub.com/api-docs/) and [GitHub](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/iam).
 
 #### Login
 
