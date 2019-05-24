@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import flow from 'lodash/flow';
 import { withStyles } from '@material-ui/styles';
+import SideSheet from '../side-sheet';
 
 const useStyles = {
     container: {
@@ -33,6 +34,10 @@ const useStyles = {
 };
 
 class Home extends React.Component {
+    state = {
+        showSideSheet: false,
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -46,8 +51,13 @@ class Home extends React.Component {
                     </span>
 
                 </div>
+                <SideSheet
+                    open={true}
+                    side={'right'}
+                >
+                    FOFOFOFOFO
+                </SideSheet>
             </div>
-
         );
     }
 }
