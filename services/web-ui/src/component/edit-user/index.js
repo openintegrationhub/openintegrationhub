@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import withSideSheet from '../../hoc/with-side-sheet';
 import withForm from '../../hoc/with-form';
+import { updateUser } from '../../action/users';
 
 
 const useStyles = {
@@ -35,8 +36,21 @@ class EditUser extends React.Component {
         pending: false,
     }
 
-    submit = (e) => {
+    componentDidMount() {
+        if (this.props.userId) {
+            const currentUser = this.props.users.find(user => user._id === this.props.userId);
+            this.props.setFormData({
+                _id: this.props.userId,
+                username: currentUser.username,
+                firstname: currentUser.firstname,
+                lastname: currentUser.lastname,
+            });
+        }
+    }
 
+    submit = (e) => {
+        e.preventDefault();
+        this.props.updateUser(this.props.formData);
     }
 
     render() {
@@ -44,7 +58,7 @@ class EditUser extends React.Component {
             classes,
         } = this.props;
 
-        const { username, password } = this.props.formData;
+        const { username, firstname, lastname } = this.props.formData;
         return (
             <div className={classes.frame}>
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>
@@ -53,8 +67,12 @@ class EditUser extends React.Component {
                         <Input id="username" name="username" onChange={this.props.setVal.bind(this, 'username')} value={username || ''} />
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
-                        <FormLabel htmlFor="password">password</FormLabel>
-                        <Input id="password" type="password" name="password" onChange={this.props.setVal.bind(this, 'password')} value={password || ''} />
+                        <FormLabel htmlFor="username">firstname</FormLabel>
+                        <Input id="username" name="username" onChange={this.props.setVal.bind(this, 'firstname')} value={firstname || ''} />
+                    </FormGroup>
+                    <FormGroup className={classes.formGroup}>
+                        <FormLabel htmlFor="username">lastname</FormLabel>
+                        <Input id="username" name="username" onChange={this.props.setVal.bind(this, 'lastname')} value={lastname || ''} />
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
                         <Button type='submit' variant="contained" color="secondary">Login</Button>
@@ -66,10 +84,10 @@ class EditUser extends React.Component {
 }
 
 const mapStateToProps = state => ({
-
+    users: state.users,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
-
+    updateUser,
 }, dispatch);
 
 export default flow(

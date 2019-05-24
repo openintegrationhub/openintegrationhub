@@ -3,8 +3,12 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 import Drawer from '@material-ui/core/Drawer';
 import flow from 'lodash/flow';
+import Container from '@material-ui/core/Container';
 
 const useStyles = {
+    root: {
+        flexGrow: 1,
+    },
     list: {
         width: 'auto',
     },
@@ -61,10 +65,15 @@ export default function withSideSheet(Component) {
                         // onClick={this.toggleDrawerEventHandler(false)}
                         // onKeyDown={this.toggleDrawerEventHandler(false)}
                     >
-                        <Component
-                            onClose={this.onClose}
-                            {...other}
-                        />
+                        <div className={this.props.classes.root}>
+                            <Container maxWidth="sm">
+                                <Component
+                                    onClose={this.onClose}
+                                    {...other}
+                                />
+                            </Container>
+                        </div>
+
                     </div>
                 </Drawer>
             );

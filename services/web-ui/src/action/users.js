@@ -26,12 +26,13 @@ export const getUsers = () => async (dispatch) => {
     }
 };
 
-export const updateUser = userId => async (dispatch) => {
+export const updateUser = user => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
-            url: `${conf.endpoints.iam}/api/v1/users/${userId}`,
+            url: `${conf.endpoints.iam}/api/v1/users/${user._id}`,
             withCredentials: true,
+            data: user,
         });
 
         dispatch({

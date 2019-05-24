@@ -29,11 +29,11 @@ class Users extends React.Component {
         props.getUsers();
     }
 
-    editHandler = (username) => {
+    editHandler = (userId) => {
         this.setState({
             editUserIsOpen: true,
+            editUserId: userId,
         });
-        console.log(username);
     };
 
     render() {
@@ -47,6 +47,7 @@ class Users extends React.Component {
                         <EditUser
                             side={'right'}
                             open={this.state.editUserIsOpen}
+                            userId={this.state.editUserId}
                             onClose={() => {
                                 this.setState({
                                     editUserIsOpen: false,
