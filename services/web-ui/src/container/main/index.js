@@ -161,7 +161,14 @@ class Main extends React.Component {
                       >
                           <MenuIcon />
                       </IconButton>
-                      <img src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg" alt="Open Integration Hub" id="logo" data-height-percentage="54" data-actual-width="271" data-actual-height="40"/>
+                      <img
+                          src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
+                          alt="Open Integration Hub"
+                          id="logo"
+                          data-height-percentage="54"
+                          data-actual-width="271"
+                          data-actual-height="40"
+                      />
                   </Toolbar>
               </AppBar>
               <Drawer

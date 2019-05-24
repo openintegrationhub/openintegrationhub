@@ -7,10 +7,16 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import withSideSheet from '../../hoc/with-side-sheet';
 import withForm from '../../hoc/with-form';
 import { updateUser, createUser } from '../../action/users';
+import { getConfig } from '../../conf';
 
+const conf = getConfig();
 
 const useStyles = {
     wrapper: {
@@ -73,7 +79,7 @@ class EditUser extends React.Component {
         } = this.props;
 
         const {
-            username, firstname, lastname, password, role,
+            username, firstname, lastname, password, role, status,
         } = this.props.formData;
         return (
             <div className={classes.frame}>
@@ -91,13 +97,30 @@ class EditUser extends React.Component {
                         <Input id="lastname" name="lastname" onChange={this.props.setVal.bind(this, 'lastname')} value={lastname || ''} />
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
-                        <FormLabel htmlFor="role">role</FormLabel>
-                        <Input id="role" name="role" onChange={this.props.setVal.bind(this, 'role')} value={role || ''} />
+                        <InputLabel htmlFor="role">role</InputLabel>
+                        <Select
+                            value={role || conf.account.roles.USER}
+                            onChange={this.props.setVal.bind(this, 'role')}
+                        >
+                            {Object.keys(conf.account.roles).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                        </Select>
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
-                        <FormLabel htmlFor="username">password</FormLabel>
-                        <Input id="password" type="password" name="password" onChange={this.props.setVal.bind(this, 'password')} value={password || ''} />
+                        <InputLabel htmlFor="role">status</InputLabel>
+                        <Select
+                            value={status || conf.account.status.ACTIVE}
+                            onChange={this.props.setVal.bind(this, 'status')}
+                        >
+                            {Object.keys(conf.account.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                        </Select>
                     </FormGroup>
+                    {!this.props.userId && (
+                        <FormGroup className={classes.formGroup}>
+                            <FormLabel htmlFor="username">password</FormLabel>
+                            <Input id="password" type="password" name="password" onChange={this.props.setVal.bind(this, 'password')} value={password || ''} />
+                        </FormGroup>
+                    )}
+
                     <FormGroup className={classes.formGroup}>
                         <Button type='submit' variant="contained" color="secondary">Save</Button>
                     </FormGroup>
