@@ -5,6 +5,7 @@ import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { getUsers } from '../../action/users';
+import EditUser from '../edit-user';
 
 
 // components
@@ -19,12 +20,19 @@ const useStyles = {
 };
 
 class Users extends React.Component {
+    state= {
+        editUserIsOpen: false,
+    }
+
     constructor(props) {
         super();
         props.getUsers();
     }
 
     editHandler = (username) => {
+        this.setState({
+            editUserIsOpen: true,
+        });
         console.log(username);
     };
 
@@ -36,6 +44,15 @@ class Users extends React.Component {
             <div className={classes.wrapper}>
                 <Grid container >
                     <Grid item xs={12}>
+                        <EditUser
+                            side={'right'}
+                            open={this.state.editUserIsOpen}
+                            onClose={() => {
+                                this.setState({
+                                    editUserIsOpen: false,
+                                });
+                            }}
+                        />
                         <Table data={this.props.users} editHandler={this.editHandler}/>
                     </Grid>
                 </Grid>

@@ -51,23 +51,23 @@ export default function withSideSheet(Component) {
         }
 
         render() {
+            const { classes, ...other } = this.props;
+
+            // Then spread only those unused props
             return (
-                <React.Fragment>
-                    <Drawer anchor={this.props.side} open={this.state[this.props.side]} onClose={this.toggleDrawerEventHandler(false)}>
-                        <div
-                            className={this.props.classes.list}
-                            role="presentation"
-                            onClick={this.toggleDrawerEventHandler(false)}
-                            onKeyDown={this.toggleDrawerEventHandler(false)}
-                        >
-                            {this.props.children}
-                        </div>
-                    </Drawer>
-                    <Component
-                        onClose={this.onClose}
-                        {...this.props}
-                    />;
-                </React.Fragment>
+                <Drawer anchor={this.props.side} open={this.state[this.props.side]} onClose={this.toggleDrawerEventHandler(false)}>
+                    <div
+                        className={this.props.classes.list}
+                        role="presentation"
+                        onClick={this.toggleDrawerEventHandler(false)}
+                        onKeyDown={this.toggleDrawerEventHandler(false)}
+                    >
+                        <Component
+                            onClose={this.onClose}
+                            {...other}
+                        />
+                    </div>
+                </Drawer>
             );
         }
     }
@@ -78,9 +78,7 @@ export default function withSideSheet(Component) {
         onClose: PropTypes.func,
     };
 
-    flow(
+    return flow(
         withStyles(useStyles),
     )(SideSheet);
-
-    return SideSheet;
 }
