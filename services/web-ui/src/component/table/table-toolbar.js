@@ -58,7 +58,7 @@ const TableToolbar = (props) => {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title="Delete">
-                    <IconButton aria-label="Delete">
+                    <IconButton aria-label="Delete" onClick={props.onDelete}>
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
