@@ -18,6 +18,12 @@ The configuration contains information about:
 * full duplex/half duplex connections
 * leading system configuration
 
+| applicationId | connected to OIH | inbound | outbound |
+| ---------- | ------------- | ------ |
+| crm1 |  true | true | true |
+| contactmanagement2 |  true | true | true |
+
+
 For each received message, the configuration is evaluated to determin how to process the message. 
 Message characteristics relevant for the dispatcher service:
 * tenant id
