@@ -32,9 +32,11 @@ This document is designed as a guide on _test the open integration hub with post
 
 ## Prerequisites
 
-In order to use the Open Integration Hub we provided a demo environment and a [postman collection](postman/OIH_Framework_Showcase.postman_collection.json) and a [postman environment](OIH_Framework.postman_environment.json) to test the functionalities of the Open Integration Hub.
+In order to use the Open Integration Hub we provided a demo environment and a [postman collection](postman/OIH_Framework_Showcase.postman_collection.json) and a [postman environment](postman/OIH_Framework.postman_environment.json) to test the functionalities of the Open Integration Hub.
 
 We suggest to download and import these files to easily process the steps described in the following.
+
+You can download postman from the [official postman website](https://www.getpostman.com/downloads/).
 
 ## SetUp
 
@@ -45,8 +47,8 @@ Please process the following steps in order to be able to generate a valid token
 
 1. Right click on the `OIH_SHOWCASE_COLLECTION` and click on `edit` OR click on the three dots `...` and click `edit`.
 2. Jump to `Pre-request Scripts`
-3. Replace `{YOUR_USERNAME}` with the username you received
-4. Replace `{YOUR_PASSWORD}` with the password you received
+3. Set `username` variable to the username you received
+4. Set `password` variable to the password you received
 5. Click on `Update`
 
 Here you can see where you should add the username and password:

@@ -560,8 +560,10 @@
 			 "id":"cb3e5496-f966-4583-8d1a-665738b7b4a5",
 			 "type":"text/javascript",
 			 "exec":[
+				"const username = \"{YOUR_USERNAME}\";",
+				"const password = \"{YOUR_PASSWORD}\";",
 				"const echoPostRequest = {",
-				"  url: 'http://iam.openintegrationhub.com/login?username={YOUR_USERNAME}@cloudecosystem.org&password={YOUR_PASSWORD}',",
+				"  url: `http://iam.openintegrationhub.com/login?username=${username}&password=${password}`,",
 				"  method: 'POST',",
 				"  header: 'Content-Type:application/json'",
 				"};",
