@@ -212,6 +212,6 @@ export default flow(
         mapStateToProps,
         mapDispatchToProps,
     ),
-    withStyles(styles, { withTheme: true }),
     withRouter,
+    withStyles(styles, { withTheme: true }),
 )(Main);
