@@ -19,6 +19,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import OpenLock from '@material-ui/icons/LockOpen';
 import Person from '@material-ui/icons/Person';
+import Busniess from '@material-ui/icons/Business';
 import HomeIcon from '@material-ui/icons/Home';
 import flow from 'lodash/flow';
 import { Route, Switch, withRouter } from 'react-router-dom';
@@ -26,8 +27,7 @@ import { logout } from '../../action/auth';
 import { getUsers } from '../../action/users';
 import Home from '../../component/home';
 import Users from '../../component/users';
-
-import './index.css';
+import Tenants from '../../component/tenants';
 
 const drawerWidth = 240;
 
@@ -93,7 +93,7 @@ const styles = theme => ({
 
 class Main extends React.Component {
   state = {
-      menu: ['Start', 'Login', 'Users', 'Logout'],
+      menu: ['Start', 'Users', 'Tenants', 'Logout'],
       open: false,
   };
 
@@ -121,6 +121,11 @@ class Main extends React.Component {
               case 'Users':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/users'); }}>
                       <ListItemIcon><Person /></ListItemIcon>
+                      <ListItemText primary={text} />
+                  </ListItem>;
+              case 'Tenants':
+                  return <ListItem button key={text} onClick={() => { this.props.history.push('/tenants'); }}>
+                      <ListItemIcon><Busniess /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Logout':
@@ -187,6 +192,7 @@ class Main extends React.Component {
                   <Switch>
                       <Route exact path="/" component={Home} />
                       <Route exact path="/users" component={Users} />
+                      <Route exact path="/tenants" component={Tenants} />
                   </Switch>
               </main>
           </div>

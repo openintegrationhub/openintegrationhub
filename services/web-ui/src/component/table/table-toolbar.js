@@ -41,17 +41,17 @@ const TableToolbar = (props) => {
             <div className={classes.title}>
                 {numSelected > 0 ? (
                     <Typography color="inherit" variant="h6">
-                        {numSelected} Users selected
+                        {numSelected} {props.type.toString()} selected
                     </Typography>
                 ) : (
                     <Typography variant="h6" id="tableTitle">
-              Users
+                        {props.type.toString()}
                     </Typography>
                 )}
             </div>
             <div className={classes.spacer} />
             <div className={classes.actions}>
-                <Input id="filter" name="filter" value={props.filter} />
+                <Input id="filter" name="filter" placeholder={props.type} />
                 <Tooltip title="Filter list">
                     <IconButton aria-label="Filter list">
                         <FilterListIcon />
