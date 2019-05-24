@@ -70,7 +70,7 @@ class Users extends React.Component {
                             });
                         }}
                     />
-                    <Table data={this.props.users} editHandler={this.editHandler} type='user'/>
+                    <Table data={this.props.users.all} editHandler={this.editHandler} type='user'/>
                 </Grid>
 
             </div>

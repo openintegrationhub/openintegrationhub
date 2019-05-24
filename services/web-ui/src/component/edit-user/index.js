@@ -9,7 +9,6 @@ import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import withSideSheet from '../../hoc/with-side-sheet';
 import withForm from '../../hoc/with-form';
@@ -26,8 +25,7 @@ const useStyles = {
     form: {
         float: 'none',
         margin: 'auto',
-        padding: '40vh 0',
-        width: 200,
+        width: 500,
     },
     frame: {
         height: '100vh',
@@ -44,7 +42,7 @@ class EditUser extends React.Component {
 
     componentDidMount() {
         if (this.props.userId) {
-            const currentUser = this.props.users.find(user => user._id === this.props.userId);
+            const currentUser = this.props.users.all.find(user => user._id === this.props.userId);
             this.props.setFormData({
                 _id: this.props.userId,
                 username: currentUser.username,
@@ -64,6 +62,25 @@ class EditUser extends React.Component {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.state.pending) {
+            if (this.props.userId) {
+                const prevUser = prevProps.users.all.find(user => user._id === prevProps.userId);
+                const currentUser = this.props.users.all.find(user => user._id === this.props.userId);
+                if (prevUser.updatedAt !== currentUser.updatedAt) {
+                    this.setState({
+                        pending: false,
+                    });
+                }
+            }
+            if (this.props.users.all.length > prevProps.users.all.length) {
+                this.setState({
+                    pending: false,
+                });
+            }
+        }
+    }
+
     submit = (e) => {
         e.preventDefault();
         if (this.props.formData._id) {
@@ -71,6 +88,9 @@ class EditUser extends React.Component {
         } else {
             this.props.createUser(this.props.formData);
         }
+        this.setState({
+            pending: true,
+        });
     }
 
     render() {
@@ -122,7 +142,12 @@ class EditUser extends React.Component {
                     )}
 
                     <FormGroup className={classes.formGroup}>
-                        <Button type='submit' variant="contained" color="secondary">Save</Button>
+                        <Button
+                            disabled={this.state.pending}
+                            type='submit'
+                            variant="contained"
+                            color="secondary">{this.state.pending ? 'Saving...' : 'Save'}
+                        </Button>
                     </FormGroup>
                 </form>
             </div>
