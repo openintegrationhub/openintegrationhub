@@ -17,10 +17,9 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import OpenLock from '@material-ui/icons/LockOpen';
-import Person from '@material-ui/icons/Person';
-import Busniess from '@material-ui/icons/Business';
-import HomeIcon from '@material-ui/icons/Home';
+import {
+    LockOpen, Person, Business, Home as HomeIcon, AccessibleForward,
+} from '@material-ui/icons';
 import flow from 'lodash/flow';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { logout } from '../../action/auth';
@@ -120,17 +119,17 @@ class Main extends React.Component {
                   </ListItem>;
               case 'Users':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/users'); }}>
-                      <ListItemIcon><Person /></ListItemIcon>
+                      <ListItemIcon><AccessibleForward /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Tenants':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/tenants'); }}>
-                      <ListItemIcon><Busniess /></ListItemIcon>
+                      <ListItemIcon><Business /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Logout':
                   return <ListItem button key={text} onClick={this.logout}>
-                      <ListItemIcon><OpenLock /></ListItemIcon>
+                      <ListItemIcon><LockOpen /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               default:
@@ -218,6 +217,6 @@ export default flow(
         mapStateToProps,
         mapDispatchToProps,
     ),
-    withStyles(styles, { withTheme: true }),
     withRouter,
+    withStyles(styles, { withTheme: true }),
 )(Main);
