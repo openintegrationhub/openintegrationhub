@@ -89,10 +89,15 @@ router.get('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
  * Partial modify of a user
  */
 router.patch('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
-    const userObj = req.body;
+    let userObj = req.body;
+
+    if (!auth.userIsAdmin(req.user)) {
+        userObj = auth.removeCriticalAccountFields(userObj);
+    }
+
     try {
         await UserDAO.update({
-            id: req.params.id, userObj, partialUpdate: true, method: 'patch', 
+            id: req.params.id, userObj, partialUpdate: true, method: 'patch',
         });
         return res.sendStatus(200);
     } catch (err) {
@@ -106,11 +111,15 @@ router.patch('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
  * */
 router.put('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
 
-    const userObj = req.body;
+    let userObj = req.body;
+
+    if (!auth.userIsAdmin(req.user)) {
+        userObj = auth.removeCriticalAccountFields(userObj);
+    }
 
     try {
         await UserDAO.update({
-            id: req.params.id, userObj, partialUpdate: false, method: 'put', 
+            id: req.params.id, userObj, partialUpdate: false, method: 'put',
         });
         return res.sendStatus(200);
     } catch (err) {
@@ -126,7 +135,7 @@ router.put('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
 router.delete('/:id/tenant/:tenantId', auth.paramsMatchesUserId, async (req, res, next) => {
     try {
         const doc = await UserDAO.removeUserFromTenant({
-            tenantId: req.params.tenantId, 
+            tenantId: req.params.tenantId,
             userId: req.params.id,
         });
 
