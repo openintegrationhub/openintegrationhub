@@ -137,7 +137,7 @@ class UserTable extends React.Component {
                                             onSelectAllClick={this.handleSelectAllClick}
                                             onRequestSort={this.handleRequestSort}
                                             rowCount={data.length}
-                                            type='user'
+                                            type={this.props.type}
                                         />
                                         <TableBody>
                                             {this.stableSort(data)
@@ -145,7 +145,7 @@ class UserTable extends React.Component {
                                                 .map(n => (<TableRowData
                                                     key={`rowData-${n._id}`}
                                                     data={n}
-                                                    type='user'
+                                                    type={this.props.type}
                                                     isSelected={this.isSelected(n._id)}
                                                     handleClick={this.handleClick.bind(this, n._id)}
                                                     editHandler={this.props.editHandler.bind(this, n._id)}

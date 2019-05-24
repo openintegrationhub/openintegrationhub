@@ -26,6 +26,7 @@ const TableRowData = (props) => {
             </TableCell>
             <TableCell align="right">{props.data.role}</TableCell>
             <TableCell align="right">{props.data.createdAt}</TableCell>
+            <TableCell align="right">{props.data.updatedAt}</TableCell>
             <TableCell align="right">{props.data.status}</TableCell>
             <TableCell align="right">
                 <Tooltip title="Edit">
@@ -53,6 +54,7 @@ const TableRowData = (props) => {
                 {props.data.name}
             </TableCell>
             <TableCell align="right">{props.data.createdAt}</TableCell>
+            <TableCell align="right">{props.data.updatedAt}</TableCell>
             <TableCell align="right">{props.data.status}</TableCell>
             <TableCell align="right">
                 <Tooltip title="Edit">
