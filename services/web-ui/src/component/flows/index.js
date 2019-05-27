@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/styles';
-import Grid from '@material-ui/core/Grid';
+// import Grid from '@material-ui/core/Grid';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -9,7 +9,7 @@ import { getTenants } from '../../action/tenants';
 
 
 // components
-import Table from '../table';
+import FlowTeaser from './flow-teaser';
 
 
 const useStyles = {
@@ -19,7 +19,7 @@ const useStyles = {
     },
 };
 
-class Tenants extends React.Component {
+class Flows extends React.Component {
     state= {
         editUserIsOpen: false,
     }
@@ -37,15 +37,12 @@ class Tenants extends React.Component {
     };
 
     render() {
-        const {
-            classes,
-        } = this.props;
+        // const {
+        //     classes,
+        // } = this.props;
         return (
-            <div className={classes.wrapper}>
-                <Grid item xs={12}>
-                    <Table data={this.props.tenants} editHandler={this.editHandler} type='tenant'/>
-                </Grid>
-
+            <div >
+                <FlowTeaser/>
             </div>
         );
     }
@@ -64,4 +61,4 @@ export default flow(
         mapDispatchToProps,
     ),
     withStyles(useStyles),
-)(Tenants);
+)(Flows);

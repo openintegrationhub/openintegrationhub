@@ -21,7 +21,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Grid from '@material-ui/core/Grid';
 import {
-    LockOpen, Person, Business, Home as HomeIcon, AccessibleForward,
+    LockOpen, Business, Waves, Home as HomeIcon, AccessibleForward,
 } from '@material-ui/icons';
 
 // Actions & Components
@@ -31,6 +31,7 @@ import { getUsers } from '../../action/users';
 import Home from '../../component/home';
 import Users from '../../component/users';
 import Tenants from '../../component/tenants';
+import Flows from '../../component/flows';
 
 const drawerWidth = 240;
 
@@ -96,7 +97,7 @@ const styles = theme => ({
 
 class Main extends React.Component {
   state = {
-      menu: ['Start', 'Users', 'Tenants', 'Logout'],
+      menu: ['Start', 'Users', 'Tenants', 'Flows', 'Logout'],
       open: false,
   };
 
@@ -129,6 +130,11 @@ class Main extends React.Component {
               case 'Tenants':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/tenants'); }}>
                       <ListItemIcon><Business /></ListItemIcon>
+                      <ListItemText primary={text} />
+                  </ListItem>;
+              case 'Flows':
+                  return <ListItem button key={text} onClick={() => { this.props.history.push('/flows'); }}>
+                      <ListItemIcon><Waves /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Logout':
@@ -205,6 +211,7 @@ class Main extends React.Component {
                           <Route exact path="/" component={Home} />
                           <Route exact path="/users" component={Users} />
                           <Route exact path="/tenants" component={Tenants} />
+                          <Route exact path="/flows" component={Flows} />
                       </Switch>
                   </main>
               </Grid>

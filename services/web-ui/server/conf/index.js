@@ -8,6 +8,7 @@ module.exports = {
     },
     endpoints: {
         iam: optional('ENDPOINT_IAM', 'http://iam.openintegrationhub.com'),
+        flow: optional('ENDPOINT_FLOW', 'http://flow-repository.openintegrationhub.com'),
     },
     wellKnown: {
         version,

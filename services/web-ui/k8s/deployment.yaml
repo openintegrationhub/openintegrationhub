@@ -20,6 +20,8 @@ spec:
           value: '3000'
         - name: ENDPOINT_IAM
           value: 'http://iam.openintegrationhub.com'
+        - name: ENDPOINT_FLOW
+          value: 'http://flow-repository.openintegrationhub.com'
         ports:
         - containerPort: 3000
         livenessProbe:
