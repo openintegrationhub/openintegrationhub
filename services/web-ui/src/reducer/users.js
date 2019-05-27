@@ -1,4 +1,4 @@
-import { GET_USERS, UPDATE_USER, UPDATE_USER_ERROR } from '../action/users';
+import { GET_USERS, UPDATE_USER, ERROR } from '../action/users';
 
 const initialState = {
     all: [],
@@ -20,10 +20,10 @@ export default (state = initialState, action) => {
             ...state,
             error: null,
         };
-    case UPDATE_USER_ERROR:
+    case ERROR:
         return {
             ...state,
-            error: action.err,
+            error: action.error,
         };
     default:
         return state;
