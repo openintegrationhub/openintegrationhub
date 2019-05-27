@@ -34,12 +34,18 @@ Open Integration Hub requires only a single connection to the framework.
 
 Standalone platform that is based on a microservice architecure. In the following a short description of the services is provided. 
 
-### Installation
+### Usage
+
+#### Postman
+
+A demo postman environment and collection can be found within the [docs folder](docs). This collection provides possibilities to easily explore the functionalities of the Open Integration Hub. It interacts with a central testing plattform provided by Cloud Ecosystem that is hosted on GCP.
+
+For further information on how to use the collection (e.g. autorization, needed parameters etc.) please see the [OIH Postman Guide](docs/oihPostmanGuide.md).
+
+#### Local Installation
 
 As the Open Integration Hub is still in development it can not be run as a whole right now.
 For further information on how to install and/or run a specific service please have a look at the service folders.
-
-A description how to test the platform will follow soon.
 
 ### Audit Log
 
