@@ -8,7 +8,10 @@ it('renders without crashing', () => {
     mount(
         <Provider store={global.configureStore()}>
             <MemoryRouter>
-                <Component />
+                <Component
+                    open={true}
+                    side={'right'}
+                />
             </MemoryRouter>
         </Provider>,
     );
