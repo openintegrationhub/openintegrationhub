@@ -1,5 +1,5 @@
 FROM node:8.16.0-alpine
-LABEL NAME="oih-iam"
+LABEL NAME="oih-web-ui"
 ARG local
 
 ADD package.json /tmp/package.json
