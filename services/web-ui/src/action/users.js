@@ -5,9 +5,10 @@ import { getConfig } from '../conf';
 const conf = getConfig();
 export const GET_USERS = 'GET_USERS';
 export const UPDATE_USER = 'UPDATE_USER';
-export const ERROR = 'ERROR';
 export const CREATE_USER = 'CREATE_USER';
 export const DELETE_USER = 'DELETE_USER';
+export const USERS_ERROR = 'USERS_ERROR';
+export const USERS_ERROR_CLEAR = 'USERS_ERROR_CLEAR';
 
 
 export const getUsers = () => async (dispatch) => {
@@ -24,7 +25,7 @@ export const getUsers = () => async (dispatch) => {
         });
     } catch (error) {
         dispatch({
-            type: ERROR,
+            type: USERS_ERROR,
             error,
         });
     }
@@ -45,7 +46,7 @@ export const updateUser = user => async (dispatch) => {
         dispatch(getUsers());
     } catch (error) {
         dispatch({
-            type: ERROR,
+            type: USERS_ERROR,
             error,
         });
     }
@@ -68,7 +69,7 @@ export const createUser = user => async (dispatch) => {
         dispatch(getUsers());
     } catch (error) {
         dispatch({
-            type: ERROR,
+            type: USERS_ERROR,
             error,
         });
     }
@@ -88,8 +89,14 @@ export const deleteUser = userId => async (dispatch) => {
         dispatch(getUsers());
     } catch (error) {
         dispatch({
-            type: ERROR,
+            type: USERS_ERROR,
             error,
         });
     }
+};
+
+export const clearError = () => (dispatch) => {
+    dispatch({
+        type: USERS_ERROR_CLEAR,
+    });
 };
