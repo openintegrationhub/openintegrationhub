@@ -40,6 +40,7 @@ const useStyles = {
 class EditUser extends React.Component {
     state = {
         pending: false,
+        succeeded: false,
     }
 
     componentDidMount() {
@@ -51,6 +52,7 @@ class EditUser extends React.Component {
                 firstname: currentUser.firstname,
                 lastname: currentUser.lastname,
                 role: currentUser.role,
+                status: currentUser.status,
                 password: '',
             });
         } else {
@@ -58,13 +60,21 @@ class EditUser extends React.Component {
                 username: '',
                 firstname: '',
                 lastname: '',
-                role: '',
+                role: conf.account.roles.USER,
+                status: conf.account.status.ACTIVE,
                 password: '',
             });
         }
     }
 
     componentDidUpdate(prevProps) {
+        if (this.props.users.error && !prevProps.users.error) {
+            this.setState({
+                pending: false,
+                succeeded: false,
+            });
+            return;
+        }
         if (this.state.pending) {
             if (this.props.userId) {
                 const prevUser = prevProps.users.all.find(user => user._id === prevProps.userId);
@@ -72,12 +82,14 @@ class EditUser extends React.Component {
                 if (prevUser.updatedAt !== currentUser.updatedAt) {
                     this.setState({
                         pending: false,
+                        succeeded: true,
                     });
                 }
             }
             if (this.props.users.all.length > prevProps.users.all.length) {
                 this.setState({
                     pending: false,
+                    succeeded: true,
                 });
             }
         }
@@ -92,6 +104,7 @@ class EditUser extends React.Component {
         }
         this.setState({
             pending: true,
+            succeeded: false,
         });
     }
 
@@ -112,6 +125,18 @@ class EditUser extends React.Component {
                     >
                         {getMessage(this.props.users.error)}
 
+                    </SnackBar>
+                )}
+                {this.state.succeeded && (
+                    <SnackBar
+                        variant={'success'}
+                        onClose={() => {
+                            this.setState({
+                                succeeded: true,
+                            });
+                        }}
+                    >
+                        Success
                     </SnackBar>
                 )}
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>

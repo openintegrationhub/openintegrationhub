@@ -117,7 +117,6 @@ SnackBar.propTypes = {
     onClose: PropTypes.func,
     autoHideDuration: PropTypes.number,
     variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']),
-
 };
 
 SnackBar.defaultProps = {
