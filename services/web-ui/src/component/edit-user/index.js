@@ -12,8 +12,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import withSideSheet from '../../hoc/with-side-sheet';
 import withForm from '../../hoc/with-form';
-import { updateUser, createUser } from '../../action/users';
+import * as usersActions from '../../action/users';
 import { getConfig } from '../../conf';
+import SnackBar from '../snack-bar';
+import { getMessage } from '../../error';
 
 const conf = getConfig();
 
@@ -103,6 +105,15 @@ class EditUser extends React.Component {
         } = this.props.formData;
         return (
             <div className={classes.frame}>
+                {this.props.users.error && (
+                    <SnackBar
+                        variant={'error'}
+                        onClose={() => { this.props.clearError(); }}
+                    >
+                        {getMessage(this.props.users.error)}
+
+                    </SnackBar>
+                )}
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>
                     <FormGroup className={classes.formGroup}>
                         <FormLabel htmlFor="username">username</FormLabel>
@@ -159,8 +170,7 @@ const mapStateToProps = state => ({
     users: state.users,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
-    updateUser,
-    createUser,
+    ...usersActions,
 }, dispatch);
 
 export default flow(
