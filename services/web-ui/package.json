@@ -14,7 +14,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "serve": "node server/",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:docker": "docker build -t openintegrationhub/iam:${VERSION} -f Dockerfile ."
   },
   "browserslist": {
     "production": [
