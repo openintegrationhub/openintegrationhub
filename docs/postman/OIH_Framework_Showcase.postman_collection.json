@@ -1,0 +1,627 @@
+{
+	"info":{
+	   "_postman_id":"ae133d77-d0d5-4eb7-b0ba-3323f44cb09f",
+	   "name":"OIH_Framework_Showcase",
+	   "schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item":[
+	   {
+		  "name":"Flows",
+		  "item":[
+			 {
+				"name":"Get user flows",
+				"request":{
+				   "method":"GET",
+				   "header":[
+ 
+				   ],
+				   "url":{
+					  "raw":"http://flow-repository.openintegrationhub.com/flows",
+					  "protocol":"http",
+					  "host":[
+						 "flow-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "flows"
+					  ]
+				   },
+				   "description":"Use this request to receive all flows for the authenticated user.\nPlease use the token generated in the POST login request for authorization."
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Start a flow by id",
+				"request":{
+				   "method":"POST",
+				   "header":[
+ 
+				   ],
+				   "url":{
+					  "raw":"http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}/start",
+					  "protocol":"http",
+					  "host":[
+						 "flow-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "flows",
+						 "{FLOW_ID}",
+						 "start"
+					  ]
+				   },
+				   "description":"Use this request to start a certain flow by id"
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Stop a flow by id",
+				"request":{
+				   "method":"POST",
+				   "header":[
+ 
+				   ],
+				   "url":{
+					  "raw":"http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}/stop",
+					  "protocol":"http",
+					  "host":[
+						 "flow-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "flows",
+						 "{FLOW_ID}",
+						 "stop"
+					  ]
+				   },
+				   "description":"Use this request to stop a certain flow."
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Get flow by id",
+				"request":{
+				   "method":"GET",
+				   "header":[
+ 
+				   ],
+				   "url":{
+					  "raw":"http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}",
+					  "protocol":"http",
+					  "host":[
+						 "flow-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "flows",
+						 "{FLOW_ID}"
+					  ]
+				   },
+				   "description":"Use this request to receive a cetrain flow by id."
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Post a new flow",
+				"request":{
+				   "method":"POST",
+				   "header":[
+					  {
+						 "key":"Content-Type",
+						 "name":"Content-Type",
+						 "value":"application/json",
+						 "type":"text"
+					  }
+				   ],
+				   "body":{
+					  "mode":"raw",
+					  "raw":"{\n\n        \"name\": \"SnazzyToWiceAndCodeComponent\",\n        \"description\": \"This flow polls for persons and pushed them to webhook.site and wice crm.\",\n        \"graph\": {\n            \"nodes\": [\n                {\n                    \"id\": \"snazzy\",\n                    \"componentId\": \"5ce27d453860ff001a034274\",\n                    \"name\": \"\",\n                    \"function\": \"getPersonsPolling\",\n                    \"description\": \"\",\n                    \"fields\": {\n                        \"username\": \"\",\n                        \"password\": \"\"\n                    }\n                },\n                {\n                    \"id\": \"snazzy_transformer\",\n                    \"componentId\": \"5ce27f4b3860ff001a034277\",\n                    \"name\": \"\",\n                    \"function\": \"transformPersonToOih\",\n                    \"description\": \"\"\n                },\n                {\n                    \"id\": \"wice_transformer\",\n                    \"componentId\": \"5ce27f2d3860ff001a034276\",\n                    \"name\": \"\",\n                    \"function\": \"transformPersonFromOih\",\n                    \"description\": \"\"\n                },\n                {\n                    \"id\": \"wice_adapter\",\n                    \"componentId\": \"5ce27d653860ff001a034275\",\n                    \"name\": \"\",\n                    \"function\": \"upsertPerson\",\n                    \"description\": \"\",\n                    \"fields\": {\n                        \"username\": \"\",\n                        \"password\": \"\",\n                        \"client_name\": \"\"\n                    }\n                },\n                {\n                    \"id\": \"code_component\",\n                    \"componentId\": \"5cde85443860ff001a034273\",\n                    \"name\": \"\",\n                    \"function\": \"execute\",\n                    \"description\": \"\",\n                    \"fields\": {\n                        \"code\": \"function* run() {console.log('Calling external URL');yield request.post({uri: 'http://webhook.site/ae17e5b3-1da6-4d2b-b664-4787ad5953d5', body: msg.body, json: true});}\"\n                    }\n                }\n            ],\n            \"edges\": [\n                {\n                    \"source\": \"snazzy\",\n                    \"target\": \"snazzy_transformer\"\n                },\n                {\n                    \"source\": \"snazzy_transformer\",\n                    \"target\": \"wice_transformer\"\n                },\n                {\n                    \"source\": \"wice_transformer\",\n                    \"target\": \"code_component\"\n                },\n                {\n                    \"source\": \"wice_transformer\",\n                    \"target\": \"wice_adapter\"\n                }\n            ]\n        },\n        \"type\": \"ordinary\",\n        \"cron\": \"*/3 * * * *\",\n        \"owners\": []\n    }"
+				   },
+				   "url":{
+					  "raw":"http://flow-repository.openintegrationhub.com/flows",
+					  "protocol":"http",
+					  "host":[
+						 "flow-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "flows"
+					  ]
+				   },
+				   "description":"Use this request to post a new flow."
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Update a flow by id",
+				"request":{
+				   "method":"PATCH",
+				   "header":[
+					  {
+						 "key":"Content-Type",
+						 "value":"application/json",
+						 "type":"text"
+					  }
+				   ],
+				   "body":{
+					  "mode":"raw",
+					  "raw":"        {\n        \"cron\": \"* * * * * *\"\n        }"
+				   },
+				   "url":{
+					  "raw":"http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}",
+					  "protocol":"http",
+					  "host":[
+						 "flow-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "flows",
+						 "{FLOW_ID}"
+					  ]
+				   },
+				   "description":"Use this request to update an existing flow."
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Delete a flow by id",
+				"request":{
+				   "method":"DELETE",
+				   "header":[
+ 
+				   ],
+				   "url":{
+					  "raw":"http://flow-repository.openintegrationhub.com/flows/{FLOW_ID}",
+					  "protocol":"http",
+					  "host":[
+						 "flow-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "flows",
+						 "{FLOW_ID}"
+					  ]
+				   }
+				},
+				"response":[
+ 
+				]
+			 }
+		  ],
+		  "description":"All flow relating requests. "
+	   },
+	   {
+		  "name":"Components",
+		  "item":[
+			 {
+				"name":"Get user components",
+				"request":{
+				   "method":"GET",
+				   "header":[
+ 
+				   ],
+				   "url":{
+					  "raw":"http://component-repository.openintegrationhub.com/components",
+					  "protocol":"http",
+					  "host":[
+						 "component-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "components"
+					  ]
+				   },
+				   "description":"Use this request to receive all available components for the authenticated user."
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Post a new component",
+				"request":{
+				   "method":"POST",
+				   "header":[
+					  {
+						 "key":"Content-Type",
+						 "value":"application/json",
+						 "type":"text"
+					  }
+				   ],
+				   "body":{
+					  "mode":"raw",
+					  "raw":"{\r\n  \"data\": {\r\n    \"name\": \"MS Office transformer\",\r\n    \"description\": \"MS Office transformer for the OIH\",\r\n    \"access\": \"public\",\r\n    \"descriptor\": {},\r\n    \"distribution\": {\r\n      \"type\": \"docker\",\r\n      \"image\": \"openintegrationhub/ms-office-transformer:latest\"\r\n    }\r\n  }\r\n}"
+				   },
+				   "url":{
+					  "raw":"http://component-repository.openintegrationhub.com/components",
+					  "protocol":"http",
+					  "host":[
+						 "component-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "components"
+					  ]
+				   },
+				   "description":"Use this request to post a new component."
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Update a component by id",
+				"request":{
+				   "method":"PATCH",
+				   "header":[
+					  {
+						 "key":"Content-Type",
+						 "value":"application/json",
+						 "type":"text"
+					  }
+				   ],
+				   "body":{
+					  "mode":"raw",
+					  "raw":"{\n    \"data\": {\n        \"distribution\": {\n            \"type\": \"docker\",\n            \"image\": \"elasticio/timer:ca9a6fea391ffa8f7c8593bd2a04143212ab63f6\"\n        }\n    }\n}"
+				   },
+				   "url":{
+					  "raw":"http://component-repository.openintegrationhub.com/components/{COMPONENT_ID}",
+					  "protocol":"http",
+					  "host":[
+						 "component-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "components",
+						 "{COMPONENT_ID}"
+					  ]
+				   }
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Delete a component by id",
+				"request":{
+				   "method":"DELETE",
+				   "header":[
+ 
+				   ],
+				   "url":{
+					  "raw":"http://component-repository.openintegrationhub.com/components/{COMPONENT_ID}",
+					  "protocol":"http",
+					  "host":[
+						 "component-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "components",
+						 "{COMPONENT_ID}"
+					  ]
+				   }
+				},
+				"response":[
+ 
+				]
+			 },
+			 {
+				"name":"Get a component by id",
+				"request":{
+				   "method":"GET",
+				   "header":[
+ 
+				   ],
+				   "url":{
+					  "raw":"http://component-repository.openintegrationhub.com/components/{COMPONENT_ID}",
+					  "protocol":"http",
+					  "host":[
+						 "component-repository",
+						 "openintegrationhub",
+						 "com"
+					  ],
+					  "path":[
+						 "components",
+						 "{COMPONENT_ID}"
+					  ]
+				   },
+				   "description":"Use this request to get a component by its id."
+				},
+				"response":[
+ 
+				]
+			 }
+		  ],
+		  "description":"All component relating requests."
+	   },
+	   {
+		  "name":"Login",
+		  "request":{
+			 "auth":{
+				"type":"oauth2",
+				"oauth2":[
+				   {
+					  "key":"accessToken",
+					  "value":"",
+					  "type":"string"
+				   },
+				   {
+					  "key":"tokenType",
+					  "value":"Bearer",
+					  "type":"string"
+				   },
+				   {
+					  "key":"addTokenTo",
+					  "value":"header",
+					  "type":"string"
+				   }
+				]
+			 },
+			 "method":"POST",
+			 "header":[
+				{
+				   "key":"Content-Type",
+				   "value":"application/json",
+				   "disabled":false
+				}
+			 ],
+			 "body":{
+				"mode":"raw",
+				"raw":"{\n\t\"username\": \"\",\n\t\"password\": \"\"\n}"
+			 },
+			 "url":{
+				"raw":"http://iam.openintegrationhub.com/login?username=&password=",
+				"protocol":"http",
+				"host":[
+				   "iam",
+				   "openintegrationhub",
+				   "com"
+				],
+				"path":[
+				   "login"
+				],
+				"query":[
+				   {
+					  "key":"username",
+					  "value":""
+				   },
+				   {
+					  "key":"password",
+					  "value":""
+				   }
+				]
+			 },
+			 "description":"This request must be used to login and receive the token."
+		  },
+		  "response":[
+ 
+		  ]
+	   },
+	   {
+		  "name":"Get All Users",
+		  "request":{
+			 "method":"GET",
+			 "header":[
+ 
+			 ],
+			 "url":{
+				"raw":"http://iam.openintegrationhub.com/api/v1/users",
+				"protocol":"http",
+				"host":[
+				   "iam",
+				   "openintegrationhub",
+				   "com"
+				],
+				"path":[
+				   "api",
+				   "v1",
+				   "users"
+				]
+			 }
+		  },
+		  "response":[
+ 
+		  ]
+	   },
+	   {
+		  "name":"Add a new user",
+		  "request":{
+			 "method":"POST",
+			 "header":[
+				{
+				   "key":"Content-Type",
+				   "value":"application/json",
+				   "type":"text"
+				}
+			 ],
+			 "body":{
+				"mode":"raw",
+				"raw":"{\n    \"username\": \"\",\n    \"firstname\": \"\",\n    \"lastname\": \"\",\n    \"role\": \"\",\n    \"password\": \"\",\n    \"permissions\": []\n}"
+			 },
+			 "url":{
+				"raw":"http://iam.openintegrationhub.com/api/v1/users",
+				"protocol":"http",
+				"host":[
+				   "iam",
+				   "openintegrationhub",
+				   "com"
+				],
+				"path":[
+				   "api",
+				   "v1",
+				   "users"
+				]
+			 }
+		  },
+		  "response":[
+ 
+		  ]
+	   },
+	   {
+		  "name":"Patch a user",
+		  "request":{
+			 "method":"PATCH",
+			 "header":[
+				{
+				   "key":"Content-Type",
+				   "value":"application/json",
+				   "type":"text"
+				}
+			 ],
+			 "body":{
+				"mode":"raw",
+				"raw":"{\n        \"_id\": \"{ID}\",\n        \"status\": \"ACTIVE\",\n        \"confirmed\": true,\n        \"role\": \"USER\",\n        \"permissions\": [],\n        \"username\": \"{USERNAME}\",\n        \"firstname\": \"\",\n        \"lastname\": \"\",\n        \"memberships\": [],\n        \"createdAt\": \"2019-05-22T12:25:28.082Z\",\n        \"updatedAt\": \"2019-05-22T12:57:15.083Z\",\n        \"__v\": 0\n    }"
+			 },
+			 "url":{
+				"raw":"http://iam.openintegrationhub.com/api/v1/users/5ce53fb3d811140011f435a6",
+				"protocol":"http",
+				"host":[
+				   "iam",
+				   "openintegrationhub",
+				   "com"
+				],
+				"path":[
+				   "api",
+				   "v1",
+				   "users",
+				   "5ce53fb3d811140011f435a6"
+				]
+			 }
+		  },
+		  "response":[
+ 
+		  ]
+	   },
+	   {
+		  "name":"Delete a user",
+		  "request":{
+			 "method":"DELETE",
+			 "header":[
+ 
+			 ],
+			 "url":{
+				"raw":"http://iam.openintegrationhub.com/api/v1/users/{USER_ID}",
+				"protocol":"http",
+				"host":[
+				   "iam",
+				   "openintegrationhub",
+				   "com"
+				],
+				"path":[
+				   "api",
+				   "v1",
+				   "users",
+				   "{USER_ID}"
+				]
+			 }
+		  },
+		  "response":[
+ 
+		  ]
+	   }
+	],
+	"auth":{
+	   "type":"bearer",
+	   "bearer":[
+		  {
+			 "key":"token",
+			 "value":"{{currentAccessToken}}",
+			 "type":"string"
+		  }
+	   ]
+	},
+	"event":[
+	   {
+		  "listen":"prerequest",
+		  "script":{
+			 "id":"cb3e5496-f966-4583-8d1a-665738b7b4a5",
+			 "type":"text/javascript",
+			 "exec":[
+				"const username = \"{YOUR_USERNAME}\";",
+				"const password = \"{YOUR_PASSWORD}\";",
+				"const echoPostRequest = {",
+				"  url: `http://iam.openintegrationhub.com/login?username=${username}&password=${password}`,",
+				"  method: 'POST',",
+				"  header: 'Content-Type:application/json'",
+				"};",
+				"",
+				"var getToken = true;",
+				"",
+				"if (!pm.environment.get('accessTokenExpiry') || ",
+				"    !pm.environment.get('currentAccessToken')) {",
+				"    console.log('Token or expiry date are missing')",
+				"} else if (pm.environment.get('accessTokenExpiry') <= (new Date()).getTime()) {",
+				"    console.log('Token is expired')",
+				"} else {",
+				"    getToken = false;",
+				"    console.log('Token and expiry date are all good');",
+				"}",
+				"    ",
+				"if (getToken === true) {",
+				"    pm.sendRequest(echoPostRequest, function (err, res) {",
+				"    console.log(err ? err : res.json());",
+				"        if (err === null) {",
+				"            console.log('Saving the token and expiry date')",
+				"            var responseJson = res.json();",
+				"            pm.environment.set('currentAccessToken', responseJson.token)",
+				"    ",
+				"            var expiryDate = new Date();",
+				"            expiryDate.setSeconds(expiryDate.getSeconds() + 7200);",
+				"            pm.environment.set('accessTokenExpiry', expiryDate.getTime());",
+				"        }",
+				"    });",
+				"}"
+			 ]
+		  }
+	   },
+	   {
+		  "listen":"test",
+		  "script":{
+			 "id":"0d550853-a164-4f9b-ba27-b9bcbcac460a",
+			 "type":"text/javascript",
+			 "exec":[
+				""
+			 ]
+		  }
+	   }
+	],
+	"variable":[
+	   {
+		  "id":"d8437f35-031c-4139-ab5b-cbbf90614803",
+		  "key":"currentAccessToken",
+		  "value":" ",
+		  "type":"string",
+		  "disabled":true
+	   },
+	   {
+		  "id":"db7ec7f7-1c7e-4f7b-9720-bac8c7113bba",
+		  "key":"accessTokenExpiry",
+		  "value":" ",
+		  "type":"string",
+		  "disabled":true
+	   }
+	]
+ }
