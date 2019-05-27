@@ -18,4 +18,4 @@ RUN ln -s /tmp/node_modules /usr/src/app/ && chown -R 1000:1000 /usr/src/app
 # just for start
 USER node
 
-CMD npm run -s start
+CMD npm run -s serve
