@@ -1,9 +1,11 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
+import flow from 'lodash/flow';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+// Ui
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,11 +19,13 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Grid from '@material-ui/core/Grid';
 import {
     LockOpen, Person, Business, Home as HomeIcon, AccessibleForward,
 } from '@material-ui/icons';
-import flow from 'lodash/flow';
-import { Route, Switch, withRouter } from 'react-router-dom';
+
+// Actions & Components
+
 import { logout } from '../../action/auth';
 import { getUsers } from '../../action/users';
 import Home from '../../component/home';
@@ -35,6 +39,7 @@ const styles = theme => ({
         display: 'flex',
     },
     appBar: {
+        position: 'inherit',
         backgroundImage: 'linear-gradient(73deg, #ff8200, #ff2473)',
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
@@ -79,14 +84,13 @@ const styles = theme => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginLeft: -drawerWidth,
     },
     contentShift: {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: 0,
+        marginLeft: drawerWidth,
     },
 });
 
@@ -144,33 +148,8 @@ class Main extends React.Component {
       const { open } = this.state;
 
       return (
-          <div className={classes.root}>
+          <Grid container className={classes.root}>
               <CssBaseline />
-              <AppBar
-                  position="fixed"
-                  className={classNames(classes.appBar, {
-                      [classes.appBarShift]: open,
-                  })}
-              >
-                  <Toolbar disableGutters={!open}>
-                      <IconButton
-                          color="inherit"
-                          aria-label="Open drawer"
-                          onClick={this.handleDrawerOpen}
-                          className={classNames(classes.menuButton, open && classes.hide)}
-                      >
-                          <MenuIcon />
-                      </IconButton>
-                      <img
-                          src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
-                          alt="Open Integration Hub"
-                          id="logo"
-                          data-height-percentage="54"
-                          data-actual-width="271"
-                          data-actual-height="40"
-                      />
-                  </Toolbar>
-              </AppBar>
               <Drawer
                   className={classes.drawer}
                   variant="persistent"
@@ -190,18 +169,47 @@ class Main extends React.Component {
                       {this.getMenuItems()}
                   </List>
               </Drawer>
-              <main
-                  className={classNames(classes.content, {
-                      [classes.contentShift]: open,
-                  })}
-              >
-                  <Switch>
-                      <Route exact path="/" component={Home} />
-                      <Route exact path="/users" component={Users} />
-                      <Route exact path="/tenants" component={Tenants} />
-                  </Switch>
-              </main>
-          </div>
+              <Grid item xs={12}>
+                  <AppBar
+                      className={classNames(classes.appBar, {
+                          [classes.appBarShift]: open,
+                      })}
+                  >
+                      <Toolbar disableGutters={!open}>
+                          <IconButton
+                              color="inherit"
+                              aria-label="Open drawer"
+                              onClick={this.handleDrawerOpen}
+                              className={classNames(classes.menuButton, open && classes.hide)}
+                          >
+                              <MenuIcon />
+                          </IconButton>
+                          <img
+                              src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
+                              alt="Open Integration Hub"
+                              id="logo"
+                              data-height-percentage="54"
+                              data-actual-width="271"
+                              data-actual-height="40"
+                          />
+                      </Toolbar>
+                  </AppBar>
+              </Grid>
+              <Grid item xs={12}>
+                  <main
+                      className={classNames(classes.content, {
+                          [classes.contentShift]: open,
+                      })}
+                  >
+                      <Switch>
+                          <Route exact path="/" component={Home} />
+                          <Route exact path="/users" component={Users} />
+                          <Route exact path="/tenants" component={Tenants} />
+                      </Switch>
+                  </main>
+              </Grid>
+
+          </Grid>
       );
   }
 }

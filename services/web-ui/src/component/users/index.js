@@ -19,10 +19,10 @@ import EditUser from '../edit-user';
 const useStyles = {
     wrapper: {
         width: '100%',
-        padding: '10vh 0 0 0',
+        position: 'inherit',
     },
-    fab: {
-        margin: '10px 0 10px 30px',
+    tools: {
+        padding: '10px 0 0 10px',
     },
 };
 
@@ -56,10 +56,13 @@ class Users extends React.Component {
         } = this.props;
         return (
             <div className={classes.wrapper}>
-                <Grid item xs={12}>
-                    <Fab color="primary" aria-label="Add" className={classes.fab} onClick={this.addUser.bind(this)}>
+                <Grid item xs={12} className={classes.tools}>
+                    <Fab color="primary" aria-label="Add" onClick={this.addUser.bind(this)}>
                         <AddIcon />
                     </Fab>
+
+                </Grid>
+                <Grid item xs={12}>
                     <EditUser
                         side={'right'}
                         open={this.state.drawerIsOpen}

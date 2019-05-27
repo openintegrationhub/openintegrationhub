@@ -145,6 +145,7 @@ class UserTable extends React.Component {
                     <Paper className={classes.root}>
                         <Confirm
                             open={this.state.confirmOpen}
+                            text='Realy delete all Selected Accounts?'
                             handleClose={this.onDelete}
                         />
                         <TableToolbar
