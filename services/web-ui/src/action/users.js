@@ -5,7 +5,7 @@ import { getConfig } from '../conf';
 const conf = getConfig();
 export const GET_USERS = 'GET_USERS';
 export const UPDATE_USER = 'UPDATE_USER';
-export const UPDATE_USER_ERROR = 'UPDATE_USER_ERROR';
+export const ERROR = 'ERROR';
 export const CREATE_USER = 'CREATE_USER';
 export const DELETE_USER = 'DELETE_USER';
 
@@ -22,8 +22,11 @@ export const getUsers = () => async (dispatch) => {
             type: GET_USERS,
             users: result.data,
         });
-    } catch (err) {
-        console.log(err);
+    } catch (error) {
+        dispatch({
+            type: ERROR,
+            error,
+        });
     }
 };
 
@@ -40,10 +43,10 @@ export const updateUser = user => async (dispatch) => {
             type: UPDATE_USER,
         });
         dispatch(getUsers());
-    } catch (err) {
+    } catch (error) {
         dispatch({
-            type: UPDATE_USER_ERROR,
-            err,
+            type: ERROR,
+            error,
         });
     }
 };
@@ -63,8 +66,11 @@ export const createUser = user => async (dispatch) => {
             type: CREATE_USER,
         });
         dispatch(getUsers());
-    } catch (err) {
-        console.log(err);
+    } catch (error) {
+        dispatch({
+            type: ERROR,
+            error,
+        });
     }
 };
 
@@ -80,7 +86,10 @@ export const deleteUser = userId => async (dispatch) => {
             type: DELETE_USER,
         });
         dispatch(getUsers());
-    } catch (err) {
-        console.log(err);
+    } catch (error) {
+        dispatch({
+            type: ERROR,
+            error,
+        });
     }
 };
