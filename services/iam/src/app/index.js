@@ -97,6 +97,9 @@ class App {
                 if (conf.general.originWhitelist.find(elem => origin.indexOf(elem) >= 0)) {
                     callback(null, true);
                 } else {
+                    log.info('Blocked by CORS');
+                    log.info(origin);
+                    log.info(conf.general.originWhitelist);
                     callback(new Error('Not allowed by CORS'));
                 }
             },
