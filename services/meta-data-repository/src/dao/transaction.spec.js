@@ -22,7 +22,7 @@ describe('Transaction', () => {
         await server.start();
 
         // wait until mongodb fully initialized
-        await timeout(1000);
+        await timeout(2000);
         //
     });
 
