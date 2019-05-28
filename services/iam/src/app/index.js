@@ -2,6 +2,7 @@
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const { Event, EventBus, EventBusManager } = require('@openintegrationhub/event-bus');
 const passport = require('passport');
 // const cors = require('cors');
@@ -176,7 +177,7 @@ class App {
         apiBase.use('/roles', require('./../routes/roles')); // eslint-disable-line global-require
 
         // TODO: if the client is not a browser, no origin or host will be provided
-        this.app.use(`/${conf.general.apiBase}`, apiBase);
+        this.app.use(`/${conf.general.apiBase}`, cors(this.corsOptions), apiBase);
 
         // static files
         this.app.use('/static', express.static(path.join(__dirname, '../../static')));
