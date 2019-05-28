@@ -164,7 +164,7 @@ class App {
         });
 
         this.app.use(checkProto);
-        this.app.use('/', require('./../routes/general')); // eslint-disable-line global-require
+        this.app.use('/', cors(this.corsOptions), require('./../routes/general')); // eslint-disable-line global-require
         
         // setup SwaggerUI
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
