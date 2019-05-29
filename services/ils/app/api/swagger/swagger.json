@@ -1,0 +1,162 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is the API for the Open Integration Hub Microservice \"Integration Layer Service\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "version": "0.0.1",
+    "title": "Integration Layer Service",
+    "termsOfService": "http://openintegrationhub.de/terms/",
+    "contact": {
+      "email": "syanev@wice.de"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags": [
+    {
+      "name": "chunks",
+      "description": "Chunks management",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://openintegrationhub.de"
+      }
+    }
+  ],
+  "paths": {
+    "/chunks/{ilaId}": {
+      "get": {
+        "x-swagger-router-controller": "chunk",
+        "tags": [
+          "chunks"
+        ],
+        "summary": "",
+        "description": ".....",
+        "operationId": "",
+        "parameters": [
+          {
+            "name": "ilaId",
+            "in": "path",
+            "description": "ilaId of Integration Layer Adapter",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/chunks": {
+      "post": {
+        "x-swagger-router-controller": "chunk",
+        "tags": [
+          "chunks"
+        ],
+        "summary": "",
+        "description": ".....",
+        "operationId": "",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addChunk"
+              }
+            }
+          },
+          "description": "",
+          "required": true
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about the Integration Layer Service",
+    "url": "https://github.com/openintegrationhub"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3002/"
+    },
+    {
+      "url": "http://integration-layer.openintegrationhub.com/"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "addChunk": {
+        "type": "object",
+        "properties": {
+          "ilaId": {
+            "type": "string",
+            "example": "123asd"
+          },
+          "cid": {
+            "type": "string",
+            "example": "email"
+          },
+          "def": {
+            "type": "object",
+            "properties": {
+              "domainId": {
+                "type": "string",
+                "example": "addresses"
+              },
+              "uri": {
+                "type": "string",
+                "example": "http://metadata.openintegrationhub.com/domains/addresses/schema/uri"
+              }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "example": "John"
+              },
+              "lastName": {
+                "type": "string",
+                "example": "Doe"
+              },
+              "email": {
+                "type": "string",
+                "example": "doe@mail.com"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
