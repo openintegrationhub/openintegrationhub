@@ -22,13 +22,12 @@ const useStyles = {
         flexGrow: 1,
     },
     form: {
-        float: 'none',
         margin: 'auto',
-        padding: '40vh 0',
+        padding: '30vh 0',
         width: 200,
     },
     frame: {
-        height: '100vh',
+        height: '90vh',
     },
     formGroup: {
         padding: '30px 0 0 0 ',
