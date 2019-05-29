@@ -40,7 +40,7 @@ For storage, the ILS uses MongoDB. Stored objects are endowed with a Time To Liv
 
 
 ## Integration Layer Adapter (ILA)
-The ILA is a generic component used to allow flows to communicate with the ILS. In posting mode, it automatically passes on any data objects received by other flow components, and endows them with the metadata listed above. In polling mode, it will automatically fetch all valid combined objects and pass them on to other components just like any other flow component. For further information about the ILA, see its [GitHub Repository] (https://github.com/openintegrationhub/)
+The ILA is a generic component used to allow flows to communicate with the ILS. In posting mode, it automatically passes on any data objects received by other flow components, and endows them with the metadata listed above. In polling mode, it will automatically fetch all valid combined objects and pass them on to other components just like any other flow component. For further information about the ILA, see its [GitHub Repository](https://github.com/openintegrationhub/integration-layer-adapter)
 
 ## Local installation/development
 To install the necessary dependencies, first run `npm install`. The service can then be started via `npm start`, and is reachable on http://localhost:3002.
