@@ -44,7 +44,7 @@ class Auth extends React.Component {
           username: process.env.REACT_APP_DEFAULT_USERNAME || '',
           password: process.env.REACT_APP_DEFAULT_PASSWORD || '',
       },
-      pending: false,
+      pending: true,
   }
 
   componentDidUpdate(prevProps) {
