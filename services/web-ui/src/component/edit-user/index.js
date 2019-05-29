@@ -33,11 +33,11 @@ const useStyles = {
     frame: {
         height: '100vh',
     },
-    formControl: {
-        padding: '30px 0 0 0 ',
-    },
     formGroup: {
         padding: '30px 0 0 0 ',
+    },
+    formControl: {
+        padding: '20px 0 10px 0 ',
     },
 };
 
@@ -145,7 +145,7 @@ class EditUser extends React.Component {
                 )}
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>
                     <FormGroup className={classes.formGroup}>
-                        <FormControl>
+                        <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="component-error">username</InputLabel>
                             <Input
                                 required
@@ -160,9 +160,7 @@ class EditUser extends React.Component {
                                 error={!this.props.isValid('username')}
                             />
                         </FormControl>
-                    </FormGroup>
-                    <FormGroup className={classes.formGroup}>
-                        <FormControl>
+                        <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="component-error">firstname</InputLabel>
                             <Input
                                 required
@@ -173,9 +171,7 @@ class EditUser extends React.Component {
                                 error={!this.props.isValid('firstname')}
                             />
                         </FormControl>
-                    </FormGroup>
-                    <FormGroup className={classes.formGroup}>
-                        <FormControl>
+                        <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="component-error">lastname</InputLabel>
                             <Input
                                 required
@@ -186,9 +182,7 @@ class EditUser extends React.Component {
                                 error={!this.props.isValid('lastname')}
                             />
                         </FormControl>
-                    </FormGroup>
-                    <FormGroup className={classes.formGroup}>
-                        <FormControl>
+                        <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="role">role</InputLabel>
                             <Select
                                 value={role || conf.account.roles.USER}
@@ -197,9 +191,7 @@ class EditUser extends React.Component {
                                 {Object.keys(conf.account.roles).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
                             </Select>
                         </FormControl>
-                    </FormGroup>
-                    <FormGroup className={classes.formGroup}>
-                        <FormControl>
+                        <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="role">status</InputLabel>
                             <Select
                                 value={status || conf.account.status.ACTIVE}
@@ -208,10 +200,8 @@ class EditUser extends React.Component {
                                 {Object.keys(conf.account.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
                             </Select>
                         </FormControl>
-                    </FormGroup>
-                    {!this.props.userId && (
-                        <FormGroup className={classes.formGroup}>
-                            <FormControl>
+                        {!this.props.userId && (
+                            <FormControl className={classes.formControl}>
                                 <InputLabel htmlFor="component-error">password</InputLabel>
                                 <Input
                                     required
@@ -222,16 +212,17 @@ class EditUser extends React.Component {
                                     value={password || ''}
                                 />
                             </FormControl>
-                        </FormGroup>
-                    )}
 
-                    <FormGroup className={classes.formGroup}>
-                        <Button
-                            disabled={this.state.pending}
-                            type='submit'
-                            variant="contained"
-                            color="secondary">{this.state.pending ? 'Saving...' : 'Save'}
-                        </Button>
+                        )}
+                        <FormControl className={classes.formControl}>
+                            <Button
+                                disabled={this.state.pending}
+                                type='submit'
+                                variant="contained"
+                                color="secondary">{this.state.pending ? 'Saving...' : 'Save'}
+                            </Button>
+                        </FormControl>
+
                     </FormGroup>
                 </form>
             </div>

@@ -3,8 +3,8 @@ import { withStyles } from '@material-ui/styles';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
+import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -35,6 +35,10 @@ const useStyles = {
     formGroup: {
         padding: '30px 0 0 0 ',
     },
+    formControl: {
+        padding: '20px 0 10px 0 ',
+    },
+
 };
 
 class EditTenant extends React.Component {
@@ -133,25 +137,35 @@ class EditTenant extends React.Component {
                 )}
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>
                     <FormGroup className={classes.formGroup}>
-                        <FormLabel htmlFor="name">name</FormLabel>
-                        <Input id="name" name="name" onChange={this.props.setVal.bind(this, 'name')} value={name || ''} />
-                    </FormGroup>
-                    <FormGroup className={classes.formGroup}>
-                        <InputLabel htmlFor="role">status</InputLabel>
-                        <Select
-                            value={status || conf.tenant.status.ACTIVE}
-                            onChange={this.props.setVal.bind(this, 'status')}
-                        >
-                            {Object.keys(conf.tenant.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
-                        </Select>
-                    </FormGroup>
-                    <FormGroup className={classes.formGroup}>
-                        <Button
-                            disabled={this.state.pending}
-                            type='submit'
-                            variant="contained"
-                            color="secondary">{this.state.pending ? 'Saving...' : 'Save'}
-                        </Button>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel htmlFor="name">name</InputLabel>
+                            <Input
+                                required
+                                id="name"
+                                name="name"
+                                onChange={this.props.setVal.bind(this, 'name')}
+                                value={name || ''}
+                                error={!this.props.isValid('name')}
+                            />
+                        </FormControl>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel htmlFor="role">status</InputLabel>
+                            <Select
+                                value={status || conf.tenant.status.ACTIVE}
+                                onChange={this.props.setVal.bind(this, 'status')}
+                            >
+                                {Object.keys(conf.tenant.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                            </Select>
+                        </FormControl>
+                        <FormControl className={classes.formControl}>
+
+                            <Button
+                                disabled={this.state.pending}
+                                type='submit'
+                                variant="contained"
+                                color="secondary">{this.state.pending ? 'Saving...' : 'Save'}
+                            </Button>
+                        </FormControl>
                     </FormGroup>
                 </form>
             </div>
