@@ -73,7 +73,7 @@ class Tenants extends React.Component {
                         tenantId={this.state.editTenantId}
                         onClose={() => {
                             this.setState({
-                                drawerIsOpen: false,
+                                editTenantIsOpen: false,
                             });
                         }}
                     />
