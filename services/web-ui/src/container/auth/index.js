@@ -36,10 +36,6 @@ const useStyles = {
     logo: {
         position: 'inherit',
         backgroundImage: 'linear-gradient(73deg, #ff8200, #ff2473)',
-        // transition: theme.transitions.create(['margin', 'width'], {
-        //     easing: theme.transitions.easing.sharp,
-        //     duration: theme.transitions.duration.leavingScreen,
-        // }),
     },
 };
 
@@ -56,11 +52,6 @@ class Auth extends React.Component {
       if (this.props.auth !== prevProps.auth && this.props.auth.isLoggedIn) {
           this.props.history.push('/');
       }
-      // if (prevProps.tokenInvalid !== this.props.tokenInvalid) {
-      //     this.setState({
-      //         isLoggedIn: false,
-      //     });
-      // }
   }
 
   setVal = (fieldName, e) => {
