@@ -1,0 +1,38 @@
+---
+settings:
+  react:
+    version: 16.8.0
+parser: babel-eslint
+parserOptions:
+  sourceType: module
+env:
+  browser: true
+  node: true
+  jasmine: true
+extends:
+- airbnb-base
+- plugin:react/recommended
+- plugin:jsx-a11y/recommended
+rules:
+  max-len: 0
+  no-underscore-dangle: 0
+  class-methods-use-this: 0
+  no-console: 0
+  import/prefer-default-export: 0
+  import/no-extraneous-dependencies: 0
+  indent: [1, 4]
+  react/prop-types: 0
+  react/no-find-dom-node: 1
+  react/no-string-refs: 1
+  react/display-name: 0
+  react/jsx-no-target-blank: 1
+  jsx-a11y/anchor-is-valid: 1
+  jsx-a11y/aria-role: 0
+  jsx-a11y/label-has-for: 0
+  jsx-a11y/click-events-have-key-events: 0
+  jsx-a11y/no-static-element-interactions: 0
+  jsx-a11y/no-noninteractive-element-interactions: 0
+  jsx-a11y/no-onchange: 0
+  jsx-a11y/no-autofocus: 0
+  jsx-a11y/label-has-associated-control: 1
+  react/no-deprecated: 1

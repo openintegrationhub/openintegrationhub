@@ -70,6 +70,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/iam
     steps: *yarn_test_steps
+  web-ui-test:
+    docker: *node_env
+    working_directory: ~/oih/services/web-ui
+    steps: *yarn_test_steps
   meta-data-repository-test:
     docker: *node_env
     working_directory: ~/oih/services/meta-data-repository
@@ -124,6 +128,9 @@ workflows:
       - iam-test:
           requires:
             - deps
+      - web-ui-test:
+          requires:
+            - deps
       - meta-data-repository-test:
           requires:
             - deps
@@ -161,6 +168,7 @@ workflows:
           requires:
             - webhooks-test
             - iam-test
+            - web-ui-test
             - meta-data-repository-test
             - component-orchestrator-test
             - scheduler-test
