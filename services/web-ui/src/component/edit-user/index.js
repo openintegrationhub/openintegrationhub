@@ -3,7 +3,6 @@ import { withStyles } from '@material-ui/styles';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import FormGroup from '@material-ui/core/FormGroup';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
@@ -33,11 +32,9 @@ const useStyles = {
     frame: {
         height: '100vh',
     },
-    formGroup: {
-        padding: '30px 0 0 0 ',
-    },
     formControl: {
-        padding: '20px 0 10px 0 ',
+        width: '100%',
+        padding: '20px 0 10px 0 !important',
     },
 };
 
@@ -144,65 +141,69 @@ class EditUser extends React.Component {
                     </SnackBar>
                 )}
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>
-                    <FormGroup className={classes.formGroup}>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel htmlFor="component-error">username</InputLabel>
-                            <Input
-                                required
-                                inputProps={{
-                                    pattern: '^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
-                                    type: 'email',
-                                }}
-                                id="username"
-                                name="username"
-                                onChange={this.props.setVal.bind(this, 'username')}
-                                value={username || ''}
-                                error={!this.props.isValid('username')}
-                            />
-                        </FormControl>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel htmlFor="component-error">firstname</InputLabel>
-                            <Input
-                                required
-                                id="firstname"
-                                name="firstname"
-                                onChange={this.props.setVal.bind(this, 'firstname')}
-                                value={firstname || ''}
-                                error={!this.props.isValid('firstname')}
-                            />
-                        </FormControl>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel htmlFor="component-error">lastname</InputLabel>
-                            <Input
-                                required
-                                id="lastname"
-                                name="lastname"
-                                onChange={this.props.setVal.bind(this, 'lastname')}
-                                value={lastname || ''}
-                                error={!this.props.isValid('lastname')}
-                            />
-                        </FormControl>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel htmlFor="role">role</InputLabel>
-                            <Select
-                                value={role || conf.account.roles.USER}
-                                onChange={this.props.setVal.bind(this, 'role')}
-                            >
-                                {Object.keys(conf.account.roles).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
-                            </Select>
-                        </FormControl>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel htmlFor="role">status</InputLabel>
-                            <Select
-                                value={status || conf.account.status.ACTIVE}
-                                onChange={this.props.setVal.bind(this, 'status')}
-                            >
-                                {Object.keys(conf.account.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
-                            </Select>
-                        </FormControl>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="username">username</InputLabel>
+                        <Input
+                            required
+                            inputProps={{
+                                pattern: '^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
+                                type: 'email',
+                            }}
+                            id="username"
+                            name="username"
+                            onChange={this.props.setVal.bind(this, 'username')}
+                            value={username || ''}
+                            error={!this.props.isValid('username')}
+                        />
+                    </FormControl>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="firstname">firstname</InputLabel>
+                        <Input
+                            required
+                            id="firstname"
+                            name="firstname"
+                            onChange={this.props.setVal.bind(this, 'firstname')}
+                            value={firstname || ''}
+                            error={!this.props.isValid('firstname')}
+                        />
+                    </FormControl>
+
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="lastname">lastname</InputLabel>
+                        <Input
+                            required
+                            id="lastname"
+                            name="lastname"
+                            onChange={this.props.setVal.bind(this, 'lastname')}
+                            value={lastname || ''}
+                            error={!this.props.isValid('lastname')}
+                        />
+                    </FormControl>
+
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="role">role</InputLabel>
+                        <Select
+                            value={role || conf.account.roles.USER}
+                            onChange={this.props.setVal.bind(this, 'role')}
+                        >
+                            {Object.keys(conf.account.roles).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="role">status</InputLabel>
+                        <Select
+                            value={status || conf.account.status.ACTIVE}
+                            onChange={this.props.setVal.bind(this, 'status')}
+                        >
+                            {Object.keys(conf.account.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl className={classes.formControl}>
                         {!this.props.userId && (
-                            <FormControl className={classes.formControl}>
-                                <InputLabel htmlFor="component-error">password</InputLabel>
+                            <React.Fragment>
+                                <InputLabel htmlFor="password">password</InputLabel>
                                 <Input
                                     required
                                     id="password"
@@ -211,19 +212,21 @@ class EditUser extends React.Component {
                                     onChange={this.props.setVal.bind(this, 'password')}
                                     value={password || ''}
                                 />
-                            </FormControl>
+                            </React.Fragment>
+
 
                         )}
-                        <FormControl className={classes.formControl}>
-                            <Button
-                                disabled={this.state.pending}
-                                type='submit'
-                                variant="contained"
-                                color="secondary">{this.state.pending ? 'Saving...' : 'Save'}
-                            </Button>
-                        </FormControl>
+                    </FormControl>
 
-                    </FormGroup>
+                    <FormControl className={classes.formControl}>
+                        <Button
+                            disabled={this.state.pending}
+                            type='submit'
+                            variant="contained"
+                            color="secondary">{this.state.pending ? 'Saving...' : 'Save'}
+                        </Button>
+                    </FormControl>
+
                 </form>
             </div>
         );

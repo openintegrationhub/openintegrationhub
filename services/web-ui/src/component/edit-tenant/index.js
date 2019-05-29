@@ -3,7 +3,6 @@ import { withStyles } from '@material-ui/styles';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
@@ -32,11 +31,9 @@ const useStyles = {
     frame: {
         height: '100vh',
     },
-    formGroup: {
-        padding: '30px 0 0 0 ',
-    },
     formControl: {
-        padding: '20px 0 10px 0 ',
+        width: '100%',
+        padding: '20px 0 10px 0 !important',
     },
 
 };
@@ -136,37 +133,35 @@ class EditTenant extends React.Component {
                     </SnackBar>
                 )}
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>
-                    <FormGroup className={classes.formGroup}>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel htmlFor="name">name</InputLabel>
-                            <Input
-                                required
-                                id="name"
-                                name="name"
-                                onChange={this.props.setVal.bind(this, 'name')}
-                                value={name || ''}
-                                error={!this.props.isValid('name')}
-                            />
-                        </FormControl>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel htmlFor="role">status</InputLabel>
-                            <Select
-                                value={status || conf.tenant.status.ACTIVE}
-                                onChange={this.props.setVal.bind(this, 'status')}
-                            >
-                                {Object.keys(conf.tenant.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
-                            </Select>
-                        </FormControl>
-                        <FormControl className={classes.formControl}>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="name">name</InputLabel>
+                        <Input
+                            required
+                            id="name"
+                            name="name"
+                            onChange={this.props.setVal.bind(this, 'name')}
+                            value={name || ''}
+                            error={!this.props.isValid('name')}
+                        />
+                    </FormControl>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="role">status</InputLabel>
+                        <Select
+                            value={status || conf.tenant.status.ACTIVE}
+                            onChange={this.props.setVal.bind(this, 'status')}
+                        >
+                            {Object.keys(conf.tenant.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                        </Select>
+                    </FormControl>
+                    <FormControl className={classes.formControl}>
 
-                            <Button
-                                disabled={this.state.pending}
-                                type='submit'
-                                variant="contained"
-                                color="secondary">{this.state.pending ? 'Saving...' : 'Save'}
-                            </Button>
-                        </FormControl>
-                    </FormGroup>
+                        <Button
+                            disabled={this.state.pending}
+                            type='submit'
+                            variant="contained"
+                            color="secondary">{this.state.pending ? 'Saving...' : 'Save'}
+                        </Button>
+                    </FormControl>
                 </form>
             </div>
         );
