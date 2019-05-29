@@ -3,8 +3,8 @@ import { withStyles } from '@material-ui/styles';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
+import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -31,6 +31,9 @@ const useStyles = {
     },
     frame: {
         height: '100vh',
+    },
+    formControl: {
+        padding: '30px 0 0 0 ',
     },
     formGroup: {
         padding: '30px 0 0 0 ',
@@ -141,16 +144,47 @@ class EditUser extends React.Component {
                 )}
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>
                     <FormGroup className={classes.formGroup}>
-                        <FormLabel htmlFor="username">username</FormLabel>
-                        <Input id="username" name="username" onChange={this.props.setVal.bind(this, 'username')} value={username || ''} />
+                        <FormControl>
+                            <InputLabel htmlFor="component-error">username</InputLabel>
+                            <Input
+                                required
+                                inputProps={{
+                                    pattern: '^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
+                                    type: 'email',
+                                }}
+                                id="username"
+                                name="username"
+                                onChange={this.props.setVal.bind(this, 'username')}
+                                value={username || ''}
+                                error={!this.props.checkValidity('username')}
+                            />
+                        </FormControl>
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
-                        <FormLabel htmlFor="firstname">firstname</FormLabel>
-                        <Input id="firstname" name="firstname" onChange={this.props.setVal.bind(this, 'firstname')} value={firstname || ''} />
+                        <FormControl>
+                            <InputLabel htmlFor="component-error">firstname</InputLabel>
+                            <Input
+                                required
+                                id="firstname"
+                                name="firstname"
+                                onChange={this.props.setVal.bind(this, 'firstname')}
+                                value={firstname || ''}
+                                error={!this.props.checkValidity('firstname')}
+                            />
+                        </FormControl>
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
-                        <FormLabel htmlFor="lastname">lastname</FormLabel>
-                        <Input id="lastname" name="lastname" onChange={this.props.setVal.bind(this, 'lastname')} value={lastname || ''} />
+                        <FormControl>
+                            <InputLabel htmlFor="component-error">lastname</InputLabel>
+                            <Input
+                                required
+                                id="lastname"
+                                name="lastname"
+                                onChange={this.props.setVal.bind(this, 'lastname')}
+                                value={lastname || ''}
+                                error={!this.props.checkValidity('lastname')}
+                            />
+                        </FormControl>
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
                         <InputLabel htmlFor="role">role</InputLabel>
@@ -172,8 +206,17 @@ class EditUser extends React.Component {
                     </FormGroup>
                     {!this.props.userId && (
                         <FormGroup className={classes.formGroup}>
-                            <FormLabel htmlFor="username">password</FormLabel>
-                            <Input id="password" type="password" name="password" onChange={this.props.setVal.bind(this, 'password')} value={password || ''} />
+                            <FormControl>
+                                <InputLabel htmlFor="component-error">password</InputLabel>
+                                <Input
+                                    required
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    onChange={this.props.setVal.bind(this, 'password')}
+                                    value={password || ''}
+                                />
+                            </FormControl>
                         </FormGroup>
                     )}
 
