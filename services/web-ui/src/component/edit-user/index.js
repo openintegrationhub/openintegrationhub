@@ -188,22 +188,26 @@ class EditUser extends React.Component {
                         </FormControl>
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
-                        <InputLabel htmlFor="role">role</InputLabel>
-                        <Select
-                            value={role || conf.account.roles.USER}
-                            onChange={this.props.setVal.bind(this, 'role')}
-                        >
-                            {Object.keys(conf.account.roles).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
-                        </Select>
+                        <FormControl>
+                            <InputLabel htmlFor="role">role</InputLabel>
+                            <Select
+                                value={role || conf.account.roles.USER}
+                                onChange={this.props.setVal.bind(this, 'role')}
+                            >
+                                {Object.keys(conf.account.roles).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                            </Select>
+                        </FormControl>
                     </FormGroup>
                     <FormGroup className={classes.formGroup}>
-                        <InputLabel htmlFor="role">status</InputLabel>
-                        <Select
-                            value={status || conf.account.status.ACTIVE}
-                            onChange={this.props.setVal.bind(this, 'status')}
-                        >
-                            {Object.keys(conf.account.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
-                        </Select>
+                        <FormControl>
+                            <InputLabel htmlFor="role">status</InputLabel>
+                            <Select
+                                value={status || conf.account.status.ACTIVE}
+                                onChange={this.props.setVal.bind(this, 'status')}
+                            >
+                                {Object.keys(conf.account.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                            </Select>
+                        </FormControl>
                     </FormGroup>
                     {!this.props.userId && (
                         <FormGroup className={classes.formGroup}>
