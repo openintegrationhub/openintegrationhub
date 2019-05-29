@@ -7,18 +7,12 @@ const Schema = mongoose.Schema;
 const node = new Schema({
   id: { type: String, required: [true, 'Flow nodes require an id.'], maxlength: 10 },
   componentId: {
-    type: String,
+    type: mongoose.Types.ObjectId,
     required: [true, 'Flow nodes require a componentId.'],
-    validate: {
-      validator(n) {
-        return (mongoose.Types.ObjectId.isValid(n));
-      },
-      message: props => `The componentId "${props.value}" is not a valid ID for the component repository.`,
-    },
   },
   function: { type: String, required: [true, 'Flow nodes require a function.'], maxlength: 30 },
   name: { type: String, maxlength: 30 },
-  credentials_id: { type: String, maxlength: 30 },
+  credentials_id: { type: mongoose.Types.ObjectId, maxlength: 30 },
   description: { type: String, maxlength: 100 },
   fields: {},
   _id: false,
