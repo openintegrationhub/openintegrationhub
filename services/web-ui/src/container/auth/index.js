@@ -7,9 +7,7 @@ import flow from 'lodash/flow';
 import { withStyles } from '@material-ui/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
 import Input from '@material-ui/core/Input';
 import update from 'immutability-helper';
 import Grid from '@material-ui/core/Grid';
@@ -22,20 +20,18 @@ const useStyles = {
     loginContainer: {
         flexGrow: 1,
     },
+    logo: {
+        padding: '10vh 0',
+        margin: 'auto',
+        width: 300,
+    },
     form: {
         margin: 'auto',
-        padding: '30vh 0',
-        width: 200,
+        width: 300,
     },
-    frame: {
-        height: '90vh',
-    },
-    formGroup: {
-        padding: '30px 0 0 0 ',
-    },
-    logo: {
-        position: 'inherit',
-        backgroundImage: 'linear-gradient(73deg, #ff8200, #ff2473)',
+    formControl: {
+        marginTop: 0,
+        padding: '20px 0',
     },
 };
 
@@ -81,44 +77,39 @@ class Auth extends React.Component {
       }
 
       return (
-          <div className={classes.loginContainer}>
-              <Grid container >
-                  <Grid item xs={4}></Grid>
-                  <Grid item xs={4}>
-                      <Card className={classes.frame}>
-                          <div className={classes.logo}>
-                              <img
-                                  src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
-                                  alt="Open Integration Hub"
-                                  id="logo"
-                                  data-height-percentage="240"
-                              />
+          <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justify="center"
+              className={classes.loginContainer}
+              style={{ minHeight: '50vh' }}
+          >
 
-                          </div>
+              <Grid item xs={3}>
+                  <img
+                      className={classes.logo}
+                      src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/small-oih-bildmarke.png"
+                      alt="Open Integration Hub"
+                      id="logo"
+                  />
 
-                          <form onSubmit={this.login.bind(this)} className={classes.form}>
-                              <FormGroup className={classes.formGroup}>
-                                  <FormControl>
-                                      <InputLabel htmlFor="component-error">username</InputLabel>
-                                      <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} required/>
-                                  </FormControl>
-                              </FormGroup>
-                              <FormGroup className={classes.formGroup}>
-                                  <FormControl>
-                                      <InputLabel htmlFor="component-error">password</InputLabel>
-                                      <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} required/>
-                                  </FormControl>
-                              </FormGroup>
-                              <FormGroup className={classes.formGroup}>
-                                  <Button type='submit' variant="contained" color="secondary">Login</Button>
-                              </FormGroup>
-                          </form>
-                      </Card>
-                  </Grid>
-                  <Grid item xs={4}></Grid>
+                  <form onSubmit={this.login} className={classes.form}>
+                      <FormControl className={classes.formControl} fullWidth required>
+                          <InputLabel htmlFor="username">username</InputLabel>
+                          <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
+                      </FormControl>
+                      <FormControl className={classes.formControl} fullWidth required>
+                          <InputLabel htmlFor="password">password</InputLabel>
+                          <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
+                      </FormControl>
+                      <FormControl className={classes.formControl} fullWidth>
+                          <Button type='submit' variant="contained" color="secondary">Login</Button>
+                      </FormControl>
+                  </form>
               </Grid>
-
-          </div>
+          </Grid>
       );
   }
 }
