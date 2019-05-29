@@ -2,7 +2,7 @@ import React from 'react';
 import update from 'immutability-helper';
 
 export default function withForm(Component) {
-    return class Form extends React.Component {
+    return class WithForm extends React.Component {
         state = {
             formData: {},
             validity: {},
@@ -82,7 +82,7 @@ export default function withForm(Component) {
             });
         }
 
-        checkValidity(fieldName) {
+        isValid = (fieldName) => {
             if (typeof this.state.validity[fieldName] !== 'undefined') {
                 return this.state.validity[fieldName];
             }
@@ -98,7 +98,7 @@ export default function withForm(Component) {
                 setFormData={this.setFormData}
                 removeVal={this.removeVal}
                 formData={this.state.formData}
-                checkValidity={this.checkValidity.bind(this)}
+                isValid={this.isValid}
                 allValid={this.state.allValid}
                 error={this.state.error}
                 {...other}

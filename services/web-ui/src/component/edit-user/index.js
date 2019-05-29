@@ -4,10 +4,11 @@ import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import FormGroup from '@material-ui/core/FormGroup';
+import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import withSideSheet from '../../hoc/with-side-sheet';
@@ -156,7 +157,7 @@ class EditUser extends React.Component {
                                 name="username"
                                 onChange={this.props.setVal.bind(this, 'username')}
                                 value={username || ''}
-                                error={!this.props.checkValidity('username')}
+                                error={!this.props.isValid('username')}
                             />
                         </FormControl>
                     </FormGroup>
@@ -169,7 +170,7 @@ class EditUser extends React.Component {
                                 name="firstname"
                                 onChange={this.props.setVal.bind(this, 'firstname')}
                                 value={firstname || ''}
-                                error={!this.props.checkValidity('firstname')}
+                                error={!this.props.isValid('firstname')}
                             />
                         </FormControl>
                     </FormGroup>
@@ -182,7 +183,7 @@ class EditUser extends React.Component {
                                 name="lastname"
                                 onChange={this.props.setVal.bind(this, 'lastname')}
                                 value={lastname || ''}
-                                error={!this.props.checkValidity('lastname')}
+                                error={!this.props.isValid('lastname')}
                             />
                         </FormControl>
                     </FormGroup>

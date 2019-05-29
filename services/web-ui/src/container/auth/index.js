@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import flow from 'lodash/flow';
 import { withStyles } from '@material-ui/styles';
-import FormLabel from '@material-ui/core/FormLabel';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -97,12 +98,16 @@ class Auth extends React.Component {
 
                           <form onSubmit={this.login.bind(this)} className={classes.form}>
                               <FormGroup className={classes.formGroup}>
-                                  <FormLabel htmlFor="username">username</FormLabel>
-                                  <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} required/>
+                                  <FormControl>
+                                      <InputLabel htmlFor="component-error">username</InputLabel>
+                                      <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} required/>
+                                  </FormControl>
                               </FormGroup>
                               <FormGroup className={classes.formGroup}>
-                                  <FormLabel htmlFor="password">password</FormLabel>
-                                  <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} required/>
+                                  <FormControl>
+                                      <InputLabel htmlFor="component-error">password</InputLabel>
+                                      <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} required/>
+                                  </FormControl>
                               </FormGroup>
                               <FormGroup className={classes.formGroup}>
                                   <Button type='submit' variant="contained" color="secondary">Login</Button>
