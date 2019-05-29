@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
-import Fab from '@material-ui/core/Fab';
+import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
 // Actions
@@ -57,10 +57,9 @@ class Users extends React.Component {
         return (
             <div className={classes.wrapper}>
                 <Grid item xs={12} className={classes.tools}>
-                    <Fab color="primary" aria-label="Add" onClick={this.addUser.bind(this)}>
-                        <AddIcon />
-                    </Fab>
-
+                    <Button variant="outlined" aria-label="Add" onClick={this.addUser}>
+                        Add<AddIcon/>
+                    </Button>
                 </Grid>
                 <Grid item xs={12}>
                     <EditUser
