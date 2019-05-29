@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/styles';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
 import Input from '@material-ui/core/Input';
 import update from 'immutability-helper';
 import Grid from '@material-ui/core/Grid';
@@ -31,6 +32,14 @@ const useStyles = {
     },
     formGroup: {
         padding: '30px 0 0 0 ',
+    },
+    logo: {
+        position: 'inherit',
+        backgroundImage: 'linear-gradient(73deg, #ff8200, #ff2473)',
+        // transition: theme.transitions.create(['margin', 'width'], {
+        //     easing: theme.transitions.easing.sharp,
+        //     duration: theme.transitions.duration.leavingScreen,
+        // }),
     },
 };
 
@@ -85,21 +94,31 @@ class Auth extends React.Component {
               <Grid container >
                   <Grid item xs={4}></Grid>
                   <Grid item xs={4}>
-                      <div className={classes.frame}>
+                      <Card className={classes.frame}>
+                          <div className={classes.logo}>
+                              <img
+                                  src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
+                                  alt="Open Integration Hub"
+                                  id="logo"
+                                  data-height-percentage="240"
+                              />
+
+                          </div>
+
                           <form onSubmit={this.login.bind(this)} className={classes.form}>
                               <FormGroup className={classes.formGroup}>
                                   <FormLabel htmlFor="username">username</FormLabel>
-                                  <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} />
+                                  <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} required/>
                               </FormGroup>
                               <FormGroup className={classes.formGroup}>
                                   <FormLabel htmlFor="password">password</FormLabel>
-                                  <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} />
+                                  <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} required/>
                               </FormGroup>
                               <FormGroup className={classes.formGroup}>
                                   <Button type='submit' variant="contained" color="secondary">Login</Button>
                               </FormGroup>
                           </form>
-                      </div>
+                      </Card>
                   </Grid>
                   <Grid item xs={4}></Grid>
               </Grid>
