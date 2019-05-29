@@ -83,7 +83,12 @@ class UserTable extends React.Component {
 
     handleSelectAllClick = (isChecked) => {
         if (isChecked) {
-            this.setState({ selected: this.props.data.map(n => n._id) });
+            this.setState({
+                selected: this.props.data.map((n) => {
+                    if (this.props.auth._id !== n._id) return n._id;
+                    return null;
+                }),
+            });
             return;
         }
         this.setState({ selected: [] });
