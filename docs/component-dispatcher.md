@@ -18,12 +18,14 @@ The configuration contains information about:
 * full duplex/half duplex connections
 * leading system configuration
 
+Tenant specific configuration:
 
 | applicationId | domain | connected to OIH | inbound | outbound |
-| ------------- | ------------- | ------------- | ------------- |
+| ------------- | ------------- | ------------- | ------------- | ------------- |
 | crm1 | customer | true | true | true |
 | contactmanagement2 | customer | true | true | true |
 | cms1 | product | true | false | true |
+
 
 
 For each received message, the configuration is evaluated to determin how to process the message. 
