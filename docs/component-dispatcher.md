@@ -18,6 +18,7 @@ The configuration contains information about:
 * full duplex/half duplex connections
 * leading system configuration
 
+
 | applicationId | domain | connected to OIH | inbound | outbound |
 | ------------- | ------------- | ------------- | ------------- |
 | crm1 | customer | true | true | true |
