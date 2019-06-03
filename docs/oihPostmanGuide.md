@@ -8,24 +8,33 @@ This document is designed as a guide on _test the open integration hub with post
   - [Use Cases](#use-cases)
     - [Flows](#flows)
       - [Get All Flows](#get-all-flows)
-      - [Get a Flow](#get-a-flow)
-      - [Post a Flow](#post-a-flow)
-      - [Update a Flow](#update-a-flow)
-      - [Delete a Flow](#delete-a-flow)
-      - [Start a Flow](#start-a-flow)
-      - [Stop a Flow](#stop-a-flow)
+      - [Get a Flow by Id](#get-a-flow-by-id)
+      - [Create a new Flow](#create-a-new-flow)
+      - [Update a Flow by Id](#update-a-flow-by-id)
+      - [Delete a Flow by Id](#delete-a-flow-by-id)
+      - [Start a Flow by Id](#start-a-flow-by-id)
+      - [Stop a Flow by Id](#stop-a-flow-by-id)
     - [Components](#components)
       - [Get All Components](#get-all-components)
-      - [Get a Component](#get-a-component)
-      - [Post a Component](#post-a-component)
-      - [Update a Component](#update-a-component)
-      - [Delete a Component](#delete-a-component)
+      - [Get a Component by Id](#get-a-component-by-id)
+      - [Create a new Component](#create-a-new-component)
+      - [Update a Component by Id](#update-a-component-by-id)
+      - [Delete a Component by Id](#delete-a-component-by-id)
     - [Identity and Access Management](#identity-and-access-management)
       - [Login](#login)
       - [Get all Users](#get-all-users)
-      - [Add a new User](#add-a-new-user)
-      - [Delete a User](#delete-a-user)
-      - [Update a User](#update-a-user)
+      - [Create a new User](#create-a-new-user)
+      - [Delete a User by Id](#delete-a-user-by-id)
+      - [Update a User by Id](#update-a-user-by-id)
+    - [Metadata](#metadata)
+      - [Get all domains](#get-all-domains)
+      - [Get a Domain by Id](#get-a-domain-by-id)
+      - [Get Models for specific Domain](#get-models-for-specific-domain)
+      - [Get Model for specific Domain by Uri](#get-model-for-specific-domain-by-uri)
+      - [Update a Domain by Id](#update-a-domain-by-id)
+      - [Import new Models](#import-new-models)
+      - [Update model by Uri](#update-model-by-uri)
+      - [Delete a Model by Uri](#delete-a-model-by-uri)
   - [Examples](#examples)
     - [Flow Examples](#flow-examples)
     - [Component Examples](#component-examples)
@@ -74,7 +83,7 @@ Steps to perform:
 
 ---
 
-#### Get a Flow
+#### Get a Flow by Id
 
 ![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
 
@@ -87,7 +96,7 @@ Steps to perform:
 
 ---
 
-#### Post a Flow
+#### Create a new Flow
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
@@ -103,7 +112,7 @@ _Hint:_ There is a predefined body that can be used.
 
 ---
 
-#### Update a Flow
+#### Update a Flow by Id
 
 ![PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)
 
@@ -119,7 +128,7 @@ _Hint:_ There is a predefined body that can be used.
 
 ---
 
-#### Delete a Flow
+#### Delete a Flow by Id
 
 ![DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg)
 
@@ -130,7 +139,7 @@ _Hint:_ There is a predefined body that can be used.
 
 ---
 
-#### Start a Flow
+#### Start a Flow by Id
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
@@ -141,7 +150,7 @@ _Hint:_ There is a predefined body that can be used.
 
 ---
 
-#### Stop a Flow
+#### Stop a Flow by Id
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
@@ -168,7 +177,7 @@ Steps to perform:
 
 ---
 
-#### Get a Component
+#### Get a Component by Id
 
 ![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
 
@@ -181,7 +190,7 @@ Steps to perform:
 
 ---
 
-#### Post a Component
+#### Create a new Component
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
@@ -197,7 +206,7 @@ _Hint:_ There is a predefined body that can be used.
 
 ---
 
-#### Update a Component
+#### Update a Component by Id
 
 ![PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)
 
@@ -214,7 +223,7 @@ _Hint:_ There is a predefined body that can be used.
 
 ---
 
-#### Delete a Component
+#### Delete a Component by Id
 
 ![DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg)
 
@@ -258,7 +267,7 @@ Steps to perform:
 
 ---
 
-#### Add a new User
+#### Create a new User
 
 ![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
 
@@ -272,7 +281,7 @@ _Hint:_ There is a predefined body that can be used.
 
 ---
 
-#### Delete a User
+#### Delete a User by Id
 
 ![DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg)
 
@@ -283,7 +292,7 @@ _Hint:_ There is a predefined body that can be used.
 
 ---
 
-#### Update a User
+#### Update a User by Id
 
 ![PATCH](https://img.shields.io/badge/Operation-PATCH-lightgrey.svg)
 
@@ -295,6 +304,120 @@ _Hint:_ There is a predefined body that can be used.
 4. Click on `Send`
 
 _Hint:_ Partial updates are possible.
+
+---
+
+### Metadata
+
+#### Get all domains
+
+![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
+
+**Postman request name:** Get All Users
+
+Steps to perform:
+
+1. Click on `Send`
+
+---
+
+#### Get a Domain by Id
+
+![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
+
+**Postman request name:** Get a Domain by Id
+
+Steps to perform:
+
+1. Replace the `{Domain_ID}` placeholder with an existing domain id
+2. Click on `Send`
+
+---
+
+#### Get Models for specific Domain
+
+![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
+
+**Postman request name:** Get Models for specific Domain
+
+Steps to perform:
+
+1. Replace the `{Domain_ID}` placeholder with an existing domain id
+2. Click on `Send`
+
+---
+
+#### Get Model for specific Domain by Uri
+
+![GET](https://img.shields.io/badge/Operation-GET-brightgreen.svg)
+
+**Postman request name:** Get Models for specific Domain by Uri
+
+Steps to perform:
+
+1. Replace the `{Domain_ID}` placeholder with an existing domain id
+2. Replace the `{URI}` placeholder with an existing model uri
+3. Click on `Send`
+
+---
+
+#### Update a Domain by Id
+
+![PUT](https://img.shields.io/badge/Operation-PUT-blue.svg)
+
+**Postman request name:** Update a Domain by Id
+
+Steps to perform:
+
+1. Replace the `{Domain_ID}` placeholder with an existing domain id
+2. Add a valid body
+3. Click on `Send`
+
+_Hint: There is a predefined body that can be used._
+
+---
+
+#### Import new Models
+
+![POST](https://img.shields.io/badge/Operation-POST-yellow.svg)
+
+**Postman request name:** Import new Models
+
+Steps to perform:
+
+1. Replace the `{Domain_ID}` placeholder with an existing domain id
+2. Add a valid body
+3. Click on `Send`
+
+_Hint: There is a predefined body that can be used._
+
+---
+
+#### Update model by Uri
+
+![PUT](https://img.shields.io/badge/Operation-PUT-blue.svg)
+
+**Postman request name:** Update model by Uri
+Steps to perform:
+
+1. Replace the `{Domain_ID}` placeholder with an existing domain id
+2. Replace the `{URI}` placeholder with an existing model uri
+3. Add a valid body
+4. Click on `Send`
+
+_Hint: There is a predefined body that can be used._
+
+---
+
+#### Delete a Model by Uri
+
+![DELETE](https://img.shields.io/badge/Operation-DELETE-red.svg)
+
+**Postman request name:** Delete a user
+
+1. Replace the `{Domain_ID}` placeholder with an existing domain id
+2. Replace the `{URI}` placeholder with an existing model uri
+3. Click on `Send`
 
 ---
 
