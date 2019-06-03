@@ -32,8 +32,8 @@ const useStyles = {
         height: '100vh',
     },
     formControl: {
+        margin: '10px',
         width: '100%',
-        padding: '20px 0 10px 0 !important',
     },
 
 };
