@@ -166,6 +166,7 @@ describe('Flow Validation', () => {
               name: 'nodeName',
               function: 'function',
               componentId: '5ca5c44c187c040010a9bb8b',
+              credentials_id: 'IncorrectSecret',
             },
             {
               id: 'NodeId',
@@ -177,9 +178,10 @@ describe('Flow Validation', () => {
         },
       });
     expect(res.status).toEqual(400);
-    expect(res.body.errors).toHaveLength(2);
-    expect(res.body.errors[0].message).toEqual('The componentId "abc" is not a valid ID for the component repository.');
-    expect(res.body.errors[1].message).toEqual('Flows with more than one node require edges.');
+    expect(res.body.errors).toHaveLength(3);
+    expect(res.body.errors[0].message).toEqual('Cast to ObjectID failed for value "abc" at path "componentId"');
+    expect(res.body.errors[1].message).toEqual('Cast to ObjectID failed for value "IncorrectSecret" at path "credentials_id"');
+    expect(res.body.errors[2].message).toEqual('Flows with more than one node require edges.');
   });
 
   test('should refuse a flow with malformed edges', async () => {
@@ -406,7 +408,7 @@ describe('Flow Operations', () => {
               id: 'NodeOne',
               componentId: '5ca5c44c187c040010a9bb8b',
               function: 'getPersonsPolling',
-              credentials_id: 'SuperSecretCredential',
+              credentials_id: '5ca5c44c187c040010a9bb8c',
               fields: {
                 username: 'TestName',
                 password: 'TestPass',
@@ -457,7 +459,7 @@ describe('Flow Operations', () => {
     expect(j.data.graph.nodes[0].id).toEqual('NodeOne');
     expect(j.data.graph.nodes[0].componentId).toEqual('5ca5c44c187c040010a9bb8b');
     expect(j.data.graph.nodes[0].function).toEqual('getPersonsPolling');
-    expect(j.data.graph.nodes[0].credentials_id).toEqual('SuperSecretCredential');
+    expect(j.data.graph.nodes[0].credentials_id).toEqual('5ca5c44c187c040010a9bb8c');
     expect(j.data.graph.nodes[0].fields.username).toEqual('TestName');
     expect(j.data.graph.nodes[0].fields.password).toEqual('TestPass');
     expect(j.data.graph.edges[0].source).toEqual('NodeOne');
