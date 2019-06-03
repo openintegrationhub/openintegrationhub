@@ -39,8 +39,7 @@ After evaluating the tenant specific configuration for a message, the configured
 
 ### message processing
 
-If a tenant specified one or more connected application which should receive the message, the original message is duplicated for each target application. Those messages will be delivered to the target applications.
-Each of those messages has new message id. The transaction id will remain the same.
+If a tenant specified one or more connected application which should receive the message, the original message is posted to each target application. The oihUid of the oihDataRecord will remain the same as in the original message.
 
 ## open questions
 
