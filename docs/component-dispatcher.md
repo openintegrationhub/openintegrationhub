@@ -31,6 +31,7 @@ Tenant specific configuration:
 For each received message, the configuration is evaluated to determin how to process the message. 
 Message characteristics relevant for the dispatcher service:
 * tenant id
+* source domain
 * source application
 * source operation
 
