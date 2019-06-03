@@ -11,27 +11,24 @@ import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import update from 'immutability-helper';
 import Grid from '@material-ui/core/Grid';
+
 // Components
 import Loader from '../../component/loader';
 // Actions
 import { login } from '../../action/auth';
 
 const useStyles = {
-    loginContainer: {
-        flexGrow: 1,
-    },
     logo: {
         padding: '10vh 0',
         margin: 'auto',
         width: 300,
     },
     form: {
-        margin: 'auto',
-        width: 300,
+        display: 'flex',
+        flexWrap: 'wrap',
     },
     formControl: {
-        marginTop: 0,
-        padding: '20px 0',
+        margin: '10px',
     },
 };
 
@@ -66,6 +63,7 @@ class Auth extends React.Component {
           pending: true,
       });
       await this.props.login(this.state.userData);
+      console.log(this.props.classes);
   };
 
   render() {
@@ -83,7 +81,6 @@ class Auth extends React.Component {
               direction="column"
               alignItems="center"
               justify="center"
-              className={classes.loginContainer}
               style={{ minHeight: '50vh' }}
           >
 
@@ -96,17 +93,20 @@ class Auth extends React.Component {
                   />
 
                   <form onSubmit={this.login} className={classes.form}>
-                      <FormControl className={classes.formControl} fullWidth required>
-                          <InputLabel htmlFor="username">username</InputLabel>
-                          <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
-                      </FormControl>
-                      <FormControl className={classes.formControl} fullWidth required>
-                          <InputLabel htmlFor="password">password</InputLabel>
-                          <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
-                      </FormControl>
-                      <FormControl className={classes.formControl} fullWidth>
-                          <Button type='submit' variant="contained" color="secondary">Login</Button>
-                      </FormControl>
+                      <div>
+                          <FormControl className={classes.formControl} fullWidth required>
+                              <InputLabel htmlFor="username">username</InputLabel>
+                              <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
+                          </FormControl>
+                          <FormControl className={classes.formControl} fullWidth required>
+                              <InputLabel htmlFor="password">password</InputLabel>
+                              <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
+                          </FormControl>
+                          <FormControl className={classes.formControl} fullWidth>
+                              <Button type='submit' variant="contained" color="secondary">Login</Button>
+                          </FormControl>
+                      </div>
+
                   </form>
               </Grid>
           </Grid>
@@ -127,10 +127,11 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 }, dispatch);
 
 export default flow(
+    withStyles(useStyles),
     connect(
         mapStateToProps,
         mapDispatchToProps,
     ),
-    withStyles(useStyles),
+
     withRouter,
 )(Auth);
