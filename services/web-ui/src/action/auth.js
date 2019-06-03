@@ -4,6 +4,7 @@ import { getConfig } from '../conf';
 const conf = getConfig();
 
 export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
 export const GET_USER = 'GET_USER';
 
 const setAxiosAuth = (token) => {
@@ -54,7 +55,7 @@ export const logout = () => async (dispatch) => {
     if (result.status === 200) {
         setAxiosAuth('');
         dispatch({
-            type: LOGIN,
+            type: LOGOUT,
             isLoggedIn: false,
             token: '',
         });
