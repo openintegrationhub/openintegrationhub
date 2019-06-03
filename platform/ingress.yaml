@@ -50,3 +50,9 @@ spec:
       - backend:
           serviceName: webhooks-service
           servicePort: 1234
+  - host: web-ui.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: web-ui
+          servicePort: 3000
