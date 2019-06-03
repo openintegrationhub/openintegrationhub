@@ -1,0 +1,13 @@
+{
+    "PORT": "3002",
+    "LOG_LEVEL": "info",
+    "REDIS_CONFIG": {
+        "name": "maester",
+        "keyPrefix": "maester:",
+        "sentinels": [{
+            "host": "localhost",
+            "port": 26379
+        }]
+    },
+    "TERMINATION_DELAY": 15000
+}
