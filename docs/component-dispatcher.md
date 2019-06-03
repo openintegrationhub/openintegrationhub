@@ -1,7 +1,7 @@
 # Dispatcher Service
 
 The dispatcher service is a central component in the hub and spoke service collaboration. 
-It is responsible for delivering messages from one application to the target applications based on a tenant specific configuration.
+It is responsible for delivering messages from one application to one or more target applications based on a tenant specific configuration.
 
 ![Dispatcher Service Overview](https://github.com/openintegrationhub/openintegrationhub/blob/dispatcher/Assets/component_dispatcher_0.1.png)
 
@@ -40,3 +40,10 @@ After evaluating the tenant specific configuration for a message, the configured
 
 If a tenant specified one or more connected application which should receive the message, the original message is duplicated for each target application. Those messages will be delivered to the target applications.
 Each of those messages has new message id. The transaction id will remain the same.
+
+## open questions
+
+* client-separation: should there be dispatcher instances for all tenants or should there be instances for each tenant?
+* horizontal scaling: how to deal with message sequences
+* the service interface will be a queue, how do the messages from the SDF adapter reach this queue
+
