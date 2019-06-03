@@ -1,12 +1,19 @@
 const proxy = require('http-proxy-middleware');
 const conf = require('../server/conf');
 
+const ORIGIN = 'http://web-ui.openintegrationhub.com';
+
 // eslint-disable-next-line func-names
 module.exports = function (app) {
     app.use(proxy('/iam-api', {
         pathRewrite: { '^/iam-api': '/' },
         target: 'http://iam.openintegrationhub.com',
         changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
     }));
     // proxy server config
     app.use('/config', (req, res) => {

@@ -80,7 +80,7 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        height: '100vh',
+        height: '90vh',
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,

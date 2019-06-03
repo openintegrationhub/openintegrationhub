@@ -1,27 +1,37 @@
 import React from 'react';
-import { withStyles } from '@material-ui/styles';
-import Grid from '@material-ui/core/Grid';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+
+// Ui
+import { withStyles } from '@material-ui/styles';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+
+// actions
 import { getTenants } from '../../action/tenants';
 // import EditTenant from '../edit-tenant';
 
 
 // components
 import Table from '../table';
+import EditTenant from '../edit-tenant';
 
 
 const useStyles = {
     wrapper: {
         width: '100%',
-        padding: '10vh 0 0 0',
+        position: 'inherit',
+    },
+    tools: {
+        padding: '10px 0 0 10px',
     },
 };
 
 class Tenants extends React.Component {
     state= {
-        editUserIsOpen: false,
+        editTenantIsOpen: false,
     }
 
     constructor(props) {
@@ -29,10 +39,18 @@ class Tenants extends React.Component {
         props.getTenants();
     }
 
-    editHandler = (userId) => {
+    editHandler = (tenantId) => {
+        console.log('edits');
         this.setState({
-            editUserIsOpen: true,
-            editUserId: userId,
+            editTenantIsOpen: true,
+            editTenantId: tenantId,
+        });
+    };
+
+    addTenant = () => {
+        this.setState({
+            editTenantIsOpen: true,
+            editTenantId: '',
         });
     };
 
@@ -42,8 +60,24 @@ class Tenants extends React.Component {
         } = this.props;
         return (
             <div className={classes.wrapper}>
+                <Grid item xs={12} className={classes.tools}>
+                    <Button variant="outlined" aria-label="Add" onClick={this.addTenant}>
+                        Add<AddIcon/>
+                    </Button>
+
+                </Grid>
                 <Grid item xs={12}>
-                    <Table data={this.props.tenants} editHandler={this.editHandler} type='tenant'/>
+                    <EditTenant
+                        side={'right'}
+                        open={this.state.editTenantIsOpen}
+                        tenantId={this.state.editTenantId}
+                        onClose={() => {
+                            this.setState({
+                                editTenantIsOpen: false,
+                            });
+                        }}
+                    />
+                    <Table data={this.props.tenants.all} editHandler={this.editHandler} type='tenant'/>
                 </Grid>
 
             </div>

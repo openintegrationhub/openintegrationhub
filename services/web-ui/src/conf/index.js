@@ -8,10 +8,10 @@ let config = {
             'status',
         ],
         tenant: [
-            'organisations',
+            'name',
+            'status',
             'createdAt',
             'updatedAt',
-            'status',
         ],
     },
     account: {
@@ -28,6 +28,17 @@ let config = {
             AWAITING_ACTIVATION: 'AWAITING_ACTIVATION',
             AWAITING_ADMIN_ACTION: 'AWAITING_ADMIN_ACTION',
             AWAITING_APPROVAL: 'AWAITING_APPROVAL',
+        },
+    },
+    tenant: {
+        roles: {
+            ADMIN: 'ADMIN',
+            USER: 'USER',
+        },
+        status: {
+            ACTIVE: 'ACTIVE',
+            PENDING: 'PENDING',
+            DISABLED: 'DISABLED',
         },
     },
 };

@@ -5,32 +5,30 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import flow from 'lodash/flow';
 import { withStyles } from '@material-ui/styles';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormGroup from '@material-ui/core/FormGroup';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import update from 'immutability-helper';
 import Grid from '@material-ui/core/Grid';
+
 // Components
 import Loader from '../../component/loader';
 // Actions
 import { login } from '../../action/auth';
 
 const useStyles = {
-    loginContainer: {
-        flexGrow: 1,
+    logo: {
+        padding: '10vh 0',
+        margin: 'auto',
+        width: 300,
     },
     form: {
-        float: 'none',
-        margin: 'auto',
-        padding: '40vh 0',
-        width: 200,
+        display: 'flex',
+        flexWrap: 'wrap',
     },
-    frame: {
-        height: '100vh',
-    },
-    formGroup: {
-        padding: '30px 0 0 0 ',
+    formControl: {
+        margin: '10px',
     },
 };
 
@@ -47,11 +45,6 @@ class Auth extends React.Component {
       if (this.props.auth !== prevProps.auth && this.props.auth.isLoggedIn) {
           this.props.history.push('/');
       }
-      // if (prevProps.tokenInvalid !== this.props.tokenInvalid) {
-      //     this.setState({
-      //         isLoggedIn: false,
-      //     });
-      // }
   }
 
   setVal = (fieldName, e) => {
@@ -70,6 +63,7 @@ class Auth extends React.Component {
           pending: true,
       });
       await this.props.login(this.state.userData);
+      console.log(this.props.classes);
   };
 
   render() {
@@ -81,30 +75,41 @@ class Auth extends React.Component {
       }
 
       return (
-          <div className={classes.loginContainer}>
-              <Grid container >
-                  <Grid item xs={4}></Grid>
-                  <Grid item xs={4}>
-                      <div className={classes.frame}>
-                          <form onSubmit={this.login.bind(this)} className={classes.form}>
-                              <FormGroup className={classes.formGroup}>
-                                  <FormLabel htmlFor="username">username</FormLabel>
-                                  <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username} />
-                              </FormGroup>
-                              <FormGroup className={classes.formGroup}>
-                                  <FormLabel htmlFor="password">password</FormLabel>
-                                  <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password} />
-                              </FormGroup>
-                              <FormGroup className={classes.formGroup}>
-                                  <Button type='submit' variant="contained" color="secondary">Login</Button>
-                              </FormGroup>
-                          </form>
-                      </div>
-                  </Grid>
-                  <Grid item xs={4}></Grid>
-              </Grid>
+          <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justify="center"
+              style={{ minHeight: '50vh' }}
+          >
 
-          </div>
+              <Grid item xs={3}>
+                  <img
+                      className={classes.logo}
+                      src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/small-oih-bildmarke.png"
+                      alt="Open Integration Hub"
+                      id="logo"
+                  />
+
+                  <form onSubmit={this.login} className={classes.form}>
+                      <div>
+                          <FormControl className={classes.formControl} fullWidth required>
+                              <InputLabel htmlFor="username">username</InputLabel>
+                              <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
+                          </FormControl>
+                          <FormControl className={classes.formControl} fullWidth required>
+                              <InputLabel htmlFor="password">password</InputLabel>
+                              <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
+                          </FormControl>
+                          <FormControl className={classes.formControl} fullWidth>
+                              <Button type='submit' variant="contained" color="secondary">Login</Button>
+                          </FormControl>
+                      </div>
+
+                  </form>
+              </Grid>
+          </Grid>
       );
   }
 }
@@ -122,10 +127,11 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 }, dispatch);
 
 export default flow(
+    withStyles(useStyles),
     connect(
         mapStateToProps,
         mapDispatchToProps,
     ),
-    withStyles(useStyles),
+
     withRouter,
 )(Auth);
