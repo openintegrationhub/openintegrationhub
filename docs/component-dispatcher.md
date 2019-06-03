@@ -3,7 +3,7 @@
 The dispatcher service is a central component in the hub and spoke service collaboration. 
 It is responsible for delivering messages from one application to one or more target applications based on a tenant specific configuration.
 
-![Dispatcher Service Overview](https://github.com/openintegrationhub/openintegrationhub/blob/dispatcher/Assets/component_dispatcher_0.1.png)
+![Dispatcher Service Overview](Assets/component_dispatcher_0.1.png)
 
 ## Service
 ### Entry Point
