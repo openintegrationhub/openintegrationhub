@@ -7,6 +7,8 @@ export const GET_TENANTS = 'GET_TENANTS';
 export const UPDATE_TENANT = 'UPDATE_TENANT';
 export const CREATE_TENANT = 'CREATE_TENANT';
 export const DELETE_TENANT = 'DELETE_USER';
+export const TENANTS_ERROR = 'TENANTS_ERROR';
+export const TENANTS_ERROR_CLEAR = 'TENANTS_ERROR_CLEAR';
 
 
 export const getTenants = () => async (dispatch) => {
@@ -19,14 +21,17 @@ export const getTenants = () => async (dispatch) => {
 
         dispatch({
             type: GET_TENANTS,
-            users: result.data,
+            tenants: result.data,
         });
     } catch (err) {
-        console.log(err);
+        dispatch({
+            type: TENANTS_ERROR,
+            err,
+        });
     }
 };
 
-export const updateUser = tenant => async (dispatch) => {
+export const updateTenant = tenant => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
@@ -40,11 +45,14 @@ export const updateUser = tenant => async (dispatch) => {
         });
         dispatch(getTenants());
     } catch (err) {
-        console.log(err);
+        dispatch({
+            type: TENANTS_ERROR,
+            err,
+        });
     }
 };
 
-export const createUser = tenant => async (dispatch) => {
+export const createTenant = tenant => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -60,11 +68,14 @@ export const createUser = tenant => async (dispatch) => {
         });
         dispatch(getTenants());
     } catch (err) {
-        console.log(err);
+        dispatch({
+            type: TENANTS_ERROR,
+            err,
+        });
     }
 };
 
-export const deleteUser = tenantId => async (dispatch) => {
+export const deleteTenant = tenantId => async (dispatch) => {
     try {
         await axios({
             method: 'delete',
@@ -77,6 +88,15 @@ export const deleteUser = tenantId => async (dispatch) => {
         });
         dispatch(getTenants());
     } catch (err) {
-        console.log(err);
+        dispatch({
+            type: TENANTS_ERROR,
+            err,
+        });
     }
+};
+
+export const clearError = () => (dispatch) => {
+    dispatch({
+        type: TENANTS_ERROR_CLEAR,
+    });
 };

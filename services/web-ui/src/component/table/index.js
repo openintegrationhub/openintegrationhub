@@ -23,6 +23,7 @@ import Confirm from '../confirm';
 // Actions
 
 import { deleteUser } from '../../action/users';
+import { deleteTenant } from '../../action/tenants';
 
 const useStyles = () => ({
     wrapper: {
@@ -40,7 +41,7 @@ const useStyles = () => ({
         overflowX: 'auto',
     },
 });
-class UserTable extends React.Component {
+class OihTable extends React.Component {
     state = {
         order: 'asc',
         orderBy: 'username',
@@ -83,7 +84,9 @@ class UserTable extends React.Component {
 
     handleSelectAllClick = (isChecked) => {
         if (isChecked) {
-            this.setState({ selected: this.props.data.map(n => n._id) });
+            this.setState({
+                selected: this.props.data.filter(n => n._id !== this.props.auth._id).map(n => n._id),
+            });
             return;
         }
         this.setState({ selected: [] });
@@ -122,9 +125,16 @@ class UserTable extends React.Component {
 
     onDelete = (result) => {
         if (result && this.state.selected.length !== 0) {
-            this.state.selected.forEach((element) => {
-                this.props.deleteUser(element);
-            });
+            if (this.props.type === 'user') {
+                this.state.selected.forEach((element) => {
+                    this.props.deleteUser(element);
+                });
+            }
+            if (this.props.type === 'tenant') {
+                this.state.selected.forEach((element) => {
+                    this.props.deleteTenant(element);
+                });
+            }
         }
         this.setState({ selected: [], confirmOpen: false });
     } ;
@@ -145,7 +155,7 @@ class UserTable extends React.Component {
                     <Paper className={classes.root}>
                         <Confirm
                             open={this.state.confirmOpen}
-                            text='Realy delete all Selected Accounts?'
+                            text='Really delete all Selected Elements?'
                             handleClose={this.onDelete}
                         />
                         <TableToolbar
@@ -213,16 +223,18 @@ class UserTable extends React.Component {
     }
 }
 
-UserTable.propTypes = {
+OihTable.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => ({
     users: state.users,
+    tenants: state.tenants,
     auth: state.auth,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     deleteUser,
+    deleteTenant,
 }, dispatch);
 
 export default flow(
@@ -231,4 +243,4 @@ export default flow(
         mapDispatchToProps,
     ),
     withStyles(useStyles),
-)(UserTable);
+)(OihTable);

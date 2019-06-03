@@ -9,8 +9,7 @@ const useStyles = {
         flexGrow: 1,
     },
     loading: {
-        padding: '40vh 0',
-        height: '100vh',
+        padding: '30vh 0',
     },
 };
 
