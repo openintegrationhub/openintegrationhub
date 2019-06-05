@@ -1,7 +1,6 @@
 import { Context } from 'koa';
 import validate from 'uuid-validate';
-import { StorageObjectExistsError } from '../../../storage-drivers/redis/redis-storage'; //@todo: should not be redis specific
-import StorageDriver, { StorageObject } from '../../storage-driver';
+import StorageDriver, { StorageObject, StorageObjectExistsError } from '../../storage-driver';
 import StorageObjectNotFound from './errors/StorageObjectNotFound';
 import StorageObjectAlreadyExists from './errors/StorageObjectAlreadyExists';
 import StorageObjectTypeNotSupported from './errors/StorageObjectTypeNotSupported';

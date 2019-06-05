@@ -1,14 +1,12 @@
 import RedisService from './redis';
 import RedisStorageObject from './redis-object';
-import Healthcheckable from '../../server/healthcheckable';
+import {
+    Healthcheckable,
+    StorageDriver,
+    StorageObjectMetadata,
+    StorageObjectExistsError
+} from '@openintegrationhub/attachment-storage-service';
 import logger from "../../logger";
-import StorageDriver, { StorageObjectMetadata } from '../../server/storage-driver';
-
-export class StorageObjectExistsError extends Error {
-    public constructor() {
-        super('Object already exists');
-    }
-}
 
 export default class StorageObjectsService implements StorageDriver, Healthcheckable {
     private readonly redis: RedisService;

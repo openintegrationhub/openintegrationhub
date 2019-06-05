@@ -18,3 +18,9 @@ export default interface StorageDriver {
     find(id: string): Promise<StorageObject|null>;
     create(id: string, metadata: StorageObjectMetadata): Promise<StorageObject>;
 }
+
+export class StorageObjectExistsError extends Error {
+    public constructor() {
+        super('Object already exists');
+    }
+}

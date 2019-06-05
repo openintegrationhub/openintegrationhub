@@ -1,0 +1,30 @@
+{
+    "name": "@openintegrationhub/attachment-storage-service",
+    "version": "0.0.1",
+    "description": "Service for storing binary data",
+    "main": "dist/index.js",
+    "directories": {
+        "doc": "docs"
+    },
+    "engines": {
+        "node": ">= 10"
+    },
+    "scripts": {
+        "test": "exit 0",
+        "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts .",
+        "build": "tsc",
+        "pretest": "npm run eslint"
+    },
+    "license": "UNLICENSED",
+    "devDependencies": {
+
+    },
+    "dependencies": {
+        "koa": "2.7.0",
+        "koa-bunyan-logger": "2.1.0",
+        "koa-jwt": "3.5.1",
+        "koa-router": "7.4.0",
+        "nconf": "0.10.0",
+        "uuid-validate": "0.0.3"
+    }
+}

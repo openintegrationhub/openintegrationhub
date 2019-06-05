@@ -2,7 +2,7 @@ import logger from './logger';
 import { Config } from './config';
 import RedisService  from './storage-drivers/redis/redis';
 import RedisStorage from './storage-drivers/redis/redis-storage';
-import Server from './server';
+import Server from '@openintegrationhub/attachment-storage-service';
 import Auth from './auth';
 
 export default class Maester {

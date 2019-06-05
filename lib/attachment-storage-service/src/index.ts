@@ -6,8 +6,10 @@ import healthcheck from './routes/healthcheck';
 import objects from './routes/objects';
 import koaBunyanLogger from 'koa-bunyan-logger';
 import errorResponder from './middleware/error-responder';
-import StorageDriver from './storage-driver';
 import Healthcheckable from './healthcheckable';
+import StorageDriver, { StorageObject, StorageObjectMetadata, StorageObjectExistsError } from './storage-driver';
+
+export { Healthcheckable, StorageDriver, StorageObject, StorageObjectMetadata, StorageObjectExistsError }
 
 export interface ServerAuth {
     middleware: IMiddleware;

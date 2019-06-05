@@ -3,7 +3,7 @@ import logger from '../../logger';
 import RedisService from './redis';
 import * as Logger from 'bunyan';
 import { createHash } from 'crypto';
-import { StorageObject, StorageObjectMetadata } from '../../server/storage-driver'
+import { StorageObject, StorageObjectMetadata } from '@openintegrationhub/attachment-storage-service';
 
 export class RedisObjectMeta implements StorageObjectMetadata {
     public readonly contentType: string;
