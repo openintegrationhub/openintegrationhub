@@ -110,10 +110,6 @@ export default class StorageObjectController {
 
     public async loadObject(ctx: IRouterContext, next: Function) {
         const { id } = ctx.params;
-        if (ctx.method === 'PUT') {
-            return next();
-        }
-
         ctx.log.debug('About to get object');
         const object = await this.objectsStorage.find(id);
 

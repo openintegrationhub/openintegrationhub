@@ -11,8 +11,7 @@
     },
     "scripts": {
         "start": "node ./dist/app.js",
-        "dev": "NODE_ENV=dev ts-node-dev ./src/app.ts | bunyan",
-        "dev:log_debug": "LOG_LEVEL=debug npm run dev",
+        "start:dev": "NODE_ENV=dev ts-node-dev ./src/app.ts | bunyan",
         "test": "NODE_ENV=test node --max-old-space-size=3071 node_modules/.bin/_mocha --exit --forbid-only --require ts-node/register --require mocha-steps 'src/**/*.spec.ts'",
         "test:watch": "npm run test -- --watch-extensions 'ts,js,json' -w || reset",
         "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts .",
@@ -54,6 +53,7 @@
     "dependencies": {
         "@elastic.io/bunyan-logger": "1.0.4",
         "@openintegrationhub/attachment-storage-service": "*",
+        "@openintegrationhub/iam-utils": "*",
         "ioredis": "4.9.0",
         "koa": "2.7.0",
         "koa-bunyan-logger": "2.1.0",

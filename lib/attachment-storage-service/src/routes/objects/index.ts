@@ -7,17 +7,21 @@ import Unauthorized from '../../errors/api/Unauthorized';
 
 export default (objectsStorage: StorageDriver, auth: ServerAuth) => {
     const controller = new Controller(objectsStorage);
+    const getOne = controller.getOne.bind(controller);
+    const put = controller.save.bind(controller);
+    const loadObject = controller.loadObject.bind(controller);
+    const canGetObject = auth.canGetObject.bind(auth);
+    const canPutObject = auth.canPutObject.bind(auth);
 
     const idRouter = new koaRouter()
-        .get('/', auth.canGetObject.bind(auth), controller.getOne.bind(controller))
-        .put('/', auth.canPutObject.bind(auth), controller.save.bind(controller))
+        .get('/', loadObject, canGetObject, getOne)
+        .put('/', canPutObject, put)
         .routes();
 
     const initLogger = (ctx: Context, next: () => Promise<any>) => {
         ctx.log = ctx.log.child({id: ctx.params.id});
         return next();
     };
-    const loadObject = controller.loadObject.bind(controller);
 
     return new koaRouter()
         .use((ctx: Context, next) => {
@@ -31,6 +35,6 @@ export default (objectsStorage: StorageDriver, auth: ServerAuth) => {
             });
         })
         .use(auth.middleware.bind(auth))
-        .use('/:id', initLogger, loadObject, idRouter)
+        .use('/:id', initLogger, idRouter)
         .routes();
 }

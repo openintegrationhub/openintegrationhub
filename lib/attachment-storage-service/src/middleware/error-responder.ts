@@ -10,7 +10,13 @@ export default async function errorResponder(ctx: Context, next: Function): Prom
             err = new ApiError();
         }
 
-        ctx.body = err.message;
+        ctx.body = {
+            errors: [
+                {
+                    message: err.message
+                }
+            ]
+        };
         ctx.status = err.status;
     }
 }
