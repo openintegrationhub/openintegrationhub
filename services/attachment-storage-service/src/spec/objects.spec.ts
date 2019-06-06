@@ -9,8 +9,15 @@ import uuid from 'uuid';
 import { Readable, Writable } from 'stream';
 import StorageObjectService from '../storage-drivers/redis/redis-storage';
 import RedisStorageObject from '../storage-drivers/redis/redis-object';
+import nock from 'nock';
 
 const { expect } = chai;
+
+function nockIamIntrospection({status = 200, body = {}} = {}) {
+    return nock('http://iam.openintegrationhub.com')
+        .post('/api/v1/tokens/introspect')
+        .reply(status, body);
+}
 
 function getCreate(
     id: string,
@@ -27,6 +34,9 @@ function getCreate(
             this.timeout(timeout);
         }
         const jwt = putJwt || this.jwt;
+
+        nockIamIntrospection();
+
         const res = await this.request
             .put(`/objects/${id}`)
             .set('Authorization', `Bearer ${jwt}`)
@@ -46,6 +56,9 @@ function getCreate(
         }
         const jwt = getJWT || this.jwt;
         const length = buf.length;
+
+        nockIamIntrospection();
+
         const res = await this.request
             .get(`/objects/${id}`)
             .set('Authorization', `Bearer ${jwt}`)
@@ -59,13 +72,7 @@ function getCreate(
 }
 
 describe(`/objects`, () => {
-    const jwtPayload = {
-        tenantId: 'tenant-id',
-        contractId: 'contract-id',
-        workspaceId: 'workspace-id',
-        flowId: 'flow-id',
-        userId: 'user-id'
-    };
+    const jwtPayload = {};
     before(async function () {
         this.maester = new Maester(config);
         await this.maester.connect();
@@ -84,38 +91,27 @@ describe(`/objects`, () => {
     });
 
     describe('/:id', () => {
-
-        xit('should require auth', async function () {
+        it('should require auth', async function () {
             const id = uuid.v4();
-            const res = await this.request.put(`/objects/${id}`)
+            const { statusCode, body } = await this.request.put(`/objects/${id}`)
                 .set('Content-Type', 'application/octet-stream')
                 .send(pseudoRandomBytes(1024));
-            expect(res).to.have.property('statusCode', 401);
-            expect(res).to.have.property('text', 'Unauthorized');
-        });
 
-        xit('should validate auth', async function () {
-            const id = uuid.v4();
-            const jwt = sign(
-                {
-                    userId: 'user-id'
-                },
-                'test'
-            );
-            const res = await this.request.put(`/objects/${id}`)
-                .set('Authorization', `Bearer ${jwt}`)
-                .set('Content-Type', 'application/octet-stream')
-                .send(pseudoRandomBytes(1024));
-            expect(res).to.have.property('statusCode', 401);
-            expect(res).to.have.property('text', 'Unauthorized');
+            expect(statusCode).to.equal(401);
+            expect(body).to.deep.equal({
+                errors: [
+                    {
+                        message: 'Missing authorization header.'
+                    }
+                ]
+            });
         });
 
         xit('should check auth', async function () {
             const id = uuid.v4();
             const newJwt = sign(
                 {
-                    ...jwtPayload,
-                    contractId: `${jwtPayload.contractId}1`
+                    ...jwtPayload
                 },
                 'test'
             );
@@ -134,126 +130,91 @@ describe(`/objects`, () => {
             expect(res).to.have.property('text', 'Forbidden');
         });
 
-        describe('access modifiers in token',  function () {
-
-            describe('all tenants', () => {
-                getCreate(
-                    uuid.v4(),
-                    pseudoRandomBytes(10),
-                    'application/octet-stream',
-                    {
-                        getJWT: sign(
-                            {
-                                tenantId: '*'
-                            },
-                            'test'
-                        )
-                    }
-                );
-            });
-
-            describe('all contracts', () => {
-                getCreate(
-                    uuid.v4(),
-                    pseudoRandomBytes(10),
-                    'application/octet-stream',
-                    {
-                        getJWT: sign(
-                            {
-                                tenantId: jwtPayload.tenantId,
-                                contractId: '*'
-                            },
-                            'test'
-                        )
-                    }
-                );
-            });
-
-            describe('all workspaces', () => {
-                getCreate(
-                    uuid.v4(),
-                    pseudoRandomBytes(10),
-                    'application/octet-stream',
-                    {
-                        getJWT: sign(
-                            {
-                                tenantId: jwtPayload.tenantId,
-                                contractId: jwtPayload.contractId,
-                                workspaceId: '*'
-                            },
-                            'test'
-                        )
-                    }
-                );
-            });
-
-            describe('all flows', () => {
-                getCreate(
-                    uuid.v4(),
-                    pseudoRandomBytes(10),
-                    'application/octet-stream',
-                    {
-                        getJWT: sign(
-                            {
-                                tenantId: jwtPayload.tenantId,
-                                contractId: jwtPayload.contractId,
-                                workspaceId: jwtPayload.workspaceId,
-                                flowId: '*'
-                            },
-                            'test'
-                        )
-                    }
-                );
-            });
-        });
-
         it('should allow only uuid as object id', async function () {
+            const nockScope = nockIamIntrospection();
+
             const id = 'definitely-not-uuid';
-            const res = await this.request
+            const { statusCode, body } = await this.request
                 .put(`/objects/${id}`)
                 .set('Content-Type', 'application/octet-stream')
                 .set('Authorization', `Bearer ${this.jwt}`)
                 .send(pseudoRandomBytes(1024));
-            expect(res).to.have.property('statusCode', 400);
-            expect(res).to.have.property('text', 'Invalid object id');
+
+            expect(statusCode).to.equal(400);
+            expect(body).to.deep.equal({
+                errors: [
+                    {
+                        message: 'Invalid object id'
+                    }
+                ]
+            });
+            expect(nockScope.isDone()).to.be.true;
         });
 
         it('should not allow to create object with same id', async function () {
+            nockIamIntrospection();
             const id = uuid.v4();
             let res = await this.request.put(`/objects/${id}`)
                 .set('Content-Type', 'application/octet-stream')
                 .set('Authorization', `Bearer ${this.jwt}`)
                 .send(pseudoRandomBytes(1024));
             expect(res).to.have.property('statusCode', 201);
-            res = await this.request.put(`/objects/${id}`)
+
+            nockIamIntrospection();
+            const { statusCode, body } = await this.request.put(`/objects/${id}`)
                 .set('Content-Type', 'application/octet-stream')
                 .set('Authorization', `Bearer ${this.jwt}`)
                 .send(pseudoRandomBytes(1024));
-            expect(res).to.have.property('statusCode', 409);
-            expect(res).to.have.property('text', 'Object already exists');
+
+            expect(body).to.deep.equal({
+                errors: [
+                    {
+                        message: 'Object already exists'
+                    }
+                ]
+            });
+            expect(statusCode).to.equal(409);
         });
 
         it('should not allow empty content-type', async function () {
+            nockIamIntrospection();
             const id = uuid.v4();
-            const res = await this.request
+            const { statusCode, body } = await this.request
                 .put(`/objects/${id}`)
                 .set('Authorization', `Bearer ${this.jwt}`)
                 .send(pseudoRandomBytes(1024));
-            expect(res).to.have.property('statusCode', 415);
-            expect(res).to.have.property('text', 'Object type not supported or missing');
+
+            expect(statusCode).to.equal(415);
+            expect(body).to.deep.equal({
+                errors: [
+                    {
+                        message: 'Object type not supported or missing'
+                    }
+                ]
+            });
         });
 
         it('should not allow unsupported content-types', async function () {
+            nockIamIntrospection();
             const id = uuid.v4();
-            const res = await this.request.put(`/objects/${id}`)
+            const { statusCode, body } = await this.request.put(`/objects/${id}`)
                 .set('Authorization', `Bearer ${this.jwt}`)
                 .set('Content-Type', 'unsupported/type')
                 .send(pseudoRandomBytes(1024));
-            expect(res).to.have.property('statusCode', 415);
-            expect(res).to.have.property('text', 'Object type not supported or missing');
+
+            expect(statusCode).to.equal(415);
+            expect(body).to.deep.equal({
+                errors: [
+                    {
+                        message: 'Object type not supported or missing'
+                    }
+                ]
+            });
         });
 
         it('should not allow concurrent writes', async function () {
+            nockIamIntrospection();
+            nockIamIntrospection();
             const id = uuid.v4();
             const promises = [
                 this.request.put(`/objects/${id}`)
@@ -271,6 +232,8 @@ describe(`/objects`, () => {
         });
 
         it('should allow empty object', async function () {
+            nockIamIntrospection();
+
             const id = uuid.v4();
             await this.request
                 .put(`/objects/${id}`)
@@ -278,6 +241,7 @@ describe(`/objects`, () => {
                 .set('Authorization', `Bearer ${this.jwt}`)
                 .send(pseudoRandomBytes(0));
 
+            nockIamIntrospection();
             const res = await this.request
                 .get(`/objects/${id}`)
                 .set('Authorization', `Bearer ${this.jwt}`);
@@ -286,6 +250,7 @@ describe(`/objects`, () => {
         });
 
         it('should wait for connection end on stop', async function () {
+            nockIamIntrospection();
             const id = uuid.v4();
             const maester = new Maester(config);
             await maester.start();
@@ -316,6 +281,7 @@ describe(`/objects`, () => {
             await maester.connect();
             const request = supertest(maester.serverCallback);
 
+            nockIamIntrospection();
             const req = <Writable> (<unknown> request
                 .put(`/objects/${id}`)
                 .set('Content-Type', 'application/octet-stream')
@@ -325,6 +291,7 @@ describe(`/objects`, () => {
             await new Promise(resolve => setTimeout(() => resolve(), 10));
             await maester.disconnect(false);
 
+            nockIamIntrospection();
             const res = await this.request
                 .get(`/objects/${id}`)
                 .set('Authorization', `Bearer ${this.jwt}`);

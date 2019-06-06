@@ -5,9 +5,9 @@ export default async function errorResponder(ctx: Context, next: Function): Prom
     try {
         await next();
     } catch (err) {
-        if (!(err instanceof ApiError)) {
+        if (!(err instanceof ApiError) && !err.status) {
             ctx.log.error(err);
-            err = new ApiError();
+            err = new ApiError(err.message);
         }
 
         ctx.body = {
