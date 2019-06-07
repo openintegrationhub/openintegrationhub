@@ -61,12 +61,12 @@ describe('schemas', () => {
         const domain_ = result;
 
         // import schema1
-        await request.post(`/domains/${domain_.data._id}/schemas`)
+        await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({ data: schema1 })
             .expect(200);
 
-        const result1 = (await request.get(`/domains/${domain_.data._id}/schemas/base.json`)
+        const result1 = (await request.get(`/domains/${domain_.data.id}/schemas/base.json`)
             .set(...global.user1)
             .expect(200)).body;
 
@@ -95,12 +95,12 @@ describe('schemas', () => {
 
 
         // import schema2
-        await request.post(`/domains/${domain_.data._id}/schemas`)
+        await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({ data: schema2 })
             .expect(200);
 
-        const result2 = (await request.get(`/domains/${domain_.data._id}/schemas/addition.json`)
+        const result2 = (await request.get(`/domains/${domain_.data.id}/schemas/addition.json`)
             .set(...global.user1)
             .expect(200)).body;
 
@@ -128,12 +128,12 @@ describe('schemas', () => {
         };
 
         // import schema3
-        await request.post(`/domains/${domain_.data._id}/schemas`)
+        await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({ data: schema3 })
             .expect(200);
 
-        const result3 = (await request.get(`/domains/${domain_.data._id}/schemas/addition2.json`)
+        const result3 = (await request.get(`/domains/${domain_.data.id}/schemas/addition2.json`)
             .set(...global.user1)
             .expect(200)).body;
 
@@ -167,7 +167,7 @@ describe('schemas', () => {
             .set(...global.user1)
             .expect(204);
 
-        result = (await request.get(`/domains/${domain_.data._id}/schemas`)
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .expect(200)).body;
 
