@@ -38,7 +38,6 @@ describe('DAO adapter', () => {
         const result = (await request.get('/domains')
             .set(...global.user1)
             .expect(200)).body;
-
         expect(result.data).toEqual('fooo');
         expect(result.meta.total).toEqual(1337);
     });
