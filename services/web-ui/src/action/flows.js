@@ -48,15 +48,13 @@ export const updateFlow = user => async (dispatch) => {
     }
 };
 
-export const createFlow = user => async (dispatch) => {
+export const createFlow = data => async (dispatch) => {
     try {
         await axios({
             method: 'post',
             url: `${conf.endpoints.flow}/api/v1/flows`,
             withCredentials: true,
-            data: {
-                ...user,
-            },
+            data,
         });
 
         dispatch({

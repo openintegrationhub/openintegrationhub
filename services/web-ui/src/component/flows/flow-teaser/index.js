@@ -30,7 +30,7 @@ function FlowTeaser() {
                         aria-controls="panel1a-content"
                         id="panel1a-header"
                     >
-                        <Typography className={classes.heading}>Flow 1</Typography>
+                        <Typography className={classes.heading}>{this.props.data.name}</Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Typography>

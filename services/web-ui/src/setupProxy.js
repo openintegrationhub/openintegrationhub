@@ -16,8 +16,8 @@ module.exports = function (app) {
         },
     }));
 
-    app.use(proxy('/flows', {
-        pathRewrite: { '^/flows': '/' },
+    app.use(proxy('/flow', {
+        pathRewrite: { '^/flow': '/' },
         target: 'http://flow-repository.openintegrationhub.com',
         changeOrigin: true,
         onProxyReq(proxyReq) {
