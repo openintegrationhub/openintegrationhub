@@ -4,12 +4,14 @@ import { withStyles } from '@material-ui/styles';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { getTenants } from '../../action/tenants';
 // import EditTenant from '../edit-tenant';
 
 
 // components
 import FlowTeaser from './flow-teaser';
+
+// actions
+import { getFlows } from '../../action/flows';
 
 
 const useStyles = {
@@ -26,7 +28,7 @@ class Flows extends React.Component {
 
     constructor(props) {
         super();
-        props.getTenants();
+        props.getFlows();
     }
 
     editHandler = (userId) => {
@@ -49,10 +51,10 @@ class Flows extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    tenants: state.tenants,
+    flows: state.flows,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
-    getTenants,
+    getFlows,
 }, dispatch);
 
 export default flow(

@@ -40,7 +40,6 @@ class Tenants extends React.Component {
     }
 
     editHandler = (tenantId) => {
-        console.log('edits');
         this.setState({
             editTenantIsOpen: true,
             editTenantId: tenantId,

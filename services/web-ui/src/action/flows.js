@@ -20,7 +20,7 @@ export const getFlows = () => async (dispatch) => {
 
         dispatch({
             type: GET_FLOWS,
-            users: result.data,
+            flows: result.data,
         });
     } catch (err) {
         console.log(err);

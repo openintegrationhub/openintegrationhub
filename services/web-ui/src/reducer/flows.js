@@ -12,7 +12,7 @@ export default (state = initialState, action) => {
             ...state,
             error: null,
             all: [
-                ...action.users,
+                ...action.flows,
             ],
         };
     case UPDATE_FLOW:
