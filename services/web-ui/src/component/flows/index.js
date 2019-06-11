@@ -68,11 +68,19 @@ class Flows extends React.Component {
     }
 
     prePage = () => {
-        this.props.getFlowsPage(this.props.flows.meta.page - 1);
+        if (this.props.flows.meta.page === 1) {
+            this.props.getFlowsPage(this.props.flows.meta.totalPages);
+        } else {
+            this.props.getFlowsPage(this.props.flows.meta.page - 1);
+        }
     };
 
     nextPage = () => {
-        this.props.getFlowsPage(this.props.flows.meta.page + 1);
+        if (this.props.flows.meta.page === this.props.flows.meta.totalPages) {
+            this.props.getFlowsPage(1);
+        } else {
+            this.props.getFlowsPage(this.props.flows.meta.page + 1);
+        }
     };
 
     render() {
@@ -95,7 +103,7 @@ class Flows extends React.Component {
                                 <InputLabel>Flows: </InputLabel>{this.props.flows.meta.total}
                             </Grid>
                             <Grid item >
-                                <Button variant="outlined" aria-label="before" onClick={this.prePage} disabled={this.props.flows.meta.page === 1}>
+                                <Button variant="outlined" aria-label="before" onClick={this.prePage} >
                                     <NavigateBefore/>
                                 </Button>
                             </Grid>
@@ -103,7 +111,7 @@ class Flows extends React.Component {
                                 {this.props.flows.meta.page}/{this.props.flows.meta.totalPages}
                             </Grid>
                             <Grid item>
-                                <Button variant="outlined" aria-label="next" onClick={this.nextPage} disabled={this.props.flows.meta.page === this.props.flows.meta.totalPages}>
+                                <Button variant="outlined" aria-label="next" onClick={this.nextPage}>
                                     <NavigateNext/>
                                 </Button>
                             </Grid>
