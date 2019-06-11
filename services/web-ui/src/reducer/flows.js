@@ -1,8 +1,11 @@
-import { GET_FLOWS, UPDATE_FLOW, UPDATE_FLOW_ERROR } from '../action/flows';
+import {
+    GET_FLOWS, UPDATE_FLOW, UPDATE_FLOW_ERROR, GET_FLOWS_PAGE,
+} from '../action/flows';
 
 const initialState = {
     all: [],
     error: null,
+    meta: null,
 };
 
 export default (state = initialState, action) => {
@@ -12,8 +15,18 @@ export default (state = initialState, action) => {
             ...state,
             error: null,
             all: [
-                ...action.users,
+                ...action.flows,
             ],
+            meta: { ...action.meta },
+        };
+    case GET_FLOWS_PAGE:
+        return {
+            ...state,
+            error: null,
+            all: [
+                ...action.flows,
+            ],
+            meta: { ...action.meta },
         };
     case UPDATE_FLOW:
         return {

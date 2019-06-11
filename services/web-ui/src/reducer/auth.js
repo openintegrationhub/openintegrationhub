@@ -7,11 +7,15 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-    case LOGIN || LOGOUT:
+    case LOGIN:
         return {
             ...state,
             isLoggedIn: action.isLoggedIn,
             token: action.token,
+        };
+    case LOGOUT:
+        return {
+            ...initialState,
         };
     case GET_USER:
         return {

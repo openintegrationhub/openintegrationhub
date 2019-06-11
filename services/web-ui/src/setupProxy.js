@@ -15,6 +15,18 @@ module.exports = function (app) {
             // or log the req
         },
     }));
+
+    app.use(proxy('/flow-api', {
+        pathRewrite: { '^/flow-api': '/' },
+        target: 'http://flow-repository.openintegrationhub.com',
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
+
     // proxy server config
     app.use('/config', (req, res) => {
         res.send(conf);
