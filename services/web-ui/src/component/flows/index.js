@@ -97,7 +97,7 @@ class Flows extends React.Component {
                         Add<Add/>
                         </Button>
                     </Grid>
-                    <Grid item xs={4}>
+                    {this.props.flows.meta && <Grid item xs={4}>
                         <Grid container justify="flex-end" spacing={2}>
                             <Grid item >
                                 <InputLabel>Flows: </InputLabel>{this.props.flows.meta.total}
@@ -116,7 +116,8 @@ class Flows extends React.Component {
                                 </Button>
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Grid>}
+
 
                 </Grid>
                 <Grid container justify="center" spacing={2}>

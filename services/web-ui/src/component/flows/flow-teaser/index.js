@@ -12,18 +12,34 @@ import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Modal from '@material-ui/core/Modal';
+
+
+// Componente
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/en';
 
 // Actions
-import { deleteFlow } from '../../../action/flows';
+import { deleteFlow, updateFlow } from '../../../action/flows';
 
 const useStyles = {
     heading: {
         fontSize: '0.9375rem',
         fontWeight: '400',
     },
+    modal: {
+        backgroundColor: 'white',
+        margin: 'auto',
+        outline: 'none',
+    },
 };
 
 class FlowTeaser extends React.PureComponent {
+    state= {
+        editFlow: false,
+        editorData: null,
+    }
+
     getNodes() {
         return this.props.data.graph.nodes && this.props.data.graph.nodes.map(node => <Grid container key={`node-${node.id}`}>
             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography>{node.name}</Typography></Grid>
@@ -40,14 +56,35 @@ class FlowTeaser extends React.PureComponent {
         </Grid>);
     }
 
+    editOpen= () => {
+        this.setState({
+            editFlow: true,
+        });
+    }
+
     deleteFlow = () => {
         this.props.deleteFlow(this.props.data.id);
     }
 
+    updateFlow = () => {
+        this.props.updateFlow(this.state.editorData);
+        this.setState({
+            editFlow: false,
+        });
+    }
+
+    editorChange(e) {
+        if (!e.error) {
+            this.setState({
+                editorData: e.jsObject,
+            });
+        }
+    }
+
     render() {
-        // const {
-        //     classes,
-        // } = this.props;
+        const {
+            classes,
+        } = this.props;
         return (
             <Grid item xs={12}>
                 <ExpansionPanel>
@@ -81,6 +118,9 @@ class FlowTeaser extends React.PureComponent {
                             <Grid item xs={3}><InputLabel>Created:</InputLabel><Typography>{this.props.data.createdAt}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{this.props.data.updatedAt}</Typography></Grid>
                             <Grid item xs={12}>
+                                <Button variant="outlined" aria-label="next" onClick={this.editOpen}>
+                                    Update
+                                </Button>
                                 <Button variant="outlined" aria-label="next" onClick={this.deleteFlow}>
                                     Delete
                                 </Button>
@@ -88,6 +128,29 @@ class FlowTeaser extends React.PureComponent {
                         </Grid>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
+                <Modal
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                    open={this.state.editFlow}
+                    onClose={ () => { this.setState({ editFlow: false }); }}
+                    style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+                >
+                    <div className={classes.modal}>
+                        <JSONInput
+                            id = 'jsonEdit'
+                            locale = {locale}
+                            theme = 'dark_vscode_tribute'
+                            placeholder = {this.props.data}
+                            height = '550px'
+                            width = '600px'
+                            onChange={this.editorChange.bind(this)}
+                        />
+                        <Button variant="outlined" aria-label="Add" onClick={this.updateFlow}>
+                            Save
+                        </Button>
+                    </div>
+
+                </Modal>
             </Grid>
         );
     }
@@ -98,6 +161,7 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     deleteFlow,
+    updateFlow,
 }, dispatch);
 
 export default flow(

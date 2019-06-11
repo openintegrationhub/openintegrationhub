@@ -47,14 +47,14 @@ export const getFlowsPage = page => async (dispatch) => {
     }
 };
 
-export const updateFlow = user => async (dispatch) => {
+export const updateFlow = flow => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
-            url: `${conf.endpoints.flow}/flows/${user._id}`,
+            url: `${conf.endpoints.flow}/flows/${flow.id}`,
             withCredentials: true,
             json: true,
-            data: user,
+            data: flow,
         });
 
         dispatch({
