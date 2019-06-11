@@ -6,7 +6,11 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
+import Container from '@material-ui/core/Container';
+import InputLabel from '@material-ui/core/InputLabel';
+import {
+    Add, NavigateNext, NavigateBefore,
+} from '@material-ui/icons';
 import Modal from '@material-ui/core/Modal';
 
 
@@ -16,13 +20,13 @@ import locale from 'react-json-editor-ajrm/locale/en';
 import FlowTeaser from './flow-teaser';
 
 // actions
-import { getFlows, createFlow } from '../../action/flows';
+import { getFlows, createFlow, getFlowsPage } from '../../action/flows';
 
 
 const useStyles = {
     wrapper: {
-        width: '100%',
-        padding: '10vh 0 0 0',
+        padding: '20px 0',
+        justifyContent: 'center',
     },
     modal: {
         backgroundColor: 'white',
@@ -48,72 +52,71 @@ class Flows extends React.Component {
         });
     };
 
-    saveFlow() {
-        console.log(JSON.stringify(this.state.editorData));
-        console.log(this.state.editorData);
+    saveFlow = () => {
         this.props.createFlow(this.state.editorData);
-        // this.setState({
-        //     addFlow: false,
-        // });
+        this.setState({
+            addFlow: false,
+        });
     }
 
     editorChange(e) {
         if (!e.error) {
             this.setState({
-                editorData: e.json,
+                editorData: e.jsObject,
             });
         }
     }
+
+    prePage = () => {
+        this.props.getFlowsPage(this.props.flows.meta.page - 1);
+    };
+
+    nextPage = () => {
+        this.props.getFlowsPage(this.props.flows.meta.page + 1);
+    };
 
     render() {
         const {
             classes,
         } = this.props;
-        const placeholder = {
-            name: 'My Flow',
-            description: 'This flow takes actions at regular invervals based on a set timer.',
-            graph: {
-                nodes: [
-                    {
-                        id: 'step_1',
-                        componentId: '5ca5c44c187c040010a9bb8b',
-                        function: 'getPersonsPolling',
-                        name: 'MS Office Adapter',
-                        description: 'string',
-                        fields: {
-                            interval: 'minute',
-                        },
-                    },
-                ],
-                edges: [
-                    {
-                        id: 'string',
-                        config: {
-                            condition: 'string',
-                            mapper: {},
-                        },
-                        source: 'step_1',
-                        target: 'step_2',
-                    },
-                ],
-            },
-            type: 'ordinary',
-            cron: '* /2 * * * *',
-            owners: [
-                {
-                    id: 'string',
-                    type: 'string',
-                },
-            ],
-        };
+
         return (
-            <Grid item xs={12}>
-                <Button variant="outlined" aria-label="Add" onClick={this.addFlow}>
-                        Add<AddIcon/>
-                </Button>
-                {
-                    this.props.flows.length && this.props.flows.map(item => <FlowTeaser key={`flowTeaser-${item._id}`} data={item}/>)
-                }
+            <Container className={classes.wrapper}>
+                <Grid container spacing={2}>
+
+                    <Grid item xs={8}>
+                        <Button variant="outlined" aria-label="Add" onClick={this.addFlow}>
+                        Add<Add/>
+                        </Button>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Grid container justify="flex-end" spacing={2}>
+                            <Grid item >
+                                <InputLabel>Flows: </InputLabel>{this.props.flows.meta.total}
+                            </Grid>
+                            <Grid item >
+                                <Button variant="outlined" aria-label="before" onClick={this.prePage} disabled={this.props.flows.meta.page === 1}>
+                                    <NavigateBefore/>
+                                </Button>
+                            </Grid>
+                            <Grid item >
+                                {this.props.flows.meta.page}/{this.props.flows.meta.totalPages}
+                            </Grid>
+                            <Grid item>
+                                <Button variant="outlined" aria-label="next" onClick={this.nextPage} disabled={this.props.flows.meta.page === this.props.flows.meta.totalPages}>
+                                    <NavigateNext/>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                </Grid>
+                <Grid container justify="center" spacing={2}>
+                    {
+                        this.props.flows.all.length && this.props.flows.all.map(item => <FlowTeaser key={`flowTeaser-${item.id}`} data={item}/>)
+                    }
+                </Grid>
+
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
@@ -124,20 +127,19 @@ class Flows extends React.Component {
                     <div className={classes.modal}>
                         <JSONInput
                             id = 'jsonEdit'
-                            placeholder = {placeholder}
                             locale = {locale}
                             theme = 'dark_vscode_tribute'
                             height = '550px'
                             width = '600px'
                             onChange={this.editorChange.bind(this)}
                         />
-                        <Button variant="outlined" aria-label="Add" onClick={this.saveFlow.bind(this)}>
+                        <Button variant="outlined" aria-label="Add" onClick={this.saveFlow}>
                             Save
                         </Button>
                     </div>
 
                 </Modal>
-            </Grid>
+            </Container>
         );
     }
 }
@@ -148,6 +150,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
     getFlows,
     createFlow,
+    getFlowsPage,
 }, dispatch);
 
 export default flow(
