@@ -457,7 +457,7 @@ Flow:
    "graph":{
       "nodes":[
          {
-            "id":"snazzy",
+            "id":"step_1",
             "componentId":"5ce27d453860ff001a034274",
             "name":"",
             "function":"getPersonsPolling",
@@ -468,21 +468,21 @@ Flow:
             }
          },
          {
-            "id":"snazzy_transformer",
+            "id":"step_2",
             "componentId":"5ce27f4b3860ff001a034277",
             "name":"",
             "function":"transformPersonToOih",
             "description":""
          },
          {
-            "id":"wice_transformer",
+            "id":"step_3",
             "componentId":"5ce27f2d3860ff001a034276",
             "name":"",
             "function":"transformPersonFromOih",
             "description":""
          },
          {
-            "id":"wice_adapter",
+            "id":"step_4",
             "componentId":"5ce27d653860ff001a034275",
             "name":"",
             "function":"upsertPerson",
@@ -494,7 +494,7 @@ Flow:
             }
          },
          {
-            "id":"code_component",
+            "id":"step_5",
             "componentId":"5cde85443860ff001a034273",
             "name":"",
             "function":"execute",
@@ -506,20 +506,20 @@ Flow:
       ],
       "edges":[
          {
-            "source":"snazzy",
-            "target":"snazzy_transformer"
+            "source":"step_1",
+            "target":"step_2"
          },
          {
-            "source":"snazzy_transformer",
+            "source":"step_2",
             "target":"wice_transformer"
          },
          {
-            "source":"wice_transformer",
-            "target":"code_component"
+            "source":"step_3",
+            "target":"step_5"
          },
          {
-            "source":"wice_transformer",
-            "target":"wice_adapter"
+            "source":"step_3",
+            "target":"step_4"
          }
       ]
    },
