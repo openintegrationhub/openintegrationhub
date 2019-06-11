@@ -33,18 +33,18 @@ class AmqpHelper extends EventEmitter {
         env.ELASTICIO_TIMEOUT = 3000;
     }
 
-    publishMessage(message, { parentMessageId, traceId } = {}, headers = {}) {
+    publishMessage(message, { parentMessageId, threadId } = {}, headers = {}) {
         return this.subscriptionChannel.publish(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_DATA_ROUTING_KEY,
             new Buffer(JSON.stringify(message)),
             {
                 headers: Object.assign({
-                    'execId': env.ELASTICIO_EXEC_ID,
-                    'taskId': env.ELASTICIO_FLOW_ID,
-                    'userId': env.ELASTICIO_USER_ID,
-                    'x-eio-meta-trace-id': traceId,
-                    'messageId': parentMessageId
+                    execId: env.ELASTICIO_EXEC_ID,
+                    taskId: env.ELASTICIO_FLOW_ID,
+                    userId: env.ELASTICIO_USER_ID,
+                    threadId,
+                    messageId: parentMessageId
                 }, headers)
             });
     }

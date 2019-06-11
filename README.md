@@ -31,8 +31,8 @@ After the registration and opening of the account you must **[upload your SSH Ke
 ### Getting Started
 
 After registration and uploading of your SSH Key you can proceed to deploy it into our system. At this stage we suggest you to:
-*   [Create a team](https://support.elastic.io/support/solutions/articles/14000048250-how-to-create-and-manage-a-team) to work on your new component. This is not required but will be automatically created using random naming by our system so we suggest you name your team accordingly.
-*   [Create a repository](https://support.elastic.io/support/solutions/articles/14000038797-create-and-manage-your-repositories) inside the team to deploy your new component code.
+*   [Create a team](https://docs.elastic.io/guides/teams-and-repos.html#creating-a-developer-team) to work on your new component. This is not required but will be automatically created using random naming by our system so we suggest you name your team accordingly.
+*   [Create a repository](https://docs.elastic.io/guides/teams-and-repos.html#create-a-component-repository) inside the team to deploy your new component code.
 
 ### Examples of Node.js components
 

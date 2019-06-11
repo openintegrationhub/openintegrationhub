@@ -57,7 +57,7 @@ describe('Integration Test', () => {
     describe('when sailor is being invoked for message processing', () => {
 
         const parentMessageId = 'parent_message_1234567890';
-        const traceId = helpers.PREFIX + '_trace_id_123456';
+        const threadId = helpers.PREFIX + '_thread_id_123456';
         const messageId = 'f45be600-f770-11e6-b42d-b187bfbf19fd';
 
         let amqpHelper = helpers.amqp();
@@ -85,14 +85,14 @@ describe('Integration Test', () => {
                 delete properties.headers.cid;
 
                 expect(properties.headers).to.deep.equal({
-                    'execId': env.ELASTICIO_EXEC_ID,
-                    'taskId': env.ELASTICIO_FLOW_ID,
-                    'userId': env.ELASTICIO_USER_ID,
-                    'stepId': env.ELASTICIO_STEP_ID,
-                    'compId': env.ELASTICIO_COMP_ID,
-                    'function': env.ELASTICIO_FUNCTION,
-                    'x-eio-meta-trace-id': traceId,
-                    'parentMessageId': parentMessageId,
+                    execId: env.ELASTICIO_EXEC_ID,
+                    taskId: env.ELASTICIO_FLOW_ID,
+                    userId: env.ELASTICIO_USER_ID,
+                    stepId: env.ELASTICIO_STEP_ID,
+                    compId: env.ELASTICIO_COMP_ID,
+                    function: env.ELASTICIO_FUNCTION,
+                    threadId,
+                    parentMessageId: parentMessageId,
                     messageId
                 });
 
@@ -100,14 +100,14 @@ describe('Integration Test', () => {
                     contentType: 'application/json',
                     contentEncoding: 'utf8',
                     headers: {
-                        'execId': env.ELASTICIO_EXEC_ID,
-                        'taskId': env.ELASTICIO_FLOW_ID,
-                        'userId': env.ELASTICIO_USER_ID,
-                        'stepId': env.ELASTICIO_STEP_ID,
-                        'compId': env.ELASTICIO_COMP_ID,
-                        'function': env.ELASTICIO_FUNCTION,
-                        'x-eio-meta-trace-id': traceId,
-                        'parentMessageId': parentMessageId,
+                        execId: env.ELASTICIO_EXEC_ID,
+                        taskId: env.ELASTICIO_FLOW_ID,
+                        userId: env.ELASTICIO_USER_ID,
+                        stepId: env.ELASTICIO_STEP_ID,
+                        compId: env.ELASTICIO_COMP_ID,
+                        function: env.ELASTICIO_FUNCTION,
+                        threadId,
+                        parentMessageId: parentMessageId,
                         messageId
                     },
                     deliveryMode: undefined,
@@ -139,7 +139,7 @@ describe('Integration Test', () => {
 
             amqpHelper.publishMessage(inputMessage, {
                 parentMessageId,
-                traceId
+                threadId
             });
         });
 
@@ -164,7 +164,7 @@ describe('Integration Test', () => {
 
             amqpHelper.publishMessage(psMsg, {
                 parentMessageId,
-                traceId
+                threadId
             });
 
             amqpHelper.on('data', ({ properties, emittedMessage }, queueName) => {
@@ -195,13 +195,13 @@ describe('Integration Test', () => {
                 delete properties.headers.cid;
 
                 expect(properties.headers).to.deep.equal({
-                    'taskId': process.env.ELASTICIO_FLOW_ID,
-                    'execId': process.env.ELASTICIO_EXEC_ID,
-                    'userId': process.env.ELASTICIO_USER_ID,
-                    'x-eio-meta-trace-id': traceId,
-                    'stepId': process.env.ELASTICIO_STEP_ID,
-                    'compId': process.env.ELASTICIO_COMP_ID,
-                    'function': process.env.ELASTICIO_FUNCTION,
+                    taskId: process.env.ELASTICIO_FLOW_ID,
+                    execId: process.env.ELASTICIO_EXEC_ID,
+                    userId: process.env.ELASTICIO_USER_ID,
+                    threadId,
+                    stepId: process.env.ELASTICIO_STEP_ID,
+                    compId: process.env.ELASTICIO_COMP_ID,
+                    function: process.env.ELASTICIO_FUNCTION,
                     messageId,
                     parentMessageId
                 });
@@ -253,7 +253,7 @@ describe('Integration Test', () => {
 
             amqpHelper.publishMessage(psMsg, {
                 parentMessageId,
-                traceId
+                threadId
             });
 
             let counter = 0;
@@ -286,13 +286,13 @@ describe('Integration Test', () => {
                 delete properties.headers.cid;
 
                 expect(properties.headers).to.deep.equal({
-                    'taskId': process.env.ELASTICIO_FLOW_ID,
-                    'execId': process.env.ELASTICIO_EXEC_ID,
-                    'userId': process.env.ELASTICIO_USER_ID,
-                    'x-eio-meta-trace-id': traceId,
-                    'stepId': process.env.ELASTICIO_STEP_ID,
-                    'compId': process.env.ELASTICIO_COMP_ID,
-                    'function': process.env.ELASTICIO_FUNCTION,
+                    taskId: process.env.ELASTICIO_FLOW_ID,
+                    execId: process.env.ELASTICIO_EXEC_ID,
+                    userId: process.env.ELASTICIO_USER_ID,
+                    threadId,
+                    stepId: process.env.ELASTICIO_STEP_ID,
+                    compId: process.env.ELASTICIO_COMP_ID,
+                    function: process.env.ELASTICIO_FUNCTION,
                     messageId,
                     parentMessageId
                 });
