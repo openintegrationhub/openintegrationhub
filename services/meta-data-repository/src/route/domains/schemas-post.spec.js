@@ -63,18 +63,18 @@ describe('schemas', () => {
         const domain_ = result;
 
         // import schema
-        result = (await request.post(`/domains/${domain_.data._id}/schemas`)
+        result = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({ data: schema })
             .expect(200));
 
 
         // get data by uri (regular request)
-        result = (await request.get(`/domains/${domain_.data._id}/schemas/organizationV2.json`)
+        result = (await request.get(`/domains/${domain_.data.id}/schemas/organizationV2.json`)
             .set(...global.user1)
             .expect(200));
 
-        expect(result.body.data.value.$id).toEqual(`${baseUrl}/domains/${domain_.data._id}/schemas/organizationV2.json`);
+        expect(result.body.data.value.$id).toEqual(`${baseUrl}/domains/${domain_.data.id}/schemas/organizationV2.json`);
 
         // import second schema with invalid reference
 
@@ -85,7 +85,7 @@ describe('schemas', () => {
             type: 'object',
             properties: {
                 someRef: {
-                    $ref: `${baseUrl}/domains/${domain_.data._id}NOTEXISTING/schemas/organizationV2.json`,
+                    $ref: `${baseUrl}/domains/${domain_.data.id}NOTEXISTING/schemas/organizationV2.json`,
                 },
                 name: {
                     type: 'string',
@@ -100,7 +100,7 @@ describe('schemas', () => {
             },
         };
 
-        result = (await request.post(`/domains/${domain_.data._id}/schemas`)
+        result = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({ data: schema })
             .expect(400));
@@ -114,7 +114,7 @@ describe('schemas', () => {
             type: 'object',
             properties: {
                 someRef: {
-                    $ref: `${baseUrl}/domains/${domain_.data._id}/schemas/organizationV2.json`,
+                    $ref: `${baseUrl}/domains/${domain_.data.id}/schemas/organizationV2.json`,
                 },
                 name: {
                     type: 'string',
@@ -129,13 +129,13 @@ describe('schemas', () => {
             },
         };
 
-        await request.post(`/domains/${domain_.data._id}/schemas`)
+        await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({ data: schema })
             .expect(200);
 
         // get data with schema json header
-        const result1 = (await request.get(`/domains/${domain_.data._id}/schemas/organizationV3.json`)
+        const result1 = (await request.get(`/domains/${domain_.data.id}/schemas/organizationV3.json`)
             .set(...global.user1)
             .set('content-type', 'application/schema+json')
             .expect(200));
@@ -147,7 +147,7 @@ describe('schemas', () => {
             type: 'object',
             properties: {
                 someRef: {
-                    $ref: `${baseUrl}/domains/${domain_.data._id}/schemas/organizationV2.json#/NOT_EXISTING`,
+                    $ref: `${baseUrl}/domains/${domain_.data.id}/schemas/organizationV2.json#/NOT_EXISTING`,
                 },
                 name: {
                     type: 'string',
@@ -162,7 +162,7 @@ describe('schemas', () => {
             },
         };
 
-        await request.post(`/domains/${domain_.data._id}/schemas`)
+        await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({ data: schema })
             .expect(400);
@@ -174,7 +174,7 @@ describe('schemas', () => {
             type: 'object',
             properties: {
                 someRef: {
-                    $ref: `${baseUrl}/domains/${domain_.data._id}/schemas/organizationV2.json#/properties/logo`,
+                    $ref: `${baseUrl}/domains/${domain_.data.id}/schemas/organizationV2.json#/properties/logo`,
                 },
                 name: {
                     type: 'string',
@@ -189,13 +189,13 @@ describe('schemas', () => {
             },
         };
 
-        await request.post(`/domains/${domain_.data._id}/schemas`)
+        await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({ data: schema })
             .expect(200);
 
 
-        const result2 = (await request.get(`/domains/${domain_.data._id}/schemas/organizationV3.json`)
+        const result2 = (await request.get(`/domains/${domain_.data.id}/schemas/organizationV3.json`)
             .set(...global.user1)
             .set('content-type', 'application/schema+json')
             .expect(200));
