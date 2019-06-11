@@ -511,7 +511,7 @@ Flow:
          },
          {
             "source":"step_2",
-            "target":"wice_transformer"
+            "target":"step_3"
          },
          {
             "source":"step_3",
