@@ -8,7 +8,7 @@ it('renders without crashing', () => {
     mount(
         <Provider store={global.configureStore()}>
             <MemoryRouter>
-                <Component />
+                <Component data={ { name: 'Test', description: 'TEST' } } />
             </MemoryRouter>
         </Provider>,
     );

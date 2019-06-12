@@ -10,7 +10,9 @@ const { USER } = require('../../constant').ENTITY_TYPE;
 const { DomainDAO, SchemaDAO } = require('../../dao');
 const { isOwnerOfDomain } = require('../../middleware/is-owner');
 const Pagination = require('../../util/pagination');
-const { transformSchema, validateSchema, URIfromId } = require('../../transform');
+const {
+    transformSchema, validateSchema, URIfromId, transformDbResults,
+} = require('../../transform');
 const { processArchive } = require('../../bulk');
 
 const log = logger.getLogger(`${conf.logging.namespace}/domains`);
@@ -45,10 +47,10 @@ router.get('/', async (req, res) => {
         req.user.sub,
     );
     res.send({
-        data: await DomainDAO.findByEntityWithPagination(
+        data: transformDbResults(await DomainDAO.findByEntityWithPagination(
             req.user.sub,
             pagination.props(),
-        ),
+        )),
         meta: {
             ...await pagination.calc({
                 'owners.id': req.user.sub,
@@ -63,7 +65,7 @@ router.get('/:id', isOwnerOfDomain, async (req, res, next) => {
 
         if (domain) {
             res.send({
-                data: domain,
+                data: transformDbResults(domain),
             });
         } else {
             res.sendStatus(403);
@@ -80,13 +82,13 @@ router.post('/', async (req, res, next) => {
     const { data } = req.body;
     try {
         res.send({
-            data: await DomainDAO.create({
+            data: transformDbResults(await DomainDAO.create({
                 ...data,
                 owners: {
                     id: req.user.sub.toString(),
                     type: USER,
                 },
-            }),
+            })),
         });
     } catch (err) {
         log.error(err);
@@ -104,11 +106,11 @@ router.get('/:id/schemas', async (req, res) => {
         req.user.sub,
     );
     res.send({
-        data: await SchemaDAO.findByDomainAndEntity({
+        data: transformDbResults(await SchemaDAO.findByDomainAndEntity({
             entity: req.user.sub,
             domain: req.params.id,
             options: pagination.props(),
-        }),
+        })),
         meta: {
             ...await pagination.calc({
                 domainId: req.params.id,
@@ -129,9 +131,7 @@ router.get('/:id/schemas/:uri*', async (req, res, next) => {
         }
 
         res.send({
-            data: {
-                ...schema,
-            },
+            data: transformDbResults(schema),
         });
     } catch (err) {
         log.error(err);

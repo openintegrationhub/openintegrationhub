@@ -3,12 +3,19 @@ import { withStyles } from '@material-ui/styles';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+// UI
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
+import { People } from '@material-ui/icons';
+// actions and stuff
 import withSideSheet from '../../hoc/with-side-sheet';
 import withForm from '../../hoc/with-form';
 import * as tenantsActions from '../../action/tenants';
@@ -42,6 +49,7 @@ class EditTenant extends React.Component {
     state = {
         pending: false,
         succeeded: false,
+        tenantMembers: [],
     }
 
     componentDidMount() {
@@ -101,6 +109,17 @@ class EditTenant extends React.Component {
         });
     }
 
+    generateMembers = () => {
+        this.state.tenantMembers.map(member => <ListItem key={`member-${member._id}`}>
+            <ListItemIcon>
+                <People />
+            </ListItemIcon>
+            <ListItemText
+                primary={member.name}
+            />
+        </ListItem>);
+    }
+
     render() {
         const {
             classes,
@@ -154,7 +173,13 @@ class EditTenant extends React.Component {
                         </Select>
                     </FormControl>
                     <FormControl className={classes.formControl}>
-
+                        <div className={classes.demo}>
+                            <List>
+                                {this.generateMembers()}
+                            </List>
+                        </div>
+                    </FormControl>
+                    <FormControl className={classes.formControl}>
                         <Button
                             disabled={this.state.pending}
                             type='submit'

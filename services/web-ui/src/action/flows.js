@@ -4,6 +4,9 @@ import { getConfig } from '../conf';
 
 const conf = getConfig();
 export const GET_FLOWS = 'GET_FLOWS';
+export const GET_FLOWS_PAGE = 'GET_FLOWS_PAGE';
+export const START_FLOW = 'START_FLOW';
+export const STOP_FLOW = 'STOP_FLOW';
 export const UPDATE_FLOW = 'UPDATE_FLOW';
 export const UPDATE_FLOW_ERROR = 'UPDATE_FLOW_ERROR';
 export const CREATE_FLOW = 'CREATE_FLOW';
@@ -14,26 +17,46 @@ export const getFlows = () => async (dispatch) => {
     try {
         const result = await axios({
             method: 'get',
-            url: `${conf.endpoints.flow}/api/v1/flows`,
+            url: `${conf.endpoints.flow}/flows`,
             withCredentials: true,
         });
 
         dispatch({
             type: GET_FLOWS,
-            users: result.data,
+            flows: result.data.data,
+            meta: result.data.meta,
         });
     } catch (err) {
         console.log(err);
     }
 };
 
-export const updateFlow = user => async (dispatch) => {
+export const getFlowsPage = page => async (dispatch) => {
+    try {
+        const result = await axios({
+            method: 'get',
+            url: `${conf.endpoints.flow}/flows?page[number]=${page}`,
+            withCredentials: true,
+        });
+
+        dispatch({
+            type: GET_FLOWS_PAGE,
+            flows: result.data.data,
+            meta: result.data.meta,
+        });
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const updateFlow = flow => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
-            url: `${conf.endpoints.flow}/api/v1/flows/${user._id}`,
+            url: `${conf.endpoints.flow}/flows/${flow.id}`,
             withCredentials: true,
-            data: user,
+            json: true,
+            data: flow,
         });
 
         dispatch({
@@ -48,15 +71,14 @@ export const updateFlow = user => async (dispatch) => {
     }
 };
 
-export const createFlow = user => async (dispatch) => {
+export const createFlow = data => async (dispatch) => {
     try {
         await axios({
             method: 'post',
-            url: `${conf.endpoints.flow}/api/v1/flows`,
+            url: `${conf.endpoints.flow}/flows`,
             withCredentials: true,
-            data: {
-                ...user,
-            },
+            json: true,
+            data,
         });
 
         dispatch({
@@ -68,11 +90,45 @@ export const createFlow = user => async (dispatch) => {
     }
 };
 
-export const deleteFlow = userId => async (dispatch) => {
+export const startFlow = flowId => async (dispatch) => {
+    try {
+        await axios({
+            method: 'post',
+            url: `${conf.endpoints.flow}/flows/${flowId}/start`,
+            withCredentials: true,
+        });
+
+        dispatch({
+            type: START_FLOW,
+        });
+        dispatch(getFlows());
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const stopFlow = flowId => async (dispatch) => {
+    try {
+        await axios({
+            method: 'post',
+            url: `${conf.endpoints.flow}/flows/${flowId}/stop`,
+            withCredentials: true,
+        });
+
+        dispatch({
+            type: STOP_FLOW,
+        });
+        dispatch(getFlows());
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const deleteFlow = flowId => async (dispatch) => {
     try {
         await axios({
             method: 'delete',
-            url: `${conf.endpoints.flow}/api/v1/flows/${userId}`,
+            url: `${conf.endpoints.flow}/flows/${flowId}`,
             withCredentials: true,
         });
 

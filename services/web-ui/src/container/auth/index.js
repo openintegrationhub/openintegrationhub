@@ -63,7 +63,6 @@ class Auth extends React.Component {
           pending: true,
       });
       await this.props.login(this.state.userData);
-      console.log(this.props.classes);
   };
 
   render() {

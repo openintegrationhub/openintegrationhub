@@ -93,7 +93,7 @@ describe('domains', () => {
             .send({ data })
             .expect(200)).body;
 
-        result = (await request.get(`/domains/${result.data._id}`)
+        result = (await request.get(`/domains/${result.data.id}`)
             .set(...global.user1)
             .expect(200)).body;
 
@@ -108,7 +108,7 @@ describe('domains', () => {
             .expect(200)).body;
 
         // retrieve domain with another account
-        await request.get(`/domains/${result.data._id}`)
+        await request.get(`/domains/${result.data.id}`)
             .set(...global.user1)
             .expect(403);
     });
