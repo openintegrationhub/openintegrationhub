@@ -27,6 +27,16 @@ module.exports = function (app) {
         },
     }));
 
+    app.use(proxy('/component-api', {
+        pathRewrite: { '^/component-api': '/' },
+        target: 'http://component-repository.openintegrationhub.com',
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
     // proxy server config
     app.use('/config', (req, res) => {
         res.send(conf);
