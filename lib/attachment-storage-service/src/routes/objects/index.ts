@@ -3,7 +3,6 @@ import { ServerAuth } from '../../index';
 import { Context } from 'koa';
 import koaRouter from 'koa-router';
 import Controller from './controller';
-import Unauthorized from '../../errors/api/Unauthorized';
 
 export default (objectsStorage: StorageDriver, auth: ServerAuth) => {
     const controller = new Controller(objectsStorage);

@@ -5,9 +5,11 @@ import Logger from 'bunyan';
 import healthcheck from './routes/healthcheck';
 import objects from './routes/objects';
 import koaBunyanLogger from 'koa-bunyan-logger';
+import koaSwagger from 'koa2-swagger-ui';
 import errorResponder from './middleware/error-responder';
 import Healthcheckable from './healthcheckable';
 import StorageDriver, { StorageObject, StorageObjectMetadata, StorageObjectExistsError } from './storage-driver';
+import * as path from 'path';
 
 export { Healthcheckable, StorageDriver, StorageObject, StorageObjectMetadata, StorageObjectExistsError }
 
@@ -39,13 +41,21 @@ export default class ObjectServer {
             .use('/healthcheck', healthcheck([storageDriver]))
             .use('/objects', objects(storageDriver, auth));
 
+        const swaggerUI = koaSwagger({
+            routePrefix: '/api-docs',
+            swaggerOptions: {
+                spec: require(path.join(__dirname, '../docs/swagger/openapi.json'))
+            },
+        });
+
         this.koa
             .use(koaBunyanLogger(this.logger))
             .use(koaBunyanLogger.requestIdContext())
             .use(koaBunyanLogger.requestLogger())
             .use(errorResponder)
             .use(this.api.routes())
-            .use(this.api.allowedMethods());
+            .use(this.api.allowedMethods())
+            .use(swaggerUI);
     }
 
     public get serverCallback(): Function {
