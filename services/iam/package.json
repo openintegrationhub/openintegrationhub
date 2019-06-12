@@ -42,7 +42,6 @@
     "favicon-url": "0.0.5",
     "jsonwebtoken": "8.4.0",
     "lodash": "4.17.11",
-    "memwatch-next": "0.3.0",
     "moment": "2.24.0",
     "mongodb": "3.1.13",
     "mongoose": "5.4.11",
