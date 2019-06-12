@@ -317,7 +317,7 @@
         }
       }
     },
-    "/domains/{domainId}/schmemas/import": {
+    "/domains/{domainId}/schemas/import": {
       "post": {
         "tags": [
           "Domains"
