@@ -108,6 +108,12 @@ export default class StorageObjectController {
         ctx.body = 'Successfully created an object';
     }
 
+    public async deleteOne(ctx: IRouterContext, next: Function) {
+        const { state: { object } } = ctx;
+        await object.remove();
+        ctx.status = 204;
+    }
+
     public async loadObject(ctx: IRouterContext, next: Function) {
         const { id } = ctx.params;
         ctx.log.debug('About to get object');

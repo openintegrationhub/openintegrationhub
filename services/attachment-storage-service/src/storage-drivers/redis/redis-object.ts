@@ -9,6 +9,7 @@ export class RedisObjectMeta implements StorageObjectMetadata {
     public readonly contentType: string;
     public readonly contentLength: number;
     public readonly complete: boolean;
+    public readonly createdAt: number;
     public readonly maxChunkSize: number;
     public readonly chunkNum: number;
     public readonly md5Hash?: string;
@@ -21,6 +22,7 @@ export class RedisObjectMeta implements StorageObjectMetadata {
         this.chunkNum = Number(meta.chunkNum);
         this.md5Hash = meta.md5Hash ? String(meta.md5Hash) : meta.md5Hash;
         this.complete = String(meta.complete) === 'true';
+        this.createdAt = meta.createdAt ? Number(meta.createdAt) : Date.now();
     }
 }
 
@@ -222,11 +224,11 @@ export default class RedisStorageObject implements StorageObject {
         return chunks.reduce((hash, chunk) => hash.update(chunk), createHash('md5')).digest('hex');
     }
 
-    public async remove() {
+    public async remove(): Promise<void> {
         const { redis, key } = this;
         const { keyPrefix } = redis.options;
         // transparent prefixing is not applied to KEYS and SCAN https://www.npmjs.com/package/ioredis#transparent-key-prefixing
-        const keys = await redis.keys(`${redis.options.keyPrefix}${key}:*`);
+        const keys = await redis.keys(`${keyPrefix}${key}:*`);
 
         if (!keys.length) {
             return;

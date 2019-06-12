@@ -22,4 +22,9 @@ export default class Auth {
         //allowed to everybody
         return next();
     }
+
+    public async canDeleteObject(ctx: RouterContext, next: Next): Promise<any> {
+        //allowed to everybody
+        return next();
+    }
 }

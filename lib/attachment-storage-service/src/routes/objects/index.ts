@@ -7,14 +7,17 @@ import Controller from './controller';
 export default (objectsStorage: StorageDriver, auth: ServerAuth) => {
     const controller = new Controller(objectsStorage);
     const getOne = controller.getOne.bind(controller);
-    const put = controller.save.bind(controller);
+    const putOne = controller.save.bind(controller);
+    const deleteOne = controller.deleteOne.bind(controller);
     const loadObject = controller.loadObject.bind(controller);
     const canGetObject = auth.canGetObject.bind(auth);
     const canPutObject = auth.canPutObject.bind(auth);
+    const canDeleteObject = auth.canDeleteObject.bind(auth);
 
     const idRouter = new koaRouter()
         .get('/', loadObject, canGetObject, getOne)
-        .put('/', canPutObject, put)
+        .put('/', canPutObject, putOne)
+        .delete('/', loadObject, canDeleteObject, deleteOne)
         .routes();
 
     const initLogger = (ctx: Context, next: () => Promise<any>) => {

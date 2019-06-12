@@ -17,6 +17,7 @@ export interface ServerAuth {
     middleware: IMiddleware;
     canGetObject: IMiddleware;
     canPutObject: IMiddleware;
+    canDeleteObject: IMiddleware;
 }
 
 export interface ServerOptions {

@@ -350,5 +350,29 @@ describe(`/objects`, () => {
 
         });
 
+        describe('DELETE /:id', () => {
+            it('should allow empty object', async function () {
+                const id = uuid.v4();
+                nockIamIntrospection();
+                let res = await this.request
+                    .put(`/objects/${id}`)
+                    .set('Content-Type', 'application/octet-stream')
+                    .set('Authorization', `Bearer ${this.jwt}`)
+                    .send(pseudoRandomBytes(100));
+                expect(res).to.have.property('statusCode', 201);
+
+                nockIamIntrospection();
+                res = await this.request
+                    .delete(`/objects/${id}`)
+                    .set('Authorization', `Bearer ${this.jwt}`);
+                expect(res).to.have.property('statusCode', 204);
+
+                nockIamIntrospection();
+                res = await this.request
+                    .get(`/objects/${id}`)
+                    .set('Authorization', `Bearer ${this.jwt}`);
+                expect(res).to.have.property('statusCode', 404);
+            });
+        });
     });
 });

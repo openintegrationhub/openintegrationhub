@@ -4,6 +4,7 @@ export interface StorageObjectMetadata {
     readonly contentType: string;
     readonly contentLength: number;
     readonly complete: boolean;
+    readonly createdAt: number;
     readonly [propName: string]: any;
 }
 
