@@ -1,4 +1,3 @@
-const memwatch = require('memwatch-next');
 const mongoose = require('mongoose');
 const Logger = require('@basaas/node-logger');
 const { EventBus } = require('@openintegrationhub/event-bus');
@@ -11,10 +10,6 @@ process.title = `node ${require('./../package.json').name} ${require('./../packa
 
 const log = Logger.getLogger(`${conf.general.loggingNameSpace}/init`, {
     level: 'info',
-});
-
-memwatch.on('leak', (info) => {
-    log.warn('POTENTIAL MEMORY LEAK', info);
 });
 
 function exitHandler(options, err) {
