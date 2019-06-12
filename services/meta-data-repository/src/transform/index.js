@@ -71,6 +71,35 @@ async function processExternalSchema({
     console.log('schema processed');
 }
 
+function transformDbResult(result) {
+    if (result._doc) {
+        result = result._doc;
+    }
+
+    result = {
+        ...result._id ? {
+            id: result._id,
+        } : {},
+        ...result,
+    };
+
+    // delete keys
+    delete result._id;
+    delete result.__v;
+
+    return result;
+}
+
+function transformDbResults(results) {
+    if (typeof results === 'object') {
+        if (Array.isArray(results)) {
+            return results.map(entry => (transformDbResult(entry)));
+        }
+        return transformDbResult(results);
+    }
+    return results;
+}
+
 module.exports = {
     validateSchema({ schema, filePath }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
@@ -170,7 +199,7 @@ module.exports = {
             backReferences,
         };
     },
-
+    transformDbResults,
     resolveRelativePath,
     transformURI,
     URIfromId,

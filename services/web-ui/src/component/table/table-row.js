@@ -36,7 +36,7 @@ const TableRowData = (props) => {
                 </Tooltip>
             </TableCell>
         </TableRow>);
-    } if (props && props.type === 'tanant') {
+    } if (props && props.type === 'tenant') {
         return (<TableRow
             hover
             role="checkbox"
@@ -53,9 +53,9 @@ const TableRowData = (props) => {
                 padding="none">
                 {props.data.name}
             </TableCell>
+            <TableCell align="right">{props.data.status}</TableCell>
             <TableCell align="right">{props.data.createdAt}</TableCell>
             <TableCell align="right">{props.data.updatedAt}</TableCell>
-            <TableCell align="right">{props.data.status}</TableCell>
             <TableCell align="right">
                 <Tooltip title="Edit">
                     <IconButton type="button" aria-label="Edit" onClick={props.editHandler}>

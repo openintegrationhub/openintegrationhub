@@ -44,7 +44,7 @@ describe('schemas', () => {
 
         const domain_ = result;
 
-        await request.post(`/domains/${domain_.data._id}/schemas/import`)
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
             .set(...global.user1)
             .expect(400);
     });
@@ -76,12 +76,12 @@ describe('schemas', () => {
             packDest,
         );
 
-        await request.post(`/domains/${domain_.data._id}/schemas/import`)
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
             .set(...global.user1)
             .attach('archive', packDest)
             .expect(200);
 
-        result = (await request.get(`/domains/${domain_.data._id}/schemas`)
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .expect(200)).body;
 
@@ -114,12 +114,12 @@ describe('schemas', () => {
             packDest,
         );
 
-        await request.post(`/domains/${domain_.data._id}/schemas/import`)
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
             .set(...global.user1)
             .attach('archive', packDest)
             .expect(200);
 
-        result = (await request.get(`/domains/${domain_.data._id}/schemas`)
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .expect(200)).body;
 

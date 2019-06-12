@@ -19,6 +19,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import NativeSelect from '@material-ui/core/NativeSelect';
 import Grid from '@material-ui/core/Grid';
 import {
     LockOpen, Business, Waves, Home as HomeIcon, AccessibleForward,
@@ -57,7 +58,7 @@ const styles = theme => ({
     },
     menuButton: {
         marginLeft: 12,
-        marginRight: 20,
+        width: 69,
     },
     hide: {
         display: 'none',
@@ -80,7 +81,7 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        height: '100vh',
+        height: '90vh',
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -93,13 +94,50 @@ const styles = theme => ({
         }),
         marginLeft: drawerWidth,
     },
+    select: {
+        color: 'white',
+        width: '100%',
+        paddingTop: '4px',
+    },
 });
 
 class Main extends React.Component {
-  state = {
-      menu: ['Start', 'Users', 'Tenants', 'Flows', 'Logout'],
-      open: false,
-  };
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            menu: [],
+            open: false,
+            context: null,
+        };
+    }
+
+    componentDidMount() {
+        let menuArr = [];
+        if (this.props.auth.role === 'ADMIN') menuArr = ['Start', 'Users', 'Tenants', 'Flows', 'Logout'];
+        else menuArr = ['Start', 'Flows', 'Logout'];
+        this.setState({
+            menu: menuArr,
+        });
+    }
+
+    componentDidUpdate(prefProps) {
+        if (prefProps.auth !== this.props.auth) {
+            let menuArr = [];
+            let context = null;
+            if (this.props.auth.role === 'ADMIN') menuArr = ['Start', 'Users', 'Tenants', 'Flows', 'Logout'];
+            else menuArr = ['Start', 'Flows', 'Logout'];
+
+            if (this.props.auth.memberships && this.props.auth.memberships.length) {
+                context = this.props.auth.memberships.find(tenant => tenant.name === 'Global').name;
+                if (context !== 'Global') context = this.props.auth.memberships[0].name;
+            }
+            this.setState({
+                menu: menuArr,
+                context,
+            });
+        }
+    }
 
   handleDrawerOpen = () => {
       this.setState({ open: true });
@@ -112,6 +150,19 @@ class Main extends React.Component {
   logout = () => {
       this.props.logout();
   };
+
+  getTenants = () => {
+      if (this.props.auth.memberships && this.props.auth.memberships.length) {
+          return this.props.auth.memberships.map((tenant, index) => <option key={`tenant-${index}`} value={tenant.name}>{tenant.name}</option>);
+      }
+      return null;
+  }
+
+  changeSelect = (event) => {
+      this.setState({
+          context: event.target.value,
+      });
+  }
 
   getMenuItems = () => <div>
       {
@@ -182,22 +233,46 @@ class Main extends React.Component {
                       })}
                   >
                       <Toolbar disableGutters={!open}>
-                          <IconButton
-                              color="inherit"
-                              aria-label="Open drawer"
-                              onClick={this.handleDrawerOpen}
-                              className={classNames(classes.menuButton, open && classes.hide)}
-                          >
-                              <MenuIcon />
-                          </IconButton>
-                          <img
-                              src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
-                              alt="Open Integration Hub"
-                              id="logo"
-                              data-height-percentage="54"
-                              data-actual-width="271"
-                              data-actual-height="40"
-                          />
+                          <Grid container spacing={3}>
+                              <IconButton
+                                  color="inherit"
+                                  aria-label="Open drawer"
+                                  onClick={this.handleDrawerOpen}
+                                  className={classNames(classes.menuButton, open && classes.hide)}
+                              >
+                                  <MenuIcon />
+                              </IconButton>
+
+                              {
+                                  this.state.context && <Grid item sm={2}>
+                                      <NativeSelect
+                                          value={this.state.context}
+                                          onChange={this.changeSelect}
+                                          name="tenants"
+                                          className={classes.select}
+                                          inputProps={{ 'aria-label': 'age' }}
+                                      >
+                                          <option value="Global">{this.state.context}</option>
+                                          {
+                                              this.getTenants()
+                                          }
+                                      </NativeSelect>
+                                  </Grid>
+                              }
+
+                              <Grid item xs={5}>
+                                  <img
+                                      src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
+                                      alt="Open Integration Hub"
+                                      id="logo"
+                                      data-height-percentage="54"
+                                      data-actual-width="271"
+                                      data-actual-height="40"
+                                  />
+                              </Grid>
+
+                          </Grid>
+
                       </Toolbar>
                   </AppBar>
               </Grid>
