@@ -5,6 +5,8 @@ import { getConfig } from '../conf';
 const conf = getConfig();
 export const GET_FLOWS = 'GET_FLOWS';
 export const GET_FLOWS_PAGE = 'GET_FLOWS_PAGE';
+export const START_FLOW = 'START_FLOW';
+export const STOP_FLOW = 'STOP_FLOW';
 export const UPDATE_FLOW = 'UPDATE_FLOW';
 export const UPDATE_FLOW_ERROR = 'UPDATE_FLOW_ERROR';
 export const CREATE_FLOW = 'CREATE_FLOW';
@@ -81,6 +83,40 @@ export const createFlow = data => async (dispatch) => {
 
         dispatch({
             type: CREATE_FLOW,
+        });
+        dispatch(getFlows());
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const startFlow = flowId => async (dispatch) => {
+    try {
+        await axios({
+            method: 'post',
+            url: `${conf.endpoints.flow}/flows/${flowId}/start`,
+            withCredentials: true,
+        });
+
+        dispatch({
+            type: START_FLOW,
+        });
+        dispatch(getFlows());
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const stopFlow = flowId => async (dispatch) => {
+    try {
+        await axios({
+            method: 'post',
+            url: `${conf.endpoints.flow}/flows/${flowId}/stop`,
+            withCredentials: true,
+        });
+
+        dispatch({
+            type: STOP_FLOW,
         });
         dispatch(getFlows());
     } catch (err) {

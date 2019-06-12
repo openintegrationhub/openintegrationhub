@@ -20,7 +20,9 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 
 // Actions
-import { deleteFlow, updateFlow } from '../../../action/flows';
+import {
+    deleteFlow, updateFlow, startFlow, stopFlow,
+} from '../../../action/flows';
 
 const useStyles = {
     heading: {
@@ -64,6 +66,14 @@ class FlowTeaser extends React.PureComponent {
 
     deleteFlow = () => {
         this.props.deleteFlow(this.props.data.id);
+    }
+
+    startFlow = () => {
+        this.props.startFlow(this.props.data.id);
+    }
+
+    stopFlow = () => {
+        this.props.stopFlow(this.props.data.id);
     }
 
     updateFlow = () => {
@@ -124,6 +134,12 @@ class FlowTeaser extends React.PureComponent {
                                 <Button variant="outlined" aria-label="next" onClick={this.deleteFlow}>
                                     Delete
                                 </Button>
+                                <Button variant="outlined" aria-label="next" onClick={this.startFlow}>
+                                    Start
+                                </Button>
+                                <Button variant="outlined" aria-label="next" onClick={this.stopFlow}>
+                                    Stop
+                                </Button>
                             </Grid>
                         </Grid>
                     </ExpansionPanelDetails>
@@ -162,6 +178,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
     deleteFlow,
     updateFlow,
+    startFlow,
+    stopFlow,
 }, dispatch);
 
 export default flow(
