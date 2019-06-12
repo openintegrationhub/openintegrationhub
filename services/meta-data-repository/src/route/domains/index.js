@@ -199,7 +199,7 @@ router.post('/:id/schemas/import', isOwnerOrHasPermissions(DomainDAO, []), uploa
             for (const schema of transformedSchemas) {
                 await SchemaDAO.createUpdate({
                     obj: {
-                        name: schema.schema.$id,
+                        name: schema.schema.title,
                         domainId: req.params.id,
                         uri: URIfromId(schema.schema.$id),
                         value: JSON.stringify(schema.schema),
