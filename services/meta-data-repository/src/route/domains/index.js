@@ -8,7 +8,6 @@ const fs = require('fs-extra');
 const conf = require('../../conf');
 const { USER } = require('../../constant').ENTITY_TYPE;
 const { DomainDAO, SchemaDAO } = require('../../dao');
-const { isOwnerOfDomain } = require('../../middleware/is-owner');
 const Pagination = require('../../util/pagination');
 const {
     transformSchema, validateSchema, URIfromId, transformDbResults,
@@ -38,6 +37,10 @@ const upload = multer({ storage });
 
 function buildURI(params) {
     return `${conf.apiBase}/domains/${params.id}/schemas/${params.uri}${params[0]}`;
+}
+
+async function isOwnerOfDomain(req, res, next) {
+    await isOwnerOf(DomainDAO, req, res, next);
 }
 
 router.get('/', async (req, res) => {
