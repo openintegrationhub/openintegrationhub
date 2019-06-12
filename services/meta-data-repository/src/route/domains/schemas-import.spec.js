@@ -119,6 +119,15 @@ describe('schemas', () => {
             .attach('archive', packDest)
             .expect(200);
 
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
+            .set(...global.user2)
+            .attach('archive', packDest)
+            .expect(403);
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user2)
+            .expect(403)).body;
+
         result = (await request.get(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .expect(200)).body;

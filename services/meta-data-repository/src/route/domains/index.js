@@ -4,11 +4,11 @@ const multer = require('multer');
 const uuid = require('uuid');
 const mkdirp = require('mkdirp');
 const fs = require('fs-extra');
-
+const { isOwnerOrHasPermissions } = require('@openintegrationhub/iam-utils');
+const { isLocalRequest } = require('../../util/common');
 const conf = require('../../conf');
 const { USER } = require('../../constant').ENTITY_TYPE;
 const { DomainDAO, SchemaDAO } = require('../../dao');
-const { isOwnerOfDomain } = require('../../middleware/is-owner');
 const Pagination = require('../../util/pagination');
 const {
     transformSchema, validateSchema, URIfromId, transformDbResults,
@@ -59,7 +59,7 @@ router.get('/', async (req, res) => {
     });
 });
 
-router.get('/:id', isOwnerOfDomain, async (req, res, next) => {
+router.get('/:id', isOwnerOrHasPermissions(DomainDAO, []), async (req, res, next) => {
     try {
         const domain = req.obj;
 
@@ -99,7 +99,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // schema
-router.get('/:id/schemas', async (req, res) => {
+router.get('/:id/schemas', isOwnerOrHasPermissions(DomainDAO, []), async (req, res) => {
     const pagination = new Pagination(
         req.originalUrl,
         SchemaDAO,
@@ -120,7 +120,12 @@ router.get('/:id/schemas', async (req, res) => {
     });
 });
 
-router.get('/:id/schemas/:uri*', async (req, res, next) => {
+router.get('/:id/schemas/:uri*', (req, res, next) => {
+    if (isLocalRequest(req)) {
+        return next();
+    }
+    isOwnerOrHasPermissions(DomainDAO, [])(req, res, next);
+}, async (req, res, next) => {
     try {
         const schema = await SchemaDAO.findByURI({
             uri: buildURI(req.params),
@@ -142,7 +147,7 @@ router.get('/:id/schemas/:uri*', async (req, res, next) => {
 });
 
 
-router.post('/:id/schemas', async (req, res, next) => {
+router.post('/:id/schemas', isOwnerOrHasPermissions(DomainDAO, []), async (req, res, next) => {
     const { data } = req.body;
 
     try {
@@ -180,7 +185,7 @@ router.post('/:id/schemas', async (req, res, next) => {
 
 // bulk upload
 
-router.post('/:id/schemas/import', upload.single('archive'), async (req, res, next) => {
+router.post('/:id/schemas/import', isOwnerOrHasPermissions(DomainDAO, []), upload.single('archive'), async (req, res, next) => {
     let session = null;
     try {
         const file = req.file;
@@ -188,12 +193,13 @@ router.post('/:id/schemas/import', upload.single('archive'), async (req, res, ne
             throw (new Error('No file submitted'));
         } else {
             const transformedSchemas = await processArchive(file.path, req.params.id);
+
             // start transaction
             session = await SchemaDAO.startTransaction();
             for (const schema of transformedSchemas) {
                 await SchemaDAO.createUpdate({
                     obj: {
-                        name: 'foo',
+                        name: schema.schema.$id,
                         domainId: req.params.id,
                         uri: URIfromId(schema.schema.$id),
                         value: JSON.stringify(schema.schema),
@@ -228,7 +234,7 @@ router.post('/:id/schemas/import', upload.single('archive'), async (req, res, ne
     }
 });
 
-router.delete('/:id/schemas/:uri*', async (req, res, next) => {
+router.delete('/:id/schemas/:uri*', isOwnerOrHasPermissions(DomainDAO, []), async (req, res, next) => {
     try {
         await SchemaDAO.delete(buildURI(req.params));
         res.sendStatus(204);
