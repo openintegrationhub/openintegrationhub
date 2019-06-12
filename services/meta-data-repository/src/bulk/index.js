@@ -15,7 +15,7 @@ module.exports = {
                     // unpack in place
                     await unpack(fileType, archivePath, root);
 
-                    readdirp({ root, fileFilter: '*.json' }, async (err, res) => {
+                    readdirp(root, { fileFilter: '*.json' }, async (err, res) => {
                         for (const file of res.files) {
                             const schema = await fs.readFile(file.fullPath, 'utf-8');
 

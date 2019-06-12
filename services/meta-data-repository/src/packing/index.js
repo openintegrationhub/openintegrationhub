@@ -20,7 +20,7 @@ module.exports = {
             if (type === 'zip') {
                 const zip = new JSZip();
                 await fs.ensureDir(path.dirname(dest));
-                readdirp({ root: src, fileFilter: '*.json' }, async (err, res) => {
+                readdirp(src, { fileFilter: '*.json' }, async (err, res) => {
                     for (const file of res.files) {
                         zip.file(file.path, fs.readFileSync(file.fullPath));
                     }

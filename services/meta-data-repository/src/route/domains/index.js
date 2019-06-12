@@ -4,7 +4,7 @@ const multer = require('multer');
 const uuid = require('uuid');
 const mkdirp = require('mkdirp');
 const fs = require('fs-extra');
-
+const { isOwnerOf } = require('@basaas/iam-utils');
 const conf = require('../../conf');
 const { USER } = require('../../constant').ENTITY_TYPE;
 const { DomainDAO, SchemaDAO } = require('../../dao');
