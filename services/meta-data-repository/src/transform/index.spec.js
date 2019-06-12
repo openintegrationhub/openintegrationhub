@@ -76,17 +76,16 @@ describe('transform', () => {
         ).toBe('domains/foo/schemas/Relation.json');
     });
 
-    test('validateSchema - valid', async (done) => {
-        readdirp(path.resolve(__dirname, '../../test/data/valid'), { fileFilter: '*.json' }, async (err, res) => {
-            for (const file of res.files) {
-                validateSchema({
-                    schema: await fs.readFile(file.fullPath, 'utf-8'),
-                    filePath: file.fullPath,
-                });
-            }
-            expect(true).toEqual(true);
-            done();
-        });
+    test('validateSchema - valid', async () => {
+        const files = await readdirp.promise(path.resolve(__dirname, '../../test/data/valid'), { fileFilter: '*.json' });
+
+        for (const file of files) {
+            validateSchema({
+                schema: await fs.readFile(file.fullPath, 'utf-8'),
+                filePath: file.fullPath,
+            });
+        }
+        expect(true).toEqual(true);
     });
 
     test('validateSchema - invalid', async () => {
@@ -124,21 +123,19 @@ describe('transform', () => {
         expect(true).toEqual(true);
     });
 
-    test('transformSchema - valid', async (done) => {
+    test('transformSchema - valid', async () => {
         const root = path.resolve(__dirname, '../../test/data/valid/');
-        readdirp(root, { fileFilter: '*.json' }, async (err, res) => {
-            for (const file of res.files) {
-                await transformSchema({
-                    schema: await fs.readFile(file.fullPath, 'utf-8'),
-                    jsonRefsOptions: {
-                        location: file.fullPath,
-                        root,
-                    },
-                });
-            }
-            expect(true).toEqual(true);
-            done();
-        });
+        const files = await readdirp.promise(root, { fileFilter: '*.json' });
+        for (const file of files) {
+            await transformSchema({
+                schema: await fs.readFile(file.fullPath, 'utf-8'),
+                jsonRefsOptions: {
+                    location: file.fullPath,
+                    root,
+                },
+            });
+        }
+        expect(true).toEqual(true);
     });
 
     test('transformSchema - invalid', async () => {
