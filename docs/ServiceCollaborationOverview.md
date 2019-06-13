@@ -216,7 +216,7 @@ The following example shows how a user can request a resource using IAM. The gra
 3. User uses the ephemeral token to request a cetrain resource (e.g. a specific flow by id).
 4. Flow repository introspects the ephemeral token at IAM (services accounts receive a permanent token when they first register) using IAM utils (middleware).
 5. IAM responds with user information such as username, tenant, tenant specific role and user permissions related to this token.
-6. Flow Repsitory checks if the user has the user has the permission to request the resource.
+6. Flow Repsitory checks if the user has the permission to request the resource.
 7. Flow repository responds with the requested information.
 
 Illustration of this process:  (Figur _requestResourceSuccess_).
