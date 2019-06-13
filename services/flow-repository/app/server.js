@@ -42,13 +42,14 @@ class Server {
           callback(new Error('Not allowed by CORS'));
         }
       },
+      credentials: true,
     };
-
-    // enables CORS
-    this.app.use('/flows', cors(corsOptions));
 
     // Enables preflight OPTIONS requests
     this.app.options('/', cors());
+
+    // enables CORS
+    this.app.use('/flows', cors(corsOptions));
   }
 
   async setupMiddleware() {
