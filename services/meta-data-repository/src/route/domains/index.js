@@ -107,8 +107,8 @@ router.get('/:id/schemas', isOwnerOrHasPermissions(DomainDAO, []), async (req, r
     );
     res.send({
         data: transformDbResults(await SchemaDAO.findByDomainAndEntity({
-            entity: req.user.sub,
-            domain: req.params.id,
+            entityId: req.user.sub,
+            domainId: req.params.id,
             options: pagination.props(),
         })),
         meta: {
