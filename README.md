@@ -51,9 +51,58 @@ Here is a list of components build on Node.js:
 
 ## Sailor logging
 
-Sailor uses [bunyan](https://github.com/trentm/node-bunyan) logging framework. You can change the logging settings with environment varaible:
- * `LOG_LEVEL` - set it to one of `error`,`warn`,`info`,`debug` or `trace`. See [this code](https://github.com/elasticio/sailor-nodejs/blob/master/lib/logging.js#L11) for more details.
+Sailor uses [bunyan](https://github.com/trentm/node-bunyan) logging framework. 
+ 
+Supported log levels are:
 
+- `FATAL`
+- `ERROR`
+- `WARN`
+- `INFO`
+- `DEBUG`
+- `TRACE`
+
+Default log level is `INFO`. You can change default log level with environment variable `LOG_LEVEL`.
+
+Sailor logger adds the following extra context to log messages:
+
+- `ELASTICIO_API_USERNAME`
+- `ELASTICIO_COMP_ID`
+- `ELASTICIO_COMP_NAME`
+- `ELASTICIO_CONTAINER_ID`
+- `ELASTICIO_CONTRACT_ID`
+- `ELASTICIO_EXEC_ID`
+- `ELASTICIO_EXEC_TYPE`
+- `ELASTICIO_EXECUTION_RESULT_ID`
+- `ELASTICIO_FLOW_ID`
+- `ELASTICIO_FLOW_VERSION`
+- `ELASTICIO_FUNCTION`
+- `ELASTICIO_ORGANIZATION_ID`
+- `ELASTICIO_STEP_ID`
+- `ELASTICIO_TASK_USER_EMAIL`
+- `ELASTICIO_TENANT_ID`
+- `ELASTICIO_USER_ID`
+- `ELASTICIO_WORKSPACE_ID`
+
+## Component logging
+
+Sailor exposes logger object for use in a component. Component logger inherits log level from sailor's logger
+and adds the following extra context to log messages:
+
+- `messageId` (unique ID of the next RabbitMQ message)
+- `parentMessageId` (unique ID of previous RabbitMQ message)
+- `threadId` (unique ID of execution thread)
+
+Component logger usage example:
+
+```JavaScript
+this.logger.fatal('message');
+this.logger.error('message');
+this.logger.warn('message');
+this.logger.info('message');
+this.logger.debug('message');
+this.logger.trace('message');
+```
 
 ## Flow control
 
@@ -85,14 +134,14 @@ exports.process = process;
 
 async function process(msg, cfg, snapshot) {
     for (let i = 0; i < 100000; i++) {
-        console.log('Sending message %s', i);
+        this.logger.info('Sending message %s', i);
         await this.emit('data', {
             body: {
                 counter: i,
                 hi: 'there'
             }
         });
-        console.log('Message %s was sent', i);
+        this.logger.info('Message %s was sent', i);
     }
 }
 ```
