@@ -36,8 +36,12 @@ export default class StorageObjectsService implements StorageDriver, Healthcheck
             throw new StorageObjectExistsError();
         }
 
+        const expiresAt = Date.now() + 5 * 24 * 60 * 60 * 1000;
+        await redis.pexpireat(key, expiresAt);
+
         const meta = {
             ...metadata,
+            expiresAt,
             maxChunkSize: RedisService.VAL_BYTES_LIMIT,
             chunkNum: 0,
             contentLength: 0,

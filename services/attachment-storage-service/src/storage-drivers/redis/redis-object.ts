@@ -10,6 +10,7 @@ export class RedisObjectMeta implements StorageObjectMetadata {
     public readonly contentLength: number;
     public readonly complete: boolean;
     public readonly createdAt: number;
+    public readonly expiresAt: number;
     public readonly maxChunkSize: number;
     public readonly chunkNum: number;
     public readonly md5Hash?: string;
@@ -23,6 +24,7 @@ export class RedisObjectMeta implements StorageObjectMetadata {
         this.md5Hash = meta.md5Hash ? String(meta.md5Hash) : meta.md5Hash;
         this.complete = String(meta.complete) === 'true';
         this.createdAt = meta.createdAt ? Number(meta.createdAt) : Date.now();
+        this.expiresAt = Number(meta.expiresAt);
     }
 }
 
@@ -83,7 +85,7 @@ export default class RedisStorageObject implements StorageObject {
     }
 
     public getWriteStream(): Writable {
-        const { redis, chunkKey, meta: { maxChunkSize } } = this;
+        const { redis, chunkKey, meta: { maxChunkSize, expiresAt } } = this;
         let currentChunkNum = 0;
         let length = 0;
         let currentRedisChunkLength = 0;
@@ -91,8 +93,12 @@ export default class RedisStorageObject implements StorageObject {
 
         return new Writable({
             write: (incomingChunk, encoding, callback) => {
+                const multi = redis.multi();
+
                 if (currentRedisChunkLength + incomingChunk.length <= maxChunkSize) {
-                    redis.append(`${chunkKey}:${currentChunkNum}`, incomingChunk, (err: Error) => {
+                    multi.append(`${chunkKey}:${currentChunkNum}`, incomingChunk);
+                    multi.pexpireat(`${chunkKey}:${currentChunkNum}`, expiresAt);
+                    multi.exec((err: Error) => {
                         if (err) {
                             callback(err);
                             return;
@@ -100,21 +106,22 @@ export default class RedisStorageObject implements StorageObject {
                         hash.update(incomingChunk);
                         callback();
                     });
+
                     length += incomingChunk.length;
                     currentRedisChunkLength += incomingChunk.length;
                     return;
                 }
 
-                let multi = redis.multi();
 
                 const leftLengthInCurrentRedisChunk = maxChunkSize - currentRedisChunkLength;
                 let leftIncomingChunk = incomingChunk;
 
                 if (leftLengthInCurrentRedisChunk) {
-                    multi = multi.append(
+                    multi.append(
                         `${chunkKey}:${currentChunkNum}`,
                         incomingChunk.slice(0, leftLengthInCurrentRedisChunk)
                     );
+                    multi.pexpireat(`${chunkKey}:${currentChunkNum}`, expiresAt);
                     leftIncomingChunk = incomingChunk.slice(leftLengthInCurrentRedisChunk);
                 }
 
@@ -127,7 +134,8 @@ export default class RedisStorageObject implements StorageObject {
                         maxChunkSize * (i + 1)
                     );
                     currentChunkNum += i;
-                    multi = multi.append(`${chunkKey}:${currentChunkNum}`, buf);
+                    multi.append(`${chunkKey}:${currentChunkNum}`, buf);
+                    multi.pexpireat(`${chunkKey}:${currentChunkNum}`, expiresAt);
                     currentRedisChunkLength += buf.length;
                 }
 
@@ -209,8 +217,12 @@ export default class RedisStorageObject implements StorageObject {
         });
     }
 
-    public async saveMetadata() {
-        await this.redis.hmset(this.metadataKey, {...this.meta });
+    public async saveMetadata(): Promise<void> {
+        const { expiresAt } = this.meta;
+        const multi = this.redis.multi();
+        multi.hmset(this.metadataKey, {...this.meta });
+        multi.pexpireat(this.metadataKey, expiresAt);
+        await multi.exec();
     }
 
     public getMetadata(): RedisObjectMeta {
