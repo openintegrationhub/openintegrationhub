@@ -12037,7 +12037,7 @@ mongoose@5.5.14:
     sift "7.0.1"
     sliced "1.0.1"
 
-mongoose@^5.4.13:
+mongoose@5.5.15, mongoose@^5.4.13:
   version "5.5.15"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.5.15.tgz#513c571313c8bbd9073aed5310fde5177522fc96"
   integrity sha512-VRX3i3ptARSGT82b6H0k/oGxkaDXPPpIBstGyrQ3mDGjygPDPjlXvJaih6zyjfRXRVvdu1L2nVfQH5FixANO1w==
