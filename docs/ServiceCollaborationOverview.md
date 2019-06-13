@@ -37,8 +37,8 @@ This example describes the scenario of starting a flow. Once the user starts a f
 
 1. Client starts a flow using flow repository's REST API.
 2. `Flow Repository` sets the flow's `status` to `starting` and raises the event `flow.starting`.
-3. There are 3 services listening to the event `flow.starting`:  Webhooks, Scheduler and Resource Coordinator. `Webhooks` and `Scheduler` examine the event's payload and decide if they need to react appropriately. We will discuss the exact reaction of both services later in this document.
-4. Upon receiving `flow.starting` event the `Resource Coordinator` starts deploying the containers. Once all containers were deployed, `Resource Coordinator` raises the `flow.started` event.
+3. There are 3 services listening to the event `flow.starting`:  Webhooks, Scheduler and Component Orchestrator. `Webhooks` and `Scheduler` examine the event's payload and decide if they need to react appropriately. We will discuss the exact reaction of both services later in this document.
+4. Upon receiving `flow.starting` event the `Component Orchestrator` starts deploying the containers. Once all containers were deployed, `Component Orchestrator` raises the `flow.started` event.
 5. `Flow Repository` receives the `flow.started` event and switches flow's `status` property from `starting` to `started`.
 6. `Webhooks` receives the `flow.started` event and starts receiving incoming HTTP calls for the given flow.
 7. `Scheduler` receives the `flow.started` event and starts scheduling the flow, according to it's cron property.
