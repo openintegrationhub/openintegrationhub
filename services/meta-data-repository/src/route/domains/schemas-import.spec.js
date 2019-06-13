@@ -133,5 +133,8 @@ describe('schemas', () => {
             .expect(200)).body;
 
         expect(result.meta.total).toEqual(20);
+        expect(result.meta.perPage).toEqual(10);
+        expect(result.meta.totalPages).toEqual(2);
+        expect(result.data.length).toEqual(10);
     });
 });
