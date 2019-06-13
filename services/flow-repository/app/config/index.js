@@ -11,6 +11,8 @@ const general = {
   flowReadPermission: process.env.FLOW_READ_PERMISSION || 'flows.read',
   flowWritePermission: process.env.FLOW_WRITE_PERMISSION || 'flows.write',
 
+  originWhitelist: process.env.ORIGINWHITELIST ? process.env.ORIGINWHITELIST.split(',') : [],
+
   // Designates which storage system (Mongo, Kubernetes, MySQL, etc.) is used
   storage: 'mongo',
 };

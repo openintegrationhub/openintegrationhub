@@ -4,6 +4,7 @@ const fs = require('fs');
 const {
     user1,
     user2,
+    admin,
 } = require('./tokens');
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');
@@ -20,6 +21,7 @@ module.exports = class MongoEnvironment extends NodeEnvironment {
         // setup auth header
         this.global.user1 = ['Authorization', `bearer ${user1.token}`];
         this.global.user2 = ['Authorization', `bearer ${user2.token}`];
+        this.global.admin = ['Authorization', `bearer ${admin.token}`];
 
         await super.setup();
     }

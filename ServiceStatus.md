@@ -22,7 +22,7 @@
 |Hierarchy and Relationship Management|[Wice GmbH](https://wice.de/)|![alpha](https://img.shields.io/badge/Alpha-yellowgreen.svg)|-|
 |IAM|[Basaas GmbH](https://www.basaas.com/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [IAM](services/iam/README.md), [Concepts](services/IAM/IAMConcept.md)|
 |Logging & Monitoring|[Elastic.io GmbH](https://www.elastic.io/)|![tbd](https://img.shields.io/badge/To%20be%20done-red.svg)|See: [Logging and Monitoring](services/LoggingMonitoring.md)|
-|Message oriented Middleware|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [MessageOrientedMiddleware](services/MessageOrientedMiddleware.md)|
+|Message oriented Middleware|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [MessageOrientedMiddleware](/docs/services/MessageOrientedMiddleware.md)|
 |Metadata Repository|[Basaas GmbH](https://www.basaas.com/)|![alpha](https://img.shields.io/badge/Alpha-yellowgreen.svg)|See: [Meta-Data-Repository](services/meta-data-repository/README.md)|
 |Reporting and Analytics APIs|[Basaas GmbH](https://www.basaas.com/)|![tbd](https://img.shields.io/badge/To%20be%20done-red.svg)|-|
 |Scheduler|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [Scheduler](services/scheduler/README.md), [Scheduler and Resource Coordinator Concept](services//SchedulerResourceCoordinator.md)|
