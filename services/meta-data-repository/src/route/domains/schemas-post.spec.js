@@ -203,5 +203,15 @@ describe('schemas', () => {
         expect(result1.body.title).not.toEqual(result2.body.title);
         expect(result1.body.uri).toEqual(result2.body.uri);
         expect(result1.body.$id).toEqual(result2.body.$id);
+
+        await request.post(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user2)
+            .send({ data: schema })
+            .expect(403);
+
+        await request.post(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.admin)
+            .send({ data: schema })
+            .expect(200);
     });
 });

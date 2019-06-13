@@ -48,6 +48,17 @@ module.exports = {
         'name domainId description uri value owners',
         options);
     },
+
+    async findByDomain({
+        domainId,
+        options = {},
+    }) {
+        return await Schema.find({
+            domainId,
+        },
+        'name domainId description uri value owners',
+        options);
+    },
     async findByURI({
         uri,
         options = {},
