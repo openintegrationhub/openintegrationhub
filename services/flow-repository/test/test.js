@@ -57,14 +57,14 @@ describe('Login Security', () => {
     const res = await request.get('/flows');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
   test('should not be able to get specific flows without login', async () => {
     const res = await request.get('/flows/123456789012');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
   test('should not be able to add flows without login', async () => {
@@ -80,7 +80,7 @@ describe('Login Security', () => {
       });
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
   test('should not be able to delete flows without login', async () => {
@@ -90,7 +90,7 @@ describe('Login Security', () => {
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 });
 
