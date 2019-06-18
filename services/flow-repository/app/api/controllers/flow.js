@@ -66,17 +66,15 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   if (req.query.filter && req.query.filter.type !== undefined) {
     if (req.query.filter.type in filterTypes) {
       filters.type = req.query.filter.type;
-    } else if (!res.headersSent) {
-      res.status(400).send({ errors: [{ message: 'Invalid filter[type] parameter' }] });
-      return;
+    } else {
+      return res.status(400).send({ errors: [{ message: 'Invalid filter[type] parameter' }] });
     }
   }
 
   // filter[user]
   if (req.query.filter && req.query.filter.user !== undefined) {
-    if (!res.locals.admin && (!res.headersSent)) {
-      res.status(403).send({ errors: [{ message: 'Filtering by user is only available to admins', code: 403 }] });
-      return;
+    if (!config.oihAdminRoles.includes(req.user.role)) {
+      return res.status(403).send({ errors: [{ message: 'Filtering by user is only available to admins', code: 403 }] });
     }
     filters.user = req.query.filter.user;
   }
@@ -95,9 +93,8 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
     }
     if (!(sortField in sortableFields)) error = true;
 
-    if (error && !res.headersSent) {
-      res.status(400).send({ errors: [{ message: 'Invalid sort parameter', code: 400 }] });
-      return;
+    if (error) {
+      return res.status(400).send({ errors: [{ message: 'Invalid sort parameter', code: 400 }] });
     }
   }
 
@@ -128,8 +125,8 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
   if (!newFlow.owners) {
     newFlow.owners = [];
   }
-  if (newFlow.owners.findIndex(o => (o.id === req.user.userid)) === -1) {
-    newFlow.owners.push({ id: req.user.userid, type: 'user' });
+  if (newFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+    newFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 
   const storeFlow = new Flow(newFlow);
@@ -145,8 +142,8 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
     const ev = {
       name: 'flowCreated',
       payload: {
-        tenant: (req.user.memberships.length === 1) ? req.user.memberships[0].tenant : '',
-        source: req.user.userid,
+        tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
+        source: req.user.sub,
         object: 'flow',
         action: 'createFlow',
         subject: response.id,
@@ -190,8 +187,8 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
   if (!updateFlow.owners) {
     updateFlow.owners = [];
   }
-  if (updateFlow.owners.findIndex(o => (o.id === req.user.userid)) === -1) {
-    updateFlow.owners.push({ id: req.user.userid, type: 'user' });
+  if (updateFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+    updateFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 
   const storeFlow = new Flow(updateFlow);
@@ -207,8 +204,8 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
     const ev = {
       name: 'flowUpdated',
       payload: {
-        tenant: (req.user.memberships.length === 1) ? req.user.memberships[0].tenant : '',
-        source: req.user.userid,
+        tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
+        source: req.user.sub,
         object: 'flow',
         action: 'updateFlow',
         subject: response.id,
@@ -271,8 +268,8 @@ router.delete('/:id', can(config.flowWritePermission), jsonParser, async (req, r
     const ev = {
       name: 'flowDeleted',
       payload: {
-        tenant: (req.user.memberships.length === 1) ? req.user.memberships[0].tenant : '',
-        source: req.user.userid,
+        tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
+        source: req.user.sub,
         object: 'flow',
         action: 'deleteFlow',
         subject: flowId,

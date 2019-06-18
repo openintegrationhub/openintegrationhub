@@ -30,13 +30,7 @@ const buildQuery = (user, permission, id) => {
   // If the user is not an OIH admin, constrain query by flow ownership
   if (!config.oihAdminRoles.includes(user.role)) {
     const owners = [user.sub];
-
-    for (let i = 0; i < user.memberships.length; i += 1) {
-      if (user.memberships[i].permissions.includes(permission)) {
-        owners.push(user.memberships[i].tenant);
-      }
-    }
-
+    if (user.currentContext) owners.push(user.currentContext.tenant);
     qry['owners.id'] = { $in: owners };
   }
 
@@ -45,7 +39,7 @@ const buildQuery = (user, permission, id) => {
 
 // Retrieves all flows for authorized owner or for admin irrespective of ownership.
 const getFlows = async ( // eslint-disable-line
-  credentials,
+  user,
   pageSize,
   pageNumber,
   searchString,
@@ -53,11 +47,8 @@ const getFlows = async ( // eslint-disable-line
   sortField,
   sortOrder,
 ) => new Promise(async (resolve) => {
-  const qry = { $and: [] };
-
-  if (credentials !== 'admin') {
-    qry.$and.push({ 'owners.id': { $in: credentials } });
-  }
+  const qry = buildQuery(user, config.flowReadPermission, null);
+  qry.$and = [];
 
   // Add all filtered fields to query
   const filterFields = Object.keys(filters);
@@ -139,14 +130,10 @@ const addFlow = storeFlow => new Promise((resolve) => {
     });
 });
 
-const updateFlow = (storeFlow, credentials) => new Promise((resolve) => {
-  const findId = mongoose.Types.ObjectId(storeFlow.id);
-  Flow.findOneAndUpdate({
-    $and: [{ '_id': findId },
-      { 'owners.id': { $in: credentials } },
-    ],
-  }, storeFlow,
-  { upsert: false, new: true }).lean()
+const updateFlow = (storeFlow, user) => new Promise((resolve) => {
+  const qry = buildQuery(user, config.flowWritePermission, storeFlow.id);
+  Flow.findOneAndUpdate(qry, storeFlow,
+    { upsert: false, new: true }).lean()
     .then((doc) => {
       const flow = format(doc);
       resolve(flow);
@@ -156,19 +143,8 @@ const updateFlow = (storeFlow, credentials) => new Promise((resolve) => {
     });
 });
 
-const startingFlow = (credentials, flowId) => new Promise((resolve) => {
-  const findId = mongoose.Types.ObjectId(flowId);
-
-  let qry;
-  if (credentials === 'admin') {
-    qry = { '_id': findId };
-  } else {
-    qry = {
-      $and: [{ '_id': findId },
-        { 'owners.id': { $in: credentials } },
-      ],
-    };
-  }
+const startingFlow = (user, flowId) => new Promise((resolve) => {
+  const qry = buildQuery(user, config.flowControlPermission, flowId);
 
   Flow.findOneAndUpdate(
     qry,
@@ -185,19 +161,8 @@ const startingFlow = (credentials, flowId) => new Promise((resolve) => {
     });
 });
 
-const stoppingFlow = (credentials, flowId) => new Promise((resolve) => {
-  const findId = mongoose.Types.ObjectId(flowId);
-
-  let qry;
-  if (credentials === 'admin') {
-    qry = { '_id': findId };
-  } else {
-    qry = {
-      $and: [{ '_id': findId },
-        { 'owners.id': { $in: credentials } },
-      ],
-    };
-  }
+const stoppingFlow = (user, flowId) => new Promise((resolve) => {
+  const qry = buildQuery(user, config.flowControlPermission, flowId);
 
   Flow.findOneAndUpdate(
     qry,
@@ -251,14 +216,9 @@ const stoppedFlow = flowId => new Promise((resolve) => {
 });
 
 
-const deleteFlow = (flowId, credentials) => new Promise((resolve) => {
-  const findId = mongoose.Types.ObjectId(flowId);
-  Flow.findOneAndRemove({
-    $and: [
-      { '_id': findId },
-      { 'owners.id': { $in: credentials } },
-    ],
-  })
+const deleteFlow = (flowId, user) => new Promise((resolve) => {
+  const qry = buildQuery(user, config.flowWritePermission, flowId);
+  Flow.findOneAndRemove(qry)
     .then((response) => {
       resolve(response);
     })
