@@ -3,7 +3,7 @@ module.exports = {
   adminToken: {
     token: 'adminToken',
     value: {
-      sub: 'TestAdmin',
+      userid: 'TestAdmin',
       username: 'admin@example.com',
       role: 'ADMIN',
       memberships: [
@@ -23,7 +23,7 @@ module.exports = {
   guestToken: {
     token: 'guestToken',
     value: {
-      sub: 'TestGuest',
+      userid: 'TestGuest',
       username: 'guest@example.com',
       role: 'GUEST',
       memberships: [
@@ -41,7 +41,7 @@ module.exports = {
   permitToken: {
     token: 'permitToken',
     value: {
-      sub: 'PermitGuy',
+      userid: 'PermitGuy',
       username: 'admin@example.com',
       role: 'GUEST',
       permissions: ['flows.read', 'flows.write'],
@@ -64,7 +64,7 @@ module.exports = {
   unpermitToken: {
     token: 'unpermitToken',
     value: {
-      sub: 'UnpermitGuy',
+      userid: 'UnpermitGuy',
       username: 'guest@example.com',
       role: 'GUEST',
       permissions: ['schoko.riegel'],

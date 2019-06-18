@@ -4,12 +4,9 @@
 
 // require our MongoDB-Model
 const mongoose = require('mongoose');
+const config = require('../../config/index.js');
 const log = require('../../config/logger');
 const Flow = require('../../models/flow');
-
-// const ObjectId = mongoose.Types.ObjectId;
-
-// Retrieves all flows for authorized owner or for admin irrespective of ownership.
 
 const format = (flow) => {
   const newFlow = flow;
@@ -21,6 +18,32 @@ const format = (flow) => {
   return newFlow;
 };
 
+// Builds a query depending on user's tenants and permissions
+const buildQuery = (user, permission, id) => {
+  let findId;
+  const qry = {};
+  if (id) {
+    findId = mongoose.Types.ObjectId(id);
+    qry._id = findId;
+  }
+
+  // If the user is not an OIH admin, constrain query by flow ownership
+  if (!config.oihAdminRoles.includes(user.role)) {
+    const owners = [user.sub];
+
+    for (let i = 0; i < user.memberships.length; i += 1) {
+      if (user.memberships[i].permissions.includes(permission)) {
+        owners.push(user.memberships[i].tenant);
+      }
+    }
+
+    qry['owners.id'] = { $in: owners };
+  }
+
+  return qry;
+};
+
+// Retrieves all flows for authorized owner or for admin irrespective of ownership.
 const getFlows = async ( // eslint-disable-line
   credentials,
   pageSize,
@@ -93,11 +116,9 @@ const getFlows = async ( // eslint-disable-line
     });
 });
 
-// Retrieves a specific flow by id, irrespective of ownership.
-// Should only be available to internal methods or OIH-Admin
-const getAnyFlowById = flowId => new Promise((resolve) => {
-  const findId = mongoose.Types.ObjectId(flowId);
-  Flow.findOne({ '_id': findId }).lean()
+const getFlowById = (flowId, user) => new Promise((resolve) => {
+  const qry = buildQuery(user, config.flowReadPermission, flowId);
+  Flow.findOne(qry).lean()
     .then((doc) => {
       const flow = format(doc);
       resolve(flow);
@@ -106,7 +127,6 @@ const getAnyFlowById = flowId => new Promise((resolve) => {
       log.error(err);
     });
 });
-
 
 const addFlow = storeFlow => new Promise((resolve) => {
   storeFlow.save()
@@ -230,22 +250,6 @@ const stoppedFlow = flowId => new Promise((resolve) => {
     });
 });
 
-const getFlowById = (flowId, credentials) => new Promise((resolve) => {
-  const findId = mongoose.Types.ObjectId(flowId);
-  Flow.findOne({
-    $and: [{ '_id': findId },
-      { 'owners.id': { $in: credentials } },
-    ],
-  }).lean()
-    .then((doc) => {
-      const flow = format(doc);
-      resolve(flow);
-    })
-    .catch((err) => {
-      log.error(err);
-    });
-});
-
 
 const deleteFlow = (flowId, credentials) => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
@@ -265,7 +269,6 @@ const deleteFlow = (flowId, credentials) => new Promise((resolve) => {
 
 
 module.exports = {
-  getAnyFlowById,
   getFlows,
   addFlow,
   startingFlow,

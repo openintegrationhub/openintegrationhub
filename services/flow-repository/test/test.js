@@ -442,6 +442,7 @@ describe('Flow Operations', () => {
     const res = await request
       .get(`/flows/${flowId1}`)
       .set('Authorization', 'Bearer adminToken');
+
     expect(res.status).toEqual(200);
     expect(res.body).not.toBeNull();
     const j = res.body;
