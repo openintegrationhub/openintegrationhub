@@ -38,7 +38,7 @@
           "flows"
         ],
         "summary": "Retrieve all flows associated with the current user from the repository",
-        "description": "This will only return Flows that are either directly associated with the user, or that are associated with a tenant that the user is also a member of.",
+        "description": "This will only return Flows that are either directly associated with the user, or that are associated with a tenant that the user is also a member of. Requires the 'flows.read' permissions.",
         "operationId": "getFlows",
         "parameters": [
           {
@@ -139,7 +139,7 @@
           "flows"
         ],
         "summary": "Add a new flow to the repository",
-        "description": "The new Flow will automatically be associated with the current user in the owners array, allowing editing and viewing by this user irrespective of tenancies.",
+        "description": "This requires the 'flows.write' permissions. The new Flow will automatically be associated with the current user in the owners array, allowing editing and viewing by this user irrespective of tenancies.",
         "operationId": "addFlow",
         "responses": {
           "201": {
@@ -184,7 +184,7 @@
           "flows"
         ],
         "summary": "Find Flow by ID",
-        "description": "Returns a single Flow by its ID, if the user is authorized to see it.",
+        "description": "Returns a single Flow by its ID, if the user is authorized to see it. This requires the 'flows.read' permission",
         "operationId": "getFlowById",
         "parameters": [
           {
@@ -233,7 +233,7 @@
           "flows"
         ],
         "summary": "Deletes a flow",
-        "description": "Entirely deletes a Flow from the repository. This cannot be reverted.",
+        "description": "Entirely deletes a Flow from the repository. This cannot be reverted. Requires the 'flows.write' permission.",
         "operationId": "deleteFlow",
         "parameters": [
           {
@@ -287,7 +287,7 @@
           }
         ],
         "summary": "Update an existing flow",
-        "description": "The id is used to match the existing Flow that will be updated.",
+        "description": "The id is used to match the existing Flow that will be updated. Requires the 'flows.write' permission.",
         "operationId": "updateFlow",
         "responses": {
           "200": {
@@ -338,7 +338,7 @@
           "flows"
         ],
         "summary": "Start a flow",
-        "description": "Initiates the flow's integration process by publishing an appropriate event to the event bus-",
+        "description": "Initiates the flow's integration process by publishing an appropriate event to the event bus. Requires the 'flows.control' permission.",
         "operationId": "startFlow",
         "parameters": [
           {
@@ -408,7 +408,7 @@
           "flows"
         ],
         "summary": "Stop a flow",
-        "description": "Stops the flow's integration process by publishing an appropriate event to the event bus.",
+        "description": "Stops the flow's integration process by publishing an appropriate event to the event bus. Requires the 'flows.control' permission.",
         "operationId": "stopFlow",
         "parameters": [
           {
