@@ -94,6 +94,95 @@ describe('Login Security', () => {
   });
 });
 
+describe('Permissions', () => {
+  test('should not be able to get all flows without permissions', async () => {
+    const res = await request
+      .get('/flows')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to get a single flow without permissions', async () => {
+    const res = await request
+      .get('/flows/5ca5c44c187c040010a9bb8b')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to post a flow without permissions', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'This content should be irrelevant',
+        graph: {},
+      });
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to patch a flow without permissions', async () => {
+    const res = await request
+      .patch('/flows/5ca5c44c187c040010a9bb8b')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'This content should be irrelevant',
+        graph: {},
+      });
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to delete a flow without permissions', async () => {
+    const res = await request
+      .delete('/flows/5ca5c44c187c040010a9bb8b')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to start a flow without permissions', async () => {
+    const res = await request
+      .post('/flows/5ca5c44c187c040010a9bb8b/start')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to stop a flow without permissions', async () => {
+    const res = await request
+      .post('/flows/5ca5c44c187c040010a9bb8b/stop')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+});
+
 describe('Flow Validation', () => {
   test('should refuse a flow missing a graph', async () => {
     const res = await request
@@ -320,7 +409,7 @@ describe('Flow Validation', () => {
     expect(res.body.errors[0].message).toEqual('Path `id` (`01234567890123456789012345678901`) is longer than the maximum allowed length (30).');
   });
 
-  test('should refuse a flow according to the same rules when updating a flow', async () => {
+  test('should refuse a flow according to the same rules when patching instead of posting', async () => {
     const tempFlow = {
       graph: {
         nodes: [
