@@ -36,4 +36,22 @@ module.exports = {
             permissions: [],
         },
     },
+    admin: {
+        token: 'admin',
+        value: {
+            sub: 'admin',
+            name: 'admin',
+            role: 'ADMIN',
+            iat: 1337,
+            memberships: [
+                {
+                    tenant: '5c507eb60838f1f976e5f2a4',
+                    permissions: [
+                    ],
+                    active: true,
+                },
+            ],
+            permissions: [],
+        },
+    },
 };

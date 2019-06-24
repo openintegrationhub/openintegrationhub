@@ -20,18 +20,18 @@ module.exports = {
             if (type === 'zip') {
                 const zip = new JSZip();
                 await fs.ensureDir(path.dirname(dest));
-                readdirp({ root: src, fileFilter: '*.json' }, async (err, res) => {
-                    for (const file of res.files) {
-                        zip.file(file.path, fs.readFileSync(file.fullPath));
-                    }
+                const files = await readdirp.promise(src, { fileFilter: '*.json' });
 
-                    zip
-                        .generateNodeStream({ streamFiles: true })
-                        .pipe(fs.createWriteStream(dest))
-                        .on('finish', () => {
-                            resolve();
-                        });
-                });
+                for (const file of files) {
+                    zip.file(file.path, fs.readFileSync(file.fullPath));
+                }
+
+                zip
+                    .generateNodeStream({ streamFiles: true })
+                    .pipe(fs.createWriteStream(dest))
+                    .on('finish', () => {
+                        resolve();
+                    });
             } else if (type === 'tgz') {
                 await fs.ensureDir(path.dirname(dest));
                 await tar.c({

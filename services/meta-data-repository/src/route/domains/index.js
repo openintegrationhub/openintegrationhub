@@ -4,11 +4,11 @@ const multer = require('multer');
 const uuid = require('uuid');
 const mkdirp = require('mkdirp');
 const fs = require('fs-extra');
-
+const { ownerOrAllowed } = require('../../middleware/permission');
+const { isLocalRequest } = require('../../util/common');
 const conf = require('../../conf');
 const { USER } = require('../../constant').ENTITY_TYPE;
 const { DomainDAO, SchemaDAO } = require('../../dao');
-const { isOwnerOfDomain } = require('../../middleware/is-owner');
 const Pagination = require('../../util/pagination');
 const {
     transformSchema, validateSchema, URIfromId, transformDbResults,
@@ -59,17 +59,16 @@ router.get('/', async (req, res) => {
     });
 });
 
-router.get('/:id', isOwnerOfDomain, async (req, res, next) => {
+router.get('/:id', ownerOrAllowed({
+    dao: DomainDAO,
+    permissions: ['not.defined'],
+}), async (req, res, next) => {
     try {
-        const domain = req.obj;
-
-        if (domain) {
-            res.send({
-                data: transformDbResults(domain),
-            });
-        } else {
-            res.sendStatus(403);
-        }
+        res.send({
+            data: await DomainDAO.findOne({
+                _id: req.params.id,
+            }),
+        });
     } catch (err) {
         log.error(err, { 'x-request-id': req.headers['x-request-id'] });
         next({
@@ -99,28 +98,58 @@ router.post('/', async (req, res, next) => {
 });
 
 // schema
-router.get('/:id/schemas', async (req, res) => {
+router.get('/:id/schemas', ownerOrAllowed({
+    dao: DomainDAO,
+    permissions: ['not.defined'],
+}), async (req, res) => {
     const pagination = new Pagination(
         req.originalUrl,
         SchemaDAO,
-        req.user.sub,
     );
-    res.send({
-        data: transformDbResults(await SchemaDAO.findByDomainAndEntity({
-            entity: req.user.sub,
-            domain: req.params.id,
+
+    let data;
+    let meta;
+
+    if (req.hasAll) {
+        data = await SchemaDAO.findByDomain({
+            domainId: req.params.id,
             options: pagination.props(),
-        })),
-        meta: {
+        });
+
+        meta = {
+            ...await pagination.calc({
+                domainId: req.params.id,
+            }),
+        };
+    } else {
+        data = await SchemaDAO.findByDomainAndEntity({
+            entityId: req.user.sub,
+            domainId: req.params.id,
+            options: pagination.props(),
+        });
+        meta = {
             ...await pagination.calc({
                 domainId: req.params.id,
                 'owners.id': req.user.sub,
             }),
-        },
+        };
+    }
+
+    res.send({
+        data: transformDbResults(data),
+        meta,
     });
 });
 
 router.get('/:id/schemas/:uri*', async (req, res, next) => {
+    if (isLocalRequest(req)) {
+        return next();
+    }
+    ownerOrAllowed({
+        dao: DomainDAO,
+        permissions: ['not.defined'],
+    })(req, res, next);
+}, async (req, res, next) => {
     try {
         const schema = await SchemaDAO.findByURI({
             uri: buildURI(req.params),
@@ -142,7 +171,10 @@ router.get('/:id/schemas/:uri*', async (req, res, next) => {
 });
 
 
-router.post('/:id/schemas', async (req, res, next) => {
+router.post('/:id/schemas', ownerOrAllowed({
+    dao: DomainDAO,
+    permissions: ['not.defined'],
+}), async (req, res, next) => {
     const { data } = req.body;
 
     try {
@@ -155,15 +187,27 @@ router.post('/:id/schemas', async (req, res, next) => {
             schema: data,
         });
 
+        let owner;
+
+        if (req.isOwnerOf) {
+            owner = req.user.sub.toString();
+        } else {
+            // get owner of domain
+            const { owners } = await DomainDAO.findOne({
+                _id: req.params.id,
+            });
+            owner = owners[0].id;
+        }
+
         await SchemaDAO.createUpdate({
             obj: {
-                name: 'foo',
+                name: req.params.name,
                 domainId: req.params.id,
                 uri: URIfromId(transformed.schema.$id),
                 value: JSON.stringify(transformed.schema),
                 refs: transformed.backReferences,
                 owners: {
-                    id: req.user.sub.toString(),
+                    id: owner,
                     type: USER,
                 },
             },
@@ -180,7 +224,10 @@ router.post('/:id/schemas', async (req, res, next) => {
 
 // bulk upload
 
-router.post('/:id/schemas/import', upload.single('archive'), async (req, res, next) => {
+router.post('/:id/schemas/import', ownerOrAllowed({
+    dao: DomainDAO,
+    permissions: ['not.defined'],
+}), upload.single('archive'), async (req, res, next) => {
     let session = null;
     try {
         const file = req.file;
@@ -188,18 +235,31 @@ router.post('/:id/schemas/import', upload.single('archive'), async (req, res, ne
             throw (new Error('No file submitted'));
         } else {
             const transformedSchemas = await processArchive(file.path, req.params.id);
+
+            let owner;
+
+            if (req.isOwnerOf) {
+                owner = req.user.sub.toString();
+            } else {
+                // get owner of domain
+                const { owners } = await DomainDAO.findOne({
+                    _id: req.params.id,
+                });
+                owner = owners[0].id;
+            }
+
             // start transaction
             session = await SchemaDAO.startTransaction();
             for (const schema of transformedSchemas) {
                 await SchemaDAO.createUpdate({
                     obj: {
-                        name: 'foo',
+                        name: schema.schema.title,
                         domainId: req.params.id,
                         uri: URIfromId(schema.schema.$id),
                         value: JSON.stringify(schema.schema),
                         refs: schema.backReferences,
                         owners: {
-                            id: req.user.sub.toString(),
+                            id: owner,
                             type: USER,
                         },
                     },
@@ -228,7 +288,10 @@ router.post('/:id/schemas/import', upload.single('archive'), async (req, res, ne
     }
 });
 
-router.delete('/:id/schemas/:uri*', async (req, res, next) => {
+router.delete('/:id/schemas/:uri*', ownerOrAllowed({
+    dao: DomainDAO,
+    permissions: ['not.defined'],
+}), async (req, res, next) => {
     try {
         await SchemaDAO.delete(buildURI(req.params));
         res.sendStatus(204);
