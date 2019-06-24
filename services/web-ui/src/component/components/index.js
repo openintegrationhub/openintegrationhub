@@ -67,21 +67,21 @@ class Components extends React.Component {
         }
     }
 
-    // prePage = () => {
-    //     if (this.props.components.meta.page === 1) {
-    //         this.props.getComponentsPage(this.props.components.meta.totalPages);
-    //     } else {
-    //         this.props.getComponentsPage(this.props.components.meta.page - 1);
-    //     }
-    // };
+    prePage = () => {
+        if (this.props.components.meta.page === 1) {
+            this.props.getComponentsPage(this.props.components.meta.totalPages);
+        } else {
+            this.props.getComponentsPage(this.props.components.meta.page - 1);
+        }
+    };
 
-    // nextPage = () => {
-    //     if (this.props.components.meta.page === this.props.components.meta.totalPages) {
-    //         this.props.getComponentsPage(1);
-    //     } else {
-    //         this.props.getComponentsPage(this.props.components.meta.page + 1);
-    //     }
-    // };
+    nextPage = () => {
+        if (this.props.components.meta.page === this.props.components.meta.totalPages) {
+            this.props.getComponentsPage(1);
+        } else {
+            this.props.getComponentsPage(this.props.components.meta.page + 1);
+        }
+    };
 
     render() {
         const {
@@ -92,22 +92,22 @@ class Components extends React.Component {
             <Container className={classes.wrapper}>
                 <Grid container spacing={2}>
 
-                    <Grid item xs={8}>
+                    <Grid item xs={6}>
                         <Button variant="outlined" aria-label="Add" onClick={this.addComponent}>
                         Add<Add/>
                         </Button>
                     </Grid>
-                    {this.props.components.meta && <Grid item xs={4}>
+                    {this.props.components.meta && <Grid item xs={6}>
                         <Grid container justify="flex-end" spacing={2}>
-                            <Grid item >
+                            <Grid item>
                                 <InputLabel>Components: </InputLabel>{this.props.components.meta.total}
                             </Grid>
-                            <Grid item >
+                            <Grid item>
                                 <Button variant="outlined" aria-label="before" onClick={this.prePage} >
                                     <NavigateBefore/>
                                 </Button>
                             </Grid>
-                            <Grid item >
+                            <Grid item>
                                 {this.props.components.meta.page}/{this.props.components.meta.totalPages}
                             </Grid>
                             <Grid item>

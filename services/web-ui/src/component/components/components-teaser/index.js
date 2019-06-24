@@ -95,7 +95,7 @@ class ComponentTeaser extends React.PureComponent {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Grid container>
-                            <Grid item xs={12}><h3>Dist</h3>
+                            <Grid item xs={12}><h3>Distribution</h3>
                                 {
                                     this.getDist()
                                 }
