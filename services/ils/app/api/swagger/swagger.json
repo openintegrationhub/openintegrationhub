@@ -30,8 +30,8 @@
         "tags": [
           "chunks"
         ],
-        "summary": "",
-        "description": ".....",
+        "summary": "Get chunk",
+        "description": "Get a chunk by ilaId",
         "operationId": "",
         "parameters": [
           {
@@ -42,6 +42,15 @@
             "schema": {
               "type": "string",
               "format": "string"
+            }
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "Split key identifier",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -68,8 +77,8 @@
         "tags": [
           "chunks"
         ],
-        "summary": "",
-        "description": ".....",
+        "summary": "Create chunk",
+        "description": "Create a chunk object",
         "operationId": "",
         "responses": {
           "200": {
@@ -91,6 +100,43 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/addChunk"
+              }
+            }
+          },
+          "description": "",
+          "required": true
+        }
+      }
+    },
+    "/chunks/split": {
+      "post": {
+        "x-swagger-router-controller": "chunk",
+        "tags": [
+          "chunks"
+        ],
+        "summary": "Split chunk",
+        "description": "Split a chunk object in smaller chunks",
+        "operationId": "",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/splitChunk"
               }
             }
           },
@@ -135,6 +181,23 @@
               "uri": {
                 "type": "string",
                 "example": "http://metadata.openintegrationhub.com/domains/addresses/schema/uri"
+              },
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "email": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
               }
             }
           },
@@ -152,6 +215,75 @@
               "email": {
                 "type": "string",
                 "example": "doe@mail.com"
+              }
+            }
+          }
+        }
+      },
+      "splitChunk": {
+        "type": "object",
+        "properties": {
+          "ilaId": {
+            "type": "string",
+            "example": "123asd"
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "example": "John"
+              },
+              "lastName": {
+                "type": "string",
+                "example": "Doe"
+              },
+              "email": {
+                "type": "string",
+                "example": "doe@mail.com"
+              },
+              "name": {
+                "type": "string",
+                "example": "Company Ltd."
+              },
+              "logo": {
+                "type": "string",
+                "example": "https://company.com/logo.png"
+              }
+            }
+          },
+          "splitSchema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "splitKey": {
+                      "type": "string",
+                      "example": "001"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "12345678"
+                    }
+                  }
+                },
+                "payload": {
+                  "type": "object",
+                  "properties": {
+                    "firstName": {
+                      "type": "string"
+                    },
+                    "lastName": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    }
+                  }
+                }
               }
             }
           }
