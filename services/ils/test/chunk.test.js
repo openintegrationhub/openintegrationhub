@@ -1,4 +1,3 @@
-
 /* eslint no-unused-expressions: "off" */
 /* eslint max-len: "off" */
 /* eslint no-underscore-dangle: "off" */
@@ -6,18 +5,21 @@
 
 const mongoose = require('mongoose');
 
+// process.env.MONGODB_URL = global.__MONGO_URI__;
+
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3002;
 const request = require('supertest')(`${hostUrl}:${port}`);
-
 const Chunk = require('../app/models/chunk');
+
 const Server = require('../app/server');
 
 const mainServer = new Server();
 let app;
 
 const {
-  chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8,
+  chunk1, chunk2, chunk3, chunk4, chunk5, chunk6,
+  chunk7, chunk8, chunk9, chunk10, chunk11, chunk12,
 } = require('./seed/chunk.seed.js');
 const log = require('../app/config/logger');
 
@@ -30,7 +32,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   const ilaIds = ['123asd', '987asd', '567qwe'];
-  await Chunk.remove({ ilaId: { $in: ilaIds } });
+  await Chunk.deleteMany({ ilaId: { $in: ilaIds } });
   await mongoose.connection.close();
   await app.close();
 });
@@ -104,6 +106,14 @@ describe('POST chunks', () => {
     expect(res.body.data.payload.salutation).toEqual('Mr.');
   });
 
+  test('should fetch the schema from OIH Meta Data Repository', async () => {
+    const res = await request
+      .post('/chunks')
+      .send(chunk3);
+    expect(res.status).toEqual(200);
+    expect(res.text).toEqual('Get schema from OIH Meta Data Repository');
+  });
+
   test('should create an invalid chunk and return 200', async () => {
     const res = await request
       .post('/chunks')
@@ -145,7 +155,7 @@ describe('POST chunks', () => {
   test('should return 400 if cid\'s doesn\'t match', async () => {
     const res = await request
       .post('/chunks')
-      .send(chunk3);
+      .send(chunk9);
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(1);
     expect(res.body.errors[0].message).toEqual('CID and def must match with other flow!');
@@ -168,6 +178,30 @@ describe('POST chunks', () => {
     expect(res.body.errors).toHaveLength(1);
     expect(res.body.errors[0].message).toEqual('Input does not match schema!');
   });
+
+  test('should return 404 if neither schema nor uri are provided', async () => {
+    const res = await request
+      .post('/chunks')
+      .send(chunk10);
+    expect(res.status).toEqual(404);
+    expect(res.text).toEqual('URI or schema must be specified!');
+  });
+
+  test('should return 400 if schema is invalid and schema uri is not provided', async () => {
+    const res = await request
+      .post('/chunks')
+      .send(chunk11);
+    expect(res.status).toEqual(400);
+    expect(res.text).toEqual('Schema is invalid and schema uri is not provided!');
+  });
+
+  test('should return 400 if neither Schema nor uri are valid!', async () => {
+    const res = await request
+      .post('/chunks')
+      .send(chunk12);
+    expect(res.status).toEqual(400);
+    expect(res.text).toEqual('Neither Schema nor uri are valid!');
+  });
 });
 
 describe('GET chunks', () => {
@@ -188,7 +222,7 @@ describe('GET chunks', () => {
     expect(res.body.data[0].payload.salutation).toEqual('Mr.');
   });
 
-  test('should return 404 if no chunk found', async () => {
+  test('should return 404 if no chunks found', async () => {
     const res = await request
       .get('/chunks/1234567}');
     expect(res.status).toEqual(404);
