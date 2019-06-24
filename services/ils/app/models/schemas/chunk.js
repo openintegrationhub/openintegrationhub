@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
+const meta = require('./meta');
 
 const chunkSchema = new Schema({
+  meta,
   ilaId: String,
   cid: String,
   def: Object,
   payload: Object,
+  splitKey: String,
+  userId: String,
   valid: Boolean,
   expireAt: {
     type: Date,

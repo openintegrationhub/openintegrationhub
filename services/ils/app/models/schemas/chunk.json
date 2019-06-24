@@ -12,7 +12,24 @@
     },
     "def": {
       "type": "object",
-      "properties": {}
+      "properties": {
+        "domainId": {
+          "type": "string"
+        }
+      },
+      "anyOf": [
+        {
+          "uri": {
+            "type": "string"
+          }
+        },
+        {
+          "schema": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      ]
     },
     "payload": {
       "type": "object",
