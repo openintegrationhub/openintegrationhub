@@ -21,11 +21,6 @@ The document shortly describes the two services and their functionality. This in
 # Technologies used
 
 - Cron-Deamon
-- Tbd for resource coordinator
-
-## Reasoning
-
-- Tbd
 
 # Conceptional Elaborations
 ## Scheduler
