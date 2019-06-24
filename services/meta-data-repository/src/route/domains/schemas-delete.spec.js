@@ -147,6 +147,16 @@ describe('schemas', () => {
             .set(...global.user1)
             .expect(400);
 
+        // try to delete schema2 as user2
+        await request.delete(`${result2.data.uri.replace('/api/v1', '')}`)
+            .set(...global.user2)
+            .expect(403);
+
+        // try to delete schema2 as admin
+        await request.delete(`${result2.data.uri.replace('/api/v1', '')}`)
+            .set(...global.admin)
+            .expect(400);
+
         // try to delete schema3
         await request.delete(`${result3.data.uri.replace('/api/v1', '')}`)
             .set(...global.user1)
@@ -159,7 +169,11 @@ describe('schemas', () => {
 
         // try to delete schema2
         await request.delete(`${result2.data.uri.replace('/api/v1', '')}`)
-            .set(...global.user1)
+            .set(...global.user2)
+            .expect(403);
+
+        await request.delete(`${result2.data.uri.replace('/api/v1', '')}`)
+            .set(...global.admin)
             .expect(204);
 
         // try to delete schema1

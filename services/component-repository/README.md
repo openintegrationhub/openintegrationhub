@@ -28,6 +28,7 @@ Kubernetes descriptors for Component Repository along with the other core platfo
 #### General
 | Name | Description |
 | --- | --- |
+| CORS_ORIGIN_WHITELIST | Comma separated list of allowed CORS origins. |
 | IAM_TOKEN | Token of the service account. |
 | LOG_LEVEL | Log level for logger. |
 | MONGODB_URI | MongoDB connection string. |

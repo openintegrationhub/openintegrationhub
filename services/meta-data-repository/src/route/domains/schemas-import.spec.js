@@ -119,10 +119,36 @@ describe('schemas', () => {
             .attach('archive', packDest)
             .expect(200);
 
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
+            .set(...global.user2)
+            .attach('archive', packDest)
+            .expect(403);
+
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
+            .set(...global.admin)
+            .attach('archive', packDest)
+            .expect(200);
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user2)
+            .expect(403)).body;
+
         result = (await request.get(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .expect(200)).body;
 
         expect(result.meta.total).toEqual(20);
+        expect(result.meta.perPage).toEqual(10);
+        expect(result.meta.totalPages).toEqual(2);
+        expect(result.data.length).toEqual(10);
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.admin)
+            .expect(200)).body;
+
+        expect(result.meta.total).toEqual(20);
+        expect(result.meta.perPage).toEqual(10);
+        expect(result.meta.totalPages).toEqual(2);
+        expect(result.data.length).toEqual(10);
     });
 });

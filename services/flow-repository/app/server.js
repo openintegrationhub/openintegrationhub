@@ -22,8 +22,34 @@ class Server {
   constructor() {
     this.app = express();
     this.app.disable('x-powered-by');
-    this.app.use(cors());
-    this.app.options('*', cors());
+  }
+
+  async setupCors() {
+    const whitelist = config.originWhitelist;
+
+    // For development, add localhost to permitted origins
+    if (process.env.NODE_ENV !== 'production') {
+      whitelist.push('http://localhost:3001');
+    }
+
+    const corsOptions = {
+      origin(origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+          callback(null, true);
+        } else {
+          log.info('Blocked by CORS');
+          log.info(origin);
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+    };
+
+    // Enables preflight OPTIONS requests
+    this.app.options('/', cors());
+
+    // enables CORS
+    this.app.use('/flows', cors(corsOptions));
   }
 
   async setupMiddleware() {
@@ -121,10 +147,9 @@ class Server {
       res.redirect('/api-docs');
     });
 
-    // Extremely rudimentary error handler. TODO: Make it less rudimentary
+    // Error handling
       this.app.use(function (err, req, res, next) { // eslint-disable-line
-      log.error(err);
-      return res.status(err.status).send(err.message);
+      return res.status(err.status || 500).send({ errors: [{ message: err.message, code: err.status }] });
     });
 
     log.info('Routes set');

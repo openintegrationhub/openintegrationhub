@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
+const { isLocalRequest } = require('../util/common');
 const swaggerDocument = require('../../doc/openapi');
 const iamLib = require('./../module/iam');
 const DAO = require('../dao');
@@ -54,10 +55,8 @@ module.exports = class Server {
         const apiBase = express.Router();
 
         apiBase.use((req, res, next) => {
-            if (req.connection.remoteAddress === req.connection.localAddress) {
-                if (req.method === 'GET' && req.originalUrl.match(/schemas.+/)) {
-                    return next();
-                }
+            if (isLocalRequest(req)) {
+                return next();
             }
             this.iam.middleware(req, res, next);
         });
