@@ -1,7 +1,4 @@
-/* eslint no-unused-expressions: "off" */
-/* eslint no-underscore-dangle: "off" */
 /* eslint max-len: "off" */
-/* eslint consistent-return: "off" */
 
 const express = require('express');
 
@@ -25,12 +22,12 @@ class Server {
   setupRoutes() {
     log.info('Setting up routes...');
     this.app.use('/chunks', chunk);
-    // Reroute to docs
     this.app.use('/docs', (req, res) => {
       res.redirect('/api-docs');
     });
 
     this.app.get('/healthcheck', (req, res) => {
+      // TODO: Improve healthcheck
       res.status(200).send('OK');
     });
 
@@ -39,8 +36,8 @@ class Server {
 
   async setup(mongoose) {
     log.info('Connecting to MongoDB ...');
-    // Configure MongoDB
-    // Use the container_name, bec containers in the same network can communicate using their service name
+    // Use the container_name, because containers in the same network can communicate using their service name
+
     this.mongoose = mongoose;
 
     const options = {

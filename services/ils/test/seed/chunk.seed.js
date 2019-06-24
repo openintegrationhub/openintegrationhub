@@ -4,6 +4,28 @@ const chunk1 = {
   def: {
     domainId: 'addresses',
     uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          minLength: 1,
+        },
+        lastName: {
+          type: 'string',
+          minLength: 1,
+        },
+        email: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: [
+        'lastName',
+        'firstName',
+      ],
+      additionalProperties: true,
+    },
   },
   payload: {
     lastName: 'Doe',
@@ -17,6 +39,28 @@ const chunk2 = {
   def: {
     domainId: 'addresses',
     uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          minLength: 1,
+        },
+        lastName: {
+          type: 'string',
+          minLength: 1,
+        },
+        email: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: [
+        'lastName',
+        'firstName',
+      ],
+      additionalProperties: true,
+    },
   },
   payload: {
     firstName: 'John',
@@ -29,7 +73,10 @@ const chunk2 = {
 const chunk3 = {
   ilaId: '123asd',
   cid: 'lastName',
-  def: {},
+  def: {
+    domainId: 'addresses',
+    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+  },
   payload: {
     firstName: 'John',
     lastName: 'Doe',
@@ -41,7 +88,32 @@ const chunk3 = {
 const chunk4 = {
   ilaId: 'asd4567',
   cid: 'firstName',
-  def: {},
+  def: {
+    domainId: 'addresses',
+    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          minLength: 1,
+        },
+        lastName: {
+          type: 'string',
+          minLength: 1,
+        },
+        email: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: [
+        'lastName',
+        'firstName',
+      ],
+      additionalProperties: true,
+    },
+  },
   payload: {
     lastName: 'Smith',
     email: 'smith@mail.com',
@@ -51,7 +123,32 @@ const chunk4 = {
 const chunk5 = {
   ilaId: '',
   cid: 'email',
-  def: {},
+  def: {
+    domainId: 'addresses',
+    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          minLength: 1,
+        },
+        lastName: {
+          type: 'string',
+          minLength: 1,
+        },
+        email: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: [
+        'lastName',
+        'firstName',
+      ],
+      additionalProperties: true,
+    },
+  },
   payload: {
     lastName: 'Hobbs',
     firstName: 'jack',
@@ -65,6 +162,28 @@ const chunk6 = {
   def: {
     domainId: 'addresses',
     uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          minLength: 1,
+        },
+        lastName: {
+          type: 'string',
+          minLength: 1,
+        },
+        email: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: [
+        'lastName',
+        'firstName',
+      ],
+      additionalProperties: true,
+    },
   },
   payload: {
     lastName: 'Hobbs',
@@ -79,6 +198,28 @@ const chunk7 = {
   def: {
     domainId: 'addresses',
     uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          minLength: 1,
+        },
+        lastName: {
+          type: 'string',
+          minLength: 1,
+        },
+        email: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: [
+        'lastName',
+        'firstName',
+      ],
+      additionalProperties: true,
+    },
   },
   payload: {
     lastName: 'Peterson',
@@ -92,6 +233,28 @@ const chunk8 = {
   def: {
     domainId: 'addresses',
     uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          minLength: 1,
+        },
+        lastName: {
+          type: 'string',
+          minLength: 1,
+        },
+        email: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: [
+        'lastName',
+        'firstName',
+      ],
+      additionalProperties: true,
+    },
   },
   payload: {
     lastName: 'Peterson',
@@ -99,6 +262,99 @@ const chunk8 = {
   },
 };
 
+const chunk9 = {
+  ilaId: '123asd',
+  cid: 'lastName',
+  def: {
+    domainId: 'addresses',
+    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          minLength: 1,
+        },
+        lastName: {
+          type: 'string',
+          minLength: 1,
+        },
+        email: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: [
+        'lastName',
+        'firstName',
+      ],
+      additionalProperties: true,
+    },
+  },
+  payload: {
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'doe@mail.com',
+    salutation: 'Mr.',
+  },
+};
+
+const chunk10 = {
+  ilaId: '123asd',
+  cid: 'lastName',
+  def: {
+    domainId: 'addresses',
+  },
+  payload: {
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'doe@mail.com',
+    salutation: 'Mr.',
+  },
+};
+
+const chunk11 = {
+  ilaId: '123asd',
+  cid: 'lastName',
+  def: {
+    domainId: 'addresses',
+    schema: {},
+  },
+  payload: {
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'doe@mail.com',
+    salutation: 'Mr.',
+  },
+};
+
+const chunk12 = {
+  ilaId: '123asd',
+  cid: 'lastName',
+  def: {
+    domainId: 'addresses',
+    uri: 'http://metadata.openintegrationhub.com',
+    schema: 213456,
+  },
+  payload: {
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'doe@mail.com',
+    salutation: 'Mr.',
+  },
+};
+
 module.exports = {
-  chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8,
+  chunk1,
+  chunk2,
+  chunk3,
+  chunk4,
+  chunk5,
+  chunk6,
+  chunk7,
+  chunk8,
+  chunk9,
+  chunk10,
+  chunk11,
+  chunk12,
 };
