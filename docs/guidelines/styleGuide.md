@@ -13,7 +13,7 @@ General best practices should be applied to software development.
 
 ## test driven development (recommendation)
 
-Use tdd (https://en.wikipedia.org/wiki/Test-driven_development)
+Use tdd (<https://en.wikipedia.org/wiki/Test-driven_development>)
 
 ## clean code / clean architecture (recommendation)
 

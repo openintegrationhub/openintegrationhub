@@ -3,11 +3,10 @@
 
 **Creator:** Hansjörg Schmidt (hschmidthh), Wice GmbH <br>
 **Last revised by:** -  <br>
-**Last update:** 02-11-2018<br>
-**Version:** 0.1<br>
+**Last update:** 02-11-2018 <br>
+**Version:** 0.1 <br>
 
 ---
-
 
 # Message and Event Bus
 
@@ -31,14 +30,16 @@ The Message and Event Bus is a backspine of the OIH, because message queues prov
 ## Requirements for the Message and Event Bus
 
 Within the Open Integration Hub we have to consider how we are fulfilling the following tasks:
+
 - How do we deal with the integration tasks which we want to deliver?
 - How do we deal with messages and events which come from the decoupled systems?
 - Do we need different kind of objects, like commands or notifications?
 
 The answers to these questions will impact the architectural decisions:
+
 - Will there be a central queue, which caters every message or event or do we need different queues?
 - If we have a series of message queues, can we strung them together to perform complicated or multi-step processes?
-- How do we handle system identification and   
+- How do we handle system identification and
 - If the message is a command, then it's a signal to the receiver to do something. How do we handle the senders and receivers?
 - If the message is a notification, then it's a signal to the subscriber that some system event has occurred. How do we handle the PubSubs?
 - Additional security measures may be necessitated when a message travels from one message processor to another inside and especially outside the system. How do we handle this?
