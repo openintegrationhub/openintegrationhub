@@ -3,7 +3,7 @@ const chunk1 = {
   cid: 'email',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
     schema: {
       type: 'object',
       properties: {
@@ -38,7 +38,7 @@ const chunk2 = {
   cid: 'email',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
     schema: {
       type: 'object',
       properties: {
@@ -75,7 +75,7 @@ const chunk3 = {
   cid: 'lastName',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
   },
   payload: {
     firstName: 'John',
@@ -90,7 +90,7 @@ const chunk4 = {
   cid: 'firstName',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
     schema: {
       type: 'object',
       properties: {
@@ -125,7 +125,7 @@ const chunk5 = {
   cid: 'email',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
     schema: {
       type: 'object',
       properties: {
@@ -161,7 +161,7 @@ const chunk6 = {
   cid: 'email',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
     schema: {
       type: 'object',
       properties: {
@@ -197,7 +197,7 @@ const chunk7 = {
   cid: 'email',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
     schema: {
       type: 'object',
       properties: {
@@ -232,7 +232,7 @@ const chunk8 = {
   cid: 'email',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
     schema: {
       type: 'object',
       properties: {
@@ -267,7 +267,7 @@ const chunk9 = {
   cid: 'lastName',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
     schema: {
       type: 'object',
       properties: {
@@ -333,7 +333,7 @@ const chunk12 = {
   cid: 'lastName',
   def: {
     domainId: 'addresses',
-    uri: 'http://metadata.openintegrationhub.com',
+    uri: 'https://metadata.openintegrationhub.com',
     schema: 213456,
   },
   payload: {
