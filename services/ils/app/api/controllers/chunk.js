@@ -1,5 +1,8 @@
 /* eslint no-underscore-dangle: "off" */
+/* eslint no-unused-expressions: "off" */
 /* eslint consistent-return: "off" */
+/* eslint no-await-in-loop: "off" */
+/* eslint max-len: ["error", { "code": 120 }] */
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -10,11 +13,13 @@ const router = express.Router();
 // Ajv schema validator
 const Ajv = require('ajv');
 const chunkSchema = require('../../models/schemas/chunk.json');
-const payloadSchema = require('../../models/schemas/payload.json');
-
+// const payloadSchema = require('../../models/schemas/payload.json');
 const ajv = new Ajv({ allErrors: true, jsonPointers: true });
+
 const chunkValidator = ajv.compile(chunkSchema);
-const payloadValidator = ajv.compile(payloadSchema);
+// const payloadValidator = ajv.compile(payloadSchema);
+const { validateSchema, validateUri, validateSplitSchema } = require('../utils/validator');
+const { createChunk, splitChunk, updateChunk } = require('../utils/helpers');
 
 // Models
 const Chunk = require('../../models/chunk');
@@ -22,18 +27,28 @@ const Chunk = require('../../models/chunk');
 // Logger
 const log = require('../../config/logger');
 
-// @route   GET /chunk
-// @desc    Get a single a chunk
-// @access  Private
+/**
+ * @desc Get chunks by ilaId
+ *
+ * @route   GET /chunks
+ * @access  Private
+ * @param {String} ilaId - Integration Layer Adapter ID
+ * @param {String} key - Split key identifier
+ * @return {Object} - Array of chunk objects containing data and meta
+ */
 router.get('/:ilaId', jsonParser, async (req, res) => {
   const { ilaId } = req.params;
+  const { key } = req.query;
+  let selector;
+
+  key ? selector = { ilaId, splitKey: key } : selector = { ilaId, valid: true };
 
   if (!ilaId || ilaId === 'undefined' || '') {
     return res.status(400).send({ errors: [{ message: 'Integration Layer Adapter ID required!', code: 400 }] });
   }
 
   try {
-    const chunks = await Chunk.find({ ilaId, valid: true });
+    const chunks = await Chunk.find(selector);
 
     if (!chunks || chunks.length === 0) {
       return res.status(404).send({ errors: [{ message: 'No chunks found!', code: 404 }] });
@@ -47,16 +62,54 @@ router.get('/:ilaId', jsonParser, async (req, res) => {
   }
 });
 
-// @route   POST /chunk
-// @desc    Create a chunk
-// @access  Private
+/**
+ * @desc Create a chunk object
+ *
+ * @route   POST /chunks
+ * @access  Private
+ * @return {Object} - Chunk object containing data and meta
+ */
 router.post('/', jsonParser, async (req, res) => {
   const {
     cid, payload, ilaId, def,
   } = req.body;
 
+  const { schema } = req.body.def;
+  const schemaUri = req.body.def.uri;
+  const invalidInputSchema = validateSchema(schema);
+  let payloadValidator;
+  let validSchemaUri;
+
+  if (schemaUri) {
+    validSchemaUri = validateUri(req.body.def.uri);
+  }
+
+  if (!schemaUri && !schema) {
+    return res.status(404).send('URI or schema must be specified!');
+  }
+
+  if (invalidInputSchema && !schemaUri) {
+    return res.status(400).send('Schema is invalid and schema uri is not provided!');
+  }
+
+
+  if (invalidInputSchema && !validSchemaUri) {
+    return res.status(400).send('Neither Schema nor uri are valid!');
+  }
+
+  if ((invalidInputSchema && schemaUri && validSchemaUri)
+    || (!schema && schemaUri && validSchemaUri)) {
+    // TODO: Get a model from OIH Meta Data Repository and then save the chunk
+    // payloadValidator = ajv.compile(schema);
+    console.log('OIH Meta Data Repository');
+    return res.status(200).send('Get schema from OIH Meta Data Repository');
+  }
+
+  if (schema && !invalidInputSchema) {
+    payloadValidator = ajv.compile(schema);
+  }
+
   const valid = chunkValidator(req.body);
-  const expireAt = new Date(new Date().getTime() + 1000 * 60 * 60);
   const validPayload = Object.prototype.hasOwnProperty.call(payload, req.body.cid);
 
   if (!validPayload) {
@@ -70,82 +123,60 @@ router.post('/', jsonParser, async (req, res) => {
   const selector = `payload.${cid}`;
   try {
     const chunk = await Chunk.findOne({ ilaId, [selector]: payload[cid] }).lean();
+    let status;
 
-    // Create chunk if does not exist
+    // Create a chunk if does not exist
     if (!chunk) {
-      log.info('Chunk created ...');
-      // TODO: Get a model from OIH Meta Data Repository and then save the chunk
-
-      const newChunk = new Chunk({
-        ilaId,
-        cid,
-        payload,
-        def,
-        expireAt,
-      });
-
-      const validNewChunk = payloadValidator(newChunk.payload);
-
-      if (validNewChunk) {
-        newChunk.valid = true;
-        const response = await newChunk.save();
-        return res.status(200).send({ data: response, meta: {} });
-      }
-
-      newChunk.valid = false;
-      const response = await newChunk.save();
-      return res.status(200).send({ data: response, meta: {} });
+      log.info('Creating chunk ...');
+      // TODO: add meta
+      const newChunk = await createChunk(ilaId, payload, undefined, undefined, cid, def, payloadValidator);
+      return res.status(200).send(newChunk);
     }
 
-    // Updatethe chunk if it already exists
-    log.info('Chunk updated ...');
+    // Update the chunk if it already exists
+    log.info('Updating chunk ...');
+    const incomingPayload = req.body.payload;
+    const incomingCid = req.body.cid;
+    const updatedChunk = await updateChunk(chunk, incomingPayload, payloadValidator, def, incomingCid);
 
-    const newPayload = Object.assign(chunk.payload, req.body.payload);
-    const validChunk = payloadValidator(newPayload);
-    let validDef = false;
-    let response;
+    updatedChunk.errors ? status = updatedChunk.errors[0].code : status = 200;
 
-    if (def.domainId === chunk.def.domainId && def.uri === chunk.def.uri) {
-      validDef = true;
-    }
-
-    if (req.body.cid !== chunk.cid || !validDef) {
-      return res.status(400).send({ errors: [{ message: 'CID and def must match with other flow!', code: 400 }] });
-    }
-
-    // Validate new object after merge and then update it
-    if (validChunk) {
-      response = await Chunk.findOneAndUpdate(
-        { _id: chunk._id },
-        {
-          $set: {
-            payload: newPayload,
-            valid: true,
-            expireAt,
-          },
-        },
-        { new: true },
-      );
-      return res.status(200).send({ data: response, meta: {} });
-    }
-
-    response = await Chunk.findOneAndUpdate(
-      { _id: chunk._id },
-      {
-        $set: {
-          payload: newPayload,
-          valid: false,
-          expireAt,
-        },
-      }, { new: true },
-    );
-
-    return res.status(200).send({ data: response, meta: {} });
+    return res.status(status).send(updatedChunk);
   } catch (err) {
     log.error(err);
     // istanbul ignore next
     return res.status(500).send({ errors: [{ message: err }] });
   }
 });
+
+/**
+ * @desc Split a chunk object
+ *
+ * @route   POST /chunks/split
+ * @access  Private
+ * @return {Object} - Splitted objects
+ */
+router.post('/split', jsonParser, async (req, res) => {
+  const {
+    payload, ilaId, splitSchema,
+  } = req.body;
+  let status;
+
+  if (!splitSchema) {
+    return res.status(400).send('Split schema is not defined!');
+  }
+
+  const invalidSplitSchema = validateSplitSchema(splitSchema);
+
+  if (invalidSplitSchema) {
+    return res.status(400).send('Split schema is not valid!');
+  }
+
+  const splittedChunk = await splitChunk(splitSchema, payload, ilaId);
+  splittedChunk.errors ? status = splittedChunk.errors[0].code : status = 200;
+
+  res.status(status).send(splittedChunk);
+});
+
 
 module.exports = router;
