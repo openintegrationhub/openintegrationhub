@@ -33,6 +33,7 @@ import Home from '../../component/home';
 import Users from '../../component/users';
 import Tenants from '../../component/tenants';
 import Flows from '../../component/flows';
+import Components from '../../component/components';
 
 const drawerWidth = 240;
 
@@ -114,8 +115,8 @@ class Main extends React.Component {
 
     componentDidMount() {
         let menuArr = [];
-        if (this.props.auth.role === 'ADMIN') menuArr = ['Start', 'Users', 'Tenants', 'Flows', 'Logout'];
-        else menuArr = ['Start', 'Flows', 'Logout'];
+        if (this.props.auth.role === 'ADMIN') menuArr = ['Start', 'Users', 'Tenants', 'Flows', 'Components', 'Logout'];
+        else menuArr = ['Start', 'Flows', 'Components', 'Logout'];
         this.setState({
             menu: menuArr,
         });
@@ -125,8 +126,8 @@ class Main extends React.Component {
         if (prefProps.auth !== this.props.auth) {
             let menuArr = [];
             let context = null;
-            if (this.props.auth.role === 'ADMIN') menuArr = ['Start', 'Users', 'Tenants', 'Flows', 'Logout'];
-            else menuArr = ['Start', 'Flows', 'Logout'];
+            if (this.props.auth.role === 'ADMIN') menuArr = ['Start', 'Users', 'Tenants', 'Flows', 'Components', 'Logout'];
+            else menuArr = ['Start', 'Flows', 'Components', 'Logout'];
 
             if (this.props.auth.memberships && this.props.auth.memberships.length) {
                 context = this.props.auth.memberships.find(tenant => tenant.name === 'Global').name;
@@ -185,6 +186,11 @@ class Main extends React.Component {
                   </ListItem>;
               case 'Flows':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/flows'); }}>
+                      <ListItemIcon><Waves /></ListItemIcon>
+                      <ListItemText primary={text} />
+                  </ListItem>;
+              case 'Components':
+                  return <ListItem button key={text} onClick={() => { this.props.history.push('/components'); }}>
                       <ListItemIcon><Waves /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
@@ -287,6 +293,7 @@ class Main extends React.Component {
                           <Route exact path="/users" component={Users} />
                           <Route exact path="/tenants" component={Tenants} />
                           <Route exact path="/flows" component={Flows} />
+                          <Route exact path="/components" component={Components} />
                       </Switch>
                   </main>
               </Grid>
