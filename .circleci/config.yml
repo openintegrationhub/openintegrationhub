@@ -13,9 +13,9 @@ aliases:
     branches:
       only: master
   - &yarn_test_steps
-      - restore_cache:
-          keys:
-            - yarn-deps-{{ .Branch }}-{{ .Revision }}
+      # - restore_cache:
+      #     keys:
+      #       - yarn-deps-{{ .Branch }}-{{ .Revision }}
       - run: yarn test
   - &build_steps
       - setup_remote_docker
