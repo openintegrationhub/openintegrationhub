@@ -54,6 +54,7 @@
     "react-scripts": "3.0.1",
     "react-test-renderer": "16.8.6",
     "redux": "4.0.1",
-    "redux-thunk": "2.3.0"
+    "redux-thunk": "2.3.0",
+    "jest": "24.7.1"
   }
 }
