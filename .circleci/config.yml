@@ -15,13 +15,13 @@ aliases:
   - &yarn_test_steps
       - restore_cache:
           keys:
-            - yarn-deps-v2-{{ .Branch }}-{{ .Revision }}
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
       - run: yarn test
   - &build_steps
       - setup_remote_docker
       - restore_cache:
           keys:
-            - yarn-deps-v2-{{ .Branch }}-{{ .Revision }}
+            - yarn-deps-{{ .Branch }}-{{ .Revision }}
       - run: |
           git diff --no-commit-id --name-only -r `git log -n 2 --oneline --pretty=format:"%h" --first-parent master | tail -n1` > gitchanges.txt
           cd ./scripts # needed for compatible with travis implementation
@@ -47,7 +47,7 @@ jobs:
           path: ~/oih
       - run: *run_npm_install
       - save_cache:
-          key: yarn-deps-v2-{{ .Branch }}-{{ .Revision }}
+          key: yarn-deps-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/oih
   test:
