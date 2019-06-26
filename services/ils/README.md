@@ -16,6 +16,12 @@ For the current prototypical implementation, the chosen core functionality is th
 
 In either case, the resulting object is then validated against a supplied definition, which includes a list of required fields. A valid object will be marked as such, and can then be retrieved by another component. If an object is invalid, it cannot be retrieved, and will instead be stored until the necessary data has been merged into it and it passes validation.
 
+## Use case: Splitting objects
+ILS comes into play when the user would like to split an object into smaller or other objects containing properties from the main object. Let's say that the user want to split the object containing employee's `firstName`, `lastName`, `salutation`, `organization`, `email`, `street` and `streetNumber` into two separate objects. The first one should have the properties `firstName`, `lastName`  and `salutation` ant the second one should contain the rest. In this case the user must provide `splitSchema` array containing two objects and each of them must have the properties `meta` and `payload`. Meta has the special property `splitKey` which servers as an identifier and `payload` consists of the fields which the new splitted object must contain. After successful splitting each new object should hold  the `splitKey` and `payload` properties.
+
+On the other hand the user would like to `GET` a new/splitted object. In such a case an `iladId` and a `splitKey` must be provided. Then ILS will return an array of all objects which have the same `splitKey`.
+
+
 ## Technical description
 The ILS API currently supports two end points, one for POSTing new objects, and one for GETting valid ones. Both of these operations ought to be conducted via the ILA, but can also be targeted manually for testing and development purposes.
 
