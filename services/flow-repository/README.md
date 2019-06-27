@@ -49,4 +49,4 @@ So in order to carry out flow operations, the current user taking them needs to 
 
 ## REST-API documentation
 
-Visit http://localhost:3001/docs to view the Swagger API-Documentation
+Visit http://flow-repository.openintegrationhub.com/api-docs/ to view the Swagger API-Documentation
