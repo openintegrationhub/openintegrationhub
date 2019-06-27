@@ -10,21 +10,21 @@
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Introduction](#introduction)
-- [Description](#description)
-  - [Purpose of the Microservice Meta Data Service](#purpose-of-the-microservice-meta-data-service)
-- [Technologies used](#technologies-used)
-- [Requirements](#requirements)
-- [Conceptional Elaborations](#conceptional-elaborations)
-  - [Basic Version](#basic-version)
-    - [Model Structure](#model-structure)
-      - [Domain Object](#domain-object)
-      - [Model Object](#model-object)
-- [Open questions / Discussion](#open-questions--discussion)
-    - [How does a transformer pass/reference the model from metadata service?](#how-does-a-transformer-passreference-the-model-from-metadata-service)
-    - [Where is the transfomer output validated](#where-is-the-transfomer-output-validated)
+- [Introduction](#Introduction)
+- [Description](#Description)
+  - [Purpose of the Microservice Meta Data Repository](#Purpose-of-the-Microservice-Meta-Data-Repository)
+- [Technologies used](#Technologies-used)
+- [Requirements](#Requirements)
+- [Conceptional Elaborations](#Conceptional-Elaborations)
+  - [Basic Version](#Basic-Version)
+    - [Model Structure](#Model-Structure)
+      - [Domain Object](#Domain-Object)
+      - [Model Object](#Model-Object)
+- [Open questions / Discussion](#Open-questions--Discussion)
+    - [How does a transformer pass/reference the model from metadata repository?](#How-does-a-transformer-passreference-the-model-from-metadata-repository)
+    - [Where is the transfomer output validated](#Where-is-the-transfomer-output-validated)
     - [_oihdatarecord_](#oihdatarecord)
-- [User Stories](#user-stories)
+- [User Stories](#User-Stories)
 
 <!-- /TOC -->
 # Introduction
@@ -35,7 +35,7 @@ In addition, this service also manages the _oihdatarecord_ and concatenates it w
 
 # Description
 
-## Purpose of the Microservice Meta Data Service
+## Purpose of the Microservice Meta Data Repository
 If we talk about metadata in this context, we mean the description of the domains and their corresponding Master Data Models. An OIH Master Data Model (OMDM) describes the data of a certain domain in a depth which is sufficient enough to map and synchronize the specific data of multiple applications in that domain. The meta data delivers all the information a user or customer needs to work with data within a specific domain.
 
 The domain models are specified by special workgroups. Please see the specific domain model repository for further informations on a domain and its master data model.
@@ -223,7 +223,7 @@ Therefore, the following structure is supposed:
 ```
 
 # Open questions / Discussion
-### How does a transformer pass/reference the model from metadata service?
+### How does a transformer pass/reference the model from metadata repository?
 For each transformer in a flow, the user could define which domain + models should be used. When a transformer creates an output how does it reference the exact model representing the data? The transformer could support multiple models, but in order for OIH to validate and process the output, it needs at least to know which model matches which output. Are models named, e.g. **person** and the domain is preselected by the user, when configuring the transfomer?
 
 The [Master-Data-Model document](https://github.com/openintegrationhub/Data-and-Domain-Models/tree/master/MasterDataModels#json-schema) defines following requirement:
@@ -231,7 +231,7 @@ The [Master-Data-Model document](https://github.com/openintegrationhub/Data-and-
 Can a **person** be a sub-model of **addresses** with a unique URI?
 
 ### Where is the transfomer output validated
-* Done by a separate validator component or Metadata Service?
+* Done by a separate validator component or metadata repository?
 
 ### _oihdatarecord_
 In order for the transformer to embed the _oihdatarecord_ into the model via **allOf**, it needs the reference/uri of the _oihdatarecord_, e.g. env vars.
