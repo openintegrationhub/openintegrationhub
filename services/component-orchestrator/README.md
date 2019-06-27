@@ -1,35 +1,55 @@
+![alpha](https://img.shields.io/badge/Status-Alpha-yellowgreen.svg)
+
+<p align="center">
+  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
+</p>
+
+The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
+
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+
 # Component Orchestrator
+
 Orchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Docker containers for each flow node on flow creation and cleans up on flow deletion.
 
 ## How it works
+
 The application works in a loop. During each loop iteration it makes sure, that all nodes for each flow have been deployed and asserts RabbitMQ queues and RabbitMQ user for each node.
 If a flow has been deleted, the application removes the corresponding containers and RabbitMQ queues and RabbitMQ user.
 
 ### Handling flow updates
+
 If a container is running an outdated version of node, it will be redeployed.
 
 ## Prerequisites
+
 - Kubernetes cluster with enabled RBAC.
 - RabbitMQ with enabled [Management plugin](https://www.rabbitmq.com/management.html).
 - MongoDB
 
 ## Service Account
+
 This service requires a service account with the following permissions:
+
 - `components.get`
 
 ## How to build
-```
+
+```docker
 docker build -t openintegrationhub/component-orchestrator:latest -f Dockerfile ../../
 ```
+
 or
-```
+
+```npm
 VERSION=latest npm run build:docker
 ```
 
 ## How to deploy
+
 Kubernetes descriptors for Resource Coordinator along with the other core platform microservices can be found in the [k8s](./k8s) directory.
 
-```
+``` console
 cd platform
 kubectl apply -f ./k8s
 ```
@@ -38,7 +58,8 @@ kubectl apply -f ./k8s
 
 ## Environment variables
 
-#### General
+### General
+
 | Name | Description |
 | --- | --- |
 | COMPONENT_REPOSITORY_BASE_URL | Base URL of the Component Repository. |
@@ -51,7 +72,8 @@ kubectl apply -f ./k8s
 | SELF_API_URI | URI to the current application. This API is called then from the inside of node containers. |
 | TICK_INTERVAL | Main loop interval. |
 
-#### Kubernetes driver specific
+### Kubernetes driver specific
+
 | Name | Description |
 | --- | --- |
 | DEFAULT_CPU_LIMIT | Default cpu limit for a flow's node container. |
