@@ -12,6 +12,10 @@
 
 In an environment similar to OIH different services communicate with each other but also with external cloud services. Such external services normally require some sort of authentication and authorization in order to identify the communicating party and the it's privileges. Typically RESTful APIs tend to secure the API with API-Keys and tokens (e.g. OAuth 2.0 tokens). The usage of certificate in combination with a private certificate authority is also possible, but this document does not focus on the concept of a Public Key Infrastructure. From a security point of view, it is reasonable to store API-Keys and tokens encrypted and have strong authorization mechanisms to access them. In a multi-tenant environment – ideally using different encryption keys for each tenant. In OIH we need an appropriate storage for tenant or user specific key value pairs, whereupon the value can be an encrypted string, certificate, etc. All stored keys and tokens should be accessible via an API if a valid authorization exists.
 
+**Framework Part:** [secret-service lib](https://github.com/openintegrationhub/openintegrationhub/tree/master/lib/secret-service)
+
+**Reference Implementation:** [secret-service service](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/secret-service)
+
 # Use Cases and requirements in OIH
 
 When dealing with integration flows there are different scenarios when secrets are required. Here are some examples:

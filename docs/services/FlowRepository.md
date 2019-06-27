@@ -30,6 +30,10 @@ member of an organization which uses the Open Integration Hub.
 These flows have to be stored, retrieved, updated and deleted. The Flow Repository
 will provide these functionabilities.
 
+**Framework Part:** Tbd
+
+**Reference Implementation:** [flow repository service](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/flow-repository)
+
 ## Requirements for the Flow Repository
 
 We will need a component within the Open Integration Hub which fulfill the following user stories.
