@@ -23,11 +23,11 @@ When dealing with integration flows there are different scenarios when secrets a
 
 Additionally, it is essential to have a sophisticated audit logging for all operations involving these secrets.
 
-# SKM Service
+# Secret Service
 
 A dedicated service should carry out the management of keys and secrets. Keys need to have at least one owner and the ownership should be validated through OIH IAM. Additionally, the underlying vault framework should be interchangeable through an abstraction layer, thus ensuring a stable public API.
 
-The SKM Service will provide a CRUD-API for keys, which can be accessed by other privileged services, e.g. flow operator or even connector, as well as the users. The API may look similar to current elastic.io credentials API <https://api.elastic.io/v2/docs/#credentials>
+The Secret-Service will provide a CRUD-API for keys, which can be accessed by other privileged services, e.g. flow operator or even connector, as well as the users. The API may look similar to current elastic.io credentials API <https://api.elastic.io/v2/docs/#credentials>
 
 Proposal for secret structure
 
@@ -63,7 +63,7 @@ Proposal for secret structure
 
 # Access control
 
-To enforce authentication and authorization, the Secure Key Management (SKM) service must also store the owner or owner group, e.g. secret is owned by user with id XYZ. Similar to current elastic.io model, flow and credentials can have a group (workspace in elastic.io documentation) as an owner. If each user has at least her own private group and each tenant likewise, then the credentials owner can be described as an array of groups.
+To enforce authentication and authorization, the Secret-Service service must also store the owner or owner group, e.g. secret is owned by user with id XYZ. Similar to current elastic.io model, flow and credentials can have a group (workspace in elastic.io documentation) as an owner. If each user has at least her own private group and each tenant likewise, then the credentials owner can be described as an array of groups.
 
 ![Credentials ownership](Assets/credentials-relationship.png)
 
@@ -74,9 +74,9 @@ Apart from users, connectors also require access to credentials, e.g. when the u
 There are two alternatives to solve this
 
 1. The service responsible for connector instantiation provides the connector with all required secrets
-2. Each connector receives a token with which it can fetch the secrets from SKM service
+2. Each connector receives a token with which it can fetch the secrets from Secret-Service
 
-With the second alternative we can make sure, that each connector has access only to specific secrets by providing them with a corresponding JWT token from IAM service. This JWT token would contain as a claim the user's group-id. This in return allows the SKM service to verify that the connector accesses only the credentials it actually is authorizes to read. Still, this seems a bit over-engineered compared to the first one. The second alternative does however make sense if it combined with the feature of AccessToken Auto-Refreshing.
+With the second alternative we can make sure, that each connector has access only to specific secrets by providing them with a corresponding JWT token from IAM service. This JWT token would contain as a claim the user's group-id. This in return allows the Secret-Service to verify that the connector accesses only the credentials it actually is authorizes to read. Still, this seems a bit over-engineered compared to the first one. The second alternative does however make sense if it combined with the feature of AccessToken Auto-Refreshing.
 
 As IAM currently does not have or support the concept of groups, we will implement the access control in the first phase as a tuple of entityType and entityId, e.g.
 
@@ -100,7 +100,7 @@ The following diagram illustrates both alternatives.
 
 # Flows, Connectors and Credentials
 
-In an integration flow, each connector represented as a node, could receive it's own JWT token containing the claims to access those credentials, which are required in this specific step. This could be accomplished for example through scheduler or flow manager, which ever is responsible for creation of connector instances and passing of environment variables to them. The connector then can fetch all required secrets from SKM service and provide the JWT token containing the claims. The SKM service validates the request and returns the secrets, if the connector is authorized to access them.
+In an integration flow, each connector represented as a node, could receive it's own JWT token containing the claims to access those credentials, which are required in this specific step. This could be accomplished for example through scheduler or flow manager, which ever is responsible for creation of connector instances and passing of environment variables to them. The connector then can fetch all required secrets from Secret-Service and provide the JWT token containing the claims. The Secret-Service validates the request and returns the secrets, if the connector is authorized to access them.
 
 The JWT payload could contain as less as the secret ids required for this specific integration step. The same ids could be present in the flow data payload, which the connector receives from the queue upon initialization.
 
@@ -114,12 +114,12 @@ The JWT payload could contain as less as the secret ids required for this specif
   * Advantage: only one token refresh, all depending connectors fetch the new access token from this service
 * Secrets are stored encrypted
 * Access control to secrets is based on IAM authentication and authorization mechanisms
-* SKM service has it's own mongodb, where it stores: secret\_id (secret is stored in vault, but referenced through secret\_id), owner (user or tenant)
-* SKM can fetch and return a new access token using the refresh token it stored in vault
+* Secret-Service has it's own mongodb, where it stores: secret\_id (secret is stored in vault, but referenced through secret\_id), owner (user or tenant)
+* Secret-Service can fetch and return a new access token using the refresh token it stored in vault
 
 # Secrets management framework
 
-Our research for a suitable and mature solution lead us to HashiCorp Vault, which we will be using for our prototypical implementation. Other solutions should be possible to integrate, as the SKM service acts also as an abstraction layer of the underlying vault framework. This allows to interchange the vault framework through other solutions, as long as the SKM API persists.
+Our research for a suitable and mature solution lead us to HashiCorp Vault, which we will be using for our prototypical implementation. Other solutions should be possible to integrate, as the Secret-Service acts also as an abstraction layer of the underlying vault framework. This allows to interchange the vault framework through other solutions, as long as the Secret-Service API persists.
 
 For a list of secrets managements solutions (albeit focused more on infrastructure and possible not up-to-date) please see this comparison list:
 
@@ -141,4 +141,4 @@ Compared to other solutions, we find that HashiCorp Vault [fits best](https://ww
 
 # Access Token Auto-Refreshing
 
-In the section Access Control we mentioned an alternative where connectors fetch the secrets directly from the SKM service. This approach has an advantage if at some point either SKM service or a correlating service also manages OAuth access tokens. In practice, this means that a connector would call SKM service an request an access token of a specific OAuth secret. The SKM service can then either return the access token, if it has a valid one or fetch the access token using for example client id and client secret. If more than one connector rely on a single access token (an identical access token), then fetching and refreshing of an access token is done ideally by a singleton – in our case SKM service or a correlating service responsible for this types of requests.
+In the section Access Control we mentioned an alternative where connectors fetch the secrets directly from the Secret-Service. This approach has an advantage if at some point either Secret-Service or a correlating service also manages OAuth access tokens. In practice, this means that a connector would call Secret-Service an request an access token of a specific OAuth secret. The Secret-Service can then either return the access token, if it has a valid one or fetch the access token using for example client id and client secret. If more than one connector rely on a single access token (an identical access token), then fetching and refreshing of an access token is done ideally by a singleton – in our case Secret-Service or a correlating service responsible for this types of requests.

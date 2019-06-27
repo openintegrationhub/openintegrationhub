@@ -9,18 +9,15 @@
 
 # Introduction
 
-The two services scheduler and resource coordinator are responsible for a fair resource distribution and a periodical execution of integration flows.
+The service component orchestrator is responsible for a fair resource distribution.
 
 # Description
 
-The document shortly describes the two services and their functionality. This includes:
-
-- Exemplary cron expressions
-- Responsibilites of the resource coordinator
+The document shortly describes the service and its functionality.
 
 # Conceptional Elaborations
 
-## Resource Coordinator
+## Component Orchestrator
 
 In a multi-tenant environment it must be guaranteed that a user or tenant
 (intentionally or unintentionally) may not get an unfair usage of shared
@@ -28,9 +25,9 @@ resources such as CPU, Memory, Network, etc. It must be guaranteed that
 every integration flow gets a chance to be executed, close to the intervals
 defined by its Cron expression.
 
-The Resource Coordinator is a micro-service defining the fairness policy
+The Component Orchestrator is a micro-service defining the fairness policy
 and controlling that each user/flow/tenant is complying with that policy.
-The Resource Coordinator is responsible for:
+The Component Orchestrator is responsible for:
 
 * Protection from over-scheduling: if an execution of a flow takes longer than its scheduling interval, the following executions must be skipped.
 * Making sure that a flow or its steps are not deployed multiple times

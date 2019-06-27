@@ -9,7 +9,7 @@
 
 # Introduction
 
-The integration component repository is needed to store integration components such as adapters & transformer.
+The component repository is needed to store integration components such as adapters & transformer.
 
 # Description
 
