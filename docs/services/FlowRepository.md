@@ -116,6 +116,7 @@ The flows are specified in JSON, therefore we store and retrieve them in JSON. T
 has to be specified.
 
 The following requests can be done:
+
 - Retrieve all flows: Returns all flows belonging to the given user.
 If the user is a member of an organization, all the flows of the organization are returned.
 If the user is a member in multiple organizations, the given authentication is used to match the proper organization.
