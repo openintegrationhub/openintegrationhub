@@ -28,8 +28,10 @@ module.exports = {
       role: 'GUEST',
       memberships: [
         {
+          permissions: ['flows.read', 'flows.write'],
           role: 'TENANT_Guest',
           tenant: 'testTenant1',
+          active: true,
         },
       ],
       iat: 1337,
@@ -50,6 +52,7 @@ module.exports = {
           role: 'TENANT_ADMIN',
           tenant: 'testTenant1',
           permissions: ['flows.read', 'flows.write'],
+          active: true,
         },
         {
           role: 'TENANT_ADMIN',
@@ -73,6 +76,7 @@ module.exports = {
           role: 'TENANT_Guest',
           tenant: 'testTenant1',
           permissions: ['müsli.riegel'],
+          active: true,
         },
       ],
       iat: 1337,
@@ -91,6 +95,7 @@ module.exports = {
           role: 'TENANT_Guest',
           tenant: 'testTenant1',
           permissions: ['flows.read'],
+          active: true,
         },
       ],
       iat: 1337,

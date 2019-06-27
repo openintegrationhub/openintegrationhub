@@ -3,13 +3,13 @@
 const general = {
   mongoUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/flowRepoDev',
   amqpUrl: process.env.QUEUE_URL || 'amqp://guest:guest@localhost:5672',
-  oihViewerRoles: ['ADMIN'],
-  tenantWriterRoles: ['TENANT_ADMIN', 'TENANT_INTEGRATOR'],
+  oihAdminRoles: ['ADMIN', 'SERVICE_ACCOUNT'],
 
   // Determines whether the IAM-permission system should be used. Set to true to enable
   usePermissions: process.env.USE_PERMISSIONS || false,
   flowReadPermission: process.env.FLOW_READ_PERMISSION || 'flows.read',
   flowWritePermission: process.env.FLOW_WRITE_PERMISSION || 'flows.write',
+  flowControlPermission: process.env.FLOW_CONTROL_PERMISSION || 'flows.control',
 
   originWhitelist: process.env.ORIGINWHITELIST ? process.env.ORIGINWHITELIST.split(',') : [],
 

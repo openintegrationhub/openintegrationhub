@@ -21,8 +21,8 @@ import locale from 'react-json-editor-ajrm/locale/en';
 
 // Actions
 import {
-    deleteFlow, updateFlow, startFlow, stopFlow,
-} from '../../../action/flows';
+    deleteComponent, updateComponent,
+} from '../../../action/components';
 
 const useStyles = {
     heading: {
@@ -36,51 +36,33 @@ const useStyles = {
     },
 };
 
-class FlowTeaser extends React.PureComponent {
+class ComponentTeaser extends React.PureComponent {
     state= {
-        editFlow: false,
+        editComponent: false,
         editorData: null,
     }
 
-    getNodes() {
-        return this.props.data.graph.nodes && this.props.data.graph.nodes.map(node => <Grid container key={`node-${node.id}`}>
-            <Grid item xs={3}><InputLabel>Id:</InputLabel><Typography>{node.id}</Typography></Grid>
-            <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography>{node.name && node.name}</Typography></Grid>
-            <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography>{node.description && node.description}</Typography></Grid>
-            <Grid item xs={3}><InputLabel>Function:</InputLabel><Typography>{node.function}</Typography></Grid>
-        </Grid>);
-    }
-
-    getEdges() {
-        return this.props.data.graph.edges && this.props.data.graph.edges.map(node => <Grid container key={`node-${node.id}`}>
-            <Grid item xs={3}><InputLabel>Source:</InputLabel><Typography>{node.source}</Typography></Grid>
-            <Grid item xs={3}><InputLabel>Target:</InputLabel><Typography>{node.target}</Typography></Grid>
-            <Grid item xs={3}><InputLabel>Condition:</InputLabel><Typography>{node.config && node.config.condition ? node.config.condition : ''}</Typography></Grid>
-        </Grid>);
+    getDist() {
+        return this.props.data.distribution && <Grid container>
+            <Grid item xs={8}><InputLabel>image:</InputLabel><Typography>{this.props.data.distribution.image}</Typography></Grid>
+            <Grid item xs={4}><InputLabel>type:</InputLabel><Typography>{this.props.data.distribution.type}</Typography></Grid>
+        </Grid>;
     }
 
     editOpen= () => {
         this.setState({
-            editFlow: true,
+            editComponent: true,
         });
     }
 
-    deleteFlow = () => {
-        this.props.deleteFlow(this.props.data.id);
+    deleteComponent = () => {
+        this.props.deleteComponent(this.props.data.id);
     }
 
-    startFlow = () => {
-        this.props.startFlow(this.props.data.id);
-    }
-
-    stopFlow = () => {
-        this.props.stopFlow(this.props.data.id);
-    }
-
-    updateFlow = () => {
-        this.props.updateFlow(this.state.editorData);
+    updateComponent = () => {
+        this.props.updateComponent(this.state.editorData);
         this.setState({
-            editFlow: false,
+            editComponent: false,
         });
     }
 
@@ -108,38 +90,25 @@ class FlowTeaser extends React.PureComponent {
                         <Grid container>
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid>
-                            {this.props.data.status && <Grid item xs={3}><InputLabel>Status:</InputLabel><Typography >{this.props.data.status}</Typography></Grid>}
                         </Grid>
 
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Grid container>
-                            <Grid item xs={12}><h3>Nodes</h3>
+                            <Grid item xs={12}><h3>Distribution</h3>
                                 {
-                                    this.props.data.graph && this.getNodes()
-                                }
-                            </Grid>
-                            <Grid item xs={12}><h3>Edges</h3>
-                                {
-                                    this.props.data.graph && this.getEdges()
+                                    this.getDist()
                                 }
                             </Grid>
                             <Grid item xs={12}><h3>Meta</h3></Grid>
-                            <Grid item xs={3}><InputLabel>Type:</InputLabel><Typography >{this.props.data.type}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Created:</InputLabel><Typography>{this.props.data.createdAt}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{this.props.data.updatedAt}</Typography></Grid>
                             <Grid item xs={12}>
                                 <Button variant="outlined" aria-label="next" onClick={this.editOpen}>
                                     Update
                                 </Button>
-                                <Button variant="outlined" aria-label="next" onClick={this.deleteFlow}>
+                                <Button variant="outlined" aria-label="next" onClick={this.deleteComponent}>
                                     Delete
-                                </Button>
-                                <Button variant="outlined" aria-label="next" onClick={this.startFlow}>
-                                    Start
-                                </Button>
-                                <Button variant="outlined" aria-label="next" onClick={this.stopFlow}>
-                                    Stop
                                 </Button>
                             </Grid>
                         </Grid>
@@ -148,8 +117,8 @@ class FlowTeaser extends React.PureComponent {
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    open={this.state.editFlow}
-                    onClose={ () => { this.setState({ editFlow: false }); }}
+                    open={this.state.editComponent}
+                    onClose={ () => { this.setState({ editComponent: false }); }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
@@ -162,7 +131,7 @@ class FlowTeaser extends React.PureComponent {
                             width = '600px'
                             onChange={this.editorChange.bind(this)}
                         />
-                        <Button variant="outlined" aria-label="Add" onClick={this.updateFlow}>
+                        <Button variant="outlined" aria-label="Add" onClick={this.updateComponent}>
                             Save
                         </Button>
                     </div>
@@ -174,13 +143,11 @@ class FlowTeaser extends React.PureComponent {
 }
 
 const mapStateToProps = state => ({
-    flows: state.flows,
+    components: state.components,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
-    deleteFlow,
-    updateFlow,
-    startFlow,
-    stopFlow,
+    deleteComponent,
+    updateComponent,
 }, dispatch);
 
 export default flow(
@@ -189,4 +156,4 @@ export default flow(
         mapDispatchToProps,
     ),
     withStyles(useStyles),
-)(FlowTeaser);
+)(ComponentTeaser);
