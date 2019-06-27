@@ -15,6 +15,12 @@ The service component orchestrator is responsible for a fair resource distributi
 
 The document shortly describes the service and its functionality.
 
+# Service Implementation
+
+**Framework Part:** [component orchestrator lib](https://github.com/openintegrationhub/openintegrationhub/tree/master/lib/component-orchestrator)
+
+**Reference Implementation:** [component orchestrator service](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/component-orchestrator)
+
 # Conceptional Elaborations
 
 ## Component Orchestrator
