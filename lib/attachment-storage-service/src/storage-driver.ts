@@ -15,9 +15,21 @@ export interface StorageObject {
     getMetadata(): StorageObjectMetadata;
 }
 
+export interface DeleteCondition {
+    key: string;
+    value: string;
+}
+
+export interface DeletionStatus {
+    id: string;
+    status: 'started' | 'success' | 'error';
+}
+
 export default interface StorageDriver {
     find(id: string): Promise<StorageObject|null>;
     create(id: string, metadata: StorageObjectMetadata): Promise<StorageObject>;
+    deleteMany(conditions: DeleteCondition[]): Promise<string>;
+    getDeletionStatus(id: string): Promise<DeletionStatus | null>;
 }
 
 export class StorageObjectExistsError extends Error {

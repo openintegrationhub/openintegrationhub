@@ -4,14 +4,21 @@ import { Server } from 'http';
 import Logger from 'bunyan';
 import healthcheck from './routes/healthcheck';
 import objects from './routes/objects';
+import batch from './routes/batch';
 import koaBunyanLogger from 'koa-bunyan-logger';
+import bodyParser from 'koa-bodyparser';
 import koaSwagger from 'koa2-swagger-ui';
 import errorResponder from './middleware/error-responder';
 import Healthcheckable from './healthcheckable';
-import StorageDriver, { StorageObject, StorageObjectMetadata, StorageObjectExistsError } from './storage-driver';
+import StorageDriver, {
+    StorageObject, StorageObjectMetadata, StorageObjectExistsError, DeleteCondition, DeletionStatus
+} from './storage-driver';
 import * as path from 'path';
 
-export { Healthcheckable, StorageDriver, StorageObject, StorageObjectMetadata, StorageObjectExistsError }
+export {
+    Healthcheckable, StorageDriver, StorageObject, StorageObjectMetadata, StorageObjectExistsError, DeleteCondition,
+    DeletionStatus
+}
 
 export interface ServerAuth {
     middleware: IMiddleware;
@@ -40,7 +47,8 @@ export default class ObjectServer {
 
         this.api
             .use('/healthcheck', healthcheck([storageDriver]))
-            .use('/objects', objects(storageDriver, auth));
+            .use('/objects', objects(storageDriver, auth))
+            .use('/batch', batch(storageDriver, auth));
 
         const swaggerUI = koaSwagger({
             routePrefix: '/api-docs',
@@ -50,6 +58,7 @@ export default class ObjectServer {
         });
 
         this.koa
+            .use(bodyParser())
             .use(koaBunyanLogger(this.logger))
             .use(koaBunyanLogger.requestIdContext())
             .use(koaBunyanLogger.requestLogger())
