@@ -9,15 +9,17 @@
 
 # Introduction
 
-The integration component repository is needed to store integration components such as adapters & transformer.
+The component repository is needed to store integration components such as adapters & transformer.
 
 # Description
 
 The documents shorty describes integration components and how they are stored, retreived and managed.
 
-# Technologies used
+# Service Implementation
 
-- Docker Registry
+**Framework Part:** [component repository lib](https://github.com/openintegrationhub/openintegrationhub/tree/master/lib/component-repository)
+
+**Reference Implementation:** [component orchestrator service](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/component-repository)
 
 ## Reasoning
 
