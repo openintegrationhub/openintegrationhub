@@ -121,6 +121,18 @@ describe('/batch', () => {
             expect(res.body.status).to.equal('started');
             expect(res.statusCode).to.equal(202);
 
+            nockIamIntrospection();
+            res = await this.request
+                .get(`/batch/delete/${processId}`)
+                .set('Authorization', `Bearer ${this.jwt}`);
+
+            expect(res.body).to.deep.equal({
+                id: processId,
+                status: 'started'
+            });
+            expect(res.statusCode).to.equal(200);
+
+
             await new Promise(resolve => setTimeout(resolve, 100)); // waiting for deletion
 
             nockIamIntrospection();
