@@ -19,11 +19,14 @@ The document shortly describes the service and its functionality.
 
 - Cron-Deamon
 
+# Service Implementation
+
 **Framework Part:** [scheduler lib](https://github.com/openintegrationhub/openintegrationhub/tree/master/lib/scheduler)
 
 **Reference Implementation:** [scheduler service](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/scheduler)
 
 # Conceptional Elaborations
+
 ## Scheduler
 
 In the Integration Hub there is a great number of active integration flows

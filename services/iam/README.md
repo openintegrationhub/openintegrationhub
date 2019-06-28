@@ -1,46 +1,58 @@
+![prod](https://img.shields.io/badge/Status-Production-brightgreen.svg)
+
+<p align="center">
+  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
+</p>
+
+The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
+
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+
 # IAM Service (working title / codename: *Heimdal*)
 
 Heimdal provides basic (JWT only) and advanced (OpenId-Connect compatible) Authentication, Authorization and User management as a service.
 
-
 ## General
 
 Heimdal supports two modes of authentication:
+
 * Simple (which is called internaly **basic** mode)
 * OIDC (OpenId-Connect)
 
 The default mode is **oidc** which can be overriden with the **process.env.AUTH_TYPE** (see section **Configuration**)
 
-
 ==A default admin account is also created. **You should modify the password after the setup, as this is a major security issue!**==
 
 We currently use MongoDB as storage. The storage is abstracted through data access objects in src/dao directory. Our aim is to provide an interface to allow interchangeability of other storages via DAOs.
 
-
 ### Simple/Basic mode
+
 In this mode Heimdal generates a simple JWT token and uses currently *HMAC* to sign the token. We will add *RSA* signing for simple mode in the upcoming release, which will support rotating keys.
 
 If you use HMAC and want to validate the JWT in other services, you have to provide the shared secret to the validating component. Heimdal also has a corresponding npm-module, which contains the validate methods and an express middleware. Please see the docs for detailed configuration and API description.
 
 #### Login
+
 POST **${BASE_URL}/login**
 
 Login with username, password (JSON payload). A JSON containing the token will be returned.
 Provide the token in future requests as a bearer token.
+
 ```shell
 Authorization: Bearer ${TOKEN}
 ```
+
 The token contains at least following claims:
+
 * username
 * role
 * memberships (user <-> tenant memberships)
 
-
 #### Refresh the token
+
 GET **${BASE_URL}/token/refresh**
 
 You must provide you current token as bearer token. The repsonse will contain the new token. The TTL of the token can be configured via Env variable.
-
 
 #### Further examples
 
@@ -48,22 +60,20 @@ Usage examples can be found in the *examples* directory as well as in unit/integ
 
 ---
 
-
 ### OIDC mode
 
 As OpenId-Connect provider we use this great implementation https://github.com/panva/node-oidc-provider
 
 In order to get started, following steps should be considered:
+
 * a RSA keystore will be auto-generated and stored in ProjectRootDir/keystore/keystore.json
-	* You can also mount your own keystore by providing the the full path to file via **KEYSTORE_PATH** variable
+  * You can also mount your own keystore by providing the the full path to file via **KEYSTORE_PATH** variable
 * default client will be added, which can befound in src/oidc/util/clients/service-clients.js
 	* you can provide the client password as an env variable **SERVICE_CLIENT_SECRET**
 	* otherwise a default password will be auto generated on startup and logged to stdout
 * a default *service account* will be created
 	* you can provide the default service account password as an env variable **SERVICE_ACCOUNT_PASSWORD**
-	* otherwise a default password will be auto generated on startup and logged to stdout
-
-
+  * otherwise a default password will be auto generated on startup and logged to stdout
 
 #### Examples
 
@@ -71,11 +81,12 @@ Usage examples (e.g. create client, verify token, update account, revoke token, 
 
 ---
 
-
 ## Configuration
+
 See the default config in src/config/index.js
 
 The following list contains the environment variables you can set to configure the service:
+
 * **IAM_BASEURL** - OIDC Prodiver base url. *default*: https://127.0.0.1:3099
 * **IAM_APIBASE** - API Base, *default*: 'api/v1'
 * **IAM_ORIGINWHITELIST** - you can provider a comma-separated list of origings, which should be allowed to access the provider. In development, this list is extended with '127.0.0.1,localhost'
@@ -102,24 +113,22 @@ The following list contains the environment variables you can set to configure t
 * **IAM_OIDC_TTL_REGACCESSTOKEN** - value in s. *default*: 1d
 * **KEYSTORE_PATH** - Full path to a keystore. If no path is provided, keystore will be auto generated and saved in project root. ==You should always mount a directory and provide a full path to a json file, where the keys should be read and stored.==
 
-
 ---
 
 ## Minimal Setup / Local development
+
 * Create a MongoDB Database
 * Run `npm install` to install all dependencies
 * Rename the provided *nodemon_example.json* to *nodemon.json*
 * Run `npm run watch` to start the service locally 
 
-
-
 ---
 
 ## REST-API documentation
+
 Visit the route **${BASE_URL}/api-docs** to view the Swager API documentation.
 
 ---
-
 
 ## Data Model
 
@@ -127,9 +136,10 @@ Each account can have 0..n memberships. A membership assigns an account to a ten
 
 * Tenant
 * Account
-	* Can have multiple memberships as tuple of &lt;_tenant_, _role_&gt;
+  * Can have multiple memberships as tuple of &lt;_tenant_, _role_&gt;
 
 Currently available roles are:
+
 * TENANT_ADMIN
 * TENANT_INTEGRATOR
 * TENANT_DEVELOPER
@@ -140,21 +150,22 @@ It is planed to make roles more generic and extensible, which would allow this s
 ---
 
 ## Usage
-#### Login
+
+### Login
+
 POST: /login (see open api docs)
 
-#### Tokens
-**Create a token**
+### Tokens
+
+#### Create a token
 
 POST /api/v1/tokens (see open api docs)
 
-*If you want to create a permanent token, pass the "tokenLifeSpan" of -1* 
+_If you want to create a permanent token, pass the "tokenLifeSpan" of -1_
 
-**Introspect a token**
+#### Introspect a token
 
 POST /api/v1/tokens/introspect (see open api docs)
-
-
 
 ---
 
@@ -188,26 +199,29 @@ policy proved Passwords for the Admin and Service Account.
   that file needs to be generated ```node -e 'require("./src/util/keystore").generateFile()'``` which will place a file ```./keystore/keystore.json```
   the generated file should be used to create the kubernetes Secret
 
-
 ## Useful commands
 
 ### Generate keystore
-```zsh 
+
+```zsh
 npm run generate-keystore
 ```
 
 ### Run tasks as examples
 
 Start local iam
-```zsh 
+
+```zsh
 npm run watch
 ```
 
 Run a task
+
 ```zsh 
 npm run task <path-to-example>
 ```
-```zsh 
+
+```zsh
 npm run task ./src/tasks/oidc/update-user
 ```
 
@@ -226,4 +240,5 @@ docker build -t eu.gcr.io/${GCP_PROJECT_ID}/iam
 gcloud docker -- push eu.gcr.io/${GCP_PROJECT_ID}/iam
 
 ## Test run
+
 docker run --rm -ti -v $PWD/uploads:/home/uploads --name -p 80:3099 iam eu.gcr.io/${GCP_PROJECT_ID}/iam

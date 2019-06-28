@@ -25,6 +25,6 @@
 |Message oriented Middleware|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [MessageOrientedMiddleware](/docs/services/MessageOrientedMiddleware.md)|
 |Metadata Repository|[Basaas GmbH](https://www.basaas.com/)|![alpha](https://img.shields.io/badge/Alpha-yellowgreen.svg)|See: [Meta-Data-Repository](services/meta-data-repository/README.md)|
 |Reporting and Analytics APIs|[Basaas GmbH](https://www.basaas.com/)|![tbd](https://img.shields.io/badge/To%20be%20done-red.svg)|-|
-|Scheduler|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [Scheduler](services/scheduler/README.md), [Scheduler and Resource Coordinator Concept](services//SchedulerResourceCoordinator.md)|
+|Scheduler|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [Scheduler](services/scheduler/README.md), [Scheduler Concept](docs/services/Scheduler.md)|
 |Secret-Service|[Basaas GmbH](https://www.basaas.com/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [Secret-Service](services/secret-service/README.md), [Concepts](services/SecureKeyManagementConcept.md)|
 |Webhooks|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [Webhooks](services/webhooks/README.md)|
