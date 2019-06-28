@@ -27,13 +27,13 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "integer"
+            "type" : "string"
           },
           "status" : {
             "type" : "string",
             "enum" : [ "started", "running", "completed" ]
           },
-          "cond" : {
+          "conditions" : {
             "type" : "array",
             "minLength" : 1,
             "items" : {

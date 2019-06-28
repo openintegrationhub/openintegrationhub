@@ -20,10 +20,7 @@ export interface DeleteCondition {
     value: string;
 }
 
-export interface DeletionStatus {
-    id: string;
-    status: 'started' | 'success' | 'error';
-}
+export type DeletionStatus = 'started' | 'success' | 'error';
 
 export default interface StorageDriver {
     find(id: string): Promise<StorageObject|null>;

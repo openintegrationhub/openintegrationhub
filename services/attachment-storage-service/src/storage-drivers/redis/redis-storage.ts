@@ -146,10 +146,7 @@ export default class StorageObjectsService implements StorageDriver, Healthcheck
         const { redis } = this;
         const res = await redis.hgetall(this.getObjectDeletionKey(id));
         if (res && res.status) {
-            return {
-                id,
-                status: res.status
-            };
+            return res.status;
         }
         return null;
     }
