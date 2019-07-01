@@ -13,7 +13,7 @@ import nock from 'nock';
 
 const { expect } = chai;
 
-function nockIamIntrospection({status = 200, body = {}} = {}) {
+function nockIamIntrospection({status = 200, body = {sub: 'user-id'}} = {}) {
     return nock('http://iam.openintegrationhub.com')
         .post('/api/v1/tokens/introspect')
         .reply(status, body);
@@ -140,7 +140,6 @@ describe(`/objects`, () => {
                 .set('Authorization', `Bearer ${this.jwt}`)
                 .send(pseudoRandomBytes(1024));
 
-            expect(statusCode).to.equal(400);
             expect(body).to.deep.equal({
                 errors: [
                     {
@@ -148,6 +147,7 @@ describe(`/objects`, () => {
                     }
                 ]
             });
+            expect(statusCode).to.equal(400);
             expect(nockScope.isDone()).to.be.true;
         });
 
@@ -304,7 +304,7 @@ describe(`/objects`, () => {
                 getCreate(uuid.v4(), 'This is a message', 'text/plain');
             });
 
-            describe('json object', () => {
+            xdescribe('json object', () => {
                 getCreate(uuid.v4(), JSON.stringify({ hello: 'json' }), 'application/json');
             });
 

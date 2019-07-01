@@ -9,6 +9,7 @@ export default (objectsStorage: StorageDriver, auth: ServerAuth) => {
     const controller = new Controller(objectsStorage);
     const deleteMany = controller.deleteMany.bind(controller);
     const getDeletionStatus = controller.getDeletionStatus.bind(controller);
+    const canDeleteMany = auth.canDeleteMany.bind(auth);
 
     return new koaRouter()
         .use((ctx: Context, next) => {
@@ -23,6 +24,6 @@ export default (objectsStorage: StorageDriver, auth: ServerAuth) => {
         })
         .use(auth.middleware.bind(auth))
         .get('/delete/:id', getDeletionStatus)
-        .post('/delete', deleteMany)
+        .post('/delete', canDeleteMany, deleteMany)
         .routes();
 }

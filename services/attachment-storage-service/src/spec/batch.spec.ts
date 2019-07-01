@@ -9,7 +9,7 @@ import nock from 'nock';
 
 const { expect } = chai;
 
-function nockIamIntrospection({status = 200, body = {}} = {}) {
+function nockIamIntrospection({status = 200, body = {sub: 'user-id', role: 'ADMIN'}} = {}) {
     return nock('http://iam.openintegrationhub.com')
         .post('/api/v1/tokens/introspect')
         .reply(status, body);
@@ -91,6 +91,7 @@ describe('/batch', () => {
             res = await this.request
                 .get(`/objects/${thirdId}`)
                 .set('Authorization', `Bearer ${this.jwt}`);
+            console.log(res.body);
             expect(res).to.have.property('statusCode', 200);
         });
     });

@@ -1,8 +1,14 @@
 import { koaMiddleware } from '@openintegrationhub/iam-utils';
 import { RouterContext } from 'koa-router';
+import { StorageObject, ServerAuth } from '@openintegrationhub/attachment-storage-service';
 type Next = () => Promise<any>;
 
-export default class Auth {
+interface IamUser {
+    sub: string;
+    role: 'ADMIN' | 'SERVICE_ACCOUNT' | 'USER';
+}
+
+export default class Auth implements ServerAuth {
     public async middleware(ctx: RouterContext, next: Next): Promise<any> {
         await koaMiddleware(ctx, () => {
             const { user } = ctx.state;
@@ -14,17 +20,36 @@ export default class Auth {
     }
 
     public async canGetObject(ctx: RouterContext, next: Next): Promise<any> {
-        //allowed to everybody
+        const { user, object } = ctx.state;
+        if (!this.isCurrentUserOwner(user, object)) {
+            throw new Error('Unauthorized');
+        }
         return next();
     }
 
     public async canPutObject(ctx: RouterContext, next: Next): Promise<any> {
-        //allowed to everybody
+        //allowed to every authenticated user
         return next();
     }
 
     public async canDeleteObject(ctx: RouterContext, next: Next): Promise<any> {
-        //allowed to everybody
+        const { user, object } = ctx.state;
+        if (!this.isCurrentUserOwner(user, object)) {
+            throw new Error('Unauthorized');
+        }
         return next();
+    }
+
+    public async canDeleteMany(ctx: RouterContext, next: Next): Promise<any> {
+        const { user }: { user: IamUser } = ctx.state;
+        if (['ADMIN', 'SERVICE_ACCOUNT'].includes(user.role)) {
+            return next();
+        }
+        throw new Error('Unauthorized');
+    }
+
+    private isCurrentUserOwner(user: IamUser, object: StorageObject) {
+        const metadata = object.getMetadata();
+        return metadata.userId === user.sub;
     }
 }

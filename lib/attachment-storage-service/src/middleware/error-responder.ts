@@ -17,6 +17,6 @@ export default async function errorResponder(ctx: Context, next: Function): Prom
                 }
             ]
         };
-        ctx.status = err.status;
+        ctx.status = err.status || 500;
     }
 }
