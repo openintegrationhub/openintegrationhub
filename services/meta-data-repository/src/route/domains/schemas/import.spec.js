@@ -2,10 +2,10 @@ const getPort = require('get-port');
 const supertest = require('supertest');
 const path = require('path');
 
-const conf = require('../../conf');
-const { pack } = require('../../packing');
-const iamMock = require('../../../test/iamMock');
-const Server = require('../../server');
+const conf = require('../../../conf');
+const { pack } = require('../../../packing');
+const iamMock = require('../../../../test/iamMock');
+const Server = require('../../../server');
 
 let port;
 let request;
@@ -66,8 +66,8 @@ describe('schemas', () => {
 
         // create zip file
         // create archive
-        const src = path.resolve(__dirname, '../../../test/data/valid');
-        const packDest = path.resolve(__dirname, '../../test-temp/temp.zip');
+        const src = path.resolve(__dirname, '../../../../test/data/valid');
+        const packDest = path.resolve(__dirname, '../../../test-temp/temp.zip');
 
         // pack
         await pack(
@@ -104,8 +104,8 @@ describe('schemas', () => {
         const domain_ = result;
 
         // create archive
-        const src = path.resolve(__dirname, '../../../test/data/valid');
-        const packDest = path.resolve(__dirname, '../../test-temp/temp.tgz');
+        const src = path.resolve(__dirname, '../../../../test/data/valid');
+        const packDest = path.resolve(__dirname, '../../../test-temp/temp.tgz');
 
         // pack
         await pack(
@@ -119,10 +119,36 @@ describe('schemas', () => {
             .attach('archive', packDest)
             .expect(200);
 
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
+            .set(...global.user2)
+            .attach('archive', packDest)
+            .expect(403);
+
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
+            .set(...global.admin)
+            .attach('archive', packDest)
+            .expect(200);
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user2)
+            .expect(403)).body;
+
         result = (await request.get(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .expect(200)).body;
 
         expect(result.meta.total).toEqual(20);
+        expect(result.meta.perPage).toEqual(10);
+        expect(result.meta.totalPages).toEqual(2);
+        expect(result.data.length).toEqual(10);
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.admin)
+            .expect(200)).body;
+
+        expect(result.meta.total).toEqual(20);
+        expect(result.meta.perPage).toEqual(10);
+        expect(result.meta.totalPages).toEqual(2);
+        expect(result.data.length).toEqual(10);
     });
 });

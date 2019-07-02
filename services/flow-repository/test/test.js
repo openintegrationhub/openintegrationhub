@@ -57,14 +57,14 @@ describe('Login Security', () => {
     const res = await request.get('/flows');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
   test('should not be able to get specific flows without login', async () => {
     const res = await request.get('/flows/123456789012');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
   test('should not be able to add flows without login', async () => {
@@ -80,7 +80,7 @@ describe('Login Security', () => {
       });
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
   test('should not be able to delete flows without login', async () => {
@@ -90,7 +90,96 @@ describe('Login Security', () => {
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
+  });
+});
+
+describe('Permissions', () => {
+  test('should not be able to get all flows without permissions', async () => {
+    const res = await request
+      .get('/flows')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to get a single flow without permissions', async () => {
+    const res = await request
+      .get('/flows/5ca5c44c187c040010a9bb8b')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to post a flow without permissions', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'This content should be irrelevant',
+        graph: {},
+      });
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to patch a flow without permissions', async () => {
+    const res = await request
+      .patch('/flows/5ca5c44c187c040010a9bb8b')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        name: 'emptyFlow',
+        description: 'This content should be irrelevant',
+        graph: {},
+      });
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to delete a flow without permissions', async () => {
+    const res = await request
+      .delete('/flows/5ca5c44c187c040010a9bb8b')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to start a flow without permissions', async () => {
+    const res = await request
+      .post('/flows/5ca5c44c187c040010a9bb8b/start')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
+  });
+
+  test('should not be able to stop a flow without permissions', async () => {
+    const res = await request
+      .post('/flows/5ca5c44c187c040010a9bb8b/stop')
+      .set('Authorization', 'Bearer unpermitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(403);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
   });
 });
 
@@ -320,7 +409,7 @@ describe('Flow Validation', () => {
     expect(res.body.errors[0].message).toEqual('Path `id` (`01234567890123456789012345678901`) is longer than the maximum allowed length (30).');
   });
 
-  test('should refuse a flow according to the same rules when updating a flow', async () => {
+  test('should refuse a flow according to the same rules when patching instead of posting', async () => {
     const tempFlow = {
       graph: {
         nodes: [
@@ -442,6 +531,7 @@ describe('Flow Operations', () => {
     const res = await request
       .get(`/flows/${flowId1}`)
       .set('Authorization', 'Bearer adminToken');
+
     expect(res.status).toEqual(200);
     expect(res.body).not.toBeNull();
     const j = res.body;
