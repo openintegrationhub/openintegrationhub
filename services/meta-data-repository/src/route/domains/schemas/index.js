@@ -229,7 +229,7 @@ router.post('/import', domainOwnerOrAllowed({
             // end transaction
             await SchemaDAO.endTransaction(session);
         }
-        res.sendStatus(202);
+        res.sendStatus(200);
     } catch (err) {
         // abort transaction if session exists
         log.error(err);
