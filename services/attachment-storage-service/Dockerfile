@@ -1,26 +1,34 @@
-# Base image with sources
 FROM node:10-alpine AS base
-WORKDIR /home/node/maester
+WORKDIR /usr/lib/attachment-storage-service
 
-COPY src/maester/src ./src
-COPY src/maester/package.json ./package.json
-COPY src/maester/package-lock.json ./package-lock.json
-COPY src/maester/tsconfig.json ./tsconfig.json
+RUN apk update && apk add --no-cache bash
+
+COPY package.json yarn.lock ./
+COPY lib/backend-commons-lib lib/backend-commons-lib
+COPY lib/attachment-storage-service lib/attachment-storage-service
+COPY services/attachment-storage-service/package.json services/attachment-storage-service/tsconfig.json ./services/attachment-storage-service/
 
 # Image for building and installing dependencies
+# node-gyp is required as dependency by some npm package
+# but node-gyp requires in build time python, build-essential, ....
+# that's not required in runtime
 FROM base AS dependencies
-RUN apk add --no-cache make gcc g++ python && \
-    npm ci --unsafe-perm && \
-    npm run build && \
-    npm ci --only=production --unsafe-perm
+RUN apk update && apk add --no-cache \
+    make \
+    gcc \
+    g++ \
+    python
+COPY services/attachment-storage-service/src ./services/attachment-storage-service/src
+RUN cd services/attachment-storage-service \
+    && yarn install \
+    && yarn run build
 
-
-# Release image for running quota-service
 FROM base AS release
-COPY --from=dependencies /home/node/maester/node_modules ./node_modules
-COPY --from=dependencies /home/node/maester/dist ./dist
+COPY --from=dependencies /usr/lib/attachment-storage-service/services/attachment-storage-service/dist ./services/attachment-storage-service/dist
+COPY --from=dependencies /usr/lib/attachment-storage-service/node_modules ./node_modules
+RUN rm yarn.lock
 
-RUN chown -R node:node /home/node
+RUN chown -R node:node .
 USER node
 
-CMD ["npm", "start"]
+CMD ["yarn", "--cwd", "services/attachment-storage-service", "start"]

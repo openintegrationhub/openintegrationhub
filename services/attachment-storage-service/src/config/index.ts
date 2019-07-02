@@ -30,7 +30,8 @@ export class Config {
     }
 
     public get REDIS(): RedisOptions {
-        return this.nconf.get('REDIS_CONFIG');
+        const redisConfig = this.nconf.get('REDIS_CONFIG');
+        return typeof redisConfig === 'string' ? JSON.parse(redisConfig) : redisConfig;
     }
 
     public get TERMINATION_DELAY(): number {

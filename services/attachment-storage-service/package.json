@@ -15,8 +15,9 @@
         "test": "NODE_ENV=test node --max-old-space-size=3071 node_modules/.bin/_mocha --exit --require ts-node/register --require mocha-steps 'src/**/*.spec.ts'",
         "test:watch": "npm run test -- --watch-extensions 'ts,js,json' -w || reset",
         "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts .",
+        "pretest": "npm run eslint",
         "build": "tsc",
-        "pretest": "npm run eslint"
+        "build:docker": "docker build -t openintegrationhub/attachment-storage-service:${VERSION} -f Dockerfile ../../"
     },
     "license": "UNLICENSED",
     "priavte": true,
