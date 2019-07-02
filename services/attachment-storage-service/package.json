@@ -7,7 +7,7 @@
         "doc": "docs"
     },
     "engines": {
-        "node": ">= 10"
+        "node": ">= 8"
     },
     "scripts": {
         "start": "node ./dist/app.js",
