@@ -2,10 +2,10 @@ const getPort = require('get-port');
 const supertest = require('supertest');
 const path = require('path');
 
-const conf = require('../../conf');
-const { pack } = require('../../packing');
-const iamMock = require('../../../test/iamMock');
-const Server = require('../../server');
+const conf = require('../../../conf');
+const { pack } = require('../../../packing');
+const iamMock = require('../../../../test/iamMock');
+const Server = require('../../../server');
 
 let port;
 let request;
@@ -66,8 +66,8 @@ describe('schemas', () => {
 
         // create zip file
         // create archive
-        const src = path.resolve(__dirname, '../../../test/data/valid');
-        const packDest = path.resolve(__dirname, '../../test-temp/temp.zip');
+        const src = path.resolve(__dirname, '../../../../test/data/valid');
+        const packDest = path.resolve(__dirname, '../../../test-temp/temp.zip');
 
         // pack
         await pack(
@@ -104,8 +104,8 @@ describe('schemas', () => {
         const domain_ = result;
 
         // create archive
-        const src = path.resolve(__dirname, '../../../test/data/valid');
-        const packDest = path.resolve(__dirname, '../../test-temp/temp.tgz');
+        const src = path.resolve(__dirname, '../../../../test/data/valid');
+        const packDest = path.resolve(__dirname, '../../../test-temp/temp.tgz');
 
         // pack
         await pack(

@@ -1,8 +1,8 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
-const conf = require('../../conf');
-const iamMock = require('../../../test/iamMock');
-const Server = require('../../server');
+const conf = require('../../../conf');
+const iamMock = require('../../../../test/iamMock');
+const Server = require('../../../server');
 
 let port;
 let request;
@@ -61,7 +61,7 @@ describe('schemas', () => {
             .expect(200)).body;
 
         const domain_ = result;
-
+        console.log('done');
         // import schema
         result = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
