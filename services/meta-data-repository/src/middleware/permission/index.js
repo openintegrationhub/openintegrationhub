@@ -18,6 +18,7 @@ module.exports = {
             });
 
             if (req.hasAll || req.isOwnerOf) {
+                if ()
                 return next();
             }
 

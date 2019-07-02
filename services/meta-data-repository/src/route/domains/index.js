@@ -64,10 +64,13 @@ router.get('/:id', ownerOrAllowed({
     permissions: ['not.defined'],
 }), async (req, res, next) => {
     try {
+        const domain = await DomainDAO.findOne({
+            _id: req.params.id,
+        });
+
+        if ()
         res.send({
-            data: await DomainDAO.findOne({
-                _id: req.params.id,
-            }),
+            data: domain,
         });
     } catch (err) {
         log.error(err, { 'x-request-id': req.headers['x-request-id'] });
