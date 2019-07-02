@@ -6,7 +6,6 @@ import healthcheck from './routes/healthcheck';
 import objects from './routes/objects';
 import batch from './routes/batch';
 import koaBunyanLogger from 'koa-bunyan-logger';
-import bodyParser from 'koa-bodyparser';
 import koaSwagger from 'koa2-swagger-ui';
 import errorResponder from './middleware/error-responder';
 import Healthcheckable from './healthcheckable';
@@ -59,7 +58,6 @@ export default class ObjectServer {
         });
 
         this.koa
-            .use(bodyParser())
             .use(koaBunyanLogger(this.logger))
             .use(koaBunyanLogger.requestIdContext())
             .use(koaBunyanLogger.requestLogger())

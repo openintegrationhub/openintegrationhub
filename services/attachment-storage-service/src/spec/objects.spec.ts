@@ -304,10 +304,9 @@ describe(`/objects`, () => {
                 getCreate(uuid.v4(), 'This is a message', 'text/plain');
             });
 
-            xdescribe('json object', () => {
+            describe('json object', () => {
                 getCreate(uuid.v4(), JSON.stringify({ hello: 'json' }), 'application/json');
             });
-
 
             describe('xml object', () => {
                 getCreate(
