@@ -21,7 +21,7 @@ RUN apk update && apk add --no-cache \
 COPY services/attachment-storage-service/src ./services/attachment-storage-service/src
 RUN cd services/attachment-storage-service \
     && yarn install \
-    && yarn run build
+    && yarn run build:ts
 
 FROM base AS release
 COPY --from=dependencies /usr/lib/attachment-storage-service/services/attachment-storage-service/dist ./services/attachment-storage-service/dist

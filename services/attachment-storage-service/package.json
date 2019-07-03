@@ -16,7 +16,7 @@
         "test:watch": "npm run test -- --watch-extensions 'ts,js,json' -w || reset",
         "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts .",
         "pretest": "npm run eslint",
-        "build": "tsc",
+        "build:ts": "tsc",
         "build:docker": "docker build -t openintegrationhub/attachment-storage-service:${VERSION} -f Dockerfile ../../"
     },
     "license": "UNLICENSED",
