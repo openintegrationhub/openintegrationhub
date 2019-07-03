@@ -25,16 +25,11 @@ module.exports = {
     async countBy(query) {
         return await Schema.countDocuments(query);
     },
-
-    async create({ obj, options = {} }) {
-        return await Schema.create([obj], options);
+    async create({ obj, options }) {
+        return (await Schema.create([obj], options))[0];
     },
-    async createUpdate({ obj, options = {} }) {
-        options = {
-            upsert: true,
-            ...options,
-        };
-        return await Schema.updateOne({ uri: obj.uri }, obj, options);
+    async updateByUri(obj) {
+        return await Schema.updateOne({ uri: obj.uri }, obj);
     },
     async findByDomainAndEntity({
         domainId,

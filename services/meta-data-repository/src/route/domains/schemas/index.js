@@ -112,7 +112,7 @@ router.post('/', domainOwnerOrAllowed({
             owner = owners[0].id;
         }
 
-        await SchemaDAO.createUpdate({
+        await SchemaDAO.create({
             obj: {
                 name: name || transformed.schema.title,
                 domainId: req.domainId,
@@ -152,6 +152,8 @@ router.get('/:uri*', async (req, res, next) => {
                 uri: req.params.uri,
             }),
         });
+
+        if (!schema) return next({ status: 404 });
 
         if (req.header('content-type') === 'application/schema+json') {
             return res.send(schema.value);
@@ -211,7 +213,7 @@ router.post('/import', domainOwnerOrAllowed({
         // start transaction
         session = await SchemaDAO.startTransaction();
         for (const schema of transformedSchemas) {
-            await SchemaDAO.createUpdate({
+            await SchemaDAO.create({
                 obj: {
                     name: schema.schema.title,
                     domainId: req.domainId,

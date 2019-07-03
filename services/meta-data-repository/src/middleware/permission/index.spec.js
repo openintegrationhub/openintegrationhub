@@ -36,7 +36,7 @@ describe('domains', () => {
             .expect(403);
     });
 
-    test('Request non existing domain', async () => {
+    test('Request existing domain', async () => {
         const payload = {
             name: 'foo',
             description: 'bar',

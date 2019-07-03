@@ -112,4 +112,37 @@ describe('domains', () => {
             .set(...global.user1)
             .expect(403);
     });
+
+    test('Updates details of a domain with a given ID.', async () => {
+        const data = {
+            name: 'foo',
+            description: 'bar',
+            public: true,
+        };
+
+        // create a domain
+        let result = (await request.post('/domains')
+            .set(...global.user1)
+            .send({ data })
+            .expect(200)).body;
+
+        result = (await request.get(`/domains/${result.data.id}`)
+            .set(...global.user1)
+            .expect(200)).body;
+
+        Object.keys(data).forEach((key) => {
+            expect(result.data[key]).toEqual(data[key]);
+        });
+
+        // create a domain with another account
+        result = (await request.post('/domains')
+            .set(...global.user2)
+            .send({ data })
+            .expect(200)).body;
+
+        // retrieve domain with another account
+        await request.get(`/domains/${result.data.id}`)
+            .set(...global.user1)
+            .expect(403);
+    });
 });
