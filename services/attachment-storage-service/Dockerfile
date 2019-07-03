@@ -5,6 +5,7 @@ RUN apk update && apk add --no-cache bash
 
 COPY package.json yarn.lock ./
 COPY lib/backend-commons-lib ./lib/backend-commons-lib
+COPY lib/iam-utils ./lib/iam-utils
 COPY lib/attachment-storage-service/package.json lib/attachment-storage-service/tsconfig.json ./lib/attachment-storage-service/
 COPY lib/attachment-storage-service/docs ./lib/attachment-storage-service/docs/
 COPY services/attachment-storage-service/package.json services/attachment-storage-service/tsconfig.json ./services/attachment-storage-service/
