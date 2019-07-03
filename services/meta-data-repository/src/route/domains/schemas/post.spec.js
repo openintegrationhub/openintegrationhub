@@ -61,11 +61,15 @@ describe('schemas', () => {
             .expect(200)).body;
 
         const domain_ = result;
-        console.log('done');
+
         // import schema
         result = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema })
+            .send({
+                data: {
+                    value: schema,
+                },
+            })
             .expect(200));
 
 
@@ -131,7 +135,11 @@ describe('schemas', () => {
 
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema })
+            .send({
+                data: {
+                    value: schema,
+                },
+            })
             .expect(200);
 
         // get data with schema json header
@@ -191,7 +199,11 @@ describe('schemas', () => {
 
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema })
+            .send({
+                data: {
+                    value: schema,
+                },
+            })
             .expect(200);
 
 
@@ -206,12 +218,20 @@ describe('schemas', () => {
 
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user2)
-            .send({ data: schema })
+            .send({
+                data: {
+                    value: schema,
+                },
+            })
             .expect(403);
 
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.admin)
-            .send({ data: schema })
+            .send({
+                data: {
+                    value: schema,
+                },
+            })
             .expect(200);
     });
 });

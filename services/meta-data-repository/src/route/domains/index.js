@@ -41,6 +41,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res, next) => {
     const { data } = req.body;
     try {
+        if (!data) throw 'Missing data';
         res.send({
             data: transformDbResults(await DomainDAO.create({
                 ...data,
