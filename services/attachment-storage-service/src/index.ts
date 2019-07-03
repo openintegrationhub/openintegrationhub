@@ -13,7 +13,7 @@ export default class Maester {
     public constructor(config: Config) {
         const { REDIS, PORT } = config;
 
-        logger.debug('Config', { REDIS, PORT });
+        logger.debug({ REDIS, PORT }, 'Config');
 
         this.config = config;
         this.redis = new RedisService(REDIS);
