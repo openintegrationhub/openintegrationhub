@@ -168,10 +168,6 @@ router.delete('/:uri*', domainOwnerOrAllowed({
     permissions: ['not.defined'],
 }), async (req, res, next) => {
     try {
-        console.log({
-            domainId: req.domainId,
-            uri: req.params.uri,
-        });
         await SchemaDAO.delete(buildURI({
             domainId: req.domainId,
             uri: req.params.uri,

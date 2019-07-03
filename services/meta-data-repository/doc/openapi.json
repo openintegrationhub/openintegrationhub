@@ -13,81 +13,9 @@
     {
       "name": "Domains",
       "description": "Domain management"
-    },
-    {
-      "name": "Config",
-      "description": "Configuration"
     }
   ],
   "paths": {
-    "/config": {
-      "get": {
-        "tags": [
-          "Config"
-        ],
-        "summary": "Retrieve the configuration",
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "recordBaseSchema": {
-                          "type": "object",
-                          "properties": {
-                            "oihUid": {
-                              "type": "string"
-                            },
-                            "oihCreated": {
-                              "type": "object"
-                            },
-                            "oihLastModified": {
-                              "type": "object"
-                            },
-                            "modificationHistory": {
-                              "type": "array",
-                              "items": {
-                                "type": "object"
-                              }
-                            },
-                            "oihApplicationRecords": {
-                              "type": "array",
-                              "items": {
-                                "type": "object"
-                              },
-                              "minItems": 1
-                            }
-                          }
-                        },
-                        "supportedSchemas": {
-                          "type": "object",
-                          "example": {
-                            "addressV1": {
-                              "ref": "https://github.com/openintegrationhub/Data-and-Domain-Models/blob/master/src/main/schema/addresses/personV1.json"
-                            },
-                            "addressV2": {
-                              "ref": "https://github.com/openintegrationhub/Data-and-Domain-Models/blob/master/src/main/schema/addresses/personV2.json"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/Meta"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/domains": {
       "get": {
         "tags": [
@@ -315,21 +243,19 @@
             }
           }
         }
-      }
-    },
-    "/domains/{domainId}/schemas/import": {
+      },
       "post": {
         "tags": [
           "Domains"
         ],
-        "summary": "Import models.",
-        "description": "This endpoint is used to upload multiple new models for a given domain.",
+        "summary": "Import model.",
+        "description": "This endpoint is used to send new model for a given domain.",
         "parameters": [
           {
             "in": "path",
             "name": "domainId",
             "required": true,
-            "description": "ID of the domain to import models into",
+            "description": "ID of the domain to import model into",
             "schema": {
               "type": "string"
             }
@@ -342,51 +268,63 @@
                 "type": "object"
               },
               "example": {
-                "address": {
-                  "type": "object",
-                  "required": [
-                    "street_address",
-                    "city",
-                    "state"
-                  ],
-                  "properties": {
-                    "street_address": {
-                      "type": "string"
-                    },
-                    "city": {
-                      "type": "string"
-                    },
-                    "state": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "person": {
-                  "type": "object",
-                  "required": [
-                    "first_name",
-                    "last_name"
-                  ],
-                  "properties": {
-                    "first_name": {
-                      "type": "string"
-                    },
-                    "last_name": {
-                      "type": "string"
-                    }
+                "$schema": "http://json-schema.org/schema#",
+                "$id": "https://github.com/openintegrationhub/Data-and-Domain-Models/blob/master/src/main/schema/oih-data-record.json",
+                "title": "OIHDataRecord",
+                "type": "object",
+                "properties": {
+                  "oihUid": {
+                    "type": "string",
+                    "description": "Uniquely identifies a record within a OIH instance. This identifier is provided by the respective OIH instance, or, at least, the OIH defines how the identifier is assigned (e.g. a random UUID given by a connector. TDB!)."
                   }
                 }
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "type": "object"
               }
             }
           }
         },
         "responses": {
-          "202": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/domains/{domainId}/schemas/import": {
+      "post": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Bulk import models.",
+        "description": "This endpoint is used to upload multiple new models for a given domain. Accepts zip or tgz archive format.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "domainId",
+            "required": true,
+            "description": "ID of the domain to import models into",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "archive": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
             "description": "successful operation"
           }
         }
