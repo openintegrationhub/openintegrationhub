@@ -15,6 +15,11 @@
       "description": "Domain management"
     }
   ],
+  "servers": [
+    {
+      "url": "http://metadata.openintegrationhub.com/api/v1"
+    }
+  ],
   "paths": {
     "/domains": {
       "get": {
@@ -22,6 +27,11 @@
           "Domains"
         ],
         "summary": "Retrieve the available domains for the authenticated user",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -51,6 +61,11 @@
           "Domains"
         ],
         "summary": "Create a new Domain.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Creates a new Domain for the authenticated user.",
         "requestBody": {
           "content": {
@@ -91,6 +106,11 @@
           "Domains"
         ],
         "summary": "Retrieve a domain with given ID.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Provides details of a domain with a given ID.",
         "parameters": [
           {
@@ -125,6 +145,11 @@
           "Domains"
         ],
         "summary": "Update a domain by ID.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Updates details of a domain with a given ID.",
         "parameters": [
           {
@@ -175,6 +200,11 @@
           "Domains"
         ],
         "summary": "Retrieve the available models for the authenticated user.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -215,6 +245,11 @@
           "Domains"
         ],
         "summary": "Create schema.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "This endpoint is used to send new schema for a given domain.",
         "parameters": [
           {
@@ -266,6 +301,11 @@
           "Domains"
         ],
         "summary": "Bulk import models.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "This endpoint is used to upload multiple new models for a given domain. Accepts zip or tgz archive format.",
         "parameters": [
           {
@@ -307,6 +347,11 @@
           "Domains"
         ],
         "summary": "Retrieve a schema by URI.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Provides details of a schema with a given URI.",
         "parameters": [
           {
@@ -352,6 +397,11 @@
           "Domains"
         ],
         "summary": "Update a schema with given URI.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Updates a schema with given URI.",
         "parameters": [
           {
@@ -410,6 +460,11 @@
           "Domains"
         ],
         "summary": "Delete a schema by uri",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "domainId",
@@ -432,16 +487,17 @@
           "204": {
             "description": "The model was successfully deleted"
           }
-        },
-        "security": [
-          {
-            "api_key": []
-          }
-        ]
+        }
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
     "schemas": {
       "Domain": {
         "allOf": [
