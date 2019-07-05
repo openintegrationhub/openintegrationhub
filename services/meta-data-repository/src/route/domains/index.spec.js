@@ -126,23 +126,43 @@ describe('domains', () => {
             .send({ data })
             .expect(200)).body;
 
-        result = (await request.get(`/domains/${result.data.id}`)
+        // update domain
+        result = (await request.put(`/domains/${result.data.id}`)
             .set(...global.user1)
+            .send({
+                data: {
+                    name: 'fooUpdate',
+                    description: 'bar',
+                    public: false,
+                },
+            })
             .expect(200)).body;
 
-        Object.keys(data).forEach((key) => {
-            expect(result.data[key]).toEqual(data[key]);
-        });
+        expect(result.data.name).toEqual('fooUpdate');
+        expect(result.data.public).toBe(false);
 
-        // create a domain with another account
-        result = (await request.post('/domains')
+        // put as admin
+        await request.put(`/domains/${result.data.id}`)
+            .set(...global.admin)
+            .send({
+                data: {
+                    name: 'fooUpdate',
+                    description: 'bar',
+                    public: false,
+                },
+            })
+            .expect(200);
+
+        // put as non authorized
+        await request.put(`/domains/${result.data.id}`)
             .set(...global.user2)
-            .send({ data })
-            .expect(200)).body;
-
-        // retrieve domain with another account
-        await request.get(`/domains/${result.data.id}`)
-            .set(...global.user1)
+            .send({
+                data: {
+                    name: 'fooUpdate',
+                    description: 'bar',
+                    public: false,
+                },
+            })
             .expect(403);
     });
 });

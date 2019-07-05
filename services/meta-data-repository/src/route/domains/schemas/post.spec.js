@@ -147,10 +147,10 @@ describe('schemas', () => {
             .expect(200);
 
         // get data with schema json header
-        const result1 = (await request.get(`/domains/${domain_.data.id}/schemas/organizationV3.json`)
+        await request.get(`/domains/${domain_.data.id}/schemas/organizationV3.json`)
             .set(...global.user1)
             .set('content-type', 'application/schema+json')
-            .expect(200));
+            .expect(200);
 
         schema = {
             $schema: 'http://json-schema.org/schema#',

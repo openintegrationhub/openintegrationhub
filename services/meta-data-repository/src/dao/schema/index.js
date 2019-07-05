@@ -28,8 +28,8 @@ module.exports = {
     async create({ obj, options }) {
         return (await Schema.create([obj], options))[0];
     },
-    async updateByUri(obj) {
-        return await Schema.updateOne({ uri: obj.uri }, obj);
+    async updateByURI(obj) {
+        return await Schema.findOneAndUpdate({ uri: obj.uri }, obj, { new: true });
     },
     async findByDomainAndEntity({
         domainId,

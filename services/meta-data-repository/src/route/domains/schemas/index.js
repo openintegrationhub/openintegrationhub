@@ -112,22 +112,22 @@ router.post('/', domainOwnerOrAllowed({
             owner = owners[0].id;
         }
 
-        await SchemaDAO.create({
-            obj: {
-                name: name || transformed.schema.title,
-                domainId: req.domainId,
-                description,
-                uri: URIfromId(transformed.schema.$id),
-                value: JSON.stringify(transformed.schema),
-                refs: transformed.backReferences,
-                owners: {
-                    id: owner,
-                    type: USER,
+        res.send({
+            data: transformDbResults(await SchemaDAO.create({
+                obj: {
+                    name: name || transformed.schema.title,
+                    domainId: req.domainId,
+                    description,
+                    uri: URIfromId(transformed.schema.$id),
+                    value: JSON.stringify(transformed.schema),
+                    refs: transformed.backReferences,
+                    owners: {
+                        id: owner,
+                        type: USER,
+                    },
                 },
-            },
+            })),
         });
-
-        res.sendStatus(200);
     } catch (err) {
         log.error(err);
         next({
@@ -166,6 +166,81 @@ router.get('/:uri*', async (req, res, next) => {
         log.error(err);
         next({
             status: 400,
+        });
+    }
+});
+
+
+router.put('/:uri*', domainOwnerOrAllowed({
+    permissions: ['not.defined'],
+}), async (req, res, next) => {
+    const { data } = req.body;
+    try {
+        if (!data) throw 'Missing data';
+
+        const { name, description, value } = data;
+
+        validateSchema({
+            schema: value,
+        });
+
+        const transformed = await transformSchema({
+            domain: req.domainId,
+            schema: value,
+        });
+
+        let owner;
+
+        if (req.isOwnerOf) {
+            owner = req.user.sub.toString();
+        } else {
+            // get owner of domain
+            const { owners } = await DomainDAO.findOne({
+                _id: req.domainId,
+            });
+            owner = owners[0].id;
+        }
+
+        console.log(await SchemaDAO.updateByURI({
+            obj: {
+                name: name || transformed.schema.title,
+                domainId: req.domainId,
+                description,
+                uri: buildURI({
+                    domainId: req.domainId,
+                    uri: req.params.uri,
+                }),
+                value: JSON.stringify(transformed.schema),
+                refs: transformed.backReferences,
+                owners: {
+                    id: owner,
+                    type: USER,
+                },
+            },
+        }));
+        res.send({
+            data: transformDbResults(await SchemaDAO.updateByURI({
+                obj: {
+                    name: name || transformed.schema.title,
+                    domainId: req.domainId,
+                    description,
+                    uri: buildURI({
+                        domainId: req.domainId,
+                        uri: req.params.uri,
+                    }),
+                    value: JSON.stringify(transformed.schema),
+                    refs: transformed.backReferences,
+                    owners: {
+                        id: owner,
+                        type: USER,
+                    },
+                },
+            })),
+        });
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 500,
         });
     }
 });

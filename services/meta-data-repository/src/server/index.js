@@ -82,6 +82,7 @@ module.exports = class Server {
             keepAlive: 120,
             useCreateIndex: true,
             useNewUrlParser: true,
+            useFindAndModify: false,
         });
     }
 

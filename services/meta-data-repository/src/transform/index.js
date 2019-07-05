@@ -83,10 +83,10 @@ function transformDbResult(result) {
         ...result,
     };
 
+
     // delete keys
     delete result._id;
     delete result.__v;
-
     return result;
 }
 
