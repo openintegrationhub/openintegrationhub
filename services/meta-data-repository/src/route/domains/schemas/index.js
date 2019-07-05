@@ -200,9 +200,9 @@ router.put('/:uri*', domainOwnerOrAllowed({
             });
             owner = owners[0].id;
         }
+        res.send({
+            data: transformDbResults(await SchemaDAO.updateByURI({
 
-        console.log(await SchemaDAO.updateByURI({
-            obj: {
                 name: name || transformed.schema.title,
                 domainId: req.domainId,
                 description,
@@ -215,25 +215,6 @@ router.put('/:uri*', domainOwnerOrAllowed({
                 owners: {
                     id: owner,
                     type: USER,
-                },
-            },
-        }));
-        res.send({
-            data: transformDbResults(await SchemaDAO.updateByURI({
-                obj: {
-                    name: name || transformed.schema.title,
-                    domainId: req.domainId,
-                    description,
-                    uri: buildURI({
-                        domainId: req.domainId,
-                        uri: req.params.uri,
-                    }),
-                    value: JSON.stringify(transformed.schema),
-                    refs: transformed.backReferences,
-                    owners: {
-                        id: owner,
-                        type: USER,
-                    },
                 },
             })),
         });
