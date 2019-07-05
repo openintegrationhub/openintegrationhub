@@ -41,13 +41,17 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res, next) => {
     const { data } = req.body;
     try {
+        if (!data) throw 'Missing data';
         res.send({
             data: transformDbResults(await DomainDAO.create({
-                ...data,
-                owners: {
-                    id: req.user.sub.toString(),
-                    type: USER,
+                obj: {
+                    ...data,
+                    owners: {
+                        id: req.user.sub.toString(),
+                        type: USER,
+                    },
                 },
+
             })),
         });
     } catch (err) {
@@ -63,12 +67,33 @@ router.get('/:id', domainOwnerOrAllowed({
 }), async (req, res, next) => {
     try {
         res.send({
-            data: await DomainDAO.findOne({
+            data: transformDbResults(await DomainDAO.findOne({
                 _id: req.params.id,
-            }),
+            })),
         });
     } catch (err) {
         log.error(err, { 'x-request-id': req.headers['x-request-id'] });
+        next({
+            status: 500,
+        });
+    }
+});
+
+router.put('/:id', domainOwnerOrAllowed({
+    permissions: ['not.defined'],
+}), async (req, res, next) => {
+    const { data } = req.body;
+    try {
+        if (!data) throw 'Missing data';
+
+        res.send({
+            data: transformDbResults(await DomainDAO.updateById({
+                id: req.params.id,
+                ...data,
+            })),
+        });
+    } catch (err) {
+        log.error(err);
         next({
             status: 500,
         });

@@ -36,7 +36,7 @@ describe('schemas', () => {
 
         let schema = {
             $schema: 'http://json-schema.org/schema#',
-            $id: 'https://github.com/organizationV2.json',
+            $id: 'https://github.com/organizationV1.json',
             title: 'Organization',
             type: 'object',
             properties: {
@@ -61,31 +61,35 @@ describe('schemas', () => {
             .expect(200)).body;
 
         const domain_ = result;
-        console.log('done');
+
         // import schema
         result = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema })
+            .send({
+                data: {
+                    value: schema,
+                },
+            })
             .expect(200));
 
 
         // get data by uri (regular request)
-        result = (await request.get(`/domains/${domain_.data.id}/schemas/organizationV2.json`)
+        result = (await request.get(`/domains/${domain_.data.id}/schemas/organizationV1.json`)
             .set(...global.user1)
             .expect(200));
 
-        expect(result.body.data.value.$id).toEqual(`${baseUrl}/domains/${domain_.data.id}/schemas/organizationV2.json`);
+        expect(result.body.data.value.$id).toEqual(`${baseUrl}/domains/${domain_.data.id}/schemas/organizationV1.json`);
 
         // import second schema with invalid reference
 
         schema = {
             $schema: 'http://json-schema.org/schema#',
-            $id: 'https://github.com/organizationV3.json',
+            $id: 'https://github.com/organizationV2.json',
             title: 'Organization',
             type: 'object',
             properties: {
                 someRef: {
-                    $ref: `${baseUrl}/domains/${domain_.data.id}NOTEXISTING/schemas/organizationV2.json`,
+                    $ref: `${baseUrl}/domains/${domain_.data.id}NOTEXISTING/schemas/organizationV1.json`,
                 },
                 name: {
                     type: 'string',
@@ -102,7 +106,11 @@ describe('schemas', () => {
 
         result = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema })
+            .send({
+                data: {
+                    value: schema,
+                },
+            })
             .expect(400));
 
         // import second schema with valid reference
@@ -114,7 +122,7 @@ describe('schemas', () => {
             type: 'object',
             properties: {
                 someRef: {
-                    $ref: `${baseUrl}/domains/${domain_.data.id}/schemas/organizationV2.json`,
+                    $ref: `${baseUrl}/domains/${domain_.data.id}/schemas/organizationV1.json`,
                 },
                 name: {
                     type: 'string',
@@ -131,18 +139,22 @@ describe('schemas', () => {
 
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema })
+            .send({
+                data: {
+                    value: schema,
+                },
+            })
             .expect(200);
 
         // get data with schema json header
-        const result1 = (await request.get(`/domains/${domain_.data.id}/schemas/organizationV3.json`)
+        await request.get(`/domains/${domain_.data.id}/schemas/organizationV3.json`)
             .set(...global.user1)
             .set('content-type', 'application/schema+json')
-            .expect(200));
+            .expect(200);
 
         schema = {
             $schema: 'http://json-schema.org/schema#',
-            $id: 'https://github.com/organizationV3.json',
+            $id: 'https://github.com/organizationV4.json',
             title: 'Organization2',
             type: 'object',
             properties: {
@@ -169,12 +181,12 @@ describe('schemas', () => {
 
         schema = {
             $schema: 'http://json-schema.org/schema#',
-            $id: 'https://github.com/organizationV3.json',
+            $id: 'https://github.com/organizationV5.json',
             title: 'Organization2',
             type: 'object',
             properties: {
                 someRef: {
-                    $ref: `${baseUrl}/domains/${domain_.data.id}/schemas/organizationV2.json#/properties/logo`,
+                    $ref: `${baseUrl}/domains/${domain_.data.id}/schemas/organizationV1.json#/properties/logo`,
                 },
                 name: {
                     type: 'string',
@@ -191,27 +203,17 @@ describe('schemas', () => {
 
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema })
+            .send({
+                data: {
+                    value: schema,
+                },
+            })
             .expect(200);
 
 
-        const result2 = (await request.get(`/domains/${domain_.data.id}/schemas/organizationV3.json`)
+        await request.get(`/domains/${domain_.data.id}/schemas/organizationV5.json`)
             .set(...global.user1)
             .set('content-type', 'application/schema+json')
-            .expect(200));
-
-        expect(result1.body.title).not.toEqual(result2.body.title);
-        expect(result1.body.uri).toEqual(result2.body.uri);
-        expect(result1.body.$id).toEqual(result2.body.$id);
-
-        await request.post(`/domains/${domain_.data.id}/schemas`)
-            .set(...global.user2)
-            .send({ data: schema })
-            .expect(403);
-
-        await request.post(`/domains/${domain_.data.id}/schemas`)
-            .set(...global.admin)
-            .send({ data: schema })
             .expect(200);
     });
 });

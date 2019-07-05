@@ -87,13 +87,17 @@ router.post('/', domainOwnerOrAllowed({
 }), async (req, res, next) => {
     const { data } = req.body;
     try {
+        if (!data) throw 'Missing data';
+
+        const { name, description, value } = data;
+
         validateSchema({
-            schema: data,
+            schema: value,
         });
 
         const transformed = await transformSchema({
             domain: req.domainId,
-            schema: data,
+            schema: value,
         });
 
         let owner;
@@ -108,21 +112,22 @@ router.post('/', domainOwnerOrAllowed({
             owner = owners[0].id;
         }
 
-        await SchemaDAO.createUpdate({
-            obj: {
-                name: req.params.name,
-                domainId: req.domainId,
-                uri: URIfromId(transformed.schema.$id),
-                value: JSON.stringify(transformed.schema),
-                refs: transformed.backReferences,
-                owners: {
-                    id: owner,
-                    type: USER,
+        res.send({
+            data: transformDbResults(await SchemaDAO.create({
+                obj: {
+                    name: name || transformed.schema.title,
+                    domainId: req.domainId,
+                    description,
+                    uri: URIfromId(transformed.schema.$id),
+                    value: JSON.stringify(transformed.schema),
+                    refs: transformed.backReferences,
+                    owners: {
+                        id: owner,
+                        type: USER,
+                    },
                 },
-            },
+            })),
         });
-
-        res.sendStatus(200);
     } catch (err) {
         log.error(err);
         next({
@@ -140,7 +145,6 @@ router.get('/:uri*', async (req, res, next) => {
     })(req, res, next);
 }, async (req, res, next) => {
     try {
-        console.log(req.domainId, req.params.uri);
         const schema = await SchemaDAO.findByURI({
 
             uri: buildURI({
@@ -148,6 +152,8 @@ router.get('/:uri*', async (req, res, next) => {
                 uri: req.params.uri,
             }),
         });
+
+        if (!schema) return next({ status: 404 });
 
         if (req.header('content-type') === 'application/schema+json') {
             return res.send(schema.value);
@@ -160,6 +166,62 @@ router.get('/:uri*', async (req, res, next) => {
         log.error(err);
         next({
             status: 400,
+        });
+    }
+});
+
+
+router.put('/:uri*', domainOwnerOrAllowed({
+    permissions: ['not.defined'],
+}), async (req, res, next) => {
+    const { data } = req.body;
+    try {
+        if (!data) throw 'Missing data';
+
+        const { name, description, value } = data;
+
+        validateSchema({
+            schema: value,
+        });
+
+        const transformed = await transformSchema({
+            domain: req.domainId,
+            schema: value,
+        });
+
+        let owner;
+
+        if (req.isOwnerOf) {
+            owner = req.user.sub.toString();
+        } else {
+            // get owner of domain
+            const { owners } = await DomainDAO.findOne({
+                _id: req.domainId,
+            });
+            owner = owners[0].id;
+        }
+        res.send({
+            data: transformDbResults(await SchemaDAO.updateByURI({
+
+                name: name || transformed.schema.title,
+                domainId: req.domainId,
+                description,
+                uri: buildURI({
+                    domainId: req.domainId,
+                    uri: req.params.uri,
+                }),
+                value: JSON.stringify(transformed.schema),
+                refs: transformed.backReferences,
+                owners: {
+                    id: owner,
+                    type: USER,
+                },
+            })),
+        });
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 500,
         });
     }
 });
@@ -187,48 +249,45 @@ router.post('/import', domainOwnerOrAllowed({
     permissions: ['not.defined'],
 }), upload.single('archive'), async (req, res, next) => {
     let session = null;
+    const file = req.file;
     try {
-        const file = req.file;
-        if (!file) {
-            throw (new Error('No file submitted'));
+        if (!file) throw 'No file submitted';
+        const transformedSchemas = await processArchive(file.path, req.domainId);
+
+        let owner;
+
+        if (req.isOwnerOf) {
+            owner = req.user.sub.toString();
         } else {
-            const transformedSchemas = await processArchive(file.path, req.domainId);
-
-            let owner;
-
-            if (req.isOwnerOf) {
-                owner = req.user.sub.toString();
-            } else {
-                // get owner of domain
-                const { owners } = await DomainDAO.findOne({
-                    _id: req.domainId,
-                });
-                owner = owners[0].id;
-            }
-
-            // start transaction
-            session = await SchemaDAO.startTransaction();
-            for (const schema of transformedSchemas) {
-                await SchemaDAO.createUpdate({
-                    obj: {
-                        name: schema.schema.title,
-                        domainId: req.domainId,
-                        uri: URIfromId(schema.schema.$id),
-                        value: JSON.stringify(schema.schema),
-                        refs: schema.backReferences,
-                        owners: {
-                            id: owner,
-                            type: USER,
-                        },
-                    },
-                    options: {
-                        session,
-                    },
-                });
-            }
-            // end transaction
-            await SchemaDAO.endTransaction(session);
+            // get owner of domain
+            const { owners } = await DomainDAO.findOne({
+                _id: req.domainId,
+            });
+            owner = owners[0].id;
         }
+
+        // start transaction
+        session = await SchemaDAO.startTransaction();
+        for (const schema of transformedSchemas) {
+            await SchemaDAO.create({
+                obj: {
+                    name: schema.schema.title,
+                    domainId: req.domainId,
+                    uri: URIfromId(schema.schema.$id),
+                    value: JSON.stringify(schema.schema),
+                    refs: schema.backReferences,
+                    owners: {
+                        id: owner,
+                        type: USER,
+                    },
+                },
+                options: {
+                    session,
+                },
+            });
+        }
+        // end transaction
+        await SchemaDAO.endTransaction(session);
         res.sendStatus(200);
     } catch (err) {
         // abort transaction if session exists

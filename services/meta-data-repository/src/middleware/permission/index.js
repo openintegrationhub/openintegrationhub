@@ -18,20 +18,23 @@ module.exports = {
                 id: req.params.id || req.domainId,
             });
 
-            if (req.hasAll && req.ownedDomain === null) {
+            if (req.hasAll) {
+                if (req.ownedDomain !== null) {
+                    return next();
+                }
                 return next({ status: 404 });
             }
 
-            if (req.hasAll || req.ownedDomain) {
-                return next();
-            }
+            if (req.ownedDomain === null) return next({ status: 404 });
+            if (req.ownedDomain === false) return next({ status: 403 });
 
-            return next({ status: 403 });
+            return next();
         } catch (err) {
+            log.error(err);
             if (req.hasAll) {
                 return next({ status: 404 });
             }
-            log.error(err);
+
             return next({ status: 403 });
         }
     },

@@ -8,10 +8,12 @@ module.exports = {
     async countBy(query) {
         return await Domain.countDocuments(query);
     },
-    async create(obj) {
-        const domain = new Domain({ ...obj });
-        await domain.save();
-        return domain.toObject();
+
+    async create({ obj, options = {} }) {
+        return (await Domain.create([obj], options))[0];
+    },
+    async updateById(obj) {
+        return await Domain.findOneAndUpdate({ _id: obj.id }, obj, { new: true });
     },
 
     async findOne(query) {

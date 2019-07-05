@@ -3,7 +3,7 @@
   "info": {
     "title": "OIH MetaData Service REST API",
     "description": "REST API for the OIH MetaData Service.",
-    "version": "0.0.2",
+    "version": "0.0.4",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -33,7 +33,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/MutableDomain"
+                        "$ref": "#/components/schemas/Domain"
                       }
                     },
                     "meta": {
@@ -59,7 +59,7 @@
                 "type": "object",
                 "properties": {
                   "data": {
-                    "$ref": "#/components/schemas/Domain"
+                    "$ref": "#/components/schemas/MutableDomain"
                   }
                 }
               }
@@ -75,7 +75,7 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/MutableDomain"
+                      "$ref": "#/components/schemas/Domain"
                     }
                   }
                 }
@@ -111,7 +111,7 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/MutableDomain"
+                      "$ref": "#/components/schemas/Domain"
                     }
                   }
                 }
@@ -143,7 +143,7 @@
                 "type": "object",
                 "properties": {
                   "data": {
-                    "$ref": "#/components/schemas/Domain"
+                    "$ref": "#/components/schemas/MutableDomain"
                   }
                 }
               }
@@ -159,7 +159,7 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/MutableDomain"
+                      "$ref": "#/components/schemas/Domain"
                     }
                   }
                 }
@@ -194,48 +194,14 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "definitons": {
-                      "$ref": "#/components/schemas/Definitons"
-                    }
-                  }
-                },
-                "example": {
-                  "definitions": {
-                    "address": {
-                      "type": "object",
-                      "$id": "#address",
-                      "required": [
-                        "street_address",
-                        "city",
-                        "state"
-                      ],
-                      "properties": {
-                        "street_address": {
-                          "type": "string"
-                        },
-                        "city": {
-                          "type": "string"
-                        },
-                        "state": {
-                          "type": "string"
-                        }
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Domain"
                       }
                     },
-                    "person": {
-                      "type": "object",
-                      "$id": "#person",
-                      "required": [
-                        "first_name",
-                        "last_name"
-                      ],
-                      "properties": {
-                        "first_name": {
-                          "type": "string"
-                        },
-                        "last_name": {
-                          "type": "string"
-                        }
-                      }
+                    "meta": {
+                      "$ref": "#/components/schemas/Meta"
                     }
                   }
                 }
@@ -248,8 +214,8 @@
         "tags": [
           "Domains"
         ],
-        "summary": "Import model.",
-        "description": "This endpoint is used to send new model for a given domain.",
+        "summary": "Create schema.",
+        "description": "This endpoint is used to send new schema for a given domain.",
         "parameters": [
           {
             "in": "path",
@@ -265,17 +231,10 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
-              },
-              "example": {
-                "$schema": "http://json-schema.org/schema#",
-                "$id": "https://github.com/openintegrationhub/Data-and-Domain-Models/blob/master/src/main/schema/oih-data-record.json",
-                "title": "OIHDataRecord",
                 "type": "object",
                 "properties": {
-                  "oihUid": {
-                    "type": "string",
-                    "description": "Uniquely identifies a record within a OIH instance. This identifier is provided by the respective OIH instance, or, at least, the OIH defines how the identifier is assigned (e.g. a random UUID given by a connector. TDB!)."
+                  "data": {
+                    "$ref": "#/components/schemas/MutableSchema"
                   }
                 }
               }
@@ -284,7 +243,19 @@
         },
         "responses": {
           "200": {
-            "description": "successful operation"
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Schema"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -364,7 +335,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Schema"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Schema"
+                    }
+                  }
                 }
               }
             }
@@ -401,26 +377,10 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
-              },
-              "example": {
-                "address": {
-                  "type": "object",
-                  "required": [
-                    "street_address",
-                    "city",
-                    "state"
-                  ],
-                  "properties": {
-                    "street_address": {
-                      "type": "string"
-                    },
-                    "city": {
-                      "type": "string"
-                    },
-                    "state": {
-                      "type": "string"
-                    }
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/MutableSchema"
                   }
                 }
               }
@@ -433,27 +393,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
-                },
-                "example": {
-                  "address": {
-                    "type": "object",
-                    "$id": "#address",
-                    "required": [
-                      "street_address",
-                      "city",
-                      "state"
-                    ],
-                    "properties": {
-                      "street_address": {
-                        "type": "string"
-                      },
-                      "city": {
-                        "type": "string"
-                      },
-                      "state": {
-                        "type": "string"
-                      }
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Schema"
                     }
                   }
                 }
@@ -488,9 +431,6 @@
         "responses": {
           "204": {
             "description": "The model was successfully deleted"
-          },
-          "404": {
-            "description": "Model with given ID not found"
           }
         },
         "security": [
@@ -592,22 +532,6 @@
                     "type": "string"
                   }
                 }
-              },
-              "person": {
-                "type": "object",
-                "$id": "#person",
-                "required": [
-                  "first_name",
-                  "last_name"
-                ],
-                "properties": {
-                  "first_name": {
-                    "type": "string"
-                  },
-                  "last_name": {
-                    "type": "string"
-                  }
-                }
               }
             }
           }
@@ -675,9 +599,6 @@
             "description": "Type of Owner entity, e.g. GROUP, TENANT, USER, etc."
           }
         }
-      },
-      "Definitons": {
-        "type": "object"
       },
       "Meta": {
         "type": "object",
