@@ -215,5 +215,62 @@ describe('schemas', () => {
             .set(...global.user1)
             .set('content-type', 'application/schema+json')
             .expect(200);
+
+
+        schema = {
+            $schema: 'http://json-schema.org/schema#',
+            $id: 'https://github.com/organizationV5.json',
+            title: 'Organization2',
+            type: 'object',
+            properties: {
+                someRef: {
+                    $ref: `${baseUrl}/domains/${domain_.data.id}/schemas/organizationV1.json#/properties/logo`,
+                },
+                name: {
+                    type: 'string',
+                    description: 'Name of the organization',
+                    example: 'Great Company',
+                },
+                logo: {
+                    type: 'string',
+                    description: 'Logo of the organization',
+                    example: 'http://example.org/logo.png',
+                },
+            },
+        };
+
+        await request.post(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .send({
+                data: {
+                    name: 'string',
+                    description: 'string',
+                    value: {
+                        $id: '#?address',
+                        required: [
+                            'street_address',
+                            'city',
+                            'state',
+                        ],
+                        properties: {
+                            street_address: {
+                                type: 'string',
+                            },
+                            city: {
+                                type: 'string',
+                            },
+                            state: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
+            })
+            .expect(200);
+
+        await request.get(`/domains/${domain_.data.id}/schemas/address`)
+            .set(...global.user1)
+            .set('content-type', 'application/schema+json')
+            .expect(200);
     });
 });

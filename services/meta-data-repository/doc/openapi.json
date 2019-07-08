@@ -563,30 +563,24 @@
           "description": {
             "type": "string"
           },
-          "uri": {
-            "type": "string"
-          },
           "value": {
             "type": "object",
             "example": {
-              "address": {
-                "type": "object",
-                "$id": "#address",
-                "required": [
-                  "street_address",
-                  "city",
-                  "state"
-                ],
-                "properties": {
-                  "street_address": {
-                    "type": "string"
-                  },
-                  "city": {
-                    "type": "string"
-                  },
-                  "state": {
-                    "type": "string"
-                  }
+              "$id": "address",
+              "required": [
+                "street_address",
+                "city",
+                "state"
+              ],
+              "properties": {
+                "street_address": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
                 }
               }
             }
@@ -624,6 +618,9 @@
             ],
             "properties": {
               "id": {
+                "type": "string"
+              },
+              "uri": {
                 "type": "string"
               },
               "createdAt": {
