@@ -46,6 +46,7 @@ export default class ObjectServer {
         this.logger = logger;
 
         this.api
+            .get('/', ctx => ctx.body = 'Attachment Storage Service')
             .use('/healthcheck', healthcheck([storageDriver]))
             .use('/objects', objects(storageDriver, auth))
             .use('/batch', batch(storageDriver, auth));
