@@ -63,7 +63,11 @@ describe('schemas', () => {
         // import schema1
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema1 })
+            .send({
+                data: {
+                    value: schema1,
+                },
+            })
             .expect(200);
 
         const result1 = (await request.get(`/domains/${domain_.data.id}/schemas/base.json`)
@@ -97,7 +101,11 @@ describe('schemas', () => {
         // import schema2
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema2 })
+            .send({
+                data: {
+                    value: schema2,
+                },
+            })
             .expect(200);
 
         const result2 = (await request.get(`/domains/${domain_.data.id}/schemas/addition.json`)
@@ -130,7 +138,11 @@ describe('schemas', () => {
         // import schema3
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema3 })
+            .send({
+                data: {
+                    value: schema3,
+                },
+            })
             .expect(200);
 
         const result3 = (await request.get(`/domains/${domain_.data.id}/schemas/addition2.json`)

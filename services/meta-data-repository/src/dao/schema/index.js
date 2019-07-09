@@ -28,7 +28,7 @@ module.exports = {
     },
 
     async create({ obj, options = {} }) {
-        const result = await Schema.create([obj], options);
+        const result = (await Schema.create([obj], options))[0];
         const event = new Event({
             headers: {
                 name: 'metadata.schema.created',
@@ -38,12 +38,12 @@ module.exports = {
         EventBusManager.getEventBus().publish(event);
         return result;
     },
-    async createUpdate({ obj, options = {} }) {
+    async updateByURI(obj) {
         options = {
             upsert: true,
             ...options,
         };
-        const result = await Schema.updateOne({ uri: obj.uri }, obj, options);
+        const result = await Schema.findOneAndUpdate({ uri: obj.uri }, obj, { new: true });
         const event = new Event({
             headers: {
                 name: 'metadata.schema.modified',
@@ -52,6 +52,7 @@ module.exports = {
         });
         EventBusManager.getEventBus().publish(event);
         return result;
+
     },
     async findByDomainAndEntity({
         domainId,

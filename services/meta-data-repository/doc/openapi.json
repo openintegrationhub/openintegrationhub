@@ -3,7 +3,7 @@
   "info": {
     "title": "OIH MetaData Service REST API",
     "description": "REST API for the OIH MetaData Service.",
-    "version": "0.0.2",
+    "version": "0.0.4",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -13,87 +13,25 @@
     {
       "name": "Domains",
       "description": "Domain management"
-    },
+    }
+  ],
+  "servers": [
     {
-      "name": "Config",
-      "description": "Configuration"
+      "url": "http://metadata.openintegrationhub.com/api/v1"
     }
   ],
   "paths": {
-    "/config": {
-      "get": {
-        "tags": [
-          "Config"
-        ],
-        "summary": "Retrieve the configuration",
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "recordBaseSchema": {
-                          "type": "object",
-                          "properties": {
-                            "oihUid": {
-                              "type": "string"
-                            },
-                            "oihCreated": {
-                              "type": "object"
-                            },
-                            "oihLastModified": {
-                              "type": "object"
-                            },
-                            "modificationHistory": {
-                              "type": "array",
-                              "items": {
-                                "type": "object"
-                              }
-                            },
-                            "oihApplicationRecords": {
-                              "type": "array",
-                              "items": {
-                                "type": "object"
-                              },
-                              "minItems": 1
-                            }
-                          }
-                        },
-                        "supportedSchemas": {
-                          "type": "object",
-                          "example": {
-                            "addressV1": {
-                              "ref": "https://github.com/openintegrationhub/Data-and-Domain-Models/blob/master/src/main/schema/addresses/personV1.json"
-                            },
-                            "addressV2": {
-                              "ref": "https://github.com/openintegrationhub/Data-and-Domain-Models/blob/master/src/main/schema/addresses/personV2.json"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/Meta"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/domains": {
       "get": {
         "tags": [
           "Domains"
         ],
         "summary": "Retrieve the available domains for the authenticated user",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -105,7 +43,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/MutableDomain"
+                        "$ref": "#/components/schemas/Domain"
                       }
                     },
                     "meta": {
@@ -123,6 +61,11 @@
           "Domains"
         ],
         "summary": "Create a new Domain.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Creates a new Domain for the authenticated user.",
         "requestBody": {
           "content": {
@@ -131,7 +74,7 @@
                 "type": "object",
                 "properties": {
                   "data": {
-                    "$ref": "#/components/schemas/Domain"
+                    "$ref": "#/components/schemas/MutableDomain"
                   }
                 }
               }
@@ -147,7 +90,7 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/MutableDomain"
+                      "$ref": "#/components/schemas/Domain"
                     }
                   }
                 }
@@ -163,6 +106,11 @@
           "Domains"
         ],
         "summary": "Retrieve a domain with given ID.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Provides details of a domain with a given ID.",
         "parameters": [
           {
@@ -183,7 +131,7 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/MutableDomain"
+                      "$ref": "#/components/schemas/Domain"
                     }
                   }
                 }
@@ -197,6 +145,11 @@
           "Domains"
         ],
         "summary": "Update a domain by ID.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Updates details of a domain with a given ID.",
         "parameters": [
           {
@@ -215,7 +168,7 @@
                 "type": "object",
                 "properties": {
                   "data": {
-                    "$ref": "#/components/schemas/Domain"
+                    "$ref": "#/components/schemas/MutableDomain"
                   }
                 }
               }
@@ -231,7 +184,7 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/MutableDomain"
+                      "$ref": "#/components/schemas/Domain"
                     }
                   }
                 }
@@ -247,6 +200,11 @@
           "Domains"
         ],
         "summary": "Retrieve the available models for the authenticated user.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -266,48 +224,68 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "definitons": {
-                      "$ref": "#/components/schemas/Definitons"
-                    }
-                  }
-                },
-                "example": {
-                  "definitions": {
-                    "address": {
-                      "type": "object",
-                      "$id": "#address",
-                      "required": [
-                        "street_address",
-                        "city",
-                        "state"
-                      ],
-                      "properties": {
-                        "street_address": {
-                          "type": "string"
-                        },
-                        "city": {
-                          "type": "string"
-                        },
-                        "state": {
-                          "type": "string"
-                        }
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Domain"
                       }
                     },
-                    "person": {
-                      "type": "object",
-                      "$id": "#person",
-                      "required": [
-                        "first_name",
-                        "last_name"
-                      ],
-                      "properties": {
-                        "first_name": {
-                          "type": "string"
-                        },
-                        "last_name": {
-                          "type": "string"
-                        }
-                      }
+                    "meta": {
+                      "$ref": "#/components/schemas/Meta"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Create schema.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "This endpoint is used to send new schema for a given domain.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "domainId",
+            "required": true,
+            "description": "ID of the domain to import model into",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/MutableSchema"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Schema"
                     }
                   }
                 }
@@ -322,8 +300,13 @@
         "tags": [
           "Domains"
         ],
-        "summary": "Import models.",
-        "description": "This endpoint is used to upload multiple new models for a given domain.",
+        "summary": "Bulk import models.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "This endpoint is used to upload multiple new models for a given domain. Accepts zip or tgz archive format.",
         "parameters": [
           {
             "in": "path",
@@ -336,57 +319,23 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "type": "object"
-              },
-              "example": {
-                "address": {
-                  "type": "object",
-                  "required": [
-                    "street_address",
-                    "city",
-                    "state"
-                  ],
-                  "properties": {
-                    "street_address": {
-                      "type": "string"
-                    },
-                    "city": {
-                      "type": "string"
-                    },
-                    "state": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "person": {
-                  "type": "object",
-                  "required": [
-                    "first_name",
-                    "last_name"
-                  ],
-                  "properties": {
-                    "first_name": {
-                      "type": "string"
-                    },
-                    "last_name": {
-                      "type": "string"
-                    }
+                "type": "object",
+                "properties": {
+                  "archive": {
+                    "type": "string",
+                    "format": "binary"
                   }
                 }
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "type": "object"
               }
             }
           }
         },
         "responses": {
-          "202": {
+          "200": {
             "description": "successful operation"
           }
         }
@@ -398,6 +347,11 @@
           "Domains"
         ],
         "summary": "Retrieve a schema by URI.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Provides details of a schema with a given URI.",
         "parameters": [
           {
@@ -426,7 +380,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Schema"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Schema"
+                    }
+                  }
                 }
               }
             }
@@ -438,6 +397,11 @@
           "Domains"
         ],
         "summary": "Update a schema with given URI.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "description": "Updates a schema with given URI.",
         "parameters": [
           {
@@ -463,26 +427,10 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
-              },
-              "example": {
-                "address": {
-                  "type": "object",
-                  "required": [
-                    "street_address",
-                    "city",
-                    "state"
-                  ],
-                  "properties": {
-                    "street_address": {
-                      "type": "string"
-                    },
-                    "city": {
-                      "type": "string"
-                    },
-                    "state": {
-                      "type": "string"
-                    }
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/MutableSchema"
                   }
                 }
               }
@@ -495,27 +443,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
-                },
-                "example": {
-                  "address": {
-                    "type": "object",
-                    "$id": "#address",
-                    "required": [
-                      "street_address",
-                      "city",
-                      "state"
-                    ],
-                    "properties": {
-                      "street_address": {
-                        "type": "string"
-                      },
-                      "city": {
-                        "type": "string"
-                      },
-                      "state": {
-                        "type": "string"
-                      }
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Schema"
                     }
                   }
                 }
@@ -529,6 +460,11 @@
           "Domains"
         ],
         "summary": "Delete a schema by uri",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "domainId",
@@ -550,20 +486,18 @@
         "responses": {
           "204": {
             "description": "The model was successfully deleted"
-          },
-          "404": {
-            "description": "Model with given ID not found"
           }
-        },
-        "security": [
-          {
-            "api_key": []
-          }
-        ]
+        }
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
     "schemas": {
       "Domain": {
         "allOf": [
@@ -629,46 +563,24 @@
           "description": {
             "type": "string"
           },
-          "uri": {
-            "type": "string"
-          },
           "value": {
             "type": "object",
             "example": {
-              "address": {
-                "type": "object",
-                "$id": "#address",
-                "required": [
-                  "street_address",
-                  "city",
-                  "state"
-                ],
-                "properties": {
-                  "street_address": {
-                    "type": "string"
-                  },
-                  "city": {
-                    "type": "string"
-                  },
-                  "state": {
-                    "type": "string"
-                  }
-                }
-              },
-              "person": {
-                "type": "object",
-                "$id": "#person",
-                "required": [
-                  "first_name",
-                  "last_name"
-                ],
-                "properties": {
-                  "first_name": {
-                    "type": "string"
-                  },
-                  "last_name": {
-                    "type": "string"
-                  }
+              "$id": "address",
+              "required": [
+                "street_address",
+                "city",
+                "state"
+              ],
+              "properties": {
+                "street_address": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
                 }
               }
             }
@@ -708,6 +620,9 @@
               "id": {
                 "type": "string"
               },
+              "uri": {
+                "type": "string"
+              },
               "createdAt": {
                 "type": "string",
                 "description": "Client creation time",
@@ -737,9 +652,6 @@
             "description": "Type of Owner entity, e.g. GROUP, TENANT, USER, etc."
           }
         }
-      },
-      "Definitons": {
-        "type": "object"
       },
       "Meta": {
         "type": "object",

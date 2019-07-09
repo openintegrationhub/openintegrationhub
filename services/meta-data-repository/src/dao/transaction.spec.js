@@ -33,9 +33,11 @@ describe('Transaction', () => {
     test('just a transaction test', async () => {
         // create dummy domain first
         const domain = await DomainDAO.create({
-            name: 'foo',
-            description: 'bar',
-            public: true,
+            obj: {
+                name: 'foo',
+                description: 'bar',
+                public: true,
+            },
         });
 
         // start session
