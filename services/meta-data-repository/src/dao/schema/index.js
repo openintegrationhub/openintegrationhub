@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
 const Schema = require('../../model/Schema');
 
 async function getReferences(uri) {
@@ -25,11 +26,28 @@ module.exports = {
     async countBy(query) {
         return await Schema.countDocuments(query);
     },
-    async create({ obj, options }) {
-        return (await Schema.create([obj], options))[0];
+
+    async create({ obj, options = {} }) {
+        const result = (await Schema.create([obj], options))[0];
+        const event = new Event({
+            headers: {
+                name: 'metadata.schema.created',
+            },
+            payload: { id: result._id },
+        });
+        EventBusManager.getEventBus().publish(event);
+        return result;
     },
     async updateByURI(obj) {
-        return await Schema.findOneAndUpdate({ uri: obj.uri }, obj, { new: true });
+        const result = await Schema.findOneAndUpdate({ uri: obj.uri }, obj, { new: true });
+        const event = new Event({
+            headers: {
+                name: 'metadata.schema.modified',
+            },
+            payload: { id: result._id },
+        });
+        EventBusManager.getEventBus().publish(event);
+        return result;
     },
     async findByDomainAndEntity({
         domainId,
@@ -76,6 +94,13 @@ module.exports = {
             await Schema.deleteOne({
                 uri,
             });
+            const event = new Event({
+                headers: {
+                    name: 'metadata.schema.deleted',
+                },
+                payload: { schema: uri },
+            });
+            EventBusManager.getEventBus().publish(event);
         } else {
             throw new Error(`${uri} referenced by ${refs.toString()}`);
         }
