@@ -3,7 +3,7 @@ const logger = require('@basaas/node-logger');
 const mkdirp = require('mkdirp');
 const { domainOwnerOrAllowed } = require('../../middleware/permission');
 const conf = require('../../conf');
-const { USER } = require('../../constant').ENTITY_TYPE;
+const { USER, TENANT } = require('../../constant').ENTITY_TYPE;
 const { DomainDAO } = require('../../dao');
 const Pagination = require('../../util/pagination');
 const {
@@ -46,10 +46,14 @@ router.post('/', async (req, res, next) => {
             data: transformDbResults(await DomainDAO.create({
                 obj: {
                     ...data,
-                    owners: {
+                    owners: [{
                         id: req.user.sub.toString(),
                         type: USER,
-                    },
+                    }, req.user.tenantId ? {
+                        id: req.user.tenantId,
+                        type: TENANT,
+                        isImmutable: true,
+                    } : {}],
                 },
 
             })),
@@ -85,6 +89,10 @@ router.put('/:id', domainOwnerOrAllowed({
     const { data } = req.body;
     try {
         if (!data) throw 'Missing data';
+
+        if (data.owners) {
+            delete data.owners;
+        }
 
         res.send({
             data: transformDbResults(await DomainDAO.updateById({

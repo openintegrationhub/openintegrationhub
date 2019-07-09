@@ -7,7 +7,7 @@ const fs = require('fs-extra');
 const { domainOwnerOrAllowed } = require('../../../middleware/permission');
 const { isLocalRequest } = require('../../../util/common');
 const conf = require('../../../conf');
-const { USER } = require('../../../constant').ENTITY_TYPE;
+const { USER, TENANT } = require('../../../constant').ENTITY_TYPE;
 const { DomainDAO, SchemaDAO } = require('../../../dao');
 const Pagination = require('../../../util/pagination');
 const {
@@ -121,10 +121,14 @@ router.post('/', domainOwnerOrAllowed({
                     uri: URIfromId(transformed.schema.$id),
                     value: JSON.stringify(transformed.schema),
                     refs: transformed.backReferences,
-                    owners: {
+                    owners: [{
                         id: owner,
                         type: USER,
-                    },
+                    }, req.user.tenantId ? {
+                        id: req.user.tenantId,
+                        type: TENANT,
+                        isImmutable: true,
+                    } : {}],
                 },
             })),
         });
@@ -137,7 +141,7 @@ router.post('/', domainOwnerOrAllowed({
 });
 
 router.get('/:uri*', async (req, res, next) => {
-    if (isLocalRequest(req)) {
+    if (!req.user && isLocalRequest(req)) {
         return next();
     }
     domainOwnerOrAllowed({
@@ -189,17 +193,6 @@ router.put('/:uri*', domainOwnerOrAllowed({
             schema: value,
         });
 
-        let owner;
-
-        if (req.isOwnerOf) {
-            owner = req.user.sub.toString();
-        } else {
-            // get owner of domain
-            const { owners } = await DomainDAO.findOne({
-                _id: req.domainId,
-            });
-            owner = owners[0].id;
-        }
         res.send({
             data: transformDbResults(await SchemaDAO.updateByURI({
 
@@ -212,10 +205,6 @@ router.put('/:uri*', domainOwnerOrAllowed({
                 }),
                 value: JSON.stringify(transformed.schema),
                 refs: transformed.backReferences,
-                owners: {
-                    id: owner,
-                    type: USER,
-                },
             })),
         });
     } catch (err) {

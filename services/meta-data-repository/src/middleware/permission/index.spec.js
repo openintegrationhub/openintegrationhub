@@ -26,40 +26,40 @@ describe('domains', () => {
         await server.stop();
     });
 
-    // test('Request non existing domain', async () => {
-    //     await request.get('/domains/fooooo')
-    //         .set(...global.admin)
-    //         .expect(404);
+    test('Request non existing domain', async () => {
+        await request.get('/domains/fooooo')
+            .set(...global.admin)
+            .expect(404);
 
-    //     await request.get('/domains/fooooo')
-    //         .set(...global.user1)
-    //         .expect(403);
-    // });
+        await request.get('/domains/fooooo')
+            .set(...global.user1)
+            .expect(403);
+    });
 
-    // test('Request existing domain', async () => {
-    //     const payload = {
-    //         name: 'foo',
-    //         description: 'bar',
-    //         public: true,
-    //     };
+    test('Request existing domain', async () => {
+        const payload = {
+            name: 'foo',
+            description: 'bar',
+            public: true,
+        };
 
-    //     const { data } = (await request.post('/domains')
-    //         .set(...global.user1)
-    //         .send({ data: payload })
-    //         .expect(200)).body;
+        const { data } = (await request.post('/domains')
+            .set(...global.user1)
+            .send({ data: payload })
+            .expect(200)).body;
 
-    //     await request.get(`/domains/${data.id}`)
-    //         .set(...global.user1)
-    //         .expect(200);
+        await request.get(`/domains/${data.id}`)
+            .set(...global.user1)
+            .expect(200);
 
-    //     await request.get(`/domains/${data.id}`)
-    //         .set(...global.user2)
-    //         .expect(403);
+        await request.get(`/domains/${data.id}`)
+            .set(...global.user2)
+            .expect(403);
 
-    //     await request.get(`/domains/${data.id}`)
-    //         .set(...global.admin)
-    //         .expect(200);
-    // });
+        await request.get(`/domains/${data.id}`)
+            .set(...global.admin)
+            .expect(200);
+    });
 
     test('Test tenant access', async () => {
         const payload = {
@@ -68,25 +68,114 @@ describe('domains', () => {
             public: true,
         };
 
-        const { data } = (await request.post('/domains')
+        let { data } = (await request.post('/domains')
             .set(...global.tenantUser1)
             .send({ data: payload })
             .expect(200)).body;
 
-        await request.get(`/domains/${data.id}`)
+        const domainId = data.id;
+
+        await request.get(`/domains/${domainId}`)
             .set(...global.tenantUser1)
             .expect(200);
 
-        await request.get(`/domains/${data.id}`)
+        await request.get(`/domains/${domainId}`)
+            .set(...global.tenantUser11)
+            .expect(403);
+
+        await request.get(`/domains/${domainId}`)
             .set(...global.tenantAdmin1)
             .expect(200);
 
-        await request.get(`/domains/${data.id}`)
+        await request.get(`/domains/${domainId}`)
             .set(...global.tenantAdmin2)
             .expect(403);
 
-        await request.get(`/domains/${data.id}`)
+        await request.get(`/domains/${domainId}`)
+            .set(...global.tenantUser2)
+            .expect(403);
+
+        await request.get(`/domains/${domainId}`)
             .set(...global.admin)
             .expect(200);
+
+        data = (await request.post(`/domains/${domainId}/schemas`)
+            .set(...global.tenantUser1)
+            .send({
+                data: {
+                    value: {
+                        $id: 'boo',
+                    },
+                },
+            })
+            .expect(200)).body.data;
+
+        const schemaUri = data.uri.replace('/api/v1', '');
+
+        await request.post(`/domains/${domainId}/schemas`)
+            .set(...global.tenantUser2)
+            .send({
+                data: {
+                    value: {
+                        $id: 'boo',
+                    },
+                },
+            })
+            .expect(403);
+
+
+        await request.post(`/domains/${domainId}/schemas`)
+            .set(...global.tenantAdmin2)
+            .send({
+                data: {
+                    value: {
+                        $id: 'boo',
+                    },
+                },
+            })
+            .expect(403);
+
+        let res = await request.post(`/domains/${domainId}/schemas`)
+            .set(...global.admin)
+            .send({
+                data: {
+                    value: {
+                        $id: 'boo1',
+                    },
+                },
+            })
+            .expect(200);
+
+        expect(res.body.data.owners[0].id).toEqual('tu1');
+        res = await request.post(`/domains/${domainId}/schemas`)
+            .set(...global.tenantAdmin1)
+            .send({
+                data: {
+                    value: {
+                        $id: 'boo2',
+                    },
+                },
+            })
+            .expect(200);
+        expect(res.body.data.owners[0].id).toEqual('tu1');
+
+        await request.get(schemaUri)
+            .set(...global.tenantUser1)
+            .expect(200);
+        await request.get(schemaUri)
+            .set(...global.tenantUser11)
+            .expect(403);
+
+        await request.get(schemaUri)
+            .set(...global.tenantAdmin1)
+            .expect(200);
+
+        await request.get(schemaUri)
+            .set(...global.tenantAdmin2)
+            .expect(403);
+
+        await request.get(schemaUri)
+            .set(...global.tenantUser2)
+            .expect(403);
     });
 });
