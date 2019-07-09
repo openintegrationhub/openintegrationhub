@@ -39,10 +39,6 @@ module.exports = {
         return result;
     },
     async updateByURI(obj) {
-        options = {
-            upsert: true,
-            ...options,
-        };
         const result = await Schema.findOneAndUpdate({ uri: obj.uri }, obj, { new: true });
         const event = new Event({
             headers: {
@@ -52,7 +48,6 @@ module.exports = {
         });
         EventBusManager.getEventBus().publish(event);
         return result;
-
     },
     async findByDomainAndEntity({
         domainId,
