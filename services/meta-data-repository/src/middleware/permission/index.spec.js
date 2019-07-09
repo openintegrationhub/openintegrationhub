@@ -26,17 +26,42 @@ describe('domains', () => {
         await server.stop();
     });
 
-    test('Request non existing domain', async () => {
-        await request.get('/domains/fooooo')
-            .set(...global.admin)
-            .expect(404);
+    // test('Request non existing domain', async () => {
+    //     await request.get('/domains/fooooo')
+    //         .set(...global.admin)
+    //         .expect(404);
 
-        await request.get('/domains/fooooo')
-            .set(...global.user1)
-            .expect(403);
-    });
+    //     await request.get('/domains/fooooo')
+    //         .set(...global.user1)
+    //         .expect(403);
+    // });
 
-    test('Request existing domain', async () => {
+    // test('Request existing domain', async () => {
+    //     const payload = {
+    //         name: 'foo',
+    //         description: 'bar',
+    //         public: true,
+    //     };
+
+    //     const { data } = (await request.post('/domains')
+    //         .set(...global.user1)
+    //         .send({ data: payload })
+    //         .expect(200)).body;
+
+    //     await request.get(`/domains/${data.id}`)
+    //         .set(...global.user1)
+    //         .expect(200);
+
+    //     await request.get(`/domains/${data.id}`)
+    //         .set(...global.user2)
+    //         .expect(403);
+
+    //     await request.get(`/domains/${data.id}`)
+    //         .set(...global.admin)
+    //         .expect(200);
+    // });
+
+    test('Test tenant access', async () => {
         const payload = {
             name: 'foo',
             description: 'bar',
@@ -44,16 +69,20 @@ describe('domains', () => {
         };
 
         const { data } = (await request.post('/domains')
-            .set(...global.user1)
+            .set(...global.tenantUser1)
             .send({ data: payload })
             .expect(200)).body;
 
         await request.get(`/domains/${data.id}`)
-            .set(...global.user1)
+            .set(...global.tenantUser1)
             .expect(200);
 
         await request.get(`/domains/${data.id}`)
-            .set(...global.user2)
+            .set(...global.tenantAdmin1)
+            .expect(200);
+
+        await request.get(`/domains/${data.id}`)
+            .set(...global.tenantAdmin2)
             .expect(403);
 
         await request.get(`/domains/${data.id}`)
