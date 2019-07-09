@@ -1,4 +1,5 @@
 const Logger = require('@basaas/node-logger');
+const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
 const Permission = require('./../models/permission');
 const CONF = require('./../conf');
 
@@ -27,7 +28,13 @@ const PermissionsDAO = {
         await instance.save();
 
         log.debug('created.permission', Object.assign({}, data));
-
+        const event = new Event({
+            headers: {
+                name: 'iam.permission.created',
+            },
+            payload: { role: data.name.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
         auditLog.info('create.permission', { data });
         return instance.toJSON();
     },
@@ -42,6 +49,13 @@ const PermissionsDAO = {
 
         log.debug('updated.permission', { id, props });
         auditLog.info('update.permission', { data: props, id });
+        const event = new Event({
+            headers: {
+                name: 'iam.permission.modified',
+            },
+            payload: { role: id.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
 
     },
 
@@ -50,6 +64,13 @@ const PermissionsDAO = {
         await Permission.deleteOne({ _id: id });
         log.debug('deleted.permission', { id });
         auditLog.info('delete.permission', { data: { id } });
+        const event = new Event({
+            headers: {
+                name: 'iam.permission.deleted',
+            },
+            payload: { role: id.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
     },
 
 };

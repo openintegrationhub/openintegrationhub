@@ -19,6 +19,7 @@ rules:
     new-cap: 0
     indent: [1, 4]
     global-require: 0
+    max-len: 0
     import/no-extraneous-dependencies: 0
     no-plusplus: 0
     no-shadow: 0
