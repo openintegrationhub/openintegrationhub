@@ -1,5 +1,5 @@
 const logger = require('@basaas/node-logger');
-const { isOwnerOf, hasAll } = require('@openintegrationhub/iam-utils');
+const { hasAll, isOwnerOf } = require('@openintegrationhub/iam-utils');
 const DomainDAO = require('../../dao/domain');
 const conf = require('../../conf');
 
@@ -29,7 +29,7 @@ module.exports = {
                 user: req.user,
             });
 
-            if (req.ownsDomain) {
+            if (req.ownsDomain || req.hasAll) {
                 return next();
             }
 
