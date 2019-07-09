@@ -4,6 +4,7 @@ const DomainDAO = require('../../dao/domain');
 const conf = require('../../conf');
 
 const log = logger.getLogger(`${conf.logging.namespace}/permission`);
+
 module.exports = {
     domainOwnerOrAllowed: ({ permissions }) => async (req, res, next) => {
         try {
@@ -12,23 +13,27 @@ module.exports = {
                 requiredPermissions: permissions,
             });
 
-            req.ownedDomain = await isOwnerOf({
-                dao: DomainDAO,
-                sub: req.user.sub,
-                id: req.params.id || req.domainId,
+            const domain = await DomainDAO.findOne({
+                _id: req.params.id || req.domainId,
             });
 
-            if (req.hasAll) {
-                if (req.ownedDomain !== null) {
-                    return next();
+            if (!domain) {
+                if (req.hasAll) {
+                    return next({ status: 404 });
                 }
-                return next({ status: 404 });
+                return next({ status: 403 });
             }
 
-            if (req.ownedDomain === null) return next({ status: 404 });
-            if (req.ownedDomain === false) return next({ status: 403 });
+            req.ownsDomain = isOwnerOf({
+                entity: domain,
+                user: req.user,
+            });
 
-            return next();
+            if (req.ownsDomain) {
+                return next();
+            }
+
+            return next({ status: 403 });
         } catch (err) {
             log.error(err);
             if (req.hasAll) {
