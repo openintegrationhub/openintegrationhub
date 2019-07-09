@@ -3,6 +3,7 @@ import KoaRouter, { IMiddleware } from 'koa-router';
 import { Server } from 'http';
 import Logger from 'bunyan';
 import healthcheck from './routes/healthcheck';
+import dataRoutes from './routes/data';
 import koaBunyanLogger from 'koa-bunyan-logger';
 import koaSwagger from 'koa2-swagger-ui';
 import errorResponder from './middleware/error-responder';
@@ -29,7 +30,8 @@ export default class ObjectServer {
             .use('/healthcheck', healthcheck([{
                 async healthcheck(): Promise<void> {
                 }
-            }]));
+            }]))
+            .use('/data', dataRoutes());
 
         const swaggerUI = koaSwagger({
             routePrefix: '/api-docs',

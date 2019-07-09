@@ -7,7 +7,7 @@ export default async function errorResponder(ctx: Context, next: Function): Prom
     } catch (err) {
         if (!(err instanceof ApiError) && !err.status) {
             ctx.log.error(err);
-            err = new ApiError(err.message);
+            err = new ApiError(err.status, err.message);
         }
 
         ctx.body = {
@@ -17,6 +17,7 @@ export default async function errorResponder(ctx: Context, next: Function): Prom
                 }
             ]
         };
+
         ctx.status = err.status || 500;
     }
 }

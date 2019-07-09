@@ -11,6 +11,7 @@
     },
     "scripts": {
         "start": "node dist/app.js",
+        "start:dev": "NODE_ENV=development ts-node-dev ./src/app.ts | bunyan",
         "test": "exit 0",
         "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts .",
         "build": "tsc",
@@ -19,7 +20,9 @@
     "license": "UNLICENSED",
     "devDependencies": {
         "@types/koa-bodyparser": "4.3.0",
-        "@types/lodash": "4.14.135"
+        "@types/lodash": "4.14.135",
+        "@types/mongoose": "5.5.7",
+        "ts-node-dev": "1.0.0-pre.40"
     },
     "dependencies": {
         "backend-commons-lib": "*",
@@ -29,6 +32,7 @@
         "koa-bunyan-logger": "2.1.0",
         "koa-router": "7.4.0",
         "koa2-swagger-ui": "2.14.0",
-        "lodash": "4.17.11"
+        "lodash": "4.17.11",
+        "mongoose": "5.6.3"
     }
 }
