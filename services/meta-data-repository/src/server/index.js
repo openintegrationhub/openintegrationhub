@@ -29,7 +29,7 @@ module.exports = class Server {
         port, mongoDbConnection, dao, iam,
     }) {
         this.port = port || conf.port;
-        this.eventBus = new EventBus({ serviceName: conf.general.loggingNameSpace, rabbitmqUri: process.env.RABBITMQ_URI });
+        this.eventBus = new EventBus({ serviceName: conf.loggingNameSpace, rabbitmqUri: process.env.RABBITMQ_URI });
         this.app = express();
         this.app.disable('x-powered-by');
         this.iam = iam || iamLib;
