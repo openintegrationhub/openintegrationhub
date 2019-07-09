@@ -43,6 +43,7 @@ describe('domains', () => {
             public: true,
         };
 
+
         const { data } = (await request.post('/domains')
             .set(...global.user1)
             .send({ data: payload })
@@ -177,5 +178,47 @@ describe('domains', () => {
         await request.get(schemaUri)
             .set(...global.tenantUser2)
             .expect(403);
+    });
+
+    test('Request all domains available to tenant admin', async () => {
+        const payload = {
+            name: 'foo',
+            description: 'bar',
+            public: true,
+        };
+
+        await request.post('/domains')
+            .set(...global.tenantUser2)
+            .send({ data: payload })
+            .expect(200);
+
+        await request.post('/domains')
+            .set(...global.tenantUser2)
+            .send({ data: payload })
+            .expect(200);
+
+        await request.post('/domains')
+            .set(...global.tenantUser22)
+            .send({ data: payload })
+            .expect(200);
+
+
+        let result = (await request.get('/domains')
+            .set(...global.tenantUser2)
+            .expect(200)).body;
+
+        expect(result.meta.total).toEqual(2);
+
+        result = (await request.get('/domains')
+            .set(...global.tenantUser22)
+            .expect(200)).body;
+
+        expect(result.meta.total).toEqual(1);
+
+        result = (await request.get('/domains')
+            .set(...global.tenantAdmin2)
+            .expect(200)).body;
+
+        expect(result.meta.total).toEqual(3);
     });
 });

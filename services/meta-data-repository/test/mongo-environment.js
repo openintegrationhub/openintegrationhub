@@ -10,6 +10,7 @@ const {
     tenantUser1,
     tenantUser11,
     tenantUser2,
+    tenantUser22,
 } = require('./tokens');
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');
@@ -34,6 +35,7 @@ module.exports = class MongoEnvironment extends NodeEnvironment {
 
         this.global.tenantAdmin2 = ['Authorization', `bearer ${tenantAdmin2.token}`];
         this.global.tenantUser2 = ['Authorization', `bearer ${tenantUser2.token}`];
+        this.global.tenantUser22 = ['Authorization', `bearer ${tenantUser22.token}`];
 
         await super.setup();
     }

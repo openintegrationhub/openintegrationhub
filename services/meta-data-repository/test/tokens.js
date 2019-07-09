@@ -110,4 +110,16 @@ module.exports = {
             permissions: [],
         },
     },
+
+    tenantUser22: {
+        token: 'tenantUser22',
+        value: {
+            sub: 'tu22',
+            name: 'tenant-user22',
+            role: 'USER',
+            iat: 1337,
+            tenantId: 't2',
+            permissions: [],
+        },
+    },
 };

@@ -4,6 +4,7 @@ const mkdirp = require('mkdirp');
 const { domainOwnerOrAllowed } = require('../../middleware/permission');
 const conf = require('../../conf');
 const { USER, TENANT } = require('../../constant').ENTITY_TYPE;
+const { TENANT_ADMIN } = require('../../constant').ROLE;
 const { DomainDAO } = require('../../dao');
 const Pagination = require('../../util/pagination');
 const {
@@ -19,23 +20,33 @@ const router = express.Router();
 // create upload path
 mkdirp.sync(conf.importFilePath);
 
-router.get('/', async (req, res) => {
-    const pagination = new Pagination(
-        req.originalUrl,
-        DomainDAO,
-        req.user.sub,
-    );
-    res.send({
-        data: transformDbResults(await DomainDAO.findByEntityWithPagination(
+router.get('/', async (req, res, next) => {
+    try {
+        const pagination = new Pagination(
+            req.originalUrl,
+            DomainDAO,
             req.user.sub,
-            pagination.props(),
-        )),
-        meta: {
-            ...await pagination.calc({
-                'owners.id': req.user.sub,
-            }),
-        },
-    });
+        );
+
+        const ownerId = req.user.role === TENANT_ADMIN ? req.user.tenantId : req.user.sub;
+
+        res.send({
+            data: transformDbResults(await DomainDAO.findByEntityWithPagination(
+                req.user.sub,
+                pagination.props(),
+            )),
+            meta: {
+                ...await pagination.calc({
+                    'owners.id': ownerId,
+                }),
+            },
+        });
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 400,
+        });
+    }
 });
 
 router.post('/', async (req, res, next) => {
