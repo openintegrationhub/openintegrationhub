@@ -7,7 +7,9 @@ export default () => {
     const controller = new Controller();
     return new koaRouter()
         .use(bodyParser())
-        .get('/:id', (ctx: RouterContext) => controller.getOne(ctx))
         .post('/', (ctx: RouterContext) => controller.create(ctx))
+        .get('/:id', (ctx: RouterContext) => controller.getOne(ctx))
+        .put('/:id', (ctx: RouterContext) => controller.putOne(ctx))
+        .patch('/:id', (ctx: RouterContext) => controller.patchOne(ctx))
         .routes();
 }
