@@ -27,7 +27,7 @@ process.on('SIGINT', exitHandler.bind(null, { exit: true }));
 (async () => {
     try {
         // configuring the EventBus
-        const eventBus = new EventBus({ serviceName: conf.general.loggingNameSpace, rabbitmqUri: process.env.RABBITMQ_URI });
+        const eventBus = new EventBus({ serviceName: conf.general.loggingNameSpace, rabbitmqUri: conf.general.rabbitmqUrl });
 
         await eventBus.connect();
 
