@@ -27,7 +27,7 @@ const config = {
         port,
 
         mongodb_url: optional('IAM_MONGODB_CONNECTION', 'mongodb://localhost:27017/accounts'),
-
+        rabbitmqUrl: optional('RABBITMQ_URI', 'amqp://guest:guest@localhost:5672'),
         originWhitelist: originwhitelist.concat(optional('NODE_ENV') !== 'production' ? [
             // development only
             '127.0.0.1', 

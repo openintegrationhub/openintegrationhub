@@ -8,6 +8,8 @@ module.exports = {
     apiBase: optional('API_BASE', '/api/v1'),
     userAuthType: optional('AUTH_TYPE', 'basic'),
     importFilePath: path.resolve(optional('IMPORT_FILE_PATH', 'temp')),
+    loggingNameSpace: 'metadata',
+    rabbitmqUrl: optional('RABBITMQ_URI', 'amqp://guest:guest@localhost:5672'),
     iam: {
         apiBase: optional('IAM_API_BASE', 'http://iam.openintegrationhub.com/api/v1'),
         introspectType: optional('INTROSPECT_TYPE', 'basic'),

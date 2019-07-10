@@ -35,7 +35,7 @@ const TenantDAO = {
 
         const event = new Event({
             headers: {
-                name: 'tenant.created',
+                name: 'iam.tenant.created',
             },
             payload: { tenant: savedEntity.toObject(), id: savedEntity._id.toString() },
         });
@@ -56,6 +56,13 @@ const TenantDAO = {
         }, updateOperation);
 
         log.debug('updated.tenant', { id, props });
+        const event = new Event({
+            headers: {
+                name: 'iam.tenant.modified',
+            },
+            payload: { id: id.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
         auditLog.info('update.tenant', { data: props, id });
 
     },
@@ -69,7 +76,7 @@ const TenantDAO = {
         auditLog.info('delete.tenant', { data: { id } });
         const event = new Event({
             headers: {
-                name: 'tenant.deleted',
+                name: 'iam.tenant.deleted',
             },
             payload: { id: id.toString() },
         });

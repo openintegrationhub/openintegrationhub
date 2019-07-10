@@ -1,6 +1,7 @@
 const Logger = require('@basaas/node-logger');
 const passport = require('passport');
 const rp = require('request-promise');
+const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
 const TokenUtils = require('./../util/tokens');
 
 const Account = require('../models/account');
@@ -138,6 +139,13 @@ module.exports = {
                 if (passportErrorMsg.name === 'IncorrectUsernameError') {
                     return next({ status: 401, message: CONSTANTS.ERROR_CODES.USER_NOT_FOUND });
                 }
+                const event = new Event({
+                    headers: {
+                        name: 'iam.user.loginFailed',
+                    },
+                    payload: { user: req.body.username.toString() },
+                });
+                EventBusManager.getEventBus().publish(event);
             }
             if (!user) {
                 return next({ status: 401, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -146,6 +154,13 @@ module.exports = {
             req.logIn(user, async (err) => {
                 if (err) {
                     log.error('Failed to login user', err);
+                    const event = new Event({
+                        headers: {
+                            name: 'iam.user.loginFailed',
+                        },
+                        payload: { user: req.body.username.toString() },
+                    });
+                    EventBusManager.getEventBus().publish(event);
                     return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
                 }
 
