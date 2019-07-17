@@ -12,7 +12,7 @@
 
 |Microservice Name|Responsibility|Status|Link to documentation|
 |---|---|---|---|
-|Attachement-Storage-Service|[Elastic.io GmbH](https://www.elastic.io/)|![wip](https://img.shields.io/badge/Work%20in%20progress-orange.svg)|-|
+|Attachement-Storage-Service|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|-|
 |Audit Log|[Wice GmbH](https://wice.de/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [Audit Log](services/audit-log/README.md), [Audit Log Requirements](docs/services/AuditLog/AuditLogRequirements.md) and [Message Format](services/AuditLog/MessageFormat.md)|
 |Component Orchestrator|[Elastic.io GmbH](https://www.elastic.io/)|![alpha](https://img.shields.io/badge/Alpha-yellowgreen.svg)|See: [Component Orchestrator](services/component-orchestrator/README.md)|
 |Component Repository|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [ComponentRepository](/services/component-repository/README.md)|
