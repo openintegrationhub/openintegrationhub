@@ -14,7 +14,7 @@ Stores arbitrary data. Based on [@openintegrationhub/attachment-storage-service]
 
 ## API docs
 
-[http://attachment-storage-service.openintegrationhub.com/api-docs/](http://attachment-storage-service.openintegrationhub.com/api-docs/).
+[http://attachment-storage-service.openintegrationhub.com/api-docs](http://attachment-storage-service.openintegrationhub.com/api-docs/).
 
 ## Prerequisites
 
