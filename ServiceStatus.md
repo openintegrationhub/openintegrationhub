@@ -17,7 +17,7 @@
 |Component Orchestrator|[Elastic.io GmbH](https://www.elastic.io/)|![alpha](https://img.shields.io/badge/Alpha-yellowgreen.svg)|See: [Component Orchestrator](services/component-orchestrator/README.md)|
 |Component Repository|[Elastic.io GmbH](https://www.elastic.io/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [ComponentRepository](/services/component-repository/README.md)|
 |Conflict-Management|[Wice GmbH](https://wice.de/)|![tbd](https://img.shields.io/badge/To%20be%20done-red.svg)|See: [Conflict Management Concepts](docs/conflictManagement)|
-|Data Hub|[Elastic.io GmbH](https://www.elastic.io/)|![tbd](https://img.shields.io/badge/To%20be%20done-red.svg)|-|
+|Data Hub|[Elastic.io GmbH](https://www.elastic.io/)|![wip](https://img.shields.io/badge/Work%20in%20progress-orange.svg)|-|
 |Flow Repository|[Wice GmbH](https://wice.de/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [Flow Repository](services/flow-repository/README.md)|
 |Hierarchy and Relationship Management|[Wice GmbH](https://wice.de/)|![alpha](https://img.shields.io/badge/Alpha-yellowgreen.svg)|-|
 |IAM|[Basaas GmbH](https://www.basaas.com/)|![prod](https://img.shields.io/badge/Production-brightgreen.svg)|See: [IAM](services/iam/README.md), [Concepts](docs/services/IAM/IAMConcept.md)|
