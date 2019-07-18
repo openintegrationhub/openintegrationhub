@@ -2,11 +2,10 @@
 
 const general = {
   mongoUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/auditLogDev',
-  oihViewerRoles: ['ADMIN'],
+  oihAdminRoles: ['ADMIN'],
 
-  // Determines whether the IAM-permission system should be used. Set to true to enable
-  usePermissions: process.env.USE_PERMISSIONS || false,
-  logReadPermission: process.env.FLOW_READ_PERMISSION || 'logs.read',
+  logReadPermission: process.env.LOG_READ_PERMISSION || 'logs.read',
+  logPushPermission: process.env.LOG_PUSH_PERMISSION || 'logs.push',
 
   // Designates which storage system (Mongo, Kubernetes, MySQL, etc.) is used
   storage: 'mongo',

@@ -6,6 +6,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const Ajv = require('ajv');
+const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
@@ -23,7 +24,7 @@ const validator = ajv.compile(schema);
 
 
 // Gets all logs
-router.post('/', jsonParser, async (req, res) => {
+router.post('/', jsonParser, can(config.logPushPermission), async (req, res) => {
   const message = req.body;
 
   const valid = validator(message);

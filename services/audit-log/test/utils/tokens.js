@@ -21,6 +21,8 @@ module.exports = {
         {
           role: 'TENANT_GUEST',
           tenant: '2',
+          permissions: ['logs.read', 'logs.push'],
+          active: true,
         },
       ],
       iat: 1337,
@@ -35,8 +37,10 @@ module.exports = {
       role: 'GUEST',
       memberships: [
         {
+          permissions: ['logs.read', 'logs.push'],
           role: 'TENANT_GUEST',
           tenant: '3',
+          active: true,
         },
       ],
       iat: 1337,

@@ -111,14 +111,15 @@ describe('Login Security', () => {
     const res = await request.get('/logs');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors).toHaveLength(1);
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
   test('should not be able to HTTP POST logs without login', async () => {
     const res = await request.post('/logs');
     expect(res.status).toEqual(401);
-    expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors).toHaveLength(1);
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 });
 

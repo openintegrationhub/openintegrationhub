@@ -4,6 +4,7 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
@@ -15,14 +16,7 @@ const router = express.Router();
 const log = require('../../config/logger'); // eslint-disable-line
 
 // Gets all flows
-router.get('/', jsonParser, async (req, res) => {
-  const credentials = res.locals.credentials[1];
-  let response;
-
-  if (!res.locals.admin && credentials.length <= 0) {
-    res.status(403).send({ errors: [{ message: 'User does not have permissions to view logs', code: 403 }] });
-  }
-
+router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
   let pageSize = 10;
   let pageNumber = 1;
 
@@ -85,11 +79,14 @@ router.get('/', jsonParser, async (req, res) => {
     searchString = searchString.replace(/(^[\s]+|[\s]$)/img, '');
   }
 
-  if (res.locals.admin) {
-    response = await storage.getLogs('admin', pageSize, pageNumber, searchString, filters, sortField, sortOrder); // eslint-disable-line
-  } else {
-    response = await storage.getLogs(credentials, pageSize, pageNumber, searchString, filters, sortField, sortOrder); // eslint-disable-line
-  }
+
+  const response = await storage.getLogs(req.user,
+    pageSize,
+    pageNumber,
+    searchString,
+    filters,
+    sortField,
+    sortOrder);
 
   if (response.data.length === 0 && !res.headersSent) {
     return res.status(404).send({ errors: [{ message: 'No logs found', code: 404 }] });
