@@ -140,7 +140,7 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
     const response = await storage.addFlow(storeFlow);
 
     const ev = {
-      name: 'flowCreated',
+      name: 'flowrepo.flow.created',
       payload: {
         tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
         source: req.user.sub,
@@ -202,7 +202,7 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
   try {
     const response = await storage.updateFlow(storeFlow, req.user);
     const ev = {
-      name: 'flowUpdated',
+      name: 'flowrepo.flow.modified',
       payload: {
         tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
         source: req.user.sub,
@@ -266,7 +266,7 @@ router.delete('/:id', can(config.flowWritePermission), jsonParser, async (req, r
     res.status(404).send({ errors: [{ message: 'Flow not found', code: 404 }] });
   } else {
     const ev = {
-      name: 'flowDeleted',
+      name: 'flowrepo.flow.deleted',
       payload: {
         tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
         source: req.user.sub,

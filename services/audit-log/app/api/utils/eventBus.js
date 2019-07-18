@@ -10,21 +10,27 @@ const logger = bunyan.createLogger({ name: 'auditlogs' });
 let eventBus;
 
 async function connectQueue() {
+  const { eventNames } = config;
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'audit-log' });
 
-  await eventBus.subscribe('audit.*', async (event) => {
-    log.info(`Received event: ${JSON.stringify(event.headers)}`);
+  const promises = [];
 
-    if (!mongoose.connection || mongoose.connection.readyState !== 1) {
-      log.error('Received event while DB was unready. Retrying...');
-      await event.nack();
-    } else {
-      await validate(event.payload);
-      await event.ack();
-    }
-  });
+  for (let i = 0; i < eventNames.length; i += 1) {
+    promises.push(eventBus.subscribe(eventNames[i], async (event) => {
+      log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
+      if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+        log.error('Received event while DB was unready. Retrying...');
+        await event.nack();
+      } else {
+        await validate(event.payload);
+        await event.ack();
+      }
+    }));
+  }
+
+  await Promise.all(promises);
 
   await eventBus.connect();
 }
