@@ -1,5 +1,4 @@
 describe('AMQP', () => {
-
     process.env.ELASTICIO_MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
     process.env.ELASTICIO_MESSAGE_CRYPTO_IV = 'iv=any16_symbols';
 
@@ -8,6 +7,8 @@ describe('AMQP', () => {
     envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
     envVars.ELASTICIO_STEP_ID = 'step_1';
     envVars.ELASTICIO_EXEC_ID = 'some-exec-id';
+    envVars.ELASTICIO_WORKSPACE_ID = '5559edd38968ec073600683';
+    envVars.ELASTICIO_CONTAINER_ID = 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948';
 
     envVars.ELASTICIO_USER_ID = '5559edd38968ec0736000002';
     envVars.ELASTICIO_COMP_ID = '5559edd38968ec0736000456';
@@ -165,7 +166,6 @@ describe('AMQP', () => {
     });
 
     it('Should sendHttpReply to outgoing channel using routing key from headers when process data', () => {
-
         const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
@@ -203,7 +203,6 @@ describe('AMQP', () => {
     });
 
     it('Should throw error in sendHttpReply if reply_to header not found', done => {
-
         const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
@@ -278,7 +277,6 @@ describe('AMQP', () => {
     });
 
     it('Should send message to errors when process error', () => {
-
         const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 
@@ -322,7 +320,6 @@ describe('AMQP', () => {
     });
 
     it('Should send message to errors using routing key from headers when process error', async () => {
-
         const expectedErrorPayload = {
             error: {
                 name: 'Error',
@@ -392,7 +389,6 @@ describe('AMQP', () => {
     });
 
     it('Should not provide errorInput if errorInput was empty', () => {
-
         const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['publish']);
 

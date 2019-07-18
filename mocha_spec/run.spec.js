@@ -10,7 +10,6 @@ const helpers = require('./integration_helpers');
 const env = process.env;
 
 describe('Integration Test', () => {
-
     const customers = [
         {
             name: 'Homer Simpson'
@@ -55,7 +54,6 @@ describe('Integration Test', () => {
     });
 
     describe('when sailor is being invoked for message processing', () => {
-
         const parentMessageId = 'parent_message_1234567890';
         const threadId = helpers.PREFIX + '_thread_id_123456';
         const messageId = 'f45be600-f770-11e6-b42d-b187bfbf19fd';
@@ -65,7 +63,6 @@ describe('Integration Test', () => {
         afterEach(() => amqpHelper.cleanUp());
 
         it('should run trigger successfully', (done) => {
-
             helpers.mockApiTaskStepResponse();
 
             nock('https://api.acme.com')
@@ -77,7 +74,6 @@ describe('Integration Test', () => {
                 .reply(200, customers);
 
             amqpHelper.on('data', ({ properties, body }, queueName) => {
-
                 expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
                 delete properties.headers.start;
@@ -87,6 +83,8 @@ describe('Integration Test', () => {
                 expect(properties.headers).to.deep.equal({
                     execId: env.ELASTICIO_EXEC_ID,
                     taskId: env.ELASTICIO_FLOW_ID,
+                    workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                    containerId: env.ELASTICIO_CONTAINER_ID,
                     userId: env.ELASTICIO_USER_ID,
                     stepId: env.ELASTICIO_STEP_ID,
                     compId: env.ELASTICIO_COMP_ID,
@@ -96,20 +94,11 @@ describe('Integration Test', () => {
                     messageId
                 });
 
+                delete properties.headers;
+
                 expect(properties).to.deep.equal({
                     contentType: 'application/json',
                     contentEncoding: 'utf8',
-                    headers: {
-                        execId: env.ELASTICIO_EXEC_ID,
-                        taskId: env.ELASTICIO_FLOW_ID,
-                        userId: env.ELASTICIO_USER_ID,
-                        stepId: env.ELASTICIO_STEP_ID,
-                        compId: env.ELASTICIO_COMP_ID,
-                        function: env.ELASTICIO_FUNCTION,
-                        threadId,
-                        parentMessageId: parentMessageId,
-                        messageId
-                    },
                     deliveryMode: undefined,
                     priority: undefined,
                     correlationId: undefined,
@@ -122,6 +111,7 @@ describe('Integration Test', () => {
                     appId: undefined,
                     clusterId: undefined
                 });
+
                 expect(body).to.deep.equal({
                     originalMsg: inputMessage,
                     customers: customers,
@@ -132,6 +122,7 @@ describe('Integration Test', () => {
                         }
                     }
                 });
+
                 done();
             });
 
@@ -168,7 +159,6 @@ describe('Integration Test', () => {
             });
 
             amqpHelper.on('data', ({ properties, emittedMessage }, queueName) => {
-
                 expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
                 expect(emittedMessage.passthrough).to.deep.eql({
@@ -189,19 +179,20 @@ describe('Integration Test', () => {
                     }
                 });
 
-
                 delete properties.headers.start;
                 delete properties.headers.end;
                 delete properties.headers.cid;
 
                 expect(properties.headers).to.deep.equal({
-                    taskId: process.env.ELASTICIO_FLOW_ID,
-                    execId: process.env.ELASTICIO_EXEC_ID,
-                    userId: process.env.ELASTICIO_USER_ID,
+                    taskId: env.ELASTICIO_FLOW_ID,
+                    execId: env.ELASTICIO_EXEC_ID,
+                    workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                    containerId: env.ELASTICIO_CONTAINER_ID,
+                    userId: env.ELASTICIO_USER_ID,
                     threadId,
-                    stepId: process.env.ELASTICIO_STEP_ID,
-                    compId: process.env.ELASTICIO_COMP_ID,
-                    function: process.env.ELASTICIO_FUNCTION,
+                    stepId: env.ELASTICIO_STEP_ID,
+                    compId: env.ELASTICIO_COMP_ID,
+                    function: env.ELASTICIO_FUNCTION,
                     messageId,
                     parentMessageId
                 });
@@ -286,13 +277,15 @@ describe('Integration Test', () => {
                 delete properties.headers.cid;
 
                 expect(properties.headers).to.deep.equal({
-                    taskId: process.env.ELASTICIO_FLOW_ID,
-                    execId: process.env.ELASTICIO_EXEC_ID,
-                    userId: process.env.ELASTICIO_USER_ID,
+                    taskId: env.ELASTICIO_FLOW_ID,
+                    execId: env.ELASTICIO_EXEC_ID,
+                    workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                    containerId: env.ELASTICIO_CONTAINER_ID,
+                    userId: env.ELASTICIO_USER_ID,
                     threadId,
-                    stepId: process.env.ELASTICIO_STEP_ID,
-                    compId: process.env.ELASTICIO_COMP_ID,
-                    function: process.env.ELASTICIO_FUNCTION,
+                    stepId: env.ELASTICIO_STEP_ID,
+                    compId: env.ELASTICIO_COMP_ID,
+                    function: env.ELASTICIO_FUNCTION,
                     messageId,
                     parentMessageId
                 });
@@ -329,10 +322,10 @@ describe('Integration Test', () => {
         });
 
         describe('when env ELASTICIO_STARTUP_REQUIRED is set', () => {
-
             beforeEach(() => {
                 env.ELASTICIO_STARTUP_REQUIRED = '1';
             });
+
             describe('when hooks data for the task is not created yet', () => {
                 it('should execute startup successfully', (done) => {
                     let startupRegistrationRequest;
@@ -370,23 +363,21 @@ describe('Integration Test', () => {
                         .get('/customers')
                         .reply(200, customers);
 
-
                     amqpHelper.on('data', ({ properties, body }, queueName) => {
-
                         expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
                         expect(startupRegistrationRequest).to.deep.equal({
                             data: 'startup'
                         });
+
                         expect(hooksDataRequest).to.deep.equal({
                             subscriptionResult: {
                                 status: 'ok'
                             }
                         });
+
                         expect(startupRegistrationNock.isDone()).to.be.ok;
-
                         expect(hooksDataNock.isDone()).to.be.ok;
-
 
                         delete properties.headers.start;
                         delete properties.headers.end;
@@ -395,6 +386,8 @@ describe('Integration Test', () => {
                         expect(properties.headers).to.eql({
                             execId: env.ELASTICIO_EXEC_ID,
                             taskId: env.ELASTICIO_FLOW_ID,
+                            workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                            containerId: env.ELASTICIO_CONTAINER_ID,
                             userId: env.ELASTICIO_USER_ID,
                             stepId: env.ELASTICIO_STEP_ID,
                             compId: env.ELASTICIO_COMP_ID,
@@ -412,14 +405,16 @@ describe('Integration Test', () => {
                                 }
                             }
                         });
+
                         done();
                     });
+
                     run = requireRun();
 
                     amqpHelper.publishMessage(inputMessage);
-                }
-                );
+                });
             });
+
             describe('when hooks data already exists', () => {
                 it('should delete previous data and execute startup successfully', (done) => {
                     let startupRegistrationRequest;
@@ -436,6 +431,7 @@ describe('Integration Test', () => {
 
                     let hooksDataRequest1;
                     let hooksDataRequest2;
+
                     // sailor persists startup data via sailor-support API
                     const hooksDataNock1 = nock('https://apidotelasticidotio')
                         .matchHeader('Connection', 'Keep-Alive')
@@ -452,13 +448,14 @@ describe('Integration Test', () => {
                                 title: 'ConflictError'
                             };
                         });
-                        // sailor removes data in order to resolve conflict
+
+                    // sailor removes data in order to resolve conflict
                     const hooksDataDeleteNock = nock('https://apidotelasticidotio')
                         .matchHeader('Connection', 'Keep-Alive')
                         .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                         .reply(204);
-                        // sailor persists startup data via sailor-support API
 
+                    // sailor persists startup data via sailor-support API
                     const hooksDataNock2 = nock('https://apidotelasticidotio')
                         .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
@@ -471,7 +468,7 @@ describe('Integration Test', () => {
                             return requestBody;
                         });
 
-                        // response for a subscription request, which performed inside of init method
+                    // response for a subscription request, which performed inside of init method
                     nock('https://api.acme.com')
                         .post('/subscribe')
                         .reply(200, {
@@ -480,16 +477,14 @@ describe('Integration Test', () => {
                         .get('/customers')
                         .reply(200, customers);
 
-
                     amqpHelper.on('data', ({ properties, body }, queueName) => {
-
                         expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
                         expect(startupRegistrationRequest).to.deep.equal({
                             data: 'startup'
                         });
-                        expect(startupRegistrationNock.isDone()).to.be.ok;
 
+                        expect(startupRegistrationNock.isDone()).to.be.ok;
                         expect(hooksDataNock1.isDone()).to.be.ok;
                         expect(hooksDataNock2.isDone()).to.be.ok;
                         expect(hooksDataDeleteNock.isDone()).to.be.ok;
@@ -499,12 +494,12 @@ describe('Integration Test', () => {
                                 status: 'ok'
                             }
                         });
+
                         expect(hooksDataRequest2).to.deep.equal({
                             subscriptionResult: {
                                 status: 'ok'
                             }
                         });
-
 
                         delete properties.headers.start;
                         delete properties.headers.end;
@@ -513,6 +508,8 @@ describe('Integration Test', () => {
                         expect(properties.headers).to.eql({
                             execId: env.ELASTICIO_EXEC_ID,
                             taskId: env.ELASTICIO_FLOW_ID,
+                            workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                            containerId: env.ELASTICIO_CONTAINER_ID,
                             userId: env.ELASTICIO_USER_ID,
                             stepId: env.ELASTICIO_STEP_ID,
                             compId: env.ELASTICIO_COMP_ID,
@@ -532,12 +529,13 @@ describe('Integration Test', () => {
                         });
                         done();
                     });
+
                     run = requireRun();
 
                     amqpHelper.publishMessage(inputMessage);
-                }
-                );
+                });
             });
+
             describe('when startup method returns empty data', () => {
                 it('should store an empty object as data and execute trigger successfully', (done) => {
                     let startupRegistrationRequest;
@@ -560,14 +558,14 @@ describe('Integration Test', () => {
                         .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
                         .reply(201);
-                        // sailor removes data in order to resolve conflict
+
+                    // sailor removes data in order to resolve conflict
                     const hooksDataDeleteNock = nock('https://apidotelasticidotio')
                         .matchHeader('Connection', 'Keep-Alive')
                         .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                         .reply(400);
 
-
-                        // response for a subscription request, which performed inside of init method
+                    // response for a subscription request, which performed inside of init method
                     nock('https://api.acme.com')
                         .post('/subscribe')
                         .reply(200, {
@@ -576,19 +574,16 @@ describe('Integration Test', () => {
                         .get('/customers')
                         .reply(200, customers);
 
-
                     amqpHelper.on('data', ({ properties, body }, queueName) => {
-
                         expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
                         expect(startupRegistrationRequest).to.deep.equal({
                             data: 'startup'
                         });
-                        expect(startupRegistrationNock.isDone()).to.be.ok;
 
+                        expect(startupRegistrationNock.isDone()).to.be.ok;
                         expect(hooksDataNock.isDone()).to.be.ok;
                         expect(hooksDataDeleteNock.isDone()).to.not.be.ok;
-
 
                         delete properties.headers.start;
                         delete properties.headers.end;
@@ -597,6 +592,8 @@ describe('Integration Test', () => {
                         expect(properties.headers).to.eql({
                             execId: env.ELASTICIO_EXEC_ID,
                             taskId: env.ELASTICIO_FLOW_ID,
+                            workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                            containerId: env.ELASTICIO_CONTAINER_ID,
                             userId: env.ELASTICIO_USER_ID,
                             stepId: env.ELASTICIO_STEP_ID,
                             compId: env.ELASTICIO_COMP_ID,
@@ -614,21 +611,21 @@ describe('Integration Test', () => {
                                 }
                             }
                         });
+
                         done();
                     });
+
                     run = requireRun();
 
                     amqpHelper.publishMessage(inputMessage);
-                }
-                );
+                });
             });
+
             describe('when startup method does not exist', () => {
                 it('should store an empty hooks data and run trigger successfully', (done) => {
-
                     env.ELASTICIO_FUNCTION = 'trigger_with_no_hooks';
 
                     helpers.mockApiTaskStepResponse();
-
 
                     // sailor persists startup data via sailor-support API
                     const hooksDataNock = nock('https://apidotelasticidotio')
@@ -636,14 +633,12 @@ describe('Integration Test', () => {
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
                         .reply(201);
 
-                        // response for a subscription request, which performed inside of init method
+                    // response for a subscription request, which performed inside of init method
                     nock('https://api.acme.com')
                         .get('/customers')
                         .reply(200, customers);
 
-
                     amqpHelper.on('data', ({ properties, body }, queueName) => {
-
                         expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
                         delete properties.headers.start;
@@ -653,6 +648,8 @@ describe('Integration Test', () => {
                         expect(properties.headers).to.eql({
                             execId: env.ELASTICIO_EXEC_ID,
                             taskId: env.ELASTICIO_FLOW_ID,
+                            workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                            containerId: env.ELASTICIO_CONTAINER_ID,
                             userId: env.ELASTICIO_USER_ID,
                             stepId: env.ELASTICIO_STEP_ID,
                             compId: env.ELASTICIO_COMP_ID,
@@ -666,13 +663,14 @@ describe('Integration Test', () => {
                         });
 
                         expect(hooksDataNock.isDone()).to.be.ok;
+
                         done();
                     });
+
                     run = requireRun();
 
                     amqpHelper.publishMessage(inputMessage);
-                }
-                );
+                });
             });
         });
 
@@ -692,7 +690,6 @@ describe('Integration Test', () => {
                     .reply(200, customers);
 
                 amqpHelper.on('data', ({ properties, emittedMessage }, queueName) => {
-
                     expect(queueName).to.eql(amqpHelper.httpReplyQueueName);
 
                     delete properties.headers.start;
@@ -705,12 +702,15 @@ describe('Integration Test', () => {
                     expect(properties.headers).to.eql({
                         execId: env.ELASTICIO_EXEC_ID,
                         taskId: env.ELASTICIO_FLOW_ID,
+                        workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                        containerId: env.ELASTICIO_CONTAINER_ID,
                         userId: env.ELASTICIO_USER_ID,
                         stepId: env.ELASTICIO_STEP_ID,
                         compId: env.ELASTICIO_COMP_ID,
                         function: env.ELASTICIO_FUNCTION,
                         reply_to: amqpHelper.httpReplyQueueRoutingKey
                     });
+
                     expect(emittedMessage).to.eql({
                         headers: {
                             'content-type': 'text/plain'
@@ -718,6 +718,7 @@ describe('Integration Test', () => {
                         body: 'Ok',
                         statusCode: 200
                     });
+
                     done();
                 });
 
@@ -731,7 +732,6 @@ describe('Integration Test', () => {
 
         describe('when sailor could not init the module', () => {
             it('should publish init errors to RabbitMQ', (done) => {
-
                 const logCriticalErrorStub = sinon.stub(logging, 'criticalErrorAndExit');
 
                 env.ELASTICIO_FUNCTION = 'fails_to_init';
@@ -746,7 +746,12 @@ describe('Integration Test', () => {
                     expect(properties.headers).to.eql({
                         execId: env.ELASTICIO_EXEC_ID,
                         taskId: env.ELASTICIO_FLOW_ID,
-                        userId: env.ELASTICIO_USER_ID
+                        workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                        containerId: env.ELASTICIO_CONTAINER_ID,
+                        userId: env.ELASTICIO_USER_ID,
+                        stepId: env.ELASTICIO_STEP_ID,
+                        compId: env.ELASTICIO_COMP_ID,
+                        function: env.ELASTICIO_FUNCTION
                     });
 
                     done();
@@ -794,7 +799,6 @@ describe('Integration Test', () => {
                 hooksDataDeleteNock.on('replied', () => setTimeout(checkResult, 50));
 
                 function checkResult() {
-
                     expect(hooksDataGetNock.isDone()).to.be.ok;
 
                     expect(requestFromShutdownHook).to.deep.equal({
@@ -803,6 +807,7 @@ describe('Integration Test', () => {
                         },
                         startupData: subsriptionResponse
                     });
+
                     expect(requestFromShutdownNock.isDone()).to.be.ok;
                     expect(hooksDataDeleteNock.isDone()).to.be.ok;
 
@@ -817,6 +822,7 @@ describe('Integration Test', () => {
             // @todo
             it('should not execute shutdown');
         });
+
         describe('when shutdown hook method is not found', () => {
             // @todo
             it('should not thrown error and just finish process');
@@ -827,7 +833,7 @@ describe('Integration Test', () => {
 function requireRun() {
     //@todo it would be great to use something like this https://github.com/jveski/shelltest
     const path = '../run.js';
-    var resolved = require.resolve(path);
+    const resolved = require.resolve(path);
     delete require.cache[resolved];
     return require(path);
 }

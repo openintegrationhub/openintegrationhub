@@ -1,6 +1,5 @@
 describe('Settings', () => {
-
-    var settings = require('../lib/settings.js');
+    const settings = require('../lib/settings.js');
 
     it('should throw error if no important settings provided', () => {
         expect(() => {
@@ -9,12 +8,14 @@ describe('Settings', () => {
     });
 
     it('should not throw error if all important settings provided', () => {
+        const envVars = {};
 
-        var envVars = {};
         envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
         envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
         envVars.ELASTICIO_EXEC_ID = 'some-exec-id';
         envVars.ELASTICIO_STEP_ID = 'step_1';
+        envVars.ELASTICIO_WORKSPACE_ID = '5559edd38968ec073600683';
+        envVars.ELASTICIO_CONTAINER_ID = 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948';
 
         envVars.ELASTICIO_USER_ID = '5559edd38968ec0736000002';
         envVars.ELASTICIO_COMP_ID = '5559edd38968ec0736000456';
@@ -31,17 +32,20 @@ describe('Settings', () => {
         envVars.ELASTICIO_API_USERNAME = 'test@test.com';
         envVars.ELASTICIO_API_KEY = '5559edd';
 
-        var result = settings.readFrom(envVars);
+        const result = settings.readFrom(envVars);
+
         expect(result.LISTEN_MESSAGES_ON).toEqual('5559edd38968ec0736000003:step_1:1432205514864:messages');
     });
 
     it('should support also numbers as a settings parameter', () => {
+        const envVars = {};
 
-        var envVars = {};
         envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
         envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
         envVars.ELASTICIO_EXEC_ID = 'some-exec-id';
         envVars.ELASTICIO_STEP_ID = 'step_1';
+        envVars.ELASTICIO_WORKSPACE_ID = '5559edd38968ec073600683';
+        envVars.ELASTICIO_CONTAINER_ID = 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948';
 
         envVars.ELASTICIO_USER_ID = '5559edd38968ec0736000002';
         envVars.ELASTICIO_COMP_ID = '5559edd38968ec0736000456';
@@ -60,9 +64,9 @@ describe('Settings', () => {
 
         envVars.ELASTICIO_RABBITMQ_PREFETCH_SAILOR = '20';
 
-        var result = settings.readFrom(envVars);
+        const result = settings.readFrom(envVars);
+
         expect(result.LISTEN_MESSAGES_ON).toEqual('5559edd38968ec0736000003:step_1:1432205514864:messages');
         expect(result.RABBITMQ_PREFETCH_SAILOR).toEqual(20);
     });
-
 });

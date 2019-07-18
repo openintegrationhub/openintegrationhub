@@ -1,4 +1,4 @@
-const logging = require('./lib/logging.js');
+const logger = require('./lib/logging.js');
 const Sailor = require('./lib/sailor.js').Sailor;
 const settings = require('./lib/settings.js').readFrom(process.env);
 const co = require('co');
@@ -10,7 +10,6 @@ let disconnectRequired;
 
 co(function* putOutToSea() {
     sailor = new Sailor(settings);
-
 
     //eslint-disable-next-line no-extra-boolean-cast
     if (!!settings.HOOK_SHUTDOWN) {
@@ -38,24 +37,24 @@ co(function* putOutToSea() {
     if (sailor) {
         sailor.reportError(e);
     }
-    logging.criticalErrorAndExit(e);
+    logger.criticalErrorAndExit(e);
 });
 
 process.on('SIGTERM', function onSigterm() {
-    console.log('Received SIGTERM');
+    logger.info('Received SIGTERM');
     disconnectAndExit();
 });
 
 process.on('SIGINT', function onSigint() {
-    console.log('Received SIGINT');
+    logger.info('Received SIGINT');
     disconnectAndExit();
 });
 
-process.on('uncaughtException', logging.criticalErrorAndExit);
+process.on('uncaughtException', logger.criticalErrorAndExit);
 
 function disconnect() {
     return co(function* putIn() {
-        console.log('Disconnecting');
+        logger.info('Disconnecting...');
         return yield sailor.disconnect();
     });
 }
@@ -66,10 +65,10 @@ function disconnectAndExit() {
     }
     co(function* putIn() {
         yield disconnect();
-        console.log('Successfully disconnected');
+        logger.info('Successfully disconnected');
         process.exit();
     }).catch((err) => {
-        console.error('Unable to disconnect', err.stack);
+        logger.error('Unable to disconnect', err.stack);
         process.exit(-1);
     });
 }

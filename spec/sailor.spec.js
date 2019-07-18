@@ -2,10 +2,13 @@
 
 describe('Sailor', () => {
     const envVars = {};
+
     envVars.ELASTICIO_AMQP_URI = 'amqp://test2/test2';
     envVars.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
     envVars.ELASTICIO_STEP_ID = 'step_1';
     envVars.ELASTICIO_EXEC_ID = 'some-exec-id';
+    envVars.ELASTICIO_WORKSPACE_ID = '5559edd38968ec073600683';
+    envVars.ELASTICIO_CONTAINER_ID = 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948';
 
     envVars.ELASTICIO_USER_ID = '5559edd38968ec0736000002';
     envVars.ELASTICIO_COMP_ID = '5559edd38968ec0736000456';
@@ -48,8 +51,9 @@ describe('Sailor', () => {
             contentEncoding: 'utf8',
             headers: {
                 taskId: '5559edd38968ec0736000003',
-                execId: 'exec1',
-                userId: '5559edd38968ec0736000002'
+                execId: 'some-exec-id',
+                userId: '5559edd38968ec0736000002',
+                workspaceId: '5559edd38968ec073600683'
             },
             deliveryMode: undefined,
             priority: undefined,
@@ -72,7 +76,6 @@ describe('Sailor', () => {
     });
 
     describe('init', () => {
-
         it('should init properly if developer returned a plain string in init', done => {
             settings.FUNCTION = 'init_trigger_returns_string';
 
@@ -96,6 +99,7 @@ describe('Sailor', () => {
                 })
                 .catch(done);
         });
+
         it('should init properly if developer returned a promise', done => {
             settings.FUNCTION = 'init_trigger';
 
@@ -132,6 +136,7 @@ describe('Sailor', () => {
 
         describe('when step data retrieved', () => {
             let stepData;
+
             beforeEach(() => {
                 stepData = {
                     snapshot: {}
@@ -231,14 +236,17 @@ describe('Sailor', () => {
 
                     expect(sendDataCalls[0].args[0]).toEqual({ items: [1,2,3,4,5,6] });
                     expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
+
                     expect(sendDataCalls[0].args[1]).toEqual({
                         contentType: 'application/json',
                         contentEncoding: 'utf8',
                         mandatory: true,
                         headers: {
-                            execId: 'exec1',
+                            execId: 'some-exec-id',
                             taskId: '5559edd38968ec0736000003',
                             userId: '5559edd38968ec0736000002',
+                            workspaceId: '5559edd38968ec073600683',
+                            containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
                             stepId: 'step_1',
                             compId: '5559edd38968ec0736000456',
                             function: 'data_trigger',
@@ -335,9 +343,11 @@ describe('Sailor', () => {
                         contentEncoding: 'utf8',
                         mandatory: true,
                         headers: {
-                            execId: 'exec1',
+                            execId: 'some-exec-id',
                             taskId: '5559edd38968ec0736000003',
                             userId: '5559edd38968ec0736000002',
+                            containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+                            workspaceId: '5559edd38968ec073600683',
                             stepId: 'step_1',
                             compId: '5559edd38968ec0736000456',
                             function: 'passthrough',
@@ -355,7 +365,6 @@ describe('Sailor', () => {
                 })
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
         });
-
 
         it('should send request to API server to update keys', done => {
             settings.FUNCTION = 'keys_trigger';
@@ -412,6 +421,7 @@ describe('Sailor', () => {
                 expect(keys).toEqual({ keys: { oauth: { access_token: 'newAccessToken' } } });
                 return Promise.reject(new Error('Update keys error'));
             });
+
             async function test() {
                 await sailor.prepare();
                 await sailor.connect();
@@ -493,8 +503,10 @@ describe('Sailor', () => {
                         mandatory: true,
                         headers: {
                             taskId: '5559edd38968ec0736000003',
-                            execId: 'exec1',
+                            execId: 'some-exec-id',
                             userId: '5559edd38968ec0736000002',
+                            containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+                            workspaceId: '5559edd38968ec073600683',
                             stepId: 'step_1',
                             compId: '5559edd38968ec0736000456',
                             function: 'update',
@@ -549,8 +561,10 @@ describe('Sailor', () => {
                         mandatory: true,
                         headers: {
                             taskId: '5559edd38968ec0736000003',
-                            execId: 'exec1',
+                            execId: 'some-exec-id',
                             userId: '5559edd38968ec0736000002',
+                            containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+                            workspaceId: '5559edd38968ec073600683',
                             stepId: 'step_1',
                             compId: '5559edd38968ec0736000456',
                             function: 'update',
@@ -665,7 +679,6 @@ describe('Sailor', () => {
         });
 
         it('should not process message if taskId in header is not equal to task._id', done => {
-
             const message2 = _.cloneDeep(message);
             message2.properties.headers.taskId = 'othertaskid';
 
@@ -755,9 +768,11 @@ describe('Sailor', () => {
                         contentEncoding: 'utf8',
                         mandatory: true,
                         headers: {
-                            execId: 'exec1',
+                            execId: 'some-exec-id',
                             taskId: '5559edd38968ec0736000003',
                             userId: '5559edd38968ec0736000002',
+                            containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+                            workspaceId: '5559edd38968ec073600683',
                             stepId: 'step_1',
                             compId: '5559edd38968ec0736000456',
                             function: 'http_reply',
@@ -780,9 +795,11 @@ describe('Sailor', () => {
                         contentEncoding: 'utf8',
                         mandatory: true,
                         headers: {
-                            execId: 'exec1',
+                            execId: 'some-exec-id',
                             taskId: '5559edd38968ec0736000003',
                             userId: '5559edd38968ec0736000002',
+                            containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+                            workspaceId: '5559edd38968ec073600683',
                             stepId: 'step_1',
                             compId: '5559edd38968ec0736000456',
                             function: 'http_reply',
@@ -837,9 +854,11 @@ describe('Sailor', () => {
                         contentEncoding: 'utf8',
                         mandatory: true,
                         headers: {
-                            execId: 'exec1',
+                            execId: 'some-exec-id',
                             taskId: '5559edd38968ec0736000003',
                             userId: '5559edd38968ec0736000002',
+                            containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+                            workspaceId: '5559edd38968ec073600683',
                             stepId: 'step_1',
                             compId: '5559edd38968ec0736000456',
                             function: 'http_reply',
@@ -870,7 +889,6 @@ describe('Sailor', () => {
     });
 
     describe('readIncomingMessageHeaders', () => {
-
         it('execId missing', () => {
             const sailor = new Sailor(settings);
 

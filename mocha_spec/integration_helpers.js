@@ -8,11 +8,10 @@ const nock = require('nock');
 
 const env = process.env;
 
-
 class AmqpHelper extends EventEmitter {
-
     constructor() {
         super();
+
         this.httpReplyQueueName = PREFIX + 'request_reply_queue';
         this.httpReplyQueueRoutingKey = PREFIX + 'request_reply_routing_key';
         this.nextStepQueue = PREFIX + '_next_step_queue';
@@ -37,11 +36,11 @@ class AmqpHelper extends EventEmitter {
         return this.subscriptionChannel.publish(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_DATA_ROUTING_KEY,
-            new Buffer(JSON.stringify(message)),
-            {
+            new Buffer(JSON.stringify(message)), {
                 headers: Object.assign({
                     execId: env.ELASTICIO_EXEC_ID,
                     taskId: env.ELASTICIO_FLOW_ID,
+                    workspaceId: env.ELASTICIO_WORKSPACE_ID,
                     userId: env.ELASTICIO_USER_ID,
                     threadId,
                     messageId: parentMessageId
@@ -62,6 +61,7 @@ class AmqpHelper extends EventEmitter {
             durable: true,
             autoDelete: false
         };
+
         yield subscriptionChannel.assertExchange(env.ELASTICIO_LISTEN_MESSAGES_ON, 'direct', exchangeOptions);
         yield publishChannel.assertExchange(env.ELASTICIO_PUBLISH_MESSAGES_TO, 'direct', exchangeOptions);
 
@@ -114,11 +114,13 @@ class AmqpHelper extends EventEmitter {
                 that.consumer.bind(that, that.nextStepQueue),
                 { consumerTag: 'sailor_nodejs_1' }
             );
+
             yield that.publishChannel.consume(
                 that.nextStepErrorQueue,
                 that.consumer.bind(that, that.nextStepErrorQueue),
                 { consumerTag: 'sailor_nodejs_2' }
             );
+
             yield that.publishChannel.consume(
                 that.httpReplyQueueName,
                 that.consumer.bind(that, that.httpReplyQueueName),
@@ -128,7 +130,6 @@ class AmqpHelper extends EventEmitter {
     }
 
     consumer(queue, message) {
-
         this.publishChannel.ack(message);
 
         const emittedMessage = JSON.parse(message.content.toString());
@@ -138,22 +139,19 @@ class AmqpHelper extends EventEmitter {
             body: emittedMessage.body,
             emittedMessage
         };
+
         this.dataMessages.push(data);
         this.emit('data', data, queue);
 
         // publishChannel.cancel('sailor_nodejs');
-
         // done();
-
     }
 }
 
 function amqp() {
-
     const handle = {
         //eslint-disable-next-line no-empty-function
         getMessages() {
-
         }
     };
     return handle;
@@ -166,6 +164,9 @@ function prepareEnv() {
     env.ELASTICIO_STEP_ID = 'step_1';
     env.ELASTICIO_EXEC_ID = 'some-exec-id';
 
+    env.ELASTICIO_WORKSPACE_ID = '5559edd38968ec073600683';
+    env.ELASTICIO_CONTAINER_ID = 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948';
+
     env.ELASTICIO_USER_ID = '5559edd38968ec0736000002';
     env.ELASTICIO_COMP_ID = '5559edd38968ec0736000456';
 
@@ -177,8 +178,6 @@ function prepareEnv() {
     env.ELASTICIO_FLOW_WEBHOOK_URI = 'https://in.elastic.io/hooks/' + env.ELASTICIO_FLOW_ID;
 
     env.DEBUG = 'sailor:debug';
-
-
 }
 
 function mockApiTaskStepResponse(response) {
@@ -205,4 +204,3 @@ exports.amqp = function amqp() {
 
 exports.prepareEnv = prepareEnv;
 exports.mockApiTaskStepResponse = mockApiTaskStepResponse;
-
