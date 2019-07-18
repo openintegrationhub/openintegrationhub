@@ -1,9 +1,16 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import * as _ from 'lodash';
 
+export interface ModificationHistoryItem extends Document {
+    user: string;
+    operation: string;
+    timestamp: string;
+}
+
 export interface DataObjectRef extends Document {
     applicationUid: string;
     recordUid: string;
+    modificationHistory: ModificationHistoryItem[];
 }
 
 export interface DataObject extends Document {
@@ -13,6 +20,23 @@ export interface DataObject extends Document {
     refs: DataObjectRef[];
 }
 
+const mofificationHistorySchema = new Schema({
+    user: {
+        type: String,
+        required: true
+    },
+    operation: {
+        type: String,
+        required: true
+    },
+    timestamp: {
+        type: Date,
+        required: true
+    }
+}, {
+    _id: false
+});
+
 const refsSchema = new Schema({
     applicationUid: {
         type: String,
@@ -21,16 +45,10 @@ const refsSchema = new Schema({
     recordUid: {
         type: String,
         required: true
-    }
-});
-
-function dataObjectRefsTransform (doc: DataObject, ret: DataObject) {
-    const safeFields = ['applicationUid', 'recordUid'];
-    return _.pick(ret, safeFields);
-}
-
-refsSchema.set('toJSON', {
-    transform: dataObjectRefsTransform
+    },
+    modificationHistory: [mofificationHistorySchema]
+}, {
+    _id: false
 });
 
 const dataObjectSchema = new Schema({
@@ -47,6 +65,8 @@ const dataObjectSchema = new Schema({
         type: Schema.Types.Mixed
     },
     refs: [refsSchema]
+}, {
+    timestamps: true
 });
 
 function dataObjectTransform (doc: DataObject, ret: DataObject) {

@@ -12,8 +12,8 @@
     "scripts": {
         "start": "node dist/app.js",
         "start:dev": "NODE_ENV=development ts-node-dev ./src/app.ts | bunyan",
-        "test": "exit 0",
-        "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts .",
+        "test": "NODE_ENV=test mocha --exit --require ts-node/register src/**/*.spec.ts",
+        "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts ./src",
         "build": "tsc",
         "pretest": "npm run eslint"
     },
@@ -21,8 +21,17 @@
     "devDependencies": {
         "@types/koa-bodyparser": "4.3.0",
         "@types/lodash": "4.14.135",
+        "@types/mocha": "5.2.7",
         "@types/mongoose": "5.5.7",
-        "ts-node-dev": "1.0.0-pre.40"
+        "@typescript-eslint/eslint-plugin": "1.9.0",
+        "@typescript-eslint/parser": "1.9.0",
+        "chai": "4.2.0",
+        "eslint": "5.16.0",
+        "mocha": "6.1.4",
+        "supertest": "4.0.2",
+        "ts-node": "8.0.2",
+        "ts-node-dev": "1.0.0-pre.40",
+        "typescript": "3.5.2"
     },
     "dependencies": {
         "backend-commons-lib": "*",
