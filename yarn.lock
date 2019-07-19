@@ -1609,7 +1609,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/bunyan@*":
+"@types/bunyan@*", "@types/bunyan@1.8.6":
   version "1.8.6"
   resolved "https://registry.yarnpkg.com/@types/bunyan/-/bunyan-1.8.6.tgz#6527641cca30bedec5feb9ab527b7803b8000582"
   integrity sha512-YiozPOOsS6bIuz31ilYqR5SlLif4TBWsousN2aCWLi5233nZSX19tFbcQUPdR7xJ8ypPyxkCGNxg0CIV5n9qxQ==
@@ -1726,6 +1726,14 @@
     "@types/bunyan" "*"
     "@types/koa" "*"
 
+"@types/koa-bunyan-logger@2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@types/koa-bunyan-logger/-/koa-bunyan-logger-2.1.1.tgz#72df5cfcc26040c47d0f9ba7d11052f6090faf4c"
+  integrity sha512-6mb3FZh2ULyhfIfeIOXseTiECII3tyW1zb2JwL1CBy9sYSgRPeWOXzxnBDd7RACLDVVy+EnInti4xAHYtuwpZA==
+  dependencies:
+    "@types/bunyan" "*"
+    "@types/koa" "*"
+
 "@types/koa-compose@*":
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/@types/koa-compose/-/koa-compose-3.2.4.tgz#76a461634a59c3e13449831708bb9b355fb1548e"
@@ -1740,10 +1748,24 @@
   dependencies:
     koa-jwt "*"
 
+"@types/koa-qs@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/koa-qs/-/koa-qs-2.0.0.tgz#4c60206169c1e978ac36dc9a8b395ad5546ef5cf"
+  integrity sha512-cBfbUvW70JsU2FCgUCFOoretdvayGzRJ2vEyNQbnZ7vb2pZ/QA+gcNzE6nVxxCcrcnRtGB7tXIRHqHPXS51utA==
+  dependencies:
+    "@types/koa" "*"
+
 "@types/koa-router@7.0.40":
   version "7.0.40"
   resolved "https://registry.yarnpkg.com/@types/koa-router/-/koa-router-7.0.40.tgz#9654dbc43375a0380c44c49c4504b4dbfc3e4e6a"
   integrity sha512-YK4+WGXch6Ig9PreZ9jlHZb2onm0S1szGw0oQxWvPhoyjSHo1Tq+CpjxMmthEUIQUc9KznOGgehFarOx8XwsFw==
+  dependencies:
+    "@types/koa" "*"
+
+"@types/koa-router@7.0.42":
+  version "7.0.42"
+  resolved "https://registry.yarnpkg.com/@types/koa-router/-/koa-router-7.0.42.tgz#0e5c01d4d0a2873d402d432114f08372d7c50eb1"
+  integrity sha512-mggrNY7Ywwjt7QjaMAlbb1ixE+v7AFskOeyKdmZT/NvPVEAo48gYUxIcF8ILlMc3eg1bo6SxNoUcbxhTv7edrA==
   dependencies:
     "@types/koa" "*"
 
@@ -1911,6 +1933,13 @@
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/@types/supertest/-/supertest-2.0.7.tgz#46ff6508075cd4519736be060f0d6331a5c8ca7b"
   integrity sha512-GibTh4OTkal71btYe2fpZP/rVHIPnnUsYphEaoywVHo+mo2a/LhlOFkIm5wdN0H0DA0Hx8x+tKgCYMD9elHu5w==
+  dependencies:
+    "@types/superagent" "*"
+
+"@types/supertest@2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@types/supertest/-/supertest-2.0.8.tgz#23801236e2b85204ed771a8e7c40febba7da2bda"
+  integrity sha512-wcax7/ip4XSSJRLbNzEIUVy2xjcBIZZAuSd2vtltQfRK7kxhx5WMHbLHkYdxN3wuQCrwpYrg86/9byDjPXoGMA==
   dependencies:
     "@types/superagent" "*"
 
@@ -10749,6 +10778,14 @@ koa-jwt@*, koa-jwt@3.5.1:
     koa-unless "1.0.7"
     p-any "1.1.0"
 
+koa-qs@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/koa-qs/-/koa-qs-2.0.0.tgz#18d16b43508a541f092e514351dc09563a48819f"
+  integrity sha1-GNFrQ1CKVB8JLlFDUdwJVjpIgZ8=
+  dependencies:
+    merge-descriptors "~0.0.2"
+    qs "~2.3.3"
+
 koa-router@7.4.0, koa-router@^7.4.0:
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/koa-router/-/koa-router-7.4.0.tgz#aee1f7adc02d5cb31d7d67465c9eacc825e8c5e0"
@@ -11577,6 +11614,11 @@ merge-descriptors@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
   integrity sha1-sAqqVW3YtEVoFQ7J0blT8/kMu2E=
+
+merge-descriptors@~0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-0.0.2.tgz#c36a52a781437513c57275f39dd9d317514ac8c7"
+  integrity sha1-w2pSp4FDdRPFcnXzndnTF1FKyMc=
 
 merge-source-map@^1.1.0:
   version "1.1.0"
@@ -14971,6 +15013,11 @@ qs@6.7.0, qs@^6.5.1, qs@^6.5.2:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
+
+qs@~2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-2.3.3.tgz#e9e85adbe75da0bbe4c8e0476a086290f863b404"
+  integrity sha1-6eha2+ddoLvkyOBHaghikPhjtAQ=
 
 qs@~6.2.0:
   version "6.2.3"

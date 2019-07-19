@@ -2,14 +2,51 @@ import { RouterContext } from 'koa-router';
 import DataObject, { DataObject as IDataObject } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 
+interface GteQuery {
+    $gte: string;
+}
+
+interface Condition {
+    createdAt?: GteQuery;
+    updatedAt?: GteQuery;
+}
+
 export default class DataController {
     public async getMany(ctx: RouterContext): Promise<void> {
-        const dataObjects = await DataObject.find({});
+        const { paging } = ctx.state;
+        const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
+        const condition: Condition = {};
+
+        if (createdSince) {
+            condition.createdAt = {
+                $gte: createdSince
+            };
+        }
+
+        if (updatedSince) {
+            condition.updatedAt = {
+                $gte: updatedSince
+            };
+        }
+
+        console.log(paging);
+
+        const [data, total] = await Promise.all([
+            await DataObject.find(condition).skip(paging.offset).limit(paging.perPage),
+            await DataObject.countDocuments(condition),
+        ]);
+
+        const meta = {
+            page: paging.page,
+            perPage: paging.perPage,
+            total: total,
+            totalPages: Math.ceil(total / paging.perPage)
+        };
 
         ctx.status = 200;
         ctx.body = {
-            data: dataObjects,
-            meta: {}
+            data,
+            meta
         };
     }
 

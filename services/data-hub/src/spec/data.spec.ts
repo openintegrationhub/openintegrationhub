@@ -178,7 +178,12 @@ describe('Data Route', () => {
 
             expect(body).to.deep.equal({
                 data: [],
-                meta: {}
+                meta: {
+                    page: 1,
+                    perPage: 50,
+                    total: 0,
+                    totalPages: 0
+                }
             });
             expect(statusCode).to.equal(200);
         });
@@ -210,26 +215,81 @@ describe('Data Route', () => {
             const id2 = res.body.data.id;
 
             res = await this.request.get('/data');
-            expect(res.body.data).to.deep.equal([
-                {
-                    "id": id1,
+            expect(res.body).to.deep.equal({
+                data: [
+                    {
+                        "id": id1,
+                        "oihUid": "some-oih-id-1",
+                        "modelId": "some-model-id-1",
+                        "content": {
+                            "some": "data"
+                        },
+                        "refs": []
+                    },
+                    {
+                        "id": id2,
+                        "oihUid": "some-oih-id-2",
+                        "modelId": "some-model-id-2",
+                        "content": {
+                            "some": "data"
+                        },
+                        "refs": []
+                    }
+                ],
+                meta: {
+                    page: 1,
+                    perPage: 50,
+                    total: 2,
+                    totalPages: 1
+                }
+            });
+        });
+
+        it('should return only 2-nd page', async function f() {
+            let res = await this.request
+                .post('/data')
+                .send({
                     "oihUid": "some-oih-id-1",
                     "modelId": "some-model-id-1",
                     "content": {
                         "some": "data"
-                    },
-                    "refs": []
-                },
-                {
-                    "id": id2,
+                    }
+                });
+
+            expect(res.statusCode).to.equal(201);
+
+            res = await this.request
+                .post('/data')
+                .send({
                     "oihUid": "some-oih-id-2",
                     "modelId": "some-model-id-2",
                     "content": {
                         "some": "data"
-                    },
-                    "refs": []
+                    }
+                });
+            expect(res.statusCode).to.equal(201);
+            const id2 = res.body.data.id;
+
+            res = await this.request.get('/data?page[number]=2&page[size]=1');
+            expect(res.body).to.deep.equal({
+                data: [
+                    {
+                        "id": id2,
+                        "oihUid": "some-oih-id-2",
+                        "modelId": "some-model-id-2",
+                        "content": {
+                            "some": "data"
+                        },
+                        "refs": []
+                    }
+                ],
+                meta: {
+                    page: 2,
+                    perPage: 1,
+                    total: 2,
+                    totalPages: 2
                 }
-            ]);
+            });
         });
     });
 });

@@ -8,6 +8,7 @@ import koaBunyanLogger from 'koa-bunyan-logger';
 import koaSwagger from 'koa2-swagger-ui';
 import errorResponder from './middleware/error-responder';
 import * as path from 'path';
+import koaQs from 'koa-qs';
 
 export interface ServerOptions {
     config: any;
@@ -24,6 +25,7 @@ export default class ObjectServer {
         this.api = new KoaRouter();
         this.koa = new Koa();
         this.logger = logger;
+        koaQs(this.koa);
 
         this.api
             .get('/', ctx => ctx.body = 'Data Hub')
