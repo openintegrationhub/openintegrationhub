@@ -744,6 +744,11 @@
                   "description": "The component repository id of the component (e.g. adapter/transformer) to be used in this step.",
                   "example": "5ca5c44c187c040010a9bb8b"
                 },
+                "credentials_id": {
+                  "type": "string",
+                  "description": "A secret service id of a secret containing credentials for this node.",
+                  "example": "5ca5c44c187c040010a9bb8c"
+                },
                 "function": {
                   "type": "string",
                   "description": "The function that the component will be executing.",
