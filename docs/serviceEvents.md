@@ -70,6 +70,8 @@ This document is designed to list all (for now: audit log relevant) events per s
 - flowrepo.flow.created
 - flowrepo.flow.modified
 - flowrepo.flow.deleted
+- flowrepo.flow.starting
+- flowrepo.flow.stopping
 
 ## Component Orchestrator
 
