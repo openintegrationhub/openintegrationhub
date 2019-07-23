@@ -2,7 +2,7 @@
   "openapi" : "3.0.0",
   "info" : {
     "description" : "Component repository is a service used to manage components in the Open Integration Hub.",
-    "version" : "0.0.6",
+    "version" : "1.0.0",
     "title" : "Component Repository",
     "license" : {
       "name" : "Apache 2.0",

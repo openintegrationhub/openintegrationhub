@@ -1,22 +1,16 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "version" : "0.0.2",
-    "title" : "Maester",
-    "description" : "Service for storage and retrieval of data objects"
+    "title" : "Attachment Storage Service",
+    "description" : "Service for storing data objects",
+    "version" : "1.0.0"
   },
   "components" : {
     "securitySchemes" : {
-      "JWT" : {
-        "description" : "JWT token passed to sailor from outside (e.g. env var), which contains flowId, workspaceId, contractId",
+      "bearerAuth" : {
         "type" : "http",
         "scheme" : "bearer",
-        "bearerFormat" : "JWT"
-      },
-      "ServiceAccount" : {
-        "description" : "Service account credentials",
-        "type" : "http",
-        "scheme" : "basic"
+        "description" : "Token issued by IAM"
       }
     },
     "schemas" : {
@@ -179,7 +173,7 @@
     }
   },
   "security" : [ {
-    "JWT" : [ ]
+    "bearerAuth" : [ ]
   } ],
   "paths" : {
     "/objects" : {
