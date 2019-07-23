@@ -1,0 +1,3 @@
+/dist
+/tmp
+!/package-lock.json

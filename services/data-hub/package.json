@@ -1,0 +1,58 @@
+{
+    "name": "data-hub",
+    "version": "0.0.1",
+    "description": "Data hub",
+    "main": "dist/index.js",
+    "directories": {
+        "doc": "docs"
+    },
+    "engines": {
+        "node": ">= 8"
+    },
+    "scripts": {
+        "start": "node dist/app.js",
+        "start:dev": "NODE_ENV=development ts-node-dev ./src/app.ts | bunyan",
+        "test": "NODE_ENV=test mocha --exit --require ts-node/register src/**/*.spec.ts",
+        "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts ./src",
+        "pretest": "npm run eslint",
+        "build:ts": "tsc",
+        "build:docker": "docker build -t openintegrationhub/data-hub:${VERSION} -f Dockerfile ../../"
+    },
+    "license": "UNLICENSED",
+    "devDependencies": {
+        "@types/bunyan": "1.8.6",
+        "@types/chai": "4.1.7",
+        "@types/koa-bodyparser": "4.3.0",
+        "@types/koa-bunyan-logger": "2.1.1",
+        "@types/koa-qs": "2.0.0",
+        "@types/koa-router": "7.0.42",
+        "@types/lodash": "4.14.135",
+        "@types/mocha": "5.2.7",
+        "@types/mongoose": "5.5.7",
+        "@types/nock": "10.0.3",
+        "@types/supertest": "2.0.8",
+        "@typescript-eslint/eslint-plugin": "1.9.0",
+        "@typescript-eslint/parser": "1.9.0",
+        "chai": "4.2.0",
+        "eslint": "5.16.0",
+        "mocha": "6.1.4",
+        "nock": "10.0.6",
+        "supertest": "4.0.2",
+        "ts-node": "8.0.2",
+        "ts-node-dev": "1.0.0-pre.40",
+        "typescript": "3.5.2"
+    },
+    "dependencies": {
+        "@openintegrationhub/iam-utils": "*",
+        "backend-commons-lib": "*",
+        "bunyan": "1.8.12",
+        "koa": "2.7.0",
+        "koa-bodyparser": "4.2.1",
+        "koa-bunyan-logger": "2.1.0",
+        "koa-qs": "2.0.0",
+        "koa-router": "7.4.0",
+        "koa2-swagger-ui": "2.14.0",
+        "lodash": "4.17.11",
+        "mongoose": "5.6.3"
+    }
+}
