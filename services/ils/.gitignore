@@ -6,3 +6,4 @@ error.log
 app/error.log
 .DS_Store
 /.env
+/test/utils/globalConfig.json
