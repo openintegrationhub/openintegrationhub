@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: attachment-storage-service
+  name: attachment-storage-service
+  namespace: oih-dev-ns
+spec:
+  ports:
+    - name: '3002'
+      port: 3002
+      protocol: TCP
+      targetPort: 3002
+  selector:
+    app: attachment-storage-service
+  type: NodePort

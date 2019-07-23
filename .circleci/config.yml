@@ -4,7 +4,7 @@ aliases:
   - &node_env
     - image: circleci/node:8-stretch
   - &node_mongo_env
-    - image: circleci/node:8-stretch
+    - image: circleci/node:10-stretch
     - image: circleci/mongo:3.6
   - &run_npm_install
     name: Installing Dependencies
@@ -118,6 +118,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/audit-log
     steps: *yarn_test_steps
+  data-hub-test:
+    docker: *node_mongo_env
+    working_directory: ~/oih/services/data-hub
+    steps: *yarn_test_steps
 workflows:
   pipeline:
     jobs:
@@ -164,6 +168,9 @@ workflows:
       - lib-component-repository-test:
           requires:
             - lib-backend-commons-lib-test
+      - data-hub-test:
+          requires:
+            - lib-backend-commons-lib-test
       - test:
           requires:
             - webhooks-test
@@ -176,6 +183,7 @@ workflows:
             - flow-repository-test
             - audit-log-test
             - lib-component-repository-test
+            - data-hub-test
       - build:
           requires:
             - test

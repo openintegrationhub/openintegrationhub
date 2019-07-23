@@ -1,4 +1,5 @@
 const Logger = require('@basaas/node-logger');
+const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
 const Account = require('./../models/account');
 const Role = require('./../models/role');
 const Permission = require('./../models/permission');
@@ -34,7 +35,13 @@ const RolesDAO = {
         await instance.save();
 
         log.debug('created.role', Object.assign({}, data));
-
+        const event = new Event({
+            headers: {
+                name: 'iam.role.create',
+            },
+            payload: { role: data.name.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
         auditLog.info('create.role', { data });
         return instance.toJSON();
     },
@@ -48,6 +55,13 @@ const RolesDAO = {
         }, { $set: props });
 
         log.debug('updated.role', { id, props });
+        const event = new Event({
+            headers: {
+                name: 'iam.role.modified',
+            },
+            payload: { role: id.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
         auditLog.info('update.role', { data: props, id });
 
         return updatedEntity.toJSON();
@@ -64,6 +78,13 @@ const RolesDAO = {
 
         await Role.deleteOne({ _id: id, tenant });
 
+        const event = new Event({
+            headers: {
+                name: 'iam.role.deleted',
+            },
+            payload: { role: id.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
         log.debug('deleted.role', { id });
         auditLog.info('delete.role', { data: { id } });
 

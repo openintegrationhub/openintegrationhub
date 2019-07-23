@@ -21,11 +21,14 @@ function URIfromId(id) {
 
 function transformURI({ domain, id, options = {} }) {
     let { pathname } = url.parse(id);
+
     // remove first slash if existing
     if (options.location) {
         pathname = options.location.replace(options.root, '');
-    } else {
+    } else if (pathname) {
         pathname = path.basename(pathname);
+    } else {
+        pathname = encodeURI(id).replace(/(#|\?)/g, '');
     }
 
     return `domains/${domain}/schemas/${pathname}`.replace('//', '/');
@@ -83,10 +86,10 @@ function transformDbResult(result) {
         ...result,
     };
 
+
     // delete keys
     delete result._id;
     delete result.__v;
-
     return result;
 }
 

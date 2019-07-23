@@ -40,7 +40,7 @@ const AccountDAO = {
 
         const event = new Event({
             headers: {
-                name: 'account.created',
+                name: 'iam.user.created',
             },
             payload: { username: userObj.username, id: account._id.toString() },
         });
@@ -68,12 +68,18 @@ const AccountDAO = {
                 method,
             },
         });
+        const event = new Event({
+            headers: {
+                name: 'iam.user.modified',
+            },
+            payload: { username: userObj.username, id: update._id.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
 
         if (userObj.password && userObj.password.length) {
             await update.setPassword(userObj.password);
             await update.save();
             auditLog.info('update.account.password', { data: { userId: id } });
-
             logger.debug('updated.account.password', { id });
         }
     },
@@ -86,7 +92,7 @@ const AccountDAO = {
 
         const event = new Event({
             headers: {
-                name: 'account.deleted',
+                name: 'iam.user.deleted',
             },
             payload: { id: id.toString() },
         });
@@ -111,6 +117,13 @@ const AccountDAO = {
         }
         userAccount.memberships.push(newMembership);
         await userAccount.save();
+        const event = new Event({
+            headers: {
+                name: 'iam.user.assignedToTenant',
+            },
+            payload: { user: userId.toString(), tenant: tenantId.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
         return userAccount.toJSON();
     },
 
@@ -121,6 +134,13 @@ const AccountDAO = {
         });
         userAccount.memberships = userAccount.memberships.filter(elem => elem.tenant.toString() !== tenantId);
         await userAccount.save();
+        const event = new Event({
+            headers: {
+                name: 'iam.user.removedFormTenant',
+            },
+            payload: { user: userId.toString(), tenant: tenantId.toString() },
+        });
+        EventBusManager.getEventBus().publish(event);
         return userAccount.toJSON();
     },
 

@@ -1,10 +1,13 @@
 const express = require('express');
+const { EventBus, EventBusManager } = require('@openintegrationhub/event-bus');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
-const { isLocalRequest } = require('../util/common');
 const swaggerDocument = require('../../doc/openapi');
+
+const { isLocalRequest } = require('../util/common');
+
 const iamLib = require('./../module/iam');
 const DAO = require('../dao');
 const conf = require('../conf');
@@ -26,6 +29,7 @@ module.exports = class Server {
         port, mongoDbConnection, dao, iam,
     }) {
         this.port = port || conf.port;
+        this.eventBus = new EventBus({ serviceName: conf.loggingNameSpace, rabbitmqUri: process.env.RABBITMQ_URI });
         this.app = express();
         this.app.disable('x-powered-by');
         this.iam = iam || iamLib;
@@ -82,6 +86,7 @@ module.exports = class Server {
             keepAlive: 120,
             useCreateIndex: true,
             useNewUrlParser: true,
+            useFindAndModify: false,
         });
     }
 
@@ -90,6 +95,8 @@ module.exports = class Server {
 
         await this.setupDatabase();
         await createCollections();
+        await this.eventBus.connect();
+        EventBusManager.init({ eventBus: this.eventBus, serviceName: conf.loggingNameSpace });
         this.server = await this.app.listen(this.port);
     }
 

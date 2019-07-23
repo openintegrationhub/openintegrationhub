@@ -8,16 +8,16 @@
 
 ---
 
-# Integration Content Repository
+# Flow Repository
 
 # Introduction
 
-This document describes the evaluation of the Microservice "Integration Content Repository".
+This document describes the evaluation of the Microservice "Flow Repository".
 This microservice is part of the integration services of the Open Integration Hub.
 
 # Description
 
-## Purpose of the Microservice Integration Content Repository
+## Purpose of the Microservice Flow Repository
 
 If we talk about "content" here, we mean "flows". All connected solutions and to the
 Open Integration Hub and the work they are doing there are represented by an "integration flows".
@@ -27,10 +27,16 @@ as defined in the corresponding integration flows.
 The integration flows are defined by a single user of the Open Integration Hub or a
 member of an organization which uses the Open Integration Hub.
 
-These flows have to be stored, retrieved, updated and deleted. The Integration Content Repository
+These flows have to be stored, retrieved, updated and deleted. The Flow Repository
 will provide these functionabilities.
 
-## Requirements for the Integration Content Repository
+# Service Implementation
+
+**Framework Part:** Tbd
+
+**Reference Implementation:** [flow repository service](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/flow-repository)
+
+## Requirements for the Flow Repository
 
 We will need a component within the Open Integration Hub which fulfill the following user stories.
 
@@ -102,10 +108,10 @@ the OIH consists of multiple services and agents with different roles and author
 
 Storing, updating and retrieving the JSON-flows could be done in a simple GIT-Repository. This is can be simple implemented.
 
-# Concept of the Integration Content Repository
+# Concept of the Flow Repository
 
 As described in the document integration services (s. [/IntegrationServices.md](../IntegrationServices.md))
-the Integration Content Repository is positioned between the Scheduler and the Resource Coordinator.
+the Flow Repository is positioned between the Scheduler and the Resource Coordinator.
 
 The Scheduler helps to perform the polling of the integration flows periodically.
 The Resource Coordinator enforces every tenant to comply with the defined policies on resource sharing.
@@ -116,6 +122,7 @@ The flows are specified in JSON, therefore we store and retrieve them in JSON. T
 has to be specified.
 
 The following requests can be done:
+
 - Retrieve all flows: Returns all flows belonging to the given user.
 If the user is a member of an organization, all the flows of the organization are returned.
 If the user is a member in multiple organizations, the given authentication is used to match the proper organization.

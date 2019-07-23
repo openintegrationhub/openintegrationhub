@@ -1,31 +1,51 @@
+![prod](https://img.shields.io/badge/Status-Production-brightgreen.svg)
+
+<p align="center">
+  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
+</p>
+
+The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
+
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+
 # Component Repository
+
 Stores information about integration components. Based on [@openintegrationhub/component-repository](../../lib/component-repository).
 
 ## API docs
+
 [http://component-repository.openintegrationhub.com/api-docs/](http://component-repository.openintegrationhub.com/api-docs/).
 
 ## Prerequisites
+
 - MongoDB
 
 ## Service Account
+
 This service requires a service account with the following permissions:
+
 - `iam.token.introspect`
 
 ## How to build
-```
+
+```docker
 docker build -t openintegrationhub/component-repository:latest -f Dockerfile ../../
 ```
+
 or
-```
+
+```npm
 VERSION=latest npm run build:docker
 ```
 
 ## How to deploy
+
 Kubernetes descriptors for Component Repository along with the other core platform microservices can be found in the [k8s](./k8s) directory.
 
 ## Environment variables
 
-#### General
+### General
+
 | Name | Description |
 | --- | --- |
 | CORS_ORIGIN_WHITELIST | Comma separated list of allowed CORS origins. |

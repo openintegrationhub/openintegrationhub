@@ -1,0 +1,439 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Attachment Storage Service",
+    "description" : "Service for storing data objects",
+    "version" : "1.0.0"
+  },
+  "components" : {
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "description" : "Token issued by IAM"
+      }
+    },
+    "schemas" : {
+      "MessageId" : {
+        "type" : "integer"
+      },
+      "BatchDelete" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "started", "running", "completed" ]
+          },
+          "conditions" : {
+            "type" : "array",
+            "minLength" : 1,
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "key" : {
+                  "description" : "Any value from JWT token: flowId, workspaceId, contractId etc.",
+                  "type" : "string"
+                },
+                "value" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters" : {
+      "MessageId" : {
+        "name" : "id",
+        "description" : "Message identifier",
+        "in" : "path",
+        "required" : true,
+        "schema" : {
+          "$ref" : "#/components/schemas/MessageId"
+        }
+      },
+      "MessageRange" : {
+        "name" : "Range",
+        "description" : "Message range",
+        "in" : "header",
+        "schema" : {
+          "type" : "string"
+        }
+      }
+    },
+    "examples" : {
+      "json" : {
+        "summary" : "json message",
+        "value" : "{ \"some\": \"json\" }"
+      },
+      "xml" : {
+        "summary" : "xml message",
+        "value" : "<xml>some</xml>"
+      },
+      "text" : {
+        "summary" : "plain text message",
+        "value" : "plain text"
+      },
+      "csv" : {
+        "summary" : "csv message",
+        "value" : "c,s,v"
+      },
+      "tsv" : {
+        "summary" : "tsv message",
+        "value" : "t\t\ts\tv"
+      },
+      "binary" : {
+        "summary" : "binary message",
+        "value" : "BINARY DATA"
+      }
+    },
+    "requestBodies" : {
+      "Message" : {
+        "required" : true,
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "type" : "object"
+            },
+            "example" : {
+              "$ref" : "#/components/examples/json/value"
+            }
+          },
+          "application/xml" : {
+            "example" : {
+              "$ref" : "#/components/examples/xml/value"
+            }
+          },
+          "text/plain" : {
+            "example" : {
+              "$ref" : "#/components/examples/text/value"
+            }
+          },
+          "text/csv" : {
+            "example" : {
+              "$ref" : "#/components/examples/csv/value"
+            }
+          },
+          "text/tsv" : {
+            "example" : {
+              "$ref" : "#/components/examples/tsv/value"
+            }
+          },
+          "application/octet-stream" : {
+            "example" : {
+              "$ref" : "#/components/examples/binary/value"
+            }
+          }
+        }
+      }
+    },
+    "responses" : {
+      "MessageNotFound" : {
+        "description" : "Message not found"
+      },
+      "MessageRangeNotSatisfiable" : {
+        "description" : "Message range not satisfiable"
+      },
+      "TooManyMessageRequests" : {
+        "description" : "Too many message requests"
+      },
+      "MessageTooLarge" : {
+        "description" : "Message too large"
+      }
+    },
+    "headers" : {
+      "MessageTTL" : {
+        "description" : "Message TTL in ms",
+        "schema" : {
+          "description" : "Message TTL in ms",
+          "type" : "integer"
+        }
+      },
+      "MessageLength" : {
+        "description" : "Message length in bytes",
+        "schema" : {
+          "type" : "integer"
+        }
+      },
+      "MessageRange" : {
+        "description" : "Message Range in bytes",
+        "schema" : {
+          "type" : "string"
+        },
+        "examples" : {
+          "bytes" : {
+            "value" : "bytes=0-1023"
+          }
+        }
+      }
+    }
+  },
+  "security" : [ {
+    "bearerAuth" : [ ]
+  } ],
+  "paths" : {
+    "/objects" : {
+      "get" : {
+        "summary" : "Get multiple messages",
+        "description" : "Returns multiple messages by ids with multipart response",
+        "parameters" : [ {
+          "name" : "ids",
+          "required" : true,
+          "in" : "query",
+          "description" : "Message ids",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MessageId"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully got messages",
+            "content" : {
+              "multipart/mixed" : {
+                "example" : "Content-Type: multipart/mixed; boundary=eio-message\n\n--eio-message\nContent-Type: application/json\nX-TTL: 5184000000\nContent-Length: 17\n{\"some\": \"json\"}\n--eio-message\nContent-Type: application/octet-stream\nX-TTL: 2592000000\nContent-Length: 342346245\n...some big file\n--eio-message "
+              }
+            }
+          },
+          "422" : {
+            "description" : "Too many messages requested at once"
+          },
+          "429" : {
+            "$ref" : "#/components/responses/TooManyMessageRequests"
+          }
+        }
+      }
+    },
+    "/objects/{id}" : {
+      "get" : {
+        "summary" : "Get message by id",
+        "description" : "Returns one message or part of it by requested range",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/MessageId"
+        }, {
+          "$ref" : "#/components/parameters/MessageRange"
+        } ],
+        "responses" : {
+          "200" : {
+            "headers" : {
+              "X-TTL" : {
+                "$ref" : "#/components/headers/MessageTTL"
+              },
+              "Content-Length" : {
+                "$ref" : "#/components/headers/MessageLength"
+              }
+            },
+            "description" : "Successfully got a message",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                },
+                "example" : {
+                  "$ref" : "#/components/examples/json/value"
+                }
+              },
+              "application/xml" : {
+                "example" : {
+                  "$ref" : "#/components/examples/xml/value"
+                }
+              },
+              "text/plain" : {
+                "example" : {
+                  "$ref" : "#/components/examples/text/value"
+                }
+              },
+              "text/csv" : {
+                "example" : {
+                  "$ref" : "#/components/examples/csv/value"
+                }
+              },
+              "text/tsv" : {
+                "example" : {
+                  "$ref" : "#/components/examples/tsv/value"
+                }
+              },
+              "application/octet-stream" : {
+                "example" : {
+                  "$ref" : "#/components/examples/binary/value"
+                }
+              }
+            }
+          },
+          "206" : {
+            "headers" : {
+              "X-TTL" : {
+                "$ref" : "#/components/headers/MessageTTL"
+              },
+              "Content-Range" : {
+                "$ref" : "#/components/headers/MessageRange"
+              },
+              "Content-Length" : {
+                "$ref" : "#/components/headers/MessageLength"
+              }
+            },
+            "description" : "Successfully got a part of message",
+            "content" : {
+              "text/plain" : {
+                "example" : {
+                  "$ref" : "#/components/examples/text/value"
+                }
+              },
+              "text/csv" : {
+                "example" : {
+                  "$ref" : "#/components/examples/csv/value"
+                }
+              },
+              "text/tsv" : {
+                "example" : {
+                  "$ref" : "#/components/examples/tsv/value"
+                }
+              },
+              "application/octet-stream" : {
+                "example" : {
+                  "$ref" : "#/components/examples/binary/value"
+                }
+              }
+            }
+          },
+          "404" : {
+            "$ref" : "#/components/responses/MessageNotFound"
+          },
+          "416" : {
+            "$ref" : "#/components/responses/MessageRangeNotSatisfiable"
+          },
+          "429" : {
+            "$ref" : "#/components/responses/TooManyMessageRequests"
+          }
+        }
+      },
+      "put" : {
+        "summary" : "Create a message",
+        "description" : "Creates a message with user-generated id",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/MessageId"
+        }, {
+          "$ref" : "#/components/parameters/MessageRange"
+        } ],
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/Message"
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a message"
+          },
+          "404" : {
+            "$ref" : "#/components/responses/MessageNotFound"
+          },
+          "416" : {
+            "$ref" : "#/components/responses/MessageRangeNotSatisfiable"
+          },
+          "429" : {
+            "$ref" : "#/components/responses/TooManyMessageRequests"
+          },
+          "409" : {
+            "description" : "Message already exists"
+          },
+          "415" : {
+            "description" : "Message type not supported or missing"
+          },
+          "413" : {
+            "$ref" : "#/components/responses/MessageTooLarge"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete a message",
+        "description" : "Delete entire message or some range in it",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/MessageId"
+        }, {
+          "$ref" : "#/components/parameters/MessageRange"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully deleted a message or message part"
+          },
+          "404" : {
+            "$ref" : "#/components/responses/MessageNotFound"
+          },
+          "416" : {
+            "$ref" : "#/components/responses/MessageRangeNotSatisfiable"
+          },
+          "429" : {
+            "$ref" : "#/components/responses/TooManyMessageRequests"
+          }
+        }
+      }
+    },
+    "/batch/delete" : {
+      "post" : {
+        "summary" : "Create request for message batch deletion",
+        "description" : "Batch deletion is async process, so we need to start and wait",
+        "security" : [ {
+          "ServiceAccount" : [ ]
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BatchDelete"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Query started",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BatchDelete"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/batch/delete/{id}" : {
+      "get" : {
+        "summary" : "Get batch delete request status",
+        "security" : [ {
+          "ServiceAccount" : [ ]
+        } ],
+        "parameters" : [ {
+          "name" : "id",
+          "required" : true,
+          "description" : "Query id",
+          "in" : "path",
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Query found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BatchDelete"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Query not found"
+          }
+        }
+      }
+    }
+  }
+}

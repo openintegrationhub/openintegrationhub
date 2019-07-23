@@ -56,3 +56,9 @@ spec:
       - backend:
           serviceName: web-ui
           servicePort: 3000
+  - host: attachment-storage-service.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: attachment-storage-service
+          servicePort: 3002
