@@ -16,10 +16,23 @@ For the current prototypical implementation, the chosen core functionality is th
 
 In either case, the resulting object is then validated against a supplied definition, which includes a list of required fields. A valid object will be marked as such, and can then be retrieved by another component. If an object is invalid, it cannot be retrieved, and will instead be stored until the necessary data has been merged into it and it passes validation.
 
-## Technical description
-The ILS API currently supports two end points, one for POSTing new objects, and one for GETting valid ones. Both of these operations ought to be conducted via the ILA, but can also be targeted manually for testing and development purposes.
+## Use case: Splitting objects
+ILS comes into play when the user would like to split an object into smaller or other objects containing properties from the main object. Let's say that the user want to split the object containing employee's `firstName`, `lastName`, `salutation`, `organization`, `email`, `street` and `streetNumber` into two separate objects. The first one should have the properties `firstName`, `lastName`  and `salutation` ant the second one should contain the rest. In this case the user must provide `splitSchema` array containing two objects and each of them must have the properties `meta` and `payload`. Meta has the special property `splitKey` which servers as an identifier and `payload` consists of the fields which the new splitted object must contain. After successful splitting each new object should hold  the `splitKey` and `payload` properties.
 
-For a POST, the body format is expected to match this format:
+On the other hand the user would like to `GET` a new/splitted object. In such a case an `ilaId` and a `splitKey` must be provided. Then ILS will return an array of all objects which have the same `splitKey`.
+
+
+## Technical description
+
+The ILS API currently supports the following endpoints:  
+
+`POST /chunks` -  Create a new chunk object  
+`POST /chunks/split` - Split a chunk into objects  
+`GET /chunks/${ilaId}?key=${splitKey}` - fetch chunks by `ilaId` and `splitKey`. SplitKey is on optional parameter for fetching chunks which are splitted by the same `splitSchema`
+
+These operations ought to be conducted via the ILA, but can also be targeted manually for testing and development purposes.
+
+For `POST /chunks`, the body format is expected to match this format:
 ```json
 {
   "ilaId": "string",
@@ -34,7 +47,29 @@ For a POST, the body format is expected to match this format:
 - `def`: The definition against which objects are validated. Currently expected to be a JSON schema.
 - `payload`: The actual data object, in JSON format.
 
-To GET, an `ilaId` must be supplied. This will return all objects marked as valid that have been saved with this `ilaId`.
+For `POST /chunks/split`, the body format should have the following format:
+```json
+{
+  "ilaId": "string",
+  "payload": {},
+  "splitSchema": [
+    {
+      "meta": {
+        "splitKey": "string"
+      },
+      "payload": {}
+    }
+  ]
+}
+```
+
+- `ilaId`: Identifies which combination of flows this object belongs to. Must match among all connected flows.
+- `payload`: The actual data object, in JSON format.
+- `splitSchema`: A schema object which could contain more then one schema. The main purpose is each schema has a meta object with an unique `splitKey`. This identifies the splitting model. In `payload` is the actual schema with all properties.
+
+To `GET /chunks/${ilaId}`, an `ilaId` must be supplied. This will return all objects marked as valid that have been saved with this `ilaId`.
+
+To `GET /chunks/${ilaId}?key=${splitKey}` the user should provide the `ilaId` and `key` as a parameter for fetching objects which are splitted by a `splitSchema` with the certain `splitKey`.
 
 For storage, the ILS uses MongoDB. Stored objects are endowed with a Time To Live of one hour, which is refreshed every time new data is merged into them.
 
