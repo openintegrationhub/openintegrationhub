@@ -12,7 +12,7 @@
     "coverage": "yarn test --coverage",
     "lint_fix": "eslint app test --fix",
     "build": "echo \"No Build defined\"",
-    "build:docker": "docker build -t openintegrationhub/ics:${VERSION} -f Dockerfile ../../"
+    "build:docker": "docker build -t openintegrationhub/ils:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
     "ajv": "^6.10.0",
@@ -39,6 +39,7 @@
     "jest-environment-node": "^23.4.0",
     "mongod": "^2.0.0",
     "mongodb": "^3.0.10",
+    "mongodb-memory-server": "^2.9.1",
     "nyc": "^12.0.2",
     "path": "^0.12.7",
     "supertest": "^3.1.0"

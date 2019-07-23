@@ -12,7 +12,7 @@ const general = {
   // flowWritePermission: process.env.FLOW_WRITE_PERMISSION || 'flows.write',
 
   // Designates which storage system (Mongo, Kubernetes, MySQL, etc.) is used
-  // storage: 'mongo',
+  storage: 'mongo',
 };
 
 module.exports = general;
