@@ -7,6 +7,7 @@ COPY package.json yarn.lock ./
 COPY lib/backend-commons-lib ./lib/backend-commons-lib
 COPY lib/iam-utils ./lib/iam-utils
 COPY services/data-hub/package.json services/data-hub/tsconfig.json ./services/data-hub/
+COPY services/data-hub/docs ./services/data-hub/docs/
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package
