@@ -1,23 +1,29 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import * as _ from 'lodash';
 
-export interface ModificationHistoryItem extends Document {
+export interface ModificationHistoryItemDocument extends Document {
     user: string;
     operation: string;
     timestamp: string;
 }
 
-export interface DataObjectRef extends Document {
+export interface DataObjectRefDocument extends Document {
     applicationUid: string;
     recordUid: string;
-    modificationHistory: ModificationHistoryItem[];
+    modificationHistory: ModificationHistoryItemDocument[];
 }
 
-export interface DataObject extends Document {
+export interface OwnerDocument extends Document {
+    id: string;
+    type: string;
+}
+
+export interface DataObjectDocument extends Document {
     oihUid: string;
     modelId: string;
     content: any;
-    refs: DataObjectRef[];
+    refs: DataObjectRefDocument[];
+    owners: OwnerDocument[];
 }
 
 const mofificationHistorySchema = new Schema({
@@ -51,6 +57,19 @@ const refsSchema = new Schema({
     _id: false
 });
 
+const ownerSchema = new Schema({
+    id: {
+        type: String,
+        required: true
+    },
+    type: {
+        type: String,
+        required: true
+    }
+}, {
+    _id: false
+});
+
 const dataObjectSchema = new Schema({
     oihUid: {
         type: String,
@@ -64,13 +83,14 @@ const dataObjectSchema = new Schema({
     content: {
         type: Schema.Types.Mixed
     },
-    refs: [refsSchema]
+    refs: [refsSchema],
+    owners: [ownerSchema]
 }, {
     timestamps: true
 });
 
-function dataObjectTransform (doc: DataObject, ret: DataObject) {
-    const safeFields = ['id', 'oihUid', 'modelId', 'content', 'refs'];
+function dataObjectTransform (doc: DataObjectDocument, ret: DataObjectDocument) {
+    const safeFields = ['id', 'oihUid', 'modelId', 'content', 'refs', 'owners'];
     ret.id = doc.id;
     return _.pick(ret, safeFields);
 }
@@ -79,4 +99,4 @@ dataObjectSchema.set('toJSON', {
     transform: dataObjectTransform
 });
 
-export default mongoose.model<DataObject>('DataObject', dataObjectSchema);
+export default mongoose.model<DataObjectDocument>('DataObject', dataObjectSchema);

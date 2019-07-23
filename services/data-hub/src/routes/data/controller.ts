@@ -1,21 +1,25 @@
 import { RouterContext } from 'koa-router';
-import DataObject, { DataObject as IDataObject } from '../../models/data-object';
+import DataObject, { DataObjectDocument, OwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
+import Unauthorized from '../../errors/api/Unauthorized';
 
 interface GteQuery {
     $gte: string;
 }
 
-interface Condition {
+interface GetManyCondition {
+    'owners.id': string;
     createdAt?: GteQuery;
     updatedAt?: GteQuery;
 }
 
 export default class DataController {
     public async getMany(ctx: RouterContext): Promise<void> {
-        const { paging } = ctx.state;
+        const { paging, user } = ctx.state;
         const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
-        const condition: Condition = {};
+        const condition: GetManyCondition = {
+            'owners.id': user.sub
+        };
 
         if (createdSince) {
             condition.createdAt = {
@@ -28,8 +32,6 @@ export default class DataController {
                 $gte: updatedSince
             };
         }
-
-        console.log(paging);
 
         const [data, total] = await Promise.all([
             await DataObject.find(condition).skip(paging.offset).limit(paging.perPage),
@@ -52,10 +54,15 @@ export default class DataController {
 
     public async getOne(ctx: RouterContext): Promise<void> {
         const { id } = ctx.params;
+        const { user } = ctx.state;
         const dataObject = await DataObject.findById(id);
 
         if (!dataObject) {
             throw new NotFound();
+        }
+
+        if (!dataObject.owners.find(o => o.id === user.sub)) {
+            throw new Unauthorized();
         }
 
         ctx.status = 200;
@@ -67,17 +74,22 @@ export default class DataController {
     public async putOne(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { id } = ctx.params;
+        const { user } = ctx.state;
         const dataObject = await DataObject.findById(id);
 
         if (!dataObject) {
             throw new NotFound();
         }
 
+        if (!dataObject.owners.find(o => o.id === user.sub)) {
+            throw new Unauthorized();
+        }
+
         Object.keys(dataObject.toJSON()).forEach(key => {
             if (key === '_id') {
                 return;
             }
-            dataObject[<keyof IDataObject>key] = undefined;
+            dataObject[<keyof DataObjectDocument>key] = undefined;
         });
 
         Object.assign(dataObject, body);
@@ -92,10 +104,15 @@ export default class DataController {
     public async patchOne(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { id } = ctx.params;
+        const { user } = ctx.state;
         const dataObject = await DataObject.findById(id);
 
         if (!dataObject) {
             throw new NotFound();
+        }
+
+        if (!dataObject.owners.find(o => o.id === user.sub)) {
+            throw new Unauthorized();
         }
 
         Object.assign(dataObject, body);
@@ -109,6 +126,14 @@ export default class DataController {
 
     public async postOne(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
+        const { user } = ctx.state;
+        body.owners = body.owners || [];
+        if (!body.owners.find((o: OwnerDocument) => o.id === user.sub)) {
+            body.owners.push({
+                id: user.sub,
+                type: 'user'
+            });
+        }
         const dataObject = await DataObject.create(body);
         ctx.status = 201;
         ctx.body = {

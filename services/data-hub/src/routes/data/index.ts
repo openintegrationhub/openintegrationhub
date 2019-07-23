@@ -3,11 +3,13 @@ import Controller from './controller';
 import { RouterContext } from 'koa-router';
 import bodyParser from 'koa-bodyparser';
 import { parsePagedQuery } from './middlewares';
+import { koaMiddleware } from '@openintegrationhub/iam-utils';
 
 export default () => {
     const controller = new Controller();
     return new KoaRouter()
         .use(bodyParser())
+        .use(koaMiddleware)
         .get('/', parsePagedQuery(), (ctx: RouterContext) => controller.getMany(ctx))
         .post('/', (ctx: RouterContext) => controller.postOne(ctx))
         .get('/:id', (ctx: RouterContext) => controller.getOne(ctx))
