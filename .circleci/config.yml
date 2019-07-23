@@ -164,6 +164,9 @@ workflows:
       - lib-component-repository-test:
           requires:
             - lib-backend-commons-lib-test
+      - data-hub-test:
+          requires:
+            - lib-backend-commons-lib-test
       - test:
           requires:
             - webhooks-test
@@ -176,6 +179,7 @@ workflows:
             - flow-repository-test
             - audit-log-test
             - lib-component-repository-test
+            - data-hub-test
       - build:
           requires:
             - test
