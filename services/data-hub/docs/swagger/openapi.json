@@ -2,9 +2,9 @@
   "openapi" : "3.0.0",
   "servers" : [ ],
   "info" : {
-    "description" : "REST API for the OIH Master Data Service.",
-    "version" : "0.0.1",
-    "title" : "OIH Master Data Service REST API",
+    "title" : "Data Hub",
+    "description" : "REST API for the OIH Data Hub Service.",
+    "version" : "1.0.0",
     "license" : {
       "name" : "Apache 2.0",
       "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -24,12 +24,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "type" : "object",
-                "properties" : {
-                  "data" : {
-                    "$ref" : "#/components/schemas/Data"
-                  }
-                }
+                "$ref" : "#/components/schemas/Data"
               }
             }
           }
@@ -43,7 +38,7 @@
                   "type" : "object",
                   "properties" : {
                     "data" : {
-                      "$ref" : "#/components/schemas/Record"
+                      "$ref" : "#/components/schemas/MutableData"
                     }
                   }
                 }
@@ -157,12 +152,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "type" : "object",
-                "properties" : {
-                  "data" : {
-                    "$ref" : "#/components/schemas/Data"
-                  }
-                }
+                "$ref" : "#/components/schemas/Data"
               }
             }
           }
@@ -176,7 +166,7 @@
                   "type" : "object",
                   "properties" : {
                     "data" : {
-                      "$ref" : "#/components/schemas/Record"
+                      "$ref" : "#/components/schemas/MutableData"
                     }
                   }
                 }
@@ -201,12 +191,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "type" : "object",
-                "properties" : {
-                  "data" : {
-                    "$ref" : "#/components/schemas/Data"
-                  }
-                }
+                "$ref" : "#/components/schemas/Data"
               }
             }
           }
@@ -220,7 +205,7 @@
                   "type" : "object",
                   "properties" : {
                     "data" : {
-                      "$ref" : "#/components/schemas/Record"
+                      "$ref" : "#/components/schemas/MutableData"
                     }
                   }
                 }
@@ -232,6 +217,13 @@
     }
   },
   "components" : {
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "description" : "Token issued by IAM"
+      }
+    },
     "schemas" : {
       "Data" : {
         "type" : "object",
@@ -251,6 +243,12 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/AppDataRecord"
+            }
+          },
+          "owners" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Owner"
             }
           }
         }
@@ -327,7 +325,26 @@
             "type" : "integer"
           }
         }
+      },
+      "Owner" : {
+        "type" : "object",
+        "required" : [ "id", "type" ],
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "description" : "External id of the owner",
+            "example" : "123"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "Type to discriminate owner's type",
+            "example" : "user"
+          }
+        }
       }
     }
-  }
+  },
+  "security" : [ {
+    "bearerAuth" : [ ]
+  } ]
 }
