@@ -118,6 +118,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/audit-log
     steps: *yarn_test_steps
+  data-hub-test:
+    docker: *node_env
+    working_directory: ~/oih/services/data-hub
+    steps: *yarn_test_steps
 workflows:
   pipeline:
     jobs:
