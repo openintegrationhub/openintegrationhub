@@ -1,9 +1,10 @@
 const logger = require('@basaas/node-logger');
-const { isOwnerOf, hasAll } = require('@openintegrationhub/iam-utils');
+const { hasAll, isOwnerOf } = require('@openintegrationhub/iam-utils');
 const DomainDAO = require('../../dao/domain');
 const conf = require('../../conf');
 
 const log = logger.getLogger(`${conf.logging.namespace}/permission`);
+
 module.exports = {
     domainOwnerOrAllowed: ({ permissions }) => async (req, res, next) => {
         try {
@@ -12,26 +13,33 @@ module.exports = {
                 requiredPermissions: permissions,
             });
 
-            req.ownedDomain = await isOwnerOf({
-                dao: DomainDAO,
-                sub: req.user.sub,
-                id: req.params.id || req.domainId,
+            const domain = await DomainDAO.findOne({
+                _id: req.params.id || req.domainId,
             });
 
-            if (req.hasAll && req.ownedDomain === null) {
-                return next({ status: 404 });
+            if (!domain) {
+                if (req.hasAll) {
+                    return next({ status: 404 });
+                }
+                return next({ status: 403 });
             }
 
-            if (req.hasAll || req.ownedDomain) {
+            req.ownsDomain = isOwnerOf({
+                entity: domain,
+                user: req.user,
+            });
+
+            if (req.ownsDomain || req.hasAll) {
                 return next();
             }
 
             return next({ status: 403 });
         } catch (err) {
+            log.error(err);
             if (req.hasAll) {
                 return next({ status: 404 });
             }
-            log.error(err);
+
             return next({ status: 403 });
         }
     },

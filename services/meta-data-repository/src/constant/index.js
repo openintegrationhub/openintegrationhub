@@ -20,6 +20,7 @@ module.exports = {
         WORKSPACE: 'WORKSPACE',
     },
     ROLE: {
+        TENANT_ADMIN: 'TENANT_ADMIN',
         ADMIN: 'ADMIN',
         USER: 'USER',
         SERVICE_ACCOUNT: 'SERVICE_ACCOUNT',

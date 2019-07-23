@@ -112,4 +112,57 @@ describe('domains', () => {
             .set(...global.user1)
             .expect(403);
     });
+
+    test('Updates details of a domain with a given ID.', async () => {
+        const data = {
+            name: 'foo',
+            description: 'bar',
+            public: true,
+        };
+
+        // create a domain
+        let result = (await request.post('/domains')
+            .set(...global.user1)
+            .send({ data })
+            .expect(200)).body;
+
+        // update domain
+        result = (await request.put(`/domains/${result.data.id}`)
+            .set(...global.user1)
+            .send({
+                data: {
+                    name: 'fooUpdate',
+                    description: 'bar',
+                    public: false,
+                },
+            })
+            .expect(200)).body;
+
+        expect(result.data.name).toEqual('fooUpdate');
+        expect(result.data.public).toBe(false);
+
+        // put as admin
+        await request.put(`/domains/${result.data.id}`)
+            .set(...global.admin)
+            .send({
+                data: {
+                    name: 'fooUpdate',
+                    description: 'bar',
+                    public: false,
+                },
+            })
+            .expect(200);
+
+        // put as non authorized
+        await request.put(`/domains/${result.data.id}`)
+            .set(...global.user2)
+            .send({
+                data: {
+                    name: 'fooUpdate',
+                    description: 'bar',
+                    public: false,
+                },
+            })
+            .expect(403);
+    });
 });
