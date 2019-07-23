@@ -157,11 +157,63 @@ Be compliant with the standardized HTTP method semantics summarized as follows:
 
 ### POST
 
-POST requests are idiomatically used to create single resources on a collection resource endpoint, 
+POST requests are idiomatically used to create single resources on a collection resource endpoint.
+
+* The response to a **POST**/**PUT**/**PATCH** request that creates or modifies an object should contain the resulting new object. The format of the response should be identical to what the service would return when **GET**ting the same object i.e. featuring the data and meta properties, e.g.:
+
+```json
+{
+  "data": {
+    "name": "My Flow",
+    "description": "This flow takes actions at regular invervals based on a set timer.",
+    "graph": {
+      "nodes": [
+        {
+          "id": "step_1",
+          "componentId": "5ca5c44c187c040010a9bb8b",
+        }
+      ]
+    }
+  }
+}
+meta: {}
+```
+
+* The request body of a **POST**/**PUT**/**PATCH** request should only contain the plain object itself, without further wrapping it inside a data object or similar. 
+
+  **Correct Example:**
+
+  ```json
+  {
+    "name": "My Flow",
+    "description": "This flow takes actions at regular invervals based on a set timer.",
+    "graph": {
+      "nodes": [
+        {
+          "id": "step_1",
+          "componentId": "5ca5c44c187c040010a9bb8b",
+        }
+      ]
+    }
+  }
+  ```
+
+  **Incorrect Example:**
+
+  ```json
+  {
+  "data": {
+    "name": "string",
+    "description": "string",
+    "value": {
+      "$id": "address",
+      "required": [
+        "street_address",
+  ```
 
 ### PUT
 
-PUT requests are used to update (in rare cases to create) entire resources - single or collection resources. 
+PUT requests are used to update (in rare cases to create) entire resources - single or collection resources.
 
 * PUT requests are usually applied to single resources, and not to collection resources, as this would imply replacing the entire collection
 * PUT requests are usually robust against non-existence of resources by implicitly creating before updating
