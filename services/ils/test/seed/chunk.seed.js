@@ -1,9 +1,12 @@
+const nock = require('nock');
+
 const chunk1 = {
   ilaId: '123asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: 'addresses',
-    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -35,10 +38,11 @@ const chunk1 = {
 
 const chunk2 = {
   ilaId: '123asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: 'addresses',
-    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -72,6 +76,7 @@ const chunk2 = {
 
 const chunk3 = {
   ilaId: '123asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'lastName',
   def: {
     domainId: 'addresses',
@@ -87,10 +92,11 @@ const chunk3 = {
 
 const chunk4 = {
   ilaId: 'asd4567',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'firstName',
   def: {
-    domainId: 'addresses',
-    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -122,10 +128,11 @@ const chunk4 = {
 
 const chunk5 = {
   ilaId: '',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: 'addresses',
-    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -158,10 +165,11 @@ const chunk5 = {
 
 const chunk6 = {
   ilaId: '987asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: 'addresses',
-    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -194,10 +202,11 @@ const chunk6 = {
 
 const chunk7 = {
   ilaId: '567qwe',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: 'addresses',
-    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -229,10 +238,11 @@ const chunk7 = {
 
 const chunk8 = {
   ilaId: '567qwe',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: 'addresses',
-    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -264,10 +274,11 @@ const chunk8 = {
 
 const chunk9 = {
   ilaId: '123asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'lastName',
   def: {
-    domainId: 'addresses',
-    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -301,10 +312,9 @@ const chunk9 = {
 
 const chunk10 = {
   ilaId: '123asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'lastName',
-  def: {
-    domainId: 'addresses',
-  },
+  def: {},
   payload: {
     firstName: 'John',
     lastName: 'Doe',
@@ -315,9 +325,10 @@ const chunk10 = {
 
 const chunk11 = {
   ilaId: '123asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'lastName',
   def: {
-    domainId: 'addresses',
+    domainId: '5d3031a20cbe7c00115c7d8f',
     schema: {},
   },
   payload: {
@@ -330,9 +341,10 @@ const chunk11 = {
 
 const chunk12 = {
   ilaId: '123asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'lastName',
   def: {
-    domainId: 'addresses',
+    domainId: '5d3031a20cbe7c00115c7d8f',
     uri: 'https://metadata.openintegrationhub.com',
     schema: 213456,
   },
@@ -343,6 +355,75 @@ const chunk12 = {
     salutation: 'Mr.',
   },
 };
+
+const createInvalidChunk = nock('http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address')
+  .get('')
+  .reply(200, {
+    data: {
+      id: '5d305efa0cbe7c00115c7d96',
+      refs: [],
+      name: 'Addresses',
+      domainId: '5d3031a20cbe7c00115c7d8f',
+      description: 'Person Model',
+      uri: '/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
+      value: {
+        $id: 'http://localhost:3000/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
+        firstName: 'string',
+        lastName: 'string',
+        email: 'string',
+        birthday: 'string',
+        required: [
+          'lastName',
+          'email',
+          'birthday',
+        ],
+      },
+      owners: [
+        {
+          id: '5d2da57e80304e0011388bfe',
+          type: 'USER',
+        },
+        {},
+      ],
+      createdAt: '2019-07-18T11:58:50.747Z',
+      updatedAt: '2019-07-18T12:38:38.322Z',
+    },
+  });
+
+const createValidChunk = nock('http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address')
+  .persist()
+  .get('')
+  .reply(200, {
+    data: {
+      id: '5d305efa0cbe7c00115c7d96',
+      refs: [],
+      name: 'Addresses',
+      domainId: '5d3031a20cbe7c00115c7d8f',
+      description: 'Person Model',
+      uri: '/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
+      value: {
+        $id: 'http://localhost:3000/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
+        firstName: 'string',
+        lastName: 'string',
+        email: 'string',
+        birthday: 'string',
+        required: [
+          'lastName',
+          'email',
+          'birthday',
+        ],
+      },
+      owners: [
+        {
+          id: '5d2da57e80304e0011388bfe',
+          type: 'USER',
+        },
+        {},
+      ],
+      createdAt: '2019-07-18T11:58:50.747Z',
+      updatedAt: '2019-07-18T12:38:38.322Z',
+    },
+  });
 
 module.exports = {
   chunk1,
@@ -357,4 +438,6 @@ module.exports = {
   chunk10,
   chunk11,
   chunk12,
+  createInvalidChunk,
+  createValidChunk,
 };

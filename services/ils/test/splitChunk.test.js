@@ -100,11 +100,12 @@ describe('SPLIT chunks', () => {
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(2);
     expect(res.body[0].data.payload.age).toEqual('');
-    expect(res.body[0].data.payload.email).toEqual('doe@mail.com');
+    expect(res.body[0].data.payload.email).toEqual('smith@mail.com');
     expect(res.body[1].data.payload.website).toEqual('');
     expect(res.body[1].data.payload.name).toEqual('Company Ltd.');
   });
 });
+
 
 describe('GET splitted chunks', () => {
   test('should return 200 and splitted chunks', async () => {
@@ -116,7 +117,7 @@ describe('GET splitted chunks', () => {
     expect(res.body.data[0].splitKey).toEqual('001');
     expect(res.body.data[1].splitKey).toEqual('001');
     expect(res.body.data[0].payload.firstName).toEqual('John');
-    expect(res.body.data[1].payload.lastName).toEqual('Doe');
+    expect(res.body.data[1].payload.lastName).toEqual('Smith');
   });
 
   test('should return 404 if no chunks with this key were found', async () => {

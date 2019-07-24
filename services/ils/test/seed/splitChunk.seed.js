@@ -58,9 +58,9 @@ const chunk3 = {
 const chunk4 = {
   ilaId: '123asd',
   payload: {
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'doe@mail.com',
+    firstName: 'Mark',
+    lastName: 'Smith',
+    email: 'smith@mail.com',
     name: 'Company Ltd.',
     logo: 'https://company.com/logo.png',
   },
