@@ -21,4 +21,4 @@ RUN chown -R node:node .
 
 USER node
 
-CMD ["npm", "start"]
+CMD npm run start
