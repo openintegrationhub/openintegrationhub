@@ -14,7 +14,7 @@ Stores master data records.
 
 ## API docs
 
-[http://data-hub.openintegrationhub.com/api-docs](http://component-repository.openintegrationhub.com/api-docs).
+[http://data-hub.openintegrationhub.com/api-docs](http://data-hub.openintegrationhub.com/api-docs).
 
 ## Prerequisites
 
