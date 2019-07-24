@@ -1,6 +1,6 @@
 /* eslint no-underscore-dangle: "off" */
 /* eslint no-unused-expressions: "off" */
-
+const request = require('request-promise');
 const Chunk = require('../../models/chunk');
 
 /**
@@ -149,4 +149,34 @@ async function splitChunk(splitSchema, payload, ilaId) {
   return response;
 }
 
-module.exports = { createChunk, updateChunk, splitChunk };
+/**
+ * @desc Fetch Schema from OIH MetaData Repository
+ *
+ * @param {String} token - IAM token
+ * @param {String} domainId - ID of the domain to retrieve schema of
+ * @param {String} schemaUri - name of the schema
+ * @return {Object} - a retrieved schema from MDR
+ */
+async function fetchSchema(token, domainId, schemaUri) {
+  const MDR_URL = 'http://metadata.openintegrationhub.com/api/v1/domains';
+  const options = {
+    method: 'GET',
+    uri: `${MDR_URL}/${domainId}/schemas/${schemaUri}`,
+    json: true,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    resolveWithFullResponse: true,
+  };
+
+  try {
+    const response = await request(options);
+    return response;
+  } catch (e) {
+    return e;
+  }
+}
+
+module.exports = {
+  createChunk, updateChunk, splitChunk, fetchSchema,
+};

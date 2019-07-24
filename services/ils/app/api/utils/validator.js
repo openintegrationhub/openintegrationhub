@@ -1,5 +1,4 @@
 /* eslint no-mixed-operators: "off" */
-const URL = require('url').URL;
 
 /**
  * @desc Check if schema is invalid
