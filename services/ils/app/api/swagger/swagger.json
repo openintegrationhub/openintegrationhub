@@ -167,6 +167,10 @@
             "type": "string",
             "example": "123asd"
           },
+          "token": {
+            "type": "string",
+            "example": "WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS"
+          },
           "cid": {
             "type": "string",
             "example": "email"
@@ -176,11 +180,11 @@
             "properties": {
               "domainId": {
                 "type": "string",
-                "example": "addresses"
+                "example": "5d3031a20cbe7c00115c7d8f"
               },
-              "uri": {
+              "schemaUri": {
                 "type": "string",
-                "example": "http://metadata.openintegrationhub.com/domains/addresses/schema/uri"
+                "example": "address"
               },
               "schema": {
                 "type": "object",
