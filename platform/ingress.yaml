@@ -68,3 +68,9 @@ spec:
       - backend:
           serviceName: data-hub-service
           servicePort: 1234
+  - host: ils.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: ils
+          servicePort: 3003
