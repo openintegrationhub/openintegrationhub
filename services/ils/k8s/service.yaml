@@ -10,6 +10,6 @@ spec:
   selector:
       app: ils
   ports:
-    - port: 3002
-      targetPort: 3002
+    - port: 3003
+      targetPort: 3003
       protocol: TCP
