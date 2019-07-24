@@ -2,7 +2,7 @@
 /* eslint no-unused-expressions: "off" */
 /* eslint consistent-return: "off" */
 /* eslint no-await-in-loop: "off" */
-/* eslint max-len: ["error", { "code": 120 }] */
+/* eslint max-len: ["error", { "code": 140 }] */
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -13,13 +13,14 @@ const router = express.Router();
 // Ajv schema validator
 const Ajv = require('ajv');
 const chunkSchema = require('../../models/schemas/chunk.json');
-// const payloadSchema = require('../../models/schemas/payload.json');
+
 const ajv = new Ajv({ allErrors: true, jsonPointers: true });
 
 const chunkValidator = ajv.compile(chunkSchema);
-// const payloadValidator = ajv.compile(payloadSchema);
-const { validateSchema, validateUri, validateSplitSchema } = require('../utils/validator');
-const { createChunk, splitChunk, updateChunk } = require('../utils/helpers');
+const { validateSchema, validateSplitSchema } = require('../utils/validator');
+const {
+  createChunk, fetchSchema, splitChunk, updateChunk,
+} = require('../utils/helpers');
 
 // Models
 const Chunk = require('../../models/chunk');
@@ -44,21 +45,36 @@ router.get('/:ilaId', jsonParser, async (req, res) => {
   key ? selector = { ilaId, splitKey: key } : selector = { ilaId, valid: true };
 
   if (!ilaId || ilaId === 'undefined' || '') {
-    return res.status(400).send({ errors: [{ message: 'Integration Layer Adapter ID required!', code: 400 }] });
+    return res.status(400).send(
+      {
+        errors:
+        [{ message: 'Integration Layer Adapter ID required!', code: 400 }],
+      },
+    );
   }
 
   try {
     const chunks = await Chunk.find(selector);
 
     if (!chunks || chunks.length === 0) {
-      return res.status(404).send({ errors: [{ message: 'No chunks found!', code: 404 }] });
+      return res.status(404).send(
+        {
+          errors:
+            [{ message: 'No chunks found!', code: 404 }],
+        },
+      );
     }
 
     res.status(200).send({ data: chunks, meta: { total: chunks.length } });
   } catch (err) {
     log.error(err);
     // istanbul ignore next
-    return res.status(500).send({ errors: [{ message: err }] });
+    return res.status(500).send(
+      {
+        errors:
+          [{ message: err }],
+      },
+    );
   }
 });
 
@@ -71,53 +87,84 @@ router.get('/:ilaId', jsonParser, async (req, res) => {
  */
 router.post('/', jsonParser, async (req, res) => {
   const {
-    cid, payload, ilaId, def,
+    cid, payload, ilaId, def, token,
   } = req.body;
-
-  const { schema } = req.body.def;
-  const schemaUri = req.body.def.uri;
+  const { domainId, schema, schemaUri } = req.body.def;
   const invalidInputSchema = validateSchema(schema);
+
   let payloadValidator;
-  let validSchemaUri;
 
-  if (schemaUri) {
-    validSchemaUri = validateUri(req.body.def.uri);
+  if (!token) {
+    return res.status(401).send(
+      {
+        errors:
+        [{ message: 'Service token not provided!', code: 401 }],
+      },
+    );
   }
 
-  if (!schemaUri && !schema) {
-    return res.status(404).send('URI or schema must be specified!');
+  if ((!domainId && !schemaUri && !schema)
+      || ((!domainId && schemaUri) || (domainId && !schemaUri))) {
+    return res.status(404).send(
+      {
+        errors:
+          [{ message: 'Domain ID and Schema URI or custom schema must be specified!', code: 404 }],
+      },
+    );
   }
 
-  if (invalidInputSchema && !schemaUri) {
-    return res.status(400).send('Schema is invalid and schema uri is not provided!');
+  // Fetch schema from MDR
+  if (domainId && schemaUri) {
+    const domainSchema = await fetchSchema(token, domainId, schemaUri);
+
+    if (domainSchema.statusCode === 404) {
+      return res.status(domainSchema.statusCode).send(
+        {
+          errors:
+          [{ message: 'DomainId or schemaUri not found!', code: domainSchema.statusCode }],
+        },
+      );
+    }
+
+    if (domainSchema.statusCode !== 200) {
+      return res.status(domainSchema.statusCode).send(
+        {
+          errors:
+            [{ message: domainSchema.message, code: domainSchema.statusCode }],
+        },
+      );
+    }
+
+    payloadValidator = ajv.compile(domainSchema.body.data.value);
   }
 
-
-  if (invalidInputSchema && !validSchemaUri) {
-    return res.status(400).send('Neither Schema nor uri are valid!');
+  if (!domainId && !schemaUri && invalidInputSchema) {
+    return res.status(400).send('Schema is invalid!');
   }
 
-  if ((invalidInputSchema && schemaUri && validSchemaUri)
-    || (!schema && schemaUri && validSchemaUri)) {
-    // TODO: Get a model from OIH Meta Data Repository and then save the chunk
-    // payloadValidator = ajv.compile(schema);
-    console.log('OIH Meta Data Repository');
-    return res.status(200).send('Get schema from OIH Meta Data Repository');
-  }
-
-  if (schema && !invalidInputSchema) {
+  if (schema) {
     payloadValidator = ajv.compile(schema);
   }
 
   const valid = chunkValidator(req.body);
+  if (!valid) {
+    return res.status(400).send(
+      {
+        errors:
+         [{ message: 'Input does not match schema!', code: 400 }],
+      },
+    );
+  }
+
   const validPayload = Object.prototype.hasOwnProperty.call(payload, req.body.cid);
 
   if (!validPayload) {
-    return res.status(400).send({ errors: [{ message: 'Payload does not contain cid!', code: 400 }] });
-  }
-
-  if (!valid) {
-    return res.status(400).send({ errors: [{ message: 'Input does not match schema!', code: 400 }] });
+    return res.status(400).send(
+      {
+        errors:
+          [{ message: 'Payload does not contain cid!', code: 400 }],
+      },
+    );
   }
 
   const selector = `payload.${cid}`;
@@ -145,7 +192,12 @@ router.post('/', jsonParser, async (req, res) => {
   } catch (err) {
     log.error(err);
     // istanbul ignore next
-    return res.status(500).send({ errors: [{ message: err }] });
+    return res.status(500).send(
+      {
+        errors:
+          [{ message: err }],
+      },
+    );
   }
 });
 
@@ -177,6 +229,5 @@ router.post('/split', jsonParser, async (req, res) => {
 
   res.status(status).send(splittedChunk);
 });
-
 
 module.exports = router;

@@ -6,30 +6,17 @@
       "type": "string",
       "minLength": 1
     },
+    "token": {
+      "type": "string",
+      "minLength": 10
+    },
     "cid": {
       "type": "string",
       "minLength": 1
     },
     "def": {
       "type": "object",
-      "properties": {
-        "domainId": {
-          "type": "string"
-        }
-      },
-      "anyOf": [
-        {
-          "uri": {
-            "type": "string"
-          }
-        },
-        {
-          "schema": {
-            "type": "object",
-            "properties": {}
-          }
-        }
-      ]
+      "properties": {}
     },
     "payload": {
       "type": "object",
@@ -42,6 +29,7 @@
   },
   "required": [
     "ilaId",
+    "token",
     "cid",
     "def",
     "payload"
