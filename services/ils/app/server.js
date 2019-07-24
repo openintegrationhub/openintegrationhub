@@ -69,7 +69,7 @@ class Server {
   }
 
   listen(port) {
-    const cport = typeof port !== 'undefined' ? port : 3002;
+    const cport = typeof port !== 'undefined' ? port : 3003;
     log.info(`Server is running on ${cport}`);
     return this.app.listen(cport);
   }

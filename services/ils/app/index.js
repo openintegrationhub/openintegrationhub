@@ -14,7 +14,7 @@ const mainServer = new Server();
     mainServer.setupSwagger();
 
     if (!module.parent) {
-      mainServer.listen(process.env.PORT || 3002);
+      mainServer.listen(process.env.PORT || 3003);
     } else {
       mainServer.listen();
     }
