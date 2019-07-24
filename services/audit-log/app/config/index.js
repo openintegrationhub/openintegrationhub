@@ -44,6 +44,8 @@ const general = {
     'flowrepo.flow.modified',
     'flowrepo.flow.deleted',
   ],
+
+  gdprEventName: 'iam.user.deleted',
 };
 
 module.exports = general;

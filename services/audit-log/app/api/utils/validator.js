@@ -2,7 +2,6 @@
 // listen and receive events
 
 const Ajv = require('ajv');
-
 const config = require('../../config/index');
 const log = require('../../config/logger');
 
@@ -34,5 +33,19 @@ const validate = async function (msg) { // eslint-disable-line
   }
 };
 
+const gdprAnonymise = async function (msg) {
+  if (!msg || !msg.id) {
+    log.warn('Received gdpr event without ID');
+    return;
+  }
 
-module.exports = { validate };
+  try {
+    await storage.anonymise(msg.id);
+    log.info('Anonymisation finished.');
+  } catch (e) {
+    log.error(`Anonymisation failed: ${e}`);
+  }
+};
+
+
+module.exports = { validate, gdprAnonymise };

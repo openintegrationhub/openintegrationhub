@@ -95,6 +95,7 @@ const getAnyLogById = logId => new Promise((resolve) => {
     });
 });
 
+// Saves an event
 const addEvent = data => new Promise((resolve) => {
   const newEvent = new Log(data);
   newEvent.save()
@@ -106,9 +107,22 @@ const addEvent = data => new Promise((resolve) => {
     });
 });
 
+// Anonymises a user id according to gdpr guidelines
+const anonymise = id => new Promise((resolve) => {
+  Log.update(
+    { 'payload.id': id },
+    { $set: { 'payload.id': 'XXXXXXXXXX' } },
+  ).then((doc) => {
+    resolve(doc._doc);
+  }).catch((err) => {
+    log.error(err);
+  });
+});
+
 
 module.exports = {
   addEvent,
   getAnyLogById,
   getLogs,
+  anonymise,
 };
