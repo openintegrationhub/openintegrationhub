@@ -62,3 +62,9 @@ spec:
       - backend:
           serviceName: attachment-storage-service
           servicePort: 3002
+  - host: data-hub.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: data-hub-service
+          servicePort: 1234
