@@ -1,0 +1,298 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is the API for the Open Integration Hub Microservice \"Integration Layer Service\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "version": "0.0.1",
+    "title": "Integration Layer Service",
+    "termsOfService": "http://openintegrationhub.de/terms/",
+    "contact": {
+      "email": "syanev@wice.de"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags": [
+    {
+      "name": "chunks",
+      "description": "Chunks management",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://openintegrationhub.de"
+      }
+    }
+  ],
+  "paths": {
+    "/chunks/{ilaId}": {
+      "get": {
+        "x-swagger-router-controller": "chunk",
+        "tags": [
+          "chunks"
+        ],
+        "summary": "Get chunk",
+        "description": "Get a chunk by ilaId",
+        "operationId": "",
+        "parameters": [
+          {
+            "name": "ilaId",
+            "in": "path",
+            "description": "ilaId of Integration Layer Adapter",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "Split key identifier",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/chunks": {
+      "post": {
+        "x-swagger-router-controller": "chunk",
+        "tags": [
+          "chunks"
+        ],
+        "summary": "Create chunk",
+        "description": "Create a chunk object",
+        "operationId": "",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addChunk"
+              }
+            }
+          },
+          "description": "",
+          "required": true
+        }
+      }
+    },
+    "/chunks/split": {
+      "post": {
+        "x-swagger-router-controller": "chunk",
+        "tags": [
+          "chunks"
+        ],
+        "summary": "Split chunk",
+        "description": "Split a chunk object in smaller chunks",
+        "operationId": "",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/splitChunk"
+              }
+            }
+          },
+          "description": "",
+          "required": true
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about the Integration Layer Service",
+    "url": "https://github.com/openintegrationhub"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3002/"
+    },
+    {
+      "url": "http://integration-layer.openintegrationhub.com/"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "addChunk": {
+        "type": "object",
+        "properties": {
+          "ilaId": {
+            "type": "string",
+            "example": "123asd"
+          },
+          "token": {
+            "type": "string",
+            "example": "WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS"
+          },
+          "cid": {
+            "type": "string",
+            "example": "email"
+          },
+          "def": {
+            "type": "object",
+            "properties": {
+              "domainId": {
+                "type": "string",
+                "example": "5d3031a20cbe7c00115c7d8f"
+              },
+              "schemaUri": {
+                "type": "string",
+                "example": "address"
+              },
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "email": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "example": "John"
+              },
+              "lastName": {
+                "type": "string",
+                "example": "Doe"
+              },
+              "email": {
+                "type": "string",
+                "example": "doe@mail.com"
+              }
+            }
+          }
+        }
+      },
+      "splitChunk": {
+        "type": "object",
+        "properties": {
+          "ilaId": {
+            "type": "string",
+            "example": "123asd"
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "example": "John"
+              },
+              "lastName": {
+                "type": "string",
+                "example": "Doe"
+              },
+              "email": {
+                "type": "string",
+                "example": "doe@mail.com"
+              },
+              "name": {
+                "type": "string",
+                "example": "Company Ltd."
+              },
+              "logo": {
+                "type": "string",
+                "example": "https://company.com/logo.png"
+              }
+            }
+          },
+          "splitSchema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "splitKey": {
+                      "type": "string",
+                      "example": "001"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "12345678"
+                    }
+                  }
+                },
+                "payload": {
+                  "type": "object",
+                  "properties": {
+                    "firstName": {
+                      "type": "string"
+                    },
+                    "lastName": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
