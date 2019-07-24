@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus');
 const config = require('../../config/index');
 const log = require('../../config/logger');
-const { validate, gdprAnonymise } = require('./validator');
+const { saveLog, gdprAnonymise } = require('./handlers');
 
 const logger = bunyan.createLogger({ name: 'auditlogs' });
 
@@ -24,7 +24,7 @@ async function connectQueue() {
         log.error('Received event while DB was unready. Retrying...');
         await event.nack();
       } else {
-        await validate(event.payload);
+        await saveLog(event.toJSON());
         await event.ack();
       }
     }));

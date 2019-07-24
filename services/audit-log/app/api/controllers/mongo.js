@@ -5,7 +5,6 @@
 const mongoose = require('mongoose');
 const log = require('../../config/logger');
 const Log = require('../../models/log');
-const config = require('../../config/index');
 
 // Retrieves all logs for authorized owner or for admin irrespective of ownership.
 
@@ -20,18 +19,14 @@ const getLogs = async ( // eslint-disable-line
 ) => new Promise(async (resolve) => {
   const qry = { $and: [] };
 
-  if (!config.oihAdminRoles.includes(user.role)) {
-    qry['payload.tenant'] = user.currentContext.tenant;
-  }
-
   // Add all filtered fields to query
   const filterFields = Object.keys(filters);
   const { length } = filterFields;
   if (length > 0) {
     let i;
     for (i = 0; i < length; i += 1) {
-      if (filterFields[i] === 'tenant') {
-        qry['payload.tenant'] = filters.tenant;
+      if (filterFields[i] === 'service') {
+        qry['headers.serviceName'] = filters.service;
       } else {
         qry[filterFields[i]] = filters[filterFields[i]];
       }

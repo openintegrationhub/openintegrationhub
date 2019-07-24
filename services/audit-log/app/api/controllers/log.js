@@ -25,8 +25,8 @@ router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
   let searchString = '';
 
   // const sortableFields = { timeStamp: 1, service: 1 };
-  const sortField = 'timeStamp';
-  const sortOrder = '1';
+  const sortField = 'createdAt';
+  const sortOrder = '-1';
 
   // page[size]
   if (req.query.page && (req.query.page.size !== undefined && pageSize > 1)) {
@@ -37,19 +37,9 @@ router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
     pageNumber = parseInt(req.query.page.number, 10);
   }
 
-  // filter[tenant]
-  if (req.query.filter && req.query.filter.tenant !== undefined) {
-    filters.tenant = req.query.filter.tenant;
-  }
-
   // filter[service]
   if (req.query.filter && req.query.filter.service !== undefined) {
     filters.service = req.query.filter.service;
-  }
-
-  // filter[nameSpace]
-  if (req.query.filter && req.query.filter.nameSpace !== undefined) {
-    filters.nameSpace = req.query.filter.nameSpace;
   }
 
   // Alternative sort orders, currently disabled.
