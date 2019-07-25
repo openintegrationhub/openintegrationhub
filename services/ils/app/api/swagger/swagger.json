@@ -155,7 +155,7 @@
       "url": "http://localhost:3002/"
     },
     {
-      "url": "http://integration-layer.openintegrationhub.com/"
+      "url": "http://ils.openintegrationhub.com/"
     }
   ],
   "components": {
