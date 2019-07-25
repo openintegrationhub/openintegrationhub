@@ -13,7 +13,7 @@ const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
 const { reportHealth } = require('../app/utils/eventBus');
-const { flowStarted, flowStopped } = require('../app/utils/handlers');
+const { flowStarted, flowStopped, gdprAnonymise } = require('../app/utils/handlers');
 const Flow = require('../app/models/flow');
 
 const Server = require('../app/server');
@@ -837,6 +837,14 @@ describe('Flow Operations', () => {
 
     const flow = await Flow.findOne({ _id: flowId1 }).lean();
     expect(flow.status).toEqual('inactive');
+  });
+
+  test('handle a user delete event', async () => {
+    await gdprAnonymise('dude');
+
+    const flow = await Flow.findOne({ _id: flowId1 }).lean();
+    expect(flow.owners).toHaveLength(1);
+    expect(flow.owners.find(owner => (owner.id === 'dude'))).toEqual(undefined);
   });
 
   test('should refuse to stop an inactive flow', async () => {

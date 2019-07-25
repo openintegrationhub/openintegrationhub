@@ -2,7 +2,7 @@ const bunyan = require('bunyan');
 const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/event-bus');
 const config = require('../config/index');
 const log = require('../config/logger');
-const { flowStarted, flowStopped } = require('./handlers');
+const { flowStarted, flowStopped, gdprAnonymise } = require('./handlers');
 
 const logger = bunyan.createLogger({ name: 'events' });
 
@@ -36,6 +36,18 @@ async function connectQueue() {
       await event.nack();
     }
   });
+
+  await eventBus.subscribe(config.gdprEventName, async (event) => {
+    log.info('Anonymising user data...');
+    const response = await gdprAnonymise(event.payload.id);
+
+    if (response === true) {
+      await event.ack();
+    } else {
+      await event.nack();
+    }
+  });
+
 
   await eventBus.connect();
 }
