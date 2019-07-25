@@ -12,7 +12,7 @@
     "coverage": "yarn test --coverage",
     "lint_fix": "eslint app test --fix",
     "build": "echo \"No Build defined\"",
-    "build:docker": "docker build -t openintegrationhub/ils:${VERSION} -f Dockerfile ../../"
+    "build:docker": "docker build -t openintegrationhub/ils:${VERSION} -f Dockerfile ."
   },
   "dependencies": {
     "ajv": "^6.10.0",
