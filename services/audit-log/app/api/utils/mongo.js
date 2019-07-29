@@ -13,7 +13,6 @@ const getLogs = async ( // eslint-disable-line
   user,
   pageSize,
   pageNumber,
-  searchString,
   filters,
   sortField,
   sortOrder,
@@ -38,28 +37,12 @@ const getLogs = async ( // eslint-disable-line
     for (i = 0; i < length; i += 1) {
       if (filterFields[i] === 'service') {
         qry['headers.serviceName'] = filters.service;
+      } else if (filterFields[i] === 'name') {
+        qry['headers.name'] = filters.name;
       } else {
         qry[`payload.${filterFields[i]}`] = filters[filterFields[i]];
       }
     }
-  }
-
-  if (searchString !== '') {
-    const rx = new RegExp(searchString);
-    qry.$and.push({
-      $or: [
-        {
-          'payload.action': {
-            $regex: rx,
-          },
-        },
-        {
-          'payload.details': {
-            $regex: rx,
-          },
-        },
-      ],
-    });
   }
 
   // , sortField, sortOrder

@@ -20,7 +20,7 @@ module.exports = {
       memberships: [
         {
           role: 'TENANT_GUEST',
-          tenant: '2',
+          tenant: 'TestTenant',
           permissions: ['logs.read', 'logs.push'],
           active: true,
         },

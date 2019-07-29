@@ -19,10 +19,9 @@ const log = require('../../config/logger'); // eslint-disable-line
 router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
   let pageSize = 10;
   let pageNumber = 1;
+  let filters = {};
 
-  const filters = {};
-
-  let searchString = '';
+  if (req.query.filter) filters = Object.assign(req.query.filter);
 
   // const sortableFields = { timeStamp: 1, service: 1 };
   const sortField = 'createdAt';
@@ -37,43 +36,10 @@ router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
     pageNumber = parseInt(req.query.page.number, 10);
   }
 
-  // filter[service]
-  if (req.query.filter && req.query.filter.service !== undefined) {
-    filters.service = req.query.filter.service;
-  }
-
-  // Alternative sort orders, currently disabled.
-  // // sort timeStamp, service  Prefix -
-  // if (req.query.sort !== undefined) {
-  //   const array = req.query.sort.split('-');
-  //   if (array.length === 1) {
-  //     sortField = array[0];
-  //     sortOrder = '1';
-  //   } else if (array.length === 2) {
-  //     sortField = array[1];
-  //     sortOrder = '-1';
-  //   } else {
-  //     error = true;
-  //   }
-  //   if (!(sortField in sortableFields)) error = true;
-  //
-  //   if (error && !res.headersSent) {
-  //     res.status(400).send('Invalid sort parameter');
-  //     return;
-  //   }
-  // }
-
-  // search
-  if (req.query.search !== undefined) {
-    searchString = req.query.search.replace(/[^a-z0-9\p{L}\-_\s]/img, '');
-    searchString = searchString.replace(/(^[\s]+|[\s]$)/img, '');
-  }
-
 
   const response = await storage.getLogs(req.user,
     pageSize,
     pageNumber,
-    searchString,
     filters,
     sortField,
     sortOrder);

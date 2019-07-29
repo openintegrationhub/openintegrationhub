@@ -130,6 +130,25 @@ describe('Log Operations', () => {
     expect(j.data[0]).toHaveProperty('_id');
   });
 
+  test('should get all logs, restricted by user/tenant', async () => {
+    const res = await request
+      .get('/logs')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+      })
+      .set('Authorization', 'Bearer userToken');
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveLength(1);
+    expect(j.data[0]).toHaveProperty('_id');
+    expect(j.data[0].payload.tenant).toEqual('TestTenant');
+  });
+
 
   test('should get all logs, filtered by service', async () => {
     const res = await request
@@ -151,14 +170,13 @@ describe('Log Operations', () => {
     expect(j.data[0].headers.serviceName).toEqual('iam');
   });
 
-
-  test('should get all logs, with a search', async () => {
+  test('should get all logs, filtered by tenant', async () => {
     const res = await request
       .get('/logs')
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        search: 'TestTenant',
+        'filter[tenant]': 'TestTenant',
       })
       .set('Authorization', 'Bearer adminToken');
 
@@ -169,6 +187,40 @@ describe('Log Operations', () => {
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(1);
     expect(j.data[0]).toHaveProperty('_id');
-    expect(j.data[0].service).toEqual('YetAnotherService');
+    expect(j.data[0].payload.tenant).toEqual('TestTenant');
+  });
+
+  test('should get all logs, filtered by name', async () => {
+    const res = await request
+      .get('/logs')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+        'filter[name]': 'iam.user.created',
+      })
+      .set('Authorization', 'Bearer adminToken');
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveLength(1);
+    expect(j.data[0]).toHaveProperty('_id');
+    expect(j.data[0].payload.username).toEqual('test@org.de');
+  });
+
+  test('should find no logs when filtering over an absent attribute', async () => {
+    const res = await request
+      .get('/logs')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+        'filter[keks]': 'Schokorosine',
+      })
+      .set('Authorization', 'Bearer adminToken');
+
+    expect(res.status).toEqual(404);
+    expect(res.text).not.toBeNull();
   });
 });
