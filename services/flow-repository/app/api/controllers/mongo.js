@@ -227,6 +227,20 @@ const deleteFlow = (flowId, user) => new Promise((resolve) => {
     });
 });
 
+const anonymise = userId => new Promise((resolve) => {
+  Flow.update(
+    { 'owners.id': userId },
+    { $pull: { owners: { id: userId } } },
+    { multi: true },
+  )
+    .then((response) => {
+      resolve(response);
+    })
+    .catch((err) => {
+      log.error(err);
+    });
+});
+
 
 module.exports = {
   getFlows,
@@ -238,4 +252,5 @@ module.exports = {
   updateFlow,
   getFlowById,
   deleteFlow,
+  anonymise,
 };

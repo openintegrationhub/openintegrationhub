@@ -7,17 +7,12 @@ const { Schema } = mongoose;
 
 // Define schema
 const log = new Schema({
-  service: String,
-  timeStamp: String,
-  nameSpace: String,
-  payload: {
-    tenant: String,
-    source: String,
-    object: String,
-    action: String,
-    subject: String,
-    details: String,
+  headers: {
+    createdAt: { type: Date, default: Date.now },
+    serviceName: String,
+    name: String,
   },
+  payload: Object,
 },
 { collection: 'logs' });
 

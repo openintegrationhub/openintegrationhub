@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "description": "This is the API for the Open Integration Hub Microservice \"Audit Log\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "title": "Audit Log",
     "termsOfService": "http://openintegrationhub.de/terms/",
     "contact": {
@@ -38,7 +38,7 @@
           "logs"
         ],
         "summary": "Retrieve all logs",
-        "description": "This will only return Logs that pertain to the current user's tenant.",
+        "description": "This will only return Logs that pertain to the current user's tenant. OIH admins can see all logs. The 'filter' query parameter can be used with arbitrary keys beyond those listed here, which will be matched within the events' payload object.",
         "operationId": "getLogs",
         "parameters": [
           {
@@ -62,7 +62,7 @@
           {
           "name": "filter[tenant]",
           "in": "query",
-          "description": "Filter by tenant.",
+          "description": "Filter by tenant. Only available to admins.",
           "required": false,
           "schema": {
             "type": "string"
@@ -72,24 +72,6 @@
           "name": "filter[service]",
           "in": "query",
           "description": "Filter by service.",
-          "required": false,
-          "schema": {
-            "type": "string"
-            }
-          },
-          {
-          "name": "filter[nameSpace]",
-          "in": "query",
-          "description": "Filter by namespace.",
-          "required": false,
-          "schema": {
-            "type": "string"
-            }
-          },
-          {
-          "name": "search",
-          "in": "query",
-          "description": "Search logs by a word or a phrase contained in the log details or action (case-insensitive). Behavior is similar to operator LIKE in SQL but case insensitive.",
           "required": false,
           "schema": {
             "type": "string"
@@ -284,59 +266,42 @@
           {
             "type": "object",
             "required": [
-              "service",
-              "timeStamp",
-              "nameSpace",
+              "headers",
               "payload"
             ],
             "properties": {
-              "service": {
-                "type": "string",
-                "description": "Name of the service that spawned the log",
-                "example": "MyService"
-              },
-              "timeStamp": {
-                "type": "string",
-                "example": "1234567"
-              },
-              "nameSpace": {
-                "type": "string",
-                "description": "The kubernetes namespace that the spawning service is in",
-                "example": "dev-oih-ns"
+              "headers": {
+                "type": "object",
+                "required": [
+                  "serviceName",
+                  "createdAt",
+                  "name"
+                ],
+                "properties": {
+                  "serviceName": {
+                    "type": "string",
+                    "description": "The name of the service that spawned this event",
+                    "example": "flow-repository"
+                  },
+                  "createdAt": {
+                    "type": "date",
+                    "description": "The time stamp when the event was spawned",
+                    "example": "1564408888"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the event",
+                    "example": "flowrepo.flow.created"
+                  }
+                }
               },
               "payload": {
                 "type": "object",
-                "properties": {
-                  "tenant": {
-                    "type": "string",
-                    "description": "The tenant of the user or resource involved in this log, if applicable",
-                    "example": "12sfeasd978"
-                  },
-                  "source": {
-                    "type": "string",
-                    "description": "The source of the cause of this log, such as a user of service",
-                    "example": "ExampleUser"
-                  },
-                  "object": {
-                    "type": "string",
-                    "description": "The general type or class of object that was affected",
-                    "example": "flow"
-                  },
-                  "action": {
-                    "type": "string",
-                    "description": "The type of action that was taken",
-                    "example": "createFlow"
-                  },
-                  "subject": {
-                    "type": "string",
-                    "description": "The unique id of the object that was affected, if applicable",
-                    "example": "ExampleFlow"
-                  },
-                  "details": {
-                    "type": "string",
-                    "description": "A human-readable detailed description",
-                    "example": "A flow with the id ExampleFlow was created"
-                  }
+                "description": "An arbitrary JSON object containing the event data",
+                "example": {
+                  "user": "TestUser",
+                  "tenant": "TestTenant",
+                  "flowId": "TestFlow"
                 }
               }
             }

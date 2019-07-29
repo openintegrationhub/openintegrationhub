@@ -12,7 +12,8 @@ const port = process.env.PORT || 3007;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
-const validator = require('../app/api/utils/validator.js');
+const { saveLog, gdprAnonymise } = require('../app/api/utils/handlers.js');
+const Log = require('../app/models/log');
 const Server = require('../app/server');
 
 const mainServer = new Server();
@@ -24,59 +25,38 @@ const guestId = token.guestToken.value.sub;
 let app;
 
 const log1 = {
-  service: 'SomeService',
-  timeStamp: '1234',
-  nameSpace: 'innerSpace',
+  headers: {
+    name: 'iam.user.created',
+    serviceName: 'iam',
+    createdAt: '1563959057790',
+  },
   payload: {
-    tenant: '1',
-    source: '200',
-    object: 'x',
-    action: 'noaction',
-    subject: 'Test subject',
-    details: 'Here goes the description.',
+    id: 'abcdef12345',
+    username: 'test@org.de',
   },
 };
 
 const log2 = {
-  service: 'SomeOtherService',
-  timeStamp: '1235',
-  nameSpace: 'outerSpace',
+  headers: {
+    name: 'flowrepo.flow.created',
+    serviceName: 'flow-repository',
+    createdAt: '1563959094720',
+  },
   payload: {
-    tenant: '2',
-    source: '400',
-    object: 'y',
-    action: 'noaction',
-    subject: 'Test subject',
-    details: 'Here goes a completely different description.',
+    flowId: 'dhi38fj3oz9fj3',
+    tenant: 'TestTenant',
   },
 };
 
 const log3 = {
-  service: 'YetAnotherService',
-  timeStamp: '1236',
-  nameSpace: 'warpSpace',
-  payload: {
-    tenant: '4',
-    source: '400',
-    object: 'y',
-    action: 'noaction',
-    subject: 'Test subject',
-    details: 'This is not actually a description.',
+  headers: {
+    name: 'flowrepo.flow.started',
+    serviceName: 'flow-repository',
+    createdAt: '1563994057792',
   },
-};
-
-
-const invalidSchema = {
-  service: 'InvalidService',
-  timeSagagtamp: '1236',
   payload: {
-    tenant: '4',
-    source: '400',
-    additionalKey: 'ADBljhasf',
-    object: 'y',
-    action: 'noaction',
-    subject: 'Test subject',
-    details: 'This should be refused by the validator.',
+    user: 'abcdef12345',
+    flowId: 'dhi38fj3oz9fj3',
   },
 };
 
@@ -87,10 +67,8 @@ beforeAll(async () => {
   mainServer.setupSwagger();
   await mainServer.setup(mongoose);
   app = mainServer.listen();
-  // Pass on messages to the validator as if they had been received by the receive module
-  await validator.validate(log1);
-  await validator.validate(log2);
-  await validator.validate(invalidSchema);
+  await saveLog(log1);
+  await saveLog(log2);
 });
 
 afterAll(async () => {
@@ -111,14 +89,15 @@ describe('Login Security', () => {
     const res = await request.get('/logs');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors).toHaveLength(1);
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
   test('should not be able to HTTP POST logs without login', async () => {
     const res = await request.post('/logs');
     expect(res.status).toEqual(401);
-    expect(res.text).not.toHaveLength(0);
-    expect(res.text).toEqual('Missing authorization header.');
+    expect(res.body.errors).toHaveLength(1);
+    expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 });
 
@@ -134,7 +113,7 @@ describe('Log Operations', () => {
     expect(res.text).not.toBeNull();
   });
 
-  test('should get all logs for an admin', async () => {
+  test('should get all logs', async () => {
     const res = await request
       .get('/logs')
       .query({
@@ -152,19 +131,13 @@ describe('Log Operations', () => {
     expect(j.data[0]).toHaveProperty('_id');
   });
 
-  test('should not show the logs to a user whose tenant has no logs', async () => {
+  test('should get all logs, restricted by user/tenant', async () => {
     const res = await request
       .get('/logs')
-      .set('Authorization', 'Bearer guestToken');
-
-    expect(res.status).toEqual(404);
-    expect(res.text).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No logs found');
-  });
-
-  test('should show only logs of the same tenant to a user', async () => {
-    const res = await request
-      .get('/logs')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+      })
       .set('Authorization', 'Bearer userToken');
 
     expect(res.status).toEqual(200);
@@ -174,7 +147,28 @@ describe('Log Operations', () => {
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(1);
     expect(j.data[0]).toHaveProperty('_id');
-    expect(j.data[0].service).toEqual('SomeOtherService');
+    expect(j.data[0].payload.tenant).toEqual('TestTenant');
+  });
+
+
+  test('should get all logs, filtered by service', async () => {
+    const res = await request
+      .get('/logs')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+        'filter[service]': 'iam',
+      })
+      .set('Authorization', 'Bearer adminToken');
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveLength(1);
+    expect(j.data[0]).toHaveProperty('_id');
+    expect(j.data[0].headers.serviceName).toEqual('iam');
   });
 
   test('should get all logs, filtered by tenant', async () => {
@@ -183,7 +177,7 @@ describe('Log Operations', () => {
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        'filter[tenant]': '1',
+        'filter[tenant]': 'TestTenant',
       })
       .set('Authorization', 'Bearer adminToken');
 
@@ -194,16 +188,16 @@ describe('Log Operations', () => {
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(1);
     expect(j.data[0]).toHaveProperty('_id');
-    expect(j.data[0].service).toEqual('SomeService');
+    expect(j.data[0].payload.tenant).toEqual('TestTenant');
   });
 
-  test('should get all logs, filtered by service', async () => {
+  test('should get all logs, filtered by name', async () => {
     const res = await request
       .get('/logs')
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        'filter[service]': 'SomeOtherService',
+        'filter[name]': 'iam.user.created',
       })
       .set('Authorization', 'Bearer adminToken');
 
@@ -214,46 +208,44 @@ describe('Log Operations', () => {
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(1);
     expect(j.data[0]).toHaveProperty('_id');
-    expect(j.data[0].service).toEqual('SomeOtherService');
+    expect(j.data[0].payload.username).toEqual('test@org.de');
   });
 
-  test('should get all logs, filtered by namespace', async () => {
+  test('should find no logs when filtering over an absent attribute', async () => {
     const res = await request
       .get('/logs')
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        'filter[nameSpace]': 'warpSpace',
+        'filter[keks]': 'Schokorosine',
       })
       .set('Authorization', 'Bearer adminToken');
 
-    expect(res.status).toEqual(200);
+    expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
-    const j = JSON.parse(res.text);
-
-    expect(j).not.toBeNull();
-    expect(j.data).toHaveLength(1);
-    expect(j.data[0]).toHaveProperty('_id');
-    expect(j.data[0].service).toEqual('YetAnotherService');
   });
 
-  test('should get all logs, with a search', async () => {
+  test('should find no logs when filtering over an absent attribute', async () => {
     const res = await request
       .get('/logs')
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        search: 'actually',
+        'filter[keks]': 'Schokorosine',
       })
       .set('Authorization', 'Bearer adminToken');
 
-    expect(res.status).toEqual(200);
+    expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
-    const j = JSON.parse(res.text);
+  });
 
-    expect(j).not.toBeNull();
-    expect(j.data).toHaveLength(1);
-    expect(j.data[0]).toHaveProperty('_id');
-    expect(j.data[0].service).toEqual('YetAnotherService');
+  test('should anonymyse a user', async () => {
+    await gdprAnonymise('abcdef12345');
+
+    const logs = await Log.find().lean();
+
+    expect(logs[0].payload.id).toEqual('XXXXXXXXXX');
+    expect(logs[0].payload.username).toEqual('XXXXXXXXXX');
+    expect(logs[2].payload.user).toEqual('XXXXXXXXXX');
   });
 });
