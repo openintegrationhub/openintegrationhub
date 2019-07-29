@@ -101,7 +101,7 @@ const CFM = require('@openintegrationhub/cfm')
 // If it does not, the reference has been changed, any data of the target object is outdated, and only the incoming data is used
 // If it does match, this is not the case, the resolver returns false, and the issue is passed on to the next resolver in line.
 CFM.addCustomResolver('overwriteIfNew', (incoming, target) => {
-  if (incoming.lastName !== target.lastName) return incoming
+  if (incoming.lastName !== target.lastName) return {value: incoming}
   else return false
 })
 
