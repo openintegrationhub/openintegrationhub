@@ -1,0 +1,55 @@
+{
+  "name": "ils",
+  "version": "0.0.1",
+  "description": "Integration Layer Service",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app/index.js",
+    "start-dev": "nodemon app/index.js",
+    "pretest": "eslint app test --ext .js --ext .json",
+    "test": "jest --runInBand",
+    "test-watch": "nodemon --exec \"npm test\"",
+    "coverage": "yarn test --coverage",
+    "lint_fix": "eslint app test --fix",
+    "build": "echo \"No Build defined\"",
+    "build:docker": "docker build -t openintegrationhub/ils:${VERSION} -f Dockerfile ."
+  },
+  "dependencies": {
+    "ajv": "^6.10.0",
+    "body-parser": "^1.18.2",
+    "bunyan": "^1.8.12",
+    "bunyan-format": "^0.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.3",
+    "generate-schema": "^2.6.0",
+    "mongoose": "^5.4.13",
+    "nock": "^10.0.6",
+    "request": "^2.87.0",
+    "request-promise": "^4.2.2",
+    "swagger-ui-express": "^3.0.8"
+  },
+  "devDependencies": {
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^22.1.0",
+    "eslint-plugin-json": "^1.2.1",
+    "eslint-plugin-mocha": "^5.2.0",
+    "jest": "^23.6.0",
+    "jest-environment-node": "^23.4.0",
+    "mongod": "^2.0.0",
+    "mongodb": "^3.0.10",
+    "mongodb-memory-server": "^2.9.1",
+    "nyc": "^12.0.2",
+    "path": "^0.12.7",
+    "supertest": "^3.1.0"
+  },
+  "nyc": {
+    "exclude": [
+      "./test"
+    ]
+  },
+  "author": "Wice GmbH",
+  "license": "Apache-2.0"
+}

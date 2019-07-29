@@ -56,7 +56,7 @@ The folder `examples` contains an example script that will publish a log event t
 
 ## REST-API documentation
 
-Visit http://localhost:3007/docs to view the Swagger API-Documentation
+Visit auditlog.openintegrationhub.com/api-docs/ to view the Swagger API-Documentation
 
 ## Current status
 

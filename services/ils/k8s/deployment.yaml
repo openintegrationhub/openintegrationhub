@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ils
+  namespace: oih-dev-ns
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ils
+    spec:
+      containers:
+        - name: ils
+          image: snazzy/ils:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3003
+          env:
+            - name: MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: flow-repository
+                  key: 'mongourl'
+          resources:
+            limits:
+              cpu: '0.1'
+              memory: 1000Mi
+            requests:
+              memory: 1000Mi
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3003
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3003
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
