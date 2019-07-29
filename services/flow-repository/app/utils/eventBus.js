@@ -62,30 +62,6 @@ async function publishQueue(ev) {
   }
 }
 
-async function publishAuditLog(ev) {
-  try {
-    const now = new Date();
-    const timestamp = now.toISOString();
-
-    const fullEvent = {
-      headers: {
-        name: `audit.${ev.name}`,
-      },
-      payload: {
-        service: 'flow-repository',
-        timeStamp: timestamp,
-        nameSpace: 'oih-dev-ns',
-        payload: ev.payload,
-      },
-    };
-
-    const newEvent = new Event(fullEvent);
-    await eventBus.publish(newEvent);
-    log.info(`Published event: ${JSON.stringify(ev)}`);
-  } catch (err) {
-    log.error(err);
-  }
-}
 
 async function disconnectQueue() {
   await eventBus.disconnect();
@@ -97,5 +73,5 @@ async function reportHealth() {
 
 
 module.exports = {
-  connectQueue, publishQueue, disconnectQueue, reportHealth, publishAuditLog,
+  connectQueue, publishQueue, disconnectQueue, reportHealth,
 };

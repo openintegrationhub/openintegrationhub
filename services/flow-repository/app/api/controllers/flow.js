@@ -10,7 +10,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
-const { publishAuditLog } = require('../../utils/eventBus');
+const { publishQueue } = require('../../utils/eventBus');
 const { validate } = require('../../utils/validator');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
@@ -140,18 +140,17 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
     const response = await storage.addFlow(storeFlow);
 
     const ev = {
-      name: 'flowrepo.flow.created',
+      headers: {
+        name: 'flowrepo.flow.created',
+      },
       payload: {
         tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
-        source: req.user.sub,
-        object: 'flow',
-        action: 'createFlow',
-        subject: response.id,
-        details: `A new flow with the id ${response.id} was created`,
+        user: req.user.sub,
+        flowId: response.id,
       },
     };
 
-    await publishAuditLog(ev);
+    await publishQueue(ev);
 
     return res.status(201).send({ data: response, meta: {} });
   } catch (err) {
@@ -202,18 +201,17 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
   try {
     const response = await storage.updateFlow(storeFlow, req.user);
     const ev = {
-      name: 'flowrepo.flow.modified',
+      headers: {
+        name: 'flowrepo.flow.modified',
+      },
       payload: {
         tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
-        source: req.user.sub,
-        object: 'flow',
-        action: 'updateFlow',
-        subject: response.id,
-        details: `A flow with the id ${response.id} was updated`,
+        user: req.user.sub,
+        flowId: response.id,
       },
     };
 
-    await publishAuditLog(ev);
+    await publishQueue(ev);
 
     res.status(200).send({ data: response, meta: {} });
   } catch (err) {
@@ -266,18 +264,17 @@ router.delete('/:id', can(config.flowWritePermission), jsonParser, async (req, r
     res.status(404).send({ errors: [{ message: 'Flow not found', code: 404 }] });
   } else {
     const ev = {
-      name: 'flowrepo.flow.deleted',
+      headers: {
+        name: 'flowrepo.flow.deleted',
+      },
       payload: {
         tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
-        source: req.user.sub,
-        object: 'flow',
-        action: 'deleteFlow',
-        subject: flowId,
-        details: `A flow with the id ${flowId} was deleted`,
+        user: req.user.sub,
+        flowId,
       },
     };
 
-    await publishAuditLog(ev);
+    await publishQueue(ev);
     res.status(200).send({ msg: 'Flow was successfully deleted' });
   }
 });
