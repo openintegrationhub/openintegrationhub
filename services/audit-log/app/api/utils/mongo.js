@@ -103,7 +103,7 @@ const getByUser = id => new Promise((resolve) => {
   )
     .lean()
     .then((doc) => {
-      resolve(doc._doc);
+      resolve(doc);
     }).catch((err) => {
       log.error(err);
     });

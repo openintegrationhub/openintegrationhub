@@ -12,8 +12,8 @@ const port = process.env.PORT || 3007;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
-// const validator = require('../app/api/utils/validator.js');
-const { saveLog } = require('../app/api/utils/handlers.js');
+const { saveLog, gdprAnonymise } = require('../app/api/utils/handlers.js');
+const Log = require('../app/models/log');
 const Server = require('../app/server');
 
 const mainServer = new Server();
@@ -55,6 +55,7 @@ const log3 = {
     createdAt: '1563994057792',
   },
   payload: {
+    user: 'abcdef12345',
     flowId: 'dhi38fj3oz9fj3',
   },
 };
@@ -222,5 +223,29 @@ describe('Log Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.text).not.toBeNull();
+  });
+
+  test('should find no logs when filtering over an absent attribute', async () => {
+    const res = await request
+      .get('/logs')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+        'filter[keks]': 'Schokorosine',
+      })
+      .set('Authorization', 'Bearer adminToken');
+
+    expect(res.status).toEqual(404);
+    expect(res.text).not.toBeNull();
+  });
+
+  test('should anonymyse a user', async () => {
+    await gdprAnonymise('abcdef12345');
+
+    const logs = await Log.find().lean();
+
+    expect(logs[0].payload.id).toEqual('XXXXXXXXXX');
+    expect(logs[0].payload.username).toEqual('XXXXXXXXXX');
+    expect(logs[2].payload.user).toEqual('XXXXXXXXXX');
   });
 });

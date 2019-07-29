@@ -39,7 +39,11 @@ async function connectQueue() {
       log.error('Received event while DB was unready. Retrying...');
       await event.nack();
     } else {
-      await gdprAnonymise(event.payload);
+      if (!event.payload || !event.payload.id) {
+        log.warn('Anonymisation event did not contain ID!');
+      } else {
+        await gdprAnonymise(event.payload.id);
+      }
       await event.ack();
     }
   });

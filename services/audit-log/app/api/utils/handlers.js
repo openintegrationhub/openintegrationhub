@@ -16,14 +16,9 @@ const saveLog = async function (event) {
   }
 };
 
-const gdprAnonymise = async function (msg) {
-  if (!msg || !msg.id) {
-    log.warn('Received gdpr event without ID');
-    return;
-  }
-
+const gdprAnonymise = async function (id) {
   try {
-    const entries = await storage.getByUser(msg.id);
+    const entries = await storage.getByUser(id);
     const promises = [];
     for (let i = 0; i < entries.length; i += 1) {
       const { payload } = entries[i];
@@ -32,7 +27,7 @@ const gdprAnonymise = async function (msg) {
       if (payload.username) payload.username = 'XXXXXXXXXX';
 
       for (let j = 0; j < keys.length; j += 1) {
-        if (payload[keys[j]] === msg.id) payload[keys[j]] = 'XXXXXXXXXX';
+        if (payload[keys[j]] === id) payload[keys[j]] = 'XXXXXXXXXX';
       }
       promises.push(storage.updatePayload(entries[i]._id, payload));
     }
