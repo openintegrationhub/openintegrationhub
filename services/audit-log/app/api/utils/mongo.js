@@ -3,6 +3,7 @@
 /* eslint quote-props: "off" */
 
 const mongoose = require('mongoose');
+const config = require('../../config');
 const log = require('../../config/logger');
 const Log = require('../../models/log');
 
@@ -19,6 +20,16 @@ const getLogs = async ( // eslint-disable-line
 ) => new Promise(async (resolve) => {
   const qry = { $and: [] };
 
+  // If the user is not an admin, restrict viewing only to logs of the same user/tenant
+  if (!config.oihAdminRoles.includes(user.role)) {
+    qry.$and.push({
+      $or: [
+        { 'payload.user': user.sub },
+        { 'payload.tenant': user.currentContext.tenant },
+      ],
+    });
+  }
+
   // Add all filtered fields to query
   const filterFields = Object.keys(filters);
   const { length } = filterFields;
@@ -28,7 +39,7 @@ const getLogs = async ( // eslint-disable-line
       if (filterFields[i] === 'service') {
         qry['headers.serviceName'] = filters.service;
       } else {
-        qry[filterFields[i]] = filters[filterFields[i]];
+        qry[`payload.${filterFields[i]}`] = filters[filterFields[i]];
       }
     }
   }
@@ -102,16 +113,30 @@ const addEvent = data => new Promise((resolve) => {
     });
 });
 
-// Anonymises a user id according to gdpr guidelines
-const anonymise = id => new Promise((resolve) => {
-  Log.update(
-    { 'payload.id': id },
-    { $set: { 'payload.id': 'XXXXXXXXXX' } },
-  ).then((doc) => {
-    resolve(doc._doc);
-  }).catch((err) => {
-    log.error(err);
-  });
+// Gets all logs pertaining to a particular user
+const getByUser = id => new Promise((resolve) => {
+  Log.find(
+    { $or: [{ 'payload.id': id }, { 'payload.user': id }] },
+  )
+    .lean()
+    .then((doc) => {
+      resolve(doc._doc);
+    }).catch((err) => {
+      log.error(err);
+    });
+});
+
+const updatePayload = (id, payload) => new Promise((resolve) => {
+  Log.findOneAndUpdate(
+    { _id: id },
+    { $set: { payload } },
+  )
+    .lean()
+    .then((doc) => {
+      resolve(doc._doc);
+    }).catch((err) => {
+      log.error(err);
+    });
 });
 
 
@@ -119,5 +144,6 @@ module.exports = {
   addEvent,
   getAnyLogById,
   getLogs,
-  anonymise,
+  getByUser,
+  updatePayload,
 };

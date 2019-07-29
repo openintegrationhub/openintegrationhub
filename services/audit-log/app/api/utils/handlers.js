@@ -1,37 +1,12 @@
 /* eslint consistent-return: "off" */
+/* eslint no-underscore-dangle: "off" */
 // listen and receive events
 
-// const Ajv = require('ajv');
 const config = require('../../config/index');
 const log = require('../../config/logger');
 
-const storage = require('../controllers/' + config.storage); // eslint-disable-line
-// const schema = require('../../models/log.json');
-// const payloadSchema = require('../../models/payload.json');
+const storage = require('./' + config.storage); // eslint-disable-line
 
-// const ajv = new Ajv();
-// ajv.addSchema(payloadSchema);
-// const validator = ajv.compile(schema);
-
-// const validate = async function (msg) { // eslint-disable-line
-//
-//   const valid = validator(msg);
-//
-//   if (!valid) {
-//     log.error('Message format is not valid!');
-//     log.error(JSON.stringify(ajv.errors));
-//     return;
-//   }
-//
-//   try {
-//     log.info('Saving event to DB...');
-//     await storage.addEvent(msg);
-//     log.info('Successfully Saved');
-//   } catch (error) {
-//     log.error('Save failed:');
-//     log.error(error);
-//   }
-// };
 
 const saveLog = async function (event) {
   try {
@@ -48,7 +23,22 @@ const gdprAnonymise = async function (msg) {
   }
 
   try {
-    await storage.anonymise(msg.id);
+    const entries = await storage.getByUser(msg.id);
+    const promises = [];
+    for (let i = 0; i < entries.length; i += 1) {
+      const { payload } = entries[i];
+      const keys = Object.keys(payload);
+
+      if (payload.username) payload.username = 'XXXXXXXXXX';
+
+      for (let j = 0; j < keys.length; j += 1) {
+        if (payload[keys[j]] === msg.id) payload[keys[j]] = 'XXXXXXXXXX';
+      }
+      promises.push(storage.updatePayload(entries[i]._id, payload));
+    }
+
+    await Promise.all(promises);
+
     log.info('Anonymisation finished.');
   } catch (e) {
     log.error(`Anonymisation failed: ${e}`);

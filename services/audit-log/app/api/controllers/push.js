@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 
-const storage = require(`./${config.storage}`); // eslint-disable-line
+const storage = require(`../utils/${config.storage}`); // eslint-disable-line
 
 const jsonParser = bodyParser.json();
 const router = express.Router();

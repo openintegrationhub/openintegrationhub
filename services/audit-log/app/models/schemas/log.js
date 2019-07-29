@@ -8,7 +8,7 @@ const { Schema } = mongoose;
 // Define schema
 const log = new Schema({
   headers: {
-    createdAt: String,
+    createdAt: { type: Date, default: Date.now },
     serviceName: String,
     name: String,
   },
