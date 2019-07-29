@@ -137,7 +137,7 @@ describe('Log Operations', () => {
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        'filter[service]': 'SomeOtherService',
+        'filter[service]': 'iam',
       })
       .set('Authorization', 'Bearer adminToken');
 
@@ -148,7 +148,7 @@ describe('Log Operations', () => {
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(1);
     expect(j.data[0]).toHaveProperty('_id');
-    expect(j.data[0].service).toEqual('SomeOtherService');
+    expect(j.data[0].headers.serviceName).toEqual('iam');
   });
 
 

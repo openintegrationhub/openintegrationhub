@@ -83,7 +83,7 @@ router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
   } if (!res.headersSent) {
     response.meta.page = pageNumber;
     response.meta.perPage = pageSize;
-    response.meta.totalPages = response.meta.total / pageSize;
+    response.meta.totalPages = Math.ceil(response.meta.total / pageSize);
     res.json(response);
   }
 });
