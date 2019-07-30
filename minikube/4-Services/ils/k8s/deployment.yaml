@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ils
+  namespace: oih-dev-ns
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ils
+    spec:
+      containers:
+        - name: ils
+          image: openintegrationhub/ils:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3003
+          env:
+            - name: MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: 'mongourl'
+          resources:
+            limits:
+              cpu: '0.1'
+              memory: 200Mi
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3003
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3003
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
