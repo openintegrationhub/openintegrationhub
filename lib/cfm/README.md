@@ -18,6 +18,9 @@ The CFM operates on a set of *Rules*. Each rule is associated with a given numbe
 
 Both sets of *Rules* and *Resolvers* are expandable. Should the included default selection be unsuitable for a particular application, the adapter developer can add their own *Rules* and/or *Resolvers* in place and use them right away.
 
+<p align="center">
+  <img src="assets/CFM.png" alt="Sublime's custom image" width="400"/>
+</p>
 
 ## Technical description
 The CFM offers three classes, which each expose a number of functions for developer to customize its behaviour.
