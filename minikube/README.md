@@ -9,7 +9,7 @@ For further information about how to set up minikube, see here:
 
 3. Set up host rules. To actually reach the services, you need to add an entry in your hosts file for each service. You can retrieve the IP with `minikube ip`, and need to make an entry for each host listed in the `ingress.yaml` file (e.g. `iam.localoih.com`).
 If you are using a Linux distribution, you can automate this by using this terminal command:
-`echo "$(minikube ip) iam.localoih.com smk.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com component-repository.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com" | sudo tee -a /etc/hosts`
+`echo "$(minikube ip) iam.localoih.com smk.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com component-repository.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com web-ui.localoih.com" | sudo tee -a /etc/hosts`
 
 4. Deploy the OIH Identity and Access Management. To do so, simply execute `kubectl apply -f ./2-IAM`. Again, wait until the service is fully deployed and ready.
 
@@ -54,4 +54,5 @@ The returned token is the service token that will be used by the other services 
 - `attachment-storage.localoih.com`: Attachment Storage. Temporarily store larger files for easier handling in flows.
 - `data-hub.localoih.com`: Data Hub. Long-term storage for flow content.
 - `ils.localoih.com`: Integration Layer Service. Perform data operations such as merging or splitting objects.
-All of these services have a Swagger documentation of their API available through the path `api-docs`. Additionally, you can check their readmes in the `services` folder of the OIH Repository: https://github.com/openintegrationhub/openintegrationhub/tree/master/services
+- `web-ui.localoih.com`: Web UI. A basic browser-based UI to control certain other services.
+Most of these services have a Swagger documentation of their API available through the path `/api-docs`. Additionally, you can check their readmes in the `services` folder of the OIH Repository: https://github.com/openintegrationhub/openintegrationhub/tree/master/services
