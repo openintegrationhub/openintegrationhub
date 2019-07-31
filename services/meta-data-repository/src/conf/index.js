@@ -20,7 +20,7 @@ module.exports = {
         oidcServiceClientId: optional('IAM_OIDC_SERVICE_CLIENT_ID', 'id'),
         oidcServiceClientSecret: optional('IAM_OIDC_SERVICE_CLIENT_SECRET', 'secret'),
     },
-    originWhitelist: optional('IAM_ORIGINWHITELIST') ? optional('IAM_ORIGINWHITELIST').split(',') : [],
+    originWhitelist: optional('ORIGINWHITELIST') ? optional('ORIGINWHITELIST').split(',') : [],
     logging: {
         namespace: optional('LOGGING_NAMESPACE', name),
         level: optional('LOGGING_LEVEL', 'error'),
