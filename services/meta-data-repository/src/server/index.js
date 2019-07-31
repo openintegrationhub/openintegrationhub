@@ -86,9 +86,11 @@ module.exports = class Server {
                 if (conf.originWhitelist.find(elem => origin.indexOf(elem) >= 0)) {
                     callback(null, true);
                 } else {
-                    log.info('Blocked by CORS');
-                    log.info(origin);
-                    log.info(conf.originWhitelist);
+                    log.info({
+                        message: 'Blocked by CORS',
+                        origin,
+                        originWhitelist: conf.originWhitelist,
+                    });
                     callback(new Error('Not allowed by CORS'));
                 }
             },
