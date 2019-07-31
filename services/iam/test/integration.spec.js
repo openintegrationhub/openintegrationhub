@@ -684,7 +684,6 @@ describe('routes', () => {
                 'lastname': 'user',
                 'status': 'ACTIVE',
                 'password': 'usertest',
-                'role': CONSTANTS.ROLES.USER,
             };
 
             const serviceAccountData = {
@@ -693,7 +692,6 @@ describe('routes', () => {
                 lastname: 'account',
                 status: CONSTANTS.STATUS.ACTIVE,
                 password: 'testpwd',
-                role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
                 permissions: [RESTRICTED_PERMISSIONS['iam.token.create'], RESTRICTED_PERMISSIONS['iam.token.introspect']],
             };
 

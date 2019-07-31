@@ -99,7 +99,7 @@ router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspec
                 'x-request-id': req.headers['x-request-id'],
             },
         });
-        const accountData = await TokenUtils.getAccountData(req.body.token);
+        const accountData = await auth.setUserDataOnReqObj(await TokenUtils.getAccountData(req.body.token));
 
         if (accountData) {
             auditLog.info('iam.token.introspect', {

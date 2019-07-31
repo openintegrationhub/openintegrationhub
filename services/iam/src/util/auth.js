@@ -197,6 +197,7 @@ module.exports = {
 
     },
 
+    // TODO auto populate roles if array not empty and entries typeof string/bson
     setUserDataOnReqObj: async (user, fetchRoles) => {
         if (fetchRoles) {
             const accountData = await Account.findOne({
