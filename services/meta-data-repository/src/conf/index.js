@@ -2,7 +2,7 @@ const path = require('path');
 const { optional, required } = require('./check-env');
 const { version, name } = require('../../package.json');
 
-const originwhitelist = optional('IAM_ORIGINWHITELIST') ? optional('IAM_ORIGINWHITELIST').split(',') : [];
+const originwhitelist = optional('ORIGINWHITELIST') ? optional('ORIGINWHITELIST').split(',') : [];
 
 module.exports = {
     port: optional('PORT', 3000),
