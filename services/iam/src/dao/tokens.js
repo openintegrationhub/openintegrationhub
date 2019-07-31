@@ -36,6 +36,9 @@ const TokenDAO = {
             payload: { id: token._id.toString() },
         });
         EventBusManager.getEventBus().publish(event);
+        if (tokenData.accountId) {
+            tokenData.accountId = tokenData.accountId.toString();
+        }
         auditLog.info('create.token', { data: tokenData });
         return token.toJSON();
     },

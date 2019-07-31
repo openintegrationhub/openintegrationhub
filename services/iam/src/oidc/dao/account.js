@@ -15,10 +15,11 @@ class Account {
             firstname: this.data.firstname,
             lastname: this.data.lastname,
             status: this.data.status,
-            role: this.data.role,
-            memberships: this.data.memberships,
+            roles: this.data.roles,
+            tenant: this.data.tenant,
+            // memberships: this.data.memberships,
             permissions: this.data.permissions,
-            currentContext: find(this.data.memberships, { active: true }),
+            // currentContext: find(this.data.memberships, { active: true }),
             confirmed: this.data.confirmed,
         };
         return claims; 

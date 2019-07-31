@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+const { ROLE_TYPE } = require('./../../constants');
 const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../../access-control/permissions');
 
 const { Schema } = mongoose;
@@ -8,7 +9,11 @@ const RoleSchema = new Schema({
     name: {
         type: String,
     },
-    type: String,
+    type: {
+        type: String,
+        'enum': Object.keys(ROLE_TYPE),
+        'default': ROLE_TYPE.TENANT,
+    },
     isGlobal: {
         type: Boolean,
         default: false,

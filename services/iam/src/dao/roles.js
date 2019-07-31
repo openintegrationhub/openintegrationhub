@@ -71,9 +71,9 @@ const RolesDAO = {
     delete: async ({ id, tenant }) => {
 
         await Account.updateMany({
-            memberships: { $elemMatch: { tenant } },
+            tenant,
         }, {
-            $pull: { 'memberships.$.roles': id },
+            $pull: { 'roles': id },
         });
 
         await Role.deleteOne({ _id: id, tenant });
@@ -114,6 +114,30 @@ const RolesDAO = {
         //     session.endSession();
         //     throw error;
         // }
+
+    },
+
+    userIsOwnerOfRole: async ({ roleId, user }) => {
+
+        if (user.isAdmin) {
+            return true;
+        }
+
+        const doc = Role.findOne({
+            _id: roleId,
+            tenant: user.tenant,
+        }).lean();
+
+        return !!doc;
+    },
+
+    getTenantRoles: async ({ roles, tenant }) => {
+
+        if (!roles) {
+            return Role.find({ tenant }).lean();
+        }
+
+        return Role.find({ tenant, _id: { $in: roles } }).lean();
 
     },
 

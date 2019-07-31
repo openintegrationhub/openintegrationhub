@@ -36,6 +36,12 @@ const PERMISSIONS = {
     common: {
 
         'tenant.all': 'tenant.all',
+
+        'tenant.account.read': 'tenant.account.read',
+        'tenant.account.create': 'tenant.account.create',
+        'tenant.account.update': 'tenant.account.update',
+        'tenant.account.delete': 'tenant.account.delete',
+
         'tenant.membership.create': 'tenant.membership.create',
         'tenant.membership.update': 'tenant.membership.update',
         'tenant.membership.delete': 'tenant.membership.delete',
@@ -62,7 +68,8 @@ const DEFAULT_ROLES = {
     [ROLES.ADMIN]: ['all'],
 
     [ROLES.USER]: [
-
+        PERMISSIONS.common['tenant.profile.read'],
+        PERMISSIONS.common['tenant.roles.read'],
     ],
 
     [MEMBERSHIP_ROLES.TENANT_ADMIN]: [
@@ -70,13 +77,17 @@ const DEFAULT_ROLES = {
         PERMISSIONS.common['tenant.all'],
 
         PERMISSIONS.common['tenant.profile.read'],
-        PERMISSIONS.common['tenant.profile.create'],
         PERMISSIONS.common['tenant.profile.update'],
 
         PERMISSIONS.common['tenant.roles.read'],
         PERMISSIONS.common['tenant.roles.create'],
         PERMISSIONS.common['tenant.roles.update'],
         PERMISSIONS.common['tenant.roles.delete'],
+
+        PERMISSIONS.common['tenant.flows.read'],
+        PERMISSIONS.common['tenant.flows.create'],
+        PERMISSIONS.common['tenant.flows.update'],
+        PERMISSIONS.common['tenant.flows.delete'],
     ],
 
 };

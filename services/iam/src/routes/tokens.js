@@ -18,7 +18,7 @@ const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/token`, {
 const auditLog = Logger.getAuditLogger(`${CONF.general.loggingNameSpace}/token-router`);
 
 /**
- * Get all Tokens
+ * Get all tokens
  */
 router.get('/', auth.isAdmin, async (req, res, next) => {
 
@@ -30,6 +30,9 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
 
     try {
         const docs = await TokenDAO.find(query);
+        docs.forEach((elem) => {
+            elem.token = elem.token.replace(/.(?=.{4,}$)/g, '*');
+        });
         return res.send(docs);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });

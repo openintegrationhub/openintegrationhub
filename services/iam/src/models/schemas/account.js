@@ -8,22 +8,22 @@ const validateEmail = function(email) {
     return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email); // eslint-disable-line
 };
 
-const membershipsSchema = new Schema({
-    roles: [{
-        type: Schema.ObjectId, ref: 'role',
-    }],
-    tenant: {
-        type: Schema.ObjectId,
-        ref: 'tenant',
-    },
-    scope: String,
-    permissions: [String],
-    active: Boolean,
-}, {
-    _id: false,
-});
+// const membershipsSchema = new Schema({
+//     roles: [{
+//         type: Schema.ObjectId, ref: 'role',
+//     }],
+//     tenant: {
+//         type: Schema.ObjectId,
+//         ref: 'tenant',
+//     },
+//     scope: String,
+//     permissions: [String],
+//     active: Boolean,
+// }, {
+//     _id: false,
+// });
 
-membershipsSchema.index({ active: 1 }, { unique: true, partialFilterExpression: { active: true } });
+// membershipsSchema.index({ active: 1 }, { unique: true, partialFilterExpression: { active: true } });
 
 const schema = {
     username: {
@@ -49,17 +49,23 @@ const schema = {
 
     },
     confirmed: { type: Boolean, 'default': false },
-    role: {
-        type: String,
-        'enum': [
-            CONSTANTS.ROLES.USER,
-            CONSTANTS.ROLES.ADMIN,
-            CONSTANTS.ROLES.SERVICE_ACCOUNT,
-        ],
-        'default': CONSTANTS.ROLES.USER,
-
+    // accountType: {
+    //     type: String,
+    //     'enum': [
+    //         CONSTANTS.ROLES.USER,
+    //         CONSTANTS.ROLES.ADMIN,
+    //         CONSTANTS.ROLES.SERVICE_ACCOUNT,
+    //     ],
+    //     'default': CONSTANTS.ROLES.USER,
+    //
+    // },
+    tenant: {
+        type: Schema.ObjectId, ref: 'tenant',
     },
-    memberships: [membershipsSchema],
+    roles: [{
+        type: Schema.ObjectId, ref: 'role',
+    }],
+    // memberships: [membershipsSchema],
     permissions: [String],
     safeguard: {
         lastLogin: Date,

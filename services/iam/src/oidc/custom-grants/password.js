@@ -3,6 +3,8 @@ const epochTime = require('oidc-provider/lib/helpers/epoch_time');
 const Account = require('../dao/account');
 
 const { ROLES } = require('../../constants');
+const { setUserDataOnReqObj } = require('../../util/auth');
+const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('../../access-control/permissions');
 
 function authenticate(provider, ctx) {
     return new Promise((resolve) => {
@@ -17,9 +19,10 @@ function authenticate(provider, ctx) {
                 const { AccessToken, IdToken } = provider;
 
                 const account = new Account(user);
- 
-                if (user.role === ROLES.SERVICE_ACCOUNT 
-                    || user.role === ROLES.ADMIN) {
+
+                user = await setUserDataOnReqObj(user, true);
+
+                if (user.permissions && user.permissions.indexOf(RESTRICTED_PERMISSIONS.all) >= 0) {
                     const at = new AccessToken({
                         accountId: account.data._id,
                         clientId: ctx.oidc.client.clientId,
