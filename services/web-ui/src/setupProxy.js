@@ -37,6 +37,16 @@ module.exports = function (app) {
             // or log the req
         },
     }));
+    app.use(proxy('/metadata-api', {
+        pathRewrite: { '^/metadata-api': '/' },
+        target: 'http://metadata.openintegrationhub.com/api/v1',
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
     // proxy server config
     app.use('/config', (req, res) => {
         res.send(conf);
