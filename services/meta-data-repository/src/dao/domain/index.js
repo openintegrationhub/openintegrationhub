@@ -1,4 +1,5 @@
 const Domain = require('../../model/Domain');
+const Schema = require('../../model/Schema');
 
 module.exports = {
 
@@ -30,8 +31,21 @@ module.exports = {
         props);
     },
     async delete(id) {
-        return await Domain.deleteOne({
-            _id: id,
-        });
+        let error;
+        try {
+            await Schema.deleteMany({ domainId: id });
+        } catch (err) {
+            error = err;
+        }
+        try {
+            await Domain.deleteOne({
+                _id: id,
+            });
+        } catch (err) {
+            error = err;
+        }
+
+
+        return error || true;
     },
 };
