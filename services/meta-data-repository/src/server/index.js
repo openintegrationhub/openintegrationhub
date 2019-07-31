@@ -62,7 +62,7 @@ module.exports = class Server {
 
 
         const apiBase = express.Router();
-
+        apiBase.use('/domains', cors(this.corsOptions));
         apiBase.use((req, res, next) => {
             if (isLocalRequest(req)) {
                 return next();
@@ -71,7 +71,7 @@ module.exports = class Server {
         });
 
         // setup routes
-        apiBase.use('/domains', cors(this.corsOptions), require('./../route/domains'));
+        apiBase.use('/domains', require('./../route/domains'));
 
         this.app.use(conf.apiBase, apiBase);
 
