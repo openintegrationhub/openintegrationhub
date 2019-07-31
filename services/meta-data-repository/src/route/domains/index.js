@@ -124,9 +124,7 @@ router.delete('/:id', domainOwnerOrAllowed({
 }), async (req, res, next) => {
     try {
         res.send({
-            data: transformDbResults(await DomainDAO.delete({
-                id: req.params.id,
-            })),
+            data: transformDbResults(await DomainDAO.delete(req.params.id)),
         });
     } catch (err) {
         log.error(err);
