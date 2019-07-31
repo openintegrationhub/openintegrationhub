@@ -4,6 +4,7 @@ import users from './users';
 import tenants from './tenants';
 import flows from './flows';
 import components from './components';
+import metadata from './metadata';
 import { LOGOUT } from '../action/auth';
 
 const appReducer = combineReducers({
@@ -12,6 +13,7 @@ const appReducer = combineReducers({
     auth,
     flows,
     components,
+    metadata,
 });
 
 export default (state, action) => {
