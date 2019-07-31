@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name: ils
-          image: snazzy/ils:latest
+          image: openintegrationhub/ils:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3003
