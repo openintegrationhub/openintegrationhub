@@ -26,7 +26,7 @@ class Account {
     }
 
     static async findById(ctx, id, token) {
-        const data = await AccountModel.findOne({ _id: id });
+        const data = await AccountModel.findOne({ _id: id }).populate('roles');
         return new Account(data);
     }
 }

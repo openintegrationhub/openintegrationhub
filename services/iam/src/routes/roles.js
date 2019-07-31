@@ -100,7 +100,7 @@ router.post('/', auth.hasTenantPermissions([PERMISSIONS['tenant.roles.create']])
         permissions = [],
     } = req.body;
 
-    if (!name) {
+    if (!name || typeof permissions !== 'object') {
         return next({ status: 400, message: CONSTANTS.ERROR_CODES.INPUT_INVALID });
     }
 

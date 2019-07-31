@@ -197,23 +197,6 @@ module.exports = {
 
     },
 
-    // TODO auto populate roles if array not empty and entries typeof string/bson
-    setUserDataOnReqObj: async (user, fetchRoles) => {
-        if (fetchRoles) {
-            const accountData = await Account.findOne({
-                _id: user._id,
-            }).populate('roles');
-            user.roles = accountData.roles;
-        }
-        user.roles.forEach((role) => {
-            user.permissions = user.permissions.concat(role.permissions);
-        });
-
-        user.isAdmin = !!user.permissions.find(permission => permission === RESTRICTED_PERMISSIONS.all);
-
-        return user;
-    },
-
     validateAuthentication: async (req, res, next) => {
         let payload = null;
         let client = null;
@@ -221,9 +204,11 @@ module.exports = {
 
         /** User has a valid cookie */
         if (req.user) {
+            req.user = req.user.toJSON();
             req.user.userid = req.user._id.toString();
-            req.user.auth = req.user;
-            req.user = await module.exports.setUserDataOnReqObj(req.user, true);
+
+            req.user = await TokenUtils.resolveUserPermissions(req.user);
+
             return next();
         }
 
@@ -307,7 +292,7 @@ module.exports = {
             req.user.permissions = payload.permissions;
             req.user.roles = payload.roles;
 
-            req.user = await module.exports.setUserDataOnReqObj(req.user);
+            req.user = await TokenUtils.resolveUserPermissions(req.user);
 
             return next();
         } else {

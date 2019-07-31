@@ -34,12 +34,19 @@ const RolesDAO = {
 
         await instance.save();
 
+        if (data.tenant) {
+            data.tenant = data.tenant.toString();
+        }
+
         log.debug('created.role', Object.assign({}, data));
         const event = new Event({
             headers: {
-                name: 'iam.role.create',
+                name: 'iam.role.created',
             },
-            payload: { role: data.name.toString() },
+            payload: {
+                role: data.name,
+                tenant: data.tenant,
+            },
         });
         EventBusManager.getEventBus().publish(event);
         auditLog.info('create.role', { data });
@@ -59,7 +66,11 @@ const RolesDAO = {
             headers: {
                 name: 'iam.role.modified',
             },
-            payload: { role: id.toString() },
+            payload: {
+                role: id.toString(),
+                permissions: props.permissions,
+                tenant: props.tenant,
+            },
         });
         EventBusManager.getEventBus().publish(event);
         auditLog.info('update.role', { data: props, id });
@@ -82,7 +93,10 @@ const RolesDAO = {
             headers: {
                 name: 'iam.role.deleted',
             },
-            payload: { role: id.toString() },
+            payload: {
+                role: id.toString(),
+                tenant,
+            },
         });
         EventBusManager.getEventBus().publish(event);
         log.debug('deleted.role', { id });

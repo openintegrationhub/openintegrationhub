@@ -50,7 +50,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
 
     if (!account) {
         // User is either disabled or does not exist anymore
-        return next({ status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
+        return next({ status: 404, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
     }
 
     if (req.body.customPermissions && !auth.hasPermissions({
@@ -60,7 +60,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
         return next({ status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
     }
 
-    if (!req.body.inquirer) {
+    if (!inquirer) {
         return next({ status: 400, message: 'Missing inquirer' });
     }
 
@@ -99,7 +99,7 @@ router.post('/introspect', auth.can([RESTRICTED_PERMISSIONS['iam.token.introspec
                 'x-request-id': req.headers['x-request-id'],
             },
         });
-        const accountData = await auth.setUserDataOnReqObj(await TokenUtils.getAccountData(req.body.token));
+        const accountData = await TokenUtils.getAccountData(req.body.token);
 
         if (accountData) {
             auditLog.info('iam.token.introspect', {
