@@ -2,6 +2,8 @@ const path = require('path');
 const { optional, required } = require('./check-env');
 const { version, name } = require('../../package.json');
 
+const originwhitelist = optional('IAM_ORIGINWHITELIST') ? optional('IAM_ORIGINWHITELIST').split(',') : [];
+
 module.exports = {
     port: optional('PORT', 3000),
     baseUrl: optional('BASE_URL', 'http://localhost'),
@@ -20,6 +22,13 @@ module.exports = {
         oidcServiceClientId: optional('IAM_OIDC_SERVICE_CLIENT_ID', 'id'),
         oidcServiceClientSecret: optional('IAM_OIDC_SERVICE_CLIENT_SECRET', 'secret'),
     },
+    originWhitelist: originwhitelist.concat(optional('NODE_ENV') !== 'production' ? [
+        // development only
+        '127.0.0.1',
+        'localhost',
+    ] : [
+
+    ]),
     logging: {
         namespace: optional('LOGGING_NAMESPACE', name),
         level: optional('LOGGING_LEVEL', 'error'),
