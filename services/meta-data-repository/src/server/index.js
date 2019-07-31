@@ -2,8 +2,10 @@ const express = require('express');
 const { EventBus, EventBusManager } = require('@openintegrationhub/event-bus');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
+const logger = require('@basaas/node-logger');
 const swaggerDocument = require('../../doc/openapi');
 
 const { isLocalRequest } = require('../util/common');
@@ -11,6 +13,9 @@ const { isLocalRequest } = require('../util/common');
 const iamLib = require('./../module/iam');
 const DAO = require('../dao');
 const conf = require('../conf');
+
+const log = logger.getLogger(`${conf.logging.namespace}/server`);
+
 
 const jsonParser = bodyParser.json();
 
@@ -34,7 +39,7 @@ module.exports = class Server {
         this.app.disable('x-powered-by');
         this.iam = iam || iamLib;
         this.mongoDbConnection = mongoDbConnection;
-
+        this.setupCors();
         // apply adapter
         // dao
         if (dao) {
@@ -66,12 +71,33 @@ module.exports = class Server {
         });
 
         // setup routes
-        apiBase.use('/domains', require('./../route/domains'));
+        apiBase.use('/domains', cors(this.corsOptions), require('./../route/domains'));
 
         this.app.use(conf.apiBase, apiBase);
 
         // error middleware
         this.app.use(require('./../middleware/error').default);
+    }
+
+    setupCors() {
+        this.corsOptions = {
+            credentials: true,
+            origin(origin, callback) {
+                if (conf.originWhitelist.find(elem => origin.indexOf(elem) >= 0)) {
+                    callback(null, true);
+                } else {
+                    log.info('Blocked by CORS');
+                    log.info(origin);
+                    log.info(conf.originWhitelist);
+                    callback(new Error('Not allowed by CORS'));
+                }
+            },
+        };
+
+        this.app.use((req, res, next) => {
+            req.headers.origin = req.headers.origin || req.headers.host;
+            next();
+        });
     }
 
     async setupDatabase() {
