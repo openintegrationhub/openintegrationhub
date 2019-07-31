@@ -119,6 +119,23 @@ router.put('/:id', domainOwnerOrAllowed({
     }
 });
 
+router.delete('/:id', domainOwnerOrAllowed({
+    permissions: ['not.defined'],
+}), async (req, res, next) => {
+    try {
+        res.send({
+            data: transformDbResults(await DomainDAO.delete({
+                id: req.params.id,
+            })),
+        });
+    } catch (err) {
+        log.error(err);
+        next({
+            status: 500,
+        });
+    }
+});
+
 // schemas
 router.use('/:id/schemas', (req, res, next) => {
     req.domainId = req.params.id;
