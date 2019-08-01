@@ -3,8 +3,8 @@
 ---
 
 **Creator:** Philipp ([philecs](https://github.com/philecs)), Cloud Ecosystem e.V. <br>
-**Last revised by:** - <br>
-**Last update:** 23-07-2019
+**Last revised by:** Philipp ([philecs](https://github.com/philecs)) <br>
+**Last update:** 01-08-2019
 
 ---
 
