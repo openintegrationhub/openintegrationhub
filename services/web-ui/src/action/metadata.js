@@ -4,12 +4,13 @@ import { getConfig } from '../conf';
 
 const conf = getConfig();
 export const GET_DOMAINS = 'GET_DOMAINS';
+export const GET_METADATA_PAGE = 'GET_METADATA_PAGE';
 export const UPDATE_DOMAIN = 'UPDATE_DOMAIN';
 export const UPDATE_METADATA_ERROR = 'UPDATE_METADATA_ERROR';
 export const CREATE_DOMAIN = 'CREATE_DOMAIN';
 export const DELETE_DOMAIN = 'DELETE_DOMAIN';
 export const DELETE_DOMAIN_SCHEMA = 'DELETE_DOMAIN_SCHEMA';
-export const GET_METADATA_PAGE = 'GET_METADATA_PAGE';
+export const CREATE_DOMAIN_SCHEMA = 'CREATE_DOMAIN_SCHEMA';
 
 
 export const getDomains = () => async (dispatch) => {
@@ -51,7 +52,7 @@ export const getMetadataPage = page => async (dispatch) => {
 export const updateDomain = domainData => async (dispatch) => {
     try {
         await axios({
-            method: 'patch',
+            method: 'put',
             url: `${conf.endpoints.metadata}/domains/${domainData.id}`,
             withCredentials: true,
             json: true,
@@ -103,6 +104,27 @@ export const deleteDomain = domainId => async (dispatch) => {
 
         dispatch({
             type: DELETE_DOMAIN,
+        });
+        dispatch(getDomains());
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const createDomainSchema = data => async (dispatch) => {
+    try {
+        await axios({
+            method: 'post',
+            url: `${conf.endpoints.metadata}/domains/${data.domainId}/schemas/${data.uri}`,
+            withCredentials: true,
+            json: true,
+            data: {
+                data,
+            },
+        });
+
+        dispatch({
+            type: CREATE_DOMAIN_SCHEMA,
         });
         dispatch(getDomains());
     } catch (err) {

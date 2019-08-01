@@ -42,11 +42,23 @@ class MetaData extends React.Component {
     state= {
         addDomain: false,
         editorData: null,
+        wasChanged: false,
     }
 
     constructor(props) {
-        super();
+        super(props);
         props.getDomains();
+        this.dummyData = {
+            name: 'String',
+            description: 'string',
+            public: true,
+            owners: [
+                {
+                    id: props.auth._id,
+                    type: 'USER',
+                },
+            ],
+        };
     }
 
     addDomain = () => {
@@ -56,16 +68,20 @@ class MetaData extends React.Component {
     };
 
     saveDomain = () => {
-        this.props.createDomain(this.state.editorData);
-        this.setState({
-            addDomain: false,
-        });
+        if (this.state.wasChanged) {
+            this.props.createDomain(this.state.editorData);
+            this.setState({
+                addDomain: false,
+                wasChanged: false,
+            });
+        }
     }
 
     editorChange(e) {
         if (!e.error) {
             this.setState({
                 editorData: e.jsObject,
+                wasChanged: true,
             });
         }
     }
@@ -140,12 +156,16 @@ class MetaData extends React.Component {
                         <JSONInput
                             id = 'jsonEdit'
                             locale = {locale}
+                            placeholder = {this.dummyData}
                             theme = 'dark_vscode_tribute'
                             height = '550px'
                             width = '600px'
                             onChange={this.editorChange.bind(this)}
                         />
-                        <Button variant="outlined" aria-label="Add" onClick={this.saveComponent}>
+                        <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ addDomain: false }); }}>
+                            close
+                        </Button>
+                        <Button variant="outlined" aria-label="Add" onClick={this.saveDomain} disabled={!this.state.wasChanged}>
                             Save
                         </Button>
                     </div>
@@ -158,6 +178,7 @@ class MetaData extends React.Component {
 
 const mapStateToProps = state => ({
     metadata: state.metadata,
+    auth: state.auth,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     getDomains,
