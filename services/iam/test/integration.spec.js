@@ -150,40 +150,212 @@ describe('routes', () => {
         let testUserId = null;
         let TenantID = null;
 
-        const testUserData = {
-            'username': 'blubb@basaas.com',
-            'firstname': 'blubb',
-            'lastname': 'blubb',
-            'status': 'ACTIVE',
-            'password': 'blubb',
-            'role': CONSTANTS.ROLES.USER,
-        };
+        beforeEach(async (done) => {
 
-        beforeAll(async (done) => {
+            const jsonPayload = {
+                'name': 'testTenant',
+                'confirmed': true,
+                'status': 'ACTIVE',
+            };
 
-            const response = await request.post('/api/v1/users')
+            const response = await request.post('/api/v1/tenants')
+                .send(jsonPayload)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+            TenantID = response.body.id;
+
+            const testUserData = {
+                'username': 'blubb@basaas.com',
+                'firstname': 'blubb',
+                'lastname': 'blubb',
+                'status': 'ACTIVE',
+                'password': 'blubb',
+                tenant: TenantID,
+            };
+
+            const response2 = await request.post('/api/v1/users')
                 .send(testUserData)
                 .set('Authorization', tokenAdmin)
                 .set('Accept', /application\/json/)
                 .expect(200);
-            testUserId = response.body.id;
+            testUserId = response2.body.id;
 
             done();
 
         });
 
-        xtest('User is successfully created', async () => {
-            const response = await request.post('/api/v1/users')
-                .send(testUserData)
+        afterEach(async (done) => {
+
+            const response = await request.get('/api/v1/tenants')
                 .set('Authorization', tokenAdmin)
                 .set('Accept', /application\/json/)
                 .expect(200);
-            testUserId = response.body.id;
+
+            /* eslint-disable-next-line no-restricted-syntax  */
+            for (const tenant of response.body) {
+                /* eslint-disable-next-line no-await-in-loop  */
+                await request.delete(`/api/v1/tenants/${tenant._id}`)
+                    .set('Authorization', tokenAdmin)
+                    .set('Accept', /application\/json/)
+                    .expect(200);
+            }
+
+            done();
+
         });
 
-        test('Tenant is successfully created', async () => {
+        test('Tenant users are returned', async () => {
+
+            const tenantAdminUser = {
+                'username': 'blubb2@basaas.com',
+                'firstname': 'blubb',
+                'lastname': 'blubb',
+                'status': 'ACTIVE',
+                'password': 'blubb',
+                tenant: TenantID,
+                permissions: [PERMISSIONS['tenant.all']],
+            };
+
+            const tenantNormalUser = {
+                'username': 'blubb3@basaas.com',
+                'firstname': 'blubb',
+                'lastname': 'blubb',
+                'status': 'ACTIVE',
+                'password': 'blubb',
+                tenant: TenantID,
+            };
+
+            await request.post('/api/v1/users')
+                .send(tenantAdminUser)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            const loginResponse = await request.post('/login')
+                .send({
+                    username: tenantAdminUser.username,
+                    password: tenantAdminUser.password,
+                })
+                .set('Accept', /application\/json/);
+
+            const tenantAdminToken = `Bearer ${loginResponse.body.token}`;
+
+            const response1 = await request.get(`/api/v1/tenants/${TenantID}/users`)
+                .set('Authorization', tenantAdminToken)
+                .set('Accept', /application\/json/)
+                .expect(200);
+            expect(response1.body.length).toBe(2);
+
+            await request.post('/api/v1/users')
+                .send(tenantNormalUser)
+                .set('Authorization', tenantAdminToken)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            const response2 = await request.get(`/api/v1/tenants/${TenantID}/users`)
+                .set('Authorization', tenantAdminToken)
+                .set('Accept', /application\/json/)
+                .expect(200);
+            expect(response2.body.length).toBe(3);
+
+        });
+
+        // FIXME
+        test('tenant can be edited by tenant admin', async () => {
+
+            const tenantPayload = {
+                'name': 'testTenant22',
+                'confirmed': true,
+                'status': 'ACTIVE',
+            };
+
+            const newTenantName = 'testTenant22-NEW';
+
+            const response = await request.post('/api/v1/tenants')
+                .send(tenantPayload)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+            const tenantId = response.body.id;
+
+            const tenantAdminUser = {
+                'username': 'blubb9876@basaas.com',
+                'firstname': 'blubb',
+                'lastname': 'blubb',
+                'status': 'ACTIVE',
+                'password': 'blubb',
+                tenant: tenantId,
+                permissions: [PERMISSIONS['tenant.all']],
+            };
+
+            const tenantNormalUser = {
+                'username': 'blubb9877@basaas.com',
+                'firstname': 'blubb',
+                'lastname': 'blubb',
+                'status': 'ACTIVE',
+                'password': 'blubb',
+                tenant: tenantId,
+            };
+
+            await request.post('/api/v1/users')
+                .send(tenantNormalUser)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            const loginResponseTenantUser = await request.post('/login')
+                .send({
+                    username: tenantNormalUser.username,
+                    password: tenantNormalUser.password,
+                })
+                .set('Accept', /application\/json/);
+
+            const tenantUserToken = loginResponseTenantUser.body.token;
+
+            // normal user is not allowed to modify tenant
+            await request.patch(`/api/v1/tenants/${tenantId}`)
+                .send({
+                    name: newTenantName,
+                })
+                .set('Authorization', `Bearer ${tenantUserToken}`)
+                .set('Accept', /application\/json/)
+                .expect(403);
+
+            await request.post('/api/v1/users')
+                .send(tenantAdminUser)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            const loginResponseTenantAdmin = await request.post('/login')
+                .send({
+                    username: tenantAdminUser.username,
+                    password: tenantAdminUser.password,
+                })
+                .set('Accept', /application\/json/);
+
+            const tenantAdminToken = loginResponseTenantAdmin.body.token;
+
+            // tenant admin can modify tenant
+            await request.patch(`/api/v1/tenants/${tenantId}`)
+                .send({
+                    name: newTenantName,
+                })
+                .set('Authorization', `Bearer ${tenantAdminToken}`)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            expect((await request.get(`/api/v1/tenants/${tenantId}`)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)).body.name).toBe(newTenantName);
+
+        });
+
+        test('Deleting tenant deletes all tenant users', async () => {
+
             const jsonPayload = {
-                'name': 'testTenant',
+                'name': 'testTenant22',
                 'confirmed': true,
                 'status': 'ACTIVE',
             };
@@ -192,179 +364,60 @@ describe('routes', () => {
                 .set('Authorization', tokenAdmin)
                 .set('Accept', /application\/json/)
                 .expect(200);
-            TenantID = response.body.id;
-        });
+            const tenantId = response.body.id;
 
-        test('User is assigned to tenant', async () => {
-
-            // const loginResponse = await request.post('/login')
-            //     .send({
-            //         username: testUserData.username,
-            //         password: testUserData.password,
-            //     })
-            //     .set('Accept', /application\/json/);
-            //
-            // const userToken = loginResponse.body.token;
-            //
-            // const role2 = {
-            //     name: 'TENANT_GUEST',
-            //     permissions: [
-            //         PERMISSIONS['tenant.profile.read'],
-            //     ],
-            //     description: 'Tenant guest role',
-            // };
-            //
-            // await request.post('/api/v1/roles')
-            //     .send(role2)
-            //     .set('Authorization', tokenAdmin)
-            //     .set('Accept', /application\/json/)
-            //     .expect(200);
-
-            const TENANT_ADMIN_ROLE_RESP = await request.get('/api/v1/roles')
-                .set('Accept', /application\/json/)
-                .set('Authorization', tokenAdmin)
-                .expect(200);
-
-            const TENANT_ADMIN_ROLE_OBJ = TENANT_ADMIN_ROLE_RESP.body.find(elem => elem.name === 'TENANT_ADMIN');
-
-            const jsonPayload = {
-                'user': testUserId,
-                'role': TENANT_ADMIN_ROLE_OBJ._id,
-            };
-            const response = await request.post(`/api/v1/tenants/${TenantID}/users`)
-                .send(jsonPayload)
-                .set('Authorization', tokenAdmin)
-                .set('Accept', /application\/json/)
-                .expect(200);
-            expect(response.body._id).toBe(testUserId);
-        });
-
-        test('Tenant users are returned', async () => {
-
-            const response = await request.get(`/api/v1/tenants/${TenantID}/users`)
-                .set('Authorization', tokenAdmin)
-                .set('Accept', /application\/json/)
-                .expect(200);
-            expect(response.body[0].username).toBe(testUserData.username);
-            expect(response.body[0].memberships.length).toBe(1);
-        });
-
-        xtest('User is re-assigned to tenant with new role', async () => {
-
-            const role1 = {
-                name: 'TENANT_DEVELOPER',
-                permissions: [
-                    PERMISSIONS['tenant.profile.read'],
-                ],
-                description: 'Tenant developer role',
+            const tenantAdminUser = {
+                'username': 'blubb9876@basaas.com',
+                'firstname': 'blubb',
+                'lastname': 'blubb',
+                'status': 'ACTIVE',
+                'password': 'blubb',
+                tenant: tenantId,
+                permissions: [PERMISSIONS['tenant.all']],
             };
 
-            const loginResponse = await request.post('/login')
-                .send({
-                    username: testUserData.username,
-                    password: testUserData.password,
-                })
-                .set('Accept', /application\/json/);
-
-            const userToken = loginResponse.body.token;
-
-            const newRole = await request.post('/api/v1/roles')
-                .send(role1)
-                .set('Authorization', `Bearer ${userToken}`)
-                .set('Accept', /application\/json/)
-                .expect(200);
-
-            // FIXME
-            // const responseOldRole = await request.get(`/api/v1/tenants/${TenantID}/users`)
-            //     .set('Authorization', tokenAdmin)
-            //     .set('Accept', /application\/json/)
-            //     .expect(200);
-            // expect(responseOldRole.body[0].memberships.length).toBe(1);
-            // expect(responseOldRole.body[0].memberships[0].role).toBe(CONSTANTS.MEMBERSHIP_ROLES.TENANT_GUEST);
-            //
-            // const jsonPayload = {
-            //     'user': testUserId,
-            //     'role': CONSTANTS.MEMBERSHIP_ROLES.TENANT_DEVELOPER,
-            // };
-            //
-            // const response = await request.post(`/api/v1/tenants/${TenantID}/users`)
-            //     .send(jsonPayload)
-            //     .set('Authorization', tokenAdmin)
-            //     .set('Accept', /application\/json/)
-            //     .expect(200);
-            // expect(response.body._id).toBe(testUserId);
-            //
-            // const responseNewRole = await request.get(`/api/v1/tenants/${TenantID}/users`)
-            //     .set('Authorization', tokenAdmin)
-            //     .set('Accept', /application\/json/)
-            //     .expect(200);
-            // expect(responseNewRole.body[0].memberships.length).toBe(1);
-            // expect(responseNewRole.body[0].memberships[0].role).toBe(jsonPayload.role);
-
-        });
-
-        // FIXME
-        xtest('tenant can be edited by tenant admin', async () => {
-
-            const loginResponse = await request.post('/login')
-                .send({
-                    username: testUserData.username,
-                    password: testUserData.password,
-                })
-                .set('Accept', /application\/json/);
-
-            const userToken = loginResponse.body.token;
-
-            // normal user is not allowed to modify tenant
-            await request.patch(`/api/v1/tenants/${TenantID}`)
-                .send({
-                    name: 'new-tenant-name-2',
-                })
-                .set('Authorization', `Bearer ${userToken}`)
-                .set('Accept', /application\/json/)
-                .expect(403);
-
-            const jsonPayload = {
-                'user': testUserId,
-                'role': CONSTANTS.MEMBERSHIP_ROLES.TENANT_ADMIN,
+            const tenantNormalUser = {
+                'username': 'blubb9877@basaas.com',
+                'firstname': 'blubb',
+                'lastname': 'blubb',
+                'status': 'ACTIVE',
+                'password': 'blubb',
+                tenant: tenantId,
             };
 
-            // modify user role to TENANT_ADMIN
-            await request.post(`/api/v1/tenants/${TenantID}/users`)
-                .send(jsonPayload)
+            await request.post('/api/v1/users')
+                .send(tenantAdminUser)
                 .set('Authorization', tokenAdmin)
                 .set('Accept', /application\/json/)
                 .expect(200);
 
-            const fetchNewTokenResp = await request.get('/api/v1/tokens/refresh')
-                .set('Accept', /application\/json/)
-                .set('Authorization', `Bearer ${userToken}`);
-
-            const newToken = fetchNewTokenResp.body.token;
-
-            // user can now edit the tenant
-            await request.patch(`/api/v1/tenants/${TenantID}`)
-                .send({
-                    name: 'new-tenant-name-2',
-                })
-                .set('Authorization', `Bearer ${newToken}`)
-                .set('Accept', /application\/json/)
-                .expect(200);
-
-        });
-
-        test('User is unassigned from tenant', async () => {
-
-            await request.delete(`/api/v1/tenants/${TenantID}/user/${testUserId}`)
+            await request.post('/api/v1/users')
+                .send(tenantNormalUser)
                 .set('Authorization', tokenAdmin)
                 .set('Accept', /application\/json/)
                 .expect(200);
 
-            const response2 = await request.get(`/api/v1/tenants/${TenantID}/users`)
+            const response2 = await request.get(`/api/v1/tenants/${tenantId}/users`)
                 .set('Authorization', tokenAdmin)
                 .set('Accept', /application\/json/)
                 .expect(200);
-            expect(response2.body.length).toBe(0);
+            expect(response2.body.length).toBe(2);
+
+            await request.delete(`/api/v1/tenants/${tenantId}`)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            const response3 = await request.get(`/api/v1/tenants/${tenantId}/users`)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200); // TODO return 404 if tenant does not exist
+            expect(response3.body.length).toBe(0);
+
+            await request.get(`/api/v1/tenants/${tenantId}`)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(404);
 
         });
 
@@ -429,10 +482,9 @@ describe('routes', () => {
             'lastname': 'blubb',
             'status': 'ACTIVE',
             'password': 'blubb',
-            'role': CONSTANTS.ROLES.USER,
         };
 
-        xtest('get token fails if user is logged out', async () => {
+        test('token invalid if user is unauthorized', async () => {
 
             /* Create new user */
 
@@ -456,24 +508,6 @@ describe('routes', () => {
 
             /* Refresh token success */
             await request.get('/api/v1/tokens/refresh')
-                .set('Cookie', userCookie)
-                .set('Accept', /application\/json/)
-                .expect(200);
-
-            /* Logout */
-            await request.post('/logout')
-                .set('Cookie', userCookie)
-                .set('Accept', /application\/json/)
-                .expect(200);
-
-            /* Refresh token fails */
-            await request.get('/api/v1/tokens/refresh')
-                .set('Cookie', userCookie)
-                .set('Accept', /application\/json/)
-                .expect(401);
-
-            /* Refresh token success with user token */
-            await request.get('/api/v1/tokens/refresh')
                 .set('Authorization', userToken)
                 .set('Accept', /application\/json/)
                 .expect(200);
@@ -485,11 +519,36 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(200);
 
+            /* Refresh token fails */
+            await request.get('/api/v1/tokens/refresh')
+                .set('Authorization', userToken)
+                .set('Accept', /application\/json/)
+                .expect(401);
+
+            /* Admin enables user */
+            await request.patch(`/api/v1/users/${testUserId}`)
+                .send({ status: CONSTANTS.STATUS.ACTIVE })
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            /* Refresh token works again */
+            await request.get('/api/v1/tokens/refresh')
+                .set('Authorization', userToken)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            /* Logout */
+            await request.post('/logout')
+                .set('Cookie', userCookie)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
             /* Refresh token fails with user token */
             await request.get('/api/v1/tokens/refresh')
                 .set('Authorization', userToken)
                 .set('Accept', /application\/json/)
-                .expect(403);
+                .expect(401);
 
         });
 
@@ -503,8 +562,8 @@ describe('routes', () => {
             lastname: 'account',
             status: CONSTANTS.STATUS.ACTIVE,
             password: 'testpwd',
-            role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
-            permissions: [RESTRICTED_PERMISSIONS['iam.token.create']],
+            // role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
+            permissions: [RESTRICTED_PERMISSIONS['all']],
         };
 
         const testUserData = {
@@ -513,7 +572,7 @@ describe('routes', () => {
             'lastname': 'user',
             'status': 'ACTIVE',
             'password': 'usertest',
-            'role': CONSTANTS.ROLES.USER,
+            // 'role': CONSTANTS.ROLES.USER,
         };
 
         test('ephemeral service account token is created', async () => {
@@ -555,7 +614,7 @@ describe('routes', () => {
                 .expect(200);
 
             /* Service account can fetch user data */
-            await request.get(`/api/v1/users/${userId}`)
+            await request.get('/api/v1/users/me')
                 .set('Authorization', `Bearer ${portTokenResponse.body.token}`)
                 .set('Accept', /application\/json/)
                 .expect(200);
@@ -588,7 +647,7 @@ describe('routes', () => {
                 })
                 .set('Authorization', tokenAdmin)
                 .set('Accept', /application\/json/)
-                .expect(403);
+                .expect(404);
 
             const createUserResponse2 = await request.post('/api/v1/users')
                 .send({
@@ -604,15 +663,15 @@ describe('routes', () => {
                 .expect(200);
             const userId2 = createUserResponse2.body.id;
 
-            /* Missing inquirer id */
-            await request.post('/api/v1/tokens')
-                .send({
-                    accountId: userId2,
-                    expiresIn: '1h',
-                })
-                .set('Authorization', tokenAdmin)
-                .set('Accept', /application\/json/)
-                .expect(400);
+            // /* Missing inquirer id */
+            // await request.post('/api/v1/tokens')
+            //     .send({
+            //         accountId: userId2,
+            //         expiresIn: '1h',
+            //     })
+            //     .set('Authorization', tokenAdmin)
+            //     .set('Accept', /application\/json/)
+            //     .expect(400);
 
         });
 
@@ -625,7 +684,6 @@ describe('routes', () => {
                 'lastname': 'user',
                 'status': 'ACTIVE',
                 'password': 'usertest',
-                'role': CONSTANTS.ROLES.USER,
             };
 
             const serviceAccountData = {
@@ -634,7 +692,6 @@ describe('routes', () => {
                 lastname: 'account',
                 status: CONSTANTS.STATUS.ACTIVE,
                 password: 'testpwd',
-                role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
                 permissions: [RESTRICTED_PERMISSIONS['iam.token.create'], RESTRICTED_PERMISSIONS['iam.token.introspect']],
             };
 
@@ -701,7 +758,7 @@ describe('routes', () => {
                 lastname: 'account',
                 status: CONSTANTS.STATUS.ACTIVE,
                 password: 'testpwd',
-                role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
+                // role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
                 permissions: [RESTRICTED_PERMISSIONS['iam.token.create'], RESTRICTED_PERMISSIONS['iam.token.introspect']],
             };
 
@@ -747,7 +804,7 @@ describe('routes', () => {
                 .expect(200);
 
             /* Service account fetch user data is successful */
-            await request.get(`/api/v1/users/${userId}`)
+            await request.get('/api/v1/users/me')
                 .set('Authorization', `Bearer ${portTokenResponse.body.token}`)
                 .set('Accept', /application\/json/)
                 .expect(200);
@@ -765,40 +822,10 @@ describe('routes', () => {
                 .expect(200);
 
             /* Service account fetch user data fails */
-            await request.get(`/api/v1/users/${userId}`)
+            await request.get('/api/v1/users/me')
                 .set('Authorization', `Bearer ${portTokenResponse.body.token}`)
                 .set('Accept', /application\/json/)
                 .expect(401);
-
-        });
-
-        xtest('introspect service token', async () => {
-
-            /* Log in as service account */
-            // const response = await request.post('/login')
-            //     .send({
-            //         username: serviceAccountData.username,
-            //         password: serviceAccountData.password,
-            //     })
-            //     .set('Accept', /application\/json/)
-            //     .expect(200);
-            // const serviceAccountToken = `Bearer ${response.body.token}`;
-            //
-            // /* Service account can create a ephemeral token for the given user id */
-            // const portTokenResponse = await request.post('/api/v1/tokens')
-            //     .send({
-            //         accountId: userId,
-            //         expiresIn: '1h',
-            //     })
-            //     .set('Authorization', serviceAccountToken)
-            //     .set('Accept', /application\/json/)
-            //     .expect(200);
-            //
-            // /* Service account can fetch user data */
-            // await request.get(`/api/v1/users/${userId}`)
-            //     .set('Authorization', `Bearer ${portTokenResponse.body.token}`)
-            //     .set('Accept', /application\/json/)
-            //     .expect(200);
 
         });
 

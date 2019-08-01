@@ -71,6 +71,8 @@ const TenantDAO = {
 
         log.debug('delete.tenant', { id });
 
+        await AccountDAO.delete({ tenant: id });
+
         await Tenant.deleteOne({ _id: id });
         log.debug('deleted.tenant', { id });
         auditLog.info('delete.tenant', { data: { id } });
