@@ -28,7 +28,7 @@ import { getConfig } from '../../../conf';
 
 // Actions
 import {
-    updateDomain, deleteDomain,
+    updateDomain, deleteDomain, createDomainSchema, deleteDomainSchema,
 } from '../../../action/metadata';
 
 const conf = getConfig();
@@ -57,8 +57,8 @@ class MetaDataTeaser extends React.PureComponent {
     constructor(props) {
         super(props);
         this.dummyData = {
-            name: 'string',
-            description: 'string',
+            name: 'String',
+            description: 'String',
             value: {
                 $id: 'address',
                 required: [
@@ -78,12 +78,6 @@ class MetaDataTeaser extends React.PureComponent {
                     },
                 },
             },
-            owners: [
-                {
-                    id: 'string',
-                    type: 'USER',
-                },
-            ],
         };
     }
 
@@ -92,20 +86,48 @@ class MetaDataTeaser extends React.PureComponent {
         return this.state.schemas.map(schema => <Grid item xs={12} key={schema.id}>
             <Grid container spacing={2}>
                 <Grid item xs={2}><InputLabel>Name:</InputLabel><Typography>{schema.name}</Typography></Grid>
-                <Grid item xs={10}><InputLabel>Uri:</InputLabel><Typography>{schema.uri}</Typography></Grid>
+                <Grid item xs={9}><InputLabel>Uri:</InputLabel><Typography>{schema.uri}</Typography></Grid>
+                <Grid item xs={1}>
+                    <Button variant="outlined" aria-label="next" onClick={this.deleteSchema.bind(this, this.props.data.id, schema.uri)}>
+                        <Delete/>
+                    </Button>
+                </Grid>
             </Grid>
         </Grid>);
     }
 
-    saveSchema(e) {
+    async saveSchema(domainId, e) {
         e.stopPropagation();
-        // if (this.state.wasChanged) {
-        //     this.setState({
-        //         addSchema: false,
-        //         wasChanged: false,
-        //         editorData: null,
-        //     });
-        // }
+        if (this.state.wasChanged) {
+            await this.props.createDomainSchema(domainId, this.state.editorData);
+            const result = await axios({
+                method: 'get',
+                url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+                withCredentials: true,
+                json: true,
+            });
+
+            this.setState({
+                schemas: result.data.data,
+                addSchema: false,
+                wasChanged: false,
+                editorData: null,
+            });
+        }
+    }
+
+    async deleteSchema(domainId, uri, e) {
+        e.stopPropagation();
+        await this.props.deleteDomainSchema(domainId, uri);
+        const result = await axios({
+            method: 'get',
+            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+            withCredentials: true,
+            json: true,
+        });
+        this.setState({
+            schemas: result.data.data,
+        });
     }
 
     editOpen= (e) => {
@@ -216,7 +238,7 @@ class MetaDataTeaser extends React.PureComponent {
                                     <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ addSchema: false }); }}>
                             close
                                     </Button>
-                                    <Button variant="outlined" aria-label="Add" onClick={this.addSchema} disabled={!this.state.wasChanged}>
+                                    <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
                             Save
                                     </Button>
                                 </div>
@@ -262,6 +284,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
     deleteDomain,
     updateDomain,
+    createDomainSchema,
+    deleteDomainSchema,
 }, dispatch);
 
 export default flow(
