@@ -111,13 +111,13 @@ export const deleteDomain = domainId => async (dispatch) => {
     }
 };
 
-export const createDomainSchema = data => async (dispatch) => {
+export const createDomainSchema = (domainId, data) => async (dispatch) => {
     try {
-        await axios({
+        const response = await axios({
             method: 'post',
-            url: `${conf.endpoints.metadata}/domains/${data.domainId}/schemas/${data.uri}`,
+            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
             withCredentials: true,
-            json: true,
+            // json: true,
             data: {
                 data,
             },
@@ -127,8 +127,10 @@ export const createDomainSchema = data => async (dispatch) => {
             type: CREATE_DOMAIN_SCHEMA,
         });
         dispatch(getDomains());
+        return response;
     } catch (err) {
         console.log(err);
+        return err;
     }
 };
 
@@ -136,7 +138,7 @@ export const deleteDomainSchema = (domainId, uri) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',
-            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas/${uri}`,
+            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas/${uri.split('/')[6]}`,
             withCredentials: true,
         });
 
