@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/secret-service",
-  "version": "1.2.3",
+  "version": "1.2.5",
   "description": "ExpressJS based service to manage credentials and secrets.",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -12,7 +12,7 @@
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
     "@openintegrationhub/event-bus": "1.0.2",
-    "@openintegrationhub/iam-utils": "1.4.0",
+    "@openintegrationhub/iam-utils": "1.4.1",
     "assert": "2.0.0",
     "base64url": "3.0.1",
     "dot-prop": "5.1.0",

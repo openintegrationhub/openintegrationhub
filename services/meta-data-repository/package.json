@@ -17,7 +17,7 @@
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
     "@openintegrationhub/event-bus": "^1.0.2",
-    "@openintegrationhub/iam-utils": "1.4.0",
+    "@openintegrationhub/iam-utils": "1.4.1",
     "ajv": "6.10.1",
     "cors": "^2.8.5",
     "dotenv": "8.0.0",

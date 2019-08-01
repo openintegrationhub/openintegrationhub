@@ -6,16 +6,7 @@ module.exports = {
       sub: 'TestAdmin',
       username: 'admin@example.com',
       role: 'ADMIN',
-      memberships: [
-        {
-          role: 'TENANT_ADMIN',
-          tenant: 'testTenant1',
-        },
-        {
-          role: 'TENANT_ADMIN',
-          tenant: 'testTenant2',
-        },
-      ],
+      permissions: ['all'],
       iat: 1337,
     },
   },
@@ -25,15 +16,8 @@ module.exports = {
     value: {
       sub: 'TestGuest',
       username: 'guest@example.com',
-      role: 'GUEST',
-      memberships: [
-        {
-          permissions: ['flows.read', 'flows.write'],
-          role: 'TENANT_Guest',
-          tenant: 'testTenant1',
-          active: true,
-        },
-      ],
+      permissions: ['flows.read', 'flows.write'],
+      tenant: 'testTenant1',
       iat: 1337,
       aud: 'Test_Audience',
       iss: 'Test_Issuer',
@@ -45,21 +29,8 @@ module.exports = {
     value: {
       sub: 'PermitGuy',
       username: 'admin@example.com',
-      role: 'GUEST',
       permissions: ['flows.read', 'flows.write'],
-      memberships: [
-        {
-          role: 'TENANT_ADMIN',
-          tenant: 'testTenant1',
-          permissions: ['flows.read', 'flows.write'],
-          active: true,
-        },
-        {
-          role: 'TENANT_ADMIN',
-          tenant: 'testTenant2',
-          permissions: ['flows.read', 'flows.write'],
-        },
-      ],
+      tenant: 'testTenant1',
       iat: 1337,
     },
   },
@@ -69,16 +40,8 @@ module.exports = {
     value: {
       sub: 'UnpermitGuy',
       username: 'guest@example.com',
-      role: 'GUEST',
-      permissions: ['schoko.riegel'],
-      memberships: [
-        {
-          role: 'TENANT_Guest',
-          tenant: 'testTenant1',
-          permissions: ['müsli.riegel'],
-          active: true,
-        },
-      ],
+      tenant: 'testTenant1',
+      permissions: ['müsli.riegel', 'schoko.riegel'],
       iat: 1337,
     },
   },
@@ -88,16 +51,8 @@ module.exports = {
     value: {
       sub: 'PartpermitGuy',
       username: 'guest@example.com',
-      role: 'GUEST',
-      permissions: ['schoko.riegel'],
-      memberships: [
-        {
-          role: 'TENANT_Guest',
-          tenant: 'testTenant1',
-          permissions: ['flows.read'],
-          active: true,
-        },
-      ],
+      tenant: 'testTenant1',
+      permissions: ['flows.read', 'schoko.riegel'],
       iat: 1337,
     },
   },
