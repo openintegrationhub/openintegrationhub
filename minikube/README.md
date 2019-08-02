@@ -17,8 +17,16 @@ If you are using a Linux distribution, you can automate this by using this termi
 4. Deploy the OIH Identity and Access Management. To do so, simply execute `kubectl apply -f ./2-IAM`. Again, wait until the service is fully deployed and ready.
 
 5. Create a service account and token for the other services in the OIH IAM. Using Postman (or another similar tool of choice), send these POST requests to `iam.localoih.com`:
-- Login as admin: Path: `/login`, Body: `{"username": "admin@openintegrationhub.com", "password": "somestring"}`.
-Use the returned token as a Bearer token for the remaining requests.
+- Login as admin: 
+  - Path: `/login`,
+  - Body:
+    ```json
+    {
+      "username": "admin@openintegrationhub.com",
+      "password": "somestring"
+    }
+    ```
+  - Use the returned token as a Bearer token for the remaining requests.
 - Create a service account: 
   - Path: `/api/v1/users`, 
   - Body: 
