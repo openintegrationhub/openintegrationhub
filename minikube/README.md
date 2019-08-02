@@ -17,7 +17,7 @@ If you are using a Linux distribution, you can automate this by using this termi
 4. Deploy the OIH Identity and Access Management. To do so, simply execute `kubectl apply -f ./2-IAM`. Again, wait until the service is fully deployed and ready.
 
 5. Create a service account and token for the other services in the OIH IAM. Using Postman (or another similar tool of choice), send these POST requests to `iam.localoih.com`:
-- Login as admin: 
+- Login as admin:
   - Path: `/login`,
   - Body:
     ```json
@@ -27,9 +27,9 @@ If you are using a Linux distribution, you can automate this by using this termi
     }
     ```
   - Use the returned token as a Bearer token for the remaining requests.
-- Create a service account: 
-  - Path: `/api/v1/users`, 
-  - Body: 
+- Create a service account:
+  - Path: `/api/v1/users`,
+  - Body:
     ```json
     {
       "username":"test@est.de",
@@ -44,11 +44,11 @@ If you are using a Linux distribution, you can automate this by using this termi
         "components.get"
       ]
     }
-    ``` 
+    ```
   - Use the returned id in the following request to create the token.
-- Create persistent service token: 
-  - Path: `/api/v1/tokens`, 
-  - Body: 
+- Create persistent service token:
+  - Path: `/api/v1/tokens`,
+  - Body:
     ```json
     {
       "accountId": "{PASTE SERVICE ACCOUNT ID HERE}",
@@ -63,28 +63,27 @@ If you are using a Linux distribution, you can automate this by using this termi
 6. Apply the shared secret via `kubecl apply -f ./3-Secret`. Ordinarily, each service would have its own secret for security reasons, but this is simplified for ease of use in a local context
 
 7. Deploy the remaining services via `kubecl apply -f ./4-Services`. This may take a while.
-**TODO**: Add the currently missing services
 
 8. The OIH is now running and ought to function just as it would in an online context. You can reach the various services via these URLS:
 - Identity and Access Management. Create and modify users, tenants, roles, and permissions.
-  - `iam.localoih.com` 
+  - `iam.localoih.com`
 - Secret Service. Securely store authentication data for other applications.
   - `skm.localoih.com`
 - Flow Repository. Create, modify, and start/stop integration flows.
   - `flow-repository.localoih.com`
-- Audit Log. View event logs spawned by the other services. 
+- Audit Log. View event logs spawned by the other services.
   - `auditlog.localoih.com`
 - Metadata Repository. Create and modify master data models used by your connectors.
   - `metadata.localoih.com`
 - Component Repository. Store and modify connector components.
   - `component-repository.localoih.com`
 - Attachment Storage. Temporarily store larger files for easier handling in flows.
-  - `attachment-storage.localoih.com`
+  - `attachment-storage-service.localoih.com`
 - Data Hub. Long-term storage for flow content.
   - `data-hub.localoih.com`
 - Integration Layer Service. Perform data operations such as merging or splitting objects.
   - `ils.localoih.com`
-- Web UI. A basic browser-based UI to control certain other services. 
+- Web UI. A basic browser-based UI to control certain other services.
   - `web-ui.localoih.com`
-   
+
 Most of these services have a Swagger documentation of their API available through the path `/api-docs`. Additionally, you can check their readmes in the `services` folder of the OIH Repository: https://github.com/openintegrationhub/openintegrationhub/tree/master/services
