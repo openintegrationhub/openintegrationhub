@@ -1,6 +1,19 @@
 In addion to setting up the Open Integration Hub on a cloud infrastucture such as GCP it is also possible to setup a local version of the framework. Make sure to perform the following to set up a local version of the OIH within your own minikube:
 
-1. Make certain minikube is installed, configured, and started. In particular, make certain that its ingress module is enabled (`minikube addons enable ingress`), and that it is endowed with sufficient resources. We suggest at least **8GB of memory** and **4 CPUs** (`minikube start --memory 8096 --cpus 4`). Make certain `kubectl` is configured to use minikube.
+---
+
+**Requirements:**
+
+Make sure that minikube is endowed with sufficient resources. We suggest at least:
+
+- _8GB of memory_
+- _4 CPUs_
+
+See _step 1_ for minikube command to allocate resources.
+
+---
+
+1. Make certain minikube is installed, configured, and started. In particular, make certain that its ingress module is enabled (`minikube addons enable ingress`). The command for allocating sufficient resources is: `minikube start --memory 8096 --cpus 4`. Make certain `kubectl` is configured to use minikube.
 For further information about how to set up minikube, see here:
 - [Install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 - [Installing Kubernetes with Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/)
