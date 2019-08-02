@@ -60,13 +60,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": ""
+                  "$ref": "#/components/schemas/getChunkResponse"
                 }
               }
             }
           },
           "400": {
-            "description": ""
+            "description": "Integration Layer Adapter ID required!"
+          },
+          "404": {
+            "description": "No chunks found!"
+          },
+          "500": {
+            "description": "Internal server error!"
           }
         }
       }
@@ -86,13 +92,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": ""
+                  "$ref": "#/components/schemas/addChunkResponse"
                 }
               }
             }
           },
           "400": {
-            "description": ""
+            "description": "Payload does not contain cid, input does not match schema or schema is invalid!"
+          },
+          "401": {
+            "description": "Service token not provided!"
+          },
+          "404": {
+            "description": "DomainId or schemaUri not found!"
+          },
+          "405": {
+            "description": "Either domainId with schemaUri or custom schema must be specified, but not both!"
+          },
+          "500": {
+            "description": "Internal server error!"
           }
         },
         "requestBody": {
@@ -123,13 +141,16 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": ""
+                  "$ref": "#/components/schemas/splitChunkResponse"
                 }
               }
             }
           },
           "400": {
-            "description": ""
+            "description": "Split schema is not defined or is invalid!"
+          },
+          "500": {
+            "description": "Internal server error!"
           }
         },
         "requestBody": {
@@ -152,14 +173,87 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3002/"
+      "url": "http://integration-layer.openintegrationhub.com/"
     },
     {
-      "url": "http://ils.openintegrationhub.com/"
+      "url": "http://localhost:3003/"
     }
   ],
   "components": {
     "schemas": {
+      "getChunkResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "5d400671657ee84fd82470e9"
+              },
+              "ilaId": {
+                "type": "string",
+                "example": "123asd"
+              },
+              "cid": {
+                "type": "string",
+                "example": "email"
+              },
+              "payload": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "doe@mail.com"
+                  }
+                }
+              },
+              "def": {
+                "type": "object",
+                "properties": {
+                  "domainId": {
+                    "type": "string",
+                    "example": "5d3031a20cbe7c00115c7d8f"
+                  },
+                  "schemaUri": {
+                    "type": "string",
+                    "example": "address"
+                  }
+                }
+              },
+              "meta": {
+                "type": "object",
+                "properties": {}
+              },
+              "expireAt": {
+                "type": "string",
+                "example": "2019-07-30T09:59:41.056Z"
+              },
+              "valid": {
+                "type": "boolean",
+                "example": true
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "string",
+                "example": 3
+              }
+            }
+          }
+        }
+      },
       "addChunk": {
         "type": "object",
         "properties": {
@@ -185,23 +279,6 @@
               "schemaUri": {
                 "type": "string",
                 "example": "address"
-              },
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "firstName": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "lastName": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "email": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                }
               }
             }
           },
@@ -221,6 +298,74 @@
                 "example": "doe@mail.com"
               }
             }
+          }
+        }
+      },
+      "addChunkResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "5d400671657ee84fd82470e9"
+              },
+              "ilaId": {
+                "type": "string",
+                "example": "123asd"
+              },
+              "cid": {
+                "type": "string",
+                "example": "email"
+              },
+              "payload": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "doe@mail.com"
+                  }
+                }
+              },
+              "def": {
+                "type": "object",
+                "properties": {
+                  "domainId": {
+                    "type": "string",
+                    "example": "5d3031a20cbe7c00115c7d8f"
+                  },
+                  "schemaUri": {
+                    "type": "string",
+                    "example": "address"
+                  }
+                }
+              },
+              "meta": {
+                "type": "object",
+                "properties": {}
+              },
+              "expireAt": {
+                "type": "string",
+                "example": "2019-07-30T09:59:41.056Z"
+              },
+              "valid": {
+                "type": "boolean",
+                "example": true
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {}
           }
         }
       },
@@ -290,6 +435,74 @@
                 }
               }
             }
+          }
+        }
+      },
+      "splitChunkResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "5d400671657ee84fd82470e9"
+              },
+              "ilaId": {
+                "type": "string",
+                "example": "123asd"
+              },
+              "cid": {
+                "type": "string",
+                "example": "email"
+              },
+              "payload": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "doe@mail.com"
+                  }
+                }
+              },
+              "splitKey": {
+                "type": "string",
+                "example": "001"
+              },
+              "meta": {
+                "type": "object",
+                "properties": {
+                  "splitKey": {
+                    "type": "string",
+                    "example": "001"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "example": "93628a8ed86c2d6378b370b7"
+                  }
+                }
+              },
+              "expireAt": {
+                "type": "string",
+                "example": "2019-07-30T09:59:41.056Z"
+              },
+              "valid": {
+                "type": "boolean",
+                "example": true
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {}
           }
         }
       }

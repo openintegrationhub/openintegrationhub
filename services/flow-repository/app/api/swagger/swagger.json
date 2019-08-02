@@ -651,11 +651,11 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "My Flow"
+            "example": "SnazzyToCodeComponent"
           },
           "description": {
             "type": "string",
-            "example": "This flow takes actions at regular invervals based on a set timer."
+            "example": "This flow polls for persons and posts them on webhoo.site."
           },
           "graph": {
             "$ref": "#/components/schemas/FlowGraph"
@@ -666,7 +666,8 @@
             "enum": [
               "ordinary",
               "realtime"
-            ]
+            ],
+            "example": "ordinary"
           },
           "cron": {
             "type": "string",
@@ -705,17 +706,20 @@
                   "inactive",
                   "starting",
                   "stopping"
-                ]
+                ],
+                "example": "inactive"
               },
               "createdAt": {
                 "type": "string",
                 "description": "Timestamp of flow creation",
-                "format": "date-time"
+                "format": "date-time",
+                "example": "2019-07-30T12:52:45.957Z"
               },
               "updatedAt": {
                 "type": "string",
                 "description": "Timestamp of most recent flow update",
-                "format": "date-time"
+                "format": "date-time",
+                "example": "2019-07-30T12:52:45.957Z"
               }
             }
           }
@@ -733,41 +737,52 @@
                 "id",
                 "command"
               ],
+              "example": [
+                {
+                  "id": "step_1",
+                  "componentId": "string",
+                  "name": "snazzy adapter for oih",
+                  "function": "getPersonsPolling",
+                  "description": "New description in progress"
+                },
+                {
+                  "id": "step_2",
+                  "componentId": "string",
+                  "name": "code_component",
+                  "function": "execute",
+                  "description": "",
+                  "fields": {
+                      "code": "function* run() {console.log('Calling external URL');yield request.post({uri: 'http://webhook.site/debc8244-3ca0-4449-af2b-e346c4f57b85', body: msg.body, json: true});}"
+                  }
+                }
+              ],
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "ID of this node, which will be referenced by edges",
-                  "example": "step_1"
+                  "description": "ID of this node, which will be referenced by edges"
                 },
                 "componentId": {
                   "type": "string",
-                  "description": "The component repository id of the component (e.g. adapter/transformer) to be used in this step.",
-                  "example": "5ca5c44c187c040010a9bb8b"
+                  "description": "The component repository id of the component (e.g. adapter/transformer) to be used in this step."
                 },
                 "credentials_id": {
                   "type": "string",
-                  "description": "A secret service id of a secret containing credentials for this node.",
-                  "example": "5ca5c44c187c040010a9bb8c"
+                  "description": "A secret service id of a secret containing credentials for this node."
                 },
                 "function": {
                   "type": "string",
-                  "description": "The function that the component will be executing.",
-                  "example": "getPersonsPolling"
+                  "description": "The function that the component will be executing."
                 },
                 "name": {
                   "type": "string",
-                  "description": "Descriptive name of this node",
-                  "example": "MS Office Adapter"
+                  "description": "Descriptive name of this node"
                 },
                 "description": {
                   "type": "string"
                 },
                 "fields": {
                   "type": "object",
-                  "description": "Optional arguments passed on to the component",
-                  "example": {
-                    "interval":"minute"
-                  }
+                  "description": "Optional arguments passed on to the component"
                 }
               }
             }

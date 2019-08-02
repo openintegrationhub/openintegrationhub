@@ -19,7 +19,7 @@ const AccountDAO = {
         const query = filter || {};
 
         return Account.findOne(query)
-            .populate('memberships.roles')
+            .populate('roles')
             .lean();
     },
 
@@ -49,42 +49,52 @@ const AccountDAO = {
         return account.toJSON();
     },
 
-    update: async ({
-        id, userObj, partialUpdate = false, method, 
-    }) => {
+    update: async (query, payload, opts) => {
 
-        const updateOperation = partialUpdate ? { $set: userObj } : userObj;
+        const updateOperation = opts.partialUpdate ? { $set: payload } : payload;
 
         const update = await Account.findOneAndUpdate({
-            _id: id,
+            _id: query._id,
         }, updateOperation);
 
-        logger.debug('updated.account', Object.assign({}, userObj, { password: '***' }));
+        logger.debug('updated.account', Object.assign({}, payload, { password: '***' }));
 
         auditLog.info('update.account', {
             data: {
-                userId: id,
-                props: Object.assign({}, userObj, { password: '***' }),
-                method,
+                userId: query._id,
+                props: Object.assign({}, payload, { password: '***' }),
+                partialUpdate: opts.partialUpdate,
             },
         });
         const event = new Event({
             headers: {
                 name: 'iam.user.modified',
             },
-            payload: { username: userObj.username, id: update._id.toString() },
+            payload: { username: payload.username, id: update._id.toString() },
         });
         EventBusManager.getEventBus().publish(event);
 
-        if (userObj.password && userObj.password.length) {
-            await update.setPassword(userObj.password);
+        if (payload.password && payload.password.length) {
+            await update.setPassword(payload.password);
             await update.save();
-            auditLog.info('update.account.password', { data: { userId: id } });
-            logger.debug('updated.account.password', { id });
+            auditLog.info('update.account.password', { data: { userId: query._id } });
+            logger.debug('updated.account.password', { id: query._id });
         }
     },
 
-    delete: async ({ id }) => {
+    delete: async (query) => {
+
+        const accounts = await Account.find(query);
+
+        /* eslint-disable-next-line no-restricted-syntax  */
+        for (const account of accounts) {
+            /* eslint-disable-next-line no-await-in-loop  */
+            await AccountDAO.deleteOne({ id: account._id });
+        }
+
+    },
+
+    deleteOne: async ({ id }) => {
 
         await Account.deleteOne({ _id: id });
         logger.debug('deleted.account', { id });
@@ -106,16 +116,9 @@ const AccountDAO = {
         const userAccount = await Account.findOne({
             _id: userId,
         });
-        userAccount.memberships = userAccount.memberships.filter(elem => elem.tenant.toString() !== tenantId);
-        const newMembership = {
-            tenant: tenantId,
-            roles,
-            permissions,
-        };
-        if (!userAccount.memberships.find(elem => elem.active === true)) {
-            newMembership.active = true;
-        }
-        userAccount.memberships.push(newMembership);
+        userAccount.tenant = tenantId;
+        userAccount.roles = roles;
+
         await userAccount.save();
         const event = new Event({
             headers: {
@@ -145,10 +148,9 @@ const AccountDAO = {
     },
 
     getUsersAssignedToTenant: async ({ tenantId }) => Account.find({
-        'memberships': { $elemMatch: { tenant: tenantId } },
+        tenant: tenantId,
     }, {
         'username': 1,
-        'memberships.$': 1,
     }).lean(),
 
     getCurrentContext: async ({ userId }) => Account.findOne({

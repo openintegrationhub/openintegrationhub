@@ -113,10 +113,16 @@ router.post('/', jsonParser, async (req, res) => {
     );
   }
 
+  if (domainId && schemaUri && schema) {
+    return res.status(405).send({
+      errors:
+              [{ message: 'Either domainId with schemaUri or custom schema must be specified, but not both!', code: 405 }],
+    });
+  }
+
   // Fetch schema from MDR
   if (domainId && schemaUri) {
     const domainSchema = await fetchSchema(token, domainId, schemaUri);
-
     if (domainSchema.statusCode === 404) {
       return res.status(domainSchema.statusCode).send(
         {

@@ -7,22 +7,58 @@ const Logger = require('@basaas/node-logger');
 const CONF = require('./../conf');
 const CONSTANTS = require('./../constants');
 const auth = require('./../util/auth');
-const UserDAO = require('../dao/accounts');
+const Util = require('./../util/common');
+const AccountDAO = require('../dao/accounts');
+const RolesDAO = require('../dao/roles');
 const TokenDAO = require('../dao/tokens');
-const { RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
+const { RESTRICTED_PERMISSIONS, PERMISSIONS, permissionsAreCommon } = require('./../access-control/permissions');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/user`, {
     level: 'debug',
 });
 
+const rolesBelongToTenant = async (roles, tenant) => {
+    const tenantRoles = (await RolesDAO.find({ tenant })).map(role => role._id.toString());
+    const falseRoles = roles.filter(role => tenantRoles.indexOf(role) < 0);
+    return falseRoles.length === 0;
+};
+
+const sanitizeUserObj = async (req, res, next) => {
+
+    const userObj = req.body;
+
+    if (!req.user.isAdmin) {
+        /* eslint-disable-next-line no-restricted-syntax  */
+        if (userObj.roles && userObj.roles.length && !(await rolesBelongToTenant(userObj.roles, req.user.tenant))) {
+            // userObj.roles = await filterByTenantRolesOnly(userObj.roles, req.user.tenant);
+            log.warn(`Unauthorized attempt to assign a role by user ${req.user.userid}`, { roles: userObj.roles, tenant: req.user.tenant });
+            return next({
+                status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN, details: 'Restricted role used',
+            });
+        }
+        /* eslint-disable-next-line no-restricted-syntax  */
+        if (userObj.permissions && !permissionsAreCommon(userObj.permissions)) {
+            log.warn(`An attempt to assign an uncommon permission to a role by user ${req.user.userid}`, { permissions: userObj.permissions });
+            return next({
+                status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN, details: 'Restricted permission used',
+            });
+        }
+        req.body.tenant = req.user.tenant;
+    }
+
+    return next();
+};
+
 /**
  * Create a new user
  * */
-router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.account.create']]), async (req, res, next) => {
+router.post('/', auth.hasTenantPermissions([PERMISSIONS['tenant.account.create']]), sanitizeUserObj, async (req, res, next) => {
+
     const userObj = req.body;
+
     try {
 
-        const doc = await UserDAO.create({ userObj });
+        const doc = await AccountDAO.create({ userObj });
         return res.send({ id: doc._id });
 
     } catch (err) {
@@ -48,7 +84,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.account.create']]), async
  */
 router.get('/', auth.isAdmin, async (req, res, next) => {
     try {
-        const doc = await UserDAO.find({});
+        const doc = await AccountDAO.find({});
         return res.send(doc);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -61,9 +97,28 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
 router.get('/me', auth.isLoggedIn, async (req, res, next) => {
 
     try {
-        const doc = await UserDAO.findOne({ _id: req.user.userid });
+        const doc = await AccountDAO.findOne({ _id: req.user.userid });
         return res.send(doc);
     } catch (err) {
+        return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
+    }
+});
+
+router.patch('/me', auth.isLoggedIn, async (req, res, next) => {
+
+    const userObj = Util.removeEmptyProps({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+    });
+    const query = {
+        _id: req.user.userid,
+    };
+
+    try {
+        await AccountDAO.update(query, userObj, { partialUpdate: true });
+        return res.sendStatus(200);
+    } catch (err) {
+        log.error(err);
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
     }
 });
@@ -71,9 +126,16 @@ router.get('/me', auth.isLoggedIn, async (req, res, next) => {
 /**
  * Get user by id
  */
-router.get('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
+router.get('/:id', auth.hasTenantPermissions([PERMISSIONS['tenant.account.read']]), async (req, res, next) => {
+
+    const query = { _id: req.params.id };
+
+    if (!req.user.isAdmin) {
+        query.tenant = req.user.tenant;
+    }
+
     try {
-        const doc = await UserDAO.findOne({ _id: req.params.id });
+        const doc = await AccountDAO.findOne(query);
         if (!doc) {
             return res.sendStatus(404);
         } else {
@@ -86,19 +148,21 @@ router.get('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
 });
 
 /**
- * Partial modify of a user
+ * Partial modify a user
  */
-router.patch('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
-    let userObj = req.body;
+router.patch('/:id', auth.hasTenantPermissions([PERMISSIONS['tenant.account.update']]), sanitizeUserObj, async (req, res, next) => {
 
-    if (!auth.userIsAdmin(req.user)) {
-        userObj = auth.removeCriticalAccountFields(userObj);
+    const userObj = req.body;
+    const query = {
+        _id: req.params.id,
+    };
+
+    if (!req.user.isAdmin) {
+        query.tenant = req.user.tenant;
     }
 
     try {
-        await UserDAO.update({
-            id: req.params.id, userObj, partialUpdate: true, method: 'patch',
-        });
+        await AccountDAO.update(query, userObj, { partialUpdate: true });
         return res.sendStatus(200);
     } catch (err) {
         log.error(err);
@@ -107,39 +171,22 @@ router.patch('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
 });
 
 /**
- * Complete modify of user data ith given data
+ * Complete modify of user data with given data
  * */
-router.put('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
+router.put('/:id', auth.hasTenantPermissions([PERMISSIONS['tenant.account.update']]), sanitizeUserObj, async (req, res, next) => {
 
-    let userObj = req.body;
+    const userObj = req.body;
+    const query = {
+        _id: req.params.id,
+    };
 
-    if (!auth.userIsAdmin(req.user)) {
-        userObj = auth.removeCriticalAccountFields(userObj);
+    if (!req.user.isAdmin) {
+        query.tenant = req.user.tenant;
     }
 
     try {
-        await UserDAO.update({
-            id: req.params.id, userObj, partialUpdate: false, method: 'put',
-        });
+        await AccountDAO.update(query, userObj, { partialUpdate: false });
         return res.sendStatus(200);
-    } catch (err) {
-        log.error(err);
-        return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
-    }
-
-});
-
-/**
- * Remove user from tenant membership
- */
-router.delete('/:id/tenant/:tenantId', auth.paramsMatchesUserId, async (req, res, next) => {
-    try {
-        const doc = await UserDAO.removeUserFromTenant({
-            tenantId: req.params.tenantId,
-            userId: req.params.id,
-        });
-
-        return res.send(doc);
     } catch (err) {
         log.error(err);
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -150,9 +197,9 @@ router.delete('/:id/tenant/:tenantId', auth.paramsMatchesUserId, async (req, res
 /**
  * Delete a user
  */
-router.delete('/:id', auth.paramsMatchesUserId, async (req, res, next) => {
+router.delete('/:id', auth.can([RESTRICTED_PERMISSIONS['iam.account.delete']]), async (req, res, next) => {
     try {
-        await UserDAO.delete({ id: req.params.id });
+        await AccountDAO.deleteOne({ id: req.params.id });
         await TokenDAO.deleteAllAccountTokens({ accountId: req.params.id });
         return res.sendStatus(200);
     } catch (err) {

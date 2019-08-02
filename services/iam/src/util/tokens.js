@@ -7,6 +7,7 @@ const Logger = require('@basaas/node-logger');
 
 const CONF = require('./../conf');
 const CONSTANTS = require('./../constants');
+const { RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
 
 const AccountsDAO = require('./../dao/accounts');
 const TokensDAO = require('./../dao/tokens');
@@ -94,6 +95,24 @@ module.exports = {
 
     },
 
+    resolveUserPermissions: async (user) => {
+        user.roles = user.roles || [];
+        // FIXME
+        let populatedRoles = user.roles;
+        if (user._id && user.roles.length && !user.roles[0].name) {
+            const accountData = await AccountsDAO.findOne({
+                _id: user._id,
+            }).populate('roles');
+            populatedRoles = accountData.roles || [];
+        }
+        populatedRoles.forEach((role) => {
+            user.permissions = user.permissions.concat(role.permissions);
+        });
+        user.isAdmin = !!user.permissions.find(permission => permission === RESTRICTED_PERMISSIONS.all);
+
+        return user;
+    },
+
     getAccountData: async (token, opts = {}) => {
 
         const existingToken = await module.exports.fetchAndProlongToken(token);
@@ -103,13 +122,15 @@ module.exports = {
         }
 
         log.debug(`fetching account data for id ${existingToken.accountId}`);
-        const AccountData = await AccountsDAO.findOne({
+        let AccountData = await AccountsDAO.findOne({
             _id: existingToken.accountId,
         });
 
         if (!AccountData || AccountData.status !== CONSTANTS.STATUS.ACTIVE) {
             return null;
         }
+
+        AccountData = await module.exports.resolveUserPermissions(AccountData);
 
         AccountData.permissions = Array.from(new Set((AccountData.permissions || []).concat(existingToken.permissions || [])));
 

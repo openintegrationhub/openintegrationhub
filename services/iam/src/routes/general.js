@@ -54,54 +54,54 @@ router.post('/login', authMiddleware.authenticate, authMiddleware.accountIsEnabl
 
 });
 
-router.get('/context', authMiddleware.validateAuthentication, async (req, res, next) => {
+// router.get('/context', authMiddleware.validateAuthentication, async (req, res, next) => {
+//
+//     try {
+//         const account = await AccountDAO.findOne({ _id: req.user.userid });
+//
+//         res.status(200).send({
+//             account,
+//             currentContext: req.user.currentContext,
+//         });
+//
+//     } catch (err) {
+//         logger.error(err);
+//         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
+//     }
+//
+// });
 
-    try {
-        const { memberships } = await AccountDAO.findOne({ _id: req.user.userid });
-
-        res.status(200).send({
-            memberships,
-            currentContext: req.user.currentContext,
-        });
-
-    } catch (err) {
-        logger.error(err);
-        return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
-    }
-
-});
-
-router.post('/context', authMiddleware.validateAuthentication,
-    async (req, res, next) => {
-
-        const { tenant } = req.body;
-
-        if (!tenant) {
-            return next({ status: 400, message: 'Missing tenant in body' });
-        }
-
-        try {
-
-            if (await AccountDAO.userHasContext({ userId: req.user.userid, tenantId: tenant })) {
-
-                const { currentContext } = await AccountDAO.setCurrentContext({ userId: req.user.userid, tenantId: tenant });
-
-                // const jwtpayload = jwtUtils.getJwtPayload(await AccountDAO.findOne({ _id: req.user.userid }));
-                //
-                // const token = await jwtUtils.basic.sign(jwtpayload);
-                // req.headers.authorization = `Bearer ${token}`;
-                res.status(200).send({ currentContext });
-
-            } else {
-                res.sendStatus(403);
-            }
-
-        } catch (err) {
-            logger.error(err);
-            return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
-        }
-
-    });
+// router.post('/context', authMiddleware.validateAuthentication,
+//     async (req, res, next) => {
+//
+//         const { tenant } = req.body;
+//
+//         if (!tenant) {
+//             return next({ status: 400, message: 'Missing tenant in body' });
+//         }
+//
+//         try {
+//
+//             if (await AccountDAO.userHasContext({ userId: req.user.userid, tenantId: tenant })) {
+//
+//                 const { currentContext } = await AccountDAO.setCurrentContext({ userId: req.user.userid, tenantId: tenant });
+//
+//                 // const jwtpayload = jwtUtils.getJwtPayload(await AccountDAO.findOne({ _id: req.user.userid }));
+//                 //
+//                 // const token = await jwtUtils.basic.sign(jwtpayload);
+//                 // req.headers.authorization = `Bearer ${token}`;
+//                 res.status(200).send({ currentContext });
+//
+//             } else {
+//                 res.sendStatus(403);
+//             }
+//
+//         } catch (err) {
+//             logger.error(err);
+//             return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
+//         }
+//
+//     });
 
 router.post('/logout', authMiddleware.validateAuthentication, async (req, res) => {
 
