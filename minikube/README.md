@@ -86,4 +86,4 @@ If you are using a Linux distribution, you can automate this by using this termi
 - Web UI. A basic browser-based UI to control certain other services.
   - `web-ui.localoih.com`
 
-Most of these services have a Swagger documentation of their API available through the path `/api-docs`. Additionally, you can check their readmes in the `services` folder of the OIH Repository: https://github.com/openintegrationhub/openintegrationhub/tree/master/services
+Most of these services have a Swagger documentation of their API available through the path `/api-docs`. Additionally, you can check their readmes in the `services` folder of the OIH Repository: [Open Integration Hub Services](https://github.com/openintegrationhub/openintegrationhub/tree/master/services)
