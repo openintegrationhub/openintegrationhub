@@ -51,10 +51,10 @@ If you are using a Linux distribution, you can automate this by using this termi
   - Body: 
     ```json
     {
-      "accountId": "5d4010e0276bef0012e916a2",
+      "accountId": "{PASTE SERVICE ACCOUNT ID GERE}",
       "expiresIn": -1,
-      "initiator": "5d4010e0276bef0012e916a2",
-      "inquirer": "5d4010e0276bef0012e916a2"
+      "initiator": "{PASTE SERVICE ACCOUNT ID GERE}",
+      "inquirer": "{PASTE SERVICE ACCOUNT ID GERE}"
     }
       ```
   - The returned token is the service token that will be used by the other services to authenticate themselves to the IAM. Copy the value, encode it in base64, and then past it into the file found at `./3-Secret/SharedSecret.yaml` at the indicated position.
