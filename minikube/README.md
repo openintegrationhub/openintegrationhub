@@ -66,7 +66,7 @@ Use the returned token as a Bearer token for the remaining requests.
   - `component-repository.localoih.com`
 - Attachment Storage. Temporarily store larger files for easier handling in flows.
   - `attachment-storage.localoih.com`
--  Data Hub. Long-term storage for flow content.
+- Data Hub. Long-term storage for flow content.
   - `data-hub.localoih.com`
 - Integration Layer Service. Perform data operations such as merging or splitting objects.
   - `ils.localoih.com`
