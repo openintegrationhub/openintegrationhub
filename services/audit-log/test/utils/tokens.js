@@ -6,7 +6,7 @@ module.exports = {
       sub: 'TestAdmin',
       username: 'admin@example.com',
       role: 'ADMIN',
-      memberships: [],
+      permissions: ['all'],
       iat: 1337,
     },
   },
@@ -16,15 +16,8 @@ module.exports = {
     value: {
       sub: 'TestUser',
       username: 'user@example.com',
-      role: 'USER',
-      memberships: [
-        {
-          role: 'TENANT_GUEST',
-          tenant: 'TestTenant',
-          permissions: ['logs.read', 'logs.push'],
-          active: true,
-        },
-      ],
+      tenant: 'TestTenant',
+      permissions: ['logs.read', 'logs.push'],
       iat: 1337,
     },
   },
@@ -34,15 +27,8 @@ module.exports = {
     value: {
       sub: 'TestGuest',
       username: 'guest@example.com',
-      role: 'GUEST',
-      memberships: [
-        {
-          permissions: ['logs.read', 'logs.push'],
-          role: 'TENANT_GUEST',
-          tenant: '3',
-          active: true,
-        },
-      ],
+      permissions: ['logs.read', 'logs.push'],
+      tenant: '3',
       iat: 1337,
     },
   },

@@ -44,14 +44,12 @@ module.exports = {
     },
 
     getJwtPayload: ({
-        _id, username, role, memberships, permissions, currentContext,
+        _id, username, role, permissions,
     }) => ({
         sub: _id,
         username,
         role,
-        memberships,
         permissions,
-        currentContext,
     }),
 
     getJwtOptions,

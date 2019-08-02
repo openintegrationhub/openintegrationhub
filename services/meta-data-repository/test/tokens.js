@@ -5,16 +5,8 @@ module.exports = {
         value: {
             sub: 'u1',
             name: 'User1',
-            role: 'USER',
             iat: 1337,
-            memberships: [
-                {
-                    tenant: '5c507eb60838f1f976e5f2a4',
-                    permissions: [
-                    ],
-                    active: true,
-                },
-            ],
+            tenant: '5c507eb60838f1f976e5f2a4',
             permissions: [],
         },
     },
@@ -25,14 +17,7 @@ module.exports = {
             name: 'User2',
             role: 'USER',
             iat: 1337,
-            memberships: [
-                {
-                    tenant: '5c507eb60838f1f976e5f2a4',
-                    permissions: [
-                    ],
-                    active: true,
-                },
-            ],
+            tenant: '5c507eb60838f1f976e5f2a4',
             permissions: [],
         },
     },
@@ -43,15 +28,8 @@ module.exports = {
             name: 'admin',
             role: 'ADMIN',
             iat: 1337,
-            memberships: [
-                {
-                    tenant: '5c507eb60838f1f976e5f2a4',
-                    permissions: [
-                    ],
-                    active: true,
-                },
-            ],
-            permissions: [],
+            tenant: '5c507eb60838f1f976e5f2a4',
+            permissions: ['all'],
         },
     },
     tenantAdmin1: {
@@ -62,7 +40,7 @@ module.exports = {
             role: 'TENANT_ADMIN',
             iat: 1337,
             tenantId: 't1',
-            permissions: [],
+            permissions: ['tenant.all'],
         },
     },
     tenantUser1: {
@@ -96,7 +74,7 @@ module.exports = {
             role: 'TENANT_ADMIN',
             iat: 1337,
             tenantId: 't2',
-            permissions: [],
+            permissions: ['tenant.all'],
         },
     },
     tenantUser2: {

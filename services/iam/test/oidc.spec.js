@@ -108,7 +108,7 @@ describe('basic OIDC test Suite', () => {
         const response = await request.get('/op/me')
             .set('Authorization', `Bearer ${serviceAccessToken}`)
             .expect(200);
-        expect(response.body.role).toBe(CONSTANTS.ROLES.ADMIN);
+        expect(response.body.username).toBe(conf.accounts.admin.username);
     });
 
     test('create User Account via Client Sec successful', async () => {
