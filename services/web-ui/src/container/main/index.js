@@ -22,7 +22,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Grid from '@material-ui/core/Grid';
 import {
-    LockOpen, Business, Waves, Home as HomeIcon, AccountCircle,
+    LockOpen, Business, SettingsInputComponent, LinearScale, Home as HomeIcon, AccountCircle, DeviceHub,
 } from '@material-ui/icons';
 
 // Actions & Components
@@ -187,17 +187,17 @@ class Main extends React.Component {
                   </ListItem>;
               case 'Flows':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/flows'); }}>
-                      <ListItemIcon><Waves /></ListItemIcon>
+                      <ListItemIcon><LinearScale /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Components':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/components'); }}>
-                      <ListItemIcon><Waves /></ListItemIcon>
+                      <ListItemIcon><SettingsInputComponent /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Metadata':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/metadata'); }}>
-                      <ListItemIcon><Waves /></ListItemIcon>
+                      <ListItemIcon><DeviceHub /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Logout':

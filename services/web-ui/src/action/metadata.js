@@ -135,10 +135,11 @@ export const createDomainSchema = (domainId, data) => async (dispatch) => {
 };
 
 export const deleteDomainSchema = (domainId, uri) => async (dispatch) => {
+    const id = uri.split('/');
     try {
         await axios({
             method: 'delete',
-            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas/${uri.split('/')[6]}`,
+            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas/${id[id.length - 1]}`,
             withCredentials: true,
         });
 

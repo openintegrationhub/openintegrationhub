@@ -16,7 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Modal from '@material-ui/core/Modal';
 import {
-    Delete, Edit, Add,
+    Delete, Edit, Add, RemoveRedEye,
 } from '@material-ui/icons';
 
 
@@ -49,6 +49,7 @@ class MetaDataTeaser extends React.PureComponent {
     state= {
         editDomain: false,
         addSchema: false,
+        viewSchema: false,
         wasChanged: false,
         editorData: null,
         schemas: [],
@@ -86,8 +87,24 @@ class MetaDataTeaser extends React.PureComponent {
         return this.state.schemas.map(schema => <Grid item xs={12} key={schema.id}>
             <Grid container spacing={2}>
                 <Grid item xs={2}><InputLabel>Name:</InputLabel><Typography>{schema.name}</Typography></Grid>
-                <Grid item xs={9}><InputLabel>Uri:</InputLabel><Typography>{schema.uri}</Typography></Grid>
-                <Grid item xs={1}>
+                <Grid item xs={8}><InputLabel>Uri:</InputLabel><Typography>{schema.uri}</Typography></Grid>
+                <Grid item xs={2}>
+                    <Button variant="outlined" aria-label="next" onClick={async () => {
+                        const id = schema.uri.split('/');
+                        const result = await axios({
+                            method: 'get',
+                            url: `${conf.endpoints.metadata}/domains/${schema.domainId}/schemas/${id[id.length - 1].split('.')[0]}`,
+                            withCredentials: true,
+                            json: true,
+                        });
+                        this.setState({
+                            viewSchema: true,
+                            editorData: result.data.data,
+                            modalOpen: true,
+                        });
+                    }}>
+                        <RemoveRedEye/>
+                    </Button>
                     <Button variant="outlined" aria-label="next" onClick={this.deleteSchema.bind(this, this.props.data.id, schema.uri)}>
                         <Delete/>
                     </Button>
@@ -112,6 +129,7 @@ class MetaDataTeaser extends React.PureComponent {
                 addSchema: false,
                 wasChanged: false,
                 editorData: null,
+                modalOpen: false,
             });
         }
     }
@@ -127,13 +145,6 @@ class MetaDataTeaser extends React.PureComponent {
         });
         this.setState({
             schemas: result.data.data,
-        });
-    }
-
-    editOpen= (e) => {
-        e.stopPropagation();
-        this.setState({
-            editDomain: true,
         });
     }
 
@@ -197,7 +208,13 @@ class MetaDataTeaser extends React.PureComponent {
 
                             <Grid item xs={4} />
                             <Grid item xs={2} >
-                                <Button variant="outlined" aria-label="next" onClick={this.editOpen}>
+                                <Button variant="outlined" aria-label="next" onClick={() => {
+                                    this.setState({
+                                        modalOpen: true,
+                                        editDomain: true,
+                                        editorData: this.props.data,
+                                    });
+                                }}>
                                     <Edit/>
                                 </Button>
                                 <Button variant="outlined" aria-label="next" onClick={this.deleteDomain}>
@@ -211,47 +228,33 @@ class MetaDataTeaser extends React.PureComponent {
                         <Grid container>
                             <Grid item xs={2}><h3>Schemas</h3></Grid>
                             <Grid item xs={10}>
-                                <Button variant="outlined" aria-label="next" onClick={() => { this.setState({ addSchema: true }); }}>
+                                <Button variant="outlined" aria-label="next" onClick={() => {
+                                    this.setState({
+                                        modalOpen: true,
+                                        addSchema: true,
+                                        editorData: this.dummyData,
+                                    });
+                                }}>
                                     <Add/>
                                 </Button>
                             </Grid>
                             {
                                 this.state.schemas.length && this.getSchemas()
                             }
-                            <Modal
-                                aria-labelledby="simple-modal-title"
-                                aria-describedby="simple-modal-description"
-                                open={this.state.addSchema}
-                                onClose={ () => { this.setState({ addSchema: false }); }}
-                                style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-                            >
-                                <div className={classes.modal}>
-                                    <JSONInput
-                                        id = 'jsonEdit'
-                                        locale = {locale}
-                                        theme = 'dark_vscode_tribute'
-                                        placeholder = {this.dummyData}
-                                        height = '550px'
-                                        width = '600px'
-                                        onChange={this.editorChange.bind(this)}
-                                    />
-                                    <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ addSchema: false }); }}>
-                            close
-                                    </Button>
-                                    <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
-                            Save
-                                    </Button>
-                                </div>
-
-                            </Modal>
                         </Grid>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    open={this.state.editDomain}
-                    onClose={ () => { this.setState({ editDomain: false }); }}
+                    open={this.state.modalOpen}
+                    onClose={ () => {
+                        this.setState({
+                            editDomain: false,
+                            viewSchema: false,
+                            addSchema: false,
+                        });
+                    }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
@@ -259,17 +262,36 @@ class MetaDataTeaser extends React.PureComponent {
                             id = 'jsonEdit'
                             locale = {locale}
                             theme = 'dark_vscode_tribute'
-                            placeholder = {this.props.data}
+                            placeholder = {this.state.editorData}
                             height = '550px'
                             width = '600px'
                             onChange={this.editorChange.bind(this)}
                         />
-                        <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ editDomain: false }); }}>
+                        <Button variant="outlined" aria-label="Add" onClick={() => {
+                            this.setState({
+                                editDomain: false,
+                                viewSchema: false,
+                                addSchema: false,
+                                modalOpen: false,
+                            });
+                        }}>
                             close
                         </Button>
-                        <Button variant="outlined" aria-label="Add" onClick={this.updateDomain} disabled={!this.state.wasChanged}>
+                        {
+                            this.state.editDomain
+                                ? <Button variant="outlined" aria-label="Add" onClick={this.updateDomain} disabled={!this.state.wasChanged}>
+                                Save
+                                </Button>
+                                : null
+                        }
+                        {
+                            this.state.addSchema
+                                ? <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
                             Save
-                        </Button>
+                                </Button>
+                                : null
+                        }
+
                     </div>
 
                 </Modal>
