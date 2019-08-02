@@ -11,6 +11,9 @@ Make sure that minikube is endowed with sufficient resources. We suggest at leas
 
 See _step 1_ for minikube command to allocate resources.
 
+
+**Please make sure to clone the monorepo before you start.**
+
 ---
 
 1. Make certain minikube is installed, configured, and started. In particular, make certain that its ingress module is enabled (`minikube addons enable ingress`). The command for allocating sufficient resources is: `minikube start --memory 8096 --cpus 4`. Make certain `kubectl` is configured to use minikube.
