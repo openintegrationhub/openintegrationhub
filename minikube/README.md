@@ -32,7 +32,7 @@ If you are using a Linux distribution, you can automate this by using this termi
   - Body:
     ```json
     {
-      "username":"test@est.de",
+      "username":"test@test.de",
       "firstname":"a",
       "lastname":"b",
       "role":"SERVICE_ACCOUNT",
