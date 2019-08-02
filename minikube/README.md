@@ -21,28 +21,34 @@ If you are using a Linux distribution, you can automate this by using this termi
 Use the returned token as a Bearer token for the remaining requests.
 - Create a service account: 
   - Path: `/api/v1/users`, 
-  - Body: `{
-	"username": "test@est.de",
-	"firstname": "a",
-	"lastname": "b",
-	"role": "SERVICE_ACCOUNT",
-	"status": "ACTIVE",
-	"password": "asd",
-    "permissions": [
+  - Body: 
+    ```json
+    {
+      "username":"test@est.de",
+      "firstname":"a",
+      "lastname":"b",
+      "role":"SERVICE_ACCOUNT",
+      "status":"ACTIVE",
+      "password":"asd",
+      "permissions":[
         "iam.tokens.introspect",
         "iam.token.introspect",
         "components.get"
-    ]
-}` 
+      ]
+    }
+    ``` 
   - Use the returned id in the following request to create the token.
 - Create persistent service token: 
   - Path: `/api/v1/tokens`, 
-  - Body: `{
-	"accountId": "5d4010e0276bef0012e916a2",
-	"expiresIn": -1,
-	"initiator": "5d4010e0276bef0012e916a2",
-	"inquirer": "5d4010e0276bef0012e916a2"
-}`
+  - Body: 
+    ```json
+    {
+      "accountId": "5d4010e0276bef0012e916a2",
+      "expiresIn": -1,
+      "initiator": "5d4010e0276bef0012e916a2",
+      "inquirer": "5d4010e0276bef0012e916a2"
+    }
+      ```
   - The returned token is the service token that will be used by the other services to authenticate themselves to the IAM. Copy the value, encode it in base64, and then past it into the file found at `./3-Secret/SharedSecret.yaml` at the indicated position.
 **TODO**: Automate this if possible
 
