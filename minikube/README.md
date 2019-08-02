@@ -55,7 +55,7 @@ Use the returned token as a Bearer token for the remaining requests.
 - Identity and Access Management. Create and modify users, tenants, roles, and permissions.
   - `iam.localoih.com` 
 - Secret Service. Securely store authentication data for other applications.
-  - `skm.localoih.com
+  - `skm.localoih.com`
 - Flow Repository. Create, modify, and start/stop integration flows.
   - `flow-repository.localoih.com`
 - Audit Log. View event logs spawned by the other services. 
