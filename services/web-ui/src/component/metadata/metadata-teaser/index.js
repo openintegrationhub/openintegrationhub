@@ -157,7 +157,7 @@ class MetaDataTeaser extends React.PureComponent {
         await this.props.deleteDomainSchema(domainId, uri);
         const result = await axios({
             method: 'get',
-            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+            url: `${conf.endpoints.metadata}/domains/${this.props.data.id}/schemas`,
             withCredentials: true,
             json: true,
         });
@@ -178,6 +178,7 @@ class MetaDataTeaser extends React.PureComponent {
             this.setState({
                 editDomain: false,
                 wasChanged: false,
+                modalOpen: false,
                 editorData: null,
             });
         }
@@ -192,12 +193,12 @@ class MetaDataTeaser extends React.PureComponent {
         }
     }
 
-    async handleExpansion(domainId, e, expanded) {
+    async handleExpansion(e, expanded) {
         let result = null;
         if (expanded) {
             result = await axios({
                 method: 'get',
-                url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+                url: `${conf.endpoints.metadata}/domains/${this.props.data.id}/schemas`,
                 withCredentials: true,
                 json: true,
             });
@@ -207,13 +208,50 @@ class MetaDataTeaser extends React.PureComponent {
         }
     }
 
+    async onUpload(e) {
+        e.preventDefault();
+        try {
+            await this.fileUpload(this.state.file);
+        } catch (error) {
+            alert(error);
+        }
+        const result = await axios({
+            method: 'get',
+            url: `${conf.endpoints.metadata}/domains/${this.props.data.id}/schemas`,
+            withCredentials: true,
+            json: true,
+        });
+        this.setState({
+            uploadSchema: false,
+            modalOpen: false,
+            file: null,
+            schema: result.data.data,
+        });
+    }
+
+    onUploadChange = (e) => {
+        this.setState({ file: e.target.files[0] });
+    }
+
+    async fileUpload(file) {
+        const url = `${conf.endpoints.metadata}/domains/${this.props.data.id}/schemas/import`;
+        const formData = new FormData();
+        formData.append('archive', file);
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data',
+            },
+        };
+        await axios.post(url, formData, config);
+    }
+
     render() {
         const {
             classes,
         } = this.props;
         return (
             <Grid item xs={12}>
-                <ExpansionPanel onChange={this.handleExpansion.bind(this, this.props.data.id)}>
+                <ExpansionPanel onChange={this.handleExpansion.bind(this)}>
                     <ExpansionPanelSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
@@ -226,7 +264,8 @@ class MetaDataTeaser extends React.PureComponent {
 
                             <Grid item xs={4} />
                             <Grid item xs={2} >
-                                <Button variant="outlined" aria-label="next" onClick={() => {
+                                <Button variant="outlined" aria-label="next" onClick={(e) => {
+                                    e.stopPropagation();
                                     this.setState({
                                         modalOpen: true,
                                         editDomain: true,
@@ -249,19 +288,23 @@ class MetaDataTeaser extends React.PureComponent {
                                     <h3>Schemas</h3>
                                 </Grid>
                                 <Grid item xs={2}>
-                                    <Add onClick={() => {
+                                    <Button variant="outlined" aria-label="Add" onClick={() => {
                                         this.setState({
                                             modalOpen: true,
                                             addSchema: true,
                                             editorData: this.dummyData,
                                         });
-                                    }}/>
-                                    <CloudUpload onClick={() => {
+                                    }}>
+                                        <Add />
+                                    </Button>
+                                    <Button variant="outlined" aria-label="Add" onClick={() => {
                                         this.setState({
                                             modalOpen: true,
                                             uploadSchema: true,
                                         });
-                                    }}/>
+                                    }}>
+                                        <CloudUpload/>
+                                    </Button>
                                 </Grid>
 
                             </Grid>
@@ -335,11 +378,13 @@ class MetaDataTeaser extends React.PureComponent {
                         }
                         {
                             this.state.uploadSchema
-                                ? <input
-                                    accept=".zip, .tgz"
-                                    id="upload-file"
-                                    type="file"
-                                />
+                                ? <form onSubmit={this.onUpload.bind(this)}>
+                                    <h1>File Upload</h1>
+                                    <input type="file" onChange={this.onUploadChange} accept=".zip, .tgz"/>
+                                    <Button type="submit" variant="outlined" aria-label="Add" >
+                                        Upload
+                                    </Button>
+                                </form>
                                 : null
                         }
 
