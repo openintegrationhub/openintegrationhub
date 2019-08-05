@@ -65,7 +65,6 @@ describe('schemas', () => {
         const domain_ = result;
 
         // create zip file
-        // create archive
         const src = path.resolve(__dirname, '../../../../test/data/valid');
         const packDest = path.resolve(__dirname, '../../../test-temp/temp.zip');
 
