@@ -102,5 +102,37 @@ describe('schemas', () => {
 
         expect(result.body.data.name).toEqual('foo');
         expect(JSON.parse(result.body.data.value).title).toEqual('Org');
+
+        result = (await request.put(created.data.uri.replace('/api/v1', ''))
+            .set(...global.user1)
+            .send({
+                data: {
+                    name: 'foo',
+                    id: 'lolololol',
+                    value: {
+                        $schema: 'http://json-schema.org/schema#',
+                        $id: 'blub',
+                        title: 'Org',
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                                description: 'Name of the organization',
+                                example: 'Great Company',
+                            },
+                            logo: {
+                                type: 'string',
+                                description: 'Logo of the organization',
+                                example: 'http://example.org/logo.png',
+                            },
+                        },
+                    },
+                },
+            })
+            .expect(200)).body;
+
+        expect(result.data.name).toEqual('foo');
+        expect(JSON.parse(result.data.value).title).toEqual('Org');
+        expect(result.data.uri).toMatch(/blub/);
     });
 });
