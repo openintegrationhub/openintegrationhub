@@ -145,5 +145,11 @@ describe('schemas', () => {
         expect(result.meta.perPage).toEqual(10);
         expect(result.meta.totalPages).toEqual(2);
         expect(result.data.length).toEqual(10);
+
+        for (const schema of result.data) {
+            await request.get(schema.uri.replace('/api/v1', ''))
+                .set(...global.user1)
+                .expect(200);
+        }
     });
 });
