@@ -117,6 +117,51 @@ export const createDomainSchema = (domainId, data) => async (dispatch) => {
             method: 'post',
             url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
             withCredentials: true,
+            data: {
+                data,
+            },
+        });
+
+        dispatch({
+            type: CREATE_DOMAIN_SCHEMA,
+        });
+        dispatch(getDomains());
+        return response;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+
+export const uploadDomainSchemas = data => async (dispatch) => {
+    try {
+        const response = await axios({
+            method: 'post',
+            url: `${conf.endpoints.metadata}/domains/${data.domainId}/schemas`,
+            withCredentials: true,
+            data: {
+                data,
+            },
+        });
+
+        dispatch({
+            type: CREATE_DOMAIN_SCHEMA,
+        });
+        dispatch(getDomains());
+        return response;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+
+export const updateDomainSchema = data => async (dispatch) => {
+    const uriParsed = data.uri.split('/');
+    try {
+        const response = await axios({
+            method: 'put',
+            url: `${conf.endpoints.metadata}/domains/${data.domainId}/schemas/${uriParsed[uriParsed.length - 1]}`,
+            withCredentials: true,
             // json: true,
             data: {
                 data,
@@ -133,6 +178,7 @@ export const createDomainSchema = (domainId, data) => async (dispatch) => {
         return err;
     }
 };
+
 
 export const deleteDomainSchema = (domainId, uri) => async (dispatch) => {
     const id = uri.split('/');

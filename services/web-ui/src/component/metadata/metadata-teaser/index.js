@@ -16,7 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Modal from '@material-ui/core/Modal';
 import {
-    Delete, Edit, Add, RemoveRedEye,
+    Delete, Edit, Add, CloudUpload,
 } from '@material-ui/icons';
 
 
@@ -28,7 +28,7 @@ import { getConfig } from '../../../conf';
 
 // Actions
 import {
-    updateDomain, deleteDomain, createDomainSchema, deleteDomainSchema,
+    updateDomain, deleteDomain, createDomainSchema, deleteDomainSchema, updateDomainSchema,
 } from '../../../action/metadata';
 
 const conf = getConfig();
@@ -49,9 +49,11 @@ class MetaDataTeaser extends React.PureComponent {
     state= {
         editDomain: false,
         addSchema: false,
-        viewSchema: false,
+        editSchema: false,
+        uploadSchema: false,
         wasChanged: false,
         editorData: null,
+        modalOpen: false,
         schemas: [],
     }
 
@@ -98,12 +100,12 @@ class MetaDataTeaser extends React.PureComponent {
                             json: true,
                         });
                         this.setState({
-                            viewSchema: true,
+                            editSchema: true,
                             editorData: result.data.data,
                             modalOpen: true,
                         });
                     }}>
-                        <RemoveRedEye/>
+                        <Edit/>
                     </Button>
                     <Button variant="outlined" aria-label="next" onClick={this.deleteSchema.bind(this, this.props.data.id, schema.uri)}>
                         <Delete/>
@@ -115,7 +117,7 @@ class MetaDataTeaser extends React.PureComponent {
 
     async saveSchema(domainId, e) {
         e.stopPropagation();
-        if (this.state.wasChanged) {
+        if (this.state.wasChanged && this.state.addSchema) {
             await this.props.createDomainSchema(domainId, this.state.editorData);
             const result = await axios({
                 method: 'get',
@@ -127,6 +129,23 @@ class MetaDataTeaser extends React.PureComponent {
             this.setState({
                 schemas: result.data.data,
                 addSchema: false,
+                wasChanged: false,
+                editorData: null,
+                modalOpen: false,
+            });
+        }
+        if (this.state.wasChanged && this.state.editSchema) {
+            await this.props.updateDomainSchema(this.state.editorData);
+            const result = await axios({
+                method: 'get',
+                url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+                withCredentials: true,
+                json: true,
+            });
+
+            this.setState({
+                schemas: result.data.data,
+                editSchema: false,
                 wasChanged: false,
                 editorData: null,
                 modalOpen: false,
@@ -226,17 +245,26 @@ class MetaDataTeaser extends React.PureComponent {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Grid container>
-                            <Grid item xs={2}><h3>Schemas</h3></Grid>
-                            <Grid item xs={10}>
-                                <Button variant="outlined" aria-label="next" onClick={() => {
-                                    this.setState({
-                                        modalOpen: true,
-                                        addSchema: true,
-                                        editorData: this.dummyData,
-                                    });
-                                }}>
-                                    <Add/>
-                                </Button>
+                            <Grid item xs={12} container>
+                                <Grid item xs={2}>
+                                    <h3>Schemas</h3>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <Add onClick={() => {
+                                        this.setState({
+                                            modalOpen: true,
+                                            addSchema: true,
+                                            editorData: this.dummyData,
+                                        });
+                                    }}/>
+                                    <CloudUpload onClick={() => {
+                                        this.setState({
+                                            modalOpen: true,
+                                            uploadSchema: true,
+                                        });
+                                    }}/>
+                                </Grid>
+
                             </Grid>
                             {
                                 this.state.schemas.length && this.getSchemas()
@@ -251,49 +279,72 @@ class MetaDataTeaser extends React.PureComponent {
                     onClose={ () => {
                         this.setState({
                             editDomain: false,
-                            viewSchema: false,
+                            editSchema: false,
                             addSchema: false,
+                            uploadSchema: false,
+                            modalOpen: false,
                         });
                     }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
-                        <JSONInput
-                            id = 'jsonEdit'
-                            locale = {locale}
-                            theme = 'dark_vscode_tribute'
-                            placeholder = {this.state.editorData}
-                            height = '550px'
-                            width = '600px'
-                            onChange={this.editorChange.bind(this)}
-                        />
-                        <Button variant="outlined" aria-label="Add" onClick={() => {
-                            this.setState({
-                                editDomain: false,
-                                viewSchema: false,
-                                addSchema: false,
-                                modalOpen: false,
-                            });
-                        }}>
-                            close
-                        </Button>
                         {
-                            this.state.editDomain
-                                ? <Button variant="outlined" aria-label="Add" onClick={this.updateDomain} disabled={!this.state.wasChanged}>
+                            this.state.editDomain || this.state.editSchema || this.state.addSchema
+                                ? <div>
+                                    <JSONInput
+                                        id = 'jsonEdit'
+                                        locale = {locale}
+                                        theme = 'dark_vscode_tribute'
+                                        placeholder = {this.state.editorData}
+                                        height = '550px'
+                                        width = '600px'
+                                        onChange={this.editorChange.bind(this)}
+                                    />
+                                    <Button variant="outlined" aria-label="Add" onClick={() => {
+                                        this.setState({
+                                            editDomain: false,
+                                            editSchema: false,
+                                            addSchema: false,
+                                            modalOpen: false,
+                                        });
+                                    }}>
+                                    close
+                                    </Button>
+                                    {
+                                        this.state.editDomain
+                                            ? <Button variant="outlined" aria-label="Add" onClick={this.updateDomain} disabled={!this.state.wasChanged}>
                                 Save
-                                </Button>
+                                            </Button>
+                                            : null
+                                    }
+                                    {
+                                        this.state.addSchema
+                                            ? <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
+                            Save
+                                            </Button>
+                                            : null
+                                    }
+                                    {
+                                        this.state.editSchema
+                                            ? <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
+                            Save
+                                            </Button>
+                                            : null
+                                    }
+                                </div>
                                 : null
                         }
                         {
-                            this.state.addSchema
-                                ? <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
-                            Save
-                                </Button>
+                            this.state.uploadSchema
+                                ? <input
+                                    accept=".zip, .tgz"
+                                    id="upload-file"
+                                    type="file"
+                                />
                                 : null
                         }
 
                     </div>
-
                 </Modal>
             </Grid>
         );
@@ -308,6 +359,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     updateDomain,
     createDomainSchema,
     deleteDomainSchema,
+    updateDomainSchema,
 }, dispatch);
 
 export default flow(
