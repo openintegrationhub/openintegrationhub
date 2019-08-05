@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: web-ui
+  namespace: oih-dev-ns
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: web-ui
+    spec:
+      containers:
+      - name: web-ui
+        image: openintegrationhub/web-ui:latest
+        env:
+        - name: PORT
+          value: '3000'
+        - name: ENDPOINT_IAM
+          value: 'http://iam.localoih.com'
+        - name: ENDPOINT_FLOW
+          value: 'http://flow-repository.localoih.com'
+        - name: ENDPOINT_COMPONENT
+          value: http://component-repository.localoih.com        
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: '0.1'
+            memory: 500Mi
