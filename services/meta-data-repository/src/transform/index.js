@@ -191,9 +191,13 @@ module.exports = {
                         $ref: `${conf.baseUrl}:${conf.port}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
                     },
                 );
-                backReferences.push(transformedPath);
+                if (!backReferences.includes(transformedPath)) {
+                    backReferences.push(transformedPath);
+                }
             } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${conf.baseUrl}:${conf.port}`) {
-                backReferences.push(uriDetails.path);
+                if (!backReferences.includes(uriDetails.path)) {
+                    backReferences.push(uriDetails.path);
+                }
             }
         }
 
