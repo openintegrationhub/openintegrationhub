@@ -192,6 +192,45 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Delete a domain by ID.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Removes any linked schema and deletes Domain.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "domainId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Domain"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/domains/{domainId}/schemas": {

@@ -16,7 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Modal from '@material-ui/core/Modal';
 import {
-    Delete, Edit, Add, RemoveRedEye,
+    Delete, Edit, Add, CloudUpload,
 } from '@material-ui/icons';
 
 
@@ -28,7 +28,7 @@ import { getConfig } from '../../../conf';
 
 // Actions
 import {
-    updateDomain, deleteDomain, createDomainSchema, deleteDomainSchema,
+    updateDomain, deleteDomain, createDomainSchema, deleteDomainSchema, updateDomainSchema,
 } from '../../../action/metadata';
 
 const conf = getConfig();
@@ -49,9 +49,11 @@ class MetaDataTeaser extends React.PureComponent {
     state= {
         editDomain: false,
         addSchema: false,
-        viewSchema: false,
+        editSchema: false,
+        uploadSchema: false,
         wasChanged: false,
         editorData: null,
+        modalOpen: false,
         schemas: [],
     }
 
@@ -90,20 +92,19 @@ class MetaDataTeaser extends React.PureComponent {
                 <Grid item xs={8}><InputLabel>Uri:</InputLabel><Typography>{schema.uri}</Typography></Grid>
                 <Grid item xs={2}>
                     <Button variant="outlined" aria-label="next" onClick={async () => {
-                        const id = schema.uri.split('/');
                         const result = await axios({
                             method: 'get',
-                            url: `${conf.endpoints.metadata}/domains/${schema.domainId}/schemas/${id[id.length - 1].split('.')[0]}`,
+                            url: `${conf.endpoints.metadata}/${schema.uri.replace('/api/v1/', '')}`,
                             withCredentials: true,
                             json: true,
                         });
                         this.setState({
-                            viewSchema: true,
+                            editSchema: true,
                             editorData: result.data.data,
                             modalOpen: true,
                         });
                     }}>
-                        <RemoveRedEye/>
+                        <Edit/>
                     </Button>
                     <Button variant="outlined" aria-label="next" onClick={this.deleteSchema.bind(this, this.props.data.id, schema.uri)}>
                         <Delete/>
@@ -115,7 +116,7 @@ class MetaDataTeaser extends React.PureComponent {
 
     async saveSchema(domainId, e) {
         e.stopPropagation();
-        if (this.state.wasChanged) {
+        if (this.state.wasChanged && this.state.addSchema) {
             await this.props.createDomainSchema(domainId, this.state.editorData);
             const result = await axios({
                 method: 'get',
@@ -132,6 +133,23 @@ class MetaDataTeaser extends React.PureComponent {
                 modalOpen: false,
             });
         }
+        if (this.state.wasChanged && this.state.editSchema) {
+            await this.props.updateDomainSchema(this.state.editorData);
+            const result = await axios({
+                method: 'get',
+                url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+                withCredentials: true,
+                json: true,
+            });
+
+            this.setState({
+                schemas: result.data.data,
+                editSchema: false,
+                wasChanged: false,
+                editorData: null,
+                modalOpen: false,
+            });
+        }
     }
 
     async deleteSchema(domainId, uri, e) {
@@ -139,7 +157,7 @@ class MetaDataTeaser extends React.PureComponent {
         await this.props.deleteDomainSchema(domainId, uri);
         const result = await axios({
             method: 'get',
-            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+            url: `${conf.endpoints.metadata}/domains/${this.props.data.id}/schemas`,
             withCredentials: true,
             json: true,
         });
@@ -160,6 +178,7 @@ class MetaDataTeaser extends React.PureComponent {
             this.setState({
                 editDomain: false,
                 wasChanged: false,
+                modalOpen: false,
                 editorData: null,
             });
         }
@@ -174,12 +193,12 @@ class MetaDataTeaser extends React.PureComponent {
         }
     }
 
-    async handleExpansion(domainId, e, expanded) {
+    async handleExpansion(e, expanded) {
         let result = null;
         if (expanded) {
             result = await axios({
                 method: 'get',
-                url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+                url: `${conf.endpoints.metadata}/domains/${this.props.data.id}/schemas`,
                 withCredentials: true,
                 json: true,
             });
@@ -189,13 +208,50 @@ class MetaDataTeaser extends React.PureComponent {
         }
     }
 
+    async onUpload(e) {
+        e.preventDefault();
+        try {
+            await this.fileUpload(this.state.file);
+        } catch (error) {
+            alert(error);
+        }
+        const result = await axios({
+            method: 'get',
+            url: `${conf.endpoints.metadata}/domains/${this.props.data.id}/schemas`,
+            withCredentials: true,
+            json: true,
+        });
+        this.setState({
+            uploadSchema: false,
+            modalOpen: false,
+            file: null,
+            schema: result.data.data,
+        });
+    }
+
+    onUploadChange = (e) => {
+        this.setState({ file: e.target.files[0] });
+    }
+
+    async fileUpload(file) {
+        const url = `${conf.endpoints.metadata}/domains/${this.props.data.id}/schemas/import`;
+        const formData = new FormData();
+        formData.append('archive', file);
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data',
+            },
+        };
+        await axios.post(url, formData, config);
+    }
+
     render() {
         const {
             classes,
         } = this.props;
         return (
             <Grid item xs={12}>
-                <ExpansionPanel onChange={this.handleExpansion.bind(this, this.props.data.id)}>
+                <ExpansionPanel onChange={this.handleExpansion.bind(this)}>
                     <ExpansionPanelSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
@@ -208,7 +264,8 @@ class MetaDataTeaser extends React.PureComponent {
 
                             <Grid item xs={4} />
                             <Grid item xs={2} >
-                                <Button variant="outlined" aria-label="next" onClick={() => {
+                                <Button variant="outlined" aria-label="next" onClick={(e) => {
+                                    e.stopPropagation();
                                     this.setState({
                                         modalOpen: true,
                                         editDomain: true,
@@ -226,17 +283,30 @@ class MetaDataTeaser extends React.PureComponent {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Grid container>
-                            <Grid item xs={2}><h3>Schemas</h3></Grid>
-                            <Grid item xs={10}>
-                                <Button variant="outlined" aria-label="next" onClick={() => {
-                                    this.setState({
-                                        modalOpen: true,
-                                        addSchema: true,
-                                        editorData: this.dummyData,
-                                    });
-                                }}>
-                                    <Add/>
-                                </Button>
+                            <Grid item xs={12} container>
+                                <Grid item xs={2}>
+                                    <h3>Schemas</h3>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <Button variant="outlined" aria-label="Add" onClick={() => {
+                                        this.setState({
+                                            modalOpen: true,
+                                            addSchema: true,
+                                            editorData: this.dummyData,
+                                        });
+                                    }}>
+                                        <Add />
+                                    </Button>
+                                    <Button variant="outlined" aria-label="Add" onClick={() => {
+                                        this.setState({
+                                            modalOpen: true,
+                                            uploadSchema: true,
+                                        });
+                                    }}>
+                                        <CloudUpload/>
+                                    </Button>
+                                </Grid>
+
                             </Grid>
                             {
                                 this.state.schemas.length && this.getSchemas()
@@ -251,49 +321,74 @@ class MetaDataTeaser extends React.PureComponent {
                     onClose={ () => {
                         this.setState({
                             editDomain: false,
-                            viewSchema: false,
+                            editSchema: false,
                             addSchema: false,
+                            uploadSchema: false,
+                            modalOpen: false,
                         });
                     }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
-                        <JSONInput
-                            id = 'jsonEdit'
-                            locale = {locale}
-                            theme = 'dark_vscode_tribute'
-                            placeholder = {this.state.editorData}
-                            height = '550px'
-                            width = '600px'
-                            onChange={this.editorChange.bind(this)}
-                        />
-                        <Button variant="outlined" aria-label="Add" onClick={() => {
-                            this.setState({
-                                editDomain: false,
-                                viewSchema: false,
-                                addSchema: false,
-                                modalOpen: false,
-                            });
-                        }}>
-                            close
-                        </Button>
                         {
-                            this.state.editDomain
-                                ? <Button variant="outlined" aria-label="Add" onClick={this.updateDomain} disabled={!this.state.wasChanged}>
+                            this.state.editDomain || this.state.editSchema || this.state.addSchema
+                                ? <div>
+                                    <JSONInput
+                                        id = 'jsonEdit'
+                                        locale = {locale}
+                                        theme = 'dark_vscode_tribute'
+                                        placeholder = {this.state.editorData}
+                                        height = '550px'
+                                        width = '600px'
+                                        onChange={this.editorChange.bind(this)}
+                                    />
+                                    <Button variant="outlined" aria-label="Add" onClick={() => {
+                                        this.setState({
+                                            editDomain: false,
+                                            editSchema: false,
+                                            addSchema: false,
+                                            modalOpen: false,
+                                        });
+                                    }}>
+                                    close
+                                    </Button>
+                                    {
+                                        this.state.editDomain
+                                            ? <Button variant="outlined" aria-label="Add" onClick={this.updateDomain} disabled={!this.state.wasChanged}>
                                 Save
-                                </Button>
+                                            </Button>
+                                            : null
+                                    }
+                                    {
+                                        this.state.addSchema
+                                            ? <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
+                            Save
+                                            </Button>
+                                            : null
+                                    }
+                                    {
+                                        this.state.editSchema
+                                            ? <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
+                            Save
+                                            </Button>
+                                            : null
+                                    }
+                                </div>
                                 : null
                         }
                         {
-                            this.state.addSchema
-                                ? <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
-                            Save
-                                </Button>
+                            this.state.uploadSchema
+                                ? <form onSubmit={this.onUpload.bind(this)}>
+                                    <h1>File Upload</h1>
+                                    <input type="file" onChange={this.onUploadChange} accept=".zip, .tgz"/>
+                                    <Button type="submit" variant="outlined" aria-label="Add" >
+                                        Upload
+                                    </Button>
+                                </form>
                                 : null
                         }
 
                     </div>
-
                 </Modal>
             </Grid>
         );
@@ -308,6 +403,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     updateDomain,
     createDomainSchema,
     deleteDomainSchema,
+    updateDomainSchema,
 }, dispatch);
 
 export default flow(

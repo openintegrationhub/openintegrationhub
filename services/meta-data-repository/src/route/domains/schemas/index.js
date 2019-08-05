@@ -203,6 +203,7 @@ router.put('/:uri*', domainOwnerOrAllowed({
                     domainId: req.domainId,
                     uri: req.path.replace(/^\//, ''),
                 }),
+                newUri: URIfromId(transformed.schema.$id),
                 value: JSON.stringify(transformed.schema),
                 refs: transformed.backReferences,
             })),
