@@ -156,11 +156,10 @@ export const uploadDomainSchemas = data => async (dispatch) => {
 };
 
 export const updateDomainSchema = data => async (dispatch) => {
-    const uriParsed = data.uri.split('/');
     try {
         const response = await axios({
             method: 'put',
-            url: `${conf.endpoints.metadata}/domains/${data.domainId}/schemas/${uriParsed[uriParsed.length - 1]}`,
+            url: `${conf.endpoints.metadata}/${data.uri.replace('/api/v1/', '')}`,
             withCredentials: true,
             // json: true,
             data: {
@@ -181,11 +180,10 @@ export const updateDomainSchema = data => async (dispatch) => {
 
 
 export const deleteDomainSchema = (domainId, uri) => async (dispatch) => {
-    const id = uri.split('/');
     try {
         await axios({
             method: 'delete',
-            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas/${id[id.length - 1]}`,
+            url: `${conf.endpoints.metadata}/${uri.replace('/api/v1/', '')}`,
             withCredentials: true,
         });
 

@@ -92,10 +92,9 @@ class MetaDataTeaser extends React.PureComponent {
                 <Grid item xs={8}><InputLabel>Uri:</InputLabel><Typography>{schema.uri}</Typography></Grid>
                 <Grid item xs={2}>
                     <Button variant="outlined" aria-label="next" onClick={async () => {
-                        const id = schema.uri.split('/');
                         const result = await axios({
                             method: 'get',
-                            url: `${conf.endpoints.metadata}/domains/${schema.domainId}/schemas/${id[id.length - 1].split('.')[0]}`,
+                            url: `${conf.endpoints.metadata}/${schema.uri.replace('/api/v1/', '')}`,
                             withCredentials: true,
                             json: true,
                         });
