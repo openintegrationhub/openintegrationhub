@@ -39,7 +39,10 @@ module.exports = {
         return result;
     },
     async updateByURI(obj) {
-        const result = await Schema.findOneAndUpdate({ uri: obj.uri }, obj, { new: true });
+        const uri = obj.uri;
+        obj.uri = obj.newUri && obj.uri !== obj.newUri ? obj.newUri : obj.uri;
+        const result = await Schema.findOneAndUpdate({ uri }, obj, { new: true });
+
         const event = new Event({
             headers: {
                 name: 'metadata.schema.modified',
