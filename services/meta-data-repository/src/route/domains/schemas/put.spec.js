@@ -33,6 +33,13 @@ describe('schemas', () => {
             public: true,
         };
 
+        // create a domain
+        const domain_ = (await request.post('/domains')
+            .set(...global.user1)
+            .send({ data: domain })
+            .expect(200)).body;
+
+
         const schema = {
             $schema: 'http://json-schema.org/schema#',
             $id: 'https://github.com/organizationV1.json',
@@ -50,18 +57,10 @@ describe('schemas', () => {
                     example: 'http://example.org/logo.png',
                 },
             },
-
         };
 
-        // create a domain
-        let result = (await request.post('/domains')
-            .set(...global.user1)
-            .send({ data: domain })
-            .expect(200)).body;
-
-
         // import schema
-        const created = (await request.post(`/domains/${result.data.id}/schemas`)
+        const created = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
                 data: {
@@ -69,6 +68,80 @@ describe('schemas', () => {
                 },
             })
             .expect(200)).body;
+
+        console.log(created.data);
+        const schema2 = {
+            $schema: 'http://json-schema.org/schema#',
+            $id: 'https://github.com/organizationV2.json',
+            title: 'Organization2',
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    description: 'Name of the organization',
+                    example: 'Great Company',
+                },
+                logo: {
+                    type: 'string',
+                    description: 'Logo of the organization',
+                    example: 'http://example.org/logo.png',
+                },
+                base: {
+                    $ref: JSON.parse(created.data.value).$id,
+                },
+            },
+        };
+
+        const schema3 = {
+            $schema: 'http://json-schema.org/schema#',
+            $id: 'https://github.com/organizationV3.json',
+            title: 'Organization3',
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    description: 'Name of the organization',
+                    example: 'Great Company',
+                },
+                logo: {
+                    type: 'string',
+                    description: 'Logo of the organization',
+                    example: 'http://example.org/logo.png',
+                },
+                base: {
+                    $ref: JSON.parse(created.data.value).$id,
+                },
+            },
+        };
+
+        // import additional schemas
+        await request.post(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .send({
+                data: {
+                    value: schema2,
+                },
+            })
+            .expect(200);
+
+        await request.post(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .send({
+                data: {
+                    value: schema3,
+                },
+            })
+            .expect(200);
+
+
+        // check created schemas
+
+        let result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .expect(200)).body.data;
+
+        console.log(result);
+
 
         // put data by uri (regular request)
 
@@ -134,5 +207,19 @@ describe('schemas', () => {
         expect(result.data.name).toEqual('foo');
         expect(JSON.parse(result.data.value).title).toEqual('Org');
         expect(result.data.uri).toMatch(/blub/);
+
+        // check updated references
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .expect(200)).body.data;
+
+        for (const schema of result) {
+            if (schema.refs) {
+                schema.refs.forEach((ref) => {
+                    expect(ref).toMatch(/blub/);
+                });
+            }
+        }
     });
 });

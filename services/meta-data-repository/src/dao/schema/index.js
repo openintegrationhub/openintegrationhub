@@ -6,6 +6,15 @@ async function getReferences(uri) {
     return (await Schema.find({ refs: uri })).map(elem => elem.uri);
 }
 
+async function updateReferences({ oldUri, newUri }) {
+    await Schema.updateMany({
+        refs: oldUri,
+    },
+    {
+        $set: { 'refs.$': newUri },
+    });
+}
+
 module.exports = {
     async startTransaction() {
         const session = await mongoose.startSession();
@@ -41,7 +50,16 @@ module.exports = {
     async updateByURI(obj) {
         const uri = obj.uri;
         obj.uri = obj.newUri && obj.uri !== obj.newUri ? obj.newUri : obj.uri;
+
         const result = await Schema.findOneAndUpdate({ uri }, obj, { new: true });
+
+        // update references
+        if (uri !== obj.uri) {
+            await updateReferences({
+                oldUri: uri,
+                newUri: obj.uri,
+            });
+        }
 
         const event = new Event({
             headers: {
@@ -52,6 +70,7 @@ module.exports = {
         EventBusManager.getEventBus().publish(event);
         return result;
     },
+
     async findByDomainAndEntity({
         domainId,
         entityId,
@@ -61,7 +80,7 @@ module.exports = {
             domainId,
             'owners.id': entityId,
         },
-        'name domainId description uri value owners',
+        null,
         options);
     },
 
@@ -72,7 +91,7 @@ module.exports = {
         return await Schema.find({
             domainId,
         },
-        'name domainId description uri value owners',
+        null,
         options);
     },
     async findByURI({
