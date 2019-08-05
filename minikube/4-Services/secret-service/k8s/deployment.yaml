@@ -1,0 +1,71 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: secret-service
+  namespace: oih-dev-ns
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: secret-service
+    spec:
+      containers:
+      - name: secret-service
+        image: openintegrationhub/secret-service:latest
+        env:
+        - name: CRYPTO_DISABLED
+          value: "true"
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: shared-secret
+              key: iamtoken
+        - name: MONGODB_CONNECTION
+          valueFrom:
+            secretKeyRef:
+              name: shared-secret
+              key: mongourl
+        # - name: IAM_OIDC_SERVICE_CLIENT_ID
+        #   value: 8ce00058-5f75-435f-9026-ad952480e15a
+        # - name: IAM_OIDC_SERVICE_CLIENT_SECRET
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: secret-service
+        #       key: 'client-secret'
+        - name: "INTROSPECT_TYPE"
+          value: "basic"
+        - name: "INTROSPECT_ENDPOINT_BASIC"
+          value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+        - name: PORT
+          value: '3000'
+        - name: API_BASE
+          value: "/api/v1"
+        - name: LOGGING_LEVEL
+          value: "error"
+        - name: TTL_AUTHFLOW
+          value: "2m"
+        - name: DEBUG_MODE
+          value: "false"
+        - name: RABBITMQ_URI
+          value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: '0.1'
+            memory: 1000Mi

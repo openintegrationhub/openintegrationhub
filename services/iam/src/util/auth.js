@@ -337,7 +337,7 @@ module.exports = {
     },
 
     isLoggedIn: (req, res, next) => {
-        if (req.user.auth || (req.user.role === CONSTANTS.ROLES.SERVICE_ACCOUNT && req.user.userid)) {
+        if (req.user) {
             return next();
         }
 

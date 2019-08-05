@@ -153,7 +153,7 @@ router.get('/:uri*', async (req, res, next) => {
 
             uri: buildURI({
                 domainId: req.domainId,
-                uri: req.params.uri,
+                uri: req.path.replace(/^\//, ''),
             }),
         });
 
@@ -201,7 +201,7 @@ router.put('/:uri*', domainOwnerOrAllowed({
                 description,
                 uri: buildURI({
                     domainId: req.domainId,
-                    uri: req.params.uri,
+                    uri: req.path.replace(/^\//, ''),
                 }),
                 newUri: URIfromId(transformed.schema.$id),
                 value: JSON.stringify(transformed.schema),
@@ -222,7 +222,7 @@ router.delete('/:uri*', domainOwnerOrAllowed({
     try {
         await SchemaDAO.delete(buildURI({
             domainId: req.domainId,
-            uri: req.params.uri,
+            uri: req.path.replace(/^\//, ''),
         }));
         res.sendStatus(204);
     } catch (err) {
