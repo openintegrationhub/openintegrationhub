@@ -14,6 +14,7 @@ import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Modal from '@material-ui/core/Modal';
 import {
     Delete, Edit, Add, CloudUpload,
@@ -40,6 +41,8 @@ const useStyles = {
     },
     modal: {
         backgroundColor: 'white',
+        height: '600px',
+        width: '700px',
         margin: 'auto',
         outline: 'none',
     },
@@ -51,6 +54,7 @@ class MetaDataTeaser extends React.PureComponent {
         addSchema: false,
         editSchema: false,
         uploadSchema: false,
+        waitForUpload: false,
         wasChanged: false,
         editorData: null,
         modalOpen: false,
@@ -210,6 +214,9 @@ class MetaDataTeaser extends React.PureComponent {
 
     async onUpload(e) {
         e.preventDefault();
+        this.setState({
+            waitForUpload: true,
+        });
         try {
             await this.fileUpload(this.state.file);
         } catch (error) {
@@ -288,7 +295,7 @@ class MetaDataTeaser extends React.PureComponent {
                                     <h3>Schemas</h3>
                                 </Grid>
                                 <Grid item xs={2}>
-                                    <Button variant="outlined" aria-label="Add" onClick={() => {
+                                    <Button variant="outlined" onClick={() => {
                                         this.setState({
                                             modalOpen: true,
                                             addSchema: true,
@@ -297,7 +304,7 @@ class MetaDataTeaser extends React.PureComponent {
                                     }}>
                                         <Add />
                                     </Button>
-                                    <Button variant="outlined" aria-label="Add" onClick={() => {
+                                    <Button variant="outlined" onClick={() => {
                                         this.setState({
                                             modalOpen: true,
                                             uploadSchema: true,
@@ -342,7 +349,7 @@ class MetaDataTeaser extends React.PureComponent {
                                         width = '600px'
                                         onChange={this.editorChange.bind(this)}
                                     />
-                                    <Button variant="outlined" aria-label="Add" onClick={() => {
+                                    <Button variant="outlined" onClick={() => {
                                         this.setState({
                                             editDomain: false,
                                             editSchema: false,
@@ -354,21 +361,21 @@ class MetaDataTeaser extends React.PureComponent {
                                     </Button>
                                     {
                                         this.state.editDomain
-                                            ? <Button variant="outlined" aria-label="Add" onClick={this.updateDomain} disabled={!this.state.wasChanged}>
+                                            ? <Button variant="outlined" onClick={this.updateDomain} disabled={!this.state.wasChanged}>
                                 Save
                                             </Button>
                                             : null
                                     }
                                     {
                                         this.state.addSchema
-                                            ? <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
+                                            ? <Button variant="outlined" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
                             Save
                                             </Button>
                                             : null
                                     }
                                     {
                                         this.state.editSchema
-                                            ? <Button variant="outlined" aria-label="Add" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
+                                            ? <Button variant="outlined" onClick={this.saveSchema.bind(this, this.props.data.id)} disabled={!this.state.wasChanged}>
                             Save
                                             </Button>
                                             : null
@@ -377,15 +384,15 @@ class MetaDataTeaser extends React.PureComponent {
                                 : null
                         }
                         {
-                            this.state.uploadSchema
+                            this.state.uploadSchema && !this.state.waitForUpload
                                 ? <form onSubmit={this.onUpload.bind(this)}>
                                     <h1>File Upload</h1>
                                     <input type="file" onChange={this.onUploadChange} accept=".zip, .tgz"/>
-                                    <Button type="submit" variant="outlined" aria-label="Add" >
+                                    <Button type="submit" variant="outlined" >
                                         Upload
                                     </Button>
                                 </form>
-                                : null
+                                : <CircularProgress/>
                         }
 
                     </div>
