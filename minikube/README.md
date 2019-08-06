@@ -76,7 +76,7 @@ If you are using a Linux distribution, you can automate this by using this termi
       "inquirer": "{PASTE SERVICE ACCOUNT ID HERE}"
     }
       ```
-  - The returned token is the service token that will be used by the other services to authenticate themselves to the IAM. Copy the value, encode it in base64, and then past it into the file found at `./3-Secret/SharedSecret.yaml` at the indicated position (`REPLACE ME`).
+  - The returned token is the service token that will be used by the other services to authenticate themselves to the IAM. Copy the value, encode it in *base64*, and then past it into the file found at `./3-Secret/SharedSecret.yaml` at the indicated position (`REPLACE ME`).
 
 6. Apply the shared secret via `kubectl apply -f ./3-Secret`. Ordinarily, each service would have its own secret for security reasons, but this is simplified for ease of use in a local context
 
