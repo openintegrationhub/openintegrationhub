@@ -60,7 +60,7 @@ describe('schemas', () => {
         };
 
         // import schema
-        const created = (await request.post(`/domains/${domain_.data.id}/schemas`)
+        let created = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
                 data: {
@@ -145,7 +145,7 @@ describe('schemas', () => {
 
         // put data by uri (regular request)
 
-        result = (await request.put(created.data.uri.replace('/api/v1', ''))
+        created = (await request.put(created.data.uri.replace('/api/v1', ''))
             .set(...global.user1)
             .send({
                 data: {
@@ -155,12 +155,12 @@ describe('schemas', () => {
                     },
                 },
             })
-            .expect(200));
+            .expect(200)).body;
 
-        expect(result.body.data.name).toEqual('Org');
-        expect(JSON.parse(result.body.data.value).title).toEqual('Org');
+        expect(created.data.name).toEqual('Org');
+        expect(JSON.parse(created.data.value).title).toEqual('Org');
 
-        result = (await request.put(created.data.uri.replace('/api/v1', ''))
+        created = (await request.put(created.data.uri.replace('/api/v1', ''))
             .set(...global.user1)
             .send({
                 data: {
@@ -171,12 +171,12 @@ describe('schemas', () => {
                     },
                 },
             })
-            .expect(200));
+            .expect(200)).body;
 
-        expect(result.body.data.name).toEqual('foo');
-        expect(JSON.parse(result.body.data.value).title).toEqual('Org');
+        expect(created.data.name).toEqual('foo');
+        expect(JSON.parse(created.data.value).title).toEqual('Org');
 
-        result = (await request.put(created.data.uri.replace('/api/v1', ''))
+        created = (await request.put(created.data.uri.replace('/api/v1', ''))
             .set(...global.user1)
             .send({
                 data: {
@@ -204,9 +204,9 @@ describe('schemas', () => {
             })
             .expect(200)).body;
 
-        expect(result.data.name).toEqual('foo');
-        expect(JSON.parse(result.data.value).title).toEqual('Org');
-        expect(result.data.uri).toMatch(/blub/);
+        expect(created.data.name).toEqual('foo');
+        expect(JSON.parse(created.data.value).title).toEqual('Org');
+        expect(created.data.uri).toMatch(/blub/);
 
         // check updated references
 
@@ -221,5 +221,39 @@ describe('schemas', () => {
                 });
             }
         }
+
+
+        // console.log(result);
+        created = (await request.put(created.data.uri.replace('/api/v1', ''))
+            .set(...global.user1)
+            .send({
+                data: {
+                    name: 'foo',
+                    id: 'lolololol',
+                    value: {
+                        $schema: 'http://json-schema.org/schema#',
+                        $id: 'foo/blub',
+                        title: 'Org',
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                                description: 'Name of the organization',
+                                example: 'Great Company',
+                            },
+                            logo: {
+                                type: 'string',
+                                description: 'Logo of the organization',
+                                example: 'http://example.org/logo.png',
+                            },
+                        },
+                    },
+                },
+            })
+            .expect(200)).body;
+
+        await request.get(created.data.uri.replace('/api/v1', ''))
+            .set(...global.user1)
+            .expect(200);
     });
 });

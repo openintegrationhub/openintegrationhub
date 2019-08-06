@@ -25,9 +25,7 @@ function transformURI({ domain, id, options = {} }) {
     // remove first slash if existing
     if (options.location) {
         pathname = options.location.replace(options.root, '');
-    } else if (pathname) {
-        pathname = path.basename(pathname);
-    } else {
+    } else if (!pathname) {
         pathname = encodeURI(id).replace(/(#|\?)/g, '');
     }
 
