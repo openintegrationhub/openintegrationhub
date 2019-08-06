@@ -206,6 +206,10 @@ module.exports = {
             backReferences,
         };
     },
+
+    buildURI({ domainId, uri }) {
+        return `${conf.apiBase}/domains/${domainId}/schemas/${uri}`;
+    },
     transformDbResults,
     resolveRelativePath,
     transformURI,
