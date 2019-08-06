@@ -1,6 +1,5 @@
 const express = require('express');
 const logger = require('@basaas/node-logger');
-const mkdirp = require('mkdirp');
 const { domainOwnerOrAllowed } = require('../../middleware/permission');
 const conf = require('../../conf');
 const { TENANT_ADMIN } = require('../../constant').ROLE;
@@ -13,9 +12,6 @@ const {
 const log = logger.getLogger(`${conf.logging.namespace}/domains:get`);
 
 const router = express.Router();
-
-// create upload path
-mkdirp.sync(conf.importFilePath);
 
 router.get('/', async (req, res, next) => {
     try {
