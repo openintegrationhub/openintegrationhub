@@ -41,8 +41,7 @@ const useStyles = {
     },
     modal: {
         backgroundColor: 'white',
-        height: '600px',
-        width: '700px',
+        width: '601px',
         margin: 'auto',
         outline: 'none',
     },
@@ -392,7 +391,7 @@ class MetaDataTeaser extends React.PureComponent {
                                         Upload
                                     </Button>
                                 </form>
-                                : <CircularProgress/>
+                                : this.state.waitForUpload && <CircularProgress/>
                         }
 
                     </div>
