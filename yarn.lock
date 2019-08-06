@@ -12620,29 +12620,6 @@ mongodb-download@^2.2.7:
     semver "^5.6.0"
     yargs "^3.26.0"
 
-mongodb-memory-server-core@5.1.10:
-  version "5.1.10"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-5.1.10.tgz#4a71aa8938489a771a7318fc4a610913c3fb4b15"
-  integrity sha512-iK67WLo3d4t55t8bpTmkxrTqhHS+gM6ElTXFqSUP+FpbhQf8jxdGy111umLrM5avgVKD4O2IxP+F7//lR2ZfCg==
-  dependencies:
-    camelcase "^5.3.1"
-    cross-spawn "^6.0.5"
-    debug "^4.1.1"
-    decompress "^4.2.0"
-    dedent "^0.7.0"
-    find-cache-dir "^3.0.0"
-    find-package-json "^1.2.0"
-    get-port "^5.0.0"
-    getos "^3.1.1"
-    https-proxy-agent "^2.2.1"
-    lockfile "^1.0.4"
-    md5-file "^4.0.0"
-    mkdirp "^0.5.1"
-    tmp "^0.1.0"
-    uuid "^3.2.1"
-  optionalDependencies:
-    mongodb ">=3.2.7"
-
 mongodb-memory-server-core@5.1.4:
   version "5.1.4"
   resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-5.1.4.tgz#19b1daa27bb5ec3832ed6d217aee13804fa4f628"
@@ -12666,12 +12643,28 @@ mongodb-memory-server-core@5.1.4:
   optionalDependencies:
     mongodb ">=3.2.7"
 
-mongodb-memory-server@5.1.10:
-  version "5.1.10"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-5.1.10.tgz#94112fba8393681b6be924ed3f6070ae39a642d6"
-  integrity sha512-aFYRzhyhDqi0nWpa1zXXS2P9yiAtsBJY3KCMaM9Cczt5ENGSpOKcMjzz31UqoFu/cMmS5WvaC46EUuyG/AmWyQ==
+mongodb-memory-server-core@5.1.5:
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-5.1.5.tgz#b1f515c9da501da9fcfeb0529df65d1331b6b631"
+  integrity sha512-VwxhCx+tP2K1RSLU0ZgeRuG27SMDEbcR3bJDpzfVRJENpzuA/8btgpLZF8Zo1KwsGeofyQZadRGh70atsOjijw==
   dependencies:
-    mongodb-memory-server-core "5.1.10"
+    camelcase "^5.3.1"
+    cross-spawn "^6.0.5"
+    debug "^4.1.1"
+    decompress "^4.2.0"
+    dedent "^0.7.0"
+    find-cache-dir "^3.0.0"
+    find-package-json "^1.2.0"
+    get-port "^5.0.0"
+    getos "^3.1.1"
+    https-proxy-agent "^2.2.1"
+    lockfile "^1.0.4"
+    md5-file "^4.0.0"
+    mkdirp "^0.5.1"
+    tmp "^0.1.0"
+    uuid "^3.2.1"
+  optionalDependencies:
+    mongodb ">=3.2.7"
 
 mongodb-memory-server@5.1.4:
   version "5.1.4"
@@ -12679,6 +12672,13 @@ mongodb-memory-server@5.1.4:
   integrity sha512-2RRZu+gkg588PGa95H+9rAW7x6EGIBjZC0ynyYAW0xhl9B62M4B1YZJQ6yWDXlJ3+wSVsVqdgE4PEbUIYhtxOQ==
   dependencies:
     mongodb-memory-server-core "5.1.4"
+
+mongodb-memory-server@5.1.5:
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-5.1.5.tgz#3ceb8ec9024a0fb36717c6f2c7ea25e197e0907e"
+  integrity sha512-FvpX7+eLjEeGowkU/vyVDVLC4hT/VnWwWja7H6XmEkx9+os6IekgJCNGlVcsOZSBxn1OFdpxHTD8IzHn4us7Mw==
+  dependencies:
+    mongodb-memory-server-core "5.1.5"
 
 mongodb-memory-server@^2.9.1:
   version "2.9.3"
