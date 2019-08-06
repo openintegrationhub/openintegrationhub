@@ -21,6 +21,7 @@ function URIfromId(id) {
 
 function transformURI({ domain, id, options = {} }) {
     let { pathname } = url.parse(id);
+    const uriBase = `domains/${domain}/schemas`;
 
     // remove first slash if existing
     if (options.location) {
@@ -29,7 +30,9 @@ function transformURI({ domain, id, options = {} }) {
         pathname = encodeURI(id).replace(/(#|\?)/g, '');
     }
 
-    return `domains/${domain}/schemas/${pathname}`.replace('//', '/');
+    pathname = pathname.replace(`${conf.apiBase}/${uriBase}`, '');
+
+    return `${uriBase}/${pathname}`.replace('//', '/');
 }
 
 function resolveRelativePath({ filePath, location, root }) {
