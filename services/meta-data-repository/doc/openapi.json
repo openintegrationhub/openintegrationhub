@@ -3,7 +3,7 @@
   "info": {
     "title": "OIH MetaData Service REST API",
     "description": "REST API for the OIH MetaData Service.",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"

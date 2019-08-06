@@ -1,4 +1,3 @@
-
 module.exports = {
     isLocalRequest(req) {
         if (req.headers.authorization) {
@@ -11,6 +10,4 @@ module.exports = {
         }
         return false;
     },
-    maskString: string => (string ? string.replace(/.(?=.{4,}$)/g, '*') : ''),
-
 };

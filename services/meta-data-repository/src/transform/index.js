@@ -25,9 +25,7 @@ function transformURI({ domain, id, options = {} }) {
     // remove first slash if existing
     if (options.location) {
         pathname = options.location.replace(options.root, '');
-    } else if (pathname) {
-        pathname = path.basename(pathname);
-    } else {
+    } else if (!pathname) {
         pathname = encodeURI(id).replace(/(#|\?)/g, '');
     }
 
@@ -118,7 +116,8 @@ module.exports = {
         jsonRefsOptions = {},
     }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
-        const fullBase = `${conf.baseUrl}:${conf.port}${conf.apiBase}`;
+        const base = `${conf.baseUrl}${conf.urlsWithPort ? `:${conf.port}` : ''}`;
+        const fullBase = `${base}${conf.apiBase}`;
 
         // default settings
 
@@ -188,13 +187,13 @@ module.exports = {
                     copy,
                     key.replace('#', ''),
                     {
-                        $ref: `${conf.baseUrl}:${conf.port}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
+                        $ref: `${base}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
                     },
                 );
                 if (!backReferences.includes(transformedPath)) {
                     backReferences.push(transformedPath);
                 }
-            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${conf.baseUrl}:${conf.port}`) {
+            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${base}`) {
                 if (!backReferences.includes(uriDetails.path)) {
                     backReferences.push(uriDetails.path);
                 }
@@ -205,6 +204,10 @@ module.exports = {
             schema: copy,
             backReferences,
         };
+    },
+
+    buildURI({ domainId, uri }) {
+        return `${conf.apiBase}/domains/${domainId}/schemas/${uri}`;
     },
     transformDbResults,
     resolveRelativePath,

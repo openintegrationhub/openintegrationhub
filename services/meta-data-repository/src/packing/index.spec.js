@@ -45,7 +45,12 @@ describe('packing', () => {
             unpackDest,
         );
 
-        expect(fs.readdirSync(unpackDest)).toHaveLength(fs.readdirSync(src).length);
+        expect(fs.readdirSync(unpackDest)).toHaveLength(
+            fs
+                .readdirSync(src)
+                .filter(filename => filename !== '.DS_Store')
+                .length,
+        );
 
         await fs.remove(packDest);
         await fs.remove(unpackDest);
@@ -70,7 +75,11 @@ describe('packing', () => {
             unpackDest,
         );
 
-        expect(fs.readdirSync(unpackDest)).toHaveLength(fs.readdirSync(src).length);
+        expect(fs.readdirSync(unpackDest)).toHaveLength(
+            fs
+                .readdirSync(src)
+                .length,
+        );
 
         await fs.remove(packDest);
         await fs.remove(unpackDest);

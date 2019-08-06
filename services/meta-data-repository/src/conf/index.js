@@ -6,6 +6,7 @@ const originwhitelist = optional('ORIGINWHITELIST') ? optional('ORIGINWHITELIST'
 
 module.exports = {
     port: optional('PORT', 3000),
+    urlsWithPort: optional('URLS_WITH_PORT', 'true') === 'true',
     baseUrl: optional('BASE_URL', 'http://localhost'),
     apiBase: optional('API_BASE', '/api/v1'),
     userAuthType: optional('AUTH_TYPE', 'basic'),
