@@ -15,7 +15,7 @@ const {
 
 const { processArchive } = require('../../../bulk');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas/post`);
+const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas:post`);
 
 const router = express.Router();
 

@@ -9,7 +9,7 @@ const {
     buildURI,
 } = require('../../../transform');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains/schmemas/delete`);
+const log = logger.getLogger(`${conf.logging.namespace}/domains/schmemas:delete`);
 
 const router = express.Router();
 

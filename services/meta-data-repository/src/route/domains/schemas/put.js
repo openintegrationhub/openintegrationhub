@@ -8,7 +8,7 @@ const {
     transformSchema, validateSchema, URIfromId, transformDbResults, buildURI,
 } = require('../../../transform');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas/put`);
+const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas:put`);
 
 const router = express.Router();
 
