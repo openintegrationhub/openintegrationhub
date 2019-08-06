@@ -116,7 +116,8 @@ module.exports = {
         jsonRefsOptions = {},
     }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
-        const fullBase = `${conf.baseUrl}:${conf.port}${conf.apiBase}`;
+        const base = `${conf.baseUrl}${conf.urlsWithPort ? `:${conf.port}` : ''}`;
+        const fullBase = `${base}${conf.apiBase}`;
 
         // default settings
 
@@ -186,13 +187,13 @@ module.exports = {
                     copy,
                     key.replace('#', ''),
                     {
-                        $ref: `${conf.baseUrl}:${conf.port}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
+                        $ref: `${base}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
                     },
                 );
                 if (!backReferences.includes(transformedPath)) {
                     backReferences.push(transformedPath);
                 }
-            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${conf.baseUrl}:${conf.port}`) {
+            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${base}`) {
                 if (!backReferences.includes(uriDetails.path)) {
                     backReferences.push(uriDetails.path);
                 }
