@@ -67,7 +67,6 @@ describe('schemas', () => {
             })
             .expect(200)).body;
 
-        console.log(created.data);
         const schema2 = {
             $schema: 'http://json-schema.org/schema#',
             $id: 'https://github.com/organizationV2.json',
@@ -130,12 +129,9 @@ describe('schemas', () => {
 
         // check created schemas
 
-        let result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+        await request.get(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .expect(200)).body.data;
-
-        console.log(result);
-
+            .expect(200);
 
         // put data by uri (regular request)
 
@@ -170,10 +166,9 @@ describe('schemas', () => {
             .set(...global.user1)
             .send({
                 name: 'foo',
-                id: 'lolololol',
                 value: {
                     $schema: 'http://json-schema.org/schema#',
-                    $id: 'blub',
+                    $id: 'https://github.com/organizationV1.json',
                     title: 'Org',
                     type: 'object',
                     properties: {
@@ -194,32 +189,15 @@ describe('schemas', () => {
 
         expect(created.data.name).toEqual('foo');
         expect(JSON.parse(created.data.value).title).toEqual('Org');
-        expect(created.data.uri).toMatch(/blub/);
 
-        // check updated references
-
-        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
-            .set(...global.user1)
-            .expect(200)).body.data;
-
-        for (const schema of result) {
-            if (schema.refs) {
-                schema.refs.forEach((ref) => {
-                    expect(ref).toMatch(/blub/);
-                });
-            }
-        }
-
-
-        // console.log(result);
-        created = (await request.put(created.data.uri.replace('/api/v1', ''))
+        await request.put(created.data.uri.replace('/api/v1', ''))
             .set(...global.user1)
             .send({
                 name: 'foo',
                 id: 'lolololol',
                 value: {
                     $schema: 'http://json-schema.org/schema#',
-                    $id: 'foo/blub',
+                    $id: 'asdasd',
                     title: 'Org',
                     type: 'object',
                     properties: {
@@ -236,10 +214,6 @@ describe('schemas', () => {
                     },
                 },
             })
-            .expect(200)).body;
-
-        await request.get(created.data.uri.replace('/api/v1', ''))
-            .set(...global.user1)
-            .expect(200);
+            .expect(500);
     });
 });

@@ -66,7 +66,6 @@ router.get('/:uri*', async (req, res, next) => {
 }, async (req, res, next) => {
     try {
         const schema = await SchemaDAO.findByURI({
-
             uri: buildURI({
                 domainId: req.domainId,
                 uri: req.path.replace(/^\//, ''),

@@ -5,7 +5,7 @@ const { domainOwnerOrAllowed } = require('../../../middleware/permission');
 const conf = require('../../../conf');
 const { SchemaDAO } = require('../../../dao');
 const {
-    transformSchema, validateSchema, URIfromId, transformDbResults, buildURI,
+    transformSchema, validateSchema, transformDbResults, buildURI,
 } = require('../../../transform');
 
 const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas:put`);
@@ -21,7 +21,6 @@ router.put('/:uri*', domainOwnerOrAllowed({
         validateSchema({
             schema: value,
         });
-
         const transformed = await transformSchema({
             domain: req.domainId,
             schema: value,
@@ -29,7 +28,6 @@ router.put('/:uri*', domainOwnerOrAllowed({
 
         res.send({
             data: transformDbResults(await SchemaDAO.updateByURI({
-
                 name: name || transformed.schema.title,
                 domainId: req.domainId,
                 description,
@@ -37,7 +35,6 @@ router.put('/:uri*', domainOwnerOrAllowed({
                     domainId: req.domainId,
                     uri: req.path.replace(/^\//, ''),
                 }),
-                newUri: URIfromId(transformed.schema.$id),
                 value: JSON.stringify(transformed.schema),
                 refs: transformed.backReferences,
             })),
