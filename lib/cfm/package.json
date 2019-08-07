@@ -10,7 +10,9 @@
   },
   "author": "Wice GmbH",
   "license": "Apache-2.0",
-  "dependencies": {},
+  "dependencies": {
+    "deepmerge": "^4.0.0"
+  },
   "devDependencies": {
     "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
