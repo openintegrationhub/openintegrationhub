@@ -90,6 +90,7 @@ router.post('/', domainOwnerOrAllowed({
         log.error(err);
         next({
             status: 400,
+            err,
         });
     }
 });
@@ -146,6 +147,7 @@ router.post('/import', domainOwnerOrAllowed({
         }
         next({
             status: 400,
+            err,
         });
     } finally {
         if (req.file) {

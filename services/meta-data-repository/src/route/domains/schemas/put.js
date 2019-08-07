@@ -49,6 +49,7 @@ router.put('/:uri*', domainOwnerOrAllowed({
         log.error(err);
         next({
             status: 500,
+            err,
         });
     }
 });

@@ -36,6 +36,7 @@ router.post('/', async (req, res, next) => {
         log.error(err);
         next({
             status: 400,
+            err,
         });
     }
 });
