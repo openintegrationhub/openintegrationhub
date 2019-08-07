@@ -13,13 +13,11 @@ const log = logger.getLogger(`${conf.logging.namespace}/domains:post`);
 const router = express.Router();
 
 router.post('/', async (req, res, next) => {
-    const { data } = req.body;
     try {
-        if (!data) throw 'Missing data';
         res.send({
             data: transformDbResults(await DomainDAO.create({
                 obj: {
-                    ...data,
+                    ...req.body,
                     owners: [{
                         id: req.user.sub.toString(),
                         type: USER,

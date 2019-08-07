@@ -39,11 +39,8 @@ const upload = multer({ storage });
 router.post('/', domainOwnerOrAllowed({
     permissions: ['not.defined'],
 }), async (req, res, next) => {
-    const { data } = req.body;
     try {
-        if (!data) throw 'Missing data';
-
-        const { name, description, value } = data;
+        const { name, description, value } = req.body;
 
         validateSchema({
             schema: value,

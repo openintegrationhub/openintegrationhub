@@ -47,7 +47,7 @@ describe('domains', () => {
         // create a domain
         result = (await request.post('/domains')
             .set(...global.user1)
-            .send({ data })
+            .send(data)
             .expect(200)).body;
 
         result = (await request.get(`/domains/${result.data.id}`)
@@ -61,7 +61,7 @@ describe('domains', () => {
         // create a domain with another account
         result = (await request.post('/domains')
             .set(...global.user2)
-            .send({ data })
+            .send(data)
             .expect(200)).body;
 
         // retrieve domain with another account

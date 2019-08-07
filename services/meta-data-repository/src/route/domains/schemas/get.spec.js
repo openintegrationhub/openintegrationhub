@@ -56,7 +56,7 @@ describe('schemas', () => {
         // create a domain
         let result = (await request.post('/domains')
             .set(...global.user1)
-            .send({ data: domain })
+            .send(domain)
             .expect(200)).body;
 
         const domain_ = result;
@@ -65,9 +65,7 @@ describe('schemas', () => {
         result = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
-                data: {
-                    value: schema,
-                },
+                value: schema,
             })
             .expect(200));
 

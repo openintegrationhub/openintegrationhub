@@ -46,7 +46,7 @@ describe('domains', () => {
 
         const { data } = (await request.post('/domains')
             .set(...global.user1)
-            .send({ data: payload })
+            .send(payload)
             .expect(200)).body;
 
         await request.get(`/domains/${data.id}`)
@@ -71,7 +71,7 @@ describe('domains', () => {
 
         let { data } = (await request.post('/domains')
             .set(...global.tenantUser1)
-            .send({ data: payload })
+            .send(payload)
             .expect(200)).body;
 
         const domainId = data.id;
@@ -103,10 +103,8 @@ describe('domains', () => {
         data = (await request.post(`/domains/${domainId}/schemas`)
             .set(...global.tenantUser1)
             .send({
-                data: {
-                    value: {
-                        $id: 'boo',
-                    },
+                value: {
+                    $id: 'boo',
                 },
             })
             .expect(200)).body.data;
@@ -116,11 +114,11 @@ describe('domains', () => {
         await request.post(`/domains/${domainId}/schemas`)
             .set(...global.tenantUser2)
             .send({
-                data: {
-                    value: {
-                        $id: 'boo',
-                    },
+
+                value: {
+                    $id: 'boo',
                 },
+
             })
             .expect(403);
 
@@ -128,10 +126,8 @@ describe('domains', () => {
         await request.post(`/domains/${domainId}/schemas`)
             .set(...global.tenantAdmin2)
             .send({
-                data: {
-                    value: {
-                        $id: 'boo',
-                    },
+                value: {
+                    $id: 'boo',
                 },
             })
             .expect(403);
@@ -139,10 +135,8 @@ describe('domains', () => {
         let res = await request.post(`/domains/${domainId}/schemas`)
             .set(...global.admin)
             .send({
-                data: {
-                    value: {
-                        $id: 'boo1',
-                    },
+                value: {
+                    $id: 'boo1',
                 },
             })
             .expect(200);
@@ -151,10 +145,8 @@ describe('domains', () => {
         res = await request.post(`/domains/${domainId}/schemas`)
             .set(...global.tenantAdmin1)
             .send({
-                data: {
-                    value: {
-                        $id: 'boo2',
-                    },
+                value: {
+                    $id: 'boo2',
                 },
             })
             .expect(200);
@@ -189,17 +181,17 @@ describe('domains', () => {
 
         await request.post('/domains')
             .set(...global.tenantUser2)
-            .send({ data: payload })
+            .send(payload)
             .expect(200);
 
         await request.post('/domains')
             .set(...global.tenantUser2)
-            .send({ data: payload })
+            .send(payload)
             .expect(200);
 
         await request.post('/domains')
             .set(...global.tenantUser22)
-            .send({ data: payload })
+            .send(payload)
             .expect(200);
 
 

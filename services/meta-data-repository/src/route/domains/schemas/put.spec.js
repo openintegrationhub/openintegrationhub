@@ -36,7 +36,7 @@ describe('schemas', () => {
         // create a domain
         const domain_ = (await request.post('/domains')
             .set(...global.user1)
-            .send({ data: domain })
+            .send(domain)
             .expect(200)).body;
 
 
@@ -63,9 +63,7 @@ describe('schemas', () => {
         let created = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
-                data: {
-                    value: schema,
-                },
+                value: schema,
             })
             .expect(200)).body;
 
@@ -118,18 +116,14 @@ describe('schemas', () => {
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
-                data: {
-                    value: schema2,
-                },
+                value: schema2,
             })
             .expect(200);
 
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
-                data: {
-                    value: schema3,
-                },
+                value: schema3,
             })
             .expect(200);
 
@@ -148,11 +142,9 @@ describe('schemas', () => {
         created = (await request.put(created.data.uri.replace('/api/v1', ''))
             .set(...global.user1)
             .send({
-                data: {
-                    value: {
-                        ...schema,
-                        title: 'Org',
-                    },
+                value: {
+                    ...schema,
+                    title: 'Org',
                 },
             })
             .expect(200)).body;
@@ -163,12 +155,10 @@ describe('schemas', () => {
         created = (await request.put(created.data.uri.replace('/api/v1', ''))
             .set(...global.user1)
             .send({
-                data: {
-                    name: 'foo',
-                    value: {
-                        ...schema,
-                        title: 'Org',
-                    },
+                name: 'foo',
+                value: {
+                    ...schema,
+                    title: 'Org',
                 },
             })
             .expect(200)).body;
@@ -179,25 +169,23 @@ describe('schemas', () => {
         created = (await request.put(created.data.uri.replace('/api/v1', ''))
             .set(...global.user1)
             .send({
-                data: {
-                    name: 'foo',
-                    id: 'lolololol',
-                    value: {
-                        $schema: 'http://json-schema.org/schema#',
-                        $id: 'blub',
-                        title: 'Org',
-                        type: 'object',
-                        properties: {
-                            name: {
-                                type: 'string',
-                                description: 'Name of the organization',
-                                example: 'Great Company',
-                            },
-                            logo: {
-                                type: 'string',
-                                description: 'Logo of the organization',
-                                example: 'http://example.org/logo.png',
-                            },
+                name: 'foo',
+                id: 'lolololol',
+                value: {
+                    $schema: 'http://json-schema.org/schema#',
+                    $id: 'blub',
+                    title: 'Org',
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'Name of the organization',
+                            example: 'Great Company',
+                        },
+                        logo: {
+                            type: 'string',
+                            description: 'Logo of the organization',
+                            example: 'http://example.org/logo.png',
                         },
                     },
                 },
@@ -227,25 +215,23 @@ describe('schemas', () => {
         created = (await request.put(created.data.uri.replace('/api/v1', ''))
             .set(...global.user1)
             .send({
-                data: {
-                    name: 'foo',
-                    id: 'lolololol',
-                    value: {
-                        $schema: 'http://json-schema.org/schema#',
-                        $id: 'foo/blub',
-                        title: 'Org',
-                        type: 'object',
-                        properties: {
-                            name: {
-                                type: 'string',
-                                description: 'Name of the organization',
-                                example: 'Great Company',
-                            },
-                            logo: {
-                                type: 'string',
-                                description: 'Logo of the organization',
-                                example: 'http://example.org/logo.png',
-                            },
+                name: 'foo',
+                id: 'lolololol',
+                value: {
+                    $schema: 'http://json-schema.org/schema#',
+                    $id: 'foo/blub',
+                    title: 'Org',
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'Name of the organization',
+                            example: 'Great Company',
+                        },
+                        logo: {
+                            type: 'string',
+                            description: 'Logo of the organization',
+                            example: 'http://example.org/logo.png',
                         },
                     },
                 },
