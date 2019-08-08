@@ -65,13 +65,13 @@
         "properties": {
           "type": "array",
           "items": {
-              "$ref": "sharedDefinitions.json#/definitions/DocumentProperty"
+              "$ref": "#/definitions/DocumentProperty"
           }
         },
         "subResources": {
           "type": "array",
           "items": {
-              "$ref": "sharedDefinitions.json#/definitions/SubResource"
+              "$ref": "#/definitions/SubResource"
           }
         }
       }
