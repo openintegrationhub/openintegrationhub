@@ -35,22 +35,22 @@ describe('domains', () => {
 
         await request.post('/domains')
             .set(...global.user1)
-            .send({ data })
+            .send(data)
             .expect(200);
 
         await request.post('/domains')
             .set(...global.user1)
-            .send({ data })
+            .send(data)
             .expect(200);
 
         await request.post('/domains')
             .set(...global.user1)
-            .send({ data })
+            .send(data)
             .expect(200);
 
         let result = (await request.post('/domains')
             .set(...global.user1)
-            .send({ data })
+            .send(data)
             .expect(200)).body;
 
         Object.keys(data).forEach((key) => {

@@ -14,24 +14,22 @@ const router = express.Router();
 router.put('/:id', domainOwnerOrAllowed({
     permissions: ['not.defined'],
 }), async (req, res, next) => {
-    const { data } = req.body;
     try {
-        if (!data) throw 'Missing data';
-
-        if (data.owners) {
-            delete data.owners;
+        if (req.body.owners) {
+            delete req.body.owners;
         }
 
         res.send({
             data: transformDbResults(await DomainDAO.updateById({
                 id: req.params.id,
-                ...data,
+                ...req.body,
             })),
         });
     } catch (err) {
         log.error(err);
         next({
             status: 500,
+            err,
         });
     }
 });

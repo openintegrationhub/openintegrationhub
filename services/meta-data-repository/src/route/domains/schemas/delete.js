@@ -26,6 +26,7 @@ router.delete('/:uri*', domainOwnerOrAllowed({
         log.error(err);
         next({
             status: 400,
+            err,
         });
     }
 });

@@ -4,10 +4,10 @@ const readdirp = require('readdirp');
 const { SchemaValidationError, SchemaReferenceError } = require('../error');
 
 const {
+    transformURI,
     transformSchema,
     validateSchema,
     resolveRelativePath,
-    transformURI,
     URIfromId,
 } = require('./');
 

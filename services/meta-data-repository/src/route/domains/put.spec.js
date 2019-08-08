@@ -36,18 +36,16 @@ describe('domains', () => {
         // create a domain
         let result = (await request.post('/domains')
             .set(...global.user1)
-            .send({ data })
+            .send(data)
             .expect(200)).body;
 
         // update domain
         result = (await request.put(`/domains/${result.data.id}`)
             .set(...global.user1)
             .send({
-                data: {
-                    name: 'fooUpdate',
-                    description: 'bar',
-                    public: false,
-                },
+                name: 'fooUpdate',
+                description: 'bar',
+                public: false,
             })
             .expect(200)).body;
 
@@ -58,11 +56,9 @@ describe('domains', () => {
         await request.put(`/domains/${result.data.id}`)
             .set(...global.admin)
             .send({
-                data: {
-                    name: 'fooUpdate',
-                    description: 'bar',
-                    public: false,
-                },
+                name: 'fooUpdate',
+                description: 'bar',
+                public: false,
             })
             .expect(200);
 
@@ -70,11 +66,9 @@ describe('domains', () => {
         await request.put(`/domains/${result.data.id}`)
             .set(...global.user2)
             .send({
-                data: {
-                    name: 'fooUpdate',
-                    description: 'bar',
-                    public: false,
-                },
+                name: 'fooUpdate',
+                description: 'bar',
+                public: false,
             })
             .expect(403);
     });
