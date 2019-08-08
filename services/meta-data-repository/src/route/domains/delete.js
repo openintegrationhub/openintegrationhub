@@ -22,6 +22,7 @@ router.delete('/:id', domainOwnerOrAllowed({
         log.error(err);
         next({
             status: 500,
+            err,
         });
     }
 });

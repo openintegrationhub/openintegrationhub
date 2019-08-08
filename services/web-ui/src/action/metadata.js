@@ -80,9 +80,7 @@ export const createDomain = data => async (dispatch) => {
             url: `${conf.endpoints.metadata}/domains`,
             withCredentials: true,
             json: true,
-            data: {
-                data,
-            },
+            data,
         });
 
         dispatch({
@@ -117,9 +115,7 @@ export const createDomainSchema = (domainId, data) => async (dispatch) => {
             method: 'post',
             url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
             withCredentials: true,
-            data: {
-                data,
-            },
+            data,
         });
 
         dispatch({
@@ -139,9 +135,7 @@ export const uploadDomainSchemas = data => async (dispatch) => {
             method: 'post',
             url: `${conf.endpoints.metadata}/domains/${data.domainId}/schemas`,
             withCredentials: true,
-            data: {
-                data,
-            },
+            data,
         });
 
         dispatch({

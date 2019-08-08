@@ -39,11 +39,8 @@ const upload = multer({ storage });
 router.post('/', domainOwnerOrAllowed({
     permissions: ['not.defined'],
 }), async (req, res, next) => {
-    const { data } = req.body;
     try {
-        if (!data) throw 'Missing data';
-
-        const { name, description, value } = data;
+        const { name, description, value } = req.body;
 
         validateSchema({
             schema: value,
@@ -90,6 +87,7 @@ router.post('/', domainOwnerOrAllowed({
         log.error(err);
         next({
             status: 400,
+            err,
         });
     }
 });
@@ -146,6 +144,7 @@ router.post('/import', domainOwnerOrAllowed({
         }
         next({
             status: 400,
+            err,
         });
     } finally {
         if (req.file) {

@@ -119,8 +119,6 @@ module.exports = {
         jsonRefsOptions = {},
     }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
-        const base = `${conf.baseUrl}${conf.urlsWithPort ? `:${conf.port}` : ''}`;
-        const fullBase = `${base}${conf.apiBase}`;
 
         // default settings
 
@@ -159,10 +157,10 @@ module.exports = {
         // rewrite id
         if (copy.$id) {
             uri = transformURI({ id: copy.$id, domain, options: jsonRefsOptions });
-            copy.$id = `${fullBase}/${uri}`;
+            copy.$id = module.exports.buildSchemaURL(uri);
         } else if (copy.id) {
             uri = transformURI({ id: copy.id, domain, options: jsonRefsOptions });
-            copy.id = `${fullBase}/${uri}`;
+            copy.id = module.exports.buildSchemaURL(uri);
         }
 
         for (const key of Object.keys(refs)) {
@@ -190,13 +188,13 @@ module.exports = {
                     copy,
                     key.replace('#', ''),
                     {
-                        $ref: `${base}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
+                        $ref: `${module.exports.buildBaseUrl()}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
                     },
                 );
                 if (!backReferences.includes(transformedPath)) {
                     backReferences.push(transformedPath);
                 }
-            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${base}`) {
+            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${module.exports.buildBaseUrl()}`) {
                 if (!backReferences.includes(uriDetails.path)) {
                     backReferences.push(uriDetails.path);
                 }
@@ -212,8 +210,17 @@ module.exports = {
     buildURI({ domainId, uri }) {
         return `${conf.apiBase}/domains/${domainId}/schemas/${uri}`;
     },
+
+
+    buildBaseUrl() {
+        return `${conf.baseUrl}${conf.urlsWithPort ? `:${conf.port}` : ''}`;
+    },
+
+    buildSchemaURL(uri) {
+        return `${module.exports.buildBaseUrl()}${conf.apiBase}/${uri}`;
+    },
+    transformURI,
     transformDbResults,
     resolveRelativePath,
-    transformURI,
     URIfromId,
 };

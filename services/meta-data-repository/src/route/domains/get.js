@@ -38,6 +38,7 @@ router.get('/', async (req, res, next) => {
         log.error(err);
         next({
             status: 400,
+            err,
         });
     }
 });
@@ -55,6 +56,7 @@ router.get('/:id', domainOwnerOrAllowed({
         log.error(err, { 'x-request-id': req.headers['x-request-id'] });
         next({
             status: 500,
+            err,
         });
     }
 });
