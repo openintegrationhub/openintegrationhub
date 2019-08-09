@@ -83,13 +83,14 @@ module.exports = class Server {
         this.corsOptions = {
             credentials: true,
             origin(origin, callback) {
-                if (conf.originWhitelist.find(elem => origin.indexOf(elem) >= 0)) {
+                const whiteList = [...conf.originWhitelist].concat([conf.baseUrl.replace(/^https?:\/\//, '')]);
+                if (whiteList.find(elem => origin.indexOf(elem) >= 0)) {
                     callback(null, true);
                 } else {
                     log.info({
                         message: 'Blocked by CORS',
                         origin,
-                        originWhitelist: conf.originWhitelist,
+                        originWhitelist: whiteList,
                     });
                     callback(new Error('Not allowed by CORS'));
                 }

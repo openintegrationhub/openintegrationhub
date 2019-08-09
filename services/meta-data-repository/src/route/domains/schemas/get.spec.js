@@ -1,21 +1,21 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
-const conf = require('../../conf');
-const iamMock = require('../../../test/iamMock');
-const Server = require('../../server');
+const conf = require('../../../conf');
+const iamMock = require('../../../../test/iamMock');
+const Server = require('../../../server');
 
 let port;
 let request;
 let server;
 
-describe('domains', () => {
+describe('schemas', () => {
     beforeAll(async () => {
         port = await getPort();
         conf.port = port;
 
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'domains-delete'),
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'schemas-get'),
             port,
         });
         iamMock.setup();
@@ -26,15 +26,9 @@ describe('domains', () => {
         await server.stop();
     });
 
-    test('delete', async () => {
-        const domain1 = {
+    test('get', async () => {
+        const domain = {
             name: 'test',
-            description: 'bar',
-            public: true,
-        };
-
-        const domain2 = {
-            name: 'test2',
             description: 'bar',
             public: true,
         };
@@ -59,21 +53,11 @@ describe('domains', () => {
 
         };
 
-        // create a domains
+        // create a domain
         let result = (await request.post('/domains')
             .set(...global.user1)
-            .send(domain1)
+            .send(domain)
             .expect(200)).body;
-
-        domain1.id = result.data.id;
-
-        // create a domain
-        result = (await request.post('/domains')
-            .set(...global.user1)
-            .send(domain2)
-            .expect(200)).body;
-
-        domain2.id = result.data.id;
 
         const domain_ = result;
 
@@ -85,26 +69,17 @@ describe('domains', () => {
             })
             .expect(200));
 
-        // remove domain1 without schemas
-        await request.delete(`/domains/${domain1.id}`)
-            .set(...global.user1)
-            .expect(200);
 
-        await request.get(`/domains/${domain1.id}`)
+        // get data by uri (regular request)
+        result = (await request.get(`/domains/${domain_.data.id}/schemas/organizationV1.json`)
             .set(...global.user1)
-            .expect(403);
+            .expect(200));
 
-        await request.get(`/domains/${domain1.id}`)
-            .set(...global.admin)
-            .expect(404);
-
-        // remove domain2 with schemas
-        await request.delete(`/domains/${domain2.id}`)
+        // get all schemas
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .expect(200);
+            .expect(200));
 
-        await request.get(`/domains/${domain2.id}`)
-            .set(...global.user1)
-            .expect(403);
+        expect(result.body.meta.total).toEqual(1);
     });
 });

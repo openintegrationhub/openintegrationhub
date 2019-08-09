@@ -6,14 +6,14 @@ async function getReferences(uri) {
     return (await Schema.find({ refs: uri })).map(elem => elem.uri);
 }
 
-async function updateReferences({ oldUri, newUri }) {
-    await Schema.updateMany({
-        refs: oldUri,
-    },
-    {
-        $set: { 'refs.$': newUri },
-    });
-}
+// async function updateReferences({ oldUri, newUri }) {
+//     await Schema.updateMany({
+//         refs: oldUri,
+//     },
+//     {
+//         $set: { 'refs.$': newUri },
+//     });
+// }
 
 module.exports = {
     async startTransaction() {
@@ -49,18 +49,12 @@ module.exports = {
     },
     async updateByURI(obj) {
         const uri = obj.uri;
-        obj.uri = obj.newUri && obj.uri !== obj.newUri ? obj.newUri : obj.uri;
+        delete obj.uri;
 
-        const result = await Schema.findOneAndUpdate({ uri }, obj, { new: true });
-
-        // update references
-        if (uri !== obj.uri) {
-            await updateReferences({
-                oldUri: uri,
-                newUri: obj.uri,
-            });
-        }
-
+        const result = await Schema.findOneAndUpdate({ uri }, obj, {
+            new: true,
+            runValidators: true,
+        });
         const event = new Event({
             headers: {
                 name: 'metadata.schema.modified',
@@ -98,16 +92,16 @@ module.exports = {
         uri,
         options = {},
     }) {
-        const schema = await Schema.findOne({
+        let schema = await Schema.findOne({
             uri,
         }, null, options);
 
         if (!schema) {
             return null;
         }
-
+        schema = schema.toObject();
         schema.value = JSON.parse(schema.value);
-        return schema.toObject();
+        return schema;
     },
     async delete(uri) {
         const refs = await getReferences(uri);

@@ -3,7 +3,7 @@
   "info": {
     "title": "OIH MetaData Service REST API",
     "description": "REST API for the OIH MetaData Service.",
-    "version": "0.0.4",
+    "version": "0.0.6",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -71,12 +71,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableDomain"
-                  }
-                }
+                "$ref": "#/components/schemas/MutableDomain"
               }
             }
           }
@@ -165,12 +160,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableDomain"
-                  }
-                }
+                "$ref": "#/components/schemas/MutableDomain"
               }
             }
           }
@@ -305,12 +295,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableSchema"
-                  }
-                }
+                "$ref": "#/components/schemas/MutableSchema"
               }
             }
           }
@@ -466,12 +451,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableSchema"
-                  }
-                }
+                "$ref": "#/components/schemas/MutableSchema"
               }
             }
           }

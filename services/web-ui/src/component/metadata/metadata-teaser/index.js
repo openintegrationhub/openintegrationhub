@@ -41,8 +41,7 @@ const useStyles = {
     },
     modal: {
         backgroundColor: 'white',
-        height: '600px',
-        width: '700px',
+        width: '601px',
         margin: 'auto',
         outline: 'none',
     },
@@ -57,6 +56,7 @@ class MetaDataTeaser extends React.PureComponent {
         waitForUpload: false,
         wasChanged: false,
         editorData: null,
+        schemaClone: null,
         modalOpen: false,
         schemas: [],
     }
@@ -105,6 +105,7 @@ class MetaDataTeaser extends React.PureComponent {
                         this.setState({
                             editSchema: true,
                             editorData: result.data.data,
+                            schemaClone: result.data.data,
                             modalOpen: true,
                         });
                     }}>
@@ -138,21 +139,32 @@ class MetaDataTeaser extends React.PureComponent {
             });
         }
         if (this.state.wasChanged && this.state.editSchema) {
-            await this.props.updateDomainSchema(this.state.editorData);
-            const result = await axios({
-                method: 'get',
-                url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
-                withCredentials: true,
-                json: true,
-            });
+            if (this.state.schemaClone.value.$id === this.state.editorData.value.$id) {
+                await this.props.updateDomainSchema(this.state.editorData);
+                const result = await axios({
+                    method: 'get',
+                    url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+                    withCredentials: true,
+                    json: true,
+                });
 
-            this.setState({
-                schemas: result.data.data,
-                editSchema: false,
-                wasChanged: false,
-                editorData: null,
-                modalOpen: false,
-            });
+                this.setState({
+                    schemas: result.data.data,
+                    editSchema: false,
+                    wasChanged: false,
+                    editorData: null,
+                    modalOpen: false,
+                });
+            } else {
+                alert('value.$id can not be changed');
+                this.setState({
+                    editSchema: false,
+                    wasChanged: false,
+                    editorData: null,
+                    schemaClone: null,
+                    modalOpen: false,
+                });
+            }
         }
     }
 
@@ -392,7 +404,7 @@ class MetaDataTeaser extends React.PureComponent {
                                         Upload
                                     </Button>
                                 </form>
-                                : <CircularProgress/>
+                                : this.state.waitForUpload && <CircularProgress/>
                         }
 
                     </div>

@@ -4,10 +4,10 @@ const readdirp = require('readdirp');
 const { SchemaValidationError, SchemaReferenceError } = require('../error');
 
 const {
+    transformURI,
     transformSchema,
     validateSchema,
     resolveRelativePath,
-    transformURI,
     URIfromId,
 } = require('./');
 
@@ -31,7 +31,7 @@ describe('transform', () => {
 
         expect(
             transformURI({ domain: 'foo', id: 'https://github.com/bar/blub/bar/0/Fooo.json' }),
-        ).toBe('domains/foo/schemas/Fooo.json');
+        ).toBe('domains/foo/schemas/bar/blub/bar/0/Fooo.json');
 
         expect(
             transformURI({ domain: 'foo', id: 'Fooo' }),
@@ -39,19 +39,15 @@ describe('transform', () => {
 
         expect(
             transformURI({ domain: 'foo', id: 'Fooo/blub' }),
-        ).toBe('domains/foo/schemas/blub');
+        ).toBe('domains/foo/schemas/Fooo/blub');
 
         expect(
             transformURI({ domain: 'foo', id: 'file:///Fooo/bar' }),
-        ).toBe('domains/foo/schemas/bar');
+        ).toBe('domains/foo/schemas/Fooo/bar');
 
         expect(
             transformURI({ domain: 'foo', id: 'C:\\Fooo\\bar' }),
-        ).toBe('domains/foo/schemas/bar');
-
-        expect(
-            transformURI({ domain: 'foo', id: 'C:\\Fooo\\bar' }),
-        ).toBe('domains/foo/schemas/bar');
+        ).toBe('domains/foo/schemas/Fooo/bar');
 
         expect(
             transformURI({

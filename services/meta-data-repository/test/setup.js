@@ -27,6 +27,7 @@ const mongod = new MongoMemoryReplSet({
 module.exports = async () => {
     if (!mongod.isRunning) {
         await mongod.start();
+        await mongod.waitUntilRunning();
     }
 
     const mongoConfig = {

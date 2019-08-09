@@ -1,18 +1,17 @@
 {
   "name": "meta-data-repository",
-  "version": "0.0.8",
+  "version": "0.1.1",
   "description": "TBD",
   "main": "index.js",
   "author": "Basaas GmbH",
   "license": "Apache-2.0",
   "scripts": {
     "start": "node src/index.js",
-    "build": "echo \"No Build defined\"",
     "test": "jest",
     "watch": "nodemon src/index.js",
     "coverage": "yarn test --coverage",
     "build:docker": "docker build -t openintegrationhub/meta-data-repository:${VERSION} -f Dockerfile .",
-    "start-dev-db": "yarn run-rs"
+    "start-dev-db": "yarn run-rs -v 4.0.11"
   },
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
@@ -47,7 +46,7 @@
     "get-port": "5.0.0",
     "jest": "24.7.1",
     "mongodb": "3.2.7",
-    "mongodb-memory-server": "5.1.10",
+    "mongodb-memory-server": "5.1.5",
     "nodemon": "1.19.1",
     "run-rs": "0.5.2",
     "supertest": "4.0.2"

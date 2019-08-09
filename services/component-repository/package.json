@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@openintegrationhub/component-repository": "*",
+    "@openintegrationhub/event-bus": "*",
     "backend-commons-lib": "*"
   },
   "devDependencies": {

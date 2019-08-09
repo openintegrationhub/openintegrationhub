@@ -21,17 +21,18 @@ function URIfromId(id) {
 
 function transformURI({ domain, id, options = {} }) {
     let { pathname } = url.parse(id);
+    const uriBase = `domains/${domain}/schemas`;
 
     // remove first slash if existing
     if (options.location) {
         pathname = options.location.replace(options.root, '');
-    } else if (pathname) {
-        pathname = path.basename(pathname);
-    } else {
+    } else if (!pathname) {
         pathname = encodeURI(id).replace(/(#|\?)/g, '');
     }
 
-    return `domains/${domain}/schemas/${pathname}`.replace('//', '/');
+    pathname = pathname.replace(`${conf.apiBase}/${uriBase}`, '');
+
+    return `${uriBase}/${pathname}`.replace('//', '/');
 }
 
 function resolveRelativePath({ filePath, location, root }) {
@@ -118,7 +119,6 @@ module.exports = {
         jsonRefsOptions = {},
     }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
-        const fullBase = `${conf.baseUrl}:${conf.port}${conf.apiBase}`;
 
         // default settings
 
@@ -157,10 +157,10 @@ module.exports = {
         // rewrite id
         if (copy.$id) {
             uri = transformURI({ id: copy.$id, domain, options: jsonRefsOptions });
-            copy.$id = `${fullBase}/${uri}`;
+            copy.$id = module.exports.buildSchemaURL(uri);
         } else if (copy.id) {
             uri = transformURI({ id: copy.id, domain, options: jsonRefsOptions });
-            copy.id = `${fullBase}/${uri}`;
+            copy.id = module.exports.buildSchemaURL(uri);
         }
 
         for (const key of Object.keys(refs)) {
@@ -188,13 +188,13 @@ module.exports = {
                     copy,
                     key.replace('#', ''),
                     {
-                        $ref: `${conf.baseUrl}:${conf.port}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
+                        $ref: `${module.exports.buildBaseUrl()}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
                     },
                 );
                 if (!backReferences.includes(transformedPath)) {
                     backReferences.push(transformedPath);
                 }
-            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${conf.baseUrl}:${conf.port}`) {
+            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${module.exports.buildBaseUrl()}`) {
                 if (!backReferences.includes(uriDetails.path)) {
                     backReferences.push(uriDetails.path);
                 }
@@ -206,8 +206,21 @@ module.exports = {
             backReferences,
         };
     },
+
+    buildURI({ domainId, uri }) {
+        return `${conf.apiBase}/domains/${domainId}/schemas/${uri}`;
+    },
+
+
+    buildBaseUrl() {
+        return `${conf.baseUrl}${conf.urlsWithPort ? `:${conf.port}` : ''}`;
+    },
+
+    buildSchemaURL(uri) {
+        return `${module.exports.buildBaseUrl()}${conf.apiBase}/${uri}`;
+    },
+    transformURI,
     transformDbResults,
     resolveRelativePath,
-    transformURI,
     URIfromId,
 };
