@@ -53,3 +53,4 @@ Kubernetes descriptors for Component Repository along with the other core platfo
 | LOG_LEVEL | Log level for logger. |
 | MONGODB_URI | MongoDB connection string. |
 | PORT | Port for HTTP interface. |
+| RABBITMQ_URI | RabbitMQ connection string. |

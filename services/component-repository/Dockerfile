@@ -7,6 +7,7 @@ COPY package.json yarn.lock ./
 COPY lib/backend-commons-lib lib/backend-commons-lib
 COPY lib/iam-utils lib/iam-utils
 COPY lib/component-repository lib/component-repository
+COPY lib/event-bus lib/event-bus
 COPY services/component-repository/package.json  services/component-repository/index.js ./services/component-repository/
 COPY services/component-repository/src services/component-repository/src
 COPY services/component-repository/config/default.json services/component-repository/config/default.json
