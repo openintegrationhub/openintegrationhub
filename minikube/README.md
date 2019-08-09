@@ -1,3 +1,13 @@
+![linux](https://img.shields.io/badge/Linux-red.svg)
+
+<p align="center">
+  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
+</p>
+
+The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
+
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+
 In addion to setting up the Open Integration Hub on a cloud infrastucture such as GCP it is also possible to setup a local version of the framework. Make sure to perform the following to set up a local version of the OIH within your own minikube:
 
 ---
