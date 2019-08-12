@@ -41,22 +41,21 @@ For further information about how to set up minikube, see here:
 
 4. Set up host rules. To actually reach the services, you need to add an entry in your hosts file for each service. You can retrieve the IP with `minikube ip`, and need to make an entry for each host listed in the `ingress.yaml` file (e.g. `iam.localoih.com`).
 If you are using...
+  - a **Linux** distribution, you can automate this by using this terminal command:
 
-a **Linux** distribution, you can automate this by using this terminal command:
+    ```console
+    `echo "$(minikube ip) iam.localoih.com smk.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com      component-repository.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com     web-ui.localoih.com" | sudo tee -a /etc/hosts`
+    ```
 
-```console
-`echo "$(minikube ip) iam.localoih.com smk.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com component-repository.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com web-ui.localoih.com" | sudo tee -a /etc/hosts`
-```
+  - a **Windows** distribution, you can find the host files under:
 
-a **Windows** distribution, you can find the host files under:
+  ```
+  windows\system32\etc\hosts
+  ```
 
-```
-windows\system32\etc\hosts
-```
+5. Deploy the OIH Identity and Access Management. To do so, simply execute `kubectl apply -f ./2-IAM`. Again, wait until the service is fully deployed and ready.
 
-1. Deploy the OIH Identity and Access Management. To do so, simply execute `kubectl apply -f ./2-IAM`. Again, wait until the service is fully deployed and ready.
-
-2. Create a service account and token for the other services in the OIH IAM. Using Postman (or another similar tool of choice), send these POST requests to `iam.localoih.com` with the header `Content-Type: application/json`:
+6. Create a service account and token for the other services in the OIH IAM. Using Postman (or another similar tool of choice), send these POST requests to `iam.localoih.com` with the header `Content-Type: application/json`:
 - Login as admin:
   - Path: `/login`,
   - Body:
@@ -99,11 +98,11 @@ windows\system32\etc\hosts
       ```
   - The returned token is the service token that will be used by the other services to authenticate themselves to the IAM. Copy the value, encode it in *base64*, and then past it into the file found at `./3-Secret/SharedSecret.yaml` at the indicated position (`REPLACE ME`).
 
-6. Apply the shared secret via `kubectl apply -f ./3-Secret`. Ordinarily, each service would have its own secret for security reasons, but this is simplified for ease of use in a local context
+7. Apply the shared secret via `kubectl apply -f ./3-Secret`. Ordinarily, each service would have its own secret for security reasons, but this is simplified for ease of use in a local context
 
-7. Deploy the remaining services via `kubectl apply -Rf ./4-Services`. This may take a while.
+8. Deploy the remaining services via `kubectl apply -Rf ./4-Services`. This may take a while.
 
-8. The OIH is now running and ought to function just as it would in an online context. You can reach the various services via these URLS:
+9. The OIH is now running and ought to function just as it would in an online context. You can reach the various services via these URLS:
 - Identity and Access Management. Create and modify users, tenants, roles, and permissions.
   - `iam.localoih.com`
 - Secret Service. Securely store authentication data for other applications.
