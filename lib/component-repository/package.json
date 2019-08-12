@@ -22,6 +22,7 @@
     "swagger-ui-express": "4.0.2"
   },
   "devDependencies": {
+    "bunyan": "1.8.12",
     "chai": "4.2.0",
     "eslint": "4.18.2",
     "eslint-plugin-mocha": "4.12.1",
