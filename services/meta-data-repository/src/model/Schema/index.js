@@ -22,7 +22,7 @@ const schema = new Schema({
         type: String,
         set(value) {
             if (!this.uri && JSON.parse(value).$id !== `${buildBaseUrl()}${this._conditions.uri}`) {
-                throw new Error('Schema $id must not be changed');
+                throw new mongoose.Error.ValidatorError({ message: 'Schema $id must not be changed' });
             }
 
             return value;
