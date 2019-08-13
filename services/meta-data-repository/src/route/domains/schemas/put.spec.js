@@ -216,4 +216,105 @@ describe('schemas', () => {
             })
             .expect(500);
     });
+
+    test('put references', async () => {
+        const domain = {
+            name: 'test2',
+            description: 'bar',
+            public: true,
+        };
+
+        // create a domain
+        const domain_ = (await request.post('/domains')
+            .set(...global.user1)
+            .send(domain)
+            .expect(200)).body;
+
+
+        const schema = {
+            $schema: 'http://json-schema.org/schema#',
+            $id: 'https://github.com/organizationV1.json',
+            title: 'Organization',
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    description: 'Name of the organization',
+                    example: 'Great Company',
+                },
+                logo: {
+                    type: 'string',
+                    description: 'Logo of the organization',
+                    example: 'http://example.org/logo.png',
+                },
+            },
+        };
+
+        // import schema
+        let created = (await request.post(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .send({
+                value: schema,
+            })
+            .expect(200)).body;
+
+        const schema2 = {
+            $schema: 'http://json-schema.org/schema#',
+            $id: 'https://github.com/organizationV2.json',
+            title: 'Organization2',
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    description: 'Name of the organization',
+                    example: 'Great Company',
+                },
+                logo: {
+                    type: 'string',
+                    description: 'Logo of the organization',
+                    example: 'http://example.org/logo.png',
+                },
+                base: {
+                    $ref: JSON.parse(created.data.value).$id,
+                },
+            },
+        };
+
+        // import second schema with reference
+        created = (await request.post(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .send({
+                value: schema2,
+            })
+            .expect(200)).body;
+
+        expect(created.data.refs.length).toEqual(1);
+
+        // update an remove reference
+        created = (await request.put(created.data.uri.replace('/api/v1', ''))
+            .set(...global.user1)
+            .send({
+                value: {
+                    $schema: 'http://json-schema.org/schema#',
+                    $id: 'https://github.com/organizationV2.json',
+                    title: 'Organization2',
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'Name of the organization',
+                            example: 'Great Company',
+                        },
+                        logo: {
+                            type: 'string',
+                            description: 'Logo of the organization',
+                            example: 'http://example.org/logo.png',
+                        },
+                    },
+                },
+            })
+            .expect(200)).body;
+
+        expect(created.data.refs.length).toEqual(0);
+    });
 });
