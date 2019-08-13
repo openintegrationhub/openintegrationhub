@@ -56,9 +56,7 @@ export const updateDomain = domainData => async (dispatch) => {
             url: `${conf.endpoints.metadata}/domains/${domainData.id}`,
             withCredentials: true,
             json: true,
-            data: {
-                data: domainData,
-            },
+            data: domainData,
         });
 
         dispatch({
@@ -156,9 +154,7 @@ export const updateDomainSchema = data => async (dispatch) => {
             url: `${conf.endpoints.metadata}/${data.uri.replace('/api/v1/', '')}`,
             withCredentials: true,
             // json: true,
-            data: {
-                data,
-            },
+            data,
         });
 
         dispatch({
