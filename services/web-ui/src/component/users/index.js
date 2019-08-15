@@ -10,6 +10,8 @@ import AddIcon from '@material-ui/icons/Add';
 
 // Actions
 import { getUsers } from '../../action/users';
+import { getTenants } from '../../action/tenants';
+import { getRoles } from '../../action/roles';
 
 // components
 import Table from '../table';
@@ -34,6 +36,8 @@ class Users extends React.Component {
     constructor(props) {
         super();
         props.getUsers();
+        props.getRoles();
+        props.getTenants();
     }
 
     editHandler = (userId) => {
@@ -85,6 +89,8 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     getUsers,
+    getTenants,
+    getRoles,
 }, dispatch);
 
 export default flow(
