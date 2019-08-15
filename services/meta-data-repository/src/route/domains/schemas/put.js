@@ -8,6 +8,8 @@ const {
     transformSchema, validateSchema, transformDbResults, buildURI,
 } = require('../../../transform');
 
+const { getToken } = require('../../../util/common');
+
 const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas:put`);
 
 const router = express.Router();
@@ -25,6 +27,7 @@ router.put('/:uri*', domainOwnerOrAllowed({
         const transformed = await transformSchema({
             domain: req.domainId,
             schema: value,
+            token: getToken(req),
         });
 
         res.send({
