@@ -7,6 +7,13 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Grid from '@material-ui/core/Grid';
+import {
+    Add, Remove,
+} from '@material-ui/icons';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -39,29 +46,51 @@ const useStyles = {
 };
 
 class EditUser extends React.Component {
-    state = {
-        pending: false,
-        succeeded: false,
+    constructor(props) {
+        super(props);
+        this.state = {
+            pending: false,
+            succeeded: false,
+            selectValue: '',
+            roles: [],
+        };
     }
 
     componentDidMount() {
         if (this.props.userId) {
             const currentUser = this.props.users.all.find(user => user._id === this.props.userId);
+            const currentTenantOfUser = currentUser.tenant && this.props.tenants.all.find(tenant => tenant._id === currentUser.tenant);
             this.props.setFormData({
                 _id: this.props.userId,
                 username: currentUser.username,
                 firstname: currentUser.firstname,
                 lastname: currentUser.lastname,
+                tenant: currentTenantOfUser || '',
                 role: currentUser.role,
                 status: currentUser.status,
                 password: '',
             });
+            if (this.props.roles && currentUser.roles) {
+                const arr = [];
+                // eslint-disable-next-line no-restricted-syntax
+                for (const role of this.props.roles.all) {
+                    if (currentUser.roles.includes(role._id)) arr.push(role);
+                }
+                this.setState({
+                    roles: arr,
+                });
+            }
         } else {
+            let adminTenant = this.props.tenants.all.find(tenant => tenant._id === this.props.auth.tenant);
+            if (this.props.auth.role === 'ADMIN') {
+                adminTenant = '';
+            }
             this.props.setFormData({
                 username: '',
                 firstname: '',
                 lastname: '',
-                role: conf.account.roles.USER,
+                tenant: adminTenant,
+                role: '',
                 status: conf.account.status.ACTIVE,
                 password: '',
             });
@@ -98,10 +127,13 @@ class EditUser extends React.Component {
 
     submit = (e) => {
         e.preventDefault();
+        const data = JSON.parse(JSON.stringify(this.props.formData));
+        if (this.state.roles.length) data.roles = this.state.roles;
+
         if (this.props.formData._id) {
-            this.props.updateUser(this.props.formData);
+            this.props.updateUser(data);
         } else {
-            this.props.createUser(this.props.formData);
+            this.props.createUser(data);
         }
         this.setState({
             pending: true,
@@ -115,7 +147,7 @@ class EditUser extends React.Component {
         } = this.props;
 
         const {
-            username, firstname, lastname, password, role, status,
+            username, firstname, lastname, password, status, tenant,
         } = this.props.formData;
         return (
             <div className={classes.frame}>
@@ -180,7 +212,77 @@ class EditUser extends React.Component {
                         />
                     </FormControl>
 
-                    <FormControl className={classes.formControl}>
+                    {
+                        this.props.auth.role === 'ADMIN'
+                                && <FormControl className={classes.formControl}>
+                                    <InputLabel htmlFor="tenant">tenant</InputLabel>
+                                    <Select
+                                        value={tenant || ''}
+                                        onChange={this.props.setVal.bind(this, 'tenant')}
+                                    >
+                                        {this.props.tenants.all.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                                    </Select>
+                                </FormControl>
+                    }
+
+                    <Grid container spacing={2}>
+
+                        <Grid item xs={12}>
+                            <FormControl className={classes.formControl}>
+                                <Select
+                                    value={this.state.selectValue}
+                                    onChange={ (e) => {
+                                        this.setState({
+                                            selectValue: e.target.value,
+                                        });
+                                    }
+                                    }
+                                >
+                                    {this.props.roles && this.props.roles.all.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                                </Select>
+                                <Button
+                                    type='button'
+                                    variant="contained"
+                                    onClick={ () => {
+                                        const tempArr = [...this.state.roles];
+                                        tempArr.push(this.state.selectValue);
+                                        this.setState({
+                                            roles: tempArr,
+                                            selectValue: '',
+                                        });
+                                    }}>
+                                    <Add/>
+                                </Button>
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            {
+                                this.state.roles.length
+                                    ? <List dense={true}>
+                                        {this.state.roles.map(item => <ListItem key={item._id}>
+                                            <ListItemText
+                                                primary={item.name}
+                                            />
+                                            <Button
+                                                type='button'
+                                                variant="contained"
+                                                onClick={ () => {
+                                                    const tempArr = [...this.state.roles];
+                                                    this.setState({
+                                                        roles: tempArr.filter(tempArrItem => tempArrItem._id !== item._id),
+                                                    });
+                                                }}>
+                                                <Remove/>
+                                            </Button>
+                                        </ListItem>)}
+                                    </List>
+
+                                    : null
+                            }
+                        </Grid>
+                    </Grid>
+                    {/* <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="role">role</InputLabel>
                         <Select
                             value={role || conf.account.roles.USER}
@@ -188,10 +290,10 @@ class EditUser extends React.Component {
                         >
                             {Object.keys(conf.account.roles).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
                         </Select>
-                    </FormControl>
+                    </FormControl> */}
 
                     <FormControl className={classes.formControl}>
-                        <InputLabel htmlFor="role">status</InputLabel>
+                        <InputLabel htmlFor="status">status</InputLabel>
                         <Select
                             value={status || conf.account.status.ACTIVE}
                             onChange={this.props.setVal.bind(this, 'status')}
@@ -235,6 +337,9 @@ class EditUser extends React.Component {
 
 const mapStateToProps = state => ({
     users: state.users,
+    roles: state.roles,
+    tenants: state.tenants,
+    auth: state.auth,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     ...usersActions,
