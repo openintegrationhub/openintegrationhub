@@ -101,9 +101,14 @@ router.post('/', auth.hasTenantPermissions([PERMISSIONS['tenant.roles.create']])
         description = '',
         permissions = [],
     } = req.body;
+    let { isGlobal } = req.body;
 
     if (!name || typeof permissions !== 'object') {
         return next({ status: 400, message: CONSTANTS.ERROR_CODES.INPUT_INVALID });
+    }
+
+    if (isGlobal && !req.user.isAdmin) {
+        isGlobal = false;
     }
 
     /* eslint-disable-next-line no-restricted-syntax  */
@@ -126,6 +131,7 @@ router.post('/', auth.hasTenantPermissions([PERMISSIONS['tenant.roles.create']])
             name,
             permissions,
             description,
+            isGlobal,
             tenant: req.user.tenant,
         });
 
