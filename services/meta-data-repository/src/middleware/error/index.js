@@ -1,5 +1,5 @@
 const defaultErrorHandler = (errObj, req, res, next) => { // eslint-disable-line
-    const status = errObj.status;
+    const status = errObj.status || 500;
     let message = 'Error';
 
     if (errObj.err) {
