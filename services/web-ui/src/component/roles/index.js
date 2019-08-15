@@ -159,7 +159,7 @@ class Roles extends React.Component {
                                 }
                                 }
                             >
-                                {this.props.roles && this.props.roles.permissions.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                                {this.props.roles && this.props.roles.permissions.map((item, index) => <MenuItem key={`selectPermissions${index}`} value={item}>{item}</MenuItem>)}
                             </Select>
                             <Button
                                 type='button'
@@ -174,13 +174,13 @@ class Roles extends React.Component {
                                 <Add/>
                             </Button>
 
-                            <Grid xs={8}>
+                            <Grid item xs={8}>
                                 {
                                     this.state.selectedPermissions.length
                                         ? <List dense={true}>
-                                            {this.state.selectedPermissions.map(item => <ListItem key={item._id}>
+                                            {this.state.selectedPermissions.map((item, index) => <ListItem key={`listPermissions${index}`}>
                                                 <ListItemText
-                                                    primary={item.name}
+                                                    primary={item}
                                                 />
                                                 <Button
                                                     type='button'
