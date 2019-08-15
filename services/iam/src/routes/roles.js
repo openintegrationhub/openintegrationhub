@@ -24,7 +24,9 @@ router.get('/', async (req, res, next) => {
     const defaultRoles = {
         isGlobal: true,
     };
-    let query = {};
+    let query = {
+        isGlobal: false,
+    };
 
     if (!req.user.isAdmin) {
         defaultRoles.type = CONSTANTS.ROLE_TYPE.TENANT;
