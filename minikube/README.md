@@ -1,3 +1,13 @@
+![linux](https://img.shields.io/badge/Linux-red.svg) ![Windows](https://img.shields.io/badge/Windows-blue.svg) 
+
+<p align="center">
+  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
+</p>
+
+The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
+
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+
 In addion to setting up the Open Integration Hub on a cloud infrastucture such as GCP it is also possible to setup a local version of the framework. Make sure to perform the following to set up a local version of the OIH within your own minikube:
 
 ---
@@ -11,28 +21,41 @@ Make sure that minikube is endowed with sufficient resources. We suggest at leas
 
 See _step 1_ for minikube command to allocate resources.
 
+ _Windows:_ If you're using Windows we suggest to use virtual box. In order to use it, Hyper-V must be disabled [Enable/Disable Hyper-V on Windows 10](https://docs.microsoft.com/de-de/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v).
 
 **Please make sure to clone the monorepo before you start.**
 
 ---
 
-1. Make certain minikube is installed, configured, and started. In particular, make certain that its ingress module is enabled (`minikube addons enable ingress`). The command for allocating sufficient resources is: `minikube start --memory 8096 --cpus 4`. Make certain `kubectl` is configured to use minikube.
+1. Make certain minikube is installed, configured, and started. The command for allocating sufficient resources is: `minikube start --memory 8096 --cpus 4`. If you already have an installed minikube instance that is using the virtualbox driver you can do `minikube stop` and then `VBoxManage modifyvm "minikube" --memory 8096 --cpus 4` to adjust the resource limits before starting again.
+
+In particular, make certain that its ingress module is enabled (`minikube addons enable ingress`).  Make certain `kubectl` is configured to use minikube. To see if its correctly configured use the `kubectl config current-context` command.
 For further information about how to set up minikube, see here:
+
 - [Install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 - [Installing Kubernetes with Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/)
 
-2. Set up the basic OIH infrastructure. To do this, simply execute `kubectl apply -f ./1-Platform`. This may take a while to finish. You can use `minikube dashboard` to check the status of the various deployments. Once they are all ready, you can proceed.
+2. _(You only have to perform this step if you're using a  **Windows** distribution and have the Docker client for Windows installed)._ Docker overwrites the acutal kubectl version. In order to fix this download the `kubectl.exe` from  [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows). Navigate to the docker directory (e.g. Program Files\Docker\Docker\resources\bin) andreplace the kubectl.exe in this folder with the one you just downloaded.
+   
+3. Set up the basic OIH infrastructure. To do this, simply execute `kubectl apply -f ./1-Platform`. This may take a while to finish. You can use `minikube dashboard` to check the status of the various deployments. Once they are all ready, you can proceed.
 
-3. Set up host rules. To actually reach the services, you need to add an entry in your hosts file for each service. You can retrieve the IP with `minikube ip`, and need to make an entry for each host listed in the `ingress.yaml` file (e.g. `iam.localoih.com`).
-If you are using a Linux distribution, you can automate this by using this terminal command:
+4. Set up host rules. To actually reach the services, you need to add an entry in your hosts file for each service. You can retrieve the IP with `minikube ip`, and need to make an entry for each host listed in the `ingress.yaml` file (e.g. `iam.localoih.com`).
+If you are using...
+  - a **Linux** distribution, you can automate this by using this terminal command:
 
-```console
-`echo "$(minikube ip) iam.localoih.com smk.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com component-repository.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com web-ui.localoih.com" | sudo tee -a /etc/hosts`
-```
+    ```console
+    `echo "$(minikube ip) iam.localoih.com smk.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com      component-repository.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com     web-ui.localoih.com" | sudo tee -a /etc/hosts`
+    ```
 
-4. Deploy the OIH Identity and Access Management. To do so, simply execute `kubectl apply -f ./2-IAM`. Again, wait until the service is fully deployed and ready.
+  - a **Windows** distribution, you can find the host files under:
 
-5. Create a service account and token for the other services in the OIH IAM. Using Postman (or another similar tool of choice), send these POST requests to `iam.localoih.com`:
+  ```
+  windows\system32\etc\hosts
+  ```
+
+5. Deploy the OIH Identity and Access Management. To do so, simply execute `kubectl apply -f ./2-IAM`. Again, wait until the service is fully deployed and ready.
+
+6. Create a service account and token for the other services in the OIH IAM. Using Postman (or another similar tool of choice), send these POST requests to `iam.localoih.com` with the header `Content-Type: application/json`:
 - Login as admin:
   - Path: `/login`,
   - Body:
@@ -73,14 +96,13 @@ If you are using a Linux distribution, you can automate this by using this termi
       "inquirer": "{PASTE SERVICE ACCOUNT ID HERE}"
     }
       ```
-  - The returned token is the service token that will be used by the other services to authenticate themselves to the IAM. Copy the value, encode it in base64, and then past it into the file found at `./3-Secret/SharedSecret.yaml` at the indicated position.
-**TODO**: Automate this if possible
+  - The returned token is the service token that will be used by the other services to authenticate themselves to the IAM. Copy the value, encode it in *base64*, and then past it into the file found at `./3-Secret/SharedSecret.yaml` at the indicated position (`REPLACE ME`).
 
-6. Apply the shared secret via `kubecl apply -f ./3-Secret`. Ordinarily, each service would have its own secret for security reasons, but this is simplified for ease of use in a local context
+7. Apply the shared secret via `kubectl apply -f ./3-Secret`. Ordinarily, each service would have its own secret for security reasons, but this is simplified for ease of use in a local context
 
-7. Deploy the remaining services via `kubecl apply -f ./4-Services`. This may take a while.
+8. Deploy the remaining services via `kubectl apply -Rf ./4-Services`. This may take a while.
 
-8. The OIH is now running and ought to function just as it would in an online context. You can reach the various services via these URLS:
+9. The OIH is now running and ought to function just as it would in an online context. You can reach the various services via these URLS:
 - Identity and Access Management. Create and modify users, tenants, roles, and permissions.
   - `iam.localoih.com`
 - Secret Service. Securely store authentication data for other applications.

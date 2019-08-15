@@ -2,7 +2,7 @@
   "name": "component-repository",
   "description": "Component repository",
   "private": true,
-  "version": "0.0.5",
+  "version": "1.0.0",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=8"
@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@openintegrationhub/component-repository": "*",
+    "@openintegrationhub/event-bus": "*",
     "backend-commons-lib": "*"
   },
   "devDependencies": {
