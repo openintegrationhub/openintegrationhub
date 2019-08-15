@@ -5,13 +5,9 @@ const { Mockgoose } = require('mockgoose');
 const mockgoose = new Mockgoose(mongoose);
 const request = require('supertest')('http://localhost:3099');
 
-const CONSTANTS = require('./../src/constants');
-
 let conf = null;
 
 describe('Tenant Routes', () => {
-    const TenantID = null;
-    const tenantKey = 'sshhhhhh';
     // Token will be set via Login and is valid 3h
     let tokenAdmin = null;
     let app = null;
