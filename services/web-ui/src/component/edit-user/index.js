@@ -256,7 +256,7 @@ class EditUser extends React.Component {
                             </FormControl>
                         </Grid>
 
-                        <Grid xs={12}>
+                        <Grid item xs={12}>
                             {
                                 this.state.roles.length
                                     ? <List dense={true}>
