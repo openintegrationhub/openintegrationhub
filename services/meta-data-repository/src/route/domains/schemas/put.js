@@ -21,6 +21,7 @@ router.put('/:uri*', domainOwnerOrAllowed({
         validateSchema({
             schema: value,
         });
+
         const transformed = await transformSchema({
             domain: req.domainId,
             schema: value,

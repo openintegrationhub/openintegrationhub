@@ -117,6 +117,7 @@ module.exports = {
         schema,
         domain,
         jsonRefsOptions = {},
+
     }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
 

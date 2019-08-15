@@ -251,7 +251,7 @@ describe('schemas', () => {
         };
 
         // import schema
-        let created = (await request.post(`/domains/${domain_.data.id}/schemas`)
+        const created1 = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
                 value: schema,
@@ -275,23 +275,85 @@ describe('schemas', () => {
                     example: 'http://example.org/logo.png',
                 },
                 base: {
-                    $ref: JSON.parse(created.data.value).$id,
+                    $ref: JSON.parse(created1.data.value).$id,
                 },
             },
         };
 
         // import second schema with reference
-        created = (await request.post(`/domains/${domain_.data.id}/schemas`)
+        let created2 = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
                 value: schema2,
             })
             .expect(200)).body;
 
-        expect(created.data.refs.length).toEqual(1);
+        expect(created2.data.refs.length).toEqual(1);
 
-        // update an remove reference
-        created = (await request.put(created.data.uri.replace('/api/v1', ''))
+        const schema3 = {
+            $schema: 'http://json-schema.org/schema#',
+            $id: 'https://github.com/organizationV3.json',
+            title: 'Organization2',
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    description: 'Name of the organization',
+                    example: 'Great Company',
+                },
+                logo: {
+                    type: 'string',
+                    description: 'Logo of the organization',
+                    example: 'http://example.org/logo.png',
+                },
+                base: {
+                    $ref: JSON.parse(created1.data.value).$id,
+                },
+            },
+        };
+
+        // import second schema with reference
+        const created3 = (await request.post(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .send({
+                value: schema3,
+            })
+            .expect(200)).body;
+
+        expect(created3.data.refs.length).toEqual(1);
+
+        // update and change reference
+        created2 = (await request.put(created2.data.uri.replace('/api/v1', ''))
+            .set(...global.user1)
+            .send({
+                value: {
+                    $schema: 'http://json-schema.org/schema#',
+                    $id: 'https://github.com/organizationV2.json',
+                    title: 'Organization2',
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'Name of the organization',
+                            example: 'Great Company',
+                        },
+                        logo: {
+                            type: 'string',
+                            description: 'Logo of the organization',
+                            example: 'http://example.org/logo.png',
+                        },
+                        base: {
+                            $ref: JSON.parse(created3.data.value).$id,
+                        },
+                    },
+                },
+            })
+            .expect(200)).body;
+
+        expect(created2.data.refs.length).toEqual(2);
+
+        // update and change reference
+        created2 = (await request.put(created2.data.uri.replace('/api/v1', ''))
             .set(...global.user1)
             .send({
                 value: {
@@ -315,6 +377,6 @@ describe('schemas', () => {
             })
             .expect(200)).body;
 
-        expect(created.data.refs.length).toEqual(0);
+        expect(created2.data.refs.length).toEqual(0);
     });
 });
