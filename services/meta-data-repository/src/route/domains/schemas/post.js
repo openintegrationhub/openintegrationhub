@@ -13,6 +13,8 @@ const {
     transformSchema, validateSchema, URIfromId, transformDbResults,
 } = require('../../../transform');
 
+const { getToken } = require('../../../util/common');
+
 const { processArchive } = require('../../../bulk');
 
 const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas:post`);
@@ -49,6 +51,7 @@ router.post('/', domainOwnerOrAllowed({
         const transformed = await transformSchema({
             domain: req.domainId,
             schema: value,
+            token: getToken(req),
         });
 
         let owner;

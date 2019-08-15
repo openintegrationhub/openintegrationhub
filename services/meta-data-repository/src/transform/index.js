@@ -117,6 +117,7 @@ module.exports = {
         schema,
         domain,
         jsonRefsOptions = {},
+        token,
     }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
 
@@ -126,6 +127,10 @@ module.exports = {
             ...{
                 prepareRequest(req, cb) {
                     req.header['content-type'] = 'application/schema+json';
+                    if (token) {
+                        req.header.Authorization = `Bearer ${token}`;
+                    }
+
                     cb(undefined, req);
                 },
                 async processContent(res, cb) {
