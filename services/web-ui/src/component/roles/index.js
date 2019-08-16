@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import {
-    Select, Switch, TextField, Container, Button, Grid, MenuItem, List, ListItem, ListItemText, FormLabel,
+    Select, Switch, TextField, Container, Button, Grid, MenuItem, List, ListItem, ListItemText, InputLabel,
 } from '@material-ui/core';
 import {
     Add, Remove,
@@ -67,7 +67,7 @@ class Roles extends React.Component {
         this.props.createRole({
             name: this.state.name,
             isGlobale: this.state.global,
-            permission: this.state.selectedPermissions,
+            permissions: this.state.selectedPermissions,
         });
         this.setState({
             addRole: false,
@@ -80,9 +80,7 @@ class Roles extends React.Component {
     setName(e) {
         if (!e.error) {
             this.setState({
-                name: {
-                    name: e.target.value,
-                },
+                name: e.target.value,
             });
         }
     }
@@ -140,7 +138,7 @@ class Roles extends React.Component {
                         {
                             this.props.auth.role === 'ADMIN'
                             && <Grid item xs={8}>
-                                <FormLabel >Global</FormLabel>
+                                <InputLabel shrink={true}>Global</InputLabel>
                                 <Switch
                                     checked={this.state.global}
                                     onChange={this.setGlobal.bind(this)}
@@ -148,7 +146,7 @@ class Roles extends React.Component {
                             </Grid>
                         }
                         <Grid item xs={8}>
-
+                            <InputLabel shrink={true}>Permissions</InputLabel>
                             <Select
                                 className={classes.select}
                                 value={this.state.permission}
@@ -159,12 +157,12 @@ class Roles extends React.Component {
                                 }
                                 }
                             >
-                                {this.props.roles && this.props.roles.permissions.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                                {this.props.roles && this.props.roles.permissions.map((item, index) => <MenuItem key={`addRolePermSelect-${index}`} value={item}>{item}</MenuItem>)}
                             </Select>
                             <Button
                                 type='button'
                                 onClick={ () => {
-                                    const tempArr = [...this.state.permissions];
+                                    const tempArr = [...this.state.selectedPermissions];
                                     tempArr.push(this.state.permission);
                                     this.setState({
                                         selectedPermissions: tempArr,
@@ -174,21 +172,21 @@ class Roles extends React.Component {
                                 <Add/>
                             </Button>
 
-                            <Grid xs={8}>
+                            <Grid xs={12}>
                                 {
                                     this.state.selectedPermissions.length
                                         ? <List dense={true}>
-                                            {this.state.selectedPermissions.map(item => <ListItem key={item._id}>
+                                            {this.state.selectedPermissions.map((item, index) => <ListItem key={`addRolelistPemissions-${index}`}>
                                                 <ListItemText
-                                                    primary={item.name}
+                                                    className={classes.select}
+                                                    primary={item}
                                                 />
                                                 <Button
                                                     type='button'
-                                                    variant="contained"
                                                     onClick={ () => {
                                                         const tempArr = [...this.state.selectedPermissions];
                                                         this.setState({
-                                                            selectedPermissions: tempArr.filter(tempArrItem => tempArrItem._id !== item._id),
+                                                            selectedPermissions: tempArr.filter(tempArrItem => tempArrItem !== item),
                                                         });
                                                     }}>
                                                     <Remove/>
