@@ -46,7 +46,6 @@ class Auth extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.auth.isLoggedIn) this.props.history.push('/');
         if (this.props.auth !== prevProps.auth && this.props.auth.isLoggedIn) {
             this.props.history.push('/');
         }
