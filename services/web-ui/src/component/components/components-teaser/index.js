@@ -2,6 +2,7 @@ import React from 'react';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import moment from 'moment';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
@@ -40,6 +41,7 @@ class ComponentTeaser extends React.PureComponent {
     state= {
         editComponent: false,
         editorData: null,
+        wasChanged: false,
     }
 
     getDist() {
@@ -60,16 +62,20 @@ class ComponentTeaser extends React.PureComponent {
     }
 
     updateComponent = () => {
-        this.props.updateComponent(this.state.editorData);
-        this.setState({
-            editComponent: false,
-        });
+        if (this.state.wasChanged) {
+            this.props.updateComponent(this.state.editorData);
+            this.setState({
+                editComponent: false,
+                wasChanged: false,
+            });
+        }
     }
 
     editorChange(e) {
         if (!e.error) {
             this.setState({
                 editorData: e.jsObject,
+                wasChanged: true,
             });
         }
     }
@@ -101,8 +107,8 @@ class ComponentTeaser extends React.PureComponent {
                                 }
                             </Grid>
                             <Grid item xs={12}><h3>Meta</h3></Grid>
-                            <Grid item xs={3}><InputLabel>Created:</InputLabel><Typography>{this.props.data.createdAt}</Typography></Grid>
-                            <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{this.props.data.updatedAt}</Typography></Grid>
+                            <Grid item xs={3}><InputLabel>Created:</InputLabel><Typography>{moment(this.props.data.createdAt).format('HH:mm:ss DD.MM.YYYY')}</Typography></Grid>
+                            <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{moment(this.props.data.updatedAt).format('HH:mm:ss DD.MM.YYYY')}</Typography></Grid>
                             <Grid item xs={12}>
                                 <Button variant="outlined" aria-label="next" onClick={this.editOpen}>
                                     Update
@@ -131,7 +137,10 @@ class ComponentTeaser extends React.PureComponent {
                             width = '600px'
                             onChange={this.editorChange.bind(this)}
                         />
-                        <Button variant="outlined" aria-label="Add" onClick={this.updateComponent}>
+                        <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ editComponent: false }); }}>
+                            close
+                        </Button>
+                        <Button variant="outlined" aria-label="Add" onClick={this.updateComponent} disabled={!this.state.wasChanged}>
                             Save
                         </Button>
                     </div>
