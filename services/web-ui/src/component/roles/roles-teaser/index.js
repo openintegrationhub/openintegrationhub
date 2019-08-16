@@ -30,14 +30,6 @@ const useStyles = {
         fontSize: '0.9375rem',
         fontWeight: '400',
     },
-    modal: {
-        backgroundColor: 'white',
-        margin: 'auto',
-        outline: 'none',
-    },
-    textField: {
-        width: 200,
-    },
     form: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -50,24 +42,17 @@ const useStyles = {
     select: {
         width: '80%',
     },
+    textField: {
+        width: 200,
+    },
 };
 
 class RolesTeaser extends React.PureComponent {
     state= {
         editRole: false,
-        global: false,
         name: '',
         permission: '',
         selectedPermissions: [],
-    }
-
-    componentDidMount() {
-        if (this.props.data.permissions.length) {
-            console.log(this.props.data.permissions);
-            this.setState({
-                selectedPermissions: this.props.data.permissions,
-            });
-        }
     }
 
     editOpen= () => {
@@ -80,22 +65,23 @@ class RolesTeaser extends React.PureComponent {
         this.props.deleteRole(this.props.data._id);
     }
 
-    updateRole = () => {
+    saveRole = () => {
         this.props.updateRole({
+            _id: this.props.data._id,
             name: this.state.name,
-            permission: this.state.selectedPermissions,
+            permissions: this.state.selectedPermissions,
         });
         this.setState({
             editRole: false,
+            name: '',
+            selectedPermissions: [],
         });
     }
 
     setName(e) {
         if (!e.error) {
             this.setState({
-                name: {
-                    name: e.target.value,
-                },
+                name: e.target.value,
             });
         }
     }
@@ -137,7 +123,17 @@ class RolesTeaser extends React.PureComponent {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Grid container>
-                            <Grid item xs={3}><InputLabel>Permissions:</InputLabel><Typography >{this.props.data.permissions}</Typography></Grid>
+                            <Grid item xs={3}>
+                                <InputLabel>Permissions:</InputLabel>
+                                <List dense={true}>
+                                    {this.props.data.permissions.map((item, index) => <ListItem key={`showRolelistPemissions-${index}`}>
+                                        <ListItemText
+                                            className={classes.select}
+                                            primary={item}
+                                        />
+                                    </ListItem>)}
+                                </List>
+                            </Grid>
                             <Grid item xs={3}><InputLabel>Created:</InputLabel><Typography>{this.props.data.createdAt}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{this.props.data.updatedAt}</Typography></Grid>
 
@@ -160,13 +156,12 @@ class RolesTeaser extends React.PureComponent {
                                 className={classes.textField}
                                 onChange={this.setName.bind(this)}
                                 margin="normal"
-                                value={this.props.data.name}
-                            />
+                                value={this.state.name}/>
 
 
                         </Grid>
                         <Grid item xs={8}>
-
+                            <InputLabel shrink={true}>Permissions</InputLabel>
                             <Select
                                 className={classes.select}
                                 value={this.state.permission}
@@ -177,12 +172,12 @@ class RolesTeaser extends React.PureComponent {
                                 }
                                 }
                             >
-                                {this.props.roles && this.props.roles.permissions.map((item, index) => <MenuItem key={`selectPermissions${index}`} value={item}>{item}</MenuItem>)}
+                                {this.props.roles && this.props.roles.permissions.map((item, index) => <MenuItem key={`editRolePermSelect-${index}`} value={item}>{item}</MenuItem>)}
                             </Select>
                             <Button
                                 type='button'
                                 onClick={ () => {
-                                    const tempArr = [...this.state.permissions];
+                                    const tempArr = [...this.state.selectedPermissions];
                                     tempArr.push(this.state.permission);
                                     this.setState({
                                         selectedPermissions: tempArr,
@@ -192,21 +187,21 @@ class RolesTeaser extends React.PureComponent {
                                 <Add/>
                             </Button>
 
-                            <Grid item xs={8}>
+                            <Grid xs={12}>
                                 {
                                     this.state.selectedPermissions.length
                                         ? <List dense={true}>
-                                            {this.state.selectedPermissions.map((item, index) => <ListItem key={`listPermissions${index}`}>
+                                            {this.state.selectedPermissions.map((item, index) => <ListItem key={`editRolelistPemissions-${index}`}>
                                                 <ListItemText
+                                                    className={classes.select}
                                                     primary={item}
                                                 />
                                                 <Button
                                                     type='button'
-                                                    variant="contained"
                                                     onClick={ () => {
                                                         const tempArr = [...this.state.selectedPermissions];
                                                         this.setState({
-                                                            selectedPermissions: tempArr.filter(tempArrItem => tempArrItem._id !== item._id),
+                                                            selectedPermissions: tempArr.filter(tempArrItem => tempArrItem !== item),
                                                         });
                                                     }}>
                                                     <Remove/>
@@ -220,7 +215,7 @@ class RolesTeaser extends React.PureComponent {
                         </Grid>
 
                         <Grid item xs={8}>
-                            <Button variant="outlined" aria-label="Add" onClick={this.updateRole}>
+                            <Button variant="outlined" aria-label="Add" onClick={this.saveRole}>
                             Save
                             </Button>
                             <Button variant="outlined" aria-label="Add" onClick={(e) => {
