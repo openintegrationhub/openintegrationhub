@@ -1,4 +1,6 @@
-import { LOGIN, LOGOUT, GET_USER } from '../action/auth';
+import {
+    LOGIN, LOGOUT, RESET, GET_USER, CHECK,
+} from '../action/auth';
 
 const initialState = {
     isLoggedIn: false,
@@ -16,6 +18,16 @@ export default (state = initialState, action) => {
     case LOGOUT:
         return {
             ...initialState,
+        };
+    case RESET:
+        return {
+            ...initialState,
+        };
+    case CHECK:
+        return {
+            ...state,
+            isLoggedIn: action.isLoggedIn,
+            token: action.token,
         };
     case GET_USER:
         return {
