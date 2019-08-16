@@ -6,6 +6,8 @@ const conf = getConfig();
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
 export const GET_USER = 'GET_USER';
+export const RESET = 'RESET';
+export const CHECK = 'CHECK';
 
 const setAxiosAuth = (token) => {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -36,6 +38,7 @@ export const login = data => async (dispatch) => {
     });
     if (result.status === 200) {
         setAxiosAuth(result.data.token);
+        sessionStorage.setItem('ohiToken', result.data.token);
         dispatch({
             type: LOGIN,
             isLoggedIn: true,
@@ -45,6 +48,33 @@ export const login = data => async (dispatch) => {
     }
 };
 
+export const resetLogin = () => async (dispatch) => {
+    dispatch({
+        type: RESET,
+        isLoggedIn: false,
+        token: '',
+    });
+    sessionStorage.removeItem('ohiToken');
+};
+
+export const checkLogin = () => async (dispatch) => {
+    const result = sessionStorage.getItem('ohiToken');
+    if (result) {
+        setAxiosAuth(result);
+        dispatch({
+            type: CHECK,
+            isLoggedIn: true,
+            token: result,
+        });
+        dispatch(getUser());
+    } else {
+        dispatch({
+            type: LOGOUT,
+            isLoggedIn: false,
+            token: '',
+        });
+    }
+};
 
 export const logout = () => async (dispatch) => {
     const result = await axios({
@@ -54,6 +84,7 @@ export const logout = () => async (dispatch) => {
     });
     if (result.status === 200) {
         setAxiosAuth('');
+        sessionStorage.removeItem('ohiToken');
         dispatch({
             type: LOGOUT,
             isLoggedIn: false,
