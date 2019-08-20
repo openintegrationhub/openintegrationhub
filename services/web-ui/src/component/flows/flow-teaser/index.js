@@ -2,6 +2,7 @@ import React from 'react';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import moment from 'moment';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
@@ -34,6 +35,12 @@ const useStyles = {
         margin: 'auto',
         outline: 'none',
     },
+    indicator: {
+        height: '10px',
+        width: '10px',
+        borderRadius: '50%',
+        display: 'inline-block',
+    },
 };
 
 class FlowTeaser extends React.PureComponent {
@@ -52,7 +59,7 @@ class FlowTeaser extends React.PureComponent {
     }
 
     getEdges() {
-        return this.props.data.graph.edges && this.props.data.graph.edges.map(node => <Grid container key={`node-${node.id}`}>
+        return this.props.data.graph.edges && this.props.data.graph.edges.map((node, index) => <Grid container key={`edges-${index}`}>
             <Grid item xs={3}><InputLabel>Source:</InputLabel><Typography>{node.source}</Typography></Grid>
             <Grid item xs={3}><InputLabel>Target:</InputLabel><Typography>{node.target}</Typography></Grid>
             <Grid item xs={3}><InputLabel>Condition:</InputLabel><Typography>{node.config && node.config.condition ? node.config.condition : ''}</Typography></Grid>
@@ -92,6 +99,21 @@ class FlowTeaser extends React.PureComponent {
         }
     }
 
+    getStatus(classes) {
+        switch (this.props.data.status) {
+        case 'starting':
+            return <span className={classes.indicator} style={{ backgroundColor: 'yellow' }}/>;
+        case 'stopping':
+            return <span className={classes.indicator} style={{ backgroundColor: 'red' }}/>;
+        case 'active':
+            return <span className={classes.indicator} style={{ backgroundColor: 'green' }}/>;
+        case 'inactive':
+            return <span className={classes.indicator} style={{ backgroundColor: 'grey' }}/>;
+        default:
+            return null;
+        }
+    }
+
     render() {
         const {
             classes,
@@ -108,7 +130,8 @@ class FlowTeaser extends React.PureComponent {
                         <Grid container>
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid>
-                            {this.props.data.status && <Grid item xs={3}><InputLabel>Status:</InputLabel><Typography >{this.props.data.status}</Typography></Grid>}
+                            {this.props.data.status
+                                && <Grid item xs={3}><InputLabel>Status:</InputLabel><Typography >{this.getStatus(classes)} {this.props.data.status}</Typography></Grid>}
                         </Grid>
 
                     </ExpansionPanelSummary>
@@ -126,8 +149,8 @@ class FlowTeaser extends React.PureComponent {
                             </Grid>
                             <Grid item xs={12}><h3>Meta</h3></Grid>
                             <Grid item xs={3}><InputLabel>Type:</InputLabel><Typography >{this.props.data.type}</Typography></Grid>
-                            <Grid item xs={3}><InputLabel>Created:</InputLabel><Typography>{this.props.data.createdAt}</Typography></Grid>
-                            <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{this.props.data.updatedAt}</Typography></Grid>
+                            <Grid item xs={3}><InputLabel>Created:</InputLabel><Typography>{moment(this.props.data.createdAt).format('HH:mm:ss DD.MM.YYYY')}</Typography></Grid>
+                            <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{moment(this.props.data.updatedAt).format('HH:mm:ss DD.MM.YYYY')}</Typography></Grid>
                             <Grid item xs={12}>
                                 <Button variant="outlined" aria-label="next" onClick={this.editOpen}>
                                     Update

@@ -39,11 +39,31 @@ class Components extends React.Component {
     state= {
         addComponent: false,
         editorData: null,
+        wasChanged: false,
     }
 
     constructor(props) {
         super();
         props.getComponents();
+        this.dummyData = {
+            distribution: {
+                type: 'string',
+                image: 'URL string',
+            },
+            access: 'public',
+            name: 'string',
+            description: 'string',
+            descriptor: {
+                actions: [],
+                triggers: [],
+            },
+            owners: [
+                {
+                    id: 'string',
+                    type: 'user',
+                },
+            ],
+        };
     }
 
     addComponent = () => {
@@ -53,16 +73,20 @@ class Components extends React.Component {
     };
 
     saveComponent = () => {
-        this.props.createComponent(this.state.editorData);
-        this.setState({
-            addComponent: false,
-        });
+        if (this.state.wasChanged) {
+            this.props.createComponent(this.state.editorData);
+            this.setState({
+                addComponent: false,
+                wasChanged: false,
+            });
+        }
     }
 
     editorChange(e) {
         if (!e.error) {
             this.setState({
                 editorData: e.jsObject,
+                wasChanged: true,
             });
         }
     }
@@ -137,12 +161,16 @@ class Components extends React.Component {
                         <JSONInput
                             id = 'jsonEdit'
                             locale = {locale}
+                            placeholder = {this.dummyData}
                             theme = 'dark_vscode_tribute'
                             height = '550px'
                             width = '600px'
                             onChange={this.editorChange.bind(this)}
                         />
-                        <Button variant="outlined" aria-label="Add" onClick={this.saveComponent}>
+                        <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ addComponent: false }); }}>
+                            close
+                        </Button>
+                        <Button variant="outlined" aria-label="Add" onClick={this.saveComponent} disabled={!this.state.wasChanged}>
                             Save
                         </Button>
                     </div>
@@ -155,6 +183,7 @@ class Components extends React.Component {
 
 const mapStateToProps = state => ({
     components: state.components,
+    auth: state.auth,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     getComponents,
