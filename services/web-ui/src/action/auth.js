@@ -38,7 +38,7 @@ export const login = data => async (dispatch) => {
     });
     if (result.status === 200) {
         setAxiosAuth(result.data.token);
-        sessionStorage.setItem('ohiToken', result.data.token);
+        sessionStorage.setItem('oihToken', result.data.token);
         dispatch({
             type: LOGIN,
             isLoggedIn: true,
@@ -54,11 +54,11 @@ export const resetLogin = () => async (dispatch) => {
         isLoggedIn: false,
         token: '',
     });
-    sessionStorage.removeItem('ohiToken');
+    sessionStorage.removeItem('oihToken');
 };
 
 export const checkLogin = () => async (dispatch) => {
-    const result = sessionStorage.getItem('ohiToken');
+    const result = sessionStorage.getItem('oihToken');
     if (result) {
         setAxiosAuth(result);
         dispatch({
@@ -84,7 +84,7 @@ export const logout = () => async (dispatch) => {
     });
     if (result.status === 200) {
         setAxiosAuth('');
-        sessionStorage.removeItem('ohiToken');
+        sessionStorage.removeItem('oihToken');
         dispatch({
             type: LOGOUT,
             isLoggedIn: false,
