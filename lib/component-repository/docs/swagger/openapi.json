@@ -257,6 +257,11 @@
             "default" : "private",
             "example" : "public"
           },
+          "applicationUid": {
+            "type": "string",
+            "description": "Unique application ID",
+            "example": "3f57d4cc-9a6b-40c9-8db6-0657c116e97c"
+          },
           "descriptor" : {
             "type" : "object",
             "description" : "Component descriptor (component.json) which contains a component meta information."
