@@ -10,7 +10,6 @@ export const UPDATE_COMPONENT_ERROR = 'UPDATE_COMPONENT_ERROR';
 export const CREATE_COMPONENT = 'CREATE_COMPONENT';
 export const DELETE_COMPONENT = 'DELETE_COMPONENT';
 
-
 export const getComponents = () => async (dispatch) => {
     try {
         const result = await axios({
