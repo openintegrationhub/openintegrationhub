@@ -64,27 +64,27 @@
     },
     "examples" : {
       "json" : {
-        "summary" : "json message",
+        "summary" : "json object",
         "value" : "{ \"some\": \"json\" }"
       },
       "xml" : {
-        "summary" : "xml message",
+        "summary" : "xml object",
         "value" : "<xml>some</xml>"
       },
       "text" : {
-        "summary" : "plain text message",
+        "summary" : "plain text object",
         "value" : "plain text"
       },
       "csv" : {
-        "summary" : "csv message",
+        "summary" : "csv object",
         "value" : "c,s,v"
       },
       "tsv" : {
-        "summary" : "tsv message",
+        "summary" : "tsv object",
         "value" : "t\t\ts\tv"
       },
       "binary" : {
-        "summary" : "binary message",
+        "summary" : "binary object",
         "value" : "BINARY DATA"
       }
     },
@@ -133,20 +133,13 @@
         "description" : "Message not found"
       },
       "TooManyMessageRequests" : {
-        "description" : "Too many message requests"
+        "description" : "Too many requests"
       },
       "MessageTooLarge" : {
-        "description" : "Message too large"
+        "description" : "Object is too large"
       }
     },
     "headers" : {
-      "MessageTTL" : {
-        "description" : "Message TTL in ms",
-        "schema" : {
-          "description" : "Message TTL in ms",
-          "type" : "integer"
-        }
-      },
       "MessageLength" : {
         "description" : "Message length in bytes",
         "schema" : {
@@ -161,7 +154,7 @@
   "paths" : {
     "/objects/{id}" : {
       "get" : {
-        "summary" : "Get message by id",
+        "summary" : "Get object by id",
         "description" : "Returns one object",
         "parameters" : [ {
           "$ref" : "#/components/parameters/MessageId"
@@ -173,7 +166,7 @@
                 "$ref" : "#/components/headers/MessageLength"
               }
             },
-            "description" : "Successfully got a message",
+            "description" : "Successfully got an object",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -219,8 +212,8 @@
         }
       },
       "put" : {
-        "summary" : "Create a message",
-        "description" : "Creates a message with user-generated id",
+        "summary" : "Create an object",
+        "description" : "Creates an object with user-generated id",
         "parameters" : [ {
           "$ref" : "#/components/parameters/MessageId"
         }],
@@ -229,7 +222,7 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Successfully created a message"
+            "description" : "Successfully created an object"
           },
           "404" : {
             "$ref" : "#/components/responses/MessageNotFound"
@@ -238,10 +231,10 @@
             "$ref" : "#/components/responses/TooManyMessageRequests"
           },
           "409" : {
-            "description" : "Message already exists"
+            "description" : "Object already exists"
           },
           "415" : {
-            "description" : "Message type not supported or missing"
+            "description" : "Object type not supported or missing"
           },
           "413" : {
             "$ref" : "#/components/responses/MessageTooLarge"
@@ -249,14 +242,14 @@
         }
       },
       "delete" : {
-        "summary" : "Delete a message",
-        "description" : "Delete entire message or some range in it",
+        "summary" : "Delete an object",
+        "description" : "Delete entire object",
         "parameters" : [ {
           "$ref" : "#/components/parameters/MessageId"
         }],
         "responses" : {
-          "200" : {
-            "description" : "Successfully deleted a message or message part"
+          "204" : {
+            "description" : "Successfully deleted an object"
           },
           "404" : {
             "$ref" : "#/components/responses/MessageNotFound"
@@ -269,8 +262,8 @@
     },
     "/batch/delete" : {
       "post" : {
-        "summary" : "Create request for message batch deletion",
-        "description" : "Batch deletion is async process, so we need to start and wait",
+        "summary" : "Create request for object batch deletion",
+        "description" : "Batch deletion is an async process, so we need to start and wait",
         "requestBody" : {
           "required" : true,
           "content" : {
@@ -282,7 +275,7 @@
           }
         },
         "responses" : {
-          "201" : {
+          "202" : {
             "description" : "Query started",
             "content" : {
               "application/json" : {
@@ -308,7 +301,7 @@
           }
         } ],
         "responses" : {
-          "201" : {
+          "200" : {
             "description" : "Query found",
             "content" : {
               "application/json" : {
