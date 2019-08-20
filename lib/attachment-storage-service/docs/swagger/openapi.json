@@ -17,7 +17,28 @@
       "MessageId" : {
         "type" : "integer"
       },
-      "BatchDelete" : {
+      "BatchDeleteRequest" : {
+        "type" : "object",
+        "properties" : {
+          "conditions" : {
+            "type" : "array",
+            "minLength" : 1,
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "key" : {
+                  "description" : "One of metadata keys",
+                  "type" : "string"
+                },
+                "value" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BatchDeleteResponse": {
         "type" : "object",
         "properties" : {
           "id" : {
@@ -26,22 +47,6 @@
           "status" : {
             "type" : "string",
             "enum" : [ "started", "running", "completed" ]
-          },
-          "conditions" : {
-            "type" : "array",
-            "minLength" : 1,
-            "items" : {
-              "type" : "object",
-              "properties" : {
-                "key" : {
-                  "description" : "Any value from JWT token: flowId, workspaceId, contractId etc.",
-                  "type" : "string"
-                },
-                "value" : {
-                  "type" : "string"
-                }
-              }
-            }
           }
         }
       }
@@ -54,14 +59,6 @@
         "required" : true,
         "schema" : {
           "$ref" : "#/components/schemas/MessageId"
-        }
-      },
-      "MessageRange" : {
-        "name" : "Range",
-        "description" : "Message range",
-        "in" : "header",
-        "schema" : {
-          "type" : "string"
         }
       }
     },
@@ -135,9 +132,6 @@
       "MessageNotFound" : {
         "description" : "Message not found"
       },
-      "MessageRangeNotSatisfiable" : {
-        "description" : "Message range not satisfiable"
-      },
       "TooManyMessageRequests" : {
         "description" : "Too many message requests"
       },
@@ -158,17 +152,6 @@
         "schema" : {
           "type" : "integer"
         }
-      },
-      "MessageRange" : {
-        "description" : "Message Range in bytes",
-        "schema" : {
-          "type" : "string"
-        },
-        "examples" : {
-          "bytes" : {
-            "value" : "bytes=0-1023"
-          }
-        }
       }
     }
   },
@@ -176,55 +159,16 @@
     "bearerAuth" : [ ]
   } ],
   "paths" : {
-    "/objects" : {
-      "get" : {
-        "summary" : "Get multiple messages",
-        "description" : "Returns multiple messages by ids with multipart response",
-        "parameters" : [ {
-          "name" : "ids",
-          "required" : true,
-          "in" : "query",
-          "description" : "Message ids",
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/MessageId"
-            }
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successfully got messages",
-            "content" : {
-              "multipart/mixed" : {
-                "example" : "Content-Type: multipart/mixed; boundary=eio-message\n\n--eio-message\nContent-Type: application/json\nX-TTL: 5184000000\nContent-Length: 17\n{\"some\": \"json\"}\n--eio-message\nContent-Type: application/octet-stream\nX-TTL: 2592000000\nContent-Length: 342346245\n...some big file\n--eio-message "
-              }
-            }
-          },
-          "422" : {
-            "description" : "Too many messages requested at once"
-          },
-          "429" : {
-            "$ref" : "#/components/responses/TooManyMessageRequests"
-          }
-        }
-      }
-    },
     "/objects/{id}" : {
       "get" : {
         "summary" : "Get message by id",
-        "description" : "Returns one message or part of it by requested range",
+        "description" : "Returns one object",
         "parameters" : [ {
           "$ref" : "#/components/parameters/MessageId"
-        }, {
-          "$ref" : "#/components/parameters/MessageRange"
-        } ],
+        }],
         "responses" : {
           "200" : {
             "headers" : {
-              "X-TTL" : {
-                "$ref" : "#/components/headers/MessageTTL"
-              },
               "Content-Length" : {
                 "$ref" : "#/components/headers/MessageLength"
               }
@@ -266,47 +210,8 @@
               }
             }
           },
-          "206" : {
-            "headers" : {
-              "X-TTL" : {
-                "$ref" : "#/components/headers/MessageTTL"
-              },
-              "Content-Range" : {
-                "$ref" : "#/components/headers/MessageRange"
-              },
-              "Content-Length" : {
-                "$ref" : "#/components/headers/MessageLength"
-              }
-            },
-            "description" : "Successfully got a part of message",
-            "content" : {
-              "text/plain" : {
-                "example" : {
-                  "$ref" : "#/components/examples/text/value"
-                }
-              },
-              "text/csv" : {
-                "example" : {
-                  "$ref" : "#/components/examples/csv/value"
-                }
-              },
-              "text/tsv" : {
-                "example" : {
-                  "$ref" : "#/components/examples/tsv/value"
-                }
-              },
-              "application/octet-stream" : {
-                "example" : {
-                  "$ref" : "#/components/examples/binary/value"
-                }
-              }
-            }
-          },
           "404" : {
             "$ref" : "#/components/responses/MessageNotFound"
-          },
-          "416" : {
-            "$ref" : "#/components/responses/MessageRangeNotSatisfiable"
           },
           "429" : {
             "$ref" : "#/components/responses/TooManyMessageRequests"
@@ -318,9 +223,7 @@
         "description" : "Creates a message with user-generated id",
         "parameters" : [ {
           "$ref" : "#/components/parameters/MessageId"
-        }, {
-          "$ref" : "#/components/parameters/MessageRange"
-        } ],
+        }],
         "requestBody" : {
           "$ref" : "#/components/requestBodies/Message"
         },
@@ -330,9 +233,6 @@
           },
           "404" : {
             "$ref" : "#/components/responses/MessageNotFound"
-          },
-          "416" : {
-            "$ref" : "#/components/responses/MessageRangeNotSatisfiable"
           },
           "429" : {
             "$ref" : "#/components/responses/TooManyMessageRequests"
@@ -353,18 +253,13 @@
         "description" : "Delete entire message or some range in it",
         "parameters" : [ {
           "$ref" : "#/components/parameters/MessageId"
-        }, {
-          "$ref" : "#/components/parameters/MessageRange"
-        } ],
+        }],
         "responses" : {
           "200" : {
             "description" : "Successfully deleted a message or message part"
           },
           "404" : {
             "$ref" : "#/components/responses/MessageNotFound"
-          },
-          "416" : {
-            "$ref" : "#/components/responses/MessageRangeNotSatisfiable"
           },
           "429" : {
             "$ref" : "#/components/responses/TooManyMessageRequests"
@@ -376,15 +271,12 @@
       "post" : {
         "summary" : "Create request for message batch deletion",
         "description" : "Batch deletion is async process, so we need to start and wait",
-        "security" : [ {
-          "ServiceAccount" : [ ]
-        } ],
         "requestBody" : {
           "required" : true,
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/BatchDelete"
+                "$ref" : "#/components/schemas/BatchDeleteRequest"
               }
             }
           }
@@ -395,7 +287,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/BatchDelete"
+                  "$ref" : "#/components/schemas/BatchDeleteResponse"
                 }
               }
             }
@@ -406,9 +298,6 @@
     "/batch/delete/{id}" : {
       "get" : {
         "summary" : "Get batch delete request status",
-        "security" : [ {
-          "ServiceAccount" : [ ]
-        } ],
         "parameters" : [ {
           "name" : "id",
           "required" : true,
@@ -424,7 +313,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/BatchDelete"
+                  "$ref" : "#/components/schemas/BatchDeleteResponse"
                 }
               }
             }
