@@ -175,6 +175,7 @@ class FlowTeaser extends React.PureComponent {
                                 <Graph
                                     width={1080}
                                     height={300}
+                                    name={this.props.data.name}
                                     data={{
                                         nodes: this.props.data.graph.nodes,
                                         links: this.props.data.graph.edges,

@@ -172,7 +172,7 @@ class Roles extends React.Component {
                                 <Add/>
                             </Button>
 
-                            <Grid xs={12}>
+                            <Grid item xs={12}>
                                 {
                                     this.state.selectedPermissions.length
                                         ? <List dense={true}>
