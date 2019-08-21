@@ -58,8 +58,7 @@ export const generateTree = (nodes, edges) => {
             children: [],
         };
     }
-    // console.log(temp);
-    // return temp;
+    return temp;
 
 
     // treeData = {

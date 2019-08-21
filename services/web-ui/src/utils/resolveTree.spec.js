@@ -1,4 +1,4 @@
-import { resolveTree, generateTree } from './resolveTree';
+import { generateTree } from './resolveTree';
 
 const edges = [
     {
@@ -76,6 +76,33 @@ const nodes = [
     },
 ];
 
-it('Test Recursive call', () => {
+const compare = {
+    name: 'step1',
+    children: [
+        {
+            name: 'step2',
+            children: [
+                {
+                    name: 'step3',
+                    children: [
+                        {
+                            name: 'step4',
+                            children: [],
+                        },
+                        {
+                            name: 'step5',
+                            children: [],
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+};
 
+describe('Check Utils', () => {
+    test('try to generate Tree', async () => {
+        const result = generateTree(nodes, edges);
+        expect(result).toBe(compare);
+    });
 });
