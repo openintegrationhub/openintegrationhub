@@ -306,7 +306,7 @@ Now click on the `ADD+` button. A popup window will appear where you can add the
 </p>
 
 <p align="left">
-  <img src="assets/popUpWindowComponent.png" alt="Sublime's custom image" width="300"/>
+  <img src="assets/popUpWindowComponent.PNG" alt="Sublime's custom image" width="300"/>
 </p>
 
 **GREAT!** You created your first component.
@@ -368,7 +368,7 @@ Now click on the `ADD+` button. A popup window will appear where you can add the
 </p>
 
 <p align="left">
-  <img src="assets/popUpWindowFlow.png" alt="Sublime's custom image" width="300"/>
+  <img src="assets/popUpWindowFlow.PNG" alt="Sublime's custom image" width="300"/>
 </p>
 
 **GREAT!** You created your first flow.
