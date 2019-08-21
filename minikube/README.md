@@ -327,7 +327,7 @@ Afterwards please replace the `ADD WEBHOOK URL HERE` with the link in your clipb
 ```json
 {
    "name":"Timer To Code Component Example",
-   "description:": "This flow periodically triggers the flow and sends request to webhook.site"
+   "description:": "This flow periodically triggers the flow and sends request to webhook.site",
    "graph":{
       "nodes":[
          {
