@@ -86,6 +86,17 @@ router.get('/:ilaId', jsonParser, async (req, res) => {
  * @return {Object} - Chunk object containing data and meta
  */
 router.post('/', jsonParser, async (req, res) => {
+  const valid = chunkValidator(req.body);
+
+  if (!valid) {
+    return res.status(400).send(
+      {
+        errors:
+         [{ message: 'Input does not match schema!', code: 400 }],
+      },
+    );
+  }
+
   const {
     cid, payload, ilaId, def, token,
   } = req.body;
@@ -152,15 +163,15 @@ router.post('/', jsonParser, async (req, res) => {
     payloadValidator = ajv.compile(schema);
   }
 
-  const valid = chunkValidator(req.body);
-  if (!valid) {
-    return res.status(400).send(
-      {
-        errors:
-         [{ message: 'Input does not match schema!', code: 400 }],
-      },
-    );
-  }
+  // const valid = chunkValidator(req.body);
+  // if (!valid) {
+  //   return res.status(400).send(
+  //     {
+  //       errors:
+  //        [{ message: 'Input does not match schema!', code: 400 }],
+  //     },
+  //   );
+  // }
 
   const validPayload = Object.prototype.hasOwnProperty.call(payload, req.body.cid);
 
