@@ -8,7 +8,7 @@ export const resolveToTree = (arr, parent) => {
 
                 if (children.length) {
                     // const tempChildren = this.resolveToTree(children, arr[i].source);
-                    // console.log(tempChildren);
+                    console.log(children);
                     out.push({
                         name: arr[i].source,
                         children,
@@ -58,7 +58,7 @@ export const generateTree = (nodes, edges) => {
             children: [],
         };
     }
-    console.log(temp);
+    // console.log(temp);
     // return temp;
 
 
