@@ -11,7 +11,6 @@ Visit the official [Open Integration Hub homepage](https://www.openintegrationhu
 In addion to setting up the Open Integration Hub on a cloud infrastucture such as GCP it is also possible to setup a local version of the framework. Make sure to perform the following to set up a local version of the OIH within your own minikube:
 
 - [Requirements](#requirements)
-- [|---|](#)
 - [Installation](#installation)
   - [Install Minikube](#install-minikube)
   - [Basic Open Integration Hub Infrastructure Setup](#basic-open-integration-hub-infrastructure-setup)
@@ -41,12 +40,10 @@ Make sure that minikube is endowed with sufficient resources. We suggest at leas
 
 ![Windows](https://img.shields.io/badge/Windows-blue.svg)
 
-<<<<<<< HEAD
+
 |If you're using Windows we suggest to use virtual box. In order to use it, Hyper-V must be disabled [Enable/Disable Hyper-V on Windows 10](https://docs.microsoft.com/de-de/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v).|
 |---|
-=======
- _Windows:_ If you're using Windows we suggest to use virtual box. In order to use it, Hyper-V must be disabled [Enable/Disable Hyper-V on Windows 10](https://docs.microsoft.com/de-de/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v).
->>>>>>> f6452627670607fb88f162291e3da340c196e5c7
+
 
 # Installation
 
@@ -64,22 +61,19 @@ and then
 
     VBoxManage modifyvm "minikube" --memory 8096 --cpus 4
 
-<<<<<<< HEAD
 to adjust the resource limits before starting again.
 
 In particular, ensure that its ingress module is enabled (`minikube addons enable ingress`).  Also make certain that `kubectl` is configured to use minikube. To see if its correctly configured use
 
     `kubectl config current-context`
 
-=======
 In particular, make certain that its ingress module is enabled (`minikube addons enable ingress`).  Make certain `kubectl` is configured to use minikube. To see if its correctly configured use the `kubectl config current-context` command.
->>>>>>> f6452627670607fb88f162291e3da340c196e5c7
+
 For further information about how to set up minikube, see here:
 
 - [Install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 - [Installing Kubernetes with Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/)
 
-<<<<<<< HEAD
 ![Windows](https://img.shields.io/badge/Windows-blue.svg)
 |If you're using Docker for Windows it overwrites the acutal kubectl version. In order to fix this download the `kubectl.exe` from  [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows). Navigate to the docker directory (e.g. Program Files\Docker\Docker\resources\bin) andreplace the kubectl.exe in this folder with the one you just downloaded.|
 ---|
