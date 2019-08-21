@@ -39,6 +39,7 @@ class Flows extends React.Component {
     state= {
         addFlow: false,
         editorData: null,
+        wasChanged: false,
     }
 
     constructor(props) {
@@ -53,16 +54,20 @@ class Flows extends React.Component {
     };
 
     saveFlow = () => {
-        this.props.createFlow(this.state.editorData);
-        this.setState({
-            addFlow: false,
-        });
+        if (this.state.wasChanged) {
+            this.props.createFlow(this.state.editorData);
+            this.setState({
+                addFlow: false,
+                wasChanged: false,
+            });
+        }
     }
 
     editorChange(e) {
         if (!e.error) {
             this.setState({
                 editorData: e.jsObject,
+                wasChanged: true,
             });
         }
     }
@@ -142,7 +147,10 @@ class Flows extends React.Component {
                             width = '600px'
                             onChange={this.editorChange.bind(this)}
                         />
-                        <Button variant="outlined" aria-label="Add" onClick={this.saveFlow}>
+                        <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ addFlow: false }); }}>
+                            close
+                        </Button>
+                        <Button variant="outlined" aria-label="Add" onClick={this.saveFlow} disabled={!this.state.wasChanged}>
                             Save
                         </Button>
                     </div>

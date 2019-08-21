@@ -3,19 +3,20 @@ import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 // Ui
+import {
+    Select, TextField, Button, Grid, MenuItem, List, ListItem, ListItemText,
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import Grid from '@material-ui/core/Grid';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Modal from '@material-ui/core/Modal';
 
 import {
-    Delete, Edit,
+    Delete, Edit, Add, Remove,
 } from '@material-ui/icons';
 
 
@@ -29,17 +30,29 @@ const useStyles = {
         fontSize: '0.9375rem',
         fontWeight: '400',
     },
-    modal: {
+    form: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        width: 500,
         backgroundColor: 'white',
+        justifyContent: 'center',
         margin: 'auto',
         outline: 'none',
+    },
+    select: {
+        width: '80%',
+    },
+    textField: {
+        width: 200,
     },
 };
 
 class RolesTeaser extends React.PureComponent {
     state= {
         editRole: false,
-        editorData: null,
+        name: '',
+        permission: '',
+        selectedPermissions: [],
     }
 
     editOpen= () => {
@@ -52,17 +65,23 @@ class RolesTeaser extends React.PureComponent {
         this.props.deleteRole(this.props.data._id);
     }
 
-    updateRole = () => {
-        this.props.updateRole(this.state.editorData);
+    saveRole = () => {
+        this.props.updateRole({
+            _id: this.props.data._id,
+            name: this.state.name,
+            permissions: this.state.selectedPermissions,
+        });
         this.setState({
             editRole: false,
+            name: '',
+            selectedPermissions: [],
         });
     }
 
-    editorChange(e) {
+    setName(e) {
         if (!e.error) {
             this.setState({
-                editorData: e.jsObject,
+                name: e.target.value,
             });
         }
     }
@@ -89,7 +108,8 @@ class RolesTeaser extends React.PureComponent {
                                     e.stopPropagation();
                                     this.setState({
                                         editRole: true,
-                                        editorData: this.props.data,
+                                        name: this.props.data.name,
+                                        selectedPermissions: this.props.data.permissions,
                                     });
                                 }}>
                                     <Edit/>
@@ -103,7 +123,17 @@ class RolesTeaser extends React.PureComponent {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Grid container>
-                            <Grid item xs={3}><InputLabel>Permissions:</InputLabel><Typography >{this.props.data.permissions}</Typography></Grid>
+                            <Grid item xs={3}>
+                                <InputLabel>Permissions:</InputLabel>
+                                <List dense={true}>
+                                    {this.props.data.permissions.map((item, index) => <ListItem key={`showRolelistPemissions-${index}`}>
+                                        <ListItemText
+                                            className={classes.select}
+                                            primary={item}
+                                        />
+                                    </ListItem>)}
+                                </List>
+                            </Grid>
                             <Grid item xs={3}><InputLabel>Created:</InputLabel><Typography>{this.props.data.createdAt}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{this.props.data.updatedAt}</Typography></Grid>
 
@@ -117,15 +147,85 @@ class RolesTeaser extends React.PureComponent {
                     onClose={ () => { this.setState({ editRole: false }); }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
-                    <div className={classes.modal}>
-                        <Button variant="outlined" aria-label="Add" onClick={this.updateRole}>
-                            Save
-                        </Button>
-                        <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ editRole: false }); }}>
-                            close
-                        </Button>
-                    </div>
+                    <form className={classes.form}>
+                        <Grid item xs={8}>
 
+                            <TextField
+                                id="standard-name"
+                                label="Name"
+                                className={classes.textField}
+                                onChange={this.setName.bind(this)}
+                                margin="normal"
+                                value={this.state.name}/>
+
+
+                        </Grid>
+                        <Grid item xs={8}>
+                            <InputLabel shrink={true}>Permissions</InputLabel>
+                            <Select
+                                className={classes.select}
+                                value={this.state.permission}
+                                onChange={ (e) => {
+                                    this.setState({
+                                        permission: e.target.value,
+                                    });
+                                }
+                                }
+                            >
+                                {this.props.roles && this.props.roles.permissions.map((item, index) => <MenuItem key={`editRolePermSelect-${index}`} value={item}>{item}</MenuItem>)}
+                            </Select>
+                            <Button
+                                type='button'
+                                onClick={ () => {
+                                    const tempArr = [...this.state.selectedPermissions];
+                                    tempArr.push(this.state.permission);
+                                    this.setState({
+                                        selectedPermissions: tempArr,
+                                        permission: '',
+                                    });
+                                }}>
+                                <Add/>
+                            </Button>
+
+                            <Grid xs={12}>
+                                {
+                                    this.state.selectedPermissions.length
+                                        ? <List dense={true}>
+                                            {this.state.selectedPermissions.map((item, index) => <ListItem key={`editRolelistPemissions-${index}`}>
+                                                <ListItemText
+                                                    className={classes.select}
+                                                    primary={item}
+                                                />
+                                                <Button
+                                                    type='button'
+                                                    onClick={ () => {
+                                                        const tempArr = [...this.state.selectedPermissions];
+                                                        this.setState({
+                                                            selectedPermissions: tempArr.filter(tempArrItem => tempArrItem !== item),
+                                                        });
+                                                    }}>
+                                                    <Remove/>
+                                                </Button>
+                                            </ListItem>)}
+                                        </List>
+
+                                        : null
+                                }
+                            </Grid>
+                        </Grid>
+
+                        <Grid item xs={8}>
+                            <Button variant="outlined" aria-label="Add" onClick={this.saveRole}>
+                            Save
+                            </Button>
+                            <Button variant="outlined" aria-label="Add" onClick={(e) => {
+                                e.preventDefault();
+                                this.setState({ editRole: false });
+                            }}>
+                            close
+                            </Button>
+                        </Grid>
+                    </form>
                 </Modal>
             </Grid>
         );
