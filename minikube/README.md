@@ -386,17 +386,17 @@ Stay in the flows section and look for the flow you just created. On the right s
 Click on it and the how the status changes from `inactive` to `starting`.
 
 <p align="left">
-  <img src="assets/inactive.png" alt="Sublime's custom image" width="500"/>
+  <img src="assets/inactive.PNG" alt="Sublime's custom image" width="500"/>
 </p>
 
 <p align="left">
-  <img src="assets/starting.png" alt="Sublime's custom image" width="500"/>
+  <img src="assets/starting.PNG" alt="Sublime's custom image" width="500"/>
 </p>
 
 After some time the status changes to `active` and the flow is running (you may have to refresh the site).
 
 <p align="left">
-  <img src="assets/active.png" alt="Sublime's custom image" width="500"/>
+  <img src="assets/active.PNG" alt="Sublime's custom image" width="500"/>
 </p>
 
 ## Lessons Learned
