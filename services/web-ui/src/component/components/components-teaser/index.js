@@ -51,6 +51,45 @@ class ComponentTeaser extends React.PureComponent {
         </Grid>;
     }
 
+    getTrigger(data) {
+        return (
+            Object.keys(data).map((key, index) => (<ExpansionPanel key={`triggers-${index}`} expandicon={<ExpandMoreIcon />}>
+                <ExpansionPanelSummary>
+                    <Grid container>
+                        <Grid item xs={3}><InputLabel>Trigger:</InputLabel><Typography >{key}</Typography></Grid>
+                    </Grid>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <Grid container spacing={2}>
+                        <Grid item xs={5}><InputLabel>Title:</InputLabel><Typography >{data[key].title}</Typography></Grid>
+                        <Grid item xs={5}><InputLabel>Description:</InputLabel><Typography >{data[key].description}</Typography></Grid>
+                        <Grid item xs={2}><InputLabel>Type:</InputLabel><Typography >{data[key].type}</Typography></Grid>
+                    </Grid>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>))
+
+        );
+    }
+
+    getActions(data) {
+        return (
+            Object.keys(data).map((key, index) => (<ExpansionPanel key={`actions-${index}`} expandicon={<ExpandMoreIcon />}>
+                <ExpansionPanelSummary>
+                    <Grid container>
+                        <Grid item xs={3}><InputLabel>Action:</InputLabel><Typography >{key}</Typography></Grid>
+                    </Grid>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <Grid container spacing={2}>
+                        <Grid item xs={4}><InputLabel>Title:</InputLabel><Typography >{data[key].title}</Typography></Grid>
+                        <Grid item xs={4}><InputLabel>Description:</InputLabel><Typography >{data[key].description}</Typography></Grid>
+                    </Grid>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>))
+
+        );
+    }
+
     editOpen= () => {
         this.setState({
             editComponent: true,
@@ -101,6 +140,26 @@ class ComponentTeaser extends React.PureComponent {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Grid container>
+
+                            {
+                                this.props.data.descriptor && Object.prototype.hasOwnProperty.call(this.props.data.descriptor, 'triggers')
+                                    && (
+                                        <Grid item xs={12}><h3>Triggers</h3>
+                                            {this.getTrigger(this.props.data.descriptor.triggers)}
+                                        </Grid>
+                                    )
+                            }
+
+
+                            {
+                                this.props.data.descriptor && Object.prototype.hasOwnProperty.call(this.props.data.descriptor, 'actions')
+                                    && (
+                                        <Grid item xs={12}><h3>Actions</h3>
+                                            {this.getActions(this.props.data.descriptor.actions)}
+                                        </Grid>
+                                    )
+                            }
+
                             <Grid item xs={12}><h3>Distribution</h3>
                                 {
                                     this.getDist()

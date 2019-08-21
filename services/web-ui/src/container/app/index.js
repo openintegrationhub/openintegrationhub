@@ -15,17 +15,19 @@ import LoginCheck from '../../component/login-check';
 import { resetLogin } from '../../action/auth';
 
 class App extends React.Component {
+    constructor(props) {
+        super(props);
+        axios.interceptors.response.use(response => response, (error) => {
+            if (error.response.status === 401) {
+                console.log('REDIRECT TO LOGIN SCREEN', error);
+                props.resetLogin();
+            }
+            return Promise.reject(error);
+        });
+    }
+
     componentDidMount() {
         document.title = 'Web UI';
-        axios.interceptors.response.use(response => response,
-            (error) => {
-                if (error.status === 401) {
-                    console.log('REDIRECT TO LOGIN SCREEN');
-                    this.props.resetLogin();
-                }
-                // Do something with response error
-                return Promise.reject(error);
-            });
     }
 
     render() {
