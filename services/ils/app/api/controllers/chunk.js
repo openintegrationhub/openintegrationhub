@@ -219,6 +219,82 @@ router.post('/', jsonParser, async (req, res) => {
 });
 
 /**
+ * @desc Validate a SDF object
+ *
+ * @route   POST /chunks/validate
+ * @access  Private
+ * @return {Object} -
+ */
+router.post('/validate', jsonParser, async (req, res) => {
+  const { payload, token } = req.body;
+  const valid = chunkValidator(req.body);
+
+  if (!token) {
+    return res.status(401).send(
+      {
+        errors:
+        [{ message: 'Service token not provided!', code: 401 }],
+      },
+    );
+  }
+
+  if (!valid) {
+    return res.status(400).send(
+      {
+        errors:
+           [{ message: 'Input does not match schema!', code: 400 }],
+      },
+    );
+  }
+
+  const validPayload = Object.prototype.hasOwnProperty.call(payload, req.body.cid);
+
+  if (!validPayload) {
+    return res.status(400).send(
+      {
+        errors:
+            [{ message: 'Payload does not contain cid!', code: 400 }],
+      },
+    );
+  }
+
+  const { domainId, schemaUri } = req.body.def;
+  if ((!domainId && !schemaUri)
+      || ((!domainId && schemaUri) || (domainId && !schemaUri))) {
+    return res.status(404).send(
+      {
+        errors:
+          [{ message: 'Domain ID and Schema URI must be specified!', code: 404 }],
+      },
+    );
+  }
+
+  // Fetch schema from MDR
+  const domainSchema = await fetchSchema(token, domainId, schemaUri);
+  if (domainSchema.statusCode === 404) {
+    return res.status(domainSchema.statusCode).send(
+      {
+        errors:
+          [{ message: 'DomainId or schemaUri not found!', code: domainSchema.statusCode }],
+      },
+    );
+  }
+
+  if (domainSchema.statusCode !== 200) {
+    return res.status(domainSchema.statusCode).send(
+      {
+        errors:
+            [{ message: domainSchema.message, code: domainSchema.statusCode }],
+      },
+    );
+  }
+
+  const payloadValidator = ajv.compile(domainSchema.body.data.value);
+  const validChunk = payloadValidator(payload);
+  res.status(200).send({ data: { valid: validChunk }, meta: {} });
+});
+
+/**
  * @desc Split a chunk object
  *
  * @route   POST /chunks/split
