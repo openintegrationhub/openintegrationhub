@@ -63,6 +63,7 @@ module.exports = class Server {
 
         const apiBase = express.Router();
         apiBase.use('/domains', cors(this.corsOptions));
+
         apiBase.use((req, res, next) => {
             if (isLocalRequest(req)) {
                 return next();

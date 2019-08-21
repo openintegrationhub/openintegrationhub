@@ -33,19 +33,23 @@ const useStyles = {
 };
 
 class Auth extends React.Component {
-  state = {
-      userData: {
-          username: process.env.REACT_APP_DEFAULT_USERNAME || '',
-          password: process.env.REACT_APP_DEFAULT_PASSWORD || '',
-      },
-      pending: false,
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            userData: {
+                username: process.env.REACT_APP_DEFAULT_USERNAME || '',
+                password: process.env.REACT_APP_DEFAULT_PASSWORD || '',
+            },
+            pending: false,
+        };
+        if (this.props.auth.isLoggedIn) this.props.history.push('/');
+    }
 
-  componentDidUpdate(prevProps) {
-      if (this.props.auth !== prevProps.auth && this.props.auth.isLoggedIn) {
-          this.props.history.push('/');
-      }
-  }
+    componentDidUpdate(prevProps) {
+        if (this.props.auth !== prevProps.auth && this.props.auth.isLoggedIn) {
+            this.props.history.push('/');
+        }
+    }
 
   setVal = (fieldName, e) => {
       this.setState({

@@ -175,6 +175,7 @@ class App {
         apiBase.use('/tenants', require('./../routes/tenants')); // eslint-disable-line global-require
         apiBase.use('/tokens', require('./../routes/tokens')); // eslint-disable-line global-require
         apiBase.use('/roles', require('./../routes/roles')); // eslint-disable-line global-require
+        apiBase.use('/permissions', require('./../routes/permissions')); // eslint-disable-line global-require
 
         // TODO: if the client is not a browser, no origin or host will be provided
         this.app.use(`/${conf.general.apiBase}`, cors(this.corsOptions), apiBase);

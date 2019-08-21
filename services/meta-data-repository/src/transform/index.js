@@ -3,6 +3,7 @@ const JsonPointer = require('json-pointer');
 const Ajv = require('ajv');
 const url = require('url');
 const path = require('path');
+const find = require('lodash/find');
 const { SchemaReferenceError, SchemaValidationError } = require('../error');
 const conf = require('../conf');
 
@@ -117,6 +118,7 @@ module.exports = {
         schema,
         domain,
         jsonRefsOptions = {},
+        token,
     }) {
         schema = typeof schema === 'string' ? JSON.parse(schema) : schema;
 
@@ -126,6 +128,10 @@ module.exports = {
             ...{
                 prepareRequest(req, cb) {
                     req.header['content-type'] = 'application/schema+json';
+                    if (token) {
+                        req.header.Authorization = `Bearer ${token}`;
+                    }
+
                     cb(undefined, req);
                 },
                 async processContent(res, cb) {
@@ -154,6 +160,8 @@ module.exports = {
         const copy = { ...schema };
         let uri = '';
         const backReferences = [];
+
+
         // rewrite id
         if (copy.$id) {
             uri = transformURI({ id: copy.$id, domain, options: jsonRefsOptions });
@@ -166,6 +174,7 @@ module.exports = {
         for (const key of Object.keys(refs)) {
             const refObj = refs[key];
             const { uriDetails } = refObj;
+
             if (refObj.error) {
                 // return original id
                 const id = schema.$id || schema.id || 'no-id';
@@ -191,10 +200,11 @@ module.exports = {
                         $ref: `${module.exports.buildBaseUrl()}${transformedPath}${uriDetails.fragment ? `#${uriDetails.fragment}` : ''}`,
                     },
                 );
+
                 if (!backReferences.includes(transformedPath)) {
                     backReferences.push(transformedPath);
                 }
-            } else if (`${uriDetails.scheme}://${uriDetails.host}:${uriDetails.port}` === `${module.exports.buildBaseUrl()}`) {
+            } else if (`${uriDetails.scheme}://${uriDetails.host}${conf.urlsWithPort ? `:${uriDetails.port}` : ''}` === `${module.exports.buildBaseUrl()}`) {
                 if (!backReferences.includes(uriDetails.path)) {
                     backReferences.push(uriDetails.path);
                 }

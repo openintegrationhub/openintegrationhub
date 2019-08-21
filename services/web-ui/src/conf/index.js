@@ -17,6 +17,7 @@ let config = {
     account: {
         roles: {
             ADMIN: 'ADMIN',
+            TENANT_ADMIN: 'TENANT_ADMIN',
             USER: 'USER',
             SERVICE_ACCOUNT: 'SERVICE_ACCOUNT',
         },
