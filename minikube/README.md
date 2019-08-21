@@ -75,8 +75,9 @@ For further information about how to set up minikube, see here:
 - [Installing Kubernetes with Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/)
 
 ![Windows](https://img.shields.io/badge/Windows-blue.svg)
-|If you're using Docker for Windows it overwrites the acutal kubectl version. In order to fix this download the `kubectl.exe` from  [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows). Navigate to the docker directory (e.g. Program Files\Docker\Docker\resources\bin) andreplace the kubectl.exe in this folder with the one you just downloaded.|
----|
+
+|If you're using Docker for Windows it overwrites the acutal kubectl version. In order to fix this download the `kubectl.exe` from [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows). Navigate to the docker directory (e.g. Program Files\Docker\Docker\resources\bin) andreplace the kubectl.exe in this folder with the one you just downloaded.|
+|---|
 
 ## Basic Open Integration Hub Infrastructure Setup
 
