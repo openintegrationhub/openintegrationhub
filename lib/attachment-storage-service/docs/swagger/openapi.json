@@ -24,16 +24,20 @@
         "properties" : {
           "conditions" : {
             "type" : "array",
+            "description": "Each element specifies a key and a value. An object has to have all specified keys with specified values in order to be deleted.",
             "minLength" : 1,
             "items" : {
               "type" : "object",
+              "required": ["key", "value"],
               "properties" : {
                 "key" : {
                   "description" : "One of metadata keys",
+                  "enum": ["userId", "contentType", "contentLength"],
                   "type" : "string"
                 },
                 "value" : {
-                  "type" : "string"
+                  "type" : "string",
+                  "description": "Value of a metadata key"
                 }
               }
             }
