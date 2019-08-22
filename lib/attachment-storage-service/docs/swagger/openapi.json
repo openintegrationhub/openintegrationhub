@@ -14,8 +14,10 @@
       }
     },
     "schemas" : {
-      "MessageId" : {
-        "type" : "integer"
+      "ObjectId" : {
+        "type" : "string",
+        "description": "UUID version 1, 3, 4 or 5",
+        "example": "2c5ea4c0-4067-11e9-8bad-9b1deb4d3b7d"
       },
       "BatchDeleteRequest" : {
         "type" : "object",
@@ -52,13 +54,13 @@
       }
     },
     "parameters" : {
-      "MessageId" : {
+      "ObjectId" : {
         "name" : "id",
-        "description" : "Message identifier",
+        "description" : "Object identifier. UUID versions 1, 3, 4 and 5 are supported.",
         "in" : "path",
         "required" : true,
         "schema" : {
-          "$ref" : "#/components/schemas/MessageId"
+          "$ref" : "#/components/schemas/ObjectId"
         }
       }
     },
@@ -89,7 +91,7 @@
       }
     },
     "requestBodies" : {
-      "Message" : {
+      "Object" : {
         "required" : true,
         "content" : {
           "application/json" : {
@@ -129,19 +131,19 @@
       }
     },
     "responses" : {
-      "MessageNotFound" : {
-        "description" : "Message not found"
+      "ObjectNotFound" : {
+        "description" : "Object not found"
       },
-      "TooManyMessageRequests" : {
+      "TooManyObjectRequests" : {
         "description" : "Too many requests"
       },
-      "MessageTooLarge" : {
+      "ObjectTooLarge" : {
         "description" : "Object is too large"
       }
     },
     "headers" : {
-      "MessageLength" : {
-        "description" : "Message length in bytes",
+      "ObjectLength" : {
+        "description" : "Object length in bytes",
         "schema" : {
           "type" : "integer"
         }
@@ -157,13 +159,13 @@
         "summary" : "Get object by id",
         "description" : "Returns one object",
         "parameters" : [ {
-          "$ref" : "#/components/parameters/MessageId"
+          "$ref" : "#/components/parameters/ObjectId"
         }],
         "responses" : {
           "200" : {
             "headers" : {
               "Content-Length" : {
-                "$ref" : "#/components/headers/MessageLength"
+                "$ref" : "#/components/headers/ObjectLength"
               }
             },
             "description" : "Successfully got an object",
@@ -204,31 +206,31 @@
             }
           },
           "404" : {
-            "$ref" : "#/components/responses/MessageNotFound"
+            "$ref" : "#/components/responses/ObjectNotFound"
           },
           "429" : {
-            "$ref" : "#/components/responses/TooManyMessageRequests"
+            "$ref" : "#/components/responses/TooManyObjectRequests"
           }
         }
       },
       "put" : {
         "summary" : "Create an object",
-        "description" : "Creates an object with user-generated id",
+        "description" : "Creates an object with user-generated ID.",
         "parameters" : [ {
-          "$ref" : "#/components/parameters/MessageId"
+          "$ref" : "#/components/parameters/ObjectId"
         }],
         "requestBody" : {
-          "$ref" : "#/components/requestBodies/Message"
+          "$ref" : "#/components/requestBodies/Object"
         },
         "responses" : {
           "201" : {
             "description" : "Successfully created an object"
           },
           "404" : {
-            "$ref" : "#/components/responses/MessageNotFound"
+            "$ref" : "#/components/responses/ObjectNotFound"
           },
           "429" : {
-            "$ref" : "#/components/responses/TooManyMessageRequests"
+            "$ref" : "#/components/responses/TooManyObjectRequests"
           },
           "409" : {
             "description" : "Object already exists"
@@ -237,7 +239,7 @@
             "description" : "Object type not supported or missing"
           },
           "413" : {
-            "$ref" : "#/components/responses/MessageTooLarge"
+            "$ref" : "#/components/responses/ObjectTooLarge"
           }
         }
       },
@@ -245,17 +247,17 @@
         "summary" : "Delete an object",
         "description" : "Delete entire object",
         "parameters" : [ {
-          "$ref" : "#/components/parameters/MessageId"
+          "$ref" : "#/components/parameters/ObjectId"
         }],
         "responses" : {
           "204" : {
             "description" : "Successfully deleted an object"
           },
           "404" : {
-            "$ref" : "#/components/responses/MessageNotFound"
+            "$ref" : "#/components/responses/ObjectNotFound"
           },
           "429" : {
-            "$ref" : "#/components/responses/TooManyMessageRequests"
+            "$ref" : "#/components/responses/TooManyObjectRequests"
           }
         }
       }
