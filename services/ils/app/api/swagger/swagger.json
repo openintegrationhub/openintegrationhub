@@ -219,7 +219,7 @@
   },
   "servers": [
     {
-      "url": "http://integration-layer.openintegrationhub.com/"
+      "url": "http://ils.openintegrationhub.com/"
     },
     {
       "url": "http://localhost:3003/"
