@@ -304,6 +304,21 @@ const chunk12 = {
   },
 };
 
+const chunk13 = {
+  ilaId: '987asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
+  cid: 'email',
+  def: {
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
+  },
+  payload: {
+    lastName: 'Hobbs',
+    firstName: 'Jack',
+    email: 'hobbs@mail.com',
+  },
+};
+
 const createInvalidChunk = nock('http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address')
   .get('')
   .reply(200, {
@@ -315,7 +330,7 @@ const createInvalidChunk = nock('http://metadata.openintegrationhub.com/api/v1/d
       description: 'Person Model',
       uri: '/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
       value: {
-        $id: 'http://localhost:3000/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
+        $id: 'http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
         firstName: 'string',
         lastName: 'string',
         email: 'string',
@@ -350,7 +365,7 @@ const createValidChunk = nock('http://metadata.openintegrationhub.com/api/v1/dom
       description: 'Person Model',
       uri: '/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
       value: {
-        $id: 'http://localhost:3000/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
+        $id: 'http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
         firstName: 'string',
         lastName: 'string',
         email: 'string',
@@ -386,6 +401,7 @@ module.exports = {
   chunk10,
   chunk11,
   chunk12,
+  chunk13,
   createInvalidChunk,
   createValidChunk,
 };
