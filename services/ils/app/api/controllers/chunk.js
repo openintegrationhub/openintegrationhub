@@ -14,6 +14,17 @@ const router = express.Router();
 const Ajv = require('ajv');
 const chunkSchema = require('../../models/schemas/chunk.json');
 
+// Logger
+const log = require('../../config/logger');
+
+const { validateSchema, validateSplitSchema } = require('../utils/validator');
+const {
+  createChunk, fetchSchema, splitChunk, updateChunk, loadExternalSchema,
+} = require('../utils/helpers');
+
+// Models
+const Chunk = require('../../models/chunk');
+
 const ajv = new Ajv({
   allErrors: true,
   jsonPointers: true,
@@ -22,19 +33,10 @@ const ajv = new Ajv({
   schemaId: 'auto',
   missingRefs: true,
   meta: true,
-  validateSchema: true,
+  validateSchema: true
 });
+
 const chunkValidator = ajv.compile(chunkSchema);
-const { validateSchema, validateSplitSchema } = require('../utils/validator');
-const {
-  createChunk, fetchSchema, splitChunk, updateChunk,
-} = require('../utils/helpers');
-
-// Models
-const Chunk = require('../../models/chunk');
-
-// Logger
-const log = require('../../config/logger');
 
 /**
  * @desc Get chunks by ilaId
@@ -159,7 +161,6 @@ router.post('/', jsonParser, async (req, res) => {
         },
       );
     }
-
     try {
       payloadValidator = ajv.compile(domainSchema.body.data.value);
     } catch (e) {
@@ -178,17 +179,8 @@ router.post('/', jsonParser, async (req, res) => {
     } catch (e) {
       log.error('ERROR: ', e);
       return res.status(400).send(e);
-    }  }
-
-  // const valid = chunkValidator(req.body);
-  // if (!valid) {
-  //   return res.status(400).send(
-  //     {
-  //       errors:
-  //        [{ message: 'Input does not match schema!', code: 400 }],
-  //     },
-  //   );
-  // }
+    }
+  }
 
   const validPayload = Object.prototype.hasOwnProperty.call(payload, req.body.cid);
 
@@ -240,7 +232,7 @@ router.post('/', jsonParser, async (req, res) => {
  *
  * @route   POST /chunks/validate
  * @access  Private
- * @return {Object} -
+ * @return {Object} - object containing valid property and meta data
  */
 router.post('/validate', jsonParser, async (req, res) => {
   const { payload, token } = req.body;
@@ -305,7 +297,6 @@ router.post('/validate', jsonParser, async (req, res) => {
       },
     );
   }
-
   let payloadValidator;
 
   try {
@@ -316,7 +307,7 @@ router.post('/validate', jsonParser, async (req, res) => {
     log.error('ERROR: ', e);
     return res.status(400).send(e);
   }
-  
+
   const validChunk = payloadValidator(payload);
   res.status(200).send({ data: { valid: validChunk }, meta: {} });
 });
