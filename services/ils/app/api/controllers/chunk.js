@@ -33,7 +33,7 @@ const ajv = new Ajv({
   schemaId: 'auto',
   missingRefs: true,
   meta: true,
-  validateSchema: true
+  validateSchema: true,
 });
 
 const chunkValidator = ajv.compile(chunkSchema);
