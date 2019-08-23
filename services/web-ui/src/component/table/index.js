@@ -42,14 +42,45 @@ const useStyles = () => ({
     },
 });
 class OihTable extends React.Component {
-    state = {
-        order: 'asc',
-        orderBy: 'username',
-        selected: [],
-        page: 0,
-        rowsPerPage: 10,
-        confirmOpen: false,
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            order: 'asc',
+            orderBy: 'username',
+            selected: [],
+            page: 0,
+            rowsPerPage: 10,
+            confirmOpen: false,
+        };
+    }
+
+    componentDidUpdate(prefProps) {
+        if (prefProps.data !== this.props.data) {
+            if (this.props.data && this.props.type === 'user') {
+                this.setUserData();
+            } else {
+                this.setState({
+                    data: this.props.data,
+                });
+            }
+        }
+    }
+
+    setUserData() {
+        const tempArr = JSON.parse(JSON.stringify(this.props.data));
+        for (const user of tempArr) {
+            if (user.roles && user.roles.length) {
+                const test = user.roles.map(userRole => this.props.roles.all.find(role => role._id === userRole).name);
+                user.roles = test.map((role, index) => <span
+                    key={`role-${index}`}
+                    style={{ paddingRight: '15px' }}>
+                    {role}</span>);
+            }
+        }
+        this.setState({
+            data: tempArr,
+        });
+    }
 
     desc = (a, b) => {
         if (b[this.state.orderBy] < a[this.state.orderBy]) {
@@ -147,7 +178,7 @@ class OihTable extends React.Component {
         } = this.state;
         const {
             data,
-        } = this.props;
+        } = this.state;
         if (data) {
             emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
             return (
@@ -231,6 +262,7 @@ const mapStateToProps = state => ({
     users: state.users,
     tenants: state.tenants,
     auth: state.auth,
+    roles: state.roles,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     deleteUser,
