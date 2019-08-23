@@ -57,7 +57,6 @@ export function buildTree(nodes, edges) {
             children: [],
         });
     }
-    console.log(temp[0]);
     return {
         ...temp[0],
     };

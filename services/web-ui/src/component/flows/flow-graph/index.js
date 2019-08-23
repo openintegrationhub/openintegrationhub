@@ -33,6 +33,10 @@ class FlowGraph extends React.Component {
         };
     }
 
+    componentDidMount() {
+        this.getTree(buildTree(this.props.data.nodes, this.props.data.links));
+    }
+
     getTree(treeData) {
         // declares a tree layout and assigns the size
         const margin = {
@@ -94,39 +98,10 @@ class FlowGraph extends React.Component {
         const {
             height, width,
         } = this.props;
-        const { data } = this.props;
-        const { nodes, links } = data;
         return (
             <div>
-                {/* <svg width={width} height={height} className={className}>
-                    {links.map(({ source, target }, index) => (
-                        <line
-                            className='link'
-                            key={`link-${index}`}
-                            strokeWidth={2}
-                            stroke='black'
-                            x1={source.x} x2={target.x} y1={source.y} y2={target.y} />
-                    ))}
-                    {nodes.map((node, index) => {
-                        const transform = `translate(${node.x},${node.y})`;
-                        return <g
-                            className='node'
-                            key={`node-${index}`}
-                            transform={transform}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => { this.setState({ openInfo: !this.state.openInfo, modalData: node }); }} >
-                            <circle
-                                r={5}/>
-                            <text x={25} dy='.35em'>{node.id}</text>
-                        </g>;
-                    })}
-
-                </svg> */}
                 <div id={`tree-${this.props.id}`} width={width} height={height}>
 
-                    {
-                        this.getTree(buildTree(nodes, links))
-                    }
                 </div>
 
                 <Modal
