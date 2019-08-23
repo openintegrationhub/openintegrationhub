@@ -1,24 +1,25 @@
-import { generateTree } from './resolveTree';
+import { buildTree } from './tree';
 
-const edges = [
+const _edges = [
     {
-        source: 'step1',
-        target: 'step2',
+        source: 'step_1',
+        target: 'step_2',
     },
     {
-        source: 'step2',
-        target: 'step3',
+        source: 'step_2',
+        target: 'step_3',
     },
     {
-        source: 'step3',
-        target: 'step4',
+        source: 'step_3',
+        target: 'step_4',
     },
     {
-        source: 'step3',
-        target: 'step5',
+        source: 'step_3',
+        target: 'step_5',
     },
+
 ];
-const nodes = [
+const _nodes = [
     {
         id: 'step_1',
         componentId: '5d1b665fa422ca001bda5686',
@@ -64,7 +65,18 @@ const nodes = [
         },
     },
     {
-        id: 'step_1',
+        id: 'step_5',
+        componentId: '5d1b665fa422ca001bda5686',
+        name: '5snazzy adapter for oih',
+        function: '5getPersonsPolling',
+        description: '5New description in progress',
+        fields: {
+            username: '5philipp.hoegner@cloudecosystem.org',
+            password: 'testoih123',
+        },
+    },
+    {
+        id: 'step_6',
         componentId: '5d1b665fa422ca001bda5686',
         name: '5snazzy adapter for oih',
         function: '5getPersonsPolling',
@@ -77,20 +89,20 @@ const nodes = [
 ];
 
 const compare = {
-    name: 'step1',
+    id: 'step_1',
     children: [
         {
-            name: 'step2',
+            id: 'step_2',
             children: [
                 {
-                    name: 'step3',
+                    id: 'step_3',
                     children: [
                         {
-                            name: 'step4',
+                            id: 'step_4',
                             children: [],
                         },
                         {
-                            name: 'step5',
+                            id: 'step_5',
                             children: [],
                         },
                     ],
@@ -101,8 +113,7 @@ const compare = {
 };
 
 describe('Check Utils', () => {
-    test('try to generate Tree', async () => {
-        const result = generateTree(nodes, edges);
-        expect(result).toBe(compare);
+    it('converts a graph data to a recursive tree object', async () => {
+        expect(JSON.stringify(buildTree(_nodes, _edges))).toEqual(JSON.stringify(compare));
     });
 });

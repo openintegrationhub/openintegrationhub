@@ -36,3 +36,5 @@ rules:
   jsx-a11y/no-autofocus: 0
   jsx-a11y/label-has-associated-control: 1
   react/no-deprecated: 1
+  no-restricted-syntax: 0
+  no-plusplus: 0

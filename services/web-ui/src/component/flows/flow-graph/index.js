@@ -9,7 +9,7 @@ import {
 import Modal from '@material-ui/core/Modal';
 
 // utils
-import { generateTree } from '../../../utils/resolveTree';
+import { buildTree } from '../../../utils/tree';
 
 
 /**
@@ -119,9 +119,9 @@ class FlowGraph extends React.Component {
                     })}
 
                 </svg>
-                {
-                    generateTree(this.props.data.nodes, this.props.data.links)
-                }
+                {/* {
+                    buildTree(this.props.data.nodes, this.props.data.links)
+                } */}
                 <Modal
                     open={this.state.openInfo}
                     onClose={ () => {
