@@ -6,11 +6,11 @@
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
     "compression": "1.7.4",
+    "d3": "^5.11.0",
     "dotenv": "8.0.0",
     "express": "4.17.0",
     "moment": "^2.24.0",
-    "react-json-editor-ajrm": "^2.5.9",
-    "react-vis-force": "^0.3.1"
+    "react-json-editor-ajrm": "^2.5.9"
   },
   "scripts": {
     "start": "react-scripts start",

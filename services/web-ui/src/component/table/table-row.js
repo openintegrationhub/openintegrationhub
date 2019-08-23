@@ -24,7 +24,7 @@ const TableRowData = (props) => {
                 padding="none">
                 {props.data.username}
             </TableCell>
-            <TableCell align="right">{props.data.role}</TableCell>
+            <TableCell align="right">{props.data.roles}</TableCell>
             <TableCell align="right">{props.data.createdAt}</TableCell>
             <TableCell align="right">{props.data.updatedAt}</TableCell>
             <TableCell align="right">{props.data.status}</TableCell>

@@ -244,12 +244,14 @@ class EditUser extends React.Component {
                                     type='button'
                                     variant="contained"
                                     onClick={ () => {
-                                        const tempArr = [...this.state.roles];
-                                        tempArr.push(this.state.selectValue);
-                                        this.setState({
-                                            roles: tempArr,
-                                            selectValue: '',
-                                        });
+                                        if (this.state.selectValue) {
+                                            const tempArr = [...this.state.roles];
+                                            tempArr.push(this.state.selectValue);
+                                            this.setState({
+                                                roles: tempArr,
+                                                selectValue: '',
+                                            });
+                                        }
                                     }}>
                                     <Add/>
                                 </Button>
