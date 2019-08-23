@@ -23,7 +23,7 @@ import {
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 // Diagram
-import Graph from '../flow-graph';
+import FlowGraph from '../flow-graph';
 
 // Actions
 import {
@@ -172,10 +172,11 @@ class FlowTeaser extends React.PureComponent {
                             </Grid> */}
 
                             <Grid item xs={12}>
-                                <Graph
+                                <FlowGraph
                                     width={1080}
                                     height={300}
                                     name={this.props.data.name}
+                                    id={this.props.data.id}
                                     data={{
                                         nodes: this.props.data.graph.nodes,
                                         links: this.props.data.graph.edges,

@@ -25,6 +25,7 @@ export function buildTree(nodes, edges) {
             source = findNode(nodes, sourceId);
             source = {
                 id: source.id,
+                name: source.id,
                 children: [],
             };
 
@@ -35,6 +36,7 @@ export function buildTree(nodes, edges) {
             target = findNode(nodes, targetId);
             target = {
                 id: target.id,
+                name: target.id,
                 children: [],
             };
         }
@@ -48,6 +50,14 @@ export function buildTree(nodes, edges) {
             }
         }
     }
+    if (!temp[0]) {
+        temp.push({
+            id: nodes[0].id,
+            name: nodes[0].id,
+            children: [],
+        });
+    }
+    console.log(temp[0]);
     return {
         ...temp[0],
     };
