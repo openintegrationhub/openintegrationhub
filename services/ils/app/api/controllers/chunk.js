@@ -160,7 +160,12 @@ router.post('/', jsonParser, async (req, res) => {
       );
     }
 
-    payloadValidator = ajv.compile(domainSchema.body.data.value);
+    try {
+      payloadValidator = ajv.compile(domainSchema.body.data.value);
+    } catch (e) {
+      log.error('ERROR: ', e);
+      return res.status(400).send(e);
+    }
   }
 
   if (!domainId && !schemaUri && invalidInputSchema) {
@@ -168,8 +173,12 @@ router.post('/', jsonParser, async (req, res) => {
   }
 
   if (schema) {
-    payloadValidator = ajv.compile(schema);
-  }
+    try {
+      payloadValidator = ajv.compile(schema);
+    } catch (e) {
+      log.error('ERROR: ', e);
+      return res.status(400).send(e);
+    }  }
 
   // const valid = chunkValidator(req.body);
   // if (!valid) {
@@ -297,7 +306,17 @@ router.post('/validate', jsonParser, async (req, res) => {
     );
   }
 
-  const payloadValidator = ajv.compile(domainSchema.body.data.value);
+  let payloadValidator;
+
+  try {
+    const obj = domainSchema.body.data.value;
+    // payloadValidator = ajv.compile(domainSchema.body.data.value);
+    payloadValidator = await ajv.compileAsync(obj);
+  } catch (e) {
+    log.error('ERROR: ', e);
+    return res.status(400).send(e);
+  }
+  
   const validChunk = payloadValidator(payload);
   res.status(200).send({ data: { valid: validChunk }, meta: {} });
 });
