@@ -14,6 +14,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Modal from '@material-ui/core/Modal';
+import {
+    AddBox,
+} from '@material-ui/icons';
 
 
 // Componente
@@ -133,6 +136,16 @@ class ComponentTeaser extends React.PureComponent {
                     >
 
                         <Grid container>
+                            {
+                                this.props.data.logo
+                                    ? <Grid item xs={1}>
+                                        <img src={this.props.data.logo} alt="Smiley face" height="42" width="42"/>
+                                    </Grid>
+
+                                    : <Grid item xs={1}>
+                                        <AddBox style={{ height: '42', width: '42' }}/>
+                                    </Grid>
+                            }
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid>
                         </Grid>
