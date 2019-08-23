@@ -14,8 +14,16 @@ const router = express.Router();
 const Ajv = require('ajv');
 const chunkSchema = require('../../models/schemas/chunk.json');
 
-const ajv = new Ajv({ allErrors: true, jsonPointers: true });
-
+const ajv = new Ajv({
+  allErrors: true,
+  jsonPointers: true,
+  extendRefs: true,
+  loadSchema: loadExternalSchema,
+  schemaId: 'auto',
+  missingRefs: true,
+  meta: true,
+  validateSchema: true,
+});
 const chunkValidator = ajv.compile(chunkSchema);
 const { validateSchema, validateSplitSchema } = require('../utils/validator');
 const {
