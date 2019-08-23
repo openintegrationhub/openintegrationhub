@@ -90,19 +90,24 @@ const _nodes = [
 
 const compare = {
     id: 'step_1',
+    name: 'step_1',
     children: [
         {
             id: 'step_2',
+            name: 'step_2',
             children: [
                 {
                     id: 'step_3',
+                    name: 'step_3',
                     children: [
                         {
                             id: 'step_4',
+                            name: 'step_4',
                             children: [],
                         },
                         {
                             id: 'step_5',
+                            name: 'step_5',
                             children: [],
                         },
                     ],
