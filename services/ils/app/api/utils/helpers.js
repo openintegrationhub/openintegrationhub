@@ -207,6 +207,22 @@ function loadExternalSchema(uri) {
   });
 }
 
+/**
+ * @desc ilaId name validation
+ *
+ * @param {String} ilaId - external schema uri
+ * @return {Boolean} - depending on regex result
+ */
+function ilaIdValidator(ilaId) {
+  const reg = /[' " / ~ > < & # \\ $ * ! ? + @ % ^ ( ),]/g;
+  return reg.test(ilaId);
+}
+
 module.exports = {
-  createChunk, updateChunk, splitChunk, fetchSchema, loadExternalSchema,
+  createChunk,
+  updateChunk,
+  splitChunk,
+  fetchSchema,
+  loadExternalSchema,
+  ilaIdValidator,
 };
