@@ -319,6 +319,21 @@ const chunk13 = {
   },
 };
 
+const chunk14 = {
+  ilaId: '/987asd@qwe!',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
+  cid: 'email',
+  def: {
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
+  },
+  payload: {
+    lastName: 'Hobbs',
+    firstName: 'Jack',
+    email: 'hobbs@mail.com',
+  },
+};
+
 const createInvalidChunk = nock('http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address')
   .get('')
   .reply(200, {
@@ -402,6 +417,7 @@ module.exports = {
   chunk11,
   chunk12,
   chunk13,
+  chunk14,
   createInvalidChunk,
   createValidChunk,
 };
