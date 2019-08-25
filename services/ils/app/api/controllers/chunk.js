@@ -24,7 +24,7 @@ const {
   splitChunk,
   updateChunk,
   loadExternalSchema,
-  
+  ilaIdValidator,
 } = require('../utils/helpers');
 
 // Models
@@ -117,6 +117,17 @@ router.post('/', jsonParser, async (req, res) => {
   } = req.body;
   const { domainId, schema, schemaUri } = req.body.def;
   const invalidInputSchema = validateSchema(schema);
+
+  const validIlaId = await ilaIdValidator(ilaId);
+
+  if (validIlaId) {
+    return res.status(400).send(
+      {
+        errors:
+        [{ message: 'ilaId must not contain special characters!', code: 400 }],
+      },
+    );
+  }
 
   let payloadValidator;
 
@@ -242,6 +253,17 @@ router.post('/', jsonParser, async (req, res) => {
 router.post('/validate', jsonParser, async (req, res) => {
   const { payload, token, ilaId } = req.body;
   const valid = chunkValidator(req.body);
+
+  const validIlaId = await ilaIdValidator(ilaId);
+
+  if (validIlaId) {
+    return res.status(400).send(
+      {
+        errors:
+        [{ message: 'ilaId must not contain special characters!', code: 400 }],
+      },
+    );
+  }
 
   if (!token) {
     return res.status(401).send(
