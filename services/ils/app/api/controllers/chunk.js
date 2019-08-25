@@ -19,7 +19,12 @@ const log = require('../../config/logger');
 
 const { validateSchema, validateSplitSchema } = require('../utils/validator');
 const {
-  createChunk, fetchSchema, splitChunk, updateChunk, loadExternalSchema,
+  createChunk,
+  fetchSchema,
+  splitChunk,
+  updateChunk,
+  loadExternalSchema,
+  
 } = require('../utils/helpers');
 
 // Models
@@ -162,7 +167,7 @@ router.post('/', jsonParser, async (req, res) => {
       );
     }
     try {
-      payloadValidator = ajv.compile(domainSchema.body.data.value);
+      payloadValidator = await ajv.compileAsync(domainSchema.body.data.value);
     } catch (e) {
       log.error('ERROR: ', e);
       return res.status(400).send(e);
@@ -175,7 +180,7 @@ router.post('/', jsonParser, async (req, res) => {
 
   if (schema) {
     try {
-      payloadValidator = ajv.compile(schema);
+      payloadValidator = await ajv.compileAsync(schema);
     } catch (e) {
       log.error('ERROR: ', e);
       return res.status(400).send(e);
@@ -235,7 +240,7 @@ router.post('/', jsonParser, async (req, res) => {
  * @return {Object} - object containing valid property and meta data
  */
 router.post('/validate', jsonParser, async (req, res) => {
-  const { payload, token } = req.body;
+  const { payload, token, ilaId } = req.body;
   const valid = chunkValidator(req.body);
 
   if (!token) {
