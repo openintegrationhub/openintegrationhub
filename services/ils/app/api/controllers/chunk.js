@@ -181,7 +181,12 @@ router.post('/', jsonParser, async (req, res) => {
       payloadValidator = await ajv.compileAsync(domainSchema.body.data.value);
     } catch (e) {
       log.error('ERROR: ', e);
-      return res.status(400).send(e);
+      return res.status(400).send(
+        {
+          errors:
+            [{ message: 'Schema is invalid!', code: 400 }],
+        },
+      );
     }
   }
 
@@ -194,7 +199,12 @@ router.post('/', jsonParser, async (req, res) => {
       payloadValidator = await ajv.compileAsync(schema);
     } catch (e) {
       log.error('ERROR: ', e);
-      return res.status(400).send(e);
+      return res.status(400).send(
+        {
+          errors:
+            [{ message: 'Schema is invalid!', code: 400 }],
+        },
+      );
     }
   }
 
@@ -332,7 +342,12 @@ router.post('/validate', jsonParser, async (req, res) => {
     payloadValidator = await ajv.compileAsync(obj);
   } catch (e) {
     log.error('ERROR: ', e);
-    return res.status(400).send(e);
+    return res.status(400).send(
+      {
+        errors:
+          [{ message: 'Schema is invalid!', code: 400 }],
+      },
+    );
   }
 
   const validChunk = payloadValidator(payload);
