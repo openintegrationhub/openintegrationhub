@@ -6,7 +6,7 @@ const mockgoose = new Mockgoose(mongoose);
 const request = require('supertest')('http://localhost:3099');
 
 const CONSTANTS = require('./../src/constants');
-const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../src/access-control/permissions');
+const { PERMISSIONS, RESTRICTED_PERMISSIONS, DEFAULT_ROLES } = require('./../src/access-control/permissions');
 
 let conf = null;
 
@@ -66,14 +66,10 @@ describe('Role Routes', () => {
                 'lastname': 'blubb',
                 'status': 'ACTIVE',
                 'password': testUser.password,
-                'role': CONSTANTS.ROLES.USER,
-                memberships: [{
-                    tenant: TenantID,
-                    permissions: [
-                        PERMISSIONS['tenant.all'],
-                    ],
-                    active: true,
-                }],
+                tenant: TenantID,
+                permissions: [
+                    PERMISSIONS['tenant.all'],
+                ],
             };
             const userResponse = await request.post('/api/v1/users')
                 .send(tenantAdminPayload)
@@ -91,13 +87,13 @@ describe('Role Routes', () => {
                 .expect(200);
             tenantAdminToken = `Bearer ${loginResponse.body.token}`;
 
-            const contextResponse = await request.post('/context')
-                .send({
-                    tenant: TenantID,
-                })
-                .set('Authorization', tenantAdminToken)
-                .set('Accept', /application\/json/)
-                .expect(200);
+            // const contextResponse = await request.post('/context')
+            //     .send({
+            //         tenant: TenantID,
+            //     })
+            //     .set('Authorization', tenantAdminToken)
+            //     .set('Accept', /application\/json/)
+            //     .expect(200);
 
             // Fetch new token
             // tokenUser = `Bearer ${contextResponse.body.token}`;
@@ -111,52 +107,26 @@ describe('Role Routes', () => {
         app.stop(); 
     });
 
-    test('get current context is successful', async () => {
-        const response = await request.get('/context')
-            .set('Accept', /application\/json/)
-            .set('Authorization', tenantAdminToken)
-            .expect(200);
-        expect(response.body.currentContext.tenant).toEqual(TenantID);
-    });
-
-    test('fails setting current context if user does not have corresponding membership', async () => {
-
-        const tenantPayload = {
-            'name': 'testTenant34',
-            'confirmed': true,
-            'status': CONSTANTS.STATUS.ACTIVE,
-        };
-        const tenantResponse = await request.post('/api/v1/tenants')
-            .send(tenantPayload)
-            .set('Authorization', tokenAdmin)
-            .set('Accept', /application\/json/)
-            .expect(200);
-        const newTenantID = tenantResponse.body.id;
-
-        await request.post('/context')
-            .send({
-                tenant: newTenantID,
-            })
-            .set('Authorization', tenantAdminToken)
-            .set('Accept', /application\/json/)
-            .expect(403);
-    });
-
     test('get all roles is successful', async () => {
         const response = await request.get('/api/v1/roles')
             .set('Accept', /application\/json/)
             .set('Authorization', tenantAdminToken)
             .expect(200);
-        expect(response.body.length).toBe(0);
+        expect(response.body.length).toBe(Object.entries(DEFAULT_ROLES).length);
     });
 
     test('role is successfully created and assigned to user', async () => {
         const role = {
-            name: 'CustomRole',
+            name: 'CustomRole0',
             // TODO: should this really be a reference? It may cause a lot of DB lookups
             permissions: [PERMISSIONS['tenant.roles.read']],
-            description: 'Lorem ipsum',
+            description: 'Lorem ipsum 0',
         };
+
+        const responseRoles1 = await request.get('/api/v1/roles')
+            .set('Accept', /application\/json/)
+            .set('Authorization', tenantAdminToken)
+            .expect(200);
 
         await request.post('/api/v1/roles')
             .send(role)
@@ -164,11 +134,11 @@ describe('Role Routes', () => {
             .set('Accept', /application\/json/)
             .expect(200);
 
-        const responseRoles = await request.get('/api/v1/roles')
+        const responseRoles2 = await request.get('/api/v1/roles')
             .set('Accept', /application\/json/)
             .set('Authorization', tenantAdminToken)
             .expect(200);
-        expect(responseRoles.body.length).toBe(1);
+        expect(responseRoles2.body.length).toBe(responseRoles1.body.length + 1);
 
     });
 
@@ -180,7 +150,8 @@ describe('Role Routes', () => {
             'lastname': 'user',
             'status': 'ACTIVE',
             'password': 'usertest',
-            'role': CONSTANTS.ROLES.USER,
+            tenant: TenantID,
+            permissions: [],
         };
         /* Create new user and a new service account */
 
@@ -213,7 +184,7 @@ describe('Role Routes', () => {
 
     });
 
-    test('User context permissions are extended with role permissions', async () => {
+    test('User permissions are extended with role permissions', async () => {
 
         const testUserData = {
             'username': 'testuser60@example.com',
@@ -221,7 +192,8 @@ describe('Role Routes', () => {
             'lastname': 'user',
             'status': 'ACTIVE',
             'password': 'usertest',
-            'role': CONSTANTS.ROLES.USER,
+            tenant: TenantID,
+            permissions: [],
         };
         /* Create new user and a new service account */
 
@@ -255,22 +227,13 @@ describe('Role Routes', () => {
             .expect(200);
 
         const jsonPayload = {
-            user: userId,
             roles: [roleResp.body._id],
             permissions: [PERMISSIONS['tenant.roles.read']],
         };
 
-        await request.post(`/api/v1/tenants/${TenantID}/users`)
+        await request.patch(`/api/v1/users/${userId}`)
             .send(jsonPayload)
             .set('Authorization', tenantAdminToken)
-            .set('Accept', /application\/json/)
-            .expect(200);
-
-        await request.post('/context')
-            .send({
-                tenant: TenantID,
-            })
-            .set('Authorization', userToken)
             .set('Accept', /application\/json/)
             .expect(200);
 
@@ -460,7 +423,8 @@ describe('Role Routes', () => {
             'lastname': 'user',
             'status': 'ACTIVE',
             'password': 'usertest',
-            'role': CONSTANTS.ROLES.USER,
+            tenant: TenantID,
+            permissions: [],
         };
         /* Create new user and a new service account */
 
@@ -493,22 +457,13 @@ describe('Role Routes', () => {
             .expect(200);
 
         const jsonPayload = {
-            user: userId,
             roles: [roleResp.body._id],
             permissions: [PERMISSIONS['tenant.roles.read']],
         };
 
-        await request.post(`/api/v1/tenants/${TenantID}/users`)
+        await request.patch(`/api/v1/users/${userId}`)
             .send(jsonPayload)
             .set('Authorization', tenantAdminToken)
-            .set('Accept', /application\/json/)
-            .expect(200);
-
-        await request.post('/context')
-            .send({
-                tenant: TenantID,
-            })
-            .set('Authorization', userToken)
             .set('Accept', /application\/json/)
             .expect(200);
 
@@ -531,8 +486,7 @@ describe('Role Routes', () => {
             .set('Authorization', userToken)
             .expect(200);
         expect(userProfileResponse.body).toBeDefined();
-        expect(userProfileResponse.body.memberships[0].roles).toBeDefined();
-        console.log('USER MEMBERSHIP', userProfileResponse.body.memberships);
+        expect(userProfileResponse.body.roles).toBeDefined();
 
         // Tenant Admin deletes role. All users with this role should now loose the role
         await request.delete(`/api/v1/roles/${roleResp.body._id}`)
@@ -540,13 +494,17 @@ describe('Role Routes', () => {
             .set('Accept', /application\/json/)
             .expect(200);
 
+        await request.get(`/api/v1/tenants/${TenantID}/profile`)
+            .set('Accept', /application\/json/)
+            .set('Authorization', userToken)
+            .expect(403);
+
         userProfileResponse = await request.get('/api/v1/users/me')
             .set('Accept', /application\/json/)
             .set('Authorization', userToken)
             .expect(200);
         expect(userProfileResponse.body).toBeDefined();
-        expect(userProfileResponse.body.memberships[0].roles.length).toBe(0);
-        console.log('USER MEMBERSHIP #2', userProfileResponse.body.memberships);
+        expect(userProfileResponse.body.roles.length).toBe(0);
 
         await request.get(`/api/v1/roles/${roleResp.body._id}`)
             .set('Authorization', tenantAdminToken)
@@ -578,14 +536,10 @@ describe('Role Routes', () => {
             'lastname': 'blubb',
             'status': 'ACTIVE',
             'password': testUser.password,
-            'role': CONSTANTS.ROLES.USER,
-            memberships: [{
-                tenant: newTenantId,
-                permissions: [
-                    PERMISSIONS['tenant.all'],
-                ],
-                active: true,
-            }],
+            tenant: newTenantId,
+            permissions: [
+                PERMISSIONS['tenant.all'],
+            ],
         };
         const userResponse = await request.post('/api/v1/users')
             .send(tenantAdminPayload2)
@@ -602,16 +556,6 @@ describe('Role Routes', () => {
             .set('Accept', /application\/json/)
             .expect(200);
         const tenantAdminToken2 = `Bearer ${loginResponse.body.token}`;
-
-        const contextResponse = await request.post('/context')
-            .send({
-                tenant: newTenantId,
-            })
-            .set('Authorization', tenantAdminToken2)
-            .set('Accept', /application\/json/)
-            .expect(200);
-
-        /* ----------*/
 
         const login2 = await request.post('/login')
             .send({
@@ -659,6 +603,81 @@ describe('Role Routes', () => {
             .set('Authorization', tenantAdmin2Token)
             .set('Accept', /application\/json/)
             .expect(200);
+
+    });
+
+    test('tenant admin can only assign own roles and common permissions to users', async () => {
+
+        const tenantPayload = {
+            'name': 'testTenant4',
+            'confirmed': true,
+            'status': CONSTANTS.STATUS.ACTIVE,
+        };
+        const tenantResponse = await request.post('/api/v1/tenants')
+            .send(tenantPayload)
+            .set('Authorization', tokenAdmin)
+            .set('Accept', /application\/json/)
+            .expect(200);
+        const newTenantId = tenantResponse.body.id;
+
+        const tenantAdminPayload = {
+            'username': 'testuserTenant4@basaas.de',
+            'firstname': 'blubb',
+            'lastname': 'blubb',
+            'status': 'ACTIVE',
+            'password': testUser.password,
+            tenant: newTenantId,
+            permissions: [
+                PERMISSIONS['tenant.all'],
+            ],
+        };
+
+        const dummyUser = {
+            'username': 'testuserTenant4__normaluser@basaas.de',
+            'firstname': 'blubb',
+            'lastname': 'blubb',
+            'status': 'ACTIVE',
+            'password': testUser.password,
+            tenant: newTenantId,
+        };
+
+        await request.post('/api/v1/users')
+            .send(tenantAdminPayload)
+            .set('Authorization', tokenAdmin)
+            .set('Accept', /application\/json/)
+            .expect(200);
+
+        const loginResponse = await request.post('/login')
+            .send({
+                username: tenantAdminPayload.username,
+                password: tenantAdminPayload.password,
+            })
+            .set('Accept', /application\/json/)
+            .expect(200);
+        const tenantAdminToken = `Bearer ${loginResponse.body.token}`;
+
+        await request.post('/api/v1/users')
+            .send(dummyUser)
+            .set('Authorization', tenantAdminToken)
+            .set('Accept', /application\/json/)
+            .expect(200);
+
+        const restrictedRole = (await request.get('/api/v1/roles')
+            .set('Authorization', tokenAdmin)
+            .set('Accept', /application\/json/)
+            .expect(200)).body.filter(role => role.permissions.indexOf('all') >= 0);
+
+        await request.post('/api/v1/users')
+            .send(Object.assign({}, dummyUser, { roles: [restrictedRole._id] }))
+            .set('Authorization', tenantAdminToken)
+            .set('Accept', /application\/json/)
+            .expect(403);
+
+        await request.post('/api/v1/users')
+            .send(Object.assign({}, dummyUser, { permissions: [RESTRICTED_PERMISSIONS.all] }))
+            .set('Authorization', tenantAdminToken)
+            .set('Accept', /application\/json/)
+            .expect(403);
 
     });
 

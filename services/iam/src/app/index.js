@@ -85,8 +85,8 @@ class App {
         }
 
         this.setupRoutes();
-        await App.createMasterAccount();
         await App.setupDefaultRoles();
+        await App.createMasterAccount();
 
     }
 
@@ -175,6 +175,7 @@ class App {
         apiBase.use('/tenants', require('./../routes/tenants')); // eslint-disable-line global-require
         apiBase.use('/tokens', require('./../routes/tokens')); // eslint-disable-line global-require
         apiBase.use('/roles', require('./../routes/roles')); // eslint-disable-line global-require
+        apiBase.use('/permissions', require('./../routes/permissions')); // eslint-disable-line global-require
 
         // TODO: if the client is not a browser, no origin or host will be provided
         this.app.use(`/${conf.general.apiBase}`, cors(this.corsOptions), apiBase);
@@ -194,28 +195,21 @@ class App {
     }
     
     static async createMasterAccount() {   
-        if (!await Account.countDocuments()) {                       
+        if (!await Account.countDocuments()) {
+            const roles = await Roles.find({ isGlobal: true }).lean();
             const admin = new Account({
                 username: conf.accounts.admin.username,
                 firstname: conf.accounts.admin.firstname,
                 lastname: conf.accounts.admin.lastname,
-                role: CONSTANTS.ROLES.ADMIN,
+                // accountType: CONSTANTS.ROLES.ADMIN,
+                roles: [{
+                    _id: roles.find(role => role.name === CONSTANTS.ROLES.ADMIN)._id,
+                }],
                 status: CONSTANTS.STATUS.ACTIVE,
             });
 
             await admin.setPassword(conf.accounts.admin.password);
             await admin.save();
-
-            const serviceaccount = new Account({
-                username: conf.accounts.serviceAccount.username,
-                firstname: conf.accounts.serviceAccount.firstname,
-                lastname: conf.accounts.serviceAccount.lastname,
-                role: CONSTANTS.ROLES.SERVICE_ACCOUNT,
-                status: CONSTANTS.STATUS.ACTIVE,
-            });
-            await serviceaccount.setPassword(conf.accounts.serviceAccount.password);
-            await serviceaccount.save();
-            log.debug('Initial db setup done');
         } 
     }
 

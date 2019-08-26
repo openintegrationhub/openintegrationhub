@@ -14,33 +14,45 @@ const logger = Logger.getLogger(`${CONF.general.loggingNameSpace}/role`, {
     level: 'debug',
 });
 
+router.use(auth.hasTenantPermissions([PERMISSIONS['tenant.roles.read']]));
+
 /**
  * Get all roles
  */
 router.get('/', async (req, res, next) => {
 
-    let query = {
+    const defaultRoles = {
         isGlobal: true,
     };
-    if (req.user.currentContext && req.user.currentContext.tenant) {
+    let query = {
+        isGlobal: false,
+    };
+
+    if (!req.user.isAdmin) {
+        defaultRoles.type = CONSTANTS.ROLE_TYPE.TENANT;
+    }
+
+    if (req.user.tenant) {
         query = {
-            tenant: req.user.currentContext.tenant,
+            tenant: req.user.tenant,
         };
     }
 
     try {
+        const standardRoles = await RolesDAO.find(defaultRoles);
         const docs = await RolesDAO.find(query);
-        return res.send(docs);
+        return res.send(standardRoles.concat(docs));
     } catch (err) {
         logger.error(err);
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
     }
 });
 
-router.use(auth.hasTenantPermissions([PERMISSIONS['tenant.roles.read']]));
-router.use(auth.hasContext);
-
 const userIsOwnerOfResource = async (req, res, next) => {
+
+    if (req.user.isAdmin) {
+        return next();
+    }
 
     const doc = await RolesDAO.findOne({
         _id: req.params.id,
@@ -48,7 +60,7 @@ const userIsOwnerOfResource = async (req, res, next) => {
     });
 
     if (doc) {
-        if (doc.tenant.toString() === req.user.currentContext.tenant.toString()) {
+        if (doc.tenant.toString() === req.user.tenant.toString()) {
             return next();
         } else {
             return next({ status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN });
@@ -66,7 +78,7 @@ const userIsOwnerOfResource = async (req, res, next) => {
 router.get('/:id', userIsOwnerOfResource, async (req, res, next) => {
     try {
         const docs = await RolesDAO.findOne({
-            tenant: req.user.currentContext.tenant,
+            tenant: req.user.tenant,
             _id: req.params.id,
         });
         if (docs) {
@@ -89,13 +101,19 @@ router.post('/', auth.hasTenantPermissions([PERMISSIONS['tenant.roles.create']])
         description = '',
         permissions = [],
     } = req.body;
+    let { isGlobal } = req.body;
 
-    if (!name) {
+    if (!name || typeof permissions !== 'object') {
         return next({ status: 400, message: CONSTANTS.ERROR_CODES.INPUT_INVALID });
+    }
+
+    if (isGlobal && !req.user.isAdmin) {
+        isGlobal = false;
     }
 
     /* eslint-disable-next-line no-restricted-syntax  */
     if (!permissionsAreCommon(permissions)) {
+        // TODO this should probably generate an audit log event
         logger.warn(`An attempt to assign a restricted permission to a role by user ${req.user.userid}`);
         return next({
             status: 403, message: CONSTANTS.ERROR_CODES.FORBIDDEN, details: 'Restricted permission used',
@@ -113,7 +131,8 @@ router.post('/', auth.hasTenantPermissions([PERMISSIONS['tenant.roles.create']])
             name,
             permissions,
             description,
-            tenant: req.user.currentContext.tenant,
+            isGlobal,
+            tenant: req.user.tenant,
         });
 
         res.status(200).send(newRole);
@@ -170,9 +189,9 @@ router.patch('/:id', auth.hasTenantPermissions([PERMISSIONS['tenant.roles.update
 /**
  * Delete a tenant role
  */
-router.delete('/:id', auth.hasContext, auth.hasTenantPermissions([PERMISSIONS['tenant.roles.delete']]), userIsOwnerOfResource, async (req, res, next) => {
+router.delete('/:id', auth.hasTenantPermissions([PERMISSIONS['tenant.roles.delete']]), userIsOwnerOfResource, async (req, res, next) => {
     try {
-        await RolesDAO.delete({ id: req.params.id, tenant: req.user.currentContext.tenant });
+        await RolesDAO.delete({ id: req.params.id, tenant: req.user.tenant });
         return res.sendStatus(200);
     } catch (err) {
         logger.error(err);

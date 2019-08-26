@@ -28,6 +28,21 @@ async function flowStopped(id) {
   return true;
 }
 
+async function gdprAnonymise(id) {
+  if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+    return false;
+  }
+
+  if (!id) {
+    log.warn('Received anonymise event without ID given');
+    return true;
+  }
+
+  await storage.anonymise(id);
+
+  return true;
+}
+
 module.exports = {
-  flowStarted, flowStopped,
+  flowStarted, flowStopped, gdprAnonymise,
 };

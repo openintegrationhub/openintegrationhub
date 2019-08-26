@@ -14,10 +14,37 @@
       }
     },
     "schemas" : {
-      "MessageId" : {
-        "type" : "integer"
+      "ObjectId" : {
+        "type" : "string",
+        "description": "UUID version 1, 3, 4 or 5",
+        "example": "2c5ea4c0-4067-11e9-8bad-9b1deb4d3b7d"
       },
-      "BatchDelete" : {
+      "BatchDeleteRequest" : {
+        "type" : "object",
+        "properties" : {
+          "conditions" : {
+            "type" : "array",
+            "description": "Each element specifies a key and a value. An object has to have all specified keys with specified values in order to be deleted.",
+            "minLength" : 1,
+            "items" : {
+              "type" : "object",
+              "required": ["key", "value"],
+              "properties" : {
+                "key" : {
+                  "description" : "One of metadata keys",
+                  "enum": ["userId", "contentType", "contentLength"],
+                  "type" : "string"
+                },
+                "value" : {
+                  "type" : "string",
+                  "description": "Value of a metadata key"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BatchDeleteResponse": {
         "type" : "object",
         "properties" : {
           "id" : {
@@ -26,73 +53,49 @@
           "status" : {
             "type" : "string",
             "enum" : [ "started", "running", "completed" ]
-          },
-          "conditions" : {
-            "type" : "array",
-            "minLength" : 1,
-            "items" : {
-              "type" : "object",
-              "properties" : {
-                "key" : {
-                  "description" : "Any value from JWT token: flowId, workspaceId, contractId etc.",
-                  "type" : "string"
-                },
-                "value" : {
-                  "type" : "string"
-                }
-              }
-            }
           }
         }
       }
     },
     "parameters" : {
-      "MessageId" : {
+      "ObjectId" : {
         "name" : "id",
-        "description" : "Message identifier",
+        "description" : "Object identifier. UUID versions 1, 3, 4 and 5 are supported.",
         "in" : "path",
         "required" : true,
         "schema" : {
-          "$ref" : "#/components/schemas/MessageId"
-        }
-      },
-      "MessageRange" : {
-        "name" : "Range",
-        "description" : "Message range",
-        "in" : "header",
-        "schema" : {
-          "type" : "string"
+          "$ref" : "#/components/schemas/ObjectId"
         }
       }
     },
     "examples" : {
       "json" : {
-        "summary" : "json message",
+        "summary" : "json object",
         "value" : "{ \"some\": \"json\" }"
       },
       "xml" : {
-        "summary" : "xml message",
+        "summary" : "xml object",
         "value" : "<xml>some</xml>"
       },
       "text" : {
-        "summary" : "plain text message",
+        "summary" : "plain text object",
         "value" : "plain text"
       },
       "csv" : {
-        "summary" : "csv message",
+        "summary" : "csv object",
         "value" : "c,s,v"
       },
       "tsv" : {
-        "summary" : "tsv message",
+        "summary" : "tsv object",
         "value" : "t\t\ts\tv"
       },
       "binary" : {
-        "summary" : "binary message",
+        "summary" : "binary object",
         "value" : "BINARY DATA"
       }
     },
     "requestBodies" : {
-      "Message" : {
+      "Object" : {
         "required" : true,
         "content" : {
           "application/json" : {
@@ -132,42 +135,21 @@
       }
     },
     "responses" : {
-      "MessageNotFound" : {
-        "description" : "Message not found"
+      "ObjectNotFound" : {
+        "description" : "Object not found"
       },
-      "MessageRangeNotSatisfiable" : {
-        "description" : "Message range not satisfiable"
+      "TooManyObjectRequests" : {
+        "description" : "Too many requests"
       },
-      "TooManyMessageRequests" : {
-        "description" : "Too many message requests"
-      },
-      "MessageTooLarge" : {
-        "description" : "Message too large"
+      "ObjectTooLarge" : {
+        "description" : "Object is too large"
       }
     },
     "headers" : {
-      "MessageTTL" : {
-        "description" : "Message TTL in ms",
-        "schema" : {
-          "description" : "Message TTL in ms",
-          "type" : "integer"
-        }
-      },
-      "MessageLength" : {
-        "description" : "Message length in bytes",
+      "ObjectLength" : {
+        "description" : "Object length in bytes",
         "schema" : {
           "type" : "integer"
-        }
-      },
-      "MessageRange" : {
-        "description" : "Message Range in bytes",
-        "schema" : {
-          "type" : "string"
-        },
-        "examples" : {
-          "bytes" : {
-            "value" : "bytes=0-1023"
-          }
         }
       }
     }
@@ -176,60 +158,21 @@
     "bearerAuth" : [ ]
   } ],
   "paths" : {
-    "/objects" : {
-      "get" : {
-        "summary" : "Get multiple messages",
-        "description" : "Returns multiple messages by ids with multipart response",
-        "parameters" : [ {
-          "name" : "ids",
-          "required" : true,
-          "in" : "query",
-          "description" : "Message ids",
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/MessageId"
-            }
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successfully got messages",
-            "content" : {
-              "multipart/mixed" : {
-                "example" : "Content-Type: multipart/mixed; boundary=eio-message\n\n--eio-message\nContent-Type: application/json\nX-TTL: 5184000000\nContent-Length: 17\n{\"some\": \"json\"}\n--eio-message\nContent-Type: application/octet-stream\nX-TTL: 2592000000\nContent-Length: 342346245\n...some big file\n--eio-message "
-              }
-            }
-          },
-          "422" : {
-            "description" : "Too many messages requested at once"
-          },
-          "429" : {
-            "$ref" : "#/components/responses/TooManyMessageRequests"
-          }
-        }
-      }
-    },
     "/objects/{id}" : {
       "get" : {
-        "summary" : "Get message by id",
-        "description" : "Returns one message or part of it by requested range",
+        "summary" : "Get object by id",
+        "description" : "Returns one object",
         "parameters" : [ {
-          "$ref" : "#/components/parameters/MessageId"
-        }, {
-          "$ref" : "#/components/parameters/MessageRange"
-        } ],
+          "$ref" : "#/components/parameters/ObjectId"
+        }],
         "responses" : {
           "200" : {
             "headers" : {
-              "X-TTL" : {
-                "$ref" : "#/components/headers/MessageTTL"
-              },
               "Content-Length" : {
-                "$ref" : "#/components/headers/MessageLength"
+                "$ref" : "#/components/headers/ObjectLength"
               }
             },
-            "description" : "Successfully got a message",
+            "description" : "Successfully got an object",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -266,136 +209,84 @@
               }
             }
           },
-          "206" : {
-            "headers" : {
-              "X-TTL" : {
-                "$ref" : "#/components/headers/MessageTTL"
-              },
-              "Content-Range" : {
-                "$ref" : "#/components/headers/MessageRange"
-              },
-              "Content-Length" : {
-                "$ref" : "#/components/headers/MessageLength"
-              }
-            },
-            "description" : "Successfully got a part of message",
-            "content" : {
-              "text/plain" : {
-                "example" : {
-                  "$ref" : "#/components/examples/text/value"
-                }
-              },
-              "text/csv" : {
-                "example" : {
-                  "$ref" : "#/components/examples/csv/value"
-                }
-              },
-              "text/tsv" : {
-                "example" : {
-                  "$ref" : "#/components/examples/tsv/value"
-                }
-              },
-              "application/octet-stream" : {
-                "example" : {
-                  "$ref" : "#/components/examples/binary/value"
-                }
-              }
-            }
-          },
           "404" : {
-            "$ref" : "#/components/responses/MessageNotFound"
-          },
-          "416" : {
-            "$ref" : "#/components/responses/MessageRangeNotSatisfiable"
+            "$ref" : "#/components/responses/ObjectNotFound"
           },
           "429" : {
-            "$ref" : "#/components/responses/TooManyMessageRequests"
+            "$ref" : "#/components/responses/TooManyObjectRequests"
           }
         }
       },
       "put" : {
-        "summary" : "Create a message",
-        "description" : "Creates a message with user-generated id",
+        "summary" : "Create an object",
+        "description" : "Creates an object with user-generated ID.",
         "parameters" : [ {
-          "$ref" : "#/components/parameters/MessageId"
-        }, {
-          "$ref" : "#/components/parameters/MessageRange"
-        } ],
+          "$ref" : "#/components/parameters/ObjectId"
+        }],
         "requestBody" : {
-          "$ref" : "#/components/requestBodies/Message"
+          "$ref" : "#/components/requestBodies/Object"
         },
         "responses" : {
           "201" : {
-            "description" : "Successfully created a message"
+            "description" : "Successfully created an object"
           },
           "404" : {
-            "$ref" : "#/components/responses/MessageNotFound"
-          },
-          "416" : {
-            "$ref" : "#/components/responses/MessageRangeNotSatisfiable"
+            "$ref" : "#/components/responses/ObjectNotFound"
           },
           "429" : {
-            "$ref" : "#/components/responses/TooManyMessageRequests"
+            "$ref" : "#/components/responses/TooManyObjectRequests"
           },
           "409" : {
-            "description" : "Message already exists"
+            "description" : "Object already exists"
           },
           "415" : {
-            "description" : "Message type not supported or missing"
+            "description" : "Object type not supported or missing"
           },
           "413" : {
-            "$ref" : "#/components/responses/MessageTooLarge"
+            "$ref" : "#/components/responses/ObjectTooLarge"
           }
         }
       },
       "delete" : {
-        "summary" : "Delete a message",
-        "description" : "Delete entire message or some range in it",
+        "summary" : "Delete an object",
+        "description" : "Delete entire object",
         "parameters" : [ {
-          "$ref" : "#/components/parameters/MessageId"
-        }, {
-          "$ref" : "#/components/parameters/MessageRange"
-        } ],
+          "$ref" : "#/components/parameters/ObjectId"
+        }],
         "responses" : {
-          "200" : {
-            "description" : "Successfully deleted a message or message part"
+          "204" : {
+            "description" : "Successfully deleted an object"
           },
           "404" : {
-            "$ref" : "#/components/responses/MessageNotFound"
-          },
-          "416" : {
-            "$ref" : "#/components/responses/MessageRangeNotSatisfiable"
+            "$ref" : "#/components/responses/ObjectNotFound"
           },
           "429" : {
-            "$ref" : "#/components/responses/TooManyMessageRequests"
+            "$ref" : "#/components/responses/TooManyObjectRequests"
           }
         }
       }
     },
     "/batch/delete" : {
       "post" : {
-        "summary" : "Create request for message batch deletion",
-        "description" : "Batch deletion is async process, so we need to start and wait",
-        "security" : [ {
-          "ServiceAccount" : [ ]
-        } ],
+        "summary" : "Create request for object batch deletion",
+        "description" : "Batch deletion is an async process, so we need to start and wait",
         "requestBody" : {
           "required" : true,
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/BatchDelete"
+                "$ref" : "#/components/schemas/BatchDeleteRequest"
               }
             }
           }
         },
         "responses" : {
-          "201" : {
+          "202" : {
             "description" : "Query started",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/BatchDelete"
+                  "$ref" : "#/components/schemas/BatchDeleteResponse"
                 }
               }
             }
@@ -406,9 +297,6 @@
     "/batch/delete/{id}" : {
       "get" : {
         "summary" : "Get batch delete request status",
-        "security" : [ {
-          "ServiceAccount" : [ ]
-        } ],
         "parameters" : [ {
           "name" : "id",
           "required" : true,
@@ -419,12 +307,12 @@
           }
         } ],
         "responses" : {
-          "201" : {
+          "200" : {
             "description" : "Query found",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/BatchDelete"
+                  "$ref" : "#/components/schemas/BatchDeleteResponse"
                 }
               }
             }

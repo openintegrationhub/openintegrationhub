@@ -1,12 +1,14 @@
-const logger = require('@basaas/node-logger');
-const conf = require('../../conf');
+const defaultErrorHandler = (errObj, req, res, next) => { // eslint-disable-line
+    const status = errObj.status || 500;
+    let message = 'Error';
 
-const log = logger.getLogger(`${conf.logging.namespace}/error`);
-
-const defaultErrorHandler = (err, req, res, next) => { // eslint-disable-line
-    log.error(err);
-    const status = err.status || 500;
-    const message = err.message || '';
+    if (errObj.err) {
+        if (errObj.err.message) {
+            message = errObj.err.message;
+        } else {
+            message = errObj.err;
+        }
+    }
 
     res.status(status);
     res.send({

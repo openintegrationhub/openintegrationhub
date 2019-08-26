@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const owners = require('../_schema/owners');
+const { buildBaseUrl } = require('../../transform');
 
 const { Schema } = mongoose;
 const { ObjectId } = Schema;
@@ -17,7 +18,16 @@ const schema = new Schema({
         unique: true,
         required: true,
     },
-    value: Object,
+    value: {
+        type: String,
+        set(value) {
+            if (!this.uri && JSON.parse(value).$id !== `${buildBaseUrl()}${this._conditions.uri}`) {
+                throw new mongoose.Error.ValidatorError({ message: 'Schema $id must not be changed' });
+            }
+
+            return value;
+        },
+    },
     owners: {
         type: [owners],
     },

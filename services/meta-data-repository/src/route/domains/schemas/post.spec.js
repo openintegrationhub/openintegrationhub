@@ -1,6 +1,9 @@
 const getPort = require('get-port');
 const supertest = require('supertest');
+const path = require('path');
+
 const conf = require('../../../conf');
+const { pack } = require('../../../packing');
 const iamMock = require('../../../../test/iamMock');
 const Server = require('../../../server');
 
@@ -57,7 +60,7 @@ describe('schemas', () => {
         // create a domain
         let result = (await request.post('/domains')
             .set(...global.user1)
-            .send({ data: domain })
+            .send(domain)
             .expect(200)).body;
 
         const domain_ = result;
@@ -66,9 +69,7 @@ describe('schemas', () => {
         result = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
-                data: {
-                    value: schema,
-                },
+                value: schema,
             })
             .expect(200));
 
@@ -107,9 +108,7 @@ describe('schemas', () => {
         result = (await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
-                data: {
-                    value: schema,
-                },
+                value: schema,
             })
             .expect(400));
 
@@ -140,9 +139,7 @@ describe('schemas', () => {
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
-                data: {
-                    value: schema,
-                },
+                value: schema,
             })
             .expect(200);
 
@@ -176,7 +173,7 @@ describe('schemas', () => {
 
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
-            .send({ data: schema })
+            .send(schema)
             .expect(400);
 
         schema = {
@@ -204,9 +201,7 @@ describe('schemas', () => {
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
-                data: {
-                    value: schema,
-                },
+                value: schema,
             })
             .expect(200);
 
@@ -242,26 +237,24 @@ describe('schemas', () => {
         await request.post(`/domains/${domain_.data.id}/schemas`)
             .set(...global.user1)
             .send({
-                data: {
-                    name: 'string',
-                    description: 'string',
-                    value: {
-                        $id: '#?address',
-                        required: [
-                            'street_address',
-                            'city',
-                            'state',
-                        ],
-                        properties: {
-                            street_address: {
-                                type: 'string',
-                            },
-                            city: {
-                                type: 'string',
-                            },
-                            state: {
-                                type: 'string',
-                            },
+                name: 'string',
+                description: 'string',
+                value: {
+                    $id: '#?address',
+                    required: [
+                        'street_address',
+                        'city',
+                        'state',
+                    ],
+                    properties: {
+                        street_address: {
+                            type: 'string',
+                        },
+                        city: {
+                            type: 'string',
+                        },
+                        state: {
+                            type: 'string',
                         },
                     },
                 },
@@ -272,5 +265,128 @@ describe('schemas', () => {
             .set(...global.user1)
             .set('content-type', 'application/schema+json')
             .expect(200);
+    });
+
+    test('import - no media', async () => {
+        const domain = {
+            name: 'test',
+            description: 'bar',
+            public: true,
+        };
+
+        // create a domain
+        const result = (await request.post('/domains')
+            .set(...global.user1)
+            .send(domain)
+            .expect(200)).body;
+
+        const domain_ = result;
+
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
+            .set(...global.user1)
+            .expect(400);
+    });
+
+    test('import - zip', async () => {
+        const domain = {
+            name: 'test',
+            description: 'bar',
+            public: true,
+        };
+
+        // create a domain
+        let result = (await request.post('/domains')
+            .set(...global.user1)
+            .send(domain)
+            .expect(200)).body;
+
+        const domain_ = result;
+
+        // create zip file
+        const src = path.resolve(__dirname, '../../../../test/data/valid');
+        const packDest = path.resolve(__dirname, '../../../test-temp/temp.zip');
+
+        // pack
+        await pack(
+            'zip',
+            src,
+            packDest,
+        );
+
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
+            .set(...global.user1)
+            .attach('archive', packDest)
+            .expect(200);
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .expect(200)).body;
+
+        expect(result.meta.total).toEqual(20);
+    });
+
+    test('import - tgz', async () => {
+        const domain = {
+            name: 'test',
+            description: 'bar',
+            public: true,
+        };
+
+        // create a domain
+        let result = (await request.post('/domains')
+            .set(...global.user1)
+            .send(domain)
+            .expect(200)).body;
+
+        const domain_ = result;
+
+        // create archive
+        const src = path.resolve(__dirname, '../../../../test/data/valid');
+        const packDest = path.resolve(__dirname, '../../../test-temp/temp.tgz');
+
+        // pack
+        await pack(
+            'tgz',
+            src,
+            packDest,
+        );
+
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
+            .set(...global.user1)
+            .attach('archive', packDest)
+            .expect(200);
+
+        await request.post(`/domains/${domain_.data.id}/schemas/import`)
+            .set(...global.user2)
+            .attach('archive', packDest)
+            .expect(403);
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user2)
+            .expect(403)).body;
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.user1)
+            .expect(200)).body;
+
+        expect(result.meta.total).toEqual(20);
+        expect(result.meta.perPage).toEqual(10);
+        expect(result.meta.totalPages).toEqual(2);
+        expect(result.data.length).toEqual(10);
+
+        result = (await request.get(`/domains/${domain_.data.id}/schemas`)
+            .set(...global.admin)
+            .expect(200)).body;
+
+        expect(result.meta.total).toEqual(20);
+        expect(result.meta.perPage).toEqual(10);
+        expect(result.meta.totalPages).toEqual(2);
+        expect(result.data.length).toEqual(10);
+
+        for (const schema of result.data) {
+            await request.get(schema.uri.replace('/api/v1', ''))
+                .set(...global.user1)
+                .expect(200);
+        }
     });
 });

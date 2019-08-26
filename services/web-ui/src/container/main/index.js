@@ -22,7 +22,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Grid from '@material-ui/core/Grid';
 import {
-    LockOpen, Business, Waves, Home as HomeIcon, AccessibleForward,
+    LockOpen, Business, SettingsInputComponent, LinearScale, Home as HomeIcon, AccountCircle, DeviceHub, Security,
 } from '@material-ui/icons';
 
 // Actions & Components
@@ -34,6 +34,8 @@ import Users from '../../component/users';
 import Tenants from '../../component/tenants';
 import Flows from '../../component/flows';
 import Components from '../../component/components';
+import MetaData from '../../component/metadata';
+import Roles from '../../component/roles';
 
 const drawerWidth = 240;
 
@@ -115,8 +117,17 @@ class Main extends React.Component {
 
     componentDidMount() {
         let menuArr = [];
-        if (this.props.auth.role === 'ADMIN') menuArr = ['Start', 'Users', 'Tenants', 'Flows', 'Components', 'Logout'];
-        else menuArr = ['Start', 'Flows', 'Components', 'Logout'];
+        switch (this.props.auth.role) {
+        case 'ADMIN':
+            menuArr = ['Start', 'Users', 'Tenants', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+            break;
+        case 'TENANT_ADMIN':
+            menuArr = ['Start', 'Users', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+            break;
+        default:
+            menuArr = ['Start', 'Flows', 'Components', 'Metadata', 'Logout'];
+            break;
+        }
         this.setState({
             menu: menuArr,
         });
@@ -126,9 +137,17 @@ class Main extends React.Component {
         if (prefProps.auth !== this.props.auth) {
             let menuArr = [];
             let context = null;
-            if (this.props.auth.role === 'ADMIN') menuArr = ['Start', 'Users', 'Tenants', 'Flows', 'Components', 'Logout'];
-            else menuArr = ['Start', 'Flows', 'Components', 'Logout'];
-
+            switch (this.props.auth.role) {
+            case 'ADMIN':
+                menuArr = ['Start', 'Users', 'Tenants', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+                break;
+            case 'TENANT_ADMIN':
+                menuArr = ['Start', 'Users', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+                break;
+            default:
+                menuArr = ['Start', 'Flows', 'Components', 'Metadata', 'Logout'];
+                break;
+            }
             if (this.props.auth.memberships && this.props.auth.memberships.length) {
                 context = this.props.auth.memberships.find(tenant => tenant.name === 'Global').name;
                 if (context !== 'Global') context = this.props.auth.memberships[0].name;
@@ -176,7 +195,7 @@ class Main extends React.Component {
                   </ListItem>;
               case 'Users':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/users'); }}>
-                      <ListItemIcon><AccessibleForward /></ListItemIcon>
+                      <ListItemIcon><AccountCircle /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Tenants':
@@ -184,14 +203,24 @@ class Main extends React.Component {
                       <ListItemIcon><Business /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
+              case 'Roles':
+                  return <ListItem button key={text} onClick={() => { this.props.history.push('/roles'); }}>
+                      <ListItemIcon><Security /></ListItemIcon>
+                      <ListItemText primary={text} />
+                  </ListItem>;
               case 'Flows':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/flows'); }}>
-                      <ListItemIcon><Waves /></ListItemIcon>
+                      <ListItemIcon><LinearScale /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Components':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/components'); }}>
-                      <ListItemIcon><Waves /></ListItemIcon>
+                      <ListItemIcon><SettingsInputComponent /></ListItemIcon>
+                      <ListItemText primary={text} />
+                  </ListItem>;
+              case 'Metadata':
+                  return <ListItem button key={text} onClick={() => { this.props.history.push('/metadata'); }}>
+                      <ListItemIcon><DeviceHub /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Logout':
@@ -292,8 +321,10 @@ class Main extends React.Component {
                           <Route exact path="/" component={Home} />
                           <Route exact path="/users" component={Users} />
                           <Route exact path="/tenants" component={Tenants} />
+                          <Route exact path="/roles" component={Roles} />
                           <Route exact path="/flows" component={Flows} />
                           <Route exact path="/components" component={Components} />
+                          <Route exact path="/metadata" component={MetaData} />
                       </Switch>
                   </main>
               </Grid>

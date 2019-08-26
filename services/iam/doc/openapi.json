@@ -1,4 +1,9 @@
 {
+  "servers": [
+    {
+      "url": "https://api.example.com"
+    }
+  ],
   "openapi": "3.0.0",
   "info": {
     "description": "This is a the API documentation for the OHI IAM system",
@@ -108,92 +113,6 @@
         }
       }
     },
-    "/context": {
-      "get": {
-        "tags": [
-          "authentication"
-        ],
-        "summary": "Returns account current context",
-        "description": "",
-        "operationId": "getCurrentContext",
-        "responses": {
-          "200": {
-            "description": "Current account context",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "currentContext": {
-                      "$ref": "#/components/schemas/Membership"
-                    },
-                    "memberships": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Membership"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Current token either expired or client is not logged in"
-          },
-          "403": {
-            "description": "Cannot login user. Account is either disabled or a precondition is missing."
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "authentication"
-        ],
-        "summary": "Set account current context",
-        "description": "",
-        "operationId": "setCurrentContext",
-        "requestBody": {
-          "description": "Tenant id",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "tenant": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Current account context",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "currentContext": {
-                      "$ref": "#/components/schemas/Membership"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Current token either expired or client is not logged in"
-          },
-          "403": {
-            "description": "Cannot login user. Account is either disabled or a precondition is missing."
-          }
-        }
-      }
-    },
     "/healthcheck": {
       "get": {
         "tags": [
@@ -209,7 +128,7 @@
         }
       }
     },
-    "/tenants": {
+    "/api/v1/tenants": {
       "get": {
         "tags": [
           "tenant"
@@ -223,7 +142,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArrayOfTenants"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tenant"
+                  }
                 }
               }
             }
@@ -243,7 +165,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TenantRequest"
+                "$ref": "#/components/schemas/TenantMutable"
               }
             }
           }
@@ -255,7 +177,7 @@
         }
       }
     },
-    "/tenants/:id": {
+    "/api/v1/tenants/:id": {
       "get": {
         "tags": [
           "tenant"
@@ -269,7 +191,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TenantResponse"
+                  "$ref": "#/components/schemas/Tenant"
                 }
               }
             }
@@ -301,7 +223,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TenantRequest"
+                "$ref": "#/components/schemas/TenantMutable"
               }
             }
           }
@@ -350,7 +272,7 @@
         }
       }
     },
-    "/tenants/:id/user": {
+    "/api/v1/tenants/:id/users": {
       "get": {
         "tags": [
           "tenant"
@@ -364,7 +286,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArrayOfUserTenantContext"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserObject"
+                  }
                 }
               }
             }
@@ -420,7 +345,7 @@
         ]
       }
     },
-    "/tenants/:id/user/:userId": {
+    "/api/v1/tenants/:id/user/:userId": {
       "delete": {
         "tags": [
           "tenant"
@@ -457,7 +382,7 @@
         }
       }
     },
-    "/users": {
+    "/api/v1/users": {
       "get": {
         "tags": [
           "user"
@@ -471,7 +396,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArrayOfUsers"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserObject"
+                  }
                 }
               }
             }
@@ -510,7 +438,7 @@
         }
       }
     },
-    "/users/:id": {
+    "/api/v1/users/:id": {
       "get": {
         "tags": [
           "user"
@@ -641,7 +569,159 @@
         }
       }
     },
-    "/users/me": {
+    "/api/v1/roles": {
+      "get": {
+        "tags": [
+          "role"
+        ],
+        "summary": "get all roles",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "getRoles",
+        "responses": {
+          "200": {
+            "description": "List all roles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Role"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "role"
+        ],
+        "summary": "Create a role",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "createRole",
+        "requestBody": {
+          "description": "Create a new role",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MutableRole"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Id of created role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Role"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roles/:id": {
+      "get": {
+        "tags": [
+          "role"
+        ],
+        "summary": "get a role by id",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "getRoleById",
+        "responses": {
+          "200": {
+            "description": "Role data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Role"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Role id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+
+      "patch": {
+        "tags": [
+          "role"
+        ],
+        "summary": "Modify a role by id",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "modifyRoleByIdPatch",
+        "requestBody": {
+          "description": "Partially update the role with given data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MutableRole"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Role id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "role"
+        ],
+        "summary": "delete a role",
+        "description": "This can only be done by a logged in user who has the required privileges.",
+        "operationId": "deleteRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Role id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/api/v1/users/me": {
       "get": {
         "tags": [
           "user"
@@ -663,44 +743,7 @@
         }
       }
     },
-    "/users/:id/tenant/:tenantId": {
-      "delete": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Un-assign user from tenant and remove the membership",
-        "description": "This can only be done by a logged in user who has the required privileges.",
-        "operationId": "deleteUserFromTenant",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of user to use",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "style": "simple"
-          },
-          {
-            "name": "tenantId",
-            "in": "path",
-            "description": "ID of tenant",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "style": "simple"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation"
-          }
-        }
-      }
-    },
-    "/tokens": {
+    "/api/v1/tokens": {
       "get": {
         "tags": [
           "tokens"
@@ -710,7 +753,7 @@
         "operationId": "getTokens",
         "responses": {
           "200": {
-            "description": "List all users",
+            "description": "List all tokens",
             "content": {
               "application/json": {
                 "schema": {
@@ -732,7 +775,7 @@
         "description": "This can only be done by a logged in user who has the required privileges.",
         "operationId": "createToken",
         "requestBody": {
-          "description": "Create a new token",
+          "description": "Remember to provide a permissions array when creating a token. If the token references an existing account, then all account permissions will be merged with any additional permissions you provided for this token.",
           "required": true,
           "content": {
             "application/json": {
@@ -761,7 +804,7 @@
         }
       }
     },
-    "/tokens/introspect": {
+    "/api/v1/tokens/introspect": {
       "post": {
         "tags": [
           "tokens"
@@ -821,7 +864,46 @@
         "type": "string",
         "enum": [
           "ADMIN",
-          "SERVICE_ACCOUNT"
+          "SERVICE_ACCOUNT",
+          "USER"
+        ]
+      },
+      "Permissions": {
+        "type": "string",
+        "enum": [
+          "all",
+          "iam.tenant.create",
+          "iam.tenant.read",
+          "iam.tenant.update",
+          "iam.tenant.delete",
+          "iam.secret.create",
+          "iam.secret.read",
+          "iam.key.create",
+          "iam.key.read",
+          "iam.key.delete",
+          "iam.account.create",
+          "iam.account.read",
+          "iam.account.update",
+          "iam.account.delete",
+          "iam.token.create",
+          "iam.token.update",
+          "iam.token.delete",
+          "iam.token.introspect",
+          "tenant.all",
+          "tenant.membership.create",
+          "tenant.membership.update",
+          "tenant.membership.delete",
+          "tenant.profile.read",
+          "tenant.profile.update",
+          "tenant.profile.delete",
+          "tenant.roles.read",
+          "tenant.roles.create",
+          "tenant.roles.update",
+          "tenant.roles.delete",
+          "tenant.flows.read",
+          "tenant.flows.create",
+          "tenant.flows.update",
+          "tenant.flows.delete"
         ]
       },
       "MembershipRole": {
@@ -838,15 +920,17 @@
         "properties": {
           "inquirer": {
             "type": "string",
-            "description": "Id of user or a service running on behalf of the user"
+            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created.",
+            "required": true
           },
           "initiator": {
             "type": "string",
-            "description": "user or a a service who initiated this token request"
+            "description": "user or a a service who initiated this token request. Who is requesting the token creation (must have the permission to create a token). Defaults to requester id."
           },
           "accountId": {
             "type": "string",
-            "description": "Affected account the token is created for"
+            "description": "Affected account the token is created for",
+            "required": true
           },
           "token": {
             "type": "string"
@@ -862,7 +946,7 @@
           "permissions": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Permissions"
             }
           },
           "tokenLifeSpan": {
@@ -887,7 +971,7 @@
           "password"
         ]
       },
-      "TenantRequest": {
+      "TenantMutable": {
         "title": "Tenant Schema",
         "type": "object",
         "properties": {
@@ -907,7 +991,7 @@
           "name"
         ]
       },
-      "TenantResponse": {
+      "Tenant": {
         "title": "Tenant Schema",
         "type": "object",
         "properties": {
@@ -940,11 +1024,8 @@
           "permissions": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Permissions"
             }
-          },
-          "tenant": {
-            "type": "string"
           },
           "scope": {
             "type": "string"
@@ -959,17 +1040,11 @@
             "type": "string",
             "description": "Username as an email address"
           },
-          "role": {
-            "$ref": "#/components/schemas/Role"
-          }
-        }
-      },
-      "UserId": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Id of created user"
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
           }
         }
       },
@@ -996,7 +1071,7 @@
           "permissions": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Permissions"
             }
           },
           "active": {
@@ -1048,8 +1123,20 @@
           "status": {
             "$ref": "#/components/schemas/Status"
           },
-          "role": {
-            "$ref": "#/components/schemas/Role"
+          "tenant": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permissions"
+            }
           },
           "confirmed": {
             "type": "boolean",
@@ -1070,7 +1157,7 @@
       "ArrayOfTenants": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/TenantResponse"
+          "$ref": "#/components/schemas/Tenant"
         }
       },
       "resetPassword": {

@@ -15,17 +15,18 @@ class Account {
             firstname: this.data.firstname,
             lastname: this.data.lastname,
             status: this.data.status,
-            role: this.data.role,
-            memberships: this.data.memberships,
+            roles: this.data.roles,
+            tenant: this.data.tenant,
+            // memberships: this.data.memberships,
             permissions: this.data.permissions,
-            currentContext: find(this.data.memberships, { active: true }),
+            // currentContext: find(this.data.memberships, { active: true }),
             confirmed: this.data.confirmed,
         };
         return claims; 
     }
 
     static async findById(ctx, id, token) {
-        const data = await AccountModel.findOne({ _id: id });
+        const data = await AccountModel.findOne({ _id: id }).populate('roles');
         return new Account(data);
     }
 }

@@ -1,0 +1,75 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: oih-dev-ingress
+  namespace: oih-dev-ns
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: iam.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: iam
+          servicePort: 3099
+  - host: skm.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: secret-service
+          servicePort: 3000
+  - host: flow-repository.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: flow-repository
+          servicePort: 3001
+  - host: auditlog.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: audit-log
+          servicePort: 3007
+  - host: metadata.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: meta-data-repository
+          servicePort: 3000
+  - host: component-repository.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: component-repository-service
+          servicePort: 1234
+  - host: webhooks.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: webhooks-service
+          servicePort: 1234
+  - host: web-ui.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: web-ui
+          servicePort: 3000
+  - host: attachment-storage-service.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: attachment-storage-service
+          servicePort: 3002
+  - host: data-hub.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: data-hub-service
+          servicePort: 1234
+  - host: ils.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: ils
+          servicePort: 3003

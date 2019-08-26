@@ -5,8 +5,6 @@ const chunk1 = {
   token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: '5d3031a20cbe7c00115c7d8f',
-    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -41,8 +39,6 @@ const chunk2 = {
   token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: '5d3031a20cbe7c00115c7d8f',
-    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -79,8 +75,8 @@ const chunk3 = {
   token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'lastName',
   def: {
-    domainId: 'addresses',
-    uri: 'https://metadata.openintegrationhub.com/domains/addresses/schema/uri',
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
   },
   payload: {
     firstName: 'John',
@@ -95,8 +91,6 @@ const chunk4 = {
   token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'firstName',
   def: {
-    domainId: '5d3031a20cbe7c00115c7d8f',
-    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -133,28 +127,6 @@ const chunk5 = {
   def: {
     domainId: '5d3031a20cbe7c00115c7d8f',
     schemaUri: 'address',
-    schema: {
-      type: 'object',
-      properties: {
-        firstName: {
-          type: 'string',
-          minLength: 1,
-        },
-        lastName: {
-          type: 'string',
-          minLength: 1,
-        },
-        email: {
-          type: 'string',
-          minLength: 1,
-        },
-      },
-      required: [
-        'lastName',
-        'firstName',
-      ],
-      additionalProperties: true,
-    },
   },
   payload: {
     lastName: 'Hobbs',
@@ -170,33 +142,13 @@ const chunk6 = {
   def: {
     domainId: '5d3031a20cbe7c00115c7d8f',
     schemaUri: 'address',
-    schema: {
-      type: 'object',
-      properties: {
-        firstName: {
-          type: 'string',
-          minLength: 1,
-        },
-        lastName: {
-          type: 'string',
-          minLength: 1,
-        },
-        email: {
-          type: 'string',
-          minLength: 1,
-        },
-      },
-      required: [
-        'lastName',
-        'firstName',
-      ],
-      additionalProperties: true,
-    },
+
   },
   payload: {
     lastName: 'Hobbs',
     firstName: 'Jack',
     email: 'hobbs@mail.com',
+    birthday: '11.11.1990',
   },
 };
 
@@ -205,8 +157,6 @@ const chunk7 = {
   token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: '5d3031a20cbe7c00115c7d8f',
-    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -241,8 +191,6 @@ const chunk8 = {
   token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
   cid: 'email',
   def: {
-    domainId: '5d3031a20cbe7c00115c7d8f',
-    schemaUri: 'address',
     schema: {
       type: 'object',
       properties: {
@@ -279,28 +227,7 @@ const chunk9 = {
   def: {
     domainId: '5d3031a20cbe7c00115c7d8f',
     schemaUri: 'address',
-    schema: {
-      type: 'object',
-      properties: {
-        firstName: {
-          type: 'string',
-          minLength: 1,
-        },
-        lastName: {
-          type: 'string',
-          minLength: 1,
-        },
-        email: {
-          type: 'string',
-          minLength: 1,
-        },
-      },
-      required: [
-        'lastName',
-        'firstName',
-      ],
-      additionalProperties: true,
-    },
+
   },
   payload: {
     firstName: 'John',
@@ -345,14 +272,50 @@ const chunk12 = {
   cid: 'lastName',
   def: {
     domainId: '5d3031a20cbe7c00115c7d8f',
-    uri: 'https://metadata.openintegrationhub.com',
-    schema: 213456,
+    schemaUri: 'https://metadata.openintegrationhub.com',
+    schema: {
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+          minLength: 1,
+        },
+        lastName: {
+          type: 'string',
+          minLength: 1,
+        },
+        email: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: [
+        'lastName',
+        'firstName',
+      ],
+      additionalProperties: true,
+    },
   },
   payload: {
     firstName: 'John',
     lastName: 'Doe',
     email: 'doe@mail.com',
     salutation: 'Mr.',
+  },
+};
+
+const chunk13 = {
+  ilaId: '987asd',
+  token: 'WXYUFOmgDdoniZatfaMTa4Ov-An98v2-4668x5fXOoLZS',
+  cid: 'email',
+  def: {
+    domainId: '5d3031a20cbe7c00115c7d8f',
+    schemaUri: 'address',
+  },
+  payload: {
+    lastName: 'Hobbs',
+    firstName: 'Jack',
+    email: 'hobbs@mail.com',
   },
 };
 
@@ -367,7 +330,7 @@ const createInvalidChunk = nock('http://metadata.openintegrationhub.com/api/v1/d
       description: 'Person Model',
       uri: '/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
       value: {
-        $id: 'http://localhost:3000/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
+        $id: 'http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
         firstName: 'string',
         lastName: 'string',
         email: 'string',
@@ -402,7 +365,7 @@ const createValidChunk = nock('http://metadata.openintegrationhub.com/api/v1/dom
       description: 'Person Model',
       uri: '/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
       value: {
-        $id: 'http://localhost:3000/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
+        $id: 'http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address',
         firstName: 'string',
         lastName: 'string',
         email: 'string',
@@ -438,6 +401,7 @@ module.exports = {
   chunk10,
   chunk11,
   chunk12,
+  chunk13,
   createInvalidChunk,
   createValidChunk,
 };

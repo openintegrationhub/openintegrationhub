@@ -1,5 +1,11 @@
-
 module.exports = {
+    getToken(req) {
+        const header = req.headers.authorization.split(' ');
+        if (!header || header.length < 2) {
+            return null;
+        }
+        return header[1];
+    },
     isLocalRequest(req) {
         if (req.headers.authorization) {
             return false;
@@ -11,6 +17,4 @@ module.exports = {
         }
         return false;
     },
-    maskString: string => (string ? string.replace(/.(?=.{4,}$)/g, '*') : ''),
-
 };

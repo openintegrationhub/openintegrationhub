@@ -1,4 +1,5 @@
 const Domain = require('../../model/Domain');
+const Schema = require('../../model/Schema');
 
 module.exports = {
 
@@ -30,7 +31,8 @@ module.exports = {
         props);
     },
     async delete(id) {
-        return await Domain.deleteOne({
+        await Schema.deleteMany({ domainId: id });
+        await Domain.deleteOne({
             _id: id,
         });
     },

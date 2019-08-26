@@ -20,23 +20,15 @@ const bunyan = require('bunyan'); // import your logger (needs to support an: .t
   await eventBus.connect();
 
   // creating a new event
-  // Name must start with 'audit'
-  // Payload must adhere to the message format expected by the audit log
+  // content of the payload object is arbitrary
   const event = new Event({
     headers: {
-      name: 'audit.flowCreated',
+      name: 'flowrepo.flow.created',
     },
     payload: {
-      service: 'flow-repository',
-      timeStamp: '12345',
-      nameSpace: 'outerSpace',
-      payload: {
-        tenant: 'testTenant',
-        source: 'testUser',
-        object: 'flow',
-        action: 'create flow',
-        subject: 'Flow xyz',
-        details: 'User testUser of tenant testTenant created a flow with id xyz',
+      user: 'TestUser',
+      tenant: 'TestTenant',
+      flowId: 'TestFlow'
       },
     },
   });

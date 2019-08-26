@@ -27,6 +27,10 @@ module.exports = {
         USER: 'USER',
         SERVICE_ACCOUNT: 'SERVICE_ACCOUNT',
     },
+    ROLE_TYPE: {
+        TENANT: 'TENANT',
+        SYSTEM: 'SYSTEM',
+    },
     MEMBERSHIP_ROLES: {
         TENANT_ADMIN: 'TENANT_ADMIN',
         TENANT_INTEGRATOR: 'TENANT_INTEGRATOR',

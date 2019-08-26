@@ -20,6 +20,7 @@ let app;
 const {
   chunk1, chunk2, chunk3, chunk4, chunk5, chunk6,
   chunk7, chunk8, chunk9, chunk10, chunk11, chunk12,
+  chunk13,
 } = require('./seed/chunk.seed.js');
 const log = require('../app/config/logger');
 
@@ -60,14 +61,14 @@ describe('POST chunks', () => {
       cid: expect.any(String),
       payload: expect.any(Object),
     });
-    expect(res.body.data.def.domainId).toEqual('5d3031a20cbe7c00115c7d8f');
-    expect(res.body.data.def.schemaUri).toEqual('address');
+    // expect(res.body.data.def.domainId).toEqual('5d3031a20cbe7c00115c7d8f');
+    // expect(res.body.data.def.schemaUri).toEqual('address');
     expect(res.body.data.payload.lastName).toEqual('Doe');
     expect(res.body.data.payload.email).toEqual('doe@mail.com');
     expect(res.body.data.valid).toBeFalsy();
   });
 
-  test('should create a valid chunk and return 200', async () => {
+  test('should create a valid chunk from Metadata Repository schema and return 200', async () => {
     const res = await request
       .post('/chunks')
       .send(chunk6);
@@ -85,6 +86,22 @@ describe('POST chunks', () => {
     expect(res.body.data.payload.firstName).toEqual('Jack');
     expect(res.body.data.payload.email).toEqual('hobbs@mail.com');
     expect(res.body.data.valid).toBeTruthy();
+  });
+
+  test('should validate a valid SDF object', async () => {
+    const res = await request
+      .post('/chunks/validate')
+      .send(chunk6);
+    expect(res.status).toEqual(200);
+    expect(res.body.data.valid).toBeTruthy();
+  });
+
+  test('should validate an invalid SDF object', async () => {
+    const res = await request
+      .post('/chunks/validate')
+      .send(chunk13);
+    expect(res.status).toEqual(200);
+    expect(res.body.data.valid).toBeFalsy();
   });
 
   test('should merge two valid chunks and return 200', async () => {
@@ -108,35 +125,45 @@ describe('POST chunks', () => {
     expect(res.body.data.payload.salutation).toEqual('Mr.');
   });
 
-  // test('should fetch the schema from OIH Meta Data Repository', async () => {
-  //   const res = await request
-  //     .post('/chunks')
-  //     .send(chunk3);
-  //   expect(res.status).toEqual(200);
-  //   expect(res.text).toEqual('Get schema from OIH Meta Data Repository');
-  //   // expect(res.body.errors).toHaveLength(1);
-  //   // expect(res.body.errors[0].message).toEqual('CID and def must match with other flow!');
-  // });
-  //
-  // test('should create an invalid chunk and return 200', async () => {
-  //   const res = await request
-  //     .post('/chunks')
-  //     .send(chunk7);
-  //   expect(res.status).toEqual(200);
-  //   expect(res.body).toHaveProperty('data');
-  //   expect(res.body).toHaveProperty('meta');
-  //   expect(res.body.meta).toEqual({});
-  //   expect(res.body.data).toMatchObject({
-  //     expireAt: expect.any(String),
-  //     ilaId: expect.any(String),
-  //     cid: expect.any(String),
-  //     payload: expect.any(Object),
-  //   });
-  //   expect(res.body.data.payload.lastName).toEqual('Peterson');
-  //   expect(res.body.data.payload.email).toEqual('peterson@mail.com');
-  //   expect(res.body.data.valid).toBeFalsy();
-  // });
-  //
+  test('should fetch the schema from OIH Meta Data Repository', async () => {
+    const res = await request
+      .post('/chunks')
+      .send(chunk6);
+    expect(res.status).toEqual(200);
+    expect(res.body).toHaveProperty('data');
+    expect(res.body).toHaveProperty('meta');
+    expect(res.body.meta).toEqual({});
+    expect(res.body.data).toMatchObject({
+      expireAt: expect.any(String),
+      ilaId: expect.any(String),
+      cid: expect.any(String),
+      payload: expect.any(Object),
+    });
+    expect(res.body.data.payload.lastName).toEqual('Hobbs');
+    expect(res.body.data.payload.firstName).toEqual('Jack');
+    expect(res.body.data.payload.email).toEqual('hobbs@mail.com');
+    expect(res.body.data.valid).toBeTruthy();
+  });
+
+  test('should create an invalid chunk and return 200', async () => {
+    const res = await request
+      .post('/chunks')
+      .send(chunk7);
+    expect(res.status).toEqual(200);
+    expect(res.body).toHaveProperty('data');
+    expect(res.body).toHaveProperty('meta');
+    expect(res.body.meta).toEqual({});
+    expect(res.body.data).toMatchObject({
+      expireAt: expect.any(String),
+      ilaId: expect.any(String),
+      cid: expect.any(String),
+      payload: expect.any(Object),
+    });
+    expect(res.body.data.payload.lastName).toEqual('Peterson');
+    expect(res.body.data.payload.email).toEqual('peterson@mail.com');
+    expect(res.body.data.valid).toBeFalsy();
+  });
+
   test('should update a chunk but it should be still invalid and return 200', async () => {
     const res = await request
       .post('/chunks')
@@ -190,22 +217,22 @@ describe('POST chunks', () => {
     expect(res.status).toEqual(404);
     expect(res.body.errors[0].message).toEqual('Domain ID and Schema URI or custom schema must be specified!');
   });
-  //
-  // test('should return 400 if schema is invalid and schema uri is not provided', async () => {
-  //   const res = await request
-  //     .post('/chunks')
-  //     .send(chunk11);
-  //   expect(res.status).toEqual(400);
-  //   expect(res.text).toEqual('Schema is invalid and schema uri is not provided!');
-  // });
-  //
-  // test('should return 400 if neither Schema nor uri are valid!', async () => {
-  //   const res = await request
-  //     .post('/chunks')
-  //     .send(chunk12);
-  //   expect(res.status).toEqual(400);
-  //   expect(res.text).toEqual('Neither Schema nor uri are valid!');
-  // });
+
+  test('should return 404 if domainId is provided but schemaUri is missing', async () => {
+    const res = await request
+      .post('/chunks')
+      .send(chunk11);
+    expect(res.status).toEqual(404);
+    expect(res.body.errors[0].message).toEqual('Domain ID and Schema URI or custom schema must be specified!');
+  });
+
+  test('should return 404 if domainId, schemaUri and schema are provided', async () => {
+    const res = await request
+      .post('/chunks')
+      .send(chunk12);
+    expect(res.status).toEqual(405);
+    expect(res.body.errors[0].message).toEqual('Either domainId with schemaUri or custom schema must be specified, but not both!');
+  });
 });
 
 describe('GET chunks', () => {

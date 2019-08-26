@@ -3,7 +3,7 @@
   "info": {
     "title": "OIH MetaData Service REST API",
     "description": "REST API for the OIH MetaData Service.",
-    "version": "0.0.4",
+    "version": "0.0.6",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -71,12 +71,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableDomain"
-                  }
-                }
+                "$ref": "#/components/schemas/MutableDomain"
               }
             }
           }
@@ -91,6 +86,21 @@
                   "properties": {
                     "data": {
                       "$ref": "#/components/schemas/Domain"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
@@ -165,16 +175,50 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableDomain"
+                "$ref": "#/components/schemas/MutableDomain"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Domain"
+                    }
                   }
                 }
               }
             }
           }
-        },
+        }
+      },
+      "delete": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Delete a domain by ID.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Removes any linked schema and deletes Domain.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "domainId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -266,12 +310,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableSchema"
-                  }
-                }
+                "$ref": "#/components/schemas/MutableSchema"
               }
             }
           }
@@ -286,6 +325,21 @@
                   "properties": {
                     "data": {
                       "$ref": "#/components/schemas/Schema"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
                     }
                   }
                 }
@@ -427,12 +481,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableSchema"
-                  }
-                }
+                "$ref": "#/components/schemas/MutableSchema"
               }
             }
           }

@@ -21,16 +21,17 @@ Open Integration Hub requires only a single connection to the framework.
     - [Local Installation](#local-installation)
   - [Services](#services)
     - [Audit Log](#audit-log)
-    - [Component Orchestrator](#component-orchestrator)
-    - [Flow Respository](#flow-respository)
+    - [Component-Orchestrator](#component-orchestrator)
+    - [Component-Repository](#component-repository)
+    - [Flow-Respository](#flow-respository)
     - [IAM](#iam)
-    - [Meta Data Repository](#meta-data-repository)
+    - [Meta-Data-Repository](#meta-data-repository)
     - [Scheduler](#scheduler)
-    - [Secret Service](#secret-service)
+    - [Secret-Service](#secret-service)
     - [Webhooks](#webhooks)
-- [Service Collaboration](#service-collaboration)
-- [Docs](#docs)
-- [Contribution](#contribution)
+  - [Service-Collaboration](#service-collaboration)
+  - [Docs](#docs)
+  - [Contribution](#contribution)
     - [Code of Conduct](#code-of-conduct)
 
 # OIH Plattform
@@ -46,8 +47,7 @@ For further information on how to use the collection (e.g. autorization, needed 
 
 ### Local Installation
 
-As the Open Integration Hub is still in development it can not be run as a whole right now.
-For further information on how to install and/or run a specific service please have a look at the service folders.
+In addition to setting the OIH up on cloud infrastrucure it is possible to install and run it locally. Find a detailed guide on how to install und use it within the [minikube folder](minikube).
 
 ## Services
 

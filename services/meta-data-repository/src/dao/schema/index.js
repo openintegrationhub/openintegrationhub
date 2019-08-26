@@ -6,6 +6,15 @@ async function getReferences(uri) {
     return (await Schema.find({ refs: uri })).map(elem => elem.uri);
 }
 
+// async function updateReferences({ oldUri, newUri }) {
+//     await Schema.updateMany({
+//         refs: oldUri,
+//     },
+//     {
+//         $set: { 'refs.$': newUri },
+//     });
+// }
+
 module.exports = {
     async startTransaction() {
         const session = await mongoose.startSession();
@@ -39,7 +48,13 @@ module.exports = {
         return result;
     },
     async updateByURI(obj) {
-        const result = await Schema.findOneAndUpdate({ uri: obj.uri }, obj, { new: true });
+        const uri = obj.uri;
+        delete obj.uri;
+
+        const result = await Schema.findOneAndUpdate({ uri }, obj, {
+            new: true,
+            runValidators: true,
+        });
         const event = new Event({
             headers: {
                 name: 'metadata.schema.modified',
@@ -49,6 +64,7 @@ module.exports = {
         EventBusManager.getEventBus().publish(event);
         return result;
     },
+
     async findByDomainAndEntity({
         domainId,
         entityId,
@@ -58,7 +74,7 @@ module.exports = {
             domainId,
             'owners.id': entityId,
         },
-        'name domainId description uri value owners',
+        null,
         options);
     },
 
@@ -69,23 +85,23 @@ module.exports = {
         return await Schema.find({
             domainId,
         },
-        'name domainId description uri value owners',
+        null,
         options);
     },
     async findByURI({
         uri,
         options = {},
     }) {
-        const schema = await Schema.findOne({
+        let schema = await Schema.findOne({
             uri,
         }, null, options);
 
         if (!schema) {
             return null;
         }
-
+        schema = schema.toObject();
         schema.value = JSON.parse(schema.value);
-        return schema.toObject();
+        return schema;
     },
     async delete(uri) {
         const refs = await getReferences(uri);

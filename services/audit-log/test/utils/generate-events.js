@@ -19,43 +19,19 @@ amqp.connect(config.amqpUrl, (err, conn) => {
     process.exit(1);
   }
   conn.createChannel((error, ch) => {
-    ch.assertExchange(config.exchangeName, 'topic', { durable: false });
+    ch.assertExchange('event-bus', 'topic', { durable: true });
 
     const validObject = {
-      service: 'SomeService',
-      timeStamp: '1234',
-      nameSpace: 'outerSpace',
+      name: 'flowrepo.flow.deleted',
       payload: {
-        tenant: '1',
-        source: '200',
-        object: 'x',
-        action: 'noaction',
-        subject: 'Test subject',
-        details: 'Here goes the description.',
+        details: 'A flow with the id abc was deleted',
       },
     };
 
-    const validObject2 = {
-      service: 'SomeOtherService',
-      timeStamp: '1235',
-      nameSpace: 'outerSpace',
-      payload: {
-        tenant: '2',
-        source: '400',
-        object: 'y',
-        action: 'noaction',
-        subject: 'Test subject',
-        details: 'Here goes the description.',
-      },
-    };
 
     const msg = JSON.stringify(validObject);
-    const msg2 = JSON.stringify(validObject2);
 
-    ch.publish(config.exchangeName, config.exchangeTopic, new Buffer.from(msg));
-    log.debug(" [x] Sent %s: '%s'", config.exchangeTopic, msg);
-    ch.publish(config.exchangeName, config.exchangeTopic, new Buffer.from(msg2));
-    log.debug(" [x] Sent %s: '%s'", config.exchangeTopic, msg2);
+    ch.publish('event-bus', 'flowrepo.flow.deleted', new Buffer.from(msg));
   });
 
   setTimeout(() => { conn.close(); }, 500);
