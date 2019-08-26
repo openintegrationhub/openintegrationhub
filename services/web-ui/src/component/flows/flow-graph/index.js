@@ -79,7 +79,8 @@ class FlowGraph extends React.Component {
             .enter().append('g')
             .attr('class', d => `node${
                 d.children ? ' node--internal' : ' node--leaf'}`)
-            .attr('transform', d => `translate(${d.y},${d.x})`);
+            .attr('transform', d => `translate(${d.y},${d.x})`)
+            .on('click', this.onClickHandle.bind(this));
 
         // adds the circle to the node
         node.append('circle')
@@ -91,7 +92,22 @@ class FlowGraph extends React.Component {
             .attr('x', d => (d.children ? -13 : 13))
             .attr('y', () => (13))
             .style('text-anchor', d => (d.children ? 'end' : 'start'))
-            .text(d => d.data.name);
+            .text(d => d.data.name)
+            .on('click', this.onClickHandle.bind(this));
+    }
+
+    onClickHandle(d) {
+        const data = this.props.data.nodes.find(node => node.id === d.data.id);
+        if (data) {
+            this.setState({
+                openInfo: true,
+                modalData: {
+                    name: data.name,
+                    description: data.description,
+                    function: data.function,
+                },
+            });
+        }
     }
 
     render() {
@@ -118,14 +134,25 @@ class FlowGraph extends React.Component {
                     }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
-                    <div style={{
-                        backgroundColor: 'white',
-                        margin: 'auto',
-                        outline: 'none',
-                    }}>
-                        <div><lable>Name: </lable>{this.state.modalData.name}</div>
-                        <div><lable>Description: </lable>{this.state.modalData.description}</div>
-                        <div><lable>Function: </lable>{this.state.modalData.function}</div>
+                    <div
+                        className="flow-modal"
+                        style={{
+                            backgroundColor: 'white',
+                            margin: 'auto',
+                            outline: 'none',
+                        }}>
+                        <div className="item">
+                            <span>Name: </span>
+                            <span>{this.state.modalData.name}</span>
+                        </div>
+                        <div className="item">
+                            <span>Description: </span>
+                            <span>{this.state.modalData.description}</span>
+                        </div>
+                        <div className="item">
+                            <span>Function: </span>
+                            <span>{this.state.modalData.function}</span>
+                        </div>
                     </div>
 
                 </Modal>

@@ -13,6 +13,11 @@ import LoginCheck from '../../component/login-check';
 
 // Actions
 import { resetLogin } from '../../action/auth';
+// Actions
+import { getUsers } from '../../action/users';
+import { getTenants } from '../../action/tenants';
+import { getRoles } from '../../action/roles';
+
 
 class App extends React.Component {
     constructor(props) {
@@ -24,6 +29,9 @@ class App extends React.Component {
             }
             return Promise.reject(error);
         });
+        props.getUsers();
+        props.getRoles();
+        props.getTenants();
     }
 
     componentDidMount() {
@@ -44,6 +52,9 @@ class App extends React.Component {
 const mapStateToProps = () => ({});
 const mapDispatchToProps = dispatch => bindActionCreators({
     resetLogin,
+    getUsers,
+    getTenants,
+    getRoles,
 }, dispatch);
 
 export default flow(
