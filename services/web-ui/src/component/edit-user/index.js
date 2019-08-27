@@ -53,6 +53,7 @@ class EditUser extends React.Component {
             succeeded: false,
             selectValue: '',
             roles: [],
+            selectableroles: [],
         };
     }
 
@@ -80,6 +81,20 @@ class EditUser extends React.Component {
                     roles: arr,
                 });
             }
+            if (currentUser && !currentUser.roles) currentUser.roles = [];
+            if (this.props.roles && currentUser.roles) {
+                const arr = [];
+                const arrSelectable = [];
+                // eslint-disable-next-line no-restricted-syntax
+                for (const role of this.props.roles.all) {
+                    if (currentUser.roles.includes(role._id)) arr.push(role);
+                    else arrSelectable.push(role);
+                }
+                this.setState({
+                    roles: arr,
+                    selectableroles: arrSelectable,
+                });
+            }
         } else {
             let adminTenant = this.props.tenants.all.find(tenant => tenant._id === this.props.auth.tenant);
             if (this.props.auth.role === 'ADMIN') {
@@ -90,14 +105,14 @@ class EditUser extends React.Component {
                 firstname: '',
                 lastname: '',
                 tenant: adminTenant,
-                role: '',
+                roles: [],
                 status: conf.account.status.ACTIVE,
                 password: '',
             });
         }
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prefstate) {
         if (this.props.users.error && !prevProps.users.error) {
             this.setState({
                 pending: false,
@@ -120,6 +135,18 @@ class EditUser extends React.Component {
                 this.setState({
                     pending: false,
                     succeeded: true,
+                });
+            }
+        }
+        if (prefstate.roles.length !== this.state.roles.length) {
+            if (this.state.roles) {
+                const arrSelectable = [];
+                // eslint-disable-next-line no-restricted-syntax
+                for (const role of this.props.roles.all) {
+                    if (!this.state.roles.find(item => item._id === role._id)) arrSelectable.push(role);
+                }
+                this.setState({
+                    selectableroles: arrSelectable,
                 });
             }
         }
@@ -238,7 +265,7 @@ class EditUser extends React.Component {
                                     }
                                     }
                                 >
-                                    {this.props.roles && this.props.roles.all.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                                    {this.state.selectableroles && this.state.selectableroles.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
                                 </Select>
                                 <Button
                                     type='button'
