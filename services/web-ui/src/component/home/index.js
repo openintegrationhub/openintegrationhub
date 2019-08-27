@@ -36,7 +36,6 @@ const useStyles = {
         height: '200px',
         marginTop: '150px',
         borderRadius: '15px',
-        background: 'Gainsboro',
     },
     contentFlows: {
         marginTop: '50px',
