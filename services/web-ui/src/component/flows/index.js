@@ -20,7 +20,9 @@ import locale from 'react-json-editor-ajrm/locale/en';
 import FlowTeaser from './flow-teaser';
 
 // actions
-import { getFlows, createFlow, getFlowsPage } from '../../action/flows';
+import {
+    getFlows, createFlow, getFlowsPage, switchAddState,
+} from '../../action/flows';
 
 
 const useStyles = {
@@ -36,30 +38,27 @@ const useStyles = {
 };
 
 class Flows extends React.Component {
-    state= {
-        addFlow: false,
-        editorData: null,
-        wasChanged: false,
-    }
-
     constructor(props) {
-        super();
+        super(props);
         props.getFlows();
+        this.state = {
+            addFlow: false,
+            editorData: null,
+            wasChanged: false,
+        };
     }
 
     addFlow = () => {
-        this.setState({
-            addFlow: true,
-        });
+        this.props.switchAddState();
     };
 
     saveFlow = () => {
         if (this.state.wasChanged) {
             this.props.createFlow(this.state.editorData);
             this.setState({
-                addFlow: false,
                 wasChanged: false,
             });
+            this.props.switchAddState();
         }
     }
 
@@ -134,8 +133,8 @@ class Flows extends React.Component {
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    open={this.state.addFlow}
-                    onClose={ () => { this.setState({ addFlow: false }); }}
+                    open={this.props.flows.addState}
+                    onClose={ () => { this.props.switchAddState(); }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
@@ -147,7 +146,7 @@ class Flows extends React.Component {
                             width = '600px'
                             onChange={this.editorChange.bind(this)}
                         />
-                        <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ addFlow: false }); }}>
+                        <Button variant="outlined" aria-label="Add" onClick={() => { this.props.switchAddState(); }}>
                             close
                         </Button>
                         <Button variant="outlined" aria-label="Add" onClick={this.saveFlow} disabled={!this.state.wasChanged}>
@@ -168,6 +167,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     getFlows,
     createFlow,
     getFlowsPage,
+    switchAddState,
 }, dispatch);
 
 export default flow(
