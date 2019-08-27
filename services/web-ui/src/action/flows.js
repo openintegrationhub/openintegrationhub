@@ -11,7 +11,6 @@ export const UPDATE_FLOW = 'UPDATE_FLOW';
 export const UPDATE_FLOW_ERROR = 'UPDATE_FLOW_ERROR';
 export const CREATE_FLOW = 'CREATE_FLOW';
 export const DELETE_FLOW = 'DELETE_FLOW';
-export const FLOW_ADD_STATE = 'FLOW_ADD_STATE';
 
 
 export const getFlows = () => async (dispatch) => {
@@ -137,16 +136,6 @@ export const deleteFlow = flowId => async (dispatch) => {
             type: DELETE_FLOW,
         });
         dispatch(getFlows());
-    } catch (err) {
-        console.log(err);
-    }
-};
-
-export const switchAddState = () => async (dispatch) => {
-    try {
-        dispatch({
-            type: FLOW_ADD_STATE,
-        });
     } catch (err) {
         console.log(err);
     }

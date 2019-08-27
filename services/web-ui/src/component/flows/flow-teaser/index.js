@@ -54,6 +54,23 @@ class FlowTeaser extends React.PureComponent {
         editorData: null,
     }
 
+    // getNodes() {
+    //     return this.props.data.graph.nodes && this.props.data.graph.nodes.map(node => <Grid container key={`node-${node.id}`}>
+    //         <Grid item xs={3}><InputLabel>Id:</InputLabel><Typography>{node.id}</Typography></Grid>
+    //         <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography>{node.name && node.name}</Typography></Grid>
+    //         <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography>{node.description && node.description}</Typography></Grid>
+    //         <Grid item xs={3}><InputLabel>Function:</InputLabel><Typography>{node.function}</Typography></Grid>
+    //     </Grid>);
+    // }
+
+    // getEdges() {
+    //     return this.props.data.graph.edges && this.props.data.graph.edges.map((node, index) => <Grid container key={`edges-${index}`}>
+    //         <Grid item xs={3}><InputLabel>Source:</InputLabel><Typography>{node.source}</Typography></Grid>
+    //         <Grid item xs={3}><InputLabel>Target:</InputLabel><Typography>{node.target}</Typography></Grid>
+    //         <Grid item xs={3}><InputLabel>Condition:</InputLabel><Typography>{node.config && node.config.condition ? node.config.condition : ''}</Typography></Grid>
+    //     </Grid>);
+    // }
+
     editOpen= (e) => {
         e.stopPropagation();
         this.setState({
