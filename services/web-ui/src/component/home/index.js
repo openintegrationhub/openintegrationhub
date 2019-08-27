@@ -15,6 +15,8 @@ import {
 import {
     getFlows, stopFlow, createFlow, switchAddState,
 } from '../../action/flows';
+import { getTenants } from '../../action/tenants';
+import { getUsers } from '../../action/users';
 
 const useStyles = {
     avatar: {
@@ -62,6 +64,8 @@ class Home extends React.Component {
             showSideSheet: false,
         };
         props.getFlows();
+        props.getUsers();
+        props.getTenants();
     }
 
     getFlows(classes) {
@@ -190,12 +194,16 @@ Home.propTypes = {
 const mapStateToProps = state => ({
     flows: state.flows,
     auth: state.auth,
+    users: state.users,
+    tenants: state.tenants,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     getFlows,
     stopFlow,
     createFlow,
     switchAddState,
+    getTenants,
+    getUsers,
 }, dispatch);
 
 export default flow(
