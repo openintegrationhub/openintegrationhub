@@ -20,7 +20,7 @@ let app;
 const {
   chunk1, chunk2, chunk3, chunk4, chunk5, chunk6,
   chunk7, chunk8, chunk9, chunk10, chunk11, chunk12,
-  chunk13, chunk14,
+  chunk13, chunk14, chunk15,
 } = require('./seed/chunk.seed.js');
 const log = require('../app/config/logger');
 
@@ -86,6 +86,14 @@ describe('POST chunks', () => {
     expect(res.body.data.payload.firstName).toEqual('Jack');
     expect(res.body.data.payload.email).toEqual('hobbs@mail.com');
     expect(res.body.data.valid).toBeTruthy();
+  });
+
+  test('should return 400 if schema is invalid', async () => {
+    const res = await request
+      .post('/chunks')
+      .send(chunk15);
+    expect(res.status).toEqual(400);
+    expect(res.body.errors[0].message).toEqual('Schema is invalid!');
   });
 
   test('should return 400 if ilaId contains special characters', async () => {
