@@ -19,7 +19,12 @@ const log = require('../../config/logger');
 
 const { validateSchema, validateSplitSchema } = require('../utils/validator');
 const {
-  createChunk, fetchSchema, splitChunk, updateChunk, loadExternalSchema,
+  createChunk,
+  fetchSchema,
+  splitChunk,
+  updateChunk,
+  loadExternalSchema,
+  ilaIdValidator,
 } = require('../utils/helpers');
 
 // Models
@@ -113,6 +118,17 @@ router.post('/', jsonParser, async (req, res) => {
   const { domainId, schema, schemaUri } = req.body.def;
   const invalidInputSchema = validateSchema(schema);
 
+  const validIlaId = await ilaIdValidator(ilaId);
+
+  if (validIlaId) {
+    return res.status(400).send(
+      {
+        errors:
+        [{ message: 'ilaId must not contain special characters!', code: 400 }],
+      },
+    );
+  }
+
   let payloadValidator;
 
   if (!token) {
@@ -162,10 +178,15 @@ router.post('/', jsonParser, async (req, res) => {
       );
     }
     try {
-      payloadValidator = ajv.compile(domainSchema.body.data.value);
+      payloadValidator = await ajv.compileAsync(domainSchema.body.data.value);
     } catch (e) {
       log.error('ERROR: ', e);
-      return res.status(400).send(e);
+      return res.status(400).send(
+        {
+          errors:
+            [{ message: 'Schema is invalid!', code: 400 }],
+        },
+      );
     }
   }
 
@@ -175,10 +196,15 @@ router.post('/', jsonParser, async (req, res) => {
 
   if (schema) {
     try {
-      payloadValidator = ajv.compile(schema);
+      payloadValidator = await ajv.compileAsync(schema);
     } catch (e) {
       log.error('ERROR: ', e);
-      return res.status(400).send(e);
+      return res.status(400).send(
+        {
+          errors:
+            [{ message: 'Schema is invalid!', code: 400 }],
+        },
+      );
     }
   }
 
@@ -235,8 +261,19 @@ router.post('/', jsonParser, async (req, res) => {
  * @return {Object} - object containing valid property and meta data
  */
 router.post('/validate', jsonParser, async (req, res) => {
-  const { payload, token } = req.body;
+  const { payload, token, ilaId } = req.body;
   const valid = chunkValidator(req.body);
+
+  const validIlaId = await ilaIdValidator(ilaId);
+
+  if (validIlaId) {
+    return res.status(400).send(
+      {
+        errors:
+        [{ message: 'ilaId must not contain special characters!', code: 400 }],
+      },
+    );
+  }
 
   if (!token) {
     return res.status(401).send(
@@ -305,7 +342,12 @@ router.post('/validate', jsonParser, async (req, res) => {
     payloadValidator = await ajv.compileAsync(obj);
   } catch (e) {
     log.error('ERROR: ', e);
-    return res.status(400).send(e);
+    return res.status(400).send(
+      {
+        errors:
+          [{ message: 'Schema is invalid!', code: 400 }],
+      },
+    );
   }
 
   const validChunk = payloadValidator(payload);
