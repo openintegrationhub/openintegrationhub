@@ -40,7 +40,7 @@ const useStyles = {
     },
 };
 
-class Home extends React.Component {
+class Profile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -48,6 +48,7 @@ class Home extends React.Component {
             succeeded: false,
             selectValue: '',
             roles: [],
+            selectableroles: [],
         };
     }
 
@@ -64,15 +65,34 @@ class Home extends React.Component {
             status: currentUser.status,
             password: '',
         });
+        if (currentUser && !currentUser.roles) currentUser.roles = [];
         if (this.props.roles && currentUser.roles) {
             const arr = [];
+            const arrSelectable = [];
             // eslint-disable-next-line no-restricted-syntax
             for (const role of this.props.roles.all) {
                 if (currentUser.roles.includes(role._id)) arr.push(role);
+                else arrSelectable.push(role);
             }
             this.setState({
                 roles: arr,
+                selectableroles: arrSelectable,
             });
+        }
+    }
+
+    componentDidUpdate(prefProps, prefstate) {
+        if (prefstate.roles.length !== this.state.roles.length) {
+            if (this.state.roles) {
+                const arrSelectable = [];
+                // eslint-disable-next-line no-restricted-syntax
+                for (const role of this.props.roles.all) {
+                    if (!this.state.roles.find(item => item._id === role._id)) arrSelectable.push(role);
+                }
+                this.setState({
+                    selectableroles: arrSelectable,
+                });
+            }
         }
     }
 
@@ -123,7 +143,6 @@ class Home extends React.Component {
                             error={!this.props.isValid('firstname')}
                         />
                     </FormControl>
-
                     <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="lastname">lastname</InputLabel>
                         <Input
@@ -162,7 +181,7 @@ class Home extends React.Component {
                                     }
                                     }
                                 >
-                                    {this.props.roles && this.props.roles.all.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                                    {this.state.selectableroles && this.state.selectableroles.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
                                 </Select>
                                 <Button
                                     type='button'
@@ -248,7 +267,7 @@ class Home extends React.Component {
     }
 }
 
-Home.propTypes = {
+Profile.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -270,4 +289,4 @@ export default flow(
     ),
     withStyles(useStyles),
     withForm,
-)(Home);
+)(Profile);
