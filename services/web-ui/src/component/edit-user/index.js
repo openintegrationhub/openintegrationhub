@@ -10,7 +10,6 @@ import Input from '@material-ui/core/Input';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Grid from '@material-ui/core/Grid';
 import {
     Add, Remove,
 } from '@material-ui/icons';
@@ -244,6 +243,7 @@ class EditUser extends React.Component {
                                 && <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="tenant">tenant</InputLabel>
                                     <Select
+                                        id='tenant'
                                         value={tenant || ''}
                                         onChange={this.props.setVal.bind(this, 'tenant')}
                                     >
@@ -252,74 +252,62 @@ class EditUser extends React.Component {
                                 </FormControl>
                     }
 
-                    <Grid container spacing={2}>
-
-                        <Grid item xs={12}>
-                            <FormControl className={classes.formControl}>
-                                <Select
-                                    value={this.state.selectValue}
-                                    onChange={ (e) => {
-                                        this.setState({
-                                            selectValue: e.target.value,
-                                        });
-                                    }
-                                    }
-                                >
-                                    {this.state.selectableroles && this.state.selectableroles.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
-                                </Select>
-                                <Button
-                                    type='button'
-                                    variant="contained"
-                                    onClick={ () => {
-                                        if (this.state.selectValue) {
-                                            const tempArr = [...this.state.roles];
-                                            tempArr.push(this.state.selectValue);
-                                            this.setState({
-                                                roles: tempArr,
-                                                selectValue: '',
-                                            });
-                                        }
-                                    }}>
-                                    <Add/>
-                                </Button>
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            {
-                                this.state.roles.length
-                                    ? <List dense={true}>
-                                        {this.state.roles.map(item => <ListItem key={item._id}>
-                                            <ListItemText
-                                                primary={item.name}
-                                            />
-                                            <Button
-                                                type='button'
-                                                variant="contained"
-                                                onClick={ () => {
-                                                    const tempArr = [...this.state.roles];
-                                                    this.setState({
-                                                        roles: tempArr.filter(tempArrItem => tempArrItem._id !== item._id),
-                                                    });
-                                                }}>
-                                                <Remove/>
-                                            </Button>
-                                        </ListItem>)}
-                                    </List>
-
-                                    : null
-                            }
-                        </Grid>
-                    </Grid>
-                    {/* <FormControl className={classes.formControl}>
-                        <InputLabel htmlFor="role">role</InputLabel>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="roles">roles</InputLabel>
                         <Select
-                            value={role || conf.account.roles.USER}
-                            onChange={this.props.setVal.bind(this, 'role')}
+                            id='roles'
+                            value={this.state.selectValue}
+                            onChange={ (e) => {
+                                this.setState({
+                                    selectValue: e.target.value,
+                                });
+                            }
+                            }
                         >
-                            {Object.keys(conf.account.roles).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                            {this.state.selectableroles && this.state.selectableroles.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
                         </Select>
-                    </FormControl> */}
+                        <Button
+                            type='button'
+                            variant="contained"
+                            onClick={ () => {
+                                if (this.state.selectValue) {
+                                    const tempArr = [...this.state.roles];
+                                    tempArr.push(this.state.selectValue);
+                                    this.setState({
+                                        roles: tempArr,
+                                        selectValue: '',
+                                    });
+                                }
+                            }}>
+                            <Add/>
+                        </Button>
+                    </FormControl>
+
+
+                    {
+                        this.state.roles.length
+                            ? <List dense={true}>
+                                {this.state.roles.map(item => <ListItem key={item._id}>
+                                    <ListItemText
+                                        primary={item.name}
+                                    />
+                                    <Button
+                                        type='button'
+                                        variant="contained"
+                                        onClick={ () => {
+                                            const tempArr = [...this.state.roles];
+                                            this.setState({
+                                                roles: tempArr.filter(tempArrItem => tempArrItem._id !== item._id),
+                                            });
+                                        }}>
+                                        <Remove/>
+                                    </Button>
+                                </ListItem>)}
+                            </List>
+
+                            : null
+                    }
+
 
                     <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="status">status</InputLabel>

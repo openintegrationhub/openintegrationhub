@@ -160,6 +160,7 @@ class Profile extends React.Component {
                                 && <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="tenant">tenant</InputLabel>
                                     <Select
+                                        id='tenant'
                                         value={tenant || ''}
                                         onChange={this.props.setVal.bind(this, 'tenant')}
                                     >
@@ -168,65 +169,60 @@ class Profile extends React.Component {
                                 </FormControl>
                     }
 
-                    <Grid container spacing={2}>
-
-                        <Grid item xs={12}>
-                            <FormControl className={classes.formControl}>
-                                <Select
-                                    value={this.state.selectValue}
-                                    onChange={ (e) => {
-                                        this.setState({
-                                            selectValue: e.target.value,
-                                        });
-                                    }
-                                    }
-                                >
-                                    {this.state.selectableroles && this.state.selectableroles.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
-                                </Select>
-                                <Button
-                                    type='button'
-                                    variant="contained"
-                                    onClick={ () => {
-                                        if (this.state.selectValue) {
-                                            const tempArr = [...this.state.roles];
-                                            tempArr.push(this.state.selectValue);
-                                            this.setState({
-                                                roles: tempArr,
-                                                selectValue: '',
-                                            });
-                                        }
-                                    }}>
-                                    <Add/>
-                                </Button>
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            {
-                                this.state.roles.length
-                                    ? <List dense={true}>
-                                        {this.state.roles.map(item => <ListItem key={item._id}>
-                                            <ListItemText
-                                                primary={item.name}
-                                            />
-                                            <Button
-                                                type='button'
-                                                variant="contained"
-                                                onClick={ () => {
-                                                    const tempArr = [...this.state.roles];
-                                                    this.setState({
-                                                        roles: tempArr.filter(tempArrItem => tempArrItem._id !== item._id),
-                                                    });
-                                                }}>
-                                                <Remove/>
-                                            </Button>
-                                        </ListItem>)}
-                                    </List>
-
-                                    : null
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor="roles">roles</InputLabel>
+                        <Select
+                            id='roles'
+                            value={this.state.selectValue}
+                            onChange={ (e) => {
+                                this.setState({
+                                    selectValue: e.target.value,
+                                });
                             }
-                        </Grid>
-                    </Grid>
+                            }
+                        >
+                            {this.state.selectableroles && this.state.selectableroles.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                        </Select>
+                        <Button
+                            type='button'
+                            variant="contained"
+                            onClick={ () => {
+                                if (this.state.selectValue) {
+                                    const tempArr = [...this.state.roles];
+                                    tempArr.push(this.state.selectValue);
+                                    this.setState({
+                                        roles: tempArr,
+                                        selectValue: '',
+                                    });
+                                }
+                            }}>
+                            <Add/>
+                        </Button>
+                    </FormControl>
+                    {
+                        this.state.roles.length
+                            ? <List dense={true}>
+                                {this.state.roles.map(item => <ListItem key={item._id}>
+                                    <ListItemText
+                                        primary={item.name}
+                                    />
+                                    <Button
+                                        type='button'
+                                        variant="contained"
+                                        onClick={ () => {
+                                            const tempArr = [...this.state.roles];
+                                            this.setState({
+                                                roles: tempArr.filter(tempArrItem => tempArrItem._id !== item._id),
+                                            });
+                                        }}>
+                                        <Remove/>
+                                    </Button>
+                                </ListItem>)}
+                            </List>
+
+                            : null
+                    }
+
 
                     <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="status">status</InputLabel>
