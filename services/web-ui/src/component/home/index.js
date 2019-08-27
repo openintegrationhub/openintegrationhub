@@ -128,7 +128,13 @@ class Home extends React.Component {
                     <Grid container item xs={5} direction='column' justify='center'>
                         <Grid item>Welcome back {this.props.auth.firstname} {this.props.auth.lastname}</Grid>
                         <Grid item>({this.props.auth.username})</Grid>
-                        <Button style={{ width: '100px', background: 'lightgrey', marginTop: '8px' }}>Profile</Button>
+                        <Button
+                            onClick={() => {
+                                this.props.history.push('/profile');
+                            }}
+                            style={{ width: '100px', background: 'lightgrey', marginTop: '8px' }}>
+                            Profile
+                        </Button>
                     </Grid>
 
 

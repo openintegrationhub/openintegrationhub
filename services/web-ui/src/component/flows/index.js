@@ -46,6 +46,50 @@ class Flows extends React.Component {
             editorData: null,
             wasChanged: false,
         };
+        this.dummyData = {
+            name: 'Flow Template with 1 exemplary flow node',
+            description: 'This is a template for flow creation with an exemplary flow node',
+            graph: {
+                nodes: [
+                    {
+                        id: 'step_1',
+                        componentId: 'COMPONENT ID',
+                        name: 'Flow node name',
+                        function: 'TRIGGER',
+                        description: 'Flow node description',
+                    },
+                    {
+                        id: 'step_2',
+                        componentId: '5cdaba4d6474a5001a8b2588',
+                        name: 'Code Component',
+                        function: 'execute',
+                        description: 'Exemplary flow node',
+                        fields: {
+                            code: 'function* run() {console.log(\'Calling external URL\');yield request.post({uri: \'http://webhook.site/d5d29c09-79ff-4e97-8137-537c6282a668\', body: msg.body, json: true});}',
+                        },
+                    },
+                    {
+                        id: 'step_3',
+                        componentId: 'COMPONENT ID',
+                        name: 'Flow node name',
+                        function: 'TRIGGER',
+                        description: 'Flow node description',
+                    },
+                ],
+                edges: [
+                    {
+                        source: 'step_1',
+                        target: 'step_2',
+                    },
+                    {
+                        source: 'step_2',
+                        target: 'step_3',
+                    },
+                ],
+            },
+            type: 'ordinary',
+            cron: '*/2 * * * *',
+        };
     }
 
     addFlow = () => {
@@ -144,6 +188,7 @@ class Flows extends React.Component {
                             theme = 'dark_vscode_tribute'
                             height = '550px'
                             width = '600px'
+                            placeholder = {this.dummyData}
                             onChange={this.editorChange.bind(this)}
                         />
                         <Button variant="outlined" aria-label="Add" onClick={() => { this.props.switchAddState(); }}>
