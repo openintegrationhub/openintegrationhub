@@ -177,17 +177,19 @@ class RolesTeaser extends React.PureComponent {
                             <Button
                                 type='button'
                                 onClick={ () => {
-                                    const tempArr = [...this.state.selectedPermissions];
-                                    tempArr.push(this.state.permission);
-                                    this.setState({
-                                        selectedPermissions: tempArr,
-                                        permission: '',
-                                    });
+                                    if (this.state.permission) {
+                                        const tempArr = [...this.state.selectedPermissions];
+                                        tempArr.push(this.state.permission);
+                                        this.setState({
+                                            selectedPermissions: tempArr,
+                                            permission: '',
+                                        });
+                                    }
                                 }}>
                                 <Add/>
                             </Button>
 
-                            <Grid xs={12}>
+                            <Grid item xs={12}>
                                 {
                                     this.state.selectedPermissions.length
                                         ? <List dense={true}>

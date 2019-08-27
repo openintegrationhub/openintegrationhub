@@ -2,6 +2,9 @@
 /* eslint no-unused-expressions: "off" */
 const request = require('request-promise');
 const Chunk = require('../../models/chunk');
+const log = require('../../config/logger');
+
+let globalToken;
 
 /**
  * @desc Check if chunk is valid and update it
@@ -158,6 +161,7 @@ async function splitChunk(splitSchema, payload, ilaId) {
  * @return {Object} - a retrieved schema from MDR
  */
 async function fetchSchema(token, domainId, schemaUri) {
+  globalToken = token;
   const MDR_URL = 'http://metadata.openintegrationhub.com/api/v1/domains';
   const options = {
     method: 'GET',
@@ -177,6 +181,48 @@ async function fetchSchema(token, domainId, schemaUri) {
   }
 }
 
+/**
+ * @desc AJV helper function for Asynchronous schema compilation
+ *
+ * @param {String} uri - external schema uri
+ * @return {Object} - a retrieved schema
+ */
+function loadExternalSchema(uri) {
+  const options = {
+    method: 'GET',
+    uri,
+    json: true,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${globalToken}`,
+    },
+  };
+
+  return request(options).then((res) => {
+    if (res.statusCode >= 400) throw new Error(`Loading error: ${res.statusCode}`);
+    return res;
+  }).catch((e) => {
+    log.error('ERROR: ', e);
+  });
+}
+
+/**
+ * @desc ilaId name validation
+ *
+ * @param {String} ilaId - external schema uri
+ * @return {Boolean} - depending on regex result
+ */
+function ilaIdValidator(ilaId) {
+  const reg = /[' " / ~ > < & # \\ $ * ! ? + @ % ^ ( ),]/g;
+  return reg.test(ilaId);
+}
+
 module.exports = {
-  createChunk, updateChunk, splitChunk, fetchSchema,
+  createChunk,
+  updateChunk,
+  splitChunk,
+  fetchSchema,
+  loadExternalSchema,
+  ilaIdValidator,
 };

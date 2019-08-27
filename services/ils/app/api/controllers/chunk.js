@@ -14,19 +14,34 @@ const router = express.Router();
 const Ajv = require('ajv');
 const chunkSchema = require('../../models/schemas/chunk.json');
 
-const ajv = new Ajv({ allErrors: true, jsonPointers: true });
+// Logger
+const log = require('../../config/logger');
 
-const chunkValidator = ajv.compile(chunkSchema);
 const { validateSchema, validateSplitSchema } = require('../utils/validator');
 const {
-  createChunk, fetchSchema, splitChunk, updateChunk,
+  createChunk,
+  fetchSchema,
+  splitChunk,
+  updateChunk,
+  loadExternalSchema,
+  ilaIdValidator,
 } = require('../utils/helpers');
 
 // Models
 const Chunk = require('../../models/chunk');
 
-// Logger
-const log = require('../../config/logger');
+const ajv = new Ajv({
+  allErrors: true,
+  jsonPointers: true,
+  extendRefs: true,
+  loadSchema: loadExternalSchema,
+  schemaId: 'auto',
+  missingRefs: true,
+  meta: true,
+  validateSchema: true,
+});
+
+const chunkValidator = ajv.compile(chunkSchema);
 
 /**
  * @desc Get chunks by ilaId
@@ -103,6 +118,17 @@ router.post('/', jsonParser, async (req, res) => {
   const { domainId, schema, schemaUri } = req.body.def;
   const invalidInputSchema = validateSchema(schema);
 
+  const validIlaId = await ilaIdValidator(ilaId);
+
+  if (validIlaId) {
+    return res.status(400).send(
+      {
+        errors:
+        [{ message: 'ilaId must not contain special characters!', code: 400 }],
+      },
+    );
+  }
+
   let payloadValidator;
 
   if (!token) {
@@ -151,8 +177,17 @@ router.post('/', jsonParser, async (req, res) => {
         },
       );
     }
-
-    payloadValidator = ajv.compile(domainSchema.body.data.value);
+    try {
+      payloadValidator = await ajv.compileAsync(domainSchema.body.data.value);
+    } catch (e) {
+      log.error('ERROR: ', e);
+      return res.status(400).send(
+        {
+          errors:
+            [{ message: 'Schema is invalid!', code: 400 }],
+        },
+      );
+    }
   }
 
   if (!domainId && !schemaUri && invalidInputSchema) {
@@ -160,18 +195,18 @@ router.post('/', jsonParser, async (req, res) => {
   }
 
   if (schema) {
-    payloadValidator = ajv.compile(schema);
+    try {
+      payloadValidator = await ajv.compileAsync(schema);
+    } catch (e) {
+      log.error('ERROR: ', e);
+      return res.status(400).send(
+        {
+          errors:
+            [{ message: 'Schema is invalid!', code: 400 }],
+        },
+      );
+    }
   }
-
-  // const valid = chunkValidator(req.body);
-  // if (!valid) {
-  //   return res.status(400).send(
-  //     {
-  //       errors:
-  //        [{ message: 'Input does not match schema!', code: 400 }],
-  //     },
-  //   );
-  // }
 
   const validPayload = Object.prototype.hasOwnProperty.call(payload, req.body.cid);
 
@@ -223,11 +258,22 @@ router.post('/', jsonParser, async (req, res) => {
  *
  * @route   POST /chunks/validate
  * @access  Private
- * @return {Object} -
+ * @return {Object} - object containing valid property and meta data
  */
 router.post('/validate', jsonParser, async (req, res) => {
-  const { payload, token } = req.body;
+  const { payload, token, ilaId } = req.body;
   const valid = chunkValidator(req.body);
+
+  const validIlaId = await ilaIdValidator(ilaId);
+
+  if (validIlaId) {
+    return res.status(400).send(
+      {
+        errors:
+        [{ message: 'ilaId must not contain special characters!', code: 400 }],
+      },
+    );
+  }
 
   if (!token) {
     return res.status(401).send(
@@ -288,8 +334,22 @@ router.post('/validate', jsonParser, async (req, res) => {
       },
     );
   }
+  let payloadValidator;
 
-  const payloadValidator = ajv.compile(domainSchema.body.data.value);
+  try {
+    const obj = domainSchema.body.data.value;
+    // payloadValidator = ajv.compile(domainSchema.body.data.value);
+    payloadValidator = await ajv.compileAsync(obj);
+  } catch (e) {
+    log.error('ERROR: ', e);
+    return res.status(400).send(
+      {
+        errors:
+          [{ message: 'Schema is invalid!', code: 400 }],
+      },
+    );
+  }
+
   const validChunk = payloadValidator(payload);
   res.status(200).send({ data: { valid: validChunk }, meta: {} });
 });

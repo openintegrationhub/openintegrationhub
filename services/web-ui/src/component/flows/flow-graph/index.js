@@ -1,49 +1,16 @@
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import {
-    forceSimulation, forceLink, forceManyBody, forceCenter,
-} from 'd3-force';
+    tree, hierarchy, select,
+} from 'd3';
 
 // Ui
 import Modal from '@material-ui/core/Modal';
 
+// utils
+import { buildTree } from '../../../utils/tree';
 
-/**
- * Create the list of nodes to render.
- * @returns {Array} Array of nodes.
- * @private
- */
-function generateSimulation(props) {
-    const {
-        data, height, width, maxSteps, strength,
-    } = props;
-    if (!data) {
-        return { nodes: [], links: [] };
-    }
-    // copy the data
-    const nodes = data.nodes.map(d => ({ ...d }));
-    const links = data.links.map(d => ({ ...d }));
-    // build the simuatation
-    const simulation = forceSimulation(nodes)
-        .force('link', forceLink().id(d => d.id))
-        .force('link', forceLink().id(d => d.id).distance([150]))
-        .force('charge', forceManyBody().strength(strength || -80))
-        .force('center', forceCenter(width / 2, height / 2))
-        .stop();
-
-    simulation.force('link').links(links);
-
-
-    const upperBound = Math.ceil(
-        Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay()),
-    );
-    for (let i = 0; i < Math.min(maxSteps, upperBound); i += 1) {
-        simulation.tick();
-    }
-
-    return { nodes, links };
-}
+import './styles.css';
 
 class FlowGraph extends React.Component {
     static get defaultProps() {
@@ -54,20 +21,9 @@ class FlowGraph extends React.Component {
         };
     }
 
-    static get propTypes() {
-        return {
-            className: PropTypes.string,
-            data: PropTypes.object.isRequired,
-            height: PropTypes.number.isRequired,
-            width: PropTypes.number.isRequired,
-            steps: PropTypes.number,
-        };
-    }
-
     constructor(props) {
         super(props);
         this.state = {
-            data: generateSimulation(props),
             openInfo: false,
             modalData: {
                 name: '',
@@ -77,44 +33,92 @@ class FlowGraph extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            data: generateSimulation(nextProps),
-        });
+    componentDidMount() {
+        this.getTree(buildTree(this.props.data.nodes, this.props.data.links));
+    }
+
+    getTree(treeData) {
+        // declares a tree layout and assigns the size
+        const margin = {
+            top: 20, right: 90, bottom: 30, left: 90,
+        };
+        const width = 1000 - margin.left - margin.right;
+        const height = 240 - margin.top - margin.bottom;
+
+        // declares a tree layout and assigns the size
+        const treemap = tree()
+            .size([height, width]);
+
+        //  assigns the data to a hierarchy using parent-child relationships
+        let nodes = hierarchy(treeData, d => d.children);
+
+        // maps the node data to the tree layout
+        nodes = treemap(nodes);
+
+        // moves the 'group' element to the top left margin
+        const svg = select(`#tree-${this.props.id}`).append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom);
+        const g = svg.append('g')
+            .attr('transform',
+                `translate(${margin.left},${margin.top})`);
+
+        // adds the links between the nodes
+        g.selectAll('.link')
+            .data(nodes.descendants().slice(1))
+            .enter().append('path')
+            .attr('class', 'link')
+            .attr('d', d => `M${d.y},${d.x
+            }C${(d.y + d.parent.y) / 2},${d.x
+            } ${(d.y + d.parent.y) / 2},${d.parent.x
+            } ${d.parent.y},${d.parent.x}`);
+
+        // adds each node as a group
+        const node = g.selectAll('.node')
+            .data(nodes.descendants())
+            .enter().append('g')
+            .attr('class', d => `node${
+                d.children ? ' node--internal' : ' node--leaf'}`)
+            .attr('transform', d => `translate(${d.y},${d.x})`)
+            .on('click', this.onClickHandle.bind(this));
+
+        // adds the circle to the node
+        node.append('circle')
+            .attr('r', 10);
+
+        // adds the text to the node
+        node.append('text')
+            .attr('dy', '.35em')
+            .attr('x', d => (d.children ? -13 : 13))
+            .attr('y', () => (13))
+            .style('text-anchor', d => (d.children ? 'end' : 'start'))
+            .text(d => d.data.name)
+            .on('click', this.onClickHandle.bind(this));
+    }
+
+    onClickHandle(d) {
+        const data = this.props.data.nodes.find(node => node.id === d.data.id);
+        if (data) {
+            this.setState({
+                openInfo: true,
+                modalData: {
+                    name: data.name,
+                    description: data.description,
+                    function: data.function,
+                },
+            });
+        }
     }
 
     render() {
         const {
-            className, height, width,
+            height, width,
         } = this.props;
-        const { data } = this.state;
-        const { nodes, links } = data;
         return (
             <div>
-                <svg width={width} height={height} className={className}>
-                    {links.map(({ source, target }, index) => (
-                        <line
-                            className='link'
-                            key={`link-${index}`}
-                            strokeWidth={2}
-                            stroke='black'
-                            x1={source.x} x2={target.x} y1={source.y} y2={target.y} />
-                    ))}
-                    {nodes.map((node, index) => {
-                        const transform = `translate(${node.x},${node.y})`;
-                        return <g
-                            className='node'
-                            key={`node-${index}`}
-                            transform={transform}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => { this.setState({ openInfo: !this.state.openInfo, modalData: node }); }} >
-                            <circle
-                                r={5}/>
-                            <text x={25} dy='.35em'>{node.id}</text>
-                        </g>;
-                    })}
+                <div id={`tree-${this.props.id}`} width={width} height={height}>
 
-                </svg>
+                </div>
 
                 <Modal
                     open={this.state.openInfo}
@@ -130,14 +134,25 @@ class FlowGraph extends React.Component {
                     }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
-                    <div style={{
-                        backgroundColor: 'white',
-                        margin: 'auto',
-                        outline: 'none',
-                    }}>
-                        <div><lable>Name: </lable>{this.state.modalData.name}</div>
-                        <div><lable>Description: </lable>{this.state.modalData.description}</div>
-                        <div><lable>Function: </lable>{this.state.modalData.function}</div>
+                    <div
+                        className="flow-modal"
+                        style={{
+                            backgroundColor: 'white',
+                            margin: 'auto',
+                            outline: 'none',
+                        }}>
+                        <div className="item">
+                            <span>Name: </span>
+                            <span>{this.state.modalData.name}</span>
+                        </div>
+                        <div className="item">
+                            <span>Description: </span>
+                            <span>{this.state.modalData.description}</span>
+                        </div>
+                        <div className="item">
+                            <span>Function: </span>
+                            <span>{this.state.modalData.function}</span>
+                        </div>
                     </div>
 
                 </Modal>
