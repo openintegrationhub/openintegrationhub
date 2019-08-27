@@ -1,0 +1,44 @@
+.node circle {
+    fill: #fff;
+    stroke: #ff8200;
+    stroke-width: 3px;
+    cursor: pointer;
+
+  }
+  
+.node text { 
+  font: 16px sans-serif;
+  cursor: pointer;
+}
+
+.node--internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}
+
+.flow-modal{
+  width: 95%;
+  max-width: 500px;
+  padding: 16px;
+  background: white;
+}
+
+.flow-modal .item{
+  display: flex;
+  width: 100%;
+  padding: 6px 0;
+}
+
+.flow-modal span{
+  display: block;
+  flex:1;
+}
+
+.flow-modal span:first-of-type{
+  font-weight: 600;
+}

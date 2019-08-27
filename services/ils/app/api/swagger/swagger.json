@@ -126,6 +126,52 @@
         }
       }
     },
+    "/chunks/validate": {
+      "post": {
+        "x-swagger-router-controller": "chunk",
+        "tags": [
+          "chunks"
+        ],
+        "summary": "Validate chunk",
+        "description": "Validate chunk from SDF Adapter",
+        "operationId": "",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/validateChunkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload does not contain cid, input does not match schema or schema is invalid!"
+          },
+          "401": {
+            "description": "Service token not provided!"
+          },
+          "404": {
+            "description": "DomainId or schemaUri not found!"
+          },
+          "500": {
+            "description": "Internal server error!"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addChunk"
+              }
+            }
+          },
+          "description": "",
+          "required": true
+        }
+      }
+    },
     "/chunks/split": {
       "post": {
         "x-swagger-router-controller": "chunk",
@@ -173,7 +219,7 @@
   },
   "servers": [
     {
-      "url": "http://integration-layer.openintegrationhub.com/"
+      "url": "http://ils.openintegrationhub.com/"
     },
     {
       "url": "http://localhost:3003/"
@@ -435,6 +481,24 @@
                 }
               }
             }
+          }
+        }
+      },
+      "validateChunkResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "valid": {
+                "type": "boolen",
+                "example": "true"
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {}
           }
         }
       },

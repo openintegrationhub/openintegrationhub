@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Redirect } from 'react-router-dom';
 
+// Actions
+import { checkLogin } from '../../action/auth';
+
 
 class LoginCheck extends React.Component {
     render() {
@@ -11,6 +14,7 @@ class LoginCheck extends React.Component {
                 {this.props.children}
             </React.Fragment>;
         }
+        this.props.checkLogin();
 
         return (
             <Redirect to="/auth"></Redirect>
@@ -22,7 +26,9 @@ const mapStateToProps = state => ({
     auth: state.auth,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({
+    checkLogin,
+}, dispatch);
 
 export default connect(
     mapStateToProps,

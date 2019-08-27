@@ -20,7 +20,9 @@ import locale from 'react-json-editor-ajrm/locale/en';
 import FlowTeaser from './flow-teaser';
 
 // actions
-import { getFlows, createFlow, getFlowsPage } from '../../action/flows';
+import {
+    getFlows, createFlow, getFlowsPage, switchAddState,
+} from '../../action/flows';
 
 
 const useStyles = {
@@ -36,33 +38,79 @@ const useStyles = {
 };
 
 class Flows extends React.Component {
-    state= {
-        addFlow: false,
-        editorData: null,
-    }
-
     constructor(props) {
-        super();
+        super(props);
         props.getFlows();
+        this.state = {
+            addFlow: false,
+            editorData: null,
+            wasChanged: false,
+        };
+        this.dummyData = {
+            name: 'Flow Template with 1 exemplary flow node',
+            description: 'This is a template for flow creation with an exemplary flow node',
+            graph: {
+                nodes: [
+                    {
+                        id: 'step_1',
+                        componentId: 'COMPONENT ID',
+                        name: 'Flow node name',
+                        function: 'TRIGGER',
+                        description: 'Flow node description',
+                    },
+                    {
+                        id: 'step_2',
+                        componentId: '5cdaba4d6474a5001a8b2588',
+                        name: 'Code Component',
+                        function: 'execute',
+                        description: 'Exemplary flow node',
+                        fields: {
+                            code: 'function* run() {console.log(\'Calling external URL\');yield request.post({uri: \'http://webhook.site/d5d29c09-79ff-4e97-8137-537c6282a668\', body: msg.body, json: true});}',
+                        },
+                    },
+                    {
+                        id: 'step_3',
+                        componentId: 'COMPONENT ID',
+                        name: 'Flow node name',
+                        function: 'TRIGGER',
+                        description: 'Flow node description',
+                    },
+                ],
+                edges: [
+                    {
+                        source: 'step_1',
+                        target: 'step_2',
+                    },
+                    {
+                        source: 'step_2',
+                        target: 'step_3',
+                    },
+                ],
+            },
+            type: 'ordinary',
+            cron: '*/2 * * * *',
+        };
     }
 
     addFlow = () => {
-        this.setState({
-            addFlow: true,
-        });
+        this.props.switchAddState();
     };
 
     saveFlow = () => {
-        this.props.createFlow(this.state.editorData);
-        this.setState({
-            addFlow: false,
-        });
+        if (this.state.wasChanged) {
+            this.props.createFlow(this.state.editorData);
+            this.setState({
+                wasChanged: false,
+            });
+            this.props.switchAddState();
+        }
     }
 
     editorChange(e) {
         if (!e.error) {
             this.setState({
                 editorData: e.jsObject,
+                wasChanged: true,
             });
         }
     }
@@ -129,8 +177,8 @@ class Flows extends React.Component {
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    open={this.state.addFlow}
-                    onClose={ () => { this.setState({ addFlow: false }); }}
+                    open={this.props.flows.addState}
+                    onClose={ () => { this.props.switchAddState(); }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
@@ -140,9 +188,13 @@ class Flows extends React.Component {
                             theme = 'dark_vscode_tribute'
                             height = '550px'
                             width = '600px'
+                            placeholder = {this.dummyData}
                             onChange={this.editorChange.bind(this)}
                         />
-                        <Button variant="outlined" aria-label="Add" onClick={this.saveFlow}>
+                        <Button variant="outlined" aria-label="Add" onClick={() => { this.props.switchAddState(); }}>
+                            close
+                        </Button>
+                        <Button variant="outlined" aria-label="Add" onClick={this.saveFlow} disabled={!this.state.wasChanged}>
                             Save
                         </Button>
                     </div>
@@ -160,6 +212,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     getFlows,
     createFlow,
     getFlowsPage,
+    switchAddState,
 }, dispatch);
 
 export default flow(

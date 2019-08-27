@@ -267,7 +267,11 @@ class Profile extends React.Component {
     }
 }
 
+<<<<<<< HEAD
 Profile.propTypes = {
+=======
+Home.propTypes = {
+>>>>>>> master
     classes: PropTypes.object.isRequired,
 };
 
@@ -289,4 +293,8 @@ export default flow(
     ),
     withStyles(useStyles),
     withForm,
+<<<<<<< HEAD
 )(Profile);
+=======
+)(Home);
+>>>>>>> master
