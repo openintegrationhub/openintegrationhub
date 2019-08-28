@@ -2,8 +2,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const schema = new Schema({
-    graph: Schema.Types.Mixed,
-    status: String
+    graph: {
+        type: Schema.Types.Mixed
+    },
+    status: {
+        type: String
+    },
+    startedBy: {
+        type: String
+    }
 });
 
 class Flow {
