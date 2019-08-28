@@ -196,8 +196,9 @@ policy proved Passwords for the Admin and Service Account.
 3. oidc-certs
   3.1  
   Filename: keystore.json  
-  pleas make sure you run ```yarn``` before and the next steps in the Repo Root folder ```services/iam```
-  that file needs to be generated ```node -e "require('./src/util/keystore').generateFile()"``` which will place a file ```./keystore/keystore.json```
+  please make sure you run ```yarn``` before and the next steps needs to be called from the Repo Root folder ```services/iam```
+  This call will generate the keystore file ```node -e "require('./src/util/keystore').generateFile()"``` 
+  which will placed a file ```./keystore/keystore.json```
   the generated file should be used to create the kubernetes Secret
 
 ## Useful commands
