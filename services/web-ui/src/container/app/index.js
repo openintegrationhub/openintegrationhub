@@ -12,8 +12,7 @@ import Auth from '../auth';
 import LoginCheck from '../../component/login-check';
 
 // Actions
-import { resetLogin } from '../../action/auth';
-// Actions
+import { resetLogin, checkLogin } from '../../action/auth';
 import { getUsers } from '../../action/users';
 import { getTenants } from '../../action/tenants';
 import { getRoles } from '../../action/roles';
@@ -22,6 +21,7 @@ import { getRoles } from '../../action/roles';
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.props.checkLogin();
         axios.interceptors.response.use(response => response, (error) => {
             if (error.response.status === 401) {
                 console.log('REDIRECT TO LOGIN SCREEN', error);
@@ -36,6 +36,12 @@ class App extends React.Component {
 
     componentDidMount() {
         document.title = 'Web UI';
+    }
+
+    componentDidUpdate() {
+        if (!this.props.auth && !this.props.auth.isLoggedIn) {
+            this.props.checkLogin();
+        }
     }
 
     render() {
@@ -55,6 +61,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     getUsers,
     getTenants,
     getRoles,
+    checkLogin,
 }, dispatch);
 
 export default flow(
