@@ -31,7 +31,10 @@ const useStyles = {
         margin: '10px',
         color: 'white',
     },
-    fontColor: {
+    root: {
+        '&.focused': {
+            color: 'white',
+        },
         color: 'white',
     },
 };
@@ -109,12 +112,32 @@ class Auth extends React.Component {
                           <form onSubmit={this.login} className={classes.form}>
 
                               <FormControl className={classes.formControl} fullWidth required>
-                                  <InputLabel className={classes.fontColor} htmlFor="username">username</InputLabel>
-                                  <Input id="username" className={classes.fontColor} name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
+                                  <InputLabel
+                                      classes={{
+                                          root: classes.root,
+                                          focused: 'focused',
+                                      }}
+                                      htmlFor="username">
+                                      username
+                                  </InputLabel>
+                                  <Input id="username"
+                                      classes={{
+                                          root: classes.root,
+                                          focused: 'focused',
+                                      }}
+                                      name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
                               </FormControl>
                               <FormControl className={classes.formControl} fullWidth required>
-                                  <InputLabel className={classes.fontColor} htmlFor="password">password</InputLabel>
-                                  <Input id="password" className={classes.fontColor} type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
+                                  <InputLabel classes={{
+                                      root: classes.root,
+                                      focused: 'focused',
+                                  }} htmlFor="password">
+                                      password
+                                  </InputLabel>
+                                  <Input id="password" classes={{
+                                      root: classes.root,
+                                      focused: 'focused',
+                                  }} type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
                               </FormControl>
                               <FormControl className={classes.formControl} fullWidth>
                                   <Button type='submit' variant="contained" color="secondary">Login</Button>

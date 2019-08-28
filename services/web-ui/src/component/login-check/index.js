@@ -8,14 +8,22 @@ import { checkLogin } from '../../action/auth';
 
 
 class LoginCheck extends React.Component {
+    componentDidMount() {
+        this.props.checkLogin();
+    }
+
+    componentDidUpdate() {
+        if (!this.props.auth && !this.props.auth.isLoggedIn) {
+            this.props.checkLogin();
+        }
+    }
+
     render() {
-        if (this.props.auth.isLoggedIn) {
+        if (this.props.auth && this.props.auth.isLoggedIn) {
             return <React.Fragment>
                 {this.props.children}
             </React.Fragment>;
         }
-        this.props.checkLogin();
-
         return (
             <Redirect to="/auth"></Redirect>
         );

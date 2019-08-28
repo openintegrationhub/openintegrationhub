@@ -5,6 +5,9 @@ import { MemoryRouter } from 'react-router-dom';
 import Component from '.';
 
 it('renders without crashing', () => {
+    sessionStorage.setItem('oihToken', 'adfggsdfklgsdf');
+
+
     mount(
         <Provider store={global.configureStore()}>
             <MemoryRouter>
