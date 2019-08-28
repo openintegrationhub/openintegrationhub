@@ -57,7 +57,7 @@ export const resetLogin = () => async (dispatch) => {
     sessionStorage.removeItem('oihToken');
 };
 
-export const checkLogin = () => async (dispatch) => {
+export const checkLogin = () => (dispatch) => {
     const result = sessionStorage.getItem('oihToken');
     if (result) {
         setAxiosAuth(result);

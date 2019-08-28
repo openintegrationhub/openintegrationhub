@@ -58,29 +58,32 @@ class Users extends React.Component {
         const {
             classes,
         } = this.props;
-        return (
-            <div className={classes.wrapper}>
-                <Grid item xs={12} className={classes.tools}>
-                    <Button variant="outlined" aria-label="Add" onClick={this.addUser}>
-                        Add<AddIcon/>
-                    </Button>
-                </Grid>
-                <Grid item xs={12}>
-                    <EditUser
-                        side={'right'}
-                        open={this.state.drawerIsOpen}
-                        userId={this.state.editUserId}
-                        onClose={() => {
-                            this.setState({
-                                drawerIsOpen: false,
-                            });
-                        }}
-                    />
-                    <Table data={this.props.users.all} editHandler={this.editHandler} type='user'/>
-                </Grid>
+        if (this.props.users && this.props.users.all.length) {
+            return (
+                <div className={classes.wrapper}>
+                    <Grid item xs={12} className={classes.tools}>
+                        <Button variant="outlined" aria-label="Add" onClick={this.addUser}>
+                            Add<AddIcon/>
+                        </Button>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <EditUser
+                            side={'right'}
+                            open={this.state.drawerIsOpen}
+                            userId={this.state.editUserId}
+                            onClose={() => {
+                                this.setState({
+                                    drawerIsOpen: false,
+                                });
+                            }}
+                        />
+                        <Table data={this.props.users.all} editHandler={this.editHandler} type='user'/>
+                    </Grid>
 
-            </div>
-        );
+                </div>
+            );
+        }
+        return null;
     }
 }
 
