@@ -17,6 +17,7 @@
   "dependencies": {
     "@openintegrationhub/component-orchestrator": "*",
     "@openintegrationhub/event-bus": "*",
+    "@openintegrationhub/iam-utils": "*",
     "JSONStream": "1.3.1",
     "backend-commons-lib": "*",
     "express": "4.16.3",
