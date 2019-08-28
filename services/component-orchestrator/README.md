@@ -32,6 +32,8 @@ If a container is running an outdated version of node, it will be redeployed.
 This service requires a service account with the following permissions:
 
 - `components.get`
+- `iam.token.create`
+- `iam.token.delete`
 
 ## How to build
 
