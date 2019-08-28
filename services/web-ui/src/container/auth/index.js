@@ -109,7 +109,12 @@ class Auth extends React.Component {
                           <form onSubmit={this.login} className={classes.form}>
 
                               <FormControl className={classes.formControl} fullWidth required>
-                                  <InputLabel className={classes.fontColor} htmlFor="username">username</InputLabel>
+                                  <InputLabel
+                                      focused={classes.fontColor}
+                                      className={classes.fontColor}
+                                      htmlFor="username">
+                                      username
+                                  </InputLabel>
                                   <Input id="username" className={classes.fontColor} name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
                               </FormControl>
                               <FormControl className={classes.formControl} fullWidth required>
