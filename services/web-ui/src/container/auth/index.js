@@ -35,9 +35,6 @@ const useStyles = {
         '&.focused': {
             color: 'white',
         },
-        '&$focusVisible': {
-            color: 'white',
-        },
         color: 'white',
     },
 };
