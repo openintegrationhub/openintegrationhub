@@ -118,16 +118,16 @@ class Main extends React.Component {
     }
 
     componentDidMount() {
-        let menuArr = [];
+        const menuArr = ['Start', 'Profile', 'Flows', 'Components', 'Metadata', 'Logout'];
         switch (this.props.auth.role) {
         case 'ADMIN':
-            menuArr = ['Start', 'Profile', 'Users', 'Tenants', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+            menuArr.splice(1, 0, 'Tenants');
+            menuArr.splice(1, 0, 'Users');
             break;
         case 'TENANT_ADMIN':
-            menuArr = ['Start', 'Profile', 'Users', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+            menuArr.splice(1, 0, 'Users');
             break;
         default:
-            menuArr = ['Start', 'Profile', 'Flows', 'Components', 'Metadata', 'Logout'];
             break;
         }
         this.setState({
@@ -137,17 +137,17 @@ class Main extends React.Component {
 
     componentDidUpdate(prefProps) {
         if (prefProps.auth !== this.props.auth) {
-            let menuArr = [];
             let context = null;
+            const menuArr = ['Start', 'Profile', 'Flows', 'Components', 'Metadata', 'Logout'];
             switch (this.props.auth.role) {
             case 'ADMIN':
-                menuArr = ['Start', 'Profile', 'Users', 'Tenants', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+                menuArr.splice(1, 0, 'Tenants');
+                menuArr.splice(1, 0, 'Users');
                 break;
             case 'TENANT_ADMIN':
-                menuArr = ['Start', 'Profile', 'Users', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+                menuArr.splice(1, 0, 'Users');
                 break;
             default:
-                menuArr = ['Start', 'Profile', 'Flows', 'Components', 'Metadata', 'Logout'];
                 break;
             }
             if (this.props.auth.memberships && this.props.auth.memberships.length) {
@@ -318,11 +318,15 @@ class Main extends React.Component {
                                   </Grid>
                                   <Grid item>
                                       <Button
-                                          style={{ width: '100px', marginTop: '3px' }}
+                                          style={{
+                                              width: '100px',
+                                              marginTop: '3px',
+                                              marginLeft: '6px',
+                                          }}
                                           onClick={() => {
                                               this.props.history.push('/profile');
                                           }}>
-                                          <Person/>
+                                          <Person />
                                       </Button>
                                   </Grid>
                               </Grid>
