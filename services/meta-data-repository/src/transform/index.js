@@ -3,7 +3,7 @@ const JsonPointer = require('json-pointer');
 const Ajv = require('ajv');
 const url = require('url');
 const path = require('path');
-const find = require('lodash/find');
+// const find = require('lodash/find');
 const { SchemaReferenceError, SchemaValidationError } = require('../error');
 const conf = require('../conf');
 
@@ -98,7 +98,7 @@ function transformDbResult(result) {
 function transformDbResults(results) {
     if (typeof results === 'object') {
         if (Array.isArray(results)) {
-            return results.map(entry => (transformDbResult(entry)));
+            return results.map((entry) => (transformDbResult(entry)));
         }
         return transformDbResult(results);
     }
@@ -136,21 +136,22 @@ module.exports = {
                 },
                 async processContent(res, cb) {
                     let error;
-                    if (res.location.match('http')
+                    let schema;
+
+                    try {
+                        if (res.location.match('http')
                         && !res.location.match(conf.baseUrl)
-                    ) {
-                        try {
-                            // await processExternalSchema({
-                            //     location: res.location,
-                            //     domain,
-                            //     schema: JSON.parse(res.text),
-                            //     jsonRefsOptions,
-                            // });
-                        } catch (err) {
-                            error = err;
+                        ) {
+                        //
                         }
+                        schema = JSON.parse(res.text);
+                    } catch (err) {
+                        error = err;
+                        // console.log(err);
+                        // throw new InputFormatError('Incorrect input format. Expecting JSON');
+                    } finally {
+                        cb(error, schema);
                     }
-                    cb(error, JSON.parse(res.text));
                 },
             },
             ...jsonRefsOptions.loaderOptions,
