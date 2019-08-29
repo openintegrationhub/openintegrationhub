@@ -21,7 +21,7 @@ import { getUsers } from '../../action/users';
 const useStyles = {
     avatar: {
         margin: '25px',
-        background: 'lightgrey',
+        background: 'rgb(243, 243, 243)',
         borderRadius: '50%',
         height: '150px',
         width: '150px',
@@ -39,7 +39,7 @@ const useStyles = {
     },
     contentFlows: {
         marginTop: '50px',
-        background: 'Gainsboro',
+        background: 'rgb(243, 243, 243)',
         borderRadius: '15px',
     },
     indicator: {
@@ -135,7 +135,7 @@ class Home extends React.Component {
                             onClick={() => {
                                 this.props.history.push('/profile');
                             }}
-                            style={{ width: '100px', background: 'lightgrey', marginTop: '8px' }}>
+                            style={{ width: '100px', background: 'rgb(243, 243, 243)', marginTop: '8px' }}>
                             Profile
                         </Button>
                     </Grid>
@@ -149,9 +149,8 @@ class Home extends React.Component {
                             <Button
                                 style={{
                                     width: '100px',
-                                    background: 'lightgrey',
+                                    background: 'rgb(230, 230, 230)',
                                     margin: '8px',
-
                                 }}
                                 onClick={() => {
                                     this.props.history.push('/flows');
@@ -162,7 +161,7 @@ class Home extends React.Component {
                         <Grid item>
                             <Button style={{
                                 width: '100px',
-                                background: 'lightgrey',
+                                background: 'rgb(230, 230, 230)',
                                 margin: '8px',
                             }}
                             onClick={() => {
