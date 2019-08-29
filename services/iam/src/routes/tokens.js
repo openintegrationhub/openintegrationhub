@@ -64,7 +64,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
         return next({ status: 400, message: 'Missing inquirer' });
     }
 
-    const token = await TokenUtils.sign({
+    const tokenObj = await TokenUtils.sign({
         ...account,
         purpose: req.body.purpose || 'accountToken',
         initiator: req.user.userid,
@@ -84,7 +84,7 @@ router.post('/', auth.can([RESTRICTED_PERMISSIONS['iam.token.create']]), async (
         'x-request-id': req.headers['x-request-id'],
     });
 
-    res.status(200).send({ token });
+    res.status(200).send({ token: tokenObj.token, id: tokenObj._id });
 });
 
 /**

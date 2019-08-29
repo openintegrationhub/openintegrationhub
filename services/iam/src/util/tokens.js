@@ -52,12 +52,15 @@ module.exports = {
                 id: existingToken._id,
                 props: module.exports._getNewExpireAt(opts.lifespan || existingToken.tokenLifeSpan),
             });
-            return existingToken.token;
+            return {
+                token: existingToken.token,
+                id: existingToken._id,
+            };
         }
 
         const token = base64Url.encode(crypto.randomBytes(128));
 
-        await TokensDAO.create({
+        const newToken = await TokensDAO.create({
             ...query,
             description: accountPayload.description,
             token,
@@ -67,7 +70,7 @@ module.exports = {
             ...tokenExpireAt,
         });
 
-        return token;
+        return newToken;
     },
 
     fetchAndProlongToken: async (token) => {
