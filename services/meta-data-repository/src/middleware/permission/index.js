@@ -6,7 +6,7 @@ const conf = require('../../conf');
 const log = logger.getLogger(`${conf.logging.namespace}/permission`);
 
 module.exports = {
-    domainOwnerOrAllowed: ({ permissions }) => async (req, res, next) => {
+    domainOwnerOrAllowed: ({ permissions = [] }) => async (req, res, next) => {
         try {
             req.hasAll = hasAll({
                 user: req.user,
@@ -29,18 +29,56 @@ module.exports = {
                 user: req.user,
             });
 
-            if (req.ownsDomain || req.hasAll) {
+            if (req.ownsDomain || (req.hasAll && req.user.tenant.toString() === domain.tenant.toString()) || req.user.isAdmin) {
                 return next();
             }
 
             return next({ status: 403 });
         } catch (err) {
-            log.error(err);
-            if (req.hasAll) {
+
+            if (err.name === 'CastError' || req.hasAll) {
                 return next({ status: 404 });
             }
+
+            log.error(err);
 
             return next({ status: 403 });
         }
     },
+    hasReadAccess: async (req, res, next) => {
+
+        try {
+            const domain = await DomainDAO.findOne({
+                _id: req.params.id || req.domainId,
+            });
+
+            if (!domain) {
+                return next({ status: 404 });
+            }
+
+            req.ownsDomain = isOwnerOf({
+                entity: domain,
+                user: req.user,
+            });
+
+            if (domain.public || req.ownsDomain || req.user.tenant.toString() === domain.tenant.toString() || req.user.isAdmin) {
+
+                return next();
+            }
+
+            return next({
+                status: 403,
+            });
+
+        } catch (err) {
+            if (err.name === 'CastError' || req.hasAll) {
+                return next({ status: 404 });
+            }
+            log.error(err);
+            return next({
+                status: 500,
+            })
+        }
+
+    }
 };

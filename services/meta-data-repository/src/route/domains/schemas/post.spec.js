@@ -357,12 +357,12 @@ describe('schemas', () => {
             .expect(200);
 
         await request.post(`/domains/${domain_.data.id}/schemas/import`)
-            .set(...global.user2)
+            .set(...global.user3)
             .attach('archive', packDest)
             .expect(403);
 
         result = (await request.get(`/domains/${domain_.data.id}/schemas`)
-            .set(...global.user2)
+            .set(...global.tenantAdmin1)
             .expect(403)).body;
 
         result = (await request.get(`/domains/${domain_.data.id}/schemas`)

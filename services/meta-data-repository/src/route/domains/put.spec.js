@@ -30,7 +30,7 @@ describe('domains', () => {
         const data = {
             name: 'foo',
             description: 'bar',
-            public: true,
+            // public: true,
         };
 
         // create a domain
@@ -64,7 +64,7 @@ describe('domains', () => {
 
         // put as non authorized
         await request.put(`/domains/${result.data.id}`)
-            .set(...global.user2)
+            .set(...global.user3)
             .send({
                 name: 'fooUpdate',
                 description: 'bar',

@@ -4,6 +4,7 @@ const mkdirp = require('mkdirp');
 const fs = require('fs-extra');
 const multer = require('multer');
 const uuid = require('uuid');
+const { PERMISSIONS } = require('@openintegrationhub/iam-utils');
 const { domainOwnerOrAllowed } = require('../../../middleware/permission');
 
 const conf = require('../../../conf');
@@ -39,7 +40,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post('/', domainOwnerOrAllowed({
-    permissions: ['not.defined'],
+    permissions: [PERMISSIONS.common["metadata.domains.crud"]],
 }), async (req, res, next) => {
     try {
         const { name, description, value } = req.body;
@@ -78,11 +79,7 @@ router.post('/', domainOwnerOrAllowed({
                     owners: [{
                         id: owner,
                         type: USER,
-                    }, req.user.tenantId ? {
-                        id: req.user.tenantId,
-                        type: TENANT,
-                        isImmutable: true,
-                    } : {}],
+                    }],
                 },
             })),
         });

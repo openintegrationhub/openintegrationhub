@@ -31,6 +31,8 @@ const schema = new Schema({
     owners: {
         type: [owners],
     },
+    tenant: String,
+    public: Boolean,
     refs: {
         type: [String],
     },

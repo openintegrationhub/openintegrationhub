@@ -1,5 +1,6 @@
 const express = require('express');
 const logger = require('@basaas/node-logger');
+const { PERMISSIONS } = require('@openintegrationhub/iam-utils');
 const { domainOwnerOrAllowed } = require('../../../middleware/permission');
 
 const conf = require('../../../conf');
@@ -14,7 +15,7 @@ const log = logger.getLogger(`${conf.logging.namespace}/domains/schmemas:delete`
 const router = express.Router();
 
 router.delete('/:uri*', domainOwnerOrAllowed({
-    permissions: ['not.defined'],
+    permissions: [PERMISSIONS.common["metadata.domains.crud"]],
 }), async (req, res, next) => {
     try {
         await SchemaDAO.delete(buildURI({

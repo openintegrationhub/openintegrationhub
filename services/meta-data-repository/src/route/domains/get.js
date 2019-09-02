@@ -1,6 +1,6 @@
 const express = require('express');
 const logger = require('@basaas/node-logger');
-const { domainOwnerOrAllowed } = require('../../middleware/permission');
+const { domainOwnerOrAllowed, hasReadAccess } = require('../../middleware/permission');
 const conf = require('../../conf');
 const { TENANT_ADMIN } = require('../../constant').ROLE;
 const { DomainDAO } = require('../../dao');
@@ -18,19 +18,18 @@ router.get('/', async (req, res, next) => {
         const pagination = new Pagination(
             req.originalUrl,
             DomainDAO,
-            req.user.sub,
         );
 
-        const ownerId = req.user.role === TENANT_ADMIN ? req.user.tenantId : req.user.sub;
+        const tenant = req.user.tenant;
 
         res.send({
             data: transformDbResults(await DomainDAO.findByEntityWithPagination(
-                req.user.sub,
+                req.user,
                 pagination.props(),
             )),
             meta: {
                 ...await pagination.calc({
-                    'owners.id': ownerId,
+                    tenant
                 }),
             },
         });
@@ -43,14 +42,14 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.get('/:id', domainOwnerOrAllowed({
-    permissions: ['not.defined'],
-}), async (req, res, next) => {
+router.get('/:id', hasReadAccess, async (req, res, next) => {
     try {
+        const domain = await DomainDAO.findOne({
+            _id: req.params.id,
+        });
+
         res.send({
-            data: transformDbResults(await DomainDAO.findOne({
-                _id: req.params.id,
-            })),
+            data: transformDbResults(domain),
         });
     } catch (err) {
         log.error(err, { 'x-request-id': req.headers['x-request-id'] });
