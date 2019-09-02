@@ -33,14 +33,14 @@ describe('domains', () => {
 
         await request.get('/domains/fooooo')
             .set(...global.user1)
-            .expect(403);
+            .expect(404);
     });
 
     test('Request existing domain', async () => {
         const payload = {
             name: 'foo',
             description: 'bar',
-            public: true,
+            // public: true,
         };
 
 
@@ -54,7 +54,7 @@ describe('domains', () => {
             .expect(200);
 
         await request.get(`/domains/${data.id}`)
-            .set(...global.user2)
+            .set(...global.tenantAdmin2)
             .expect(403);
 
         await request.get(`/domains/${data.id}`)
@@ -66,42 +66,66 @@ describe('domains', () => {
         const payload = {
             name: 'foo',
             description: 'bar',
+            // public: true,
+        };
+
+        const globalPayload = {
+            name: 'fooglobal',
+            description: 'bar',
             public: true,
         };
 
         let { data } = (await request.post('/domains')
-            .set(...global.tenantUser1)
+            .set(...global.tenantAdmin1)
             .send(payload)
             .expect(200)).body;
 
+        let globalData = (await request.post('/domains')
+            .set(...global.admin)
+            .send(globalPayload)
+            .expect(200)).body;
+
         const domainId = data.id;
+        const globalDomainId = globalData.data.id;
 
         await request.get(`/domains/${domainId}`)
             .set(...global.tenantUser1)
             .expect(200);
-
-        await request.get(`/domains/${domainId}`)
-            .set(...global.tenantUser11)
-            .expect(403);
 
         await request.get(`/domains/${domainId}`)
             .set(...global.tenantAdmin1)
             .expect(200);
 
         await request.get(`/domains/${domainId}`)
-            .set(...global.tenantAdmin2)
-            .expect(403);
-
-        await request.get(`/domains/${domainId}`)
             .set(...global.tenantUser2)
             .expect(403);
+
+        await request.get(`/domains/${globalDomainId}`)
+            .set(...global.tenantUser1)
+            .expect(200);
+
+        await request.get(`/domains/${globalDomainId}`)
+            .set(...global.tenantUser2)
+            .expect(200);
+
+        // await request.get(`/domains/${domainId}`)
+        //     .set(...global.tenantAdmin1)
+        //     .expect(200);
+        //
+        // await request.get(`/domains/${domainId}`)
+        //     .set(...global.tenantAdmin2)
+        //     .expect(403);
+        //
+        // await request.get(`/domains/${domainId}`)
+        //     .set(...global.tenantUser2)
+        //     .expect(403);
 
         await request.get(`/domains/${domainId}`)
             .set(...global.admin)
             .expect(200);
 
         data = (await request.post(`/domains/${domainId}/schemas`)
-            .set(...global.tenantUser1)
+            .set(...global.tenantAdmin1)
             .send({
                 value: {
                     $id: 'boo',
@@ -141,7 +165,7 @@ describe('domains', () => {
             })
             .expect(200);
 
-        expect(res.body.data.owners[0].id).toEqual('tu1');
+        expect(res.body.data.owners[0].id).toEqual('ta1');
         res = await request.post(`/domains/${domainId}/schemas`)
             .set(...global.tenantAdmin1)
             .send({
@@ -150,14 +174,11 @@ describe('domains', () => {
                 },
             })
             .expect(200);
-        expect(res.body.data.owners[0].id).toEqual('tu1');
+        expect(res.body.data.owners[0].id).toEqual('ta1');
 
         await request.get(schemaUri)
             .set(...global.tenantUser1)
             .expect(200);
-        await request.get(schemaUri)
-            .set(...global.tenantUser11)
-            .expect(403);
 
         await request.get(schemaUri)
             .set(...global.tenantAdmin1)
@@ -176,21 +197,21 @@ describe('domains', () => {
         const payload = {
             name: 'foo',
             description: 'bar',
-            public: true,
+            // public: true,
         };
 
         await request.post('/domains')
-            .set(...global.tenantUser2)
+            .set(...global.tenantAdmin2)
             .send(payload)
             .expect(200);
 
         await request.post('/domains')
-            .set(...global.tenantUser2)
+            .set(...global.tenantAdmin2)
             .send(payload)
             .expect(200);
 
         await request.post('/domains')
-            .set(...global.tenantUser22)
+            .set(...global.tenantAdmin22)
             .send(payload)
             .expect(200);
 
@@ -199,13 +220,13 @@ describe('domains', () => {
             .set(...global.tenantUser2)
             .expect(200)).body;
 
-        expect(result.meta.total).toEqual(2);
+        expect(result.meta.total).toEqual(3);
 
         result = (await request.get('/domains')
-            .set(...global.tenantUser22)
+            .set(...global.tenantAdmin22)
             .expect(200)).body;
 
-        expect(result.meta.total).toEqual(1);
+        expect(result.meta.total).toEqual(3);
 
         result = (await request.get('/domains')
             .set(...global.tenantAdmin2)

@@ -1,3 +1,5 @@
+const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
+const { isTenantAdmin } = require('@openintegrationhub/iam-utils');
 const Domain = require('../../model/Domain');
 const Schema = require('../../model/Schema');
 
@@ -21,12 +23,30 @@ module.exports = {
         return await Domain.findOne(query);
     },
     async findByEntityWithPagination(
-        id,
+        requester,
         props,
     ) {
-        return await Domain.find({
-            'owners.id': id,
-        },
+        const query = {
+            $or: [
+                {
+                    tenant: requester.tenant,
+                },
+                {
+                    public: true,
+                },
+                {
+                    owners: {
+                        $in: [{
+                            id: requester.sub,
+                            type: 'USER',
+                        }]
+                    }
+                }
+
+            ]
+
+        };
+        return await Domain.find(query,
         'name description public owners',
         props);
     },
@@ -35,5 +55,20 @@ module.exports = {
         await Domain.deleteOne({
             _id: id,
         });
+        const event = new Event({
+            headers: {
+                name: 'metadata.domain.deleted',
+            },
+            payload: { schema: id },
+        });
+        EventBusManager.getEventBus().publish(event);
+    },
+
+    async deleteAll({ tenant }) {
+
+        const toBeDeleted = await Domain.find({ tenant });
+        for (const domain of toBeDeleted) {
+            await module.exports.delete(domain._id);
+        }
     },
 };

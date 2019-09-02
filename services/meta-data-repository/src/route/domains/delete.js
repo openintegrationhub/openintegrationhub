@@ -11,9 +11,7 @@ const log = logger.getLogger(`${conf.logging.namespace}/domains:delete`);
 
 const router = express.Router();
 
-router.delete('/:id', domainOwnerOrAllowed({
-    permissions: ['not.defined'],
-}), async (req, res, next) => {
+router.delete('/:id', domainOwnerOrAllowed({}), async (req, res, next) => {
     try {
         res.send({
             data: transformDbResults(await DomainDAO.delete(req.params.id)),

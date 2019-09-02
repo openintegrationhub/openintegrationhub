@@ -12,7 +12,8 @@ router.use(getRouter);
 router.use(postRouter);
 router.use(putRouter);
 router.use(deleteRouter);
-router.use('/:id/schemas', (req, res, next) => {
+router.use('/:id/schemas', async (req, res, next) => {
+
     req.domainId = req.params.id;
     next();
 }, schemasRouter);

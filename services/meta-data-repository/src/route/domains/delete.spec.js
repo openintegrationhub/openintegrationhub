@@ -92,11 +92,11 @@ describe('domains', () => {
 
         await request.get(`/domains/${domain1.id}`)
             .set(...global.user1)
-            .expect(403);
-
-        await request.get(`/domains/${domain1.id}`)
-            .set(...global.admin)
             .expect(404);
+
+        // await request.get(`/domains/${domain1.id}`)
+        //     .set(...global.admin)
+        //     .expect(404);
 
         // remove domain2 with schemas
         await request.delete(`/domains/${domain2.id}`)
@@ -105,6 +105,6 @@ describe('domains', () => {
 
         await request.get(`/domains/${domain2.id}`)
             .set(...global.user1)
-            .expect(403);
+            .expect(404);
     });
 });

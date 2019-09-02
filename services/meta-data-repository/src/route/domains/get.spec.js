@@ -41,7 +41,7 @@ describe('domains', () => {
         const data = {
             name: 'foo',
             description: 'bar',
-            public: true,
+            // public: true,
         };
 
         // create a domain
@@ -60,7 +60,7 @@ describe('domains', () => {
 
         // create a domain with another account
         result = (await request.post('/domains')
-            .set(...global.user2)
+            .set(...global.tenantAdmin2)
             .send(data)
             .expect(200)).body;
 
