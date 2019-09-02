@@ -1,21 +1,36 @@
 {
-  "name": "cfm",
-  "version": "1.0.0",
-  "description": "Conflict Management NPM Module",
+  "name": "@wice-devs/cfm",
+  "version": "1.0.5",
+  "description": "Conflict Management",
   "main": "index.js",
   "scripts": {
     "pretest": "eslint test --ext .js --ext .json",
     "test": "jest --runInBand --coverage --coverageDirectory=coverage",
-    "lint_fix": "eslint test --fix"
+    "lint-fix": "eslint test --fix"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openintegrationhub/openintegrationhub.git"
+  },
+  "keywords": [
+    "conflict management",
+    "openintegrationhub"
+  ],
+  "bugs": {
+    "url": "https://github.com/openintegrationhub/openintegrationhub/issues"
+  },
+  "homepage": "https://github.com/openintegrationhub/",
   "author": "Wice GmbH",
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "dependencies": {
-    "deepmerge": "^4.0.0"
+    "deepmerge": "^4.0.0",
+    "bunyan": "^1.8.12",
+    "bunyan-format": "^0.2.1"
   },
   "devDependencies": {
-    "bunyan": "^1.8.12",
-    "bunyan-format": "^0.2.1",
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "^2.14.0",
@@ -32,5 +47,8 @@
       "./config",
       "./tests"
     ]
+  },
+  "directories": {
+    "test": "test"
   }
 }

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
+  <img src="https://raw.githubusercontent.com/openintegrationhub/openintegrationhub/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="OIH Logo" width="400"/>
 </p>
 
 The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
@@ -19,7 +19,7 @@ The CFM operates on a set of *Rules*. Each rule is associated with a given numbe
 Both sets of *Rules* and *Resolvers* are expandable. Should the included default selection be unsuitable for a particular application, the adapter developer can add their own *Rules* and/or *Resolvers* in place and use them right away.
 
 <p align="center">
-  <img src="assets/CFM.png" alt="Sublime's custom image" width="400"/>
+  <img src="https://raw.githubusercontent.com/openintegrationhub/openintegrationhub/master/lib/cfm/assets/CFM.png" alt="OIH-CFM workflow" width="400"/>
 </p>
 
 ## Technical description
@@ -98,7 +98,7 @@ Resolvers used in global rules should return an empty object "{}" if an entry is
 ## Examples
 Creating two custom resolvers, for handling a particular type of object
 ```javascript
-const CFM = require('@openintegrationhub/cfm')
+const CFM = require('@wice-devs/cfm')
 
 // This resolver checks whether a certain field in the incoming object matches the value of the target object
 // If it does not, the reference has been changed, any data of the target object is outdated, and only the incoming data is used
@@ -138,7 +138,7 @@ CFM.setRules({'enrichPersonData': ['recipient']})
 
 ## Local installation/development
 
-Do `npm install --save @wice/cfm` and implement the following code in your adapter:
+Do `npm install --save @wice-devs/cfm` and implement the following code in your adapter:
 
 ```javascript
 const CFM = require('../index');
