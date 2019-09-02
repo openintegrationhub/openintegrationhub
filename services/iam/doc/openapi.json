@@ -1055,6 +1055,10 @@
           "token": {
             "type": "string",
             "description": "Auth token"
+          },
+          "id": {
+            "type": "string",
+            "description": "Token id"
           }
         }
       },
