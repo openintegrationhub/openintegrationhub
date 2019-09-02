@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
-    "@openintegrationhub/event-bus": "1.0.2",
+    "@openintegrationhub/event-bus": "1.1.2",
     "@openintegrationhub/iam-utils": "1.5.1",
     "ajv": "6.10.2",
     "cors": "2.8.5",

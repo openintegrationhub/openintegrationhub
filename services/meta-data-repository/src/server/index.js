@@ -11,6 +11,7 @@ const swaggerDocument = require('../../doc/openapi');
 const { isLocalRequest } = require('../util/common');
 
 const iamLib = require('./../module/iam');
+const EventsModule = require('./../module/event');
 const DAO = require('../dao');
 const conf = require('../conf');
 
@@ -125,8 +126,8 @@ module.exports = class Server {
 
         await this.setupDatabase();
         await createCollections();
-        await this.eventBus.connect();
         EventBusManager.init({ eventBus: this.eventBus, serviceName: conf.loggingNameSpace });
+        this.eventsModule = new EventsModule();
         this.server = await this.app.listen(this.port);
     }
 
@@ -134,6 +135,7 @@ module.exports = class Server {
         if (this.server) {
             mongoose.connection.close();
             this.server.close();
+            await EventBusManager.destroy();
         }
     }
 };
