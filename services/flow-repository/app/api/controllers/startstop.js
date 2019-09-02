@@ -46,6 +46,8 @@ router.post('/:id/start', jsonParser, can(config.flowControlPermission), async (
     payload: flow,
   };
 
+  ev.payload.startedBy = req.user.sub;
+
   await publishQueue(ev);
   return res.status(200).send({ data: { id: flow.id, status: flow.status }, meta: {} });
 });
