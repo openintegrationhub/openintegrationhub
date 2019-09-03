@@ -29,7 +29,6 @@ const PERMISSIONS = {
 
         'iam.token.introspect': 'iam.token.introspect',
 
-        'secrets.raw.read': 'secrets.raw.read',
         'secrets.secret.deleteAny': 'secrets.secret.deleteAny',
         'secrets.authClient.deleteAny': 'secrets.authClient.deleteAny',
 
