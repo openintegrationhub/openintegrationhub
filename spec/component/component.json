@@ -94,6 +94,10 @@
     "http_reply": {
       "main": "./actions/httpReply.js",
       "title": "Http Reply"
+    },
+    "use_flow_variables" : {
+        "main": "./actions/flow_variables.js",
+        "title": "Flow variables"
     }
   }
 }

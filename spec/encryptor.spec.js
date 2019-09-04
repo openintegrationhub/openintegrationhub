@@ -27,7 +27,7 @@ describe('Cipher', () => {
     });
 
     it('should encrypt & decrypt buffer', () => {
-        var content = new Buffer('Hello world');
+        var content = Buffer.from('Hello world');
         var result = cipher.encryptMessageContent(content.toString());
         var decryptedResult = cipher.decryptMessageContent(result);
         expect(decryptedResult).toEqual('Hello world');
@@ -35,7 +35,7 @@ describe('Cipher', () => {
 
     it('should encrypt & decrypt message with buffers', () => {
         var content = {
-            property1: new Buffer('Hello world').toString()
+            property1: Buffer.from('Hello world').toString()
         };
         var result = cipher.encryptMessageContent(content);
         var decryptedResult = cipher.decryptMessageContent(result);

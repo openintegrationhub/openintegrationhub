@@ -68,7 +68,7 @@ describe('Sailor', () => {
             mandatory: true,
             clusterId: ''
         },
-        content: new Buffer(encryptor.encryptMessageContent(payload))
+        content: Buffer.from(encryptor.encryptMessageContent(payload))
     };
 
     beforeEach(() => {
@@ -364,6 +364,42 @@ describe('Sailor', () => {
                     done();
                 })
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
+        });
+        it('should provide access to flow vairables', done => {
+            settings.FUNCTION = 'use_flow_variables';
+            const sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({
+                    is_passthrough: true,
+                    variables: {
+                        var1: 'val1',
+                        var2: 'val2'
+                    }
+                });
+            });
+
+            const psPayload = {
+                body: payload
+            };
+
+            sailor.connect()
+                .then(() => sailor.prepare())
+                .then(() => sailor.processMessage(psPayload, message))
+                .then(() => {
+                    expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
+
+                    const sendDataCalls = fakeAMQPConnection.sendData.calls;
+
+                    expect(sendDataCalls[0].args[0].body).toEqual({
+                        var1: 'val1',
+                        var2: 'val2'
+                    });
+                    done();
+                })
+                .catch(done.fail);
         });
 
         it('should send request to API server to update keys', done => {
