@@ -12,8 +12,11 @@ const port = process.env.PORT || 3001;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
+const { getOrphanedFlows } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
-const { flowStarted, flowStopped, gdprAnonymise } = require('../app/utils/handlers');
+const {
+  flowStarted, flowStopped, gdprAnonymise, cleanupOrphans,
+} = require('../app/utils/handlers');
 const Flow = require('../app/models/flow');
 
 const Server = require('../app/server');
@@ -922,5 +925,57 @@ describe('Cleanup', () => {
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
     expect(res.body.errors[0].message).toEqual('No flow found');
+  });
+});
+
+describe('Maintenance functions', () => {
+  beforeAll(async () => {
+    const orphanFlow = {
+      type: 'ordinary',
+      name: 'EmptyFlow',
+      description: 'A functional flow that lacks owners',
+      status: 'active',
+      graph: {
+        nodes: [
+          {
+            id: 'NodeOne',
+            componentId: '5ca5c44c187c040010a9bb8b',
+            function: 'getPersonsPolling',
+            credentials_id: '5ca5c44c187c040010a9bb8c',
+            fields: {
+              username: 'TestName',
+              password: 'TestPass',
+            },
+          },
+          {
+            id: 'NodeTwo',
+            componentId: '5ca5c44c187c040010a9bb8c',
+            function: 'transformTestToOih',
+          },
+        ],
+        edges: [
+          {
+            source: 'NodeOne',
+            target: 'NodeTwo',
+          },
+        ],
+      },
+    };
+
+    const storeFlow = new Flow(orphanFlow);
+    await storeFlow.save();
+  });
+
+  test('should find an orphaned flow', async () => {
+    const orphans = await getOrphanedFlows();
+
+    expect(orphans.length).toEqual(1);
+    expect(orphans[0].name).toEqual('EmptyFlow');
+  });
+
+  test('should stop all active orphaned flows', async () => {
+    const count = await cleanupOrphans();
+
+    expect(count).toEqual(1);
   });
 });

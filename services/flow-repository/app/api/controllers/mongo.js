@@ -241,6 +241,22 @@ const anonymise = userId => new Promise((resolve) => {
     });
 });
 
+const getOrphanedFlows = () => new Promise((resolve) => {
+  Flow.find({
+    $or: [
+      { owners: null },
+      { owners: { $size: 0 } },
+    ],
+  })
+    .lean()
+    .then((response) => {
+      resolve(response);
+    })
+    .catch((err) => {
+      log.error(err);
+    });
+});
+
 
 module.exports = {
   getFlows,
@@ -253,4 +269,6 @@ module.exports = {
   getFlowById,
   deleteFlow,
   anonymise,
+  getOrphanedFlows,
+  format,
 };
