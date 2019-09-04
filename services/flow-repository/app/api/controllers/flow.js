@@ -144,7 +144,7 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
         name: 'flowrepo.flow.created',
       },
       payload: {
-        tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
+        tenant: (req.user.tenant) ? req.user.tenant : '',
         user: req.user.sub,
         flowId: response.id,
       },
@@ -205,7 +205,7 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
         name: 'flowrepo.flow.modified',
       },
       payload: {
-        tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
+        tenant: (req.user.tenant) ? req.user.tenant : '',
         user: req.user.sub,
         flowId: response.id,
       },
@@ -268,7 +268,7 @@ router.delete('/:id', can(config.flowWritePermission), jsonParser, async (req, r
         name: 'flowrepo.flow.deleted',
       },
       payload: {
-        tenant: (req.user.currentContext) ? req.user.currentContext.tenant : '',
+        tenant: (req.user.tenant) ? req.user.tenant : '',
         user: req.user.sub,
         flowId,
       },
