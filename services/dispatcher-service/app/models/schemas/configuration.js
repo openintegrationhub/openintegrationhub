@@ -10,15 +10,16 @@ const configuration = new Schema({
   tenant: String,
   connections: [
     {
-      active: Boolean,
       source: {
         appId: String,
         domain: String,
       },
       targets: [
         {
+          active: Boolean,
           flowId: String,
           routingKey: String,
+          appId: String,
         },
       ],
     },
