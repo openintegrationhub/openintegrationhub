@@ -1,0 +1,40 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is the API for the Open Integration Hub Microservice \"Dispatcher Service\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "version": "0.0.1",
+    "title": "Dispatcher Service",
+    "termsOfService": "http://openintegrationhub.de/terms/",
+    "contact": {
+      "email": "shoeffler@wice.de"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags": [],
+  "paths": {},
+  "externalDocs": {
+    "description": "Find out more about the Open Integration Hub",
+    "url": "https://github.com/openintegrationhub"
+  },
+  "servers": [
+    {
+      "url": "http://dispatcher-service.openintegrationhub.com/"
+    },
+    {
+      "url": "http://localhost:3013/"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Enter the bearer token received from the IAM"
+      }
+    },
+    "schemas": {}
+  }
+}
