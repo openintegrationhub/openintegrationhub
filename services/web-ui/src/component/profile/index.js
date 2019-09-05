@@ -1,27 +1,23 @@
 import React from 'react';
-import { withStyles } from '@material-ui/styles';
-import flow from 'lodash/flow';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import flow from 'lodash/flow';
+// Ui
+import {
+    Grid, Button, ListItemText, ListItem, List, Input, FormControl, InputLabel, Select, MenuItem,
+} from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import {
     Add, Remove,
 } from '@material-ui/icons';
 
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import withSideSheet from '../../hoc/with-side-sheet';
 import withForm from '../../hoc/with-form';
-import * as usersActions from '../../action/users';
 import { getConfig } from '../../conf';
-import SnackBar from '../snack-bar';
-import { getMessage } from '../../error';
+
+// actions
+import { updateUser } from '../../action/users';
+
 
 const conf = getConfig();
 
@@ -32,7 +28,7 @@ const useStyles = {
     },
     form: {
         float: 'none',
-        margin: 'auto',
+        marginTop: '60px',
         width: 500,
     },
     frame: {
@@ -44,7 +40,7 @@ const useStyles = {
     },
 };
 
-class EditUser extends React.Component {
+class Profile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -57,86 +53,35 @@ class EditUser extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.userId) {
-            const currentUser = this.props.users.all.find(user => user._id === this.props.userId);
-            const currentTenantOfUser = currentUser.tenant && this.props.tenants.all.find(tenant => tenant._id === currentUser.tenant);
-            this.props.setFormData({
-                _id: this.props.userId,
-                username: currentUser.username,
-                firstname: currentUser.firstname,
-                lastname: currentUser.lastname,
-                tenant: currentTenantOfUser || '',
-                role: currentUser.role,
-                status: currentUser.status,
-                password: '',
-            });
-            if (this.props.roles && currentUser.roles) {
-                const arr = [];
-                // eslint-disable-next-line no-restricted-syntax
-                for (const role of this.props.roles.all) {
-                    if (currentUser.roles.includes(role._id)) arr.push(role);
-                }
-                this.setState({
-                    roles: arr,
-                });
+        const currentUser = this.props.users.all.find(user => user._id === this.props.auth._id);
+        const currentTenantOfUser = currentUser.tenant && this.props.tenants.all.find(tenant => tenant._id === currentUser.tenant);
+        this.props.setFormData({
+            _id: currentUser._id,
+            username: currentUser.username,
+            firstname: currentUser.firstname,
+            lastname: currentUser.lastname,
+            tenant: currentTenantOfUser || '',
+            role: currentUser.role,
+            status: currentUser.status,
+            password: '',
+        });
+        if (currentUser && !currentUser.roles) currentUser.roles = [];
+        if (this.props.roles && currentUser.roles) {
+            const arr = [];
+            const arrSelectable = [];
+            // eslint-disable-next-line no-restricted-syntax
+            for (const role of this.props.roles.all) {
+                if (currentUser.roles.includes(role._id)) arr.push(role);
+                else arrSelectable.push(role);
             }
-            if (currentUser && !currentUser.roles) currentUser.roles = [];
-            if (this.props.roles && currentUser.roles) {
-                const arr = [];
-                const arrSelectable = [];
-                // eslint-disable-next-line no-restricted-syntax
-                for (const role of this.props.roles.all) {
-                    if (currentUser.roles.includes(role._id)) arr.push(role);
-                    else arrSelectable.push(role);
-                }
-                this.setState({
-                    roles: arr,
-                    selectableroles: arrSelectable,
-                });
-            }
-        } else {
-            let adminTenant = this.props.tenants.all.find(tenant => tenant._id === this.props.auth.tenant);
-            if (this.props.auth.role === 'ADMIN') {
-                adminTenant = '';
-            }
-            this.props.setFormData({
-                username: '',
-                firstname: '',
-                lastname: '',
-                tenant: adminTenant,
-                roles: [],
-                status: conf.account.status.ACTIVE,
-                password: '',
+            this.setState({
+                roles: arr,
+                selectableroles: arrSelectable,
             });
         }
     }
 
-    componentDidUpdate(prevProps, prefstate) {
-        if (this.props.users.error && !prevProps.users.error) {
-            this.setState({
-                pending: false,
-                succeeded: false,
-            });
-            return;
-        }
-        if (this.state.pending) {
-            if (this.props.userId) {
-                const prevUser = prevProps.users.all.find(user => user._id === prevProps.userId);
-                const currentUser = this.props.users.all.find(user => user._id === this.props.userId);
-                if (prevUser.updatedAt !== currentUser.updatedAt) {
-                    this.setState({
-                        pending: false,
-                        succeeded: true,
-                    });
-                }
-            }
-            if (this.props.users.all.length > prevProps.users.all.length) {
-                this.setState({
-                    pending: false,
-                    succeeded: true,
-                });
-            }
-        }
+    componentDidUpdate(prefProps, prefstate) {
         if (prefstate.roles.length !== this.state.roles.length) {
             if (this.state.roles) {
                 const arrSelectable = [];
@@ -156,11 +101,7 @@ class EditUser extends React.Component {
         const data = JSON.parse(JSON.stringify(this.props.formData));
         if (this.state.roles.length) data.roles = this.state.roles;
 
-        if (this.props.formData._id) {
-            this.props.updateUser(data);
-        } else {
-            this.props.createUser(data);
-        }
+        this.props.updateUser(data);
         this.setState({
             pending: true,
             succeeded: false,
@@ -168,36 +109,13 @@ class EditUser extends React.Component {
     }
 
     render() {
-        const {
-            classes,
-        } = this.props;
-
+        const { classes } = this.props;
         const {
             username, firstname, lastname, password, status, tenant,
         } = this.props.formData;
-        return (
-            <div className={classes.frame}>
-                {this.props.users.error && (
-                    <SnackBar
-                        variant={'error'}
-                        onClose={() => { this.props.clearError(); }}
-                    >
-                        {getMessage(this.props.users.error)}
 
-                    </SnackBar>
-                )}
-                {this.state.succeeded && (
-                    <SnackBar
-                        variant={'success'}
-                        onClose={() => {
-                            this.setState({
-                                succeeded: true,
-                            });
-                        }}
-                    >
-                        Success
-                    </SnackBar>
-                )}
+        return (
+            <Grid container justify='center'>
                 <form onSubmit={this.submit.bind(this)} className={classes.form}>
                     <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="username">username</InputLabel>
@@ -225,7 +143,6 @@ class EditUser extends React.Component {
                             error={!this.props.isValid('firstname')}
                         />
                     </FormControl>
-
                     <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="lastname">lastname</InputLabel>
                         <Input
@@ -282,8 +199,6 @@ class EditUser extends React.Component {
                             <Add/>
                         </Button>
                     </FormControl>
-
-
                     {
                         this.state.roles.length
                             ? <List dense={true}>
@@ -320,21 +235,17 @@ class EditUser extends React.Component {
                     </FormControl>
 
                     <FormControl className={classes.formControl}>
-                        {!this.props.userId && (
-                            <React.Fragment>
-                                <InputLabel htmlFor="password">password</InputLabel>
-                                <Input
-                                    required
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    onChange={this.props.setVal.bind(this, 'password')}
-                                    value={password || ''}
-                                />
-                            </React.Fragment>
-
-
-                        )}
+                        <React.Fragment>
+                            <InputLabel htmlFor="password">password</InputLabel>
+                            <Input
+                                required
+                                id="password"
+                                type="password"
+                                name="password"
+                                onChange={this.props.setVal.bind(this, 'password')}
+                                value={password || ''}
+                            />
+                        </React.Fragment>
                     </FormControl>
 
                     <FormControl className={classes.formControl}>
@@ -347,10 +258,15 @@ class EditUser extends React.Component {
                     </FormControl>
 
                 </form>
-            </div>
+            </Grid>
         );
     }
 }
+
+Profile.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
+
 
 const mapStateToProps = state => ({
     users: state.users,
@@ -359,7 +275,7 @@ const mapStateToProps = state => ({
     auth: state.auth,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
-    ...usersActions,
+    updateUser,
 }, dispatch);
 
 export default flow(
@@ -368,6 +284,5 @@ export default flow(
         mapDispatchToProps,
     ),
     withStyles(useStyles),
-    withSideSheet,
     withForm,
-)(EditUser);
+)(Profile);

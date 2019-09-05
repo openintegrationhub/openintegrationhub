@@ -12,6 +12,7 @@ const domain = new Schema({
     owners: {
         type: [owners],
     },
+    tenant: String,
 }, {
     autoCreate: true,
     timestamps: true,

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
+const { isTenantAdmin } = require('@openintegrationhub/iam-utils');
 const Schema = require('../../model/Schema');
 
 async function getReferences(uri) {
@@ -68,11 +69,30 @@ module.exports = {
     async findByDomainAndEntity({
         domainId,
         entityId,
+        requester,
         options = {},
     }) {
+        const query = {
+            $or: [
+                {
+                    tenant: requester.tenant,
+                },
+                {
+                    public: true,
+                },
+                {
+                    owners: {
+                        $in: [{
+                            id: requester.sub,
+                            type: 'USER',
+                        }]
+                    }
+                }
+            ]
+        };
         return await Schema.find({
             domainId,
-            'owners.id': entityId,
+            ...query
         },
         null,
         options);
@@ -119,6 +139,19 @@ module.exports = {
             EventBusManager.getEventBus().publish(event);
         } else {
             throw new Error(`${uri} referenced by ${refs.toString()}`);
+        }
+    },
+    async deleteAll({ ownerId, ownerType }) {
+
+        const toBeDeleted = await Schema.find({ owners: { id: ownerId, type: ownerType } });
+        for (const schema of toBeDeleted) {
+            if (schema.owners.length > 1) {
+                // remove ownerid from owners
+                schema.owners = schema.owners.filter(owner => owner.id !== ownerId);
+                await schema.save();
+            } else {
+                await module.exports.delete(schema.uri);
+            }
         }
     },
 };

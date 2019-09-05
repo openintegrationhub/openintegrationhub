@@ -1,56 +1,185 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import flow from 'lodash/flow';
+// Ui
+import { Grid, Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
+import {
+    Person,
+} from '@material-ui/icons';
+
+// actions
+import {
+    getFlows, stopFlow, createFlow, switchAddState,
+} from '../../action/flows';
+import { getTenants } from '../../action/tenants';
+import { getUsers } from '../../action/users';
 
 const useStyles = {
-    container: {
-        float: 'none',
-        margin: 'auto',
-        padding: '15vh 25vw 10vh 25vw',
+    avatar: {
+        margin: '25px',
+        background: 'rgb(243, 243, 243)',
+        borderRadius: '50%',
+        height: '150px',
+        width: '150px',
     },
     headline: {
-        fontSize: '54px',
+        fontSize: '32px',
         lineHeight: '52px',
-        textShadow: '0em 0.03em 0.1em rgba(0,0,0,0.08)',
-        color: '#fff!important',
         fontFamily: '"Saira", sans-serif',
         fontWeight: '300',
     },
-    content: {
-        fontSize: '24px',
-        lineHeight: '1.33em',
-        color: '#fff!important',
-        fontFamily: '"Saira", sans-serif',
-        fontWeight: '300',
+    contentAuth: {
+        height: '200px',
+        marginTop: '150px',
+        borderRadius: '15px',
     },
-    wrapper: {
-        backgroundSize: 'cover',
-        backgroundImage: 'url(https://www.openintegrationhub.org/wp-content/uploads/2018/06/headergrafik-1440-x-684-px.jpg)',
-        backgroundPosition: 'bottom center',
-        backgroundRepeat: 'no-repeat',
+    contentFlows: {
+        marginTop: '50px',
+        background: 'rgb(243, 243, 243)',
+        borderRadius: '15px',
+    },
+    indicator: {
+        height: '10px',
+        width: '10px',
+        borderRadius: '50%',
+        display: 'inline-block',
+        marginRight: '10px',
+    },
+    flowsContainer: {
+        background: 'white',
+        borderRadius: '15px',
+        margin: '20px',
     },
 };
 
 class Home extends React.Component {
-    state = {
-        showSideSheet: false,
+    constructor(props) {
+        super(props);
+        this.state = {
+            showSideSheet: false,
+        };
+        props.getFlows();
+        props.getUsers();
+        props.getTenants();
+    }
+
+    getFlows(classes) {
+        const activeFlows = this.props.flows.all.filter(item => item.status === 'active');
+        activeFlows.length = 5;
+        if (activeFlows && activeFlows.length) {
+            return (
+                <Grid container item xs={12} justify='center'>
+                    {
+                        activeFlows.map((activeFlow, index) => (
+                            <Grid
+                                container
+                                item
+                                xs={2}
+                                key={`flowItem-${index}`}
+                                className={classes.flowsContainer}
+                                justify='flex-end'>
+                                <Grid item style={{ margin: '8px' }}>
+                                    <span className={classes.indicator} style={{ backgroundColor: 'green' }}/>
+                                    {activeFlow.status}
+                                </Grid>
+                                <Grid item xs={12} style={{ margin: '8px' }}>
+                                    {activeFlow.name}
+                                </Grid>
+                                <Grid item>
+                                    <Button
+                                        style={{
+                                            width: '100px',
+                                            background: 'lightgrey',
+                                            margin: '8px',
+                                        }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            this.props.stopFlow(activeFlow.id);
+                                        }}>
+                                        stop
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        ))
+                    }
+                </Grid>);
+        }
+        return null;
     }
 
     render() {
         const { classes } = this.props;
         return (
-            <div className={classes.wrapper}>
-                <div className={classes.container}>
-                    <h1 className={classes.headline}>
-                    Die Revolution der Daten-Synchronisation
-                    </h1>
-                    <span className={classes.content}>
-                Open Source Framework zum standardisierten Datenaustausch zwischen Geschäftsanwendungen.
-                    </span>
+            <Grid container justify='center'>
 
-                </div>
-            </div>
+                <Grid container item xs={11} className={classes.contentAuth}>
+
+                    {
+                        this.props.auth.avatar
+                            ? <Grid item xs={2}>
+                                <img className={classes.avatar} src={this.props.auth.avatar} alt="Avatar"/>
+                            </Grid>
+
+                            : <Grid item xs={2}>
+                                <Person className={classes.avatar}/>
+                            </Grid>
+                    }
+                    <Grid container item xs={5} direction='column' justify='center'>
+                        <Grid item>Welcome back {this.props.auth.firstname} {this.props.auth.lastname}</Grid>
+                        <Grid item>({this.props.auth.username})</Grid>
+                        <Button
+                            onClick={() => {
+                                this.props.history.push('/profile');
+                            }}
+                            style={{ width: '100px', background: 'rgb(243, 243, 243)', marginTop: '8px' }}>
+                            Profile
+                        </Button>
+                    </Grid>
+
+
+                </Grid>
+                <Grid container item xs={11} className={classes.contentFlows} spacing={5}>
+                    <Grid item xs={9} className={classes.headline}>Your Active Flows</Grid>
+                    <Grid container item xs={3} justify='flex-end'>
+                        <Grid item>
+                            <Button
+                                style={{
+                                    width: '100px',
+                                    background: 'rgb(230, 230, 230)',
+                                    margin: '8px',
+                                }}
+                                onClick={() => {
+                                    this.props.history.push('/flows');
+                                }}>
+                                all Flows
+                            </Button>
+                        </Grid>
+                        <Grid item>
+                            <Button style={{
+                                width: '100px',
+                                background: 'rgb(230, 230, 230)',
+                                margin: '8px',
+                            }}
+                            onClick={() => {
+                                this.props.switchAddState();
+                                this.props.history.push('/flows');
+                            }}>
+                                add Flow
+                            </Button>
+                        </Grid>
+
+                    </Grid>
+
+                    {
+                        this.props.flows.all.length ? this.getFlows(classes) : null
+                    }
+
+                </Grid>
+            </Grid>
         );
     }
 }
@@ -59,6 +188,27 @@ Home.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
+
+const mapStateToProps = state => ({
+    flows: state.flows,
+    auth: state.auth,
+    users: state.users,
+    tenants: state.tenants,
+});
+const mapDispatchToProps = dispatch => bindActionCreators({
+    getFlows,
+    stopFlow,
+    createFlow,
+    switchAddState,
+    getTenants,
+    getUsers,
+}, dispatch);
+
 export default flow(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    ),
+    withRouter,
     withStyles(useStyles),
 )(Home);

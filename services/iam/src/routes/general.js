@@ -48,9 +48,9 @@ router.post('/login', authMiddleware.authenticate, authMiddleware.accountIsEnabl
     }
 
     // TODO: should normal users always receive a token? Is that token long living?
-    const token = await TokenUtils.sign(req.user);
-    req.headers.authorization = `Bearer ${token}`;
-    res.status(200).send({ token });
+    const tokenObj = await TokenUtils.sign(req.user);
+    req.headers.authorization = `Bearer ${tokenObj.token}`;
+    res.status(200).send({ token: tokenObj.token, id: tokenObj._id });
 
 });
 

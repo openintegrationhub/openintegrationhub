@@ -22,11 +22,12 @@ import ListItemText from '@material-ui/core/ListItemText';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Grid from '@material-ui/core/Grid';
 import {
-    LockOpen, Business, SettingsInputComponent, LinearScale, Home as HomeIcon, AccountCircle, DeviceHub, Security,
+    Person, LockOpen, Business, SettingsInputComponent, LinearScale, Home as HomeIcon, AccountCircle, DeviceHub, Security,
 } from '@material-ui/icons';
 
 // Actions & Components
 
+import { Button } from '@material-ui/core';
 import { logout } from '../../action/auth';
 import { getUsers } from '../../action/users';
 import Home from '../../component/home';
@@ -36,6 +37,7 @@ import Flows from '../../component/flows';
 import Components from '../../component/components';
 import MetaData from '../../component/metadata';
 import Roles from '../../component/roles';
+import Profile from '../../component/profile';
 
 const drawerWidth = 240;
 
@@ -116,16 +118,16 @@ class Main extends React.Component {
     }
 
     componentDidMount() {
-        let menuArr = [];
+        const menuArr = ['Start', 'Profile', 'Flows', 'Components', 'Metadata', 'Logout'];
         switch (this.props.auth.role) {
         case 'ADMIN':
-            menuArr = ['Start', 'Users', 'Tenants', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+            menuArr.splice(1, 0, 'Tenants');
+            menuArr.splice(1, 0, 'Users');
             break;
         case 'TENANT_ADMIN':
-            menuArr = ['Start', 'Users', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+            menuArr.splice(1, 0, 'Users');
             break;
         default:
-            menuArr = ['Start', 'Flows', 'Components', 'Metadata', 'Logout'];
             break;
         }
         this.setState({
@@ -135,17 +137,17 @@ class Main extends React.Component {
 
     componentDidUpdate(prefProps) {
         if (prefProps.auth !== this.props.auth) {
-            let menuArr = [];
             let context = null;
+            const menuArr = ['Start', 'Profile', 'Flows', 'Components', 'Metadata', 'Logout'];
             switch (this.props.auth.role) {
             case 'ADMIN':
-                menuArr = ['Start', 'Users', 'Tenants', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+                menuArr.splice(1, 0, 'Tenants');
+                menuArr.splice(1, 0, 'Users');
                 break;
             case 'TENANT_ADMIN':
-                menuArr = ['Start', 'Users', 'Roles', 'Flows', 'Components', 'Metadata', 'Logout'];
+                menuArr.splice(1, 0, 'Users');
                 break;
             default:
-                menuArr = ['Start', 'Flows', 'Components', 'Metadata', 'Logout'];
                 break;
             }
             if (this.props.auth.memberships && this.props.auth.memberships.length) {
@@ -191,6 +193,11 @@ class Main extends React.Component {
               case 'Start':
                   return <ListItem button key={text} onClick={() => { this.props.history.push('/'); }}>
                       <ListItemIcon><HomeIcon /></ListItemIcon>
+                      <ListItemText primary={text} />
+                  </ListItem>;
+              case 'Profile':
+                  return <ListItem button key={text} onClick={() => { this.props.history.push('/profile'); }}>
+                      <ListItemIcon><Person /></ListItemIcon>
                       <ListItemText primary={text} />
                   </ListItem>;
               case 'Users':
@@ -279,7 +286,7 @@ class Main extends React.Component {
                               </IconButton>
 
                               {
-                                  this.state.context && <Grid item sm={2}>
+                                  this.state.context && <Grid item xs={1}>
                                       <NativeSelect
                                           value={this.state.context}
                                           onChange={this.changeSelect}
@@ -295,7 +302,7 @@ class Main extends React.Component {
                                   </Grid>
                               }
 
-                              <Grid item xs={5}>
+                              <Grid item xs={9}>
                                   <img
                                       src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
                                       alt="Open Integration Hub"
@@ -304,6 +311,24 @@ class Main extends React.Component {
                                       data-actual-width="271"
                                       data-actual-height="40"
                                   />
+                              </Grid>
+                              <Grid container item xs={2} justify='flex-end' wrap='nowrap'>
+                                  <Grid item style={{ marginTop: '10px' }}>
+                                      {this.props.auth.username}
+                                  </Grid>
+                                  <Grid item>
+                                      <Button
+                                          style={{
+                                              width: '100px',
+                                              marginTop: '3px',
+                                              marginLeft: '6px',
+                                          }}
+                                          onClick={() => {
+                                              this.props.history.push('/profile');
+                                          }}>
+                                          <Person />
+                                      </Button>
+                                  </Grid>
                               </Grid>
 
                           </Grid>
@@ -325,6 +350,7 @@ class Main extends React.Component {
                           <Route exact path="/flows" component={Flows} />
                           <Route exact path="/components" component={Components} />
                           <Route exact path="/metadata" component={MetaData} />
+                          <Route exact path="/profile" component={Profile} />
                       </Switch>
                   </main>
               </Grid>

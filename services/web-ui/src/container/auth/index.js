@@ -14,12 +14,12 @@ import Grid from '@material-ui/core/Grid';
 
 // Components
 import Loader from '../../component/loader';
+import Logo from './oih-vertikal-zentriert-white.svg';
 // Actions
 import { login } from '../../action/auth';
 
 const useStyles = {
     logo: {
-        padding: '10vh 0',
         margin: 'auto',
         width: 300,
     },
@@ -29,6 +29,13 @@ const useStyles = {
     },
     formControl: {
         margin: '10px',
+        color: 'white',
+    },
+    root: {
+        '&.focused': {
+            color: 'white',
+        },
+        color: 'white',
     },
 };
 
@@ -78,41 +85,68 @@ class Auth extends React.Component {
       }
 
       return (
-          <Grid
-              container
-              spacing={0}
-              direction="column"
-              alignItems="center"
-              justify="center"
-              style={{ minHeight: '50vh' }}
-          >
+          <div style={{
+              height: '95%',
+              backgroundSize: 'cover',
+              backgroundImage: 'url(https://www.openintegrationhub.org/wp-content/uploads/2018/06/headergrafik-1440-x-684-px.jpg)',
+          }}>
+              <Grid
+                  container
+                  direction="column"
+                  alignItems="center"
+                  justify="center"
+                  style={{ minHeight: '100vh' }}
+              >
 
-              <Grid item xs={3}>
-                  <img
-                      className={classes.logo}
-                      src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/small-oih-bildmarke.png"
-                      alt="Open Integration Hub"
-                      id="logo"
-                  />
+                  <Grid container item xs={3} justify='center' spacing={10}>
+                      <Grid item>
+                          <img
+                              className={classes.logo}
+                              src={Logo}
+                              alt="Open Integration Hub"
+                              id="logo"
+                          />
+                      </Grid>
 
-                  <form onSubmit={this.login} className={classes.form}>
-                      <div>
-                          <FormControl className={classes.formControl} fullWidth required>
-                              <InputLabel htmlFor="username">username</InputLabel>
-                              <Input id="username" name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
-                          </FormControl>
-                          <FormControl className={classes.formControl} fullWidth required>
-                              <InputLabel htmlFor="password">password</InputLabel>
-                              <Input id="password" type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
-                          </FormControl>
-                          <FormControl className={classes.formControl} fullWidth>
-                              <Button type='submit' variant="contained" color="secondary">Login</Button>
-                          </FormControl>
-                      </div>
+                      <Grid item>
+                          <form onSubmit={this.login} className={classes.form}>
 
-                  </form>
+                              <FormControl className={classes.formControl} fullWidth required>
+                                  <InputLabel
+                                      classes={{
+                                          root: classes.root,
+                                          focused: 'focused',
+                                      }}
+                                      htmlFor="username">
+                                      username
+                                  </InputLabel>
+                                  <Input id="username"
+                                      classes={{
+                                          root: classes.root,
+                                          focused: 'focused',
+                                      }}
+                                      name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
+                              </FormControl>
+                              <FormControl className={classes.formControl} fullWidth required>
+                                  <InputLabel classes={{
+                                      root: classes.root,
+                                      focused: 'focused',
+                                  }} htmlFor="password">
+                                      password
+                                  </InputLabel>
+                                  <Input id="password" classes={{
+                                      root: classes.root,
+                                      focused: 'focused',
+                                  }} type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
+                              </FormControl>
+                              <FormControl className={classes.formControl} fullWidth>
+                                  <Button type='submit' variant="contained" color="secondary">Login</Button>
+                              </FormControl>
+                          </form>
+                      </Grid>
+                  </Grid>
               </Grid>
-          </Grid>
+          </div>
       );
   }
 }

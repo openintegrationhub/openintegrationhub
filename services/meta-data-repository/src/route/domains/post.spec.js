@@ -30,7 +30,7 @@ describe('domains', () => {
         const data = {
             name: 'foo',
             description: 'bar',
-            public: true,
+            // public: true,
         };
 
         await request.post('/domains')

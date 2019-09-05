@@ -5,6 +5,7 @@ const logger = require('@basaas/node-logger');
 
 const Server = require('./server');
 const conf = require('./conf');
+const { EventBus } = require('@openintegrationhub/event-bus');
 
 const log = logger.getLogger(`${conf.logging.namespace}/main`);
 
@@ -20,7 +21,11 @@ function exitHandler(options, err) {
 
 process.on('SIGINT', exitHandler.bind(null));
 
-const server = new Server({});
+const eventBus = new EventBus({ serviceName: conf.logging.namespace, rabbitmqUri: process.env.RABBITMQ_URI });
+
+const server = new Server({
+    eventBus,
+});
 
 (async () => {
     try {

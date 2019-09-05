@@ -15,7 +15,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test -w 3",
     "serve": "node server/",
     "eject": "react-scripts eject",
     "build:docker": "docker build -t openintegrationhub/web-ui:${VERSION} -f Dockerfile ."

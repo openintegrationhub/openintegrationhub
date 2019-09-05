@@ -155,7 +155,7 @@ describe('schemas', () => {
 
         // try to delete schema2 as user2
         await request.delete(`${result2.data.uri.replace('/api/v1', '')}`)
-            .set(...global.user2)
+            .set(...global.tenantUser2)
             .expect(403);
 
         // try to delete schema2 as admin
@@ -175,7 +175,7 @@ describe('schemas', () => {
 
         // try to delete schema2
         await request.delete(`${result2.data.uri.replace('/api/v1', '')}`)
-            .set(...global.user2)
+            .set(...global.user3)
             .expect(403);
 
         await request.delete(`${result2.data.uri.replace('/api/v1', '')}`)

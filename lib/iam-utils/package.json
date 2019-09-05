@@ -1,8 +1,8 @@
 {
   "name": "@openintegrationhub/iam-utils",
-  "version": "1.4.1",
+  "version": "1.5.1",
   "description": "Utils and express middleware for OIH IAM service",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

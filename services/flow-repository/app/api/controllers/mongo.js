@@ -30,7 +30,7 @@ const buildQuery = (user, permission, id) => {
   // If the user is not an OIH admin, constrain query by flow ownership
   if (!config.oihAdminRoles.includes(user.role)) {
     const owners = [user.sub];
-    if (user.currentContext) owners.push(user.currentContext.tenant);
+    if (user.tenant) owners.push(user.tenant);
     qry['owners.id'] = { $in: owners };
   }
 
@@ -241,6 +241,22 @@ const anonymise = userId => new Promise((resolve) => {
     });
 });
 
+const getOrphanedFlows = () => new Promise((resolve) => {
+  Flow.find({
+    $or: [
+      { owners: null },
+      { owners: { $size: 0 } },
+    ],
+  })
+    .lean()
+    .then((response) => {
+      resolve(response);
+    })
+    .catch((err) => {
+      log.error(err);
+    });
+});
+
 
 module.exports = {
   getFlows,
@@ -253,4 +269,6 @@ module.exports = {
   getFlowById,
   deleteFlow,
   anonymise,
+  getOrphanedFlows,
+  format,
 };

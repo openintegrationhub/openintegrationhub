@@ -1,11 +1,12 @@
 import {
-    GET_FLOWS, UPDATE_FLOW, UPDATE_FLOW_ERROR, GET_FLOWS_PAGE,
+    GET_FLOWS, FLOW_ADD_STATE, UPDATE_FLOW, UPDATE_FLOW_ERROR, GET_FLOWS_PAGE,
 } from '../action/flows';
 
 const initialState = {
     all: [],
     error: null,
     meta: null,
+    addState: false,
 };
 
 export default (state = initialState, action) => {
@@ -37,6 +38,11 @@ export default (state = initialState, action) => {
         return {
             ...state,
             error: action.err,
+        };
+    case FLOW_ADD_STATE:
+        return {
+            ...state,
+            addState: !state.addState,
         };
     default:
         return state;

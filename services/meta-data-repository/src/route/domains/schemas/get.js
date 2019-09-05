@@ -5,7 +5,7 @@ const {
     buildURI,
 } = require('../../../transform');
 const { SchemaDAO } = require('../../../dao');
-const { domainOwnerOrAllowed } = require('../../../middleware/permission');
+const { domainOwnerOrAllowed, hasReadAccess } = require('../../../middleware/permission');
 const Pagination = require('../../../util/pagination');
 const conf = require('../../../conf');
 const { isLocalRequest } = require('../../../util/common');
@@ -14,9 +14,7 @@ const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas:get`);
 
 const router = express.Router();
 
-router.get('/', domainOwnerOrAllowed({
-    permissions: ['not.defined'],
-}), async (req, res) => {
+router.get('/', domainOwnerOrAllowed({}), async (req, res) => {
     const pagination = new Pagination(
         req.originalUrl,
         SchemaDAO,
@@ -25,30 +23,43 @@ router.get('/', domainOwnerOrAllowed({
     let data;
     let meta;
 
-    if (req.hasAll) {
-        data = await SchemaDAO.findByDomain({
-            domainId: req.domainId,
-            options: pagination.props(),
-        });
+    // TODO authorization access to domainId?
+    data = await SchemaDAO.findByDomain({
+        domainId: req.domainId,
+        options: pagination.props(),
+    });
 
-        meta = {
-            ...await pagination.calc({
-                domainId: req.domainId,
-            }),
-        };
-    } else {
-        data = await SchemaDAO.findByDomainAndEntity({
-            entityId: req.user.sub,
+    meta = {
+        ...await pagination.calc({
             domainId: req.domainId,
-            options: pagination.props(),
-        });
-        meta = {
-            ...await pagination.calc({
-                domainId: req.domainId,
-                'owners.id': req.user.sub,
-            }),
-        };
-    }
+        }),
+    };
+
+    // if (req.hasAll) {
+    //     data = await SchemaDAO.findByDomain({
+    //         domainId: req.domainId,
+    //         options: pagination.props(),
+    //     });
+    //
+    //     meta = {
+    //         ...await pagination.calc({
+    //             domainId: req.domainId,
+    //         }),
+    //     };
+    // } else {
+    //     data = await SchemaDAO.findByDomainAndEntity({
+    //         entityId: req.user.sub,
+    //         requester: req.user,
+    //         domainId: req.domainId,
+    //         options: pagination.props(),
+    //     });
+    //     meta = {
+    //         ...await pagination.calc({
+    //             domainId: req.domainId,
+    //             'owners.id': req.user.sub,
+    //         }),
+    //     };
+    // }
 
     res.send({
         data: transformDbResults(data),
@@ -60,9 +71,7 @@ router.get('/:uri*', async (req, res, next) => {
     if (!req.user && isLocalRequest(req)) {
         return next();
     }
-    domainOwnerOrAllowed({
-        permissions: ['not.defined'],
-    })(req, res, next);
+    hasReadAccess(req, res, next);
 }, async (req, res, next) => {
     try {
         const schema = await SchemaDAO.findByURI({

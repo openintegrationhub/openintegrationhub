@@ -69,8 +69,9 @@ class OihTable extends React.Component {
     setUserData() {
         const tempArr = JSON.parse(JSON.stringify(this.props.data));
         for (const user of tempArr) {
-            if (user.roles && user.roles.length) {
+            if (user.roles && user.roles.length && this.props.roles && this.props.roles.all.length) {
                 const test = user.roles.map(userRole => this.props.roles.all.find(role => role._id === userRole).name);
+
                 user.roles = test.map((role, index) => <span
                     key={`role-${index}`}
                     style={{ paddingRight: '15px' }}>
