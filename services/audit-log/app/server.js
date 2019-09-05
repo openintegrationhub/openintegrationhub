@@ -33,10 +33,11 @@ class Server {
     log.info('Setting up middleware...');
 
     this.app.use('/logs', iamMiddleware.middleware);
-    this.app.use('/logs', async (req, res) => {
+    this.app.use('/logs', async (req, res, next) => {
       if (this.mongoose.connection.readyState !== 1) {
         return res.status(500).send({ errors: [{ message: `NO DB. Please try again later ${this.mongoose.connection.readyState}`, code: 500 }] });
       }
+      next();
     });
     log.info('Middleware set up');
   }
