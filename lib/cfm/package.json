@@ -1,0 +1,54 @@
+{
+  "name": "@wice-devs/cfm",
+  "version": "1.0.6",
+  "description": "Conflict Management",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "eslint test --ext .js --ext .json",
+    "test": "jest --runInBand --coverage --coverageDirectory=coverage",
+    "lint-fix": "eslint test --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openintegrationhub/openintegrationhub.git"
+  },
+  "keywords": [
+    "conflict management",
+    "openintegrationhub"
+  ],
+  "bugs": {
+    "url": "https://github.com/openintegrationhub/openintegrationhub/issues"
+  },
+  "homepage": "https://github.com/openintegrationhub/",
+  "author": "Wice GmbH",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "dependencies": {
+    "deepmerge": "^4.0.0",
+    "bunyan": "^1.8.12",
+    "bunyan-format": "^0.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^22.1.0",
+    "eslint-plugin-json": "^1.2.1",
+    "eslint-plugin-mocha": "^5.2.0",
+    "jest": "^24.8.0",
+    "jest-environment-node": "^24.8.0",
+    "nyc": "^14.1.1",
+    "path": "^0.12.7"
+  },
+  "nyc": {
+    "exclude": [
+      "./config",
+      "./tests"
+    ]
+  },
+  "directories": {
+    "test": "test"
+  }
+}
