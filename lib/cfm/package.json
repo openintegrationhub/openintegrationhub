@@ -1,6 +1,6 @@
 {
   "name": "@wice-devs/cfm",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Conflict Management",
   "main": "index.js",
   "scripts": {

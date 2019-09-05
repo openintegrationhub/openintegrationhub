@@ -84,7 +84,7 @@ Rules can be created and applied through the functions exposed by the CFM. The a
 
 ### predefined global rules
 
-`resolverSkipDuplicateEntry`: Compares incoming data to target data and makes CFM return `{}` if it is an exact duplicate.
+`ResolverSkipDuplicateEntry`: Compares incoming data to target data and makes CFM return `{}` if it is an exact duplicate.
 
 ### Resolver
 Resolvers are the lowest-level component of the CFM. They contain a single arbitrary function that takes two data values and attempt to find a reconciliation for them. If successful, the reconciled value is returned as an object in the following form: `{value:returnedData}`.
