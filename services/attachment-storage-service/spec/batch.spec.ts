@@ -1,6 +1,6 @@
-import Maester from '../index';
-import config from '../config';
-import StorageObjectService from '../storage-drivers/redis/redis-storage';
+import Maester from '../src';
+import config from '../src/config';
+import StorageObjectService from '../src/storage-drivers/redis/redis-storage';
 import chai from 'chai';
 import { pseudoRandomBytes } from 'crypto';
 import { agent } from 'supertest';
@@ -9,7 +9,7 @@ import nock from 'nock';
 
 const { expect } = chai;
 
-function nockIamIntrospection({status = 200, body = {sub: 'user-id', role: 'ADMIN'}} = {}) {
+function nockIamIntrospection({status = 200, body = {sub: 'user-id', permissions: ['all']}} = {}) {
     return nock('http://iam.openintegrationhub.com')
         .post('/api/v1/tokens/introspect')
         .reply(status, body);

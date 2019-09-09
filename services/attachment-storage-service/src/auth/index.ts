@@ -5,7 +5,7 @@ type Next = () => Promise<any>;
 
 interface IamUser {
     sub: string;
-    role: 'ADMIN' | 'SERVICE_ACCOUNT' | 'USER';
+    isAdmin: boolean;
 }
 
 export default class Auth implements ServerAuth {
@@ -42,7 +42,7 @@ export default class Auth implements ServerAuth {
 
     public async canDeleteMany(ctx: RouterContext, next: Next): Promise<any> {
         const { user }: { user: IamUser } = ctx.state;
-        if (['ADMIN', 'SERVICE_ACCOUNT'].includes(user.role)) {
+        if (user.isAdmin) {
             return next();
         }
         throw new Error('Unauthorized');
