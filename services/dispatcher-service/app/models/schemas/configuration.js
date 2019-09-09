@@ -10,12 +10,15 @@ const configuration = new Schema({
   tenant: String,
   connections: [
     {
+      _id: false,
       source: {
+        _id: false,
         appId: String,
         domain: String,
       },
       targets: [
         {
+          _id: false,
           active: Boolean,
           flowId: String,
           routingKey: String,
@@ -25,6 +28,8 @@ const configuration = new Schema({
     },
   ],
 },
-{ collection: 'configurations' });
+{ collection: 'configurations', timestamps: true });
+
+configuration.index({ tenant: 1 }, { unique: true });
 
 module.exports.configuration = configuration;

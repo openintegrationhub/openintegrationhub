@@ -12,6 +12,7 @@ const cors = require('cors');
 const config = require('./config/index');
 const healthcheck = require('./api/controllers/healthcheck');
 const swaggerDocument = require('./api/swagger/swagger.json');
+const dispatches = require('./api/controllers/dispatches');
 
 const log = require('./utils/logger');
 
@@ -29,7 +30,7 @@ class Server {
   setupMiddleware() {
     log.info('Setting up middleware...');
 
-    this.app.use('/config', iamMiddleware.middleware);
+    this.app.use('/dispatches', iamMiddleware.middleware);
 
     log.info('Middleware set up');
   }
@@ -39,6 +40,7 @@ class Server {
 
     // configure routes
     this.app.use('/healthcheck', healthcheck);
+    this.app.use('/dispatches', dispatches);
 
     // Reroute to docs
     this.app.use('/docs', (req, res) => {

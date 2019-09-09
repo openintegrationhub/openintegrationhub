@@ -13,18 +13,19 @@ const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
 const Server = require('../app/server');
+const Configuration = require('../app/models/configuration');
 
 const mainServer = new Server();
 
-const log = require('../app/config/logger'); // eslint-disable-line
+const log = require('../app/utils/logger'); // eslint-disable-line
 
-const adminId = token.adminToken.value.sub;
-const guestId = token.guestToken.value.sub;
 let app;
-
 
 beforeAll(async () => {
   iamMock.setup();
+  mainServer.setupMiddleware();
+  mainServer.setupRoutes();
+  mainServer.setupSwagger();
   await mainServer.setup(mongoose);
   app = mainServer.listen();
 });
@@ -39,5 +40,108 @@ describe('Documentation', () => {
     const res = await request.get('/api-docs/');
     expect(res.text).not.toHaveLength(0);
     expect(res.text).toMatch(/HTML for static distribution bundle build/);
+  });
+});
+
+describe('API', () => {
+  const connections = [
+    {
+      source: {
+        appId: 'Snazzy',
+        domain: 'Addresses',
+      },
+      targets: [
+        {
+          appId: 'Wice',
+          routingKey: 'WiceAddressesABCDE',
+          flowId: 'ABCDE',
+          active: true,
+        },
+        {
+          appId: 'Outlook',
+          routingKey: 'OutlookAddressesFGHI',
+          flowId: 'FGHI',
+          active: true,
+        },
+      ],
+    },
+  ];
+
+  test('should post a new configuration', async () => {
+    const res = await request
+      .put('/dispatches')
+      .set('Authorization', 'Bearer userToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(
+        connections,
+      );
+    expect(res.status).toEqual(201);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.data.tenant).toEqual('TestTenant');
+    expect(res.body.data.connections).toEqual(connections);
+  });
+
+  test('should get the new configuration', async () => {
+    const res = await request
+      .get('/dispatches')
+      .set('Authorization', 'Bearer userToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.data.tenant).toEqual('TestTenant');
+    expect(res.body.data.connections).toEqual(connections);
+  });
+
+  test('should not get the new configuration from another tenant', async () => {
+    const res = await request
+      .get('/dispatches')
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(404);
+    expect(res.text).not.toHaveLength(0);
+  });
+
+  test('should update the configuration', async () => {
+    const newConnections = connections;
+    newConnections[0].targets.push(
+      {
+        appId: 'GoogleContacts',
+        routingKey: 'GoogleContactsAddressesJKLM',
+        flowId: 'JLKM',
+        active: true,
+      },
+    );
+    const res = await request
+      .put('/dispatches')
+      .set('Authorization', 'Bearer userToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(
+        newConnections,
+      );
+    expect(res.status).toEqual(201);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.data.tenant).toEqual('TestTenant');
+    expect(res.body.data.connections).toEqual(newConnections);
+
+    // Ensure it updates and does not insert
+    const allConfigs = await Configuration.find().lean();
+    expect(allConfigs).toHaveLength(1);
+  });
+
+  test('should delete the configuration', async () => {
+    const res = await request
+      .delete('/dispatches')
+      .set('Authorization', 'Bearer userToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toHaveLength(0);
+
+    const allConfigs = await Configuration.find().lean();
+    expect(allConfigs).toHaveLength(0);
   });
 });
