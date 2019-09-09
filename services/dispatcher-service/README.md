@@ -72,7 +72,7 @@ The Dispatcher Service listens for data update events published by the Data Hub.
 
 If this is the case, the Dispatcher Service then iterates through all listed active targets for this source/domain. The Flow Repository is checked to ascertain whether the flows exist and are currently active. Any inactive flows are (re-)started by the Dispatcher Service. Then the update data is propagated to each of the flows' SDF adapters.
 
-(*graphic here*)
+![Dispatcher Service](assets/ds.png)
 
 ## Local installation/development
 
