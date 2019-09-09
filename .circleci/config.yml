@@ -16,7 +16,10 @@ aliases:
       - restore_cache:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
-      - run: yarn test
+      - run:
+        - ls -la node_modules/@openintegrationhub
+        - ls -la ../../node_modules/@openintegrationhub
+        - yarn test
   - &build_steps
       - setup_remote_docker
       - restore_cache:
