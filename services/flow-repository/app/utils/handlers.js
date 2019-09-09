@@ -28,6 +28,33 @@ async function flowStopped(id) {
   return true;
 }
 
+async function cleanupOrphans() {
+  const { publishQueue } = require('./eventBus'); // eslint-disable-line
+
+  const orphans = await storage.getOrphanedFlows();
+  const promises = [];
+  let counter = 0;
+  for (let i = 0; i < orphans.length; i += 1) {
+    if (orphans[i].status === 'active') {
+      counter += 1;
+      const formattedOrphan = storage.format(orphans[i]);
+      formattedOrphan.status = 'stopping';
+
+      const ev = {
+        headers: {
+          name: 'flow.stopping',
+        },
+        payload: formattedOrphan,
+      };
+      promises.push(publishQueue(ev));
+    }
+  }
+
+  await Promise.all(promises);
+
+  return counter;
+}
+
 async function gdprAnonymise(id) {
   if (!mongoose.connection || mongoose.connection.readyState !== 1) {
     return false;
@@ -40,9 +67,12 @@ async function gdprAnonymise(id) {
 
   await storage.anonymise(id);
 
+  await cleanupOrphans();
+
   return true;
 }
 
+
 module.exports = {
-  flowStarted, flowStopped, gdprAnonymise,
+  flowStarted, flowStopped, gdprAnonymise, cleanupOrphans,
 };

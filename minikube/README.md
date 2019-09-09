@@ -49,7 +49,7 @@ Make sure that minikube is endowed with sufficient resources. We suggest at leas
 
 Make certain minikube is installed, configured, and started. The command for allocating sufficient resources is
 
-    minikube start --memory 8096 --cpus 4
+    minikube start --memory 8192 --cpus 4
 
 If you already have an installed minikube instance that is using the virtualbox driver you can do
 
@@ -57,7 +57,7 @@ If you already have an installed minikube instance that is using the virtualbox 
 
 and then
 
-    VBoxManage modifyvm "minikube" --memory 8096 --cpus 4
+    VBoxManage modifyvm "minikube" --memory 8192 --cpus 4
 
 to adjust the resource limits before starting again.
 
