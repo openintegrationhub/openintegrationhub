@@ -126,6 +126,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/ils
     steps: *yarn_test_steps
+  attachment-storage-test:
+    docker: *node_env
+    working_directory: ~/oih/services/attachment-storage-service
+    steps: *yarn_test_steps
 workflows:
   pipeline:
     jobs:
@@ -178,6 +182,9 @@ workflows:
       - ils-test:
           requires:
             - deps
+      - attachment-storage-test:
+          requires:
+            - deps
       - test:
           requires:
             - webhooks-test
@@ -192,6 +199,7 @@ workflows:
             - lib-component-repository-test
             - data-hub-test
             - ils-test
+            - attachment-storage-test
       - build:
           requires:
             - test
