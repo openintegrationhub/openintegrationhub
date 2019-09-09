@@ -20,7 +20,15 @@ class SchedulerApp extends App {
         const channel = await amqp.getConnection().createChannel();
         const queueCreator = new QueueCreator(channel);
 
-        await mongoose.connect(config.get('MONGODB_URI'), {useNewUrlParser: true});
+        const mongooseOptions = {
+            poolSize: 50,
+            socketTimeoutMS: 60000,
+            connectTimeoutMS: 30000,
+            keepAlive: 120,
+            useCreateIndex: true,
+            useNewUrlParser: true
+        };
+        await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
 
         container.register({
             channel: asValue(channel),
