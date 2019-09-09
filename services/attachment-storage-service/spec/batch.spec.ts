@@ -1,6 +1,6 @@
-import Maester from '../index';
-import config from '../config';
-import StorageObjectService from '../storage-drivers/redis/redis-storage';
+import Maester from '../src';
+import config from '../src/config';
+import StorageObjectService from '../src/storage-drivers/redis/redis-storage';
 import chai from 'chai';
 import { pseudoRandomBytes } from 'crypto';
 import { agent } from 'supertest';
