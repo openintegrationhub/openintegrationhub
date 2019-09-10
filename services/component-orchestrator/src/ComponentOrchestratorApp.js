@@ -24,7 +24,12 @@ class ComponentOrchestratorApp extends App {
 
         const channel = await amqp.getConnection().createChannel();
         const queueCreator = new QueueCreator(channel);
-        await mongoose.connect(config.get('MONGODB_URI'), {useNewUrlParser: true});
+        const mongooseOptions = {
+            socketTimeoutMS: 60000,
+            useCreateIndex: true,
+            useNewUrlParser: true
+        };
+        await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
         const iamClient = iamUtils.createClient({
             iamToken: config.get('IAM_TOKEN')
         });

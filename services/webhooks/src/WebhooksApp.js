@@ -20,7 +20,13 @@ class WebhooksApp extends App {
         await amqp.start();
         const channel = await amqp.getConnection().createChannel();
         const queueCreator = new QueueCreator(channel);
-        await mongoose.connect(config.get('MONGODB_URI'), {useNewUrlParser: true});
+
+        const mongooseOptions = {
+            socketTimeoutMS: 60000,
+            useCreateIndex: true,
+            useNewUrlParser: true
+        };
+        await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
 
         container.register({
             channel: asValue(channel),
