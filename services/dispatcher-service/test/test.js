@@ -14,6 +14,7 @@ const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
 const Server = require('../app/server');
 const Configuration = require('../app/models/configuration');
+const { createDispatches } = require('../app/utils/handlers');
 
 const mainServer = new Server();
 
@@ -143,5 +144,66 @@ describe('API', () => {
 
     const allConfigs = await Configuration.find().lean();
     expect(allConfigs).toHaveLength(0);
+  });
+});
+
+describe('Event Handlers', () => {
+  beforeAll(async () => {
+    const config = {
+      tenant: 'Test Tenant',
+      connections: [
+        {
+          source: {
+            flowId: 'abc',
+            appId: 'Snazzy',
+          },
+          targets: [
+            {
+              appId: 'Wice',
+              flowId: 'def',
+            },
+            {
+              appId: 'Outlook',
+              flowId: 'hij',
+            },
+          ],
+        },
+      ],
+    };
+
+    const storeConf = new Configuration(config);
+    await storeConf.save();
+  });
+
+  test('should generate correct events for a given configuration', async () => {
+    const payload = {
+      meta: {
+        flowId: 'abc',
+        appId: 'Snazzy',
+        oihUid: 'harbl',
+      },
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+      },
+    };
+
+    const ev1 = {
+      headers: {
+        name: 'dispatch.def',
+      },
+      payload,
+    };
+
+    const ev2 = {
+      headers: {
+        name: 'dispatch.hij',
+      },
+      payload,
+    };
+    const events = await createDispatches(payload);
+    expect(events).toHaveLength(2);
+    expect(events[0]).toEqual(ev1);
+    expect(events[1]).toEqual(ev2);
   });
 });

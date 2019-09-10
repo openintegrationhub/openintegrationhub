@@ -36,4 +36,11 @@ const deleteConfig = tenant => new Promise(async (resolve) => {
   resolve(configuration);
 });
 
-module.exports = { getConfig, upsertConfig, deleteConfig };
+const getConfigBySource = flowId => new Promise(async (resolve) => {
+  const configuration = await Configuration.findOne({ 'connections.source.flowId': flowId }).lean();
+  resolve(format(configuration));
+});
+
+module.exports = {
+  getConfig, upsertConfig, deleteConfig, getConfigBySource,
+};

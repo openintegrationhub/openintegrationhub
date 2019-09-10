@@ -15,6 +15,7 @@ const configuration = new Schema({
         _id: false,
         appId: String,
         domain: String,
+        flowId: String,
       },
       targets: [
         {
@@ -30,6 +31,8 @@ const configuration = new Schema({
 },
 { collection: 'configurations', timestamps: true });
 
+configuration.index({ 'connections.source.flowId': 1 });
 configuration.index({ tenant: 1 }, { unique: true });
+
 
 module.exports.configuration = configuration;
