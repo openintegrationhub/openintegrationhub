@@ -4,7 +4,7 @@ const config = require('../config/index');
 const log = require('./logger');
 const { createDispatches } = require('./handlers');
 
-const logger = bunyan.createLogger({ name: 'auditlogs' });
+const logger = bunyan.createLogger({ name: 'dispatcher-service' });
 
 let eventBus;
 
