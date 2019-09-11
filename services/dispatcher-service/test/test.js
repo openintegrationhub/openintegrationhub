@@ -4,6 +4,7 @@
 const mongoose = require('mongoose');
 
 process.env.MONGODB_URL = global.__MONGO_URI__;
+process.env.NODE_ENV = 'test';
 
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3013;
