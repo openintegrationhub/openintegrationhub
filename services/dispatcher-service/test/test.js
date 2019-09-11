@@ -1,7 +1,4 @@
-/* eslint no-unused-expressions: "off" */
-/* eslint max-len: "off" */
 /* eslint no-underscore-dangle: "off" */
-/* eslint no-unused-vars: "off" */
 
 const mongoose = require('mongoose');
 
@@ -11,7 +8,6 @@ const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3013;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
-const token = require('./utils/tokens');
 const Server = require('../app/server');
 const Configuration = require('../app/models/configuration');
 const { createDispatches } = require('../app/utils/handlers');

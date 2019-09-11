@@ -1,3 +1,5 @@
+/* eslint no-await-in-loop: "off" */
+
 const bunyan = require('bunyan');
 const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/event-bus');
 const config = require('../config/index');
@@ -7,7 +9,6 @@ const { createDispatches } = require('./handlers');
 const logger = bunyan.createLogger({ name: 'dispatcher-service' });
 
 let eventBus;
-
 
 async function publishQueue(ev) {
   try {
@@ -50,7 +51,39 @@ async function reportHealth() {
   return (eventBus._connected); // eslint-disable-line
 }
 
+async function disconnectDummies(dummyQueues) {
+  try {
+    const promises = [];
+    for (let i = 0; i < dummyQueues.length; i += 1) {
+      promises.push(dummyQueues[i].disconnect());
+    }
+    await Promise.all(promises);
+  } catch (e) {
+    log.error(`Error while disconnecting dummy queues: ${e}`);
+  }
+}
+
+// This function will create a dummy queue to make certain no messages are lost
+// This queue will later be emptied by an instance of the sdf adapter
+async function createDummyQueues(keys) {
+  const dummyQueues = [];
+  for (let i = 0; i < keys.length; i += 1) {
+    try {
+      const dummyLogger = bunyan.createLogger({ name: 'sdf-adapter' });
+      const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger: dummyLogger });
+      const dummyEventBus = new EventBus({ transport, logger: dummyLogger, serviceName: 'sdf-adapter' });
+
+      await dummyEventBus.subscribe(keys[i], async () => {});
+      await dummyEventBus.connect();
+      dummyQueues.push(dummyEventBus);
+    } catch (e) {
+      log.error(`Error while creating dummy queue: ${e}`);
+    }
+  }
+  setTimeout(async () => { await disconnectDummies(dummyQueues); }, 50);
+}
+
 
 module.exports = {
-  connectQueue, disconnectQueue, reportHealth,
+  connectQueue, disconnectQueue, reportHealth, createDummyQueues, disconnectDummies,
 };

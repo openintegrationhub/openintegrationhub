@@ -25,14 +25,18 @@ const upsertConfig = data => new Promise(async (resolve) => {
   const configuration = await Configuration.findOneAndUpdate(
     { tenant: data.tenant },
     data,
-    { upsert: true, new: true },
+    { upsert: true, new: true, useFindAndModify: false },
   )
     .lean();
   resolve(format(configuration));
 });
 
 const deleteConfig = tenant => new Promise(async (resolve) => {
-  const configuration = await Configuration.findOneAndDelete({ tenant }).lean();
+  const configuration = await Configuration.findOneAndDelete(
+    { tenant },
+    { useFindAndModify: false },
+  )
+    .lean();
   resolve(configuration);
 });
 
