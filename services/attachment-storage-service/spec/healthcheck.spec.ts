@@ -1,5 +1,5 @@
-import Maester from '../index';
-import config from '../config';
+import Maester from '../src';
+import config from '../src/config';
 import chai from 'chai';
 import { agent } from 'supertest';
 const { expect } = chai;

@@ -1,5 +1,5 @@
-import Maester from '../index';
-import config from '../config';
+import Maester from '../src';
+import config from '../src/config';
 import { step } from 'mocha-steps';
 import chai from 'chai';
 import { createHash, pseudoRandomBytes } from 'crypto';
@@ -7,8 +7,8 @@ import supertest, { agent } from 'supertest';
 import { sign } from 'jsonwebtoken';
 import uuid from 'uuid';
 import { Readable, Writable } from 'stream';
-import StorageObjectService from '../storage-drivers/redis/redis-storage';
-import RedisStorageObject from '../storage-drivers/redis/redis-object';
+import StorageObjectService from '../src/storage-drivers/redis/redis-storage';
+import RedisStorageObject from '../src/storage-drivers/redis/redis-object';
 import nock from 'nock';
 
 const { expect } = chai;

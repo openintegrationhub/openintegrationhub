@@ -8,7 +8,12 @@ export default class DataHubApp extends App {
         const container = this.getContainer();
         const config = container.resolve('config');
         const logger = <Logger>container.resolve('logger');
-        await mongoose.connect(config.get('MONGODB_URI'), { useNewUrlParser: true });
+        const mongooseOptions = {
+            socketTimeoutMS: 60000,
+            useCreateIndex: true,
+            useNewUrlParser: true
+        };
+        await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
         const server = new Server({config, logger});
         server.listen(config.get('PORT'));
     }
