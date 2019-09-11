@@ -1,4 +1,5 @@
 /* eslint no-underscore-dangle: "off" */
+/* eslint no-unused-vars: "off" */
 
 const mongoose = require('mongoose');
 
@@ -7,10 +8,11 @@ process.env.MONGODB_URL = global.__MONGO_URI__;
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3013;
 const request = require('supertest')(`${hostUrl}:${port}`);
+const nock = require('nock');
 const iamMock = require('./utils/iamMock.js');
 const Server = require('../app/server');
 const Configuration = require('../app/models/configuration');
-const { createDispatches } = require('../app/utils/handlers');
+const { createDispatches, getTargets, checkFlows } = require('../app/utils/handlers');
 
 const mainServer = new Server();
 
@@ -160,7 +162,7 @@ describe('Event Handlers', () => {
             },
             {
               appId: 'Outlook',
-              flowId: 'hij',
+              flowId: 'ghi',
             },
           ],
         },
@@ -169,6 +171,27 @@ describe('Event Handlers', () => {
 
     const storeConf = new Configuration(config);
     await storeConf.save();
+  });
+
+  test('should get the target flow ids for a given source', async () => {
+    const targets = await getTargets('abc');
+    expect(targets).toEqual(['def', 'ghi']);
+  });
+
+  test('should check flow repository for the status of flows', async () => {
+    const firstGet = nock('http://localhost:3001/flows/def')
+      .get('')
+      .reply(200, { data: { status: 'active' } });
+
+    const secondGet = nock('http://localhost:3001/flows/ghi')
+      .get('')
+      .reply(200, { data: { status: 'inactive' } });
+
+    const flowStart = nock('http://localhost:3001/flows/ghi/start')
+      .post('')
+      .reply(200, {});
+
+    await checkFlows(['def', 'ghi']);
   });
 
   test('should generate correct events for a given configuration', async () => {
@@ -193,11 +216,11 @@ describe('Event Handlers', () => {
 
     const ev2 = {
       headers: {
-        name: 'dispatch.hij',
+        name: 'dispatch.ghi',
       },
       payload,
     };
-    const events = await createDispatches(payload);
+    const events = await createDispatches(['def', 'ghi'], payload);
     expect(events).toHaveLength(2);
     expect(events[0]).toEqual(ev1);
     expect(events[1]).toEqual(ev2);

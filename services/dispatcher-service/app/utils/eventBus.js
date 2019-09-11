@@ -4,7 +4,7 @@ const bunyan = require('bunyan');
 const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/event-bus');
 const config = require('../config/index');
 const log = require('./logger');
-const { createDispatches } = require('./handlers');
+const { createDispatches, getTargets, checkFlows } = require('./handlers');
 
 const logger = bunyan.createLogger({ name: 'dispatcher-service' });
 
@@ -28,7 +28,11 @@ async function connectQueue() {
   await eventBus.subscribe(config.incomingEventName, async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
-    const events = await createDispatches(event.payload);
+    const targets = getTargets(event.payload.meta.flowId);
+
+    await checkFlows(targets);
+
+    const events = await createDispatches(targets, event.payload);
     const promises = [];
 
     for (let i = 0; i < events.length; i += 1) {

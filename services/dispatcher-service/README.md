@@ -1,4 +1,4 @@
-![alpha](https://img.shields.io/badge/Status-Alpha-yellow.svg)
+![alpha](https://img.shields.io/badge/Status-Beta%3F-yellowgreen.svg)
 
 <p align="center">
   <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="OIH Logo" width="400"/>
@@ -25,6 +25,7 @@ A configuration describes a list of sources by their application ID and Domain, 
     {
       "source": {
         "appId": "Wice",
+        "flowId": "xyz",
         "domain": "Addresses",
       },
       "targets": [
@@ -43,6 +44,7 @@ A configuration describes a list of sources by their application ID and Domain, 
     {
       "source": {
         "appId": "Snazzy",
+        "flowId": "uvw",
         "domain": "Addresses",
       },
       "targets": [
@@ -81,13 +83,12 @@ If this is the case, the Dispatcher Service then iterates through all listed act
 Visit `dispatcher-service.openintegrationhub.com/api-docs/` to view the Swagger API-Documentation
 
 ## Current status
-*Extremely* alpha
+Dispatcher service is currently capable of:
+- Storing and retrieving dispatch configurations
+- Routing incoming dispatch events according to these configurations
+- Communicating with the Flow Repository to check the flows statuses, and start them if necessary
 
-## Open Questions
-- How are the events best passed on to the SDF Adapters, while ensuring no duplicates or missed updates?
-    - Could be solved using unique routing keys unique to each SDF Adapter
-- How should we deal with the delay between starting a flow and the flow/adapter actually being online and able to receive data?
-    - Could be solved using a persistent/resilient queue, which stores the message(s) until the respective adapter is able to fetch them.
-- Should the schema for the configuration be changed? The current proposal has the advantage of granularity and being easy to parse internally, but might not be the most intuitive representation of the Hub and Spoke model.
-- How/when/by whom should the target flows be stopped after receiving a message, if at all?
-    - Probably better solved by the Orchestrator
+Currently outstanding issues:
+- Validation of dispatch configurations
+- Validation of incoming dispatch events
+- Analysing potential security concerns when viewing flows and routing messages
