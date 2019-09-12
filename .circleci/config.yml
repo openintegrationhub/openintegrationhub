@@ -161,9 +161,6 @@ workflows:
       - audit-log-test:
           requires:
             - deps
-      - dispatcher-service-test:
-          requires:
-            - deps
       - lib-backend-commons-lib-test:
           requires:
             - deps
@@ -199,7 +196,6 @@ workflows:
             - lib-component-repository-test
             - data-hub-test
             - ils-test
-            - dispatcher-service-test
       - build:
           requires:
             - test
