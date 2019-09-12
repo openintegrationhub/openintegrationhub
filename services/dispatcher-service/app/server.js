@@ -10,15 +10,13 @@ const swaggerUi = require('swagger-ui-express');
 const iamMiddleware = require('@openintegrationhub/iam-utils');
 const cors = require('cors');
 const config = require('./config/index');
-const logs = require('./api/controllers/log');
-const push = require('./api/controllers/push');
 const healthcheck = require('./api/controllers/healthcheck');
 const swaggerDocument = require('./api/swagger/swagger.json');
+const dispatches = require('./api/controllers/dispatches');
 
-const log = require('./config/logger');
+const log = require('./utils/logger');
 
-// const receiver = require('./api/utils/receive.module.js');
-const eventBus = require('./api/utils/eventBus.js');
+const eventBus = require('./utils/eventBus.js');
 
 class Server {
   constructor() {
@@ -32,13 +30,8 @@ class Server {
   setupMiddleware() {
     log.info('Setting up middleware...');
 
-    this.app.use('/logs', iamMiddleware.middleware);
-    this.app.use('/logs', async (req, res, next) => {
-      if (this.mongoose.connection.readyState !== 1) {
-        return res.status(500).send({ errors: [{ message: `NO DB. Please try again later ${this.mongoose.connection.readyState}`, code: 500 }] });
-      }
-      next();
-    });
+    this.app.use('/dispatches', iamMiddleware.middleware);
+
     log.info('Middleware set up');
   }
 
@@ -46,15 +39,14 @@ class Server {
     log.info('Setting routes...');
 
     // configure routes
-    this.app.use('/logs', logs);
-    this.app.use('/logs', push);
-
     this.app.use('/healthcheck', healthcheck);
+    this.app.use('/dispatches', dispatches);
 
     // Reroute to docs
     this.app.use('/docs', (req, res) => {
       res.redirect('/api-docs');
     });
+
 
     // Error handling
       this.app.use(function (err, req, res, next) { // eslint-disable-line
@@ -73,7 +65,7 @@ class Server {
 
       const options = {
         keepAlive: 1, connectTimeoutMS: 30000, reconnectInterval: 1000, reconnectTries: Number.MAX_VALUE, useNewUrlParser: true,
-      }; //
+      };
 
       // Will connect to the mongo container by default, but to localhost if testing is active
       mongoose.connect(config.mongoUrl, options);
@@ -128,7 +120,7 @@ class Server {
   }
 
   listen(port) {
-    const cport = typeof port !== 'undefined' ? port : 3007;
+    const cport = typeof port !== 'undefined' ? port : 3013;
     log.info(`Opening port ${cport}`);
     return this.app.listen(cport);
   }

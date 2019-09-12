@@ -1,0 +1,152 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "This is the API for the Open Integration Hub Microservice \"Dispatcher Service\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "version": "0.0.1",
+    "title": "Dispatcher Service",
+    "termsOfService": "http://openintegrationhub.de/terms/",
+    "contact": {
+      "email": "shoeffler@wice.de"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags": [
+    {
+      "name": "dispatches",
+      "description": "Configure your dispatch settings",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://openintegrationhub.de"
+      }
+    }
+  ],
+  "paths": {
+    "/dispatches": {
+      "get": {
+        "x-swagger-router-controller": "configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "dispatches"
+        ],
+        "summary": "Gets the tenant's current dispatch configuration",
+        "description": "Each tenant can only have one configuration at a time",
+        "operationId": "getConfig",
+        "responses": {
+          "200": {
+            "description": "The tenant-specific configuration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {"$ref": "#/components/schemas/Config"},
+                    "meta": {"type": "object"}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tenant has no dispatch configuration"
+          }
+        }
+      },
+      "put": {
+        "x-swagger-router-controller": "configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "dispatches"
+        ],
+        "summary": "Adds or updates a dispatch configuration",
+        "description": "If a configuration already exists, will automatically update based on tenant.",
+        "operationId": "addConfig",
+        "responses": {
+          "201": {
+            "description": "The created configuration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {"$ref": "#/components/schemas/Config"},
+                    "meta": {"type": "object"}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MutableConfig"
+              }
+            }
+          },
+          "description": "The connections of the configuration.",
+          "required": true
+        }
+      },
+      "delete": {
+        "x-swagger-router-controller": "configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "dispatches"
+        ],
+        "summary": "Deletes the tenant's dispatch configuration",
+        "description": "This means all dispatches will be deactivated from this point forward.",
+        "operationId": "deleteConfig",
+        "responses": {
+          "200": {
+            "description": "The tenant-specific configuration has been deleted."
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about the Open Integration Hub",
+    "url": "https://github.com/openintegrationhub"
+  },
+  "servers": [
+    {
+      "url": "http://dispatcher-service.openintegrationhub.com/"
+    },
+    {
+      "url": "http://localhost:3013/"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Enter the bearer token received from the IAM"
+      }
+    },
+    "schemas": {
+      "MutableConfig": {
+        "type": "object"
+      },
+      "Config": {
+        "type": "object"
+      }
+    }
+  }
+}
