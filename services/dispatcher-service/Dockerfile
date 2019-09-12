@@ -2,13 +2,13 @@ FROM node:8.12-alpine AS base
 LABEL NAME="oih-dispatcher-service"
 LABEL MAINTAINER Sven Höffler "shoeffler@wice.de"
 
-WORKDIR /usr/src/audit-log
+WORKDIR /usr/src/dispatcher-service
 
 RUN apk add --no-cache bash
 
 COPY package.json yarn.lock ./
-COPY services/audit-log/package.json ./services/dispatcher-service/
-COPY services/audit-log/app services/dispatcher-service/app
+COPY services/dispatcher-service/package.json ./services/dispatcher-service/
+COPY services/dispatcher-service/app services/dispatcher-service/app
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package
