@@ -28,18 +28,29 @@ async function connectQueue() {
   await eventBus.subscribe(config.incomingEventName, async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
-    const targets = getTargets(event.payload.meta.flowId);
+    const targets = await getTargets(event.payload.meta.flowId);
+
+    log.debug(`Targets: ${targets}`);
 
     await checkFlows(targets);
 
+    log.debug('After checkflows');
+
     const events = await createDispatches(targets, event.payload);
+
+    log.debug(`Events: ${events}`);
+
     const promises = [];
 
     for (let i = 0; i < events.length; i += 1) {
       promises.push(publishQueue(events[i]));
     }
 
+    log.debug('Before Promise.all');
+
     await Promise.all(promises);
+
+    log.debug('After Promise.all');
     await event.ack();
   });
 
