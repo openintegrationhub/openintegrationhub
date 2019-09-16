@@ -1,20 +1,60 @@
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+const schema = new Schema({
+    flowId: {
+        type: String
+    },
+    userId: {
+        type: String
+    },
+    tokenId: {
+        type: String
+    },
+    token: {
+        type: String
+    }
+});
+schema.index({flowId: 1, userId: 1}, {unique: true});
+
+const IamToken = mongoose.model('IamToken', schema);
+
 module.exports = class TokensDao {
     constructor({iamClient}) {
         this._iamClient = iamClient;
     }
 
-    async getTokenForUser(userId) {
-        const { token } = await this._iamClient.createToken({
+    async getTokenForFlowAndUser({userId, flowId}) {
+        const oldToken = await IamToken.find({flowId, userId});
+        if (oldToken) {
+            return oldToken.token;
+        }
+
+        const { id: tokenId, token } = await this._iamClient.createToken({
             accountId: userId,
             expiresIn: -1,
-            description: 'Created by Component Orchestrator',
-            new: false
+            description: `Created by Component Orchestrator for flow ${flowId}`
+        });
+
+        await IamToken.create({
+            flowId,
+            userId,
+            token,
+            tokenId
         });
 
         return token;
     }
 
-    async deleteTokenForUser() {
-        return true; //@todo: implement
+    async deleteTokenForFlowAndUser({flowId, userId}) {
+        const tokens = await IamToken.find({
+            flowId,
+            userId
+        });
+
+        for (const token of tokens) {
+            await this._iamClient.deleteTokenById(token.tokenId);
+            await token.remove();
+        }
     }
 };
