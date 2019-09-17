@@ -20,6 +20,7 @@ describe('basic OIDC test Suite', () => {
         process.env.IAM_ACC_SERVICEACCOUNT_USERNAME = 'testuser@basaas.de';
         process.env.IAM_ACC_SERVICEACCOUNT_PASSWORD = 'testpass';
         process.env.IAM_DEBUG = 'true';
+        process.env.IAM_MONGODB_CONNECTION = `${global.__MONGO_URI__}-oidc`;
 
         getHeader = `Basic ${encode(`${
             encodeURIComponent(process.env.IAM_SERVICE_CLIENT_ID)}:${encodeURIComponent(process.env.IAM_SERVICE_CLIENT_SECRET)}`)
@@ -39,7 +40,7 @@ describe('basic OIDC test Suite', () => {
 
         const App = require('../src/app');
         app = new App({
-            mongoConnection: `${global.__MONGO_URI__}-oidc`,
+            mongoConnection: process.env.IAM_MONGODB_CONNECTION,
         });
         await app.setup();
         await app.start();
