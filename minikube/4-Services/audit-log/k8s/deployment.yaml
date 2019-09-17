@@ -21,7 +21,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: shared-secret
-                  key: 'mongourl'
+                  key: 'auditLogMongourl'
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
