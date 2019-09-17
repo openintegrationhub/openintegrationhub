@@ -1,5 +1,4 @@
 const path = require('path');
-const mongoose = require('mongoose');
 const request = require('supertest')('http://127.0.0.1:3099');
 const { encode } = require('base64-url');
 const fs = require('fs');
@@ -44,7 +43,11 @@ describe('basic OIDC test Suite', () => {
         });
         await app.setup();
         await app.start();
-        done();
+
+        setTimeout(() => {
+            done();
+        }, 1000);
+
     });
 
     afterAll(() => {

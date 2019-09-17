@@ -67,7 +67,7 @@ class App {
         this.mongoose = mongoose;
         mongoose.Promise = Promise;
 
-        mongoose.connect(this.mongoConnection, {
+        await mongoose.connect(this.mongoConnection, {
             poolSize: 50,
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
