@@ -43,3 +43,5 @@ clients.json
 /src/app/dev/*.pem
 
 run-test-container
+
+test/globalConfig.json

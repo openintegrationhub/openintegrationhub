@@ -1,6 +1,7 @@
 
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Event, EventBus, EventBusManager } = require('@openintegrationhub/event-bus');
@@ -58,14 +59,15 @@ class App {
         this.app = express();
         this.app.set('port', conf.general.port);
         this.app.disable('x-powered-by');
+        this.mongoConnection = (opts && opts.mongoConnection) || conf.general.mongodb_url;
     }
 
-    async setup(mongoose) {
+    async setup() {
 
         this.mongoose = mongoose;
         mongoose.Promise = Promise;
 
-        mongoose.connect(conf.general.mongodb_url, {
+        mongoose.connect(this.mongoConnection, {
             poolSize: 50,
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,

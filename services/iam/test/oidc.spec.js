@@ -1,14 +1,11 @@
 const path = require('path');
 const mongoose = require('mongoose');
-const Mockgoose = require('mockgoose').Mockgoose;
 const request = require('supertest')('http://127.0.0.1:3099');
 const { encode } = require('base64-url');
 const fs = require('fs');
 const CONSTANTS = require('./../src/constants');
 
 let conf = null;
-
-const mockgoose = new Mockgoose(mongoose);
 
 describe('basic OIDC test Suite', () => {
     let app = null;
@@ -42,9 +39,10 @@ describe('basic OIDC test Suite', () => {
         conf = require('./../src/conf/index');
 
         const App = require('../src/app');
-        app = new App();
-        await mockgoose.prepareStorage();
-        await app.setup(mongoose);
+        app = new App({
+            mongoConnection: `${global.__MONGO_URI__}-oidc`,
+        });
+        await app.setup();
         await app.start();
         done();
     });
