@@ -1,9 +1,6 @@
 process.env.AUTH_TYPE = 'basic';
 const mongoose = require('mongoose');
-const Mockgoose = require('mockgoose').Mockgoose;
-
-const mockgoose = new Mockgoose(mongoose);
-const request = require('supertest')('http://127.0.0.1:3099');
+const request = require('supertest')('http://localhost:3099');
 const CONSTANTS = require('./../src/constants');
 const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../src/access-control/permissions');
 
@@ -16,12 +13,14 @@ describe('routes', () => {
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_AUTH_TYPE = 'basic';
-        process.env.IAM_BASEURL = 'http://127.0.0.1';
+        process.env.IAM_BASEURL = 'http://localhost';
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 
-        app = new App();
-        await mockgoose.prepareStorage();
-        await app.setup(mongoose);
+        app = new App({
+            mongoConnection: `${global.__MONGO_URI__}-integration`,
+        });
+
+        await app.setup();
         await app.start();
 
         setTimeout(async () => {
@@ -849,9 +848,10 @@ describe('RSA Signing', () => {
         conf.jwt.algorithmType = process.env.IAM_JWT_ALGORITHM_TYPE;
         conf.jwt.algorithm = 'RS256';
         const App = require('../src/app');
-        app = new App();
-        await mockgoose.prepareStorage();
-        await app.setup(mongoose);
+        app = new App({
+            mongoConnection: `${global.__MONGO_URI__}-integration`,
+        });
+        await app.setup();
         await app.start();
         done();
     });
