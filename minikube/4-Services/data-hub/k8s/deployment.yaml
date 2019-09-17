@@ -24,7 +24,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: shared-secret
-                  key: mongourl
+                  key: dataHubMongourl
             - name: PORT
               value: '1234'
             - name: IAM_TOKEN

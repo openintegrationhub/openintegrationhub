@@ -25,7 +25,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: shared-secret
-              key: mongourl
+              key: metaDataMongourl
         - name: "INTROSPECT_TYPE"
           value: "basic"
         - name: RABBITMQ_URI

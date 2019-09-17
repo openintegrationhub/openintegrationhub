@@ -21,7 +21,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: shared-secret
-                  key: 'mongourl'
+                  key: 'flowRepoMongourl'
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -33,6 +33,8 @@ spec:
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"
               value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+            - name: ORIGINWHITELIST
+              value: 'localoih.com,http://web-ui.localoih.com'
           resources:
             limits:
               cpu: '0.1'

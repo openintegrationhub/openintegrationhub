@@ -5,13 +5,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const node = new Schema({
-  id: { type: String, required: [true, 'Flow nodes require an id.'], maxlength: 10 },
+  id: { type: String, required: [true, 'Flow nodes require an id.'], maxlength: 30 },
   componentId: {
     type: mongoose.Types.ObjectId,
     required: [true, 'Flow nodes require a componentId.'],
   },
-  function: { type: String, required: [true, 'Flow nodes require a function.'], maxlength: 30 },
-  name: { type: String, maxlength: 30 },
+  function: { type: String, required: [true, 'Flow nodes require a function.'], maxlength: 60 },
+  name: { type: String, maxlength: 60 },
   credentials_id: { type: mongoose.Types.ObjectId, maxlength: 30 },
   description: { type: String, maxlength: 100 },
   fields: {},
@@ -24,8 +24,8 @@ const edge = new Schema({
     condition: { type: String, maxlength: 30 },
     mapper: {},
   },
-  source: { type: String, required: [true, 'Flow edges require a source.'], maxlength: 10 },
-  target: { type: String, required: [true, 'Flow edges require a target.'], maxlength: 10 },
+  source: { type: String, required: [true, 'Flow edges require a source.'], maxlength: 30 },
+  target: { type: String, required: [true, 'Flow edges require a target.'], maxlength: 30 },
   _id: false,
 });
 
@@ -59,7 +59,7 @@ const graph = new Schema({
 
 // Define schema
 const flow = new Schema({
-  name: { type: String, maxlength: 30 },
+  name: { type: String, maxlength: 60 },
   description: { type: String, maxlength: 100 },
   graph: { type: graph, required: [true, 'Flows require a graph.'] },
   type: { type: String, maxlength: 30 },
