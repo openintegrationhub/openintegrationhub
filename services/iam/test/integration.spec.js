@@ -898,6 +898,12 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(200);
 
+            /* Admin deletes the token */
+            await request.get(`/api/v1/tokens/${tokenResp.body[0]._id}`)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(404);
+
             /* Service account fetch user data fails */
             await request.get('/api/v1/users/me')
                 .set('Authorization', `Bearer ${portTokenResponse.body.token}`)
