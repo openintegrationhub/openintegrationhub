@@ -42,6 +42,7 @@ module.exports = {
             inquirer: accountPayload.inquirer,
             permissions: accountPayload.permissions,
             type: opts.type || (accountPayload.inquirer ? CONSTANTS.TOKEN_TYPES.DELEGATE : CONSTANTS.TOKEN_TYPES.SELF),
+            tokenLifeSpan: opts.lifespan,
         };
 
         // Search for an existing token --> findOneAndUpdate?
@@ -52,10 +53,7 @@ module.exports = {
                 id: existingToken._id,
                 props: module.exports._getNewExpireAt(opts.lifespan || existingToken.tokenLifeSpan),
             });
-            return {
-                token: existingToken.token,
-                id: existingToken._id,
-            };
+            return existingToken;
         }
 
         const token = base64Url.encode(crypto.randomBytes(128));

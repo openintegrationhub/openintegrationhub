@@ -28,6 +28,10 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
         query.token = decodeURIComponent(req.query.token);
     }
 
+    if (req.query.accountId) {
+        query.accountId = req.query.accountId;
+    }
+
     try {
         const docs = await TokenDAO.find(query);
         docs.forEach((elem) => {

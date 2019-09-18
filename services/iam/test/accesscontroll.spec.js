@@ -288,6 +288,8 @@ describe('Role Routes', () => {
             .set('Authorization', tokenAdmin)
             .set('Accept', /application\/json/)
             .expect(200);
+        expect(newTokenResp1.body.token).toBeDefined();
+        expect(newTokenResp1.body.id).toBeDefined();
 
         const introspect1 = await request.post('/api/v1/tokens/introspect')
             .send({
