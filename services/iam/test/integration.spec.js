@@ -620,6 +620,84 @@ describe('routes', () => {
 
         });
 
+        test('permanent service account token is created', async () => {
+
+            const userAccount = {
+                'username': 'sa-persistent-token@example.com',
+                'firstname': 'test',
+                'lastname': 'user',
+                'status': 'ACTIVE',
+                'password': 'usertest',
+                // 'role': CONSTANTS.ROLES.USER,
+            };
+
+            const userCreateResp = await request.post('/api/v1/users')
+                .send(userAccount)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            /* Service account can create a ephemeral token for the given user id */
+            const portTokenResponse = await request.post('/api/v1/tokens')
+                .send({
+                    accountId: userCreateResp.body.id,
+                    expiresIn: -1,
+                })
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            console.log(portTokenResponse.body);
+
+            expect(portTokenResponse.body.token).toBeDefined();
+            expect(portTokenResponse.body.id).toBeDefined();
+
+            /* Repeat, should not create a duplicate */
+            const portTokenResponse2 = await request.post('/api/v1/tokens')
+                .send({
+                    accountId: userCreateResp.body.id,
+                    expiresIn: -1,
+                })
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            console.log(portTokenResponse2.body);
+
+            expect(portTokenResponse2.body.token).toBeDefined();
+            expect(portTokenResponse2.body.id).toBeDefined();
+
+            const portTokenResponse3 = await request.get(`/api/v1/tokens?accountId=${userCreateResp.body.id}`)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            expect(portTokenResponse3.body.length).toEqual(1);
+
+            /* Multiple different tokens possible */
+            const portTokenResponse4 = await request.post('/api/v1/tokens')
+                .send({
+                    accountId: userCreateResp.body.id,
+                    expiresIn: '2h',
+                })
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            console.log(portTokenResponse4.body);
+
+            expect(portTokenResponse4.body.token).toBeDefined();
+            expect(portTokenResponse4.body.id).toBeDefined();
+
+            const portTokenResponse5 = await request.get(`/api/v1/tokens?accountId=${userCreateResp.body.id}`)
+                .set('Authorization', tokenAdmin)
+                .set('Accept', /application\/json/)
+                .expect(200);
+
+            expect(portTokenResponse5.body.length).toEqual(2);
+
+        });
+
         test('ephemeral tokens are only created for existing users and valid params', async () => {
 
             /* Create new user and a new service account */
