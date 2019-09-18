@@ -1,14 +1,17 @@
-![linux](https://img.shields.io/badge/Linux-red.svg) ![Windows](https://img.shields.io/badge/Windows-blue.svg) 
 
 <p align="center">
   <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
 </p>
 
-The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
+The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalization.
 
 Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
 
-In addion to setting up the Open Integration Hub on a cloud infrastucture such as GCP it is also possible to setup a local version of the framework. Make sure to perform the following to set up a local version of the OIH within your own minikube:
+# Local Installation Guide
+
+![linux](https://img.shields.io/badge/Linux-red.svg) ![Windows](https://img.shields.io/badge/Windows-blue.svg)
+
+In addition to setting up the Open Integration Hub on a cloud infrastructure such as GCP it is also possible to setup a local version of the framework. Make sure to perform the following to set up a local version of the OIH within your own minikube:
 
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -31,7 +34,7 @@ In addion to setting up the Open Integration Hub on a cloud infrastucture such a
 
 # Requirements
 
-**Please make sure to clone the monorepo before you start.**
+**Please make sure to clone the [monorepo](https://github.com/openintegrationhub/openintegrationhub) before you start.**
 
 Make sure that minikube is endowed with sufficient resources. We suggest at least:
 
@@ -40,7 +43,7 @@ Make sure that minikube is endowed with sufficient resources. We suggest at leas
 
 ![Windows](https://img.shields.io/badge/Windows-blue.svg)
 
-|If you're using Windows we suggest to use virtual box. In order to use it, Hyper-V must be disabled [Enable/Disable Hyper-V on Windows 10](https://docs.microsoft.com/de-de/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v).|
+|If you're using Windows we suggest to use virtual box. In order to use it, Hyper-V must be disabled [Enable/Disable Hyper-V on Windows 10](https://docs.microsoft.com/de-de/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v).You may also have to enable virtualisation features in you BIOS.|
 |---|
 
 # Installation
@@ -63,7 +66,9 @@ to adjust the resource limits before starting again.
 
 In particular, ensure that its ingress module is enabled (`minikube addons enable ingress`).  Also make certain that `kubectl` is configured to use minikube. To see if its correctly configured use
 
-    `kubectl config current-context`
+    `kubectl config current-context
+    or
+    cluster info`
 
 For further information about how to set up minikube, see here:
 
@@ -77,7 +82,9 @@ For further information about how to set up minikube, see here:
 
 ## Basic Open Integration Hub Infrastructure Setup
 
-Set up the basic OIH infrastructure. To do this, simply execute
+**Please make sure to clone the [monorepo](https://github.com/openintegrationhub/openintegrationhub) before you start. You will need the files in the minikube folder.**
+
+Set up the basic Open Integration Hub infrastructure. To do this, simply execute
 
 `kubectl apply -f ./1-Platform`
 
@@ -97,7 +104,23 @@ echo "$(minikube ip) iam.localoih.com smk.localoih.com flow-repository.localoih.
 a **Windows** distribution, you can find the host files under:
 
 ```console
-windows\system32\etc\hosts
+c:\windows\system32\etc\hosts
+or
+c:\windows\system32\drivers\etc\hosts
+
+then add
+
+your_minikube_ip iam.localoih.com
+your_minikube_ip smk.localoih.com
+your_minikube_ip flow-repository.localoih.com
+your_minikube_ip auditlog.localoih.com
+your_minikube_ip metadata.localoih.com
+your_minikube_ip component-repository.localoih.com
+your_minikube_ip webhooks.localoih.com
+your_minikube_ip attachment-storage-service.localoih.com
+your_minikube_ip data-hub.localoih.com
+your_minikube_ip ils.localoih.com
+your_minikube_ip web-ui.localoih.com
 ```
 
 ## Identity and Access Management Deployment
@@ -115,7 +138,7 @@ Create a service account and token for the other services in the OIH IAM. Using 
 ### Login as Admin
 
  _Path_:
-  
+
 `/login`
 
 _Request Body:_
@@ -213,7 +236,7 @@ The returned token is the service token that will be used by the other services 
 
 Apply the shared secret via
 
-    kubectl apply -f ./3-Secret. 
+    kubectl apply -f ./3-Secret.
 
 Ordinarily, each service would have its own secret for security reasons, but this is simplified for ease of use in a local context
 
@@ -248,9 +271,9 @@ The Open Integration Hub is now running and ought to function just as it would i
 - **Web UI**. A basic browser-based UI to control certain other services.
   - `web-ui.localoih.com`
 
-Most of these services have an OpenAPI documentation of their API available through the path `/api-docs`. Additionally, you can check their readmes in the `services` folder of the OIH Repository: [Open Integration Hub Services](https://github.com/openintegrationhub/openintegrationhub/tree/master/services)
+Most of these services have an OpenAPI documentation of their API available through the path `/api-docs`. You can also check the [API Reference Documentation](https://openintegrationhub.github.io/docs/API%20Reference/APIReferenceOverview.html). If you want to learn more about the services, check the [Service Documentation](https://openintegrationhub.github.io/docs/Services/Services.html) or their readmes in the `services` folder of the GitHub Repository: [Open Integration Hub Services](https://github.com/openintegrationhub/openintegrationhub/tree/master/services)
 
-# Usage
+# User Tutorial
 
 The following step-by-step guide will show you how you can add your first components and create a flow with these components via the provided web ui. All actions are also performable via postman or similar tools.
 
@@ -401,7 +424,7 @@ After some time the status changes to `active` and the flow is running (you may 
 
 ## Lessons Learned
 
-In this usage section you have learned...
+In this tutorial you have learned...
 
 1. How to create components via the web ui
 2. How to create a flow within the Open Integration Hub using existing components
