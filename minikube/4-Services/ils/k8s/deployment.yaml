@@ -21,7 +21,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: shared-secret
-                  key: 'mongourl'
+                  key: 'ilsMongourl'
           resources:
             limits:
               cpu: '0.1'

@@ -1,8 +1,4 @@
 process.env.AUTH_TYPE = 'basic';
-const mongoose = require('mongoose');
-const { Mockgoose } = require('mockgoose');
-
-const mockgoose = new Mockgoose(mongoose);
 const request = require('supertest')('http://localhost:3099');
 
 let conf = null;
@@ -16,9 +12,10 @@ describe('Tenant Routes', () => {
         process.env.IAM_AUTH_TYPE = 'basic';
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 
-        app = new App();
-        await mockgoose.prepareStorage();
-        await app.setup(mongoose);
+        app = new App({
+            mongoConnection: `${global.__MONGO_URI__}-permissions`,
+        });
+        await app.setup();
         await app.start();
 
         setTimeout(async () => {

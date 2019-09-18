@@ -23,7 +23,7 @@ spec:
         - name: ENDPOINT_FLOW
           value: 'http://flow-repository.localoih.com'
         - name: ENDPOINT_COMPONENT
-          value: http://component-repository.localoih.com        
+          value: 'http://component-repository.localoih.com'       
         ports:
         - containerPort: 3000
         livenessProbe:

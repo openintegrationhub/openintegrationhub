@@ -1,8 +1,4 @@
 process.env.AUTH_TYPE = 'basic';
-const mongoose = require('mongoose');
-const Mockgoose = require('mockgoose').Mockgoose;
-
-const mockgoose = new Mockgoose(mongoose);
 const request = require('supertest')('http://localhost:3099');
 
 const CONSTANTS = require('./../src/constants');
@@ -25,9 +21,10 @@ describe('User Routes', () => {
         process.env.IAM_AUTH_TYPE = 'basic';
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 
-        app = new App();
-        await mockgoose.prepareStorage();
-        await app.setup(mongoose);
+        app = new App({
+            mongoConnection: `${global.__MONGO_URI__}-users`,
+        });
+        await app.setup();
         await app.start();
 
         setTimeout(async () => {

@@ -24,7 +24,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: shared-secret
-                  key: mongourl
+                  key: componentRepoMongourl
             - name: PORT
               value: '1234'
             - name: IAM_TOKEN
@@ -34,6 +34,8 @@ spec:
                   key: iamtoken
             - name: LOG_LEVEL
               value: trace
+            - name: "INTROSPECT_ENDPOINT_BASIC"
+              value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: IfNotPresent

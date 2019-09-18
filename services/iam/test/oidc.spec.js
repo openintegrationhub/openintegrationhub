@@ -1,14 +1,10 @@
 const path = require('path');
-const mongoose = require('mongoose');
-const Mockgoose = require('mockgoose').Mockgoose;
 const request = require('supertest')('http://127.0.0.1:3099');
 const { encode } = require('base64-url');
 const fs = require('fs');
 const CONSTANTS = require('./../src/constants');
 
 let conf = null;
-
-const mockgoose = new Mockgoose(mongoose);
 
 describe('basic OIDC test Suite', () => {
     let app = null;
@@ -24,6 +20,7 @@ describe('basic OIDC test Suite', () => {
         process.env.IAM_ACC_SERVICEACCOUNT_USERNAME = 'testuser@basaas.de';
         process.env.IAM_ACC_SERVICEACCOUNT_PASSWORD = 'testpass';
         process.env.IAM_DEBUG = 'true';
+        process.env.IAM_MONGODB_CONNECTION = `${global.__MONGO_URI__}-oidc`;
 
         getHeader = `Basic ${encode(`${
             encodeURIComponent(process.env.IAM_SERVICE_CLIENT_ID)}:${encodeURIComponent(process.env.IAM_SERVICE_CLIENT_SECRET)}`)
@@ -42,11 +39,16 @@ describe('basic OIDC test Suite', () => {
         conf = require('./../src/conf/index');
 
         const App = require('../src/app');
-        app = new App();
-        await mockgoose.prepareStorage();
-        await app.setup(mongoose);
+        app = new App({
+            mongoConnection: process.env.IAM_MONGODB_CONNECTION,
+        });
+        await app.setup();
         await app.start();
-        done();
+
+        setTimeout(() => {
+            done();
+        }, 1000);
+
     });
 
     afterAll(() => {
@@ -163,7 +165,7 @@ describe('basic OIDC test Suite', () => {
         const pathToKeystore = path.join(__dirname, '../keystore/keystore.json');
         const { generateFile } = require('../src/util/keystore');
         
-        await fs.unlink(pathToKeystore);
+        await fs.unlinkSync(pathToKeystore);
         await generateFile();
         
     });

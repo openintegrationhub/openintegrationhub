@@ -34,7 +34,7 @@ process.on('SIGINT', exitHandler.bind(null, { exit: true }));
         // main task
         const mainApp = new App({ eventBus });
 
-        await mainApp.setup(mongoose);
+        await mainApp.setup();
 
         if (conf.general.useHttps) {
             log.info('Using local https');
