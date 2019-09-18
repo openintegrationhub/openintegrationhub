@@ -25,7 +25,7 @@ module.exports = class TokensDao {
     }
 
     async getTokenForFlowAndUser({userId, flowId}) {
-        const oldToken = await IamToken.find({flowId, userId});
+        const [oldToken] = await IamToken.find({flowId, userId});
         if (oldToken) {
             return oldToken.token;
         }
