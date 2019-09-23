@@ -1,29 +1,29 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import * as _ from 'lodash';
 
-export interface ModificationHistoryItemDocument extends Document {
+export interface IModificationHistoryItemDocument extends Document {
     user: string;
     operation: string;
     timestamp: string;
 }
 
-export interface DataObjectRefDocument extends Document {
+export interface IDataObjectRefDocument extends Document {
     applicationUid: string;
     recordUid: string;
-    modificationHistory: ModificationHistoryItemDocument[];
+    modificationHistory: IModificationHistoryItemDocument[];
 }
 
-export interface OwnerDocument extends Document {
+export interface IOwnerDocument extends Document {
     id: string;
     type: string;
 }
 
-export interface DataObjectDocument extends Document {
+export interface IDataObjectDocument extends Document {
     oihUid: string;
     modelId: string;
     content: any;
-    refs: DataObjectRefDocument[];
-    owners: OwnerDocument[];
+    refs: IDataObjectRefDocument[];
+    owners: IOwnerDocument[];
 }
 
 const mofificationHistorySchema = new Schema({
@@ -89,7 +89,7 @@ const dataObjectSchema = new Schema({
     timestamps: true
 });
 
-function dataObjectTransform (doc: DataObjectDocument, ret: DataObjectDocument) {
+function dataObjectTransform (doc: IDataObjectDocument, ret: IDataObjectDocument) {
     const safeFields = ['id', 'oihUid', 'modelId', 'content', 'refs', 'owners'];
     ret.id = doc.id;
     return _.pick(ret, safeFields);
@@ -99,4 +99,4 @@ dataObjectSchema.set('toJSON', {
     transform: dataObjectTransform
 });
 
-export default mongoose.model<DataObjectDocument>('DataObject', dataObjectSchema);
+export default mongoose.model<IDataObjectDocument>('DataObject', dataObjectSchema);
