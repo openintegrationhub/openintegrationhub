@@ -125,7 +125,7 @@ class App {
 
         const mongoSession = session({
             secret: process.env.IAM_SESSION_COOKIE_SECRET || 'Thi5Secret1sSoloelyForTestingOnly$',
-            name: 'basaas-iam',
+            name: process.env.IAM_SESSION_COOKIE_NAME || 'basaas-iam',
             store: new MongoStore({
                 mongooseConnection: this.mongoose.connection,
                 touchAfter: 4 * 3600,
