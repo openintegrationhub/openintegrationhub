@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import KoaRouter, { IMiddleware } from 'koa-router';
+import KoaRouter from 'koa-router';
 import { Server } from 'http';
 import Logger from 'bunyan';
 import healthcheck from './routes/healthcheck';
@@ -25,6 +25,7 @@ export default class ObjectServer {
         this.api = new KoaRouter();
         this.koa = new Koa();
         this.logger = logger;
+
         koaQs(this.koa);
 
         this.api

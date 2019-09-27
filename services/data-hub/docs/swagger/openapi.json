@@ -229,12 +229,13 @@
         "type" : "object",
         "required" : [ "content" ],
         "properties" : {
-          "oihUid" : {
-            "type" : "string"
-          },
-          "modelId" : {
+          "domainId" : {
             "type" : "string",
-            "description" : "ID of the model representing this data"
+            "description": "Object domain ID"
+          },
+          "schemaUri" : {
+            "type" : "string",
+            "description" : "Validation schema URI"
           },
           "content" : {
             "type" : "object"

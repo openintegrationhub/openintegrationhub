@@ -135,6 +135,7 @@ export default class DataController {
             });
         }
         const dataObject = await DataObject.create(body);
+
         ctx.status = 201;
         ctx.body = {
             data: dataObject

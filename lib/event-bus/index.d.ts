@@ -9,13 +9,25 @@ export interface IEventBusOptions {
 export interface IEvent {
     readonly payload: any;
     readonly headers: object;
-    ack(): void;
-    nack(): void;
+    ack(): Promise<void>;
+    nack(): Promise<void>;
+    toJSON(): object;
+}
+
+interface EventHeaders {
+    name: string
+}
+type EventPayload = any;
+
+interface EventOptions {
+    headers: EventHeaders;
+    payload: EventPayload;
 }
 
 export class Event implements IEvent {
-    public readonly payload: any;
-    public readonly headers: object;
+    public constructor(opts: EventOptions);
+    public readonly headers: EventHeaders;
+    public readonly payload: EventPayload;
     public ack(): void;
     public nack(): void;
 }

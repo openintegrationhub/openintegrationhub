@@ -1,29 +1,29 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 import * as _ from 'lodash';
 
-export interface IModificationHistoryItemDocument extends Document {
+export interface IModificationHistoryItemDocument {
     user: string;
     operation: string;
     timestamp: string;
 }
 
-export interface IDataObjectRefDocument extends Document {
+export interface IDataObjectRefDocument {
     applicationUid: string;
     recordUid: string;
-    modificationHistory: IModificationHistoryItemDocument[];
+    modificationHistory?: IModificationHistoryItemDocument[];
 }
 
-export interface IOwnerDocument extends Document {
+export interface IOwnerDocument extends Types.Subdocument {
     id: string;
     type: string;
 }
 
 export interface IDataObjectDocument extends Document {
-    oihUid: string;
-    modelId: string;
+    domainId: string;
+    schemaUri: string;
     content: any;
-    refs: IDataObjectRefDocument[];
-    owners: IOwnerDocument[];
+    refs?: IDataObjectRefDocument[];
+    owners?: IOwnerDocument[];
 }
 
 const mofificationHistorySchema = new Schema({
@@ -71,14 +71,11 @@ const ownerSchema = new Schema({
 });
 
 const dataObjectSchema = new Schema({
-    oihUid: {
-        type: String,
-        required: true,
-        unique: true
+    domainId: {
+        type: String
     },
-    modelId: {
-        type: String,
-        required: true
+    schemaUri: {
+        type: String
     },
     content: {
         type: Schema.Types.Mixed
@@ -90,7 +87,7 @@ const dataObjectSchema = new Schema({
 });
 
 function dataObjectTransform (doc: IDataObjectDocument, ret: IDataObjectDocument) {
-    const safeFields = ['id', 'oihUid', 'modelId', 'content', 'refs', 'owners'];
+    const safeFields = ['id', 'domainId', 'schemaUri', 'content', 'refs', 'owners'];
     ret.id = doc.id;
     return _.pick(ret, safeFields);
 }
