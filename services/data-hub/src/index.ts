@@ -86,11 +86,17 @@ export default class DataHubApp extends App {
             const dataRecord = await DataObject.findById(oihUid);
 
             if (dataRecord) {
-                dataRecord.refs.push({
-                    applicationUid,
-                    recordUid
-                });
-                await dataRecord.save();
+                if (dataRecord.refs.find(
+                    ref => ref.applicationUid === applicationUid.toString() && ref.recordUid === recordUid.toString()
+                )) {
+                    logger.warn(meta, 'Trying to add an existing ref once again');
+                } else {
+                    dataRecord.refs.push({
+                        applicationUid,
+                        recordUid
+                    });
+                    await dataRecord.save();
+                }
             } else {
                 logger.warn(meta, 'Data record is not found');
             }

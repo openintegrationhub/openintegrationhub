@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "name": "validation.success"
+  },
+  "payload": {
+    "meta": {
+      "domainId": "1",
+      "schemaUri": "2",
+      "recordUid": "3",
+      "applicationUid": "4"
+    },
+    "data": {
+      "koko": 1
+    }
+  }
+}

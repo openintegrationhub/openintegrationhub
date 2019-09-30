@@ -1,0 +1,13 @@
+{
+  "headers": {
+    "name": "ref.create"
+  },
+  "payload": {
+    "meta": {
+      "oihUid": "5d91c826240277a11dd8a4f1",
+      "recordUid": "5",
+      "applicationUid": "6"
+    },
+    "data": {}
+  }
+}
