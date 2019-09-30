@@ -4,7 +4,7 @@ const { isTenantAdmin } = require('@openintegrationhub/iam-utils');
 const Schema = require('../../model/Schema');
 
 async function getReferences(uri) {
-    return (await Schema.find({ refs: uri })).map(elem => elem.uri);
+    return (await Schema.find({ refs: uri })).map((elem) => elem.uri);
 }
 
 // async function updateReferences({ oldUri, newUri }) {
@@ -85,14 +85,14 @@ module.exports = {
                         $in: [{
                             id: requester.sub,
                             type: 'USER',
-                        }]
-                    }
-                }
-            ]
+                        }],
+                    },
+                },
+            ],
         };
         return await Schema.find({
             domainId,
-            ...query
+            ...query,
         },
         null,
         options);
@@ -142,12 +142,11 @@ module.exports = {
         }
     },
     async deleteAll({ ownerId, ownerType }) {
-
         const toBeDeleted = await Schema.find({ owners: { id: ownerId, type: ownerType } });
         for (const schema of toBeDeleted) {
             if (schema.owners.length > 1) {
                 // remove ownerid from owners
-                schema.owners = schema.owners.filter(owner => owner.id !== ownerId);
+                schema.owners = schema.owners.filter((owner) => owner.id !== ownerId);
                 await schema.save();
             } else {
                 await module.exports.delete(schema.uri);
