@@ -7,6 +7,7 @@ const Server = require('@openintegrationhub/secret-service');
 const { EventBus } = require('@openintegrationhub/event-bus');
 const conf = require('./src/conf');
 
+console.log(conf);
 const log = logger.getLogger(`${conf.logging.namespace}/main`);
 
 function exitHandler(options, err) {
