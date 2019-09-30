@@ -1,10 +1,10 @@
 import { Context } from 'koa';
-import Healthcheckable from '../../healthcheckable';
+import IHealthcheckable from '../../healthcheckable';
 
 export default class HealthcheckController {
-    private readonly objects: Healthcheckable[];
+    private readonly objects: IHealthcheckable[];
 
-    public constructor(objects: Healthcheckable[]) {
+    public constructor(objects: IHealthcheckable[]) {
         this.objects = objects;
     }
 

@@ -5,6 +5,7 @@ RUN apk update && apk add --no-cache bash
 
 COPY package.json yarn.lock ./
 COPY lib/backend-commons-lib ./lib/backend-commons-lib
+COPY lib/event-bus ./lib/event-bus
 COPY lib/iam-utils ./lib/iam-utils
 COPY services/data-hub/package.json services/data-hub/tsconfig.json ./services/data-hub/
 COPY services/data-hub/docs ./services/data-hub/docs/

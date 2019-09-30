@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import KoaRouter, { IMiddleware } from 'koa-router';
+import KoaRouter from 'koa-router';
 import { Server } from 'http';
 import Logger from 'bunyan';
 import healthcheck from './routes/healthcheck';
@@ -10,7 +10,7 @@ import errorResponder from './middleware/error-responder';
 import * as path from 'path';
 import koaQs from 'koa-qs';
 
-export interface ServerOptions {
+export interface IServerOptions {
     config: any;
     logger: Logger;
 }
@@ -21,10 +21,11 @@ export default class ObjectServer {
     private server: Server;
     private logger: Logger;
 
-    public constructor({config, logger}: ServerOptions) {
+    public constructor({config, logger}: IServerOptions) {
         this.api = new KoaRouter();
         this.koa = new Koa();
         this.logger = logger;
+
         koaQs(this.koa);
 
         this.api

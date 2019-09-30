@@ -43,6 +43,7 @@
         "typescript": "3.5.2"
     },
     "dependencies": {
+        "@openintegrationhub/event-bus": "*",
         "@openintegrationhub/iam-utils": "*",
         "backend-commons-lib": "*",
         "bunyan": "1.8.12",
