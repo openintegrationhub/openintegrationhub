@@ -28,8 +28,9 @@ export class Event implements IEvent {
     public constructor(opts: EventOptions);
     public readonly headers: EventHeaders;
     public readonly payload: EventPayload;
-    public ack(): void;
-    public nack(): void;
+    public ack(): Promise<void>;
+    public nack(): Promise<void>;
+    toJSON(): object;
 }
 
 export class EventBus {
