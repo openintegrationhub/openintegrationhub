@@ -48,16 +48,16 @@ Subscripes
 
 Publishes
 
-* **metadata.domain.deleted** - Deletes tenant domains and schemas
-* **metadata.schema.created** - Deletes tenant domains and schemas
-* **metadata.schema.modified** - Deletes tenant domains and schemas
-* **metadata.schema.deleted** - Deletes tenant domains and schemas
+* **metadata.domain.deleted**
+* **metadata.schema.created**
+* **metadata.schema.modified**
+* **metadata.schema.deleted**
 
 ---
 
 
 
-## Basic usage & development
+## Development
 
 Install packages
 
@@ -85,11 +85,14 @@ yarn test
 
 ---
 
-## Run in local Docker container
+## Install (minimal)
 
-Create env-file under "./.env.local"
+In service root directory "openintegrationhub/services/meta-data-repository/"
 
-```console
+Setup .env.local
+
+```zsh
+tee -a .env.local <<EOF
 MONGODB_CONNECTION=mongodb://172.17.0.1:27017/meta-data-repository
 LOG_LEVEL=error
 IAM_TOKEN=token
@@ -98,17 +101,18 @@ REFRESH_TIMEOUT=600
 EXPIRATION_OFFSET=-100
 PAGINATION_PAGE_SIZE=10
 INTROSPECT_ENDPOINT_BASIC=http://iam.openintegrationhub.com/api/v1/tokens/introspect
+EOF
 ```
 
-Create docker image
+Build image
 
-```console
+```zsh
 docker build . -t oih/meta-data-repository
 ```
 
 Run container
 
-```console
+```zsh
 docker run -p 3000:3000 --env-file=".env.local" oih/meta-data-repository
 ```
 
