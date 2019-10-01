@@ -280,23 +280,23 @@ The Open Integration Hub is now running and ought to function just as it would i
 - **Identity and Access Management**. Create and modify users, tenants, roles, and permissions.
   - `YOUR IAM URL`
 - **Secret Service**. Securely store authentication data for other applications.
-  - `YOUR Secret Service URL`
+  - `YOUR Secret-Service URL`
 - **Flow Repository**. Create, modify, and start/stop integration flows.
-  - `flow-repository.localoih.com`
+  - `YOUR Flow-Repository URL`
 - **Audit Log**. View event logs spawned by the other services.
-  - `auditlog.localoih.com`
+  - `YOUR Audit-Log URL`
 - **Metadata Repository**. Create and modify master data models used by your connectors.
-  - `metadata.localoih.com`
+  - `YOUR Meta-Data-Repository URL`
 - **Component Repository**. Store and modify connector components.
-  - `component-repository.localoih.com`
+  - `YOUR Component-Repository URL`
 - **Attachment Storage Service**. Temporarily store larger files for easier handling in flows.
-  - `attachment-storage-service.localoih.com`
+  - `YOUR Attachment-Storage-Service URL`
 - **Data Hub**. Long-term storage for flow content.
-  - `data-hub.localoih.com`
+  - `YOUR Data-Hub URL`
 - **Integration Layer Service**. Perform data operations such as merging or splitting objects.
-  - `ils.localoih.com`
+  - `YOUR Integration-Layer-Service URL`
 - **Web UI**. A basic browser-based UI to control certain other services.
-  - `web-ui.localoih.com`
+  - `YOUR Web-UI URL`
 
 Most of these services have an OpenAPI documentation of their API available through the path `/api-docs`. You can also check the [API Reference Documentation](https://openintegrationhub.github.io/docs/API%20Reference/APIReferenceOverview.html). If you want to learn more about the services, check the [Service Documentation](https://openintegrationhub.github.io/docs/Services/Services.html) or their readmes in the `services` folder of the GitHub Repository: [Open Integration Hub Services](https://github.com/openintegrationhub/openintegrationhub/tree/master/services)
 
@@ -346,17 +346,17 @@ The timer component is used to trigger flows on a provided interval, while the c
 In order to add those components, visit the web ui (`web-ui.localoih.com`) and navigate to the `Components` section.
 
 <p align="left">
-  <img src="assets/menu.png" alt="Sublime's custom image" width="150"/>
+  <img src="minikube/assets/menu.png" alt="Sublime's custom image" width="150"/>
 </p>
 
 Now click on the `ADD+` button. A popup window will appear where you can add the code provided above.
 
 <p align="left">
-  <img src="assets/AddComponent.png" alt="Sublime's custom image" width="1200"/>
+  <img src="minikube/assets/AddComponent.png" alt="Sublime's custom image" width="1200"/>
 </p>
 
 <p align="left">
-  <img src="assets/popUpWindowComponent.PNG" alt="Sublime's custom image" width="300"/>
+  <img src="minikube/assets/popUpWindowComponent.PNG" alt="Sublime's custom image" width="300"/>
 </p>
 
 **GREAT!** You created your first component.
@@ -408,17 +408,17 @@ Afterwards please replace the `ADD WEBHOOK URL HERE` with the link in your clipb
 In order to add the flow, navigate to the `Flows` section.
 
 <p align="left">
-  <img src="assets/menuFlow.png" alt="Sublime's custom image" width="150"/>
+  <img src="minikube/assets/menuFlow.png" alt="Sublime's custom image" width="150"/>
 </p>
 
 Now click on the `ADD+` button. A popup window will appear where you can add the code provided above.
 
 <p align="left">
-  <img src="assets/AddFlow.png" alt="Sublime's custom image" width="1200"/>
+  <img src="minikube/assets/AddFlow.png" alt="Sublime's custom image" width="1200"/>
 </p>
 
 <p align="left">
-  <img src="assets/popUpWindowFlow.PNG" alt="Sublime's custom image" width="300"/>
+  <img src="minikube/assets/popUpWindowFlow.PNG" alt="Sublime's custom image" width="300"/>
 </p>
 
 **GREAT!** You created your first flow.
@@ -430,23 +430,23 @@ Now that you have created two components and a flow, it is time to start this fl
 Stay in the flows section and look for the flow you just created. On the right side you will the a "play" symbol.
 
 <p align="left">
-  <img src="assets/play.png" alt="Sublime's custom image" width="300"/>
+  <img src="minikube/assets/play.png" alt="Sublime's custom image" width="300"/>
 </p>
 
 Click on it and the how the status changes from `inactive` to `starting`.
 
 <p align="left">
-  <img src="assets/inactive.PNG" alt="Sublime's custom image" width="500"/>
+  <img src="minikube/assets/inactive.PNG" alt="Sublime's custom image" width="500"/>
 </p>
 
 <p align="left">
-  <img src="assets/starting.PNG" alt="Sublime's custom image" width="500"/>
+  <img src="minikube/assets/starting.PNG" alt="Sublime's custom image" width="500"/>
 </p>
 
 After some time the status changes to `active` and the flow is running (you may have to refresh the site).
 
 <p align="left">
-  <img src="assets/active.PNG" alt="Sublime's custom image" width="500"/>
+  <img src="minikube/assets/active.PNG" alt="Sublime's custom image" width="500"/>
 </p>
 
 ## Lessons Learned
