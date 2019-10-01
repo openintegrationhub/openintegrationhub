@@ -93,7 +93,7 @@ Setup .env.local
 
 ```zsh
 tee -a .env.local <<EOF
-MONGODB_CONNECTION=mongodb://172.17.0.1:27017/meta-data-repository
+MONGODB_CONNECTION={MONGODB_CONNECTION}/meta-data-repository
 LOG_LEVEL=error
 IAM_TOKEN=token
 DEBUG_MODE=false
@@ -113,7 +113,7 @@ docker build . -t oih/meta-data-repository
 Run container
 
 ```zsh
-docker run -p 3000:3000 --env-file=".env.local" oih/meta-data-repository
+docker run --rm -p 3000:3000 --env-file=".env.local" oih/meta-data-repository
 ```
 
 Open your browser and connect to http://localhost:3000/api-docs
