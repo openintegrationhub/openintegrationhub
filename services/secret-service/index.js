@@ -7,6 +7,7 @@ const Server = require('@openintegrationhub/secret-service');
 const { EventBus } = require('@openintegrationhub/event-bus');
 const conf = require('./src/conf');
 
+console.log(conf);
 const log = logger.getLogger(`${conf.logging.namespace}/main`);
 
 function exitHandler(options, err) {
@@ -23,10 +24,12 @@ process.on('SIGINT', exitHandler.bind(null));
 
 
 (async () => {
-
     try {
         // configuring the EventBus
-        const eventBus = new EventBus({ serviceName: conf.logging.namespace, rabbitmqUri: process.env.RABBITMQ_URI });
+        const eventBus = new EventBus({
+            serviceName: conf.logging.namespace,
+            rabbitmqUri: process.env.RABBITMQ_URI,
+        });
 
         const server = new Server({
             adapter: {
@@ -38,7 +41,6 @@ process.on('SIGINT', exitHandler.bind(null));
         await server.start();
         log.info(`Listening on port ${conf.port}`);
         log.info(`Introspect type ${conf.iam.introspectType}`);
-
     } catch (err) {
         exitHandler(null, err);
     }

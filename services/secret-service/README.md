@@ -10,9 +10,11 @@ Visit the official [Open Integration Hub homepage](https://www.openintegrationhu
 
 # Secrets-Service (working title / codename: *Lynx*)
 
-[Documentation on Swagger Hub](https://app.swaggerhub.com/apis/basaas/secret-service/0.1.0)
+[API Documentation](http://skm.openintegrationhub.com/api-docs/)
 
 ## Basic usage & development
+
+Please note that the core framework is located under [lib/secret-service](../../lib/secret-service) 
 
 Install packages
 
@@ -26,25 +28,19 @@ Start local lynx
 yarn start
 ```
 
-Watch server and restart after code changes
+Test lynx core framwework components
 
 ```zsh 
-yarn watch
+cd ../../lib/secret-service && yarn test
 ```
 
-Test lynx components
+## Run minimal setup
 
-```zsh 
-yarn test
-```
-
-## Run in local Docker container
-
-Create env-file under "./.env.local"
+Create env-file under "./.env.local" and change endpoint/connection settings to fit your environment
 
 ```console
 PORT=3000
-MONGODB_CONNECTION=mongodb://host.docker.internal:27017/secrets-service
+MONGODB_CONNECTION=mongodb://172.17.0.1:27017/secret-service
 INTROSPECT_ENDPOINT_BASIC=http://iam.openintegrationhub.com/api/v1/tokens/introspect
 IAM_TOKEN=YOUR_IAM_TOKEN
 API_BASE=/api/v1
@@ -59,7 +55,7 @@ If you are using the IAM OpenId Connect feature, you can also use the following 
 
 ```console
 INTROSPECT_TYPE=oidc
-INTROSPECT_ENDPOINT_OIDC=https://host.docker.internal:3002/op/token/introspection
+INTROSPECT_ENDPOINT_OIDC=http://iam.openintegrationhub.com/op/token/introspection
 OIDC_CLIENT_ID=your_client_id
 OIDC_CLIENT_SECRET=your_client_secret
 ```
@@ -67,14 +63,16 @@ OIDC_CLIENT_SECRET=your_client_secret
 Create docker image
 
 ```console
-docker build .
+docker build . -t oih/secret-service
 ```
 
 Run container
 
 ```console
-docker run --env-file=".env.local" -it {containerId}
+docker run -p 3000:3000 --env-file=".env.local" oih/secret-service
 ```
+
+Open your browser and connect to http://localhost:3000/api-docs
 
 ## General
 

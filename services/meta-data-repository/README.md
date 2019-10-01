@@ -43,38 +43,32 @@ yarn test
 Create env-file under "./.env.local"
 
 ```console
-PORT=3000
-MONGODB_CONNECTION=mongodb://host.docker.internal:27017/meta-data-repository
-INTROSPECT_ENDPOINT_BASIC=http://iam.openintegrationhub.com/api/v1/tokens/introspect
-IAM_TOKEN=YOUR_IAM_TOKEN
-API_BASE=/api/v1
-LOGGING_LEVEL=error
+MONGODB_CONNECTION=mongodb://172.17.0.1:27017/meta-data-repository
+LOG_LEVEL=error
+IAM_TOKEN=token
 DEBUG_MODE=false
-```
-
-If you are using the IAM OpenId Connect feature, you can also use the following env vars for token introspection
-
-```console
-INTROSPECT_TYPE=oidc
-INTROSPECT_ENDPOINT_OIDC=https://host.docker.internal:3002/op/token/introspection
-OIDC_CLIENT_ID=your_client_id
-OIDC_CLIENT_SECRET=your_client_secret
+REFRESH_TIMEOUT=600
+EXPIRATION_OFFSET=-100
+PAGINATION_PAGE_SIZE=10
+INTROSPECT_ENDPOINT_BASIC=http://iam.openintegrationhub.com/api/v1/tokens/introspect
 ```
 
 Create docker image
 
 ```console
-docker build .
+docker build . -t oih/meta-data-repository
 ```
 
 Run container
 
 ```console
-docker run --env-file=".env.local" -it {containerId}
+docker run -p 3000:3000 --env-file=".env.local" oih/meta-data-repository
 ```
 
-## General
-
-### Concept and docs
+Open your browser and connect to http://localhost:3000/api-docs
+```
 
 #### Default Settings
+
+* IMPORT_FILE_PATH: __temp__ - Defines file upload directory.
+* URLS_WITH_PORT: __true__ - If true PORT will be added to schema URL. i.e http://localhost:3000/foo/bar

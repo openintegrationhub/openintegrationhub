@@ -1,3 +1,3 @@
-export default interface Healthcheckable {
+export default interface IHealthcheckable {
     healthcheck(): Promise<void>;
 }

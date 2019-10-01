@@ -1,29 +1,29 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 import * as _ from 'lodash';
 
-export interface ModificationHistoryItemDocument extends Document {
+export interface IModificationHistoryItemDocument {
     user: string;
     operation: string;
     timestamp: string;
 }
 
-export interface DataObjectRefDocument extends Document {
+export interface IDataObjectRefDocument {
     applicationUid: string;
     recordUid: string;
-    modificationHistory: ModificationHistoryItemDocument[];
+    modificationHistory?: IModificationHistoryItemDocument[];
 }
 
-export interface OwnerDocument extends Document {
+export interface IOwnerDocument extends Types.Subdocument {
     id: string;
     type: string;
 }
 
-export interface DataObjectDocument extends Document {
-    oihUid: string;
-    modelId: string;
+export interface IDataObjectDocument extends Document {
+    domainId: string;
+    schemaUri: string;
     content: any;
-    refs: DataObjectRefDocument[];
-    owners: OwnerDocument[];
+    refs?: IDataObjectRefDocument[];
+    owners?: IOwnerDocument[];
 }
 
 const mofificationHistorySchema = new Schema({
@@ -71,14 +71,11 @@ const ownerSchema = new Schema({
 });
 
 const dataObjectSchema = new Schema({
-    oihUid: {
-        type: String,
-        required: true,
-        unique: true
+    domainId: {
+        type: String
     },
-    modelId: {
-        type: String,
-        required: true
+    schemaUri: {
+        type: String
     },
     content: {
         type: Schema.Types.Mixed
@@ -89,8 +86,8 @@ const dataObjectSchema = new Schema({
     timestamps: true
 });
 
-function dataObjectTransform (doc: DataObjectDocument, ret: DataObjectDocument) {
-    const safeFields = ['id', 'oihUid', 'modelId', 'content', 'refs', 'owners'];
+function dataObjectTransform (doc: IDataObjectDocument, ret: IDataObjectDocument) {
+    const safeFields = ['id', 'domainId', 'schemaUri', 'content', 'refs', 'owners'];
     ret.id = doc.id;
     return _.pick(ret, safeFields);
 }
@@ -99,4 +96,4 @@ dataObjectSchema.set('toJSON', {
     transform: dataObjectTransform
 });
 
-export default mongoose.model<DataObjectDocument>('DataObject', dataObjectSchema);
+export default mongoose.model<IDataObjectDocument>('DataObject', dataObjectSchema);

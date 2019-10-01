@@ -39,16 +39,16 @@ module.exports = {
                         $in: [{
                             id: requester.sub,
                             type: 'USER',
-                        }]
-                    }
-                }
+                        }],
+                    },
+                },
 
-            ]
+            ],
 
         };
         return await Domain.find(query,
-        'name description public owners',
-        props);
+            'name description public owners',
+            props);
     },
     async delete(id) {
         await Schema.deleteMany({ domainId: id });
@@ -65,7 +65,6 @@ module.exports = {
     },
 
     async deleteAll({ tenant }) {
-
         const toBeDeleted = await Domain.find({ tenant });
         for (const domain of toBeDeleted) {
             await module.exports.delete(domain._id);

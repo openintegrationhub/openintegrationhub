@@ -8,8 +8,7 @@ module.exports =  {
         sourceType:  'module',  // Allows for the use of imports
     },
     rules:  {
-        '@typescript-eslint/class-name-casing': 'error',
-        '@typescript-eslint/ban-ts-ignore': 'error',
-        '@typescript-eslint/no-angle-bracket-type-assertion': 0
+        '@typescript-eslint/no-angle-bracket-type-assertion': 'off',
+        '@typescript-eslint/interface-name-prefix': ['error', 'always']
     },
 };

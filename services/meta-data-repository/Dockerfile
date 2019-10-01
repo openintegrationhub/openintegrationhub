@@ -1,4 +1,4 @@
-FROM node:8.11.1-alpine
+FROM node:8.16.1-alpine
 LABEL NAME="meta-data-repository"
 ARG local
 
@@ -10,8 +10,8 @@ RUN apk --no-cache add \
     g++ \
     libc6-compat
 RUN if [ "$local" == "true" ]; \
-    then cd /tmp && npm install ; \
-    else cd /tmp && npm install --production ; \
+    then cd /tmp && yarn ; \
+    else cd /tmp && yarn --production ; \
     fi 
 WORKDIR /usr/src/app
 ADD . /usr/src/app

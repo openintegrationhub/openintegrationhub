@@ -20,14 +20,12 @@ spec:
             - name: MONGODB_URL
               valueFrom:
                 secretKeyRef:
-                  name: flow-repository
+                  name: ils
                   key: 'mongourl'
           resources:
             limits:
               cpu: '0.1'
-              memory: 1000Mi
-            requests:
-              memory: 1000Mi
+              memory: 500Mi
           livenessProbe:
             httpGet:
               path: /healthcheck

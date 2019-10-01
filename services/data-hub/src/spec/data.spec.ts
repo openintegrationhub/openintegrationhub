@@ -33,8 +33,8 @@ describe('Data Route', () => {
     describe('POST /data/:id', () => {
         it('should create new item', async function () {
             const record = {
-                "oihUid": "some-oih-id",
-                "modelId": "some-model-id",
+                "domainId": "my-domain",
+                "schemaUri": "my-schema",
                 "content": {
                     "some": "data"
                 },
@@ -73,8 +73,8 @@ describe('Data Route', () => {
     describe('PUT /data/:id', () => {
         it('should rewrite existing object', async function () {
             const record = {
-                "oihUid": "some-oih-id",
-                "modelId": "some-model-id",
+                "domainId": "my-domain",
+                "schemaUri": "my-schema",
                 "content": {
                     "some": "data"
                 },
@@ -104,8 +104,8 @@ describe('Data Route', () => {
 
             const recordId = body.data.id;
             const newRecord = {
-                "oihUid": "new-oih-id",
-                "modelId": "new-model-id",
+                "domainId": "my-domain",
+                "schemaUri": "my-schema",
                 "content": {
                     "some": "new data"
                 }
@@ -127,8 +127,8 @@ describe('Data Route', () => {
     describe('PATCH /data/:id', () => {
         it('should patch existing object', async function () {
             const record = {
-                "oihUid": "some-oih-id",
-                "modelId": "some-model-id",
+                "domainId": "my-domain",
+                "schemaUri": "my-schema",
                 "content": {
                     "some": "data"
                 },
@@ -158,8 +158,8 @@ describe('Data Route', () => {
 
             const recordId = body.data.id;
             const patchRecord = {
-                "oihUid": "new-oih-id",
-                "modelId": "new-model-id",
+                "domainId": "my-domain",
+                "schemaUri": "my-schema",
                 "content": {
                     "some": "new data"
                 },
@@ -219,8 +219,8 @@ describe('Data Route', () => {
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send({
-                    "oihUid": "some-oih-id-1",
-                    "modelId": "some-model-id-1",
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
                     "content": {
                         "some": "data"
                     }
@@ -234,8 +234,8 @@ describe('Data Route', () => {
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send({
-                    "oihUid": "some-oih-id-2",
-                    "modelId": "some-model-id-2",
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
                     "content": {
                         "some": "data"
                     }
@@ -251,8 +251,8 @@ describe('Data Route', () => {
                 data: [
                     {
                         "id": id1,
-                        "oihUid": "some-oih-id-1",
-                        "modelId": "some-model-id-1",
+                        "domainId": "my-domain",
+                        "schemaUri": "my-schema",
                         "content": {
                             "some": "data"
                         },
@@ -261,8 +261,8 @@ describe('Data Route', () => {
                     },
                     {
                         "id": id2,
-                        "oihUid": "some-oih-id-2",
-                        "modelId": "some-model-id-2",
+                        "domainId": "my-domain",
+                        "schemaUri": "my-schema",
                         "content": {
                             "some": "data"
                         },
@@ -285,8 +285,8 @@ describe('Data Route', () => {
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send({
-                    "oihUid": "some-oih-id-1",
-                    "modelId": "some-model-id-1",
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
                     "content": {
                         "some": "data"
                     }
@@ -299,8 +299,8 @@ describe('Data Route', () => {
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send({
-                    "oihUid": "some-oih-id-2",
-                    "modelId": "some-model-id-2",
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
                     "content": {
                         "some": "data"
                     }
@@ -316,8 +316,8 @@ describe('Data Route', () => {
                 data: [
                     {
                         "id": id2,
-                        "oihUid": "some-oih-id-2",
-                        "modelId": "some-model-id-2",
+                        "domainId": "my-domain",
+                        "schemaUri": "my-schema",
                         "content": {
                             "some": "data"
                         },
