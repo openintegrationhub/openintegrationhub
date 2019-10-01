@@ -239,7 +239,7 @@ _Request Body:_
 
 ```json
 {
-  "accountId": "{PASTE SERVICE ACCOUNT ID HERE}",
+  "accountId": "PASTE SERVICE ACCOUNT ID HERE",
   "expiresIn": -1
 }
 ```
@@ -264,8 +264,8 @@ metadata:
   namespace: oih-dev-ns
 type: Opaque
 data:
-  mongourl: [CONNECTION URL]
-  iamtoken: [IAM TOKEN]
+  mongourl: CONNECTION_URL
+  iamtoken: IAM TOKEN
 ```
 
 Once you created the secret files, execute the following commands for each service:
