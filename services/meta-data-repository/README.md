@@ -66,7 +66,6 @@ docker run -p 3000:3000 --env-file=".env.local" oih/meta-data-repository
 ```
 
 Open your browser and connect to http://localhost:3000/api-docs
-```
 
 #### Default Settings
 
