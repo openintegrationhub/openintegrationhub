@@ -10,12 +10,12 @@ const {
     buildURI,
 } = require('../../../transform');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains/schmemas:delete`);
+const log = logger.getLogger(`${conf.log.namespace}/domains/schmemas:delete`);
 
 const router = express.Router();
 
 router.delete('/:uri*', domainOwnerOrAllowed({
-    permissions: [PERMISSIONS.common["metadata.domains.crud"]],
+    permissions: [PERMISSIONS.common['metadata.domains.crud']],
 }), async (req, res, next) => {
     try {
         await SchemaDAO.delete(buildURI({

@@ -15,7 +15,7 @@ const EventsModule = require('./../module/event');
 const DAO = require('../dao');
 const conf = require('../conf');
 
-const log = logger.getLogger(`${conf.logging.namespace}/server`);
+const log = logger.getLogger(`${conf.log.namespace}/server`);
 
 
 const jsonParser = bodyParser.json();
@@ -35,7 +35,7 @@ module.exports = class Server {
         port, mongoDbConnection, dao, iam,
     }) {
         this.port = port || conf.port;
-        this.eventBus = new EventBus({ serviceName: conf.loggingNameSpace, rabbitmqUri: process.env.RABBITMQ_URI });
+        this.eventBus = new EventBus({ serviceName: conf.log.namespace, rabbitmqUri: process.env.RABBITMQ_URI });
         this.app = express();
         this.app.disable('x-powered-by');
         this.iam = iam || iamLib;
@@ -86,7 +86,7 @@ module.exports = class Server {
             credentials: true,
             origin(origin, callback) {
                 const whiteList = [...conf.originWhitelist].concat([conf.baseUrl.replace(/^https?:\/\//, '')]);
-                if (whiteList.find(elem => origin.indexOf(elem) >= 0)) {
+                if (whiteList.find((elem) => origin.indexOf(elem) >= 0)) {
                     callback(null, true);
                 } else {
                     log.info({
@@ -107,8 +107,8 @@ module.exports = class Server {
 
     async setupDatabase() {
         const connectionString = this.mongoDbConnection
-        || global.__MONGO_URI__
-        || conf.mongoDbConnection;
+            || global.__MONGO_URI__
+            || conf.mongoDbConnection;
 
         await mongoose.connect(connectionString, {
             poolSize: 50,
@@ -118,6 +118,7 @@ module.exports = class Server {
             useCreateIndex: true,
             useNewUrlParser: true,
             useFindAndModify: false,
+            useUnifiedTopology: true,
         });
     }
 

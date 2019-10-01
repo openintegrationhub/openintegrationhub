@@ -9,11 +9,11 @@ const {
     transformDbResults,
 } = require('../../transform');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains:post`);
+const log = logger.getLogger(`${conf.log.namespace}/domains:post`);
 
 const router = express.Router();
 
-router.post('/', can([PERMISSIONS.common["metadata.domains.crud"]]), async (req, res, next) => {
+router.post('/', can([PERMISSIONS.common['metadata.domains.crud']]), async (req, res, next) => {
     try {
         if (!req.user.isAdmin) {
             req.body.public = false;

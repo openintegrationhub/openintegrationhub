@@ -7,7 +7,7 @@ const {
     transformDbResults,
 } = require('../../transform');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains:delete`);
+const log = logger.getLogger(`${conf.log.namespace}/domains:delete`);
 
 const router = express.Router();
 

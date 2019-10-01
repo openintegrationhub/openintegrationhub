@@ -18,7 +18,7 @@ const { getToken } = require('../../../util/common');
 
 const { processArchive } = require('../../../bulk');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas:post`);
+const log = logger.getLogger(`${conf.log.namespace}/domains/schemas:post`);
 
 const router = express.Router();
 
@@ -40,7 +40,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post('/', domainOwnerOrAllowed({
-    permissions: [PERMISSIONS.common["metadata.domains.crud"]],
+    permissions: [PERMISSIONS.common['metadata.domains.crud']],
 }), async (req, res, next) => {
     try {
         const { name, description, value } = req.body;

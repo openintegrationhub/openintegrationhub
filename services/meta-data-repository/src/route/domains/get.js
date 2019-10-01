@@ -9,7 +9,7 @@ const {
     transformDbResults,
 } = require('../../transform');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains:get`);
+const log = logger.getLogger(`${conf.log.namespace}/domains:get`);
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.get('/', async (req, res, next) => {
             )),
             meta: {
                 ...await pagination.calc({
-                    tenant
+                    tenant,
                 }),
             },
         });

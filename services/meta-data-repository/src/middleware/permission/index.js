@@ -3,7 +3,7 @@ const { hasAll, isOwnerOf } = require('@openintegrationhub/iam-utils');
 const DomainDAO = require('../../dao/domain');
 const conf = require('../../conf');
 
-const log = logger.getLogger(`${conf.logging.namespace}/permission`);
+const log = logger.getLogger(`${conf.log.namespace}/permission`);
 
 module.exports = {
     domainOwnerOrAllowed: ({ permissions = [] }) => async (req, res, next) => {
