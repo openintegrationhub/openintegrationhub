@@ -39,6 +39,24 @@ The following list contains the environment variables you can set to configure t
 
 ---
 
+## Event controller
+
+Subscripes
+
+* **iam.tenant.deleted** - Deletes tenant domains and schemas
+
+
+Publishes
+
+* **metadata.domain.deleted** - Deletes tenant domains and schemas
+* **metadata.schema.created** - Deletes tenant domains and schemas
+* **metadata.schema.modified** - Deletes tenant domains and schemas
+* **metadata.schema.deleted** - Deletes tenant domains and schemas
+
+---
+
+
+
 ## Basic usage & development
 
 Install packages
