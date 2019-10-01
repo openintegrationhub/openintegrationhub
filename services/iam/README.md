@@ -111,7 +111,7 @@ The following list contains the environment variables you can set to configure t
 
 * **IAM_BASEURL** - OIDC Prodiver base url. *default*: https://127.0.0.1:3099
 * **IAM_APIBASE** - API Base, *default*: 'api/v1'
-* **IAM_ORIGINWHITELIST** - you can provider a comma-separated list of origings, which should be allowed to access the provider. In development, this list is extended with '127.0.0.1,localhost'
+* **IAM_ORIGINWHITELIST** - you can provide a comma-separated list of origings, which should be allowed to access the provider. In development, this list is extended with '127.0.0.1,localhost'
 * **IAM_AUTH_TYPE** - 'oidc' or 'basic'. *default*: oidc
 * **IAM_DEBUG** - Boolean. *default*: false
 * **IAM_PORT** - *default*: 3099

@@ -5,7 +5,7 @@ const SchemasDAO = require('../dao/schema/index');
 
 const conf = require('../conf');
 
-const logger = Logger.getLogger(`${conf.logging.namespace}/events`);
+const logger = Logger.getLogger(`${conf.log.namespace}/events`);
 
 class EventManager {
 

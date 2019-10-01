@@ -1,18 +1,18 @@
 const express = require('express');
 const logger = require('@basaas/node-logger');
-const { domainOwnerOrAllowed } = require('../../middleware/permission');
 const { can, PERMISSIONS } = require('@openintegrationhub/iam-utils');
+const { domainOwnerOrAllowed } = require('../../middleware/permission');
 const conf = require('../../conf');
 const { DomainDAO } = require('../../dao');
 const {
     transformDbResults,
 } = require('../../transform');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains:put`);
+const log = logger.getLogger(`${conf.log.namespace}/domains:put`);
 
 const router = express.Router();
 
-router.put('/:id', can([PERMISSIONS.common["metadata.domains.crud"]]), async (req, res, next) => {
+router.put('/:id', can([PERMISSIONS.common['metadata.domains.crud']]), async (req, res, next) => {
     try {
         // TODO?
         if (req.body.owners) {

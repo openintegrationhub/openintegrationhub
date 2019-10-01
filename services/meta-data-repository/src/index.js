@@ -3,11 +3,11 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const logger = require('@basaas/node-logger');
 
+const { EventBus } = require('@openintegrationhub/event-bus');
 const Server = require('./server');
 const conf = require('./conf');
-const { EventBus } = require('@openintegrationhub/event-bus');
 
-const log = logger.getLogger(`${conf.logging.namespace}/main`);
+const log = logger.getLogger(`${conf.log.namespace}/main`);
 
 function exitHandler(options, err) {
     let status = 0;
@@ -21,7 +21,7 @@ function exitHandler(options, err) {
 
 process.on('SIGINT', exitHandler.bind(null));
 
-const eventBus = new EventBus({ serviceName: conf.logging.namespace, rabbitmqUri: process.env.RABBITMQ_URI });
+const eventBus = new EventBus({ serviceName: conf.log.namespace, rabbitmqUri: process.env.RABBITMQ_URI });
 
 const server = new Server({
     eventBus,

@@ -10,7 +10,7 @@ const {
 
 const { getToken } = require('../../../util/common');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas:put`);
+const log = logger.getLogger(`${conf.log.namespace}/domains/schemas:put`);
 
 const router = express.Router();
 

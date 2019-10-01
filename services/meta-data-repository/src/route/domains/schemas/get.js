@@ -10,7 +10,7 @@ const Pagination = require('../../../util/pagination');
 const conf = require('../../../conf');
 const { isLocalRequest } = require('../../../util/common');
 
-const log = logger.getLogger(`${conf.logging.namespace}/domains/schemas:get`);
+const log = logger.getLogger(`${conf.log.namespace}/domains/schemas:get`);
 
 const router = express.Router();
 
