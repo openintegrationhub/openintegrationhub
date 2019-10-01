@@ -2,7 +2,7 @@ FROM node:8.12-alpine AS base
 LABEL NAME="oih-flow-repository"
 LABEL MAINTAINER Hansjörg Schmidt "hschmidt@wice.de"
 
-WORKDIR /usr/src/audit-log
+WORKDIR /usr/src/flow-repository
 
 RUN apk add --no-cache bash
 
@@ -20,7 +20,7 @@ RUN apk add --no-cache make gcc g++ python
 RUN yarn install --production
 
 FROM base AS release
-COPY --from=dependencies /usr/src/audit-log/node_modules ./node_modules
+COPY --from=dependencies /usr/src/flow-repository/node_modules ./node_modules
 RUN rm yarn.lock
 
 RUN chown -R node:node .
