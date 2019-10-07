@@ -8,11 +8,13 @@ class HttpApi {
      * @param opts.config
      * @param opts.logger
      * @param opts.flowsDao - Flow Data Access Object
+     * @param opts.secretsDao - Secrets Data Access Object
      */
-    constructor({ config, logger, flowsDao }) {
+    constructor({ config, logger, flowsDao, secretsDao }) {
         this._config = config;
         this._logger = logger.child({service: 'HttpApi'});
         this._flowsDao = flowsDao;
+        this._secretsDao = secretsDao;
         this._app = express();
         this._app.get('/v1/tasks/:flowId/steps/:stepId', this._getStepInfo.bind(this));
         this._app.get('/healthcheck', this._healthcheck.bind(this));
@@ -47,6 +49,14 @@ class HttpApi {
             }
 
             const nodeConfig = node.fields || {};
+            if (node.credentials_id) {
+                this._logger.trace({secretId: node.credentials_id}, 'About to get secret by ID');
+                const secret = await this._secretsDao.findById(node.credentials_id);
+                if (!secret) {
+                    throw new errors.ResourceNotFoundError(`Secret ${node.credentials_id} is not found`);
+                }
+                Object.assign(nodeConfig, secret.value);
+            }
 
             res.status(200);
             res.json({
