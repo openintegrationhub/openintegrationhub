@@ -86,7 +86,7 @@ export default class DataHubApp extends App {
 
                     await eventBus.publish(recordUpdatedEvent);
                 } else {
-                    log.debug('Updating a new record');
+                    log.debug('Creating a new record');
                     const newRecord = await DataObject.create({
                         domainId,
                         schemaUri,
