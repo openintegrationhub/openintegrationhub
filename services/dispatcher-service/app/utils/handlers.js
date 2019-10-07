@@ -45,6 +45,7 @@ async function checkFlows(targets) {
 
 async function getTargets(sourceFlow) {
   const configuration = await storage.getConfigBySource(sourceFlow);
+  if (!configuration) return false;
   const { connections } = configuration;
   const targetFlows = [];
 
