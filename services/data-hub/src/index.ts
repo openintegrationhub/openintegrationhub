@@ -2,7 +2,7 @@ import Server from './server';
 import Logger from 'bunyan';
 import { App } from 'backend-commons-lib';
 import mongoose from 'mongoose';
-import { EventBus, IEvent } from '@openintegrationhub/event-bus';
+import { EventBus, IEvent, Event } from '@openintegrationhub/event-bus';
 import DataObject from './models/data-object';
 
 interface IDataRecordEventPayloadMeta {
@@ -54,21 +54,63 @@ export default class DataHubApp extends App {
 
         const NEW_RECORD_EVENT_NAME = 'validation.success';
         eventBus.subscribe(NEW_RECORD_EVENT_NAME, async (evt: IDataRecordEvent) => {
-            logger.trace({event: evt.toJSON()}, `Received ${NEW_RECORD_EVENT_NAME} event`);
             const { data, meta } = evt.payload;
             const { domainId, schemaUri, recordUid, applicationUid } = meta;
+            const log = logger.child({recordUid, applicationUid});
+            log.trace({event: evt.toJSON()}, `Received ${NEW_RECORD_EVENT_NAME} event`);
+
+            const oldRecord = await DataObject.findOne({
+                refs: {
+                    $elemMatch: {
+                        recordUid,
+                        applicationUid
+                    }
+                }
+            });
+
             try {
-                await DataObject.create({
-                    domainId,
-                    schemaUri,
-                    content: data,
-                    refs: [
-                        {
-                            recordUid,
-                            applicationUid
+                if (oldRecord) {
+                    log.debug('Updating the existing record');
+                    oldRecord.content = data;
+                    await oldRecord.save();
+
+                    const recordUpdatedEvent = new Event({
+                        headers: {
+                            name: 'data-hub.record.updated'
+                        },
+                        payload: {
+                            meta: Object.assign({}, meta, {oihUid: oldRecord.id}),
+                            data
                         }
-                    ]
-                });
+                    });
+
+                    await eventBus.publish(recordUpdatedEvent);
+                } else {
+                    log.debug('Updating a new record');
+                    const newRecord = await DataObject.create({
+                        domainId,
+                        schemaUri,
+                        content: data,
+                        refs: [
+                            {
+                                recordUid,
+                                applicationUid
+                            }
+                        ]
+                    });
+
+                    const recordCreatedEvent = new Event({
+                        headers: {
+                            name: 'data-hub.record.created'
+                        },
+                        payload: {
+                            meta: Object.assign({}, meta, {oihUid: newRecord.id}),
+                            data
+                        }
+                    });
+
+                    await eventBus.publish(recordCreatedEvent);
+                }
             } catch (e) {
                 logger.error({err: e, event: evt.toJSON()}, 'Failed to save data record');
                 await evt.nack();
@@ -80,17 +122,19 @@ export default class DataHubApp extends App {
 
         const NEW_REF_EVENT_NAME = 'ref.create';
         eventBus.subscribe(NEW_REF_EVENT_NAME, async (evt: IDataRecordRefEvent) => {
-            logger.trace({event: evt.toJSON()}, `Received ${NEW_REF_EVENT_NAME} event`);
             const { meta } = evt.payload;
             const { oihUid, applicationUid, recordUid } = meta;
-            const dataRecord = await DataObject.findById(oihUid);
+            const log = logger.child({oihUid, applicationUid, recordUid});
+            log.trace({event: evt.toJSON()}, `Received ${NEW_REF_EVENT_NAME} event`);
 
+            const dataRecord = await DataObject.findById(oihUid);
             if (dataRecord) {
                 if (dataRecord.refs.find(
                     ref => ref.applicationUid === applicationUid.toString() && ref.recordUid === recordUid.toString()
                 )) {
-                    logger.warn(meta, 'Trying to add an existing ref once again');
+                    log.warn('The same ref already exists');
                 } else {
+                    log.debug('Creating a new ref');
                     dataRecord.refs.push({
                         applicationUid,
                         recordUid
@@ -98,7 +142,7 @@ export default class DataHubApp extends App {
                     await dataRecord.save();
                 }
             } else {
-                logger.warn(meta, 'Data record is not found');
+                log.warn('Data record is not found');
             }
 
             await evt.ack();
