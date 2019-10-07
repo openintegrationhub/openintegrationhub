@@ -25,23 +25,36 @@ async function connectQueue() {
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'dispatcher-service' });
 
-  await eventBus.subscribe(config.incomingEventName, async (event) => {
-    log.info(`Received event: ${JSON.stringify(event.headers)}`);
+  for (let i = 0; i < config.incomingEventNames.length; i += 1) {
+    await eventBus.subscribe(config.incomingEventNames[i], async (event) => {
+      log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
-    const targets = await getTargets(event.payload.meta.flowId);
+      if (!event.payload.meta || !event.payload.meta.flowId) {
+        log.warn('Received malformed event:');
+        log.warn(event.payload);
+        return event.ack();
+      }
 
-    await checkFlows(targets);
+      const targets = await getTargets(event.payload.meta.flowId);
 
-    const events = await createDispatches(targets, event.payload);
-    const promises = [];
+      if (!targets) {
+        log.info('No targets found for event.');
+        return event.ack();
+      }
 
-    for (let i = 0; i < events.length; i += 1) {
-      promises.push(publishQueue(events[i]));
-    }
+      await checkFlows(targets);
 
-    await Promise.all(promises);
-    await event.ack();
-  });
+      const events = await createDispatches(targets, event.payload);
+      const promises = [];
+
+      for (let j = 0; j < events.length; j += 1) {
+        promises.push(publishQueue(events[j]));
+      }
+
+      await Promise.all(promises);
+      return event.ack();
+    });
+  }
 
   await eventBus.connect();
 }

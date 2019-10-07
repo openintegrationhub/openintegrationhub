@@ -56,7 +56,7 @@ async function spawnEvent() {
   // Create an event similar to one that the Data Hub would spawn
   const ev = {
     headers: {
-      name: config.incomingEventName,
+      name: config.incomingEventNames[0],
     },
     payload: {
       meta: {
