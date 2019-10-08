@@ -37,7 +37,13 @@ class HttpApi {
      * @private
      */
     async _getStepInfo(req, res) {
-        this._logger.trace(req.params, 'Node info request');
+        this._logger.trace({
+            params: req.params,
+            query: req.query,
+            headers: req.headers,
+            originalUrl: req.originalUrl
+        }, 'Node info request');
+
         try {
             const flow = await this._flowsDao.findById(req.params.flowId);
             if (!flow) {
