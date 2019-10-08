@@ -18,7 +18,7 @@ You may run the framework or single services on a platform of your choice. As a 
 
 [Local Setup](https://openintegrationhub.github.io//docs/Getting%20Started/LocalInstallationGuide.html) with minikube.
 
-[Google Cloud Platform Setup](https://openintegrationhub.github.io//docs/Getting%20Started/GCPInstallationGuide.html)
+[Google Cloud Platform Setup](https://openintegrationhub.github.io/docs/Getting%20Started/GCPInstallationGuide.html)
 
 
 ## Documentation
