@@ -28,7 +28,7 @@ const buildQuery = (user, permission, id) => {
   }
 
   // If the user is not an OIH admin, constrain query by flow ownership
-  if (!config.oihAdminRoles.includes(user.role)) {
+  if (!user.isAdmin) {
     const owners = [user.sub];
     if (user.tenant) owners.push(user.tenant);
     qry['owners.id'] = { $in: owners };
