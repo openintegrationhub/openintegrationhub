@@ -187,8 +187,8 @@ class KubernetesDriver extends BaseDriver {
         };
     }
 
-    _prepareEnvVars(flow, node, nodeQueues) {
-        let envVars = Object.assign({}, nodeQueues);
+    _prepareEnvVars(flow, node, vars) {
+        let envVars = Object.assign({}, vars);
         envVars.EXEC_ID = uuid().replace(/-/g, '');
         envVars.STEP_ID = node.id;
         envVars.FLOW_ID = flow.id;
@@ -196,8 +196,8 @@ class KubernetesDriver extends BaseDriver {
         envVars.COMP_ID = node.componentId;
         envVars.FUNCTION = node.function;
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
-        envVars.API_USERNAME = 'does not matter';
-        envVars.API_KEY = 'does not matter';
+        envVars.API_USERNAME = 'iam_token';
+        envVars.API_KEY = envVars.IAM_TOKEN;
         envVars.CONTAINER_ID = 'does not matter';
         envVars.WORKSPACE_ID = 'does not matter';
         envVars = Object.entries(envVars).reduce((env, [k, v]) => {
