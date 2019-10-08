@@ -192,12 +192,14 @@ class KubernetesDriver extends BaseDriver {
         envVars.EXEC_ID = uuid().replace(/-/g, '');
         envVars.STEP_ID = node.id;
         envVars.FLOW_ID = flow.id;
-        envVars.USER_ID = 'FIXME hardcode smth here';
+        envVars.USER_ID = flow.startedBy;
         envVars.COMP_ID = node.componentId;
         envVars.FUNCTION = node.function;
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
         envVars.API_USERNAME = 'does not matter';
         envVars.API_KEY = 'does not matter';
+        envVars.CONTAINER_ID = 'does not matter';
+        envVars.WORKSPACE_ID = 'does not matter';
         envVars = Object.entries(envVars).reduce((env, [k, v]) => {
             env['ELASTICIO_' + k] = v;
             return env;
