@@ -1,0 +1,3972 @@
+{
+	"info": {
+		"_postman_id": "ae133d77-d0d5-4eb7-b0ba-3323f44cb09f",
+		"name": "OIH_Framework_Showcase",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Flow Repository",
+			"item": [
+				{
+					"name": "Get all flows",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows"
+							]
+						},
+						"description": "Use this request to receive all flows for the authenticated user.\nPlease use the token generated in the POST login request for authorization."
+					},
+					"response": []
+				},
+				{
+					"name": "Start a flow by id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/5d24872d5ac1b100191ac849/start",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"5d24872d5ac1b100191ac849",
+								"start"
+							]
+						},
+						"description": "Use this request to start a certain flow by id"
+					},
+					"response": []
+				},
+				{
+					"name": "Stop a flow by id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/5d24872d5ac1b100191ac849/stop",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"5d24872d5ac1b100191ac849",
+								"stop"
+							]
+						},
+						"description": "Use this request to stop a certain flow."
+					},
+					"response": []
+				},
+				{
+					"name": "Get flow by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/5cdd406ce9f4c600194bebbc",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"5cdd406ce9f4c600194bebbc"
+							]
+						},
+						"description": "Use this request to receive a cetrain flow by id."
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new flow",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Timer to SDF Adapter\",\n    \"description\": \"This flow sends messages to OIH via SDF Adapter.\",\n    \"graph\": {\n        \"nodes\": [\n            {\n                \"id\": \"step_1\",\n                \"componentId\": \"5cdd6176055d50001af66cc7\",\n                \"name\": \"Timer\",\n                \"function\": \"timer\",\n                \"description\": \"\",\n                \"fields\": {\n                    \"interval\": \"minute\"\n                }\n            },\n            {\n                \"id\": \"step_2\",\n                \"componentId\": \"5cde85443860ff001a034273\",\n                \"name\": \"Code Component\",\n                \"function\": \"execute\",\n                \"description\": \"\",\n                \"fields\": {\n                    \"code\": \"function* run() {console.log('Calling external URL');yield request.post({uri: 'http://webhook.site/ae17e5b3-1da6-4d2b-b664-4787ad5953d5', body: msg.body, json: true});}\"\n                }\n            },\n            {\n                \"id\": \"step_3\",\n                \"componentId\": \"5d2484d2a422ca001bda5690\",\n                \"name\": \"SDF Adapter\",\n                \"function\": \"sendMessageToOih\",\n                \"description\": \"\",\n                \"fields\": {\n                    \"operation\": \"Create\",\n                    \"domain\": \"Addresses\",\n                    \"model\": \"Person\"\n                }\n            }\n        ],\n        \"edges\": [\n            {\n                \"source\": \"step_1\",\n                \"target\": \"step_2\"\n            },\n            {\n                \"source\": \"step_2\",\n                \"target\": \"step_3\"\n            }\n        ]\n    },\n    \"type\": \"ordinary\",\n    \"cron\": \"*/2 * * * *\",\n    \"owners\": []\n}"
+						},
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows"
+							]
+						},
+						"description": "Use this request to post a new flow."
+					},
+					"response": []
+				},
+				{
+					"name": "Update a flow by id",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"graph\": {\n        \"nodes\": [\n            {\n                \"id\": \"step_1\",\n                \"componentId\": \"5cdd6176055d50001af66cc7\",\n                \"name\": \"Timer\",\n                \"function\": \"timer\",\n                \"description\": \"\",\n                \"fields\": {\n                    \"interval\": \"minute\"\n                }\n            },\n            {\n                \"id\": \"step_2\",\n                \"componentId\": \"5cde85443860ff001a034273\",\n                \"name\": \"Code Component\",\n                \"function\": \"execute\",\n                \"description\": \"\",\n                \"fields\": {\n                    \"code\": \"function* run() {console.log('Calling external URL');yield request.post({uri: 'http://webhook.site/0055e205-b2fa-4767-8702-ccb3fa8043b2', body: msg.body, json: true});}\"\n                }\n            },\n            {\n                \"id\": \"step_3\",\n                \"componentId\": \"5d2484d2a422ca001bda5690\",\n                \"name\": \"SDF Adapter\",\n                \"function\": \"sendMessageToOih\",\n                \"description\": \"\",\n                \"fields\": {\n                    \"operation\": \"Create\",\n                    \"domain\": \"Addresses\",\n                    \"model\": \"Person\"\n                }\n            }\n        ],\n        \"edges\": [\n            {\n                \"source\": \"step_1\",\n                \"target\": \"step_2\"\n            },\n            {\n                \"source\": \"step_1\",\n                \"target\": \"step_3\"\n            }\n        ]\n    }\n}"
+						},
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/5d24872d5ac1b100191ac849",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"5d24872d5ac1b100191ac849"
+							]
+						},
+						"description": "Use this request to update an existing flow."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a flow by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://flow-repository.openintegrationhub.com/flows/5d526f59312c710019950aef",
+							"protocol": "http",
+							"host": [
+								"flow-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"flows",
+								"5d526f59312c710019950aef"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "All flow relating requests. "
+		},
+		{
+			"name": "Component Repository",
+			"item": [
+				{
+					"name": "Get user components",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://component-repository.openintegrationhub.com/components",
+							"protocol": "http",
+							"host": [
+								"component-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"components"
+							]
+						},
+						"description": "Use this request to receive all available components for the authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new component",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"data\": {\r\n    \"name\": \"SDF Adapter\",\r\n    \"description\": \"SDF adapter for the OIH\",\r\n    \"access\": \"public\",\r\n    \"descriptor\": {},\r\n    \"distribution\": {\r\n      \"type\": \"docker\",\r\n      \"image\": \"openintegrationhub/sdf-adapter:latest\"\r\n    }\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "http://component-repository.openintegrationhub.com/components",
+							"protocol": "http",
+							"host": [
+								"component-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"components"
+							]
+						},
+						"description": "Use this request to post a new component."
+					},
+					"response": []
+				},
+				{
+					"name": "Update a component by id",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"descriptor\":{\n        \t\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "http://component-repository.openintegrationhub.com/components/{COMPONENT_ID}",
+							"protocol": "http",
+							"host": [
+								"component-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"components",
+								"{COMPONENT_ID}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a component by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://component-repository.openintegrationhub.com/components/{COMPONENT_ID}",
+							"protocol": "http",
+							"host": [
+								"component-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"components",
+								"{COMPONENT_ID}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a component by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://component-repository.openintegrationhub.com/components/5cdaba4d6474a5001a8b2588",
+							"protocol": "http",
+							"host": [
+								"component-repository",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"components",
+								"5cdaba4d6474a5001a8b2588"
+							]
+						},
+						"description": "Use this request to get a component by its id."
+					},
+					"response": []
+				}
+			],
+			"description": "All component relating requests."
+		},
+		{
+			"name": "Audit Log",
+			"item": [
+				{
+					"name": "Retrieve all logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "auditlog.openintegrationhub.com/logs?page[size]=<integer>&page[number]=<integer>&filter[tenant]=<string>&filter[service]=<string>",
+							"host": [
+								"auditlog",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"logs"
+							],
+							"query": [
+								{
+									"key": "page[size]",
+									"value": "<integer>",
+									"description": "Amount of logs per page returned. Default is 10."
+								},
+								{
+									"key": "page[number]",
+									"value": "<integer>",
+									"description": "Number of the page to be returned. Default is 1."
+								},
+								{
+									"key": "filter[tenant]",
+									"value": "<string>",
+									"description": "Filter by tenant. Only available to admins."
+								},
+								{
+									"key": "filter[service]",
+									"value": "<string>",
+									"description": "Filter by service."
+								}
+							]
+						},
+						"description": "This will only return Logs that pertain to the current user's tenant. OIH admins can see all logs. The 'filter' query parameter can be used with arbitrary keys beyond those listed here, which will be matched within the events' payload object."
+					},
+					"response": [
+						{
+							"name": "No logs associated with the current tenant could be found in the repository.",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/logs?page[size]=<integer>&page[number]=<integer>&filter[tenant]=<string>&filter[service]=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logs"
+									],
+									"query": [
+										{
+											"key": "page[size]",
+											"value": "<integer>"
+										},
+										{
+											"key": "page[number]",
+											"value": "<integer>"
+										},
+										{
+											"key": "filter[tenant]",
+											"value": "<string>"
+										},
+										{
+											"key": "filter[service]",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Missing authorization header. Login via the IAM to receive a token.",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/logs?page[size]=<integer>&page[number]=<integer>&filter[tenant]=<string>&filter[service]=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logs"
+									],
+									"query": [
+										{
+											"key": "page[size]",
+											"value": "<integer>"
+										},
+										{
+											"key": "page[number]",
+											"value": "<integer>"
+										},
+										{
+											"key": "filter[tenant]",
+											"value": "<string>"
+										},
+										{
+											"key": "filter[service]",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "A list of logs.",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/logs?page[size]=<integer>&page[number]=<integer>&filter[tenant]=<string>&filter[service]=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logs"
+									],
+									"query": [
+										{
+											"key": "page[size]",
+											"value": "<integer>"
+										},
+										{
+											"key": "page[number]",
+											"value": "<integer>"
+										},
+										{
+											"key": "filter[tenant]",
+											"value": "<string>"
+										},
+										{
+											"key": "filter[service]",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"data\": [\n  {\n   \"headers\": {\n    \"serviceName\": \"<string>\",\n    \"createdAt\": \"<date>\",\n    \"name\": \"<string>\"\n   },\n   \"payload\": \"<object>\"\n  },\n  {\n   \"headers\": {\n    \"serviceName\": \"<string>\",\n    \"createdAt\": \"<date>\",\n    \"name\": \"<string>\"\n   },\n   \"payload\": \"<object>\"\n  }\n ],\n \"meta\": {\n  \"page\": \"<integer>\",\n  \"perPage\": \"<integer>\",\n  \"total\": \"<integer>\",\n  \"totalPages\": \"<integer>\"\n }\n}"
+						}
+					]
+				},
+				{
+					"name": "Post a log entry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"headers\": {\n        \"serviceName\": \"<string>\",\n        \"createdAt\": \"<date>\",\n        \"name\": \"<string>\"\n    },\n    \"payload\": \"<object>\"\n}"
+						},
+						"url": {
+							"raw": "auditlog.openintegrationhub.com/logs",
+							"host": [
+								"auditlog",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"logs"
+							]
+						},
+						"description": "Optional endpoint to add a log entry via post instead as message"
+					},
+					"response": [
+						{
+							"name": "Invalid message format. Message must be in the provided format.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"headers\": {\n        \"serviceName\": \"<string>\",\n        \"createdAt\": \"<date>\",\n        \"name\": \"<string>\"\n    },\n    \"payload\": \"<object>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/logs",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logs"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Missing authorization header. Login via the IAM to receive a token.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"headers\": {\n        \"serviceName\": \"<string>\",\n        \"createdAt\": \"<date>\",\n        \"name\": \"<string>\"\n    },\n    \"payload\": \"<object>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/logs",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logs"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "The newly created Log.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"headers\": {\n        \"serviceName\": \"<string>\",\n        \"createdAt\": \"<date>\",\n        \"name\": \"<string>\"\n    },\n    \"payload\": \"<object>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/logs",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logs"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"headers\": {\n  \"serviceName\": \"<string>\",\n  \"createdAt\": \"<date>\",\n  \"name\": \"<string>\"\n },\n \"payload\": \"<object>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Performs a healthcheck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "auditlog.openintegrationhub.com/healthcheck",
+							"host": [
+								"auditlog",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"healthcheck"
+							]
+						},
+						"description": "This will return 200 and a JSON object with relevant status information when the service is running and healthy."
+					},
+					"response": [
+						{
+							"name": "An object detailing the system and component status",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/healthcheck",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"healthcheck"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"status\": \"<string>\",\n \"details\": {\n  \"MongoDB\": {\n   \"status\": \"<string>\"\n  },\n  \"queue\": {\n   \"status\": \"<string>\"\n  }\n }\n}"
+						},
+						{
+							"name": "At least one component is unhealthy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/healthcheck",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"healthcheck"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"status\": \"<string>\",\n \"details\": {\n  \"MongoDB\": {\n   \"status\": \"<string>\"\n  },\n  \"queue\": {\n   \"status\": \"<string>\"\n  }\n }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Metadata Repository",
+			"item": [
+				{
+					"name": "Create a new domain",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \t\t\t\t\t\"data\": {\r\n    \t\t\t\t\t\t\"name\": \"test456\",\r\n    \t\t\t\t\t\t\"description\": \"collaboration domain for test purposes\",\r\n    \t\t\t\t\t\t\"public\": true\r\n  \t\t\t\t\t}\t\t\t\t\t\r\n\t\t}"
+						},
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all domains",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a domain by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "QD0XUXvd-RGSCnLIUYndO-8o0FuX4kajixrxIHTNqsH05-ZLe_CytCA-ZrG8H92LIjiQsD-CtbuoePnj1kvd05xRbedakCevMFh7zShY485UyhLzYJNv2EHHat6fMXCgPEHhzgSDLtVdcqAiA7xXKlmeP9rAaqlCDht2y1kpUYc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains/5d4976b150aa460011dea67e",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains",
+								"5d4976b150aa460011dea67e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get models for specific domain",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains/5d5e576383c89e001b9299e0/schemas",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains",
+								"5d5e576383c89e001b9299e0",
+								"schemas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get model for specific domain by uri",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains/5d5e576383c89e001b9299e0/schemas//collaboration/task.json",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains",
+								"5d5e576383c89e001b9299e0",
+								"schemas",
+								"",
+								"collaboration",
+								"task.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a domain by id",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"id\":\"5d496cfc8be5970011ab0db1\",\r\n   \"name\":\"string\",\r\n   \"description\":\"new description: short desc update\",\r\n   \"public\":true\r\n}"
+						},
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains/5d496cfc8be5970011ab0db1",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains",
+								"5d496cfc8be5970011ab0db1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import new model",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n            name: 'String',\r\n            description: 'String',\r\n            value: {\r\n                $id: 'address',\r\n                required: [\r\n                    'street_address',\r\n                    'city',\r\n                    'state',\r\n                ],\r\n                properties: {\r\n                    street_address: {\r\n                        type: 'string',\r\n                    },\r\n                    city: {\r\n                        type: 'string',\r\n                    },\r\n                    state: {\r\n                        type: 'string',\r\n                    },\r\n                },\r\n            },\r\n        }}"
+						},
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains/5cf51a1629bb9e00108f092c/schemas",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains",
+								"5cf51a1629bb9e00108f092c",
+								"schemas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update model by uri",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"name\": \"test\",\n        \"description\": \"upload test\",\n        \"value\": {\n            \"$id\": \"testing\",\n            \"properties\": {\n                \"first_name\": {\n                    \"type\": \"string\"\n                },\n                \"given_name\": {\n                    \"type\": \"string\"\n                }\n            }\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains/5d24a0491662560011290586/schemas/testingPhil",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains",
+								"5d24a0491662560011290586",
+								"schemas",
+								"testingPhil"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a model by uri",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains/5cf51a1629bb9e00108f092c/schemas/FALLLLLLLLLLLLLLKKKKKKKKKKK",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains",
+								"5cf51a1629bb9e00108f092c",
+								"schemas",
+								"FALLLLLLLLLLLLLLKKKKKKKKKKK"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk import",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "multipart/form-data",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "archive",
+									"contentType": "",
+									"type": "file",
+									"src": "/C:/Users/Philipp/Documents/workspace/openintegrationhub/services/integrationtests/metadata-repository/invalid.zip"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains/5d70f6ed936f980011698a9b/schemas/import",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains",
+								"5d70f6ed936f980011698a9b",
+								"schemas",
+								"import"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Domain by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "QD0XUXvd-RGSCnLIUYndO-8o0FuX4kajixrxIHTNqsH05-ZLe_CytCA-ZrG8H92LIjiQsD-CtbuoePnj1kvd05xRbedakCevMFh7zShY485UyhLzYJNv2EHHat6fMXCgPEHhzgSDLtVdcqAiA7xXKlmeP9rAaqlCDht2y1kpUYc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://metadata.openintegrationhub.com/api/v1/domains/5d4973e350aa460011dea652",
+							"protocol": "http",
+							"host": [
+								"metadata",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"domains",
+								"5d4973e350aa460011dea652"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Attachments Storage Service",
+			"item": [
+				{
+					"name": "Create a Message",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"some\": \"json\",\n    \"test\": \"philipp\"\n}"
+						},
+						"url": {
+							"raw": "http://attachment-storage-service.openintegrationhub.com/objects/abc-def-geh",
+							"protocol": "http",
+							"host": [
+								"attachment-storage-service",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"objects",
+								"abc-def-geh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://attachment-storage-service.openintegrationhub.com/objects/67f718b9-0b36-40b8-89d6-1899ad86f97e",
+							"protocol": "http",
+							"host": [
+								"attachment-storage-service",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"objects",
+								"67f718b9-0b36-40b8-89d6-1899ad86f97e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch deletion",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"conditions\": [\n        {\n            \"key\": \"userId\",\n            \"value\": \"5bcee3048bbfec0010367bd7\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "http://attachment-storage-service.openintegrationhub.com/batch/delete",
+							"protocol": "http",
+							"host": [
+								"attachment-storage-service",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"batch",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch deletion status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://attachment-storage-service.openintegrationhub.com/batch/delete/4f5ae35e-148c-4163-a429-9fc8f3084baa",
+							"protocol": "http",
+							"host": [
+								"attachment-storage-service",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"batch",
+								"delete",
+								"4f5ae35e-148c-4163-a429-9fc8f3084baa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Message",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://attachment-storage-service.openintegrationhub.com/objects/67f718b9-0b36-40b8-89d6-1899ad86f97e",
+							"protocol": "http",
+							"host": [
+								"attachment-storage-service",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"objects",
+								"67f718b9-0b36-40b8-89d6-1899ad86f97e"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ff3017ba-1bbb-4927-89cf-e8b79206505e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2b756755-86ef-43b3-a681-1473a63297e3",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Integration Layer Service",
+			"item": [
+				{
+					"name": "Validate Object",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ilaId\": \"123xkwe125235d5e576383c89e001b9299e0\",\n    \"token\": \"U8Mk3aagmeGusR8bBsZMyOP62QNP7oSQIp5ZpyDPUK2-Jsvce3dBqMcpd7SVmRmMCpiQyxikdKAsUgFPmbiQykAu0gxcEKaadxhSNcbjFpEld45R1OxJJ1mHMqdYyFEFl68XyVVahmO-bhBGnPhnJQqVdYnNc-12G8VesSWwizI\",\n    \"cid\": \"oihUid\",\n    \"def\": {\n        \"domainId\": \"5d5e576383c89e001b9299e0\",\n        \"schemaUri\": \"/collaboration/task.json\"\n    },\n    \"payload\": {\n        \"oihUid\": \"567\",\n        \"oihApplicationRecords\": [\n            {\n                \"applicationUid\": \"123\",\n                \"recordUid\": \"201306\"\n            }\n        ], \n        \"substasks\": [\n            {\n                \"task\": \"Analyze system 1\",\n                \"details\": {\n                    \"subject\": \"analysis\",\n                    \"startdate\": \"2018-01-01T10:10:10Z\",\n                    \"enddate\": \"2018-03-01T10:10:10Z\",\n                    \"reminderdate\": \"2018-02-01T10:10:10Z\",\n                    \"content\": \"To create a datamodel we have to analyze system 1...\",\n                    \"status\": \"in progress\"\n                }\n            },\n            {\n                \"task\": \"Analyze system 2\",\n                \"details\": {\n                    \"subject\": \"analysis\",\n                    \"startdate\": \"2018-01-01T10:10:10Z\",\n                    \"enddate\": \"2018-03-01T10:10:10Z\",\n                    \"reminderdate\": \"2018-02-01T10:10:10Z\",\n                    \"content\": \"To create a datamodel we have to analyze system 2...\",\n                    \"status\": \"in progress\"\n                }\n            }\n        ],\n        \"details\": {\n            \"task\": \"Analyze systems\",\n            \"details\": {\n                \"subject\": \"analysis\",\n                \"startdate\": \"2018-01-01T10:10:10Z\",\n                \"enddate\": \"2018-03-01T10:10:10Z\",\n                \"reminderdate\": \"2018-02-01T10:10:10Z\",\n                \"content\": \"To create a datamodel we have to analyze system 1...\",\n                \"status\": \"in progress\"\n            }\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "http://ils.openintegrationhub.com/chunks/validate",
+							"protocol": "http",
+							"host": [
+								"ils",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"chunks",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chunks",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Conte",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://ils.openintegrationhub.com/chunks/003",
+							"protocol": "http",
+							"host": [
+								"ils",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"chunks",
+								"003"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Chunk",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ilaId\": \"003\",\n    \"token\": \"5_hOlcYSnI5rFw_YwNW6i4bh5C6XTBozZu0ljVUD-lim7ecMfNicsUqhmv4NMddr2Snegx9y18-oDfKXh8ODw9PHkwUpYXlKmRCg8RRnKBisAghNp0mGj3Ow-OxitXAA05gZ2jBVu2LuRIOD-eBdRKM6qR5fxs0SnZifSAA1hOU\",\n    \"cid\": \"email\",\n    \"def\": {\n        \"schema\": {\n            \"type\": \"object\",\n            \"properties\": {\n                \"first\": {\n                \t\"type\": \"string\"\n                },\n                \"last\": {\n                \t\"type\": \"string\"\n                },\n                \"email\": {\n                \t\"type\": \"string\"\n                },\n                \"logo\": {\n                \t\"type\": \"string\"\n                },\n                \"address\": {\n                \t\"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"last\"\n            ]\n        }\n    },\n    \"payload\": {\n        \"last\": \"Doe\",\n        \"email\": \"mytest@email.com\",\n        \"logo\": \"doe@mail.com\",\n        \"address\": \"test\"\n    }\n}"
+						},
+						"url": {
+							"raw": "http://ils.openintegrationhub.com/chunks",
+							"protocol": "http",
+							"host": [
+								"ils",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"chunks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Split Chunk",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ilaId\": \"123asd\",\r\n  \"payload\": {\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\",\r\n    \"email\": \"doe@mail.com\",\r\n    \"name\": \"Company Ltd.\",\r\n    \"logo\": \"https://company.com/logo.png\"\r\n  },\r\n  \"splitSchema\": [\r\n    {\r\n      \"meta\": {\r\n        \"splitKey\": \"001\",\r\n        \"userId\": \"12345678\"\r\n      },\r\n      \"payload\": {\r\n        \"firstName\": \"string\",\r\n        \"lastName\": \"string\",\r\n        \"email\": \"string\"\r\n      }\r\n    },\r\n        {\r\n      \"meta\": {\r\n        \"splitKey\": \"0021\",\r\n        \"userId\": \"12345678\"\r\n      },\r\n      \"payload\": {\r\n        \"firstName\": \"string\",\r\n        \"lastName\": \"string\",\r\n        \"logo\": \"string\"\r\n      }\r\n    }\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "http://ils.openintegrationhub.com/chunks/split",
+							"protocol": "http",
+							"host": [
+								"ils",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"chunks",
+								"split"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Secret Service",
+			"item": [],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Data Hub",
+			"item": [
+				{
+					"name": "Retrieve a data object with given ID.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://data-hub.openintegrationhub.com/data/:id",
+							"protocol": "http",
+							"host": [
+								"data-hub",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"data",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "<string>",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							]
+						},
+						"description": "Retrieve a data object with given ID."
+					},
+					"response": [
+						{
+							"name": "successful operation",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/data/<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"data",
+										"<string>"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"data\": {\n  \"domainId\": \"<string>\",\n  \"schemaUri\": \"<string>\",\n  \"content\": \"<object>\",\n  \"refs\": [\n   {\n    \"applicationUid\": \"<string>\",\n    \"recordUid\": \"<string>\",\n    \"modificationHistory\": [\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     },\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     }\n    ]\n   },\n   {\n    \"applicationUid\": \"<string>\",\n    \"recordUid\": \"<string>\",\n    \"modificationHistory\": [\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     },\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     }\n    ]\n   }\n  ],\n  \"owners\": [\n   {\n    \"id\": \"<string>\",\n    \"type\": \"<string>\"\n   },\n   {\n    \"id\": \"<string>\",\n    \"type\": \"<string>\"\n   }\n  ],\n  \"id\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\"\n }\n}"
+						}
+					]
+				},
+				{
+					"name": "Replace the data object with given ID.",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"<object>\",\n    \"domainId\": \"<string>\",\n    \"schemaUri\": \"<string>\",\n    \"refs\": [\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        },\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        }\n    ],\n    \"owners\": [\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        },\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "http://data-hub.openintegrationhub.com/data/:id",
+							"protocol": "http",
+							"host": [
+								"data-hub",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"data",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "<string>",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							]
+						},
+						"description": "Replace the data object with given ID."
+					},
+					"response": [
+						{
+							"name": "successful operation",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"content\": \"<object>\",\n    \"domainId\": \"<string>\",\n    \"schemaUri\": \"<string>\",\n    \"refs\": [\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        },\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        }\n    ],\n    \"owners\": [\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        },\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        }\n    ]\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/data/<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"data",
+										"<string>"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"data\": {\n  \"domainId\": \"<string>\",\n  \"schemaUri\": \"<string>\",\n  \"content\": \"<object>\",\n  \"refs\": [\n   {\n    \"applicationUid\": \"<string>\",\n    \"recordUid\": \"<string>\",\n    \"modificationHistory\": [\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     },\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     }\n    ]\n   },\n   {\n    \"applicationUid\": \"<string>\",\n    \"recordUid\": \"<string>\",\n    \"modificationHistory\": [\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     },\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     }\n    ]\n   }\n  ],\n  \"owners\": [\n   {\n    \"id\": \"<string>\",\n    \"type\": \"<string>\"\n   },\n   {\n    \"id\": \"<string>\",\n    \"type\": \"<string>\"\n   }\n  ],\n  \"id\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\"\n }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update the data object with given ID.",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"<object>\",\n    \"domainId\": \"<string>\",\n    \"schemaUri\": \"<string>\",\n    \"refs\": [\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        },\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        }\n    ],\n    \"owners\": [\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        },\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "http://data-hub.openintegrationhub.com/data/:id",
+							"protocol": "http",
+							"host": [
+								"data-hub",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"data",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "<string>",
+									"description": {
+										"content": "",
+										"type": "text/plain"
+									}
+								}
+							]
+						},
+						"description": "Update the data object with given ID."
+					},
+					"response": [
+						{
+							"name": "successful operation",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"content\": \"<object>\",\n    \"domainId\": \"<string>\",\n    \"schemaUri\": \"<string>\",\n    \"refs\": [\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        },\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        }\n    ],\n    \"owners\": [\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        },\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        }\n    ]\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/data/<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"data",
+										"<string>"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"data\": {\n  \"domainId\": \"<string>\",\n  \"schemaUri\": \"<string>\",\n  \"content\": \"<object>\",\n  \"refs\": [\n   {\n    \"applicationUid\": \"<string>\",\n    \"recordUid\": \"<string>\",\n    \"modificationHistory\": [\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     },\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     }\n    ]\n   },\n   {\n    \"applicationUid\": \"<string>\",\n    \"recordUid\": \"<string>\",\n    \"modificationHistory\": [\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     },\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     }\n    ]\n   }\n  ],\n  \"owners\": [\n   {\n    \"id\": \"<string>\",\n    \"type\": \"<string>\"\n   },\n   {\n    \"id\": \"<string>\",\n    \"type\": \"<string>\"\n   }\n  ],\n  \"id\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\"\n }\n}"
+						}
+					]
+				},
+				{
+					"name": "Post a new data object.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"<object>\",\n    \"domainId\": \"<string>\",\n    \"schemaUri\": \"<string>\",\n    \"refs\": [\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        },\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        }\n    ],\n    \"owners\": [\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        },\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "http://data-hub.openintegrationhub.com/data",
+							"protocol": "http",
+							"host": [
+								"data-hub",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"data"
+							]
+						},
+						"description": "Post a new data object."
+					},
+					"response": [
+						{
+							"name": "successful operation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"content\": \"<object>\",\n    \"domainId\": \"<string>\",\n    \"schemaUri\": \"<string>\",\n    \"refs\": [\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        },\n        {\n            \"applicationUid\": \"<string>\",\n            \"recordUid\": \"<string>\",\n            \"modificationHistory\": [\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                },\n                {\n                    \"user\": \"<string>\",\n                    \"operation\": \"<string>\",\n                    \"timestamp\": \"<dateTime>\"\n                }\n            ]\n        }\n    ],\n    \"owners\": [\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        },\n        {\n            \"id\": \"<string>\",\n            \"type\": \"<string>\"\n        }\n    ]\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/data",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"data"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"data\": {\n  \"domainId\": \"<string>\",\n  \"schemaUri\": \"<string>\",\n  \"content\": \"<object>\",\n  \"refs\": [\n   {\n    \"applicationUid\": \"<string>\",\n    \"recordUid\": \"<string>\",\n    \"modificationHistory\": [\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     },\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     }\n    ]\n   },\n   {\n    \"applicationUid\": \"<string>\",\n    \"recordUid\": \"<string>\",\n    \"modificationHistory\": [\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     },\n     {\n      \"user\": \"<string>\",\n      \"operation\": \"<string>\",\n      \"timestamp\": \"<dateTime>\"\n     }\n    ]\n   }\n  ],\n  \"owners\": [\n   {\n    \"id\": \"<string>\",\n    \"type\": \"<string>\"\n   },\n   {\n    \"id\": \"<string>\",\n    \"type\": \"<string>\"\n   }\n  ],\n  \"id\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\"\n }\n}"
+						}
+					]
+				},
+				{
+					"name": "Retrieve data.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://data-hub.openintegrationhub.com/data?page[size]=<integer>&page[number]=<integer>&created_since=<string>&updated_since=<string>",
+							"protocol": "http",
+							"host": [
+								"data-hub",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"data"
+							],
+							"query": [
+								{
+									"key": "page[size]",
+									"value": "<integer>",
+									"description": "The amount of records per page returned. Defaults to 50."
+								},
+								{
+									"key": "page[number]",
+									"value": "<integer>",
+									"description": "The number of the page to be returned. Defaults to 1."
+								},
+								{
+									"key": "created_since",
+									"value": "<string>",
+									"description": "Used to retrieve data records that we created since given timestamp"
+								},
+								{
+									"key": "updated_since",
+									"value": "<string>",
+									"description": "Used to retrieve data records that we updated since given timestamp"
+								}
+							]
+						},
+						"description": "Retrieve data."
+					},
+					"response": [
+						{
+							"name": "successful operation",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/data?page[size]=<integer>&page[number]=<integer>&created_since=<string>&updated_since=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"data"
+									],
+									"query": [
+										{
+											"key": "page[size]",
+											"value": "<integer>"
+										},
+										{
+											"key": "page[number]",
+											"value": "<integer>"
+										},
+										{
+											"key": "created_since",
+											"value": "<string>"
+										},
+										{
+											"key": "updated_since",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"data\": [\n  {\n   \"domainId\": \"<string>\",\n   \"schemaUri\": \"<string>\",\n   \"content\": \"<object>\",\n   \"refs\": [\n    {\n     \"applicationUid\": \"<string>\",\n     \"recordUid\": \"<string>\",\n     \"modificationHistory\": [\n      {\n       \"user\": \"<string>\",\n       \"operation\": \"<string>\",\n       \"timestamp\": \"<dateTime>\"\n      },\n      {\n       \"user\": \"<string>\",\n       \"operation\": \"<string>\",\n       \"timestamp\": \"<dateTime>\"\n      }\n     ]\n    },\n    {\n     \"applicationUid\": \"<string>\",\n     \"recordUid\": \"<string>\",\n     \"modificationHistory\": [\n      {\n       \"user\": \"<string>\",\n       \"operation\": \"<string>\",\n       \"timestamp\": \"<dateTime>\"\n      },\n      {\n       \"user\": \"<string>\",\n       \"operation\": \"<string>\",\n       \"timestamp\": \"<dateTime>\"\n      }\n     ]\n    }\n   ],\n   \"owners\": [\n    {\n     \"id\": \"<string>\",\n     \"type\": \"<string>\"\n    },\n    {\n     \"id\": \"<string>\",\n     \"type\": \"<string>\"\n    }\n   ],\n   \"id\": \"<string>\",\n   \"createdAt\": \"<dateTime>\",\n   \"updatedAt\": \"<dateTime>\"\n  },\n  {\n   \"domainId\": \"<string>\",\n   \"schemaUri\": \"<string>\",\n   \"content\": \"<object>\",\n   \"refs\": [\n    {\n     \"applicationUid\": \"<string>\",\n     \"recordUid\": \"<string>\",\n     \"modificationHistory\": [\n      {\n       \"user\": \"<string>\",\n       \"operation\": \"<string>\",\n       \"timestamp\": \"<dateTime>\"\n      },\n      {\n       \"user\": \"<string>\",\n       \"operation\": \"<string>\",\n       \"timestamp\": \"<dateTime>\"\n      }\n     ]\n    },\n    {\n     \"applicationUid\": \"<string>\",\n     \"recordUid\": \"<string>\",\n     \"modificationHistory\": [\n      {\n       \"user\": \"<string>\",\n       \"operation\": \"<string>\",\n       \"timestamp\": \"<dateTime>\"\n      },\n      {\n       \"user\": \"<string>\",\n       \"operation\": \"<string>\",\n       \"timestamp\": \"<dateTime>\"\n      }\n     ]\n    }\n   ],\n   \"owners\": [\n    {\n     \"id\": \"<string>\",\n     \"type\": \"<string>\"\n    },\n    {\n     \"id\": \"<string>\",\n     \"type\": \"<string>\"\n    }\n   ],\n   \"id\": \"<string>\",\n   \"createdAt\": \"<dateTime>\",\n   \"updatedAt\": \"<dateTime>\"\n  }\n ],\n \"meta\": {\n  \"page\": \"<integer>\",\n  \"perPage\": \"<integer>\",\n  \"total\": \"<integer>\",\n  \"totalPages\": \"<integer>\"\n }\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "IAM",
+			"item": [
+				{
+					"name": "users",
+					"item": [
+						{
+							"name": "get all users",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/users",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users"
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "List all users",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"users"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "[\n {\n  \"username\": \"<string>\",\n  \"firstname\": \"<string>\",\n  \"lastname\": \"<string>\",\n  \"id\": \"<string>\",\n  \"status\": \"<string>\",\n  \"tenant\": \"<string>\",\n  \"roles\": [\n   {\n    \"name\": \"<string>\",\n    \"permissions\": [\n     \"<string>\",\n     \"<string>\"\n    ],\n    \"scope\": \"<string>\"\n   },\n   {\n    \"name\": \"<string>\",\n    \"permissions\": [\n     \"<string>\",\n     \"<string>\"\n    ],\n    \"scope\": \"<string>\"\n   }\n  ],\n  \"permissions\": [\n   \"<string>\",\n   \"<string>\"\n  ],\n  \"confirmed\": \"<boolean>\",\n  \"img\": \"<string>\"\n },\n {\n  \"username\": \"<string>\",\n  \"firstname\": \"<string>\",\n  \"lastname\": \"<string>\",\n  \"id\": \"<string>\",\n  \"status\": \"<string>\",\n  \"tenant\": \"<string>\",\n  \"roles\": [\n   {\n    \"name\": \"<string>\",\n    \"permissions\": [\n     \"<string>\",\n     \"<string>\"\n    ],\n    \"scope\": \"<string>\"\n   },\n   {\n    \"name\": \"<string>\",\n    \"permissions\": [\n     \"<string>\",\n     \"<string>\"\n    ],\n    \"scope\": \"<string>\"\n   }\n  ],\n  \"permissions\": [\n   \"<string>\",\n   \"<string>\"\n  ],\n  \"confirmed\": \"<boolean>\",\n  \"img\": \"<string>\"\n }\n]"
+								}
+							]
+						},
+						{
+							"name": "Create user",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"<string>\",\n    \"firstname\": \"<string>\",\n    \"lastname\": \"<string>\",\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"tenant\": \"<string>\",\n    \"roles\": [\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        },\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        }\n    ],\n    \"permissions\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"confirmed\": \"<boolean>\",\n    \"img\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/users",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users"
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Id of created user",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"<string>\",\n    \"firstname\": \"<string>\",\n    \"lastname\": \"<string>\",\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"tenant\": \"<string>\",\n    \"roles\": [\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        },\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        }\n    ],\n    \"permissions\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"confirmed\": \"<boolean>\",\n    \"img\": \"<string>\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"users"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"username\": \"<string>\",\n \"firstname\": \"<string>\",\n \"lastname\": \"<string>\",\n \"id\": \"<string>\",\n \"status\": \"<string>\",\n \"tenant\": \"<string>\",\n \"roles\": [\n  {\n   \"name\": \"<string>\",\n   \"permissions\": [\n    \"<string>\",\n    \"<string>\"\n   ],\n   \"scope\": \"<string>\"\n  },\n  {\n   \"name\": \"<string>\",\n   \"permissions\": [\n    \"<string>\",\n    \"<string>\"\n   ],\n   \"scope\": \"<string>\"\n  }\n ],\n \"permissions\": [\n  \"<string>\",\n  \"<string>\"\n ],\n \"confirmed\": \"<boolean>\",\n \"img\": \"<string>\"\n}"
+								}
+							]
+						},
+						{
+							"name": "get current user",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/users/me",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"me"
+									]
+								},
+								"description": "User must have a valid session."
+							},
+							"response": [
+								{
+									"name": "current users data",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/users/me",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"users",
+												"me"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"username\": \"<string>\",\n \"firstname\": \"<string>\",\n \"lastname\": \"<string>\",\n \"id\": \"<string>\",\n \"status\": \"<string>\",\n \"tenant\": \"<string>\",\n \"roles\": [\n  {\n   \"name\": \"<string>\",\n   \"permissions\": [\n    \"<string>\",\n    \"<string>\"\n   ],\n   \"scope\": \"<string>\"\n  },\n  {\n   \"name\": \"<string>\",\n   \"permissions\": [\n    \"<string>\",\n    \"<string>\"\n   ],\n   \"scope\": \"<string>\"\n  }\n ],\n \"permissions\": [\n  \"<string>\",\n  \"<string>\"\n ],\n \"confirmed\": \"<boolean>\",\n \"img\": \"<string>\"\n}"
+								}
+							]
+						},
+						{
+							"name": "get a user by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/users/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "ID of user to use"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "User data",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/users/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"users",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"username\": \"<string>\",\n \"firstname\": \"<string>\",\n \"lastname\": \"<string>\",\n \"id\": \"<string>\",\n \"status\": \"<string>\",\n \"tenant\": \"<string>\",\n \"roles\": [\n  {\n   \"name\": \"<string>\",\n   \"permissions\": [\n    \"<string>\",\n    \"<string>\"\n   ],\n   \"scope\": \"<string>\"\n  },\n  {\n   \"name\": \"<string>\",\n   \"permissions\": [\n    \"<string>\",\n    \"<string>\"\n   ],\n   \"scope\": \"<string>\"\n  }\n ],\n \"permissions\": [\n  \"<string>\",\n  \"<string>\"\n ],\n \"confirmed\": \"<boolean>\",\n \"img\": \"<string>\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Modify a user by id",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"<string>\",\n    \"firstname\": \"<string>\",\n    \"lastname\": \"<string>\",\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"tenant\": \"<string>\",\n    \"roles\": [\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        },\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        }\n    ],\n    \"permissions\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"confirmed\": \"<boolean>\",\n    \"img\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/users/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "ID of user to use"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "successful operation",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"<string>\",\n    \"firstname\": \"<string>\",\n    \"lastname\": \"<string>\",\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"tenant\": \"<string>\",\n    \"roles\": [\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        },\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        }\n    ],\n    \"permissions\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"confirmed\": \"<boolean>\",\n    \"img\": \"<string>\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/users/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"users",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Modify a user by id",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"<string>\",\n    \"firstname\": \"<string>\",\n    \"lastname\": \"<string>\",\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"tenant\": \"<string>\",\n    \"roles\": [\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        },\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        }\n    ],\n    \"permissions\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"confirmed\": \"<boolean>\",\n    \"img\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/users/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "ID of user to use"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "successful operation",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"<string>\",\n    \"firstname\": \"<string>\",\n    \"lastname\": \"<string>\",\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"tenant\": \"<string>\",\n    \"roles\": [\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        },\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        }\n    ],\n    \"permissions\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"confirmed\": \"<boolean>\",\n    \"img\": \"<string>\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/users/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"users",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "delete user",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/users/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "ID of user to use"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "successful operation",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/users/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"users",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "roles",
+					"item": [
+						{
+							"name": "get all roles",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/roles",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"roles"
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "List all roles",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/roles",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"roles"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "[\n {\n  \"name\": \"<string>\",\n  \"permissions\": [\n   \"<string>\",\n   \"<string>\"\n  ],\n  \"scope\": \"<string>\"\n },\n {\n  \"name\": \"<string>\",\n  \"permissions\": [\n   \"<string>\",\n   \"<string>\"\n  ],\n  \"scope\": \"<string>\"\n }\n]"
+								}
+							]
+						},
+						{
+							"name": "Create a role",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"schema type not provided\""
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/roles",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"roles"
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Id of created role",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "\"schema type not provided\""
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/roles",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"roles"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"name\": \"<string>\",\n \"permissions\": [\n  \"<string>\",\n  \"<string>\"\n ],\n \"scope\": \"<string>\"\n}"
+								}
+							]
+						},
+						{
+							"name": "get a role by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/roles/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"roles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "Role id"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Role data",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/roles/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"roles",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"name\": \"<string>\",\n \"permissions\": [\n  \"<string>\",\n  \"<string>\"\n ],\n \"scope\": \"<string>\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Modify a role by id",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"schema type not provided\""
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/roles/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"roles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "Role id"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "successful operation",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "\"schema type not provided\""
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/roles/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"roles",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "delete a role",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/roles/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"roles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "Role id"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "successful operation",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/roles/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"roles",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "tokens",
+					"item": [
+						{
+							"name": "get all tokens",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tokens",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tokens"
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "List all tokens",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tokens",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tokens"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "[\n {\n  \"inquirer\": \"<string>\",\n  \"initiator\": \"<string>\",\n  \"accountId\": \"<string>\",\n  \"token\": \"<string>\",\n  \"type\": \"<string>\",\n  \"permissions\": [\n   \"<string>\",\n   \"<string>\"\n  ],\n  \"tokenLifeSpan\": \"<string>\"\n },\n {\n  \"inquirer\": \"<string>\",\n  \"initiator\": \"<string>\",\n  \"accountId\": \"<string>\",\n  \"token\": \"<string>\",\n  \"type\": \"<string>\",\n  \"permissions\": [\n   \"<string>\",\n   \"<string>\"\n  ],\n  \"tokenLifeSpan\": \"<string>\"\n }\n]"
+								}
+							]
+						},
+						{
+							"name": "Create a new token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"inquirer\": \"<string>\",\n    \"initiator\": \"<string>\",\n    \"accountId\": \"<string>\",\n    \"token\": \"<string>\",\n    \"type\": \"<string>\",\n    \"permissions\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"tokenLifeSpan\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tokens",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tokens"
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Id of created user",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"inquirer\": \"<string>\",\n    \"initiator\": \"<string>\",\n    \"accountId\": \"<string>\",\n    \"token\": \"<string>\",\n    \"type\": \"<string>\",\n    \"permissions\": [\n        \"<string>\",\n        \"<string>\"\n    ],\n    \"tokenLifeSpan\": \"<string>\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tokens",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tokens"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"token\": \"<string>\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Introspect a token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"token\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tokens/introspect",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tokens",
+										"introspect"
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Id of created user",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"token\": \"<string>\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tokens/introspect",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tokens",
+												"introspect"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"username\": \"<string>\",\n \"firstname\": \"<string>\",\n \"lastname\": \"<string>\",\n \"id\": \"<string>\",\n \"status\": \"<string>\",\n \"tenant\": \"<string>\",\n \"roles\": [\n  {\n   \"name\": \"<string>\",\n   \"permissions\": [\n    \"<string>\",\n    \"<string>\"\n   ],\n   \"scope\": \"<string>\"\n  },\n  {\n   \"name\": \"<string>\",\n   \"permissions\": [\n    \"<string>\",\n    \"<string>\"\n   ],\n   \"scope\": \"<string>\"\n  }\n ],\n \"permissions\": [\n  \"<string>\",\n  \"<string>\"\n ],\n \"confirmed\": \"<boolean>\",\n \"img\": \"<string>\"\n}"
+								}
+							]
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "tenants",
+					"item": [
+						{
+							"name": "Get all tenants",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tenants",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tenants"
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "List of all tenants",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tenants",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tenants"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "[\n {\n  \"name\": \"<string>\",\n  \"id\": \"<string>\",\n  \"status\": \"<string>\",\n  \"confirmed\": \"<boolean>\"\n },\n {\n  \"name\": \"<string>\",\n  \"id\": \"<string>\",\n  \"status\": \"<string>\",\n  \"confirmed\": \"<boolean>\"\n }\n]"
+								}
+							]
+						},
+						{
+							"name": "Create a tenant",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"<string>\",\n    \"status\": \"<string>\",\n    \"confirmed\": \"<boolean>\"\n}"
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tenants",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tenants"
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"<string>\",\n    \"status\": \"<string>\",\n    \"confirmed\": \"<boolean>\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tenants",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tenants"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "get all users assigned to the given tenant",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tenants/:id/users",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tenants",
+										":id",
+										"users"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "Tenant id"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "List of all users who are members of the given organization",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tenants/<string>/users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tenants",
+												"<string>",
+												"users"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "[\n {\n  \"username\": \"<string>\",\n  \"firstname\": \"<string>\",\n  \"lastname\": \"<string>\",\n  \"id\": \"<string>\",\n  \"status\": \"<string>\",\n  \"tenant\": \"<string>\",\n  \"roles\": [\n   {\n    \"name\": \"<string>\",\n    \"permissions\": [\n     \"<string>\",\n     \"<string>\"\n    ],\n    \"scope\": \"<string>\"\n   },\n   {\n    \"name\": \"<string>\",\n    \"permissions\": [\n     \"<string>\",\n     \"<string>\"\n    ],\n    \"scope\": \"<string>\"\n   }\n  ],\n  \"permissions\": [\n   \"<string>\",\n   \"<string>\"\n  ],\n  \"confirmed\": \"<boolean>\",\n  \"img\": \"<string>\"\n },\n {\n  \"username\": \"<string>\",\n  \"firstname\": \"<string>\",\n  \"lastname\": \"<string>\",\n  \"id\": \"<string>\",\n  \"status\": \"<string>\",\n  \"tenant\": \"<string>\",\n  \"roles\": [\n   {\n    \"name\": \"<string>\",\n    \"permissions\": [\n     \"<string>\",\n     \"<string>\"\n    ],\n    \"scope\": \"<string>\"\n   },\n   {\n    \"name\": \"<string>\",\n    \"permissions\": [\n     \"<string>\",\n     \"<string>\"\n    ],\n    \"scope\": \"<string>\"\n   }\n  ],\n  \"permissions\": [\n   \"<string>\",\n   \"<string>\"\n  ],\n  \"confirmed\": \"<boolean>\",\n  \"img\": \"<string>\"\n }\n]"
+								}
+							]
+						},
+						{
+							"name": "Add a user to the tenant",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"<string>\",\n    \"roles\": [\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        },\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        }\n    ]\n}"
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tenants/:id/users",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tenants",
+										":id",
+										"users"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "Tenant id, to which the user should be added"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"<string>\",\n    \"roles\": [\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        },\n        {\n            \"name\": \"<string>\",\n            \"permissions\": [\n                \"<string>\",\n                \"<string>\"\n            ],\n            \"scope\": \"<string>\"\n        }\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tenants/<string>/users",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tenants",
+												"<string>",
+												"users"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "get the tenant by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tenants/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tenants",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "Tenant id"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "List of all users",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tenants/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tenants",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"name\": \"<string>\",\n \"id\": \"<string>\",\n \"status\": \"<string>\",\n \"confirmed\": \"<boolean>\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Modify the tenant",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"<string>\",\n    \"status\": \"<string>\",\n    \"confirmed\": \"<boolean>\"\n}"
+								},
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tenants/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tenants",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "Tenant id"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"<string>\",\n    \"status\": \"<string>\",\n    \"confirmed\": \"<boolean>\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tenants/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tenants",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Delete tenant",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tenants/:id",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tenants",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "Tenant id"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tenants/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tenants",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Remove user from tenant",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "iam.openintegrationhub.com/api/v1/tenants/:id/user/:userId",
+									"host": [
+										"iam",
+										"openintegrationhub",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"tenants",
+										":id",
+										"user",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "<string>",
+											"description": "Tenant Id"
+										},
+										{
+											"key": "userId",
+											"value": "<string>",
+											"description": "User Id"
+										}
+									]
+								},
+								"description": "This can only be done by a logged in user who has the required privileges."
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/tenants/<string>/user/<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"tenants",
+												"<string>",
+												"user",
+												"<string>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "text/plain"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Service Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "iam.openintegrationhub.com/",
+							"host": [
+								"iam",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Detailed service information",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Login route",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"<string>\",\n    \"password\": \"<string>\"\n}"
+						},
+						"url": {
+							"raw": "iam.openintegrationhub.com/login",
+							"host": [
+								"iam",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request; Missing mandatory body",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"<string>\",\n    \"password\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Cannot login user. Account is either disabled or a precondition is missing.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"<string>\",\n    \"password\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Login successful",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"<string>\",\n    \"password\": \"<string>\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"token\": \"<string>\",\n \"id\": \"<string>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Logout route",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "iam.openintegrationhub.com/logout",
+							"host": [
+								"iam",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Logout successful",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/logout",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "User is not logged in.",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/logout",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logout"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Cluster tools",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "iam.openintegrationhub.com/healthcheck",
+							"host": [
+								"iam",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"healthcheck"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Service is healthy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/healthcheck",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"healthcheck"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "36a9d2e6-f549-4553-a2bb-e12fd49de7a1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3f3c1dfe-afdb-4e21-99f8-a772f0e5f956",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Dispatcher",
+			"item": [
+				{
+					"name": "Gets the tenant's current dispatch configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://dispatcher-service.openintegrationhub.com/dispatches",
+							"protocol": "http",
+							"host": [
+								"dispatcher-service",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"dispatches"
+							]
+						},
+						"description": "Each tenant can only have one configuration at a time"
+					},
+					"response": [
+						{
+							"name": "The tenant-specific configuration.",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/dispatches",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"dispatches"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"data\": \"<object>\",\n \"meta\": \"<object>\"\n}"
+						},
+						{
+							"name": "Tenant has no dispatch configuration",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/dispatches",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"dispatches"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Adds or updates a dispatch configuration",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\"<object>\""
+						},
+						"url": {
+							"raw": "http://dispatcher-service.openintegrationhub.com/dispatches",
+							"protocol": "http",
+							"host": [
+								"dispatcher-service",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"dispatches"
+							]
+						},
+						"description": "If a configuration already exists, will automatically update based on tenant."
+					},
+					"response": [
+						{
+							"name": "The created configuration.",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"<object>\""
+								},
+								"url": {
+									"raw": "{{baseUrl}}/dispatches",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"dispatches"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"data\": \"<object>\",\n \"meta\": \"<object>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Deletes the tenant's dispatch configuration",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://dispatcher-service.openintegrationhub.com/dispatches",
+							"protocol": "http",
+							"host": [
+								"dispatcher-service",
+								"openintegrationhub",
+								"com"
+							],
+							"path": [
+								"dispatches"
+							]
+						},
+						"description": "This means all dispatches will be deactivated from this point forward."
+					},
+					"response": [
+						{
+							"name": "The tenant-specific configuration has been deleted.",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/dispatches",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"dispatches"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ebdb24ce-eb6a-40ad-a193-825c718f8fb6",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "cfab4790-beb5-41ea-8dcf-2426af8dd426",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{currentAccessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "cb3e5496-f966-4583-8d1a-665738b7b4a5",
+				"type": "text/javascript",
+				"exec": [
+					"  async function preRequest(){",
+					"  ",
+					"    //Setting username and password",
+					"    const username = \"YOUR USERNAME\";",
+					"    const password = \"YOUR PASSWORD\";",
+					"    let getToken = true;",
+					"    ",
+					"    //Configuring request",
+					"    const echoPostRequest = {",
+					"      url: `http://iam.openintegrationhub.com/login?username=${username}&password=${password}`,",
+					"      method: 'POST',",
+					"      header: 'Content-Type:application/json'",
+					"    };",
+					"    ",
+					"    ",
+					"    ",
+					"    //Check token and expiry date",
+					"    if (!pm.environment.get('accessTokenExpiry') || ",
+					"        !pm.environment.get('currentAccessToken')) {",
+					"        console.log('Token or expiry date are missing')",
+					"    } else if (pm.environment.get('accessTokenExpiry') <= (new Date()).getTime()) {",
+					"        console.log('Token is expired')",
+					"    } else {",
+					"        getToken = false;",
+					"        console.log('Token and expiry date are all good');",
+					"    }",
+					"    ",
+					"    //Check token validity",
+					"    if (getToken === false) {",
+					"        ",
+					"        const echoValidationRequest = {",
+					"            method: 'GET',",
+					"            url: `http://flow-repository.openintegrationhub.com/flows`,",
+					"            header: `Authorization:Bearer ${pm.environment.get('currentAccessToken')}`,",
+					"        };",
+					"",
+					"        pm.sendRequest(echoValidationRequest, (err,res) => {",
+					"            if (err === null) {",
+					"                const jsonResult = res.json();",
+					"                if (jsonResult.errors && jsonResult.errors[0].code === 401){",
+					"                    getToken = true;",
+					"",
+					"                    pm.sendRequest(echoPostRequest, function (err, res) {",
+					"                        if (err === null) {",
+					"                               ",
+					"                        console.log('Saving the token and expiry date');",
+					"                        ",
+					"                        let responseJson = res.json();",
+					"                        pm.environment.set('currentAccessToken', responseJson.token);",
+					"                    ",
+					"                        let expiryDate = new Date();",
+					"                        expiryDate.setSeconds(expiryDate.getSeconds() + 7200);",
+					"                        pm.environment.set('accessTokenExpiry', expiryDate.getTime());",
+					"                        }",
+					"                    });",
+					"                } else {",
+					"                    getToken = false;",
+					"                }",
+					"            } else {",
+					"                console.log('Error while making request');",
+					"            }",
+					"        });",
+					"",
+					"        console.log(`FLAG 4 with getToken value: ${JSON.stringify(getToken)}`);",
+					"",
+					"    }",
+					"    ",
+					"    //Fetch a new token and expiry date",
+					"    if (getToken === true) {",
+					"        pm.sendRequest(echoPostRequest, function (err, res) {",
+					"        console.log(err ? err : res.json());",
+					"            if (err === null) {",
+					"                console.log('Saving the token and expiry date');",
+					"                var responseJson = res.json();",
+					"                pm.environment.set('currentAccessToken', responseJson.token);",
+					"        ",
+					"                var expiryDate = new Date();",
+					"                expiryDate.setSeconds(expiryDate.getSeconds() + 7200);",
+					"                pm.environment.set('accessTokenExpiry', expiryDate.getTime());",
+					"            }",
+					"        });",
+					"    }",
+					"}",
+					"",
+					"preRequest();"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "0d550853-a164-4f9b-ba27-b9bcbcac460a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "fd1d9e1c-be97-4822-9ba5-301e383bf619",
+			"key": "currentAccessToken",
+			"value": " ",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"id": "2c31fb39-e0ae-4885-a78b-5a6465d7b7c0",
+			"key": "accessTokenExpiry",
+			"value": " ",
+			"type": "string",
+			"disabled": true
+		}
+	],
+	"protocolProfileBehavior": {}
+}
