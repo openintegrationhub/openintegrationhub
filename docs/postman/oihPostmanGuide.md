@@ -41,7 +41,7 @@ This document is designed as a guide on _test the open integration hub with post
 
 ## Prerequisites
 
-In order to use the Open Integration Hub we provided a demo environment and a [postman collection](postman/OIH_Framework_Showcase.postman_collection.json) and a [postman environment](postman/OIH_Framework.postman_environment.json) to test the functionalities of the Open Integration Hub.
+In order to use the Open Integration Hub we provided a demo environment and a [postman collection](https://github.com/openintegrationhub/openintegrationhub/blob/master/docs/postman/OIH_Framework_Showcase.postman_collection.json) and a [postman environment](https://github.com/openintegrationhub/openintegrationhub/blob/master/docs/postman/OIH_Framework.postman_environment.json) to test the functionalities of the Open Integration Hub.
 
 We suggest to download and import these files to easily process the steps described in the following.
 
@@ -61,7 +61,7 @@ Please process the following steps in order to be able to generate a valid token
 5. Click on `Update`
 
 Here you can see where you should add the username and password:
-![usrName_pw](assets/postmanToken.PNG)
+![usrName_pw](https://raw.githubusercontent.com/openintegrationhub/openintegrationhub/master/docs/assets/postmanToken.PNG)
 
 Now you can proceed and use the predefined requests.
 
@@ -438,15 +438,15 @@ In order to display your data correctly it is necessary that you perform the sub
 _Note:_ If you don't have a test account for one (SnazzyContacts/WiceCRM) or both applications please request one from [hschmidthh](https://github.com/hschmidthh) EMail:<hschmidt@wice.de>
 
 Step3:
-![webhookSiteUri](assets/webhookSiteUri.PNG)
+![webhookSiteUri](https://raw.githubusercontent.com/openintegrationhub/openintegrationhub/master/docs/assets/webhookSiteUri.PNG)
 
 Step4:
 
-![snazzyCredentials](assets/snazzyCredentials.PNG)
+![snazzyCredentials](https://raw.githubusercontent.com/openintegrationhub/openintegrationhub/master/docs/assets/snazzyCredentials.PNG)
 
 Step5:
 
-![wiceCredentials](assets/wiceCredentials.PNG)
+![wiceCredentials](https://raw.githubusercontent.com/openintegrationhub/openintegrationhub/master/docs/assets/wiceCredentials.PNG)
 
 Flow:
 
