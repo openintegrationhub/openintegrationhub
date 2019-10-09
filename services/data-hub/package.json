@@ -46,6 +46,7 @@
         "@openintegrationhub/event-bus": "*",
         "@openintegrationhub/iam-utils": "*",
         "backend-commons-lib": "*",
+        "@wice-devs/cfm": "1.0.8",
         "bunyan": "1.8.12",
         "koa": "2.7.0",
         "koa-bodyparser": "4.2.1",

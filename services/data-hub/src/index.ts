@@ -4,6 +4,7 @@ import { App } from 'backend-commons-lib';
 import mongoose from 'mongoose';
 import { EventBus, IEvent, Event } from '@openintegrationhub/event-bus';
 import DataObject from './models/data-object';
+import resolveConflict from './cfm/conflict-manager'
 
 interface IDataRecordEventPayloadMeta {
     domainId: string;
@@ -71,16 +72,23 @@ export default class DataHubApp extends App {
             try {
                 if (oldRecord) {
                     log.debug('Updating the existing record');
-                    oldRecord.content = data;
-                    await oldRecord.save();
+                    const newContent = resolveConflict(data, oldRecord.content)
 
+                    // If CFM returns an empty object, incoming data is an exact duplicate and can be discarded
+                    if (newContent  === {}) {
+                        await evt.ack();
+                        return
+                    }
+
+                    oldRecord.content = newContent;
+                    await oldRecord.save();
                     const recordUpdatedEvent = new Event({
                         headers: {
                             name: 'data-hub.record.updated'
                         },
                         payload: {
                             meta: Object.assign({}, meta, {oihUid: oldRecord.id}),
-                            data
+                            data: newContent
                         }
                     });
 
