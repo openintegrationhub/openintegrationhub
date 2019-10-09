@@ -47,18 +47,18 @@ describe('API', () => {
   const connections = [
     {
       source: {
-        appId: 'Snazzy',
+        appUid: 'Snazzy',
         domain: 'Addresses',
       },
       targets: [
         {
-          appId: 'Wice',
+          appUid: 'Wice',
           routingKey: 'WiceAddressesABCDE',
           flowId: 'ABCDE',
           active: true,
         },
         {
-          appId: 'Outlook',
+          appUid: 'Outlook',
           routingKey: 'OutlookAddressesFGHI',
           flowId: 'FGHI',
           active: true,
@@ -108,7 +108,7 @@ describe('API', () => {
     const newConnections = connections;
     newConnections[0].targets.push(
       {
-        appId: 'GoogleContacts',
+        appUid: 'GoogleContacts',
         routingKey: 'GoogleContactsAddressesJKLM',
         flowId: 'JLKM',
         active: true,
@@ -154,15 +154,15 @@ describe('Event Handlers', () => {
         {
           source: {
             flowId: 'abc',
-            appId: 'Snazzy',
+            appUid: 'Snazzy',
           },
           targets: [
             {
-              appId: 'Wice',
+              appUid: 'Wice',
               flowId: 'def',
             },
             {
-              appId: 'Outlook',
+              appUid: 'Outlook',
               flowId: 'ghi',
             },
           ],
@@ -176,7 +176,7 @@ describe('Event Handlers', () => {
 
   test('should get the target flow ids for a given source', async () => {
     const targets = await getTargets('abc');
-    expect(targets).toEqual(['def', 'ghi']);
+    expect(targets).toEqual([{ flowId: 'def', appUid: 'Wice' }, { flowId: 'ghi', appUid: 'Outlook' }]);
   });
 
   test('should check flow repository for the status of flows', async () => {
@@ -199,8 +199,17 @@ describe('Event Handlers', () => {
     const payload = {
       meta: {
         flowId: 'abc',
-        appId: 'Snazzy',
         oihUid: 'harbl',
+        refs: [
+          {
+            appUid: 'Wice',
+            recordUid: '1234',
+          },
+          {
+            appUid: 'Outlook',
+            recordUid: '5678',
+          },
+        ],
       },
       data: {
         firstName: 'Jane',
@@ -212,16 +221,39 @@ describe('Event Handlers', () => {
       headers: {
         name: 'dispatch.def',
       },
-      payload,
+      payload: {
+        meta: {
+          flowId: 'abc',
+          oihUid: 'harbl',
+          appUid: 'Wice',
+          recordUid: '1234',
+        },
+        data: {
+          firstName: 'Jane',
+          lastName: 'Doe',
+        },
+      },
     };
 
     const ev2 = {
       headers: {
         name: 'dispatch.ghi',
       },
-      payload,
+      payload: {
+        meta: {
+          flowId: 'abc',
+          oihUid: 'harbl',
+          appUid: 'Outlook',
+          recordUid: '5678',
+        },
+        data: {
+          firstName: 'Jane',
+          lastName: 'Doe',
+        },
+      },
     };
-    const events = await createDispatches(['def', 'ghi'], payload);
+
+    const events = await createDispatches([{ flowId: 'def', appUid: 'Wice' }, { flowId: 'ghi', appUid: 'Outlook' }], payload);
     expect(events).toHaveLength(2);
     expect(events[0]).toEqual(ev1);
     expect(events[1]).toEqual(ev2);

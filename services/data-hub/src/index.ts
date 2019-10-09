@@ -79,7 +79,7 @@ export default class DataHubApp extends App {
                             name: 'data-hub.record.updated'
                         },
                         payload: {
-                            meta: Object.assign({}, meta, {oihUid: oldRecord.id}),
+                            meta: Object.assign({}, meta, {oihUid: oldRecord.id, refs: oldRecord.refs}),
                             data
                         }
                     });
