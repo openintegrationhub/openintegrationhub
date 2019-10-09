@@ -214,7 +214,7 @@ function loadExternalSchema(uri) {
  * @return {Boolean} - depending on regex result
  */
 function ilaIdValidator(ilaId) {
-  const reg = /[' " / ~ > < & # \\ $ * ! ? + @ % ^ ( ),]/g;
+  const reg = /['"/~><&#\\$*!?@%^(),]/g;
   return reg.test(ilaId);
 }
 
