@@ -54,7 +54,7 @@ async function getTargets(sourceFlow) {
     if (connections[i].source.flowId === sourceFlow) {
       const { targets } = connections[i];
       for (let j = 0; j < targets.length; j += 1) {
-        targetFlows.push({ flowId: targets[j].flowId, appUid: targets[j].appUid });
+        targetFlows.push({ flowId: targets[j].flowId, applicationUid: targets[j].applicationUid });
       }
     }
   }
@@ -75,10 +75,10 @@ async function createDispatches(targets, payload) {
 
   for (let i = 0; i < targets.length; i += 1) {
     const targetPayload = newPayload;
-    targetPayload.meta.appUid = targets[i].appUid;
+    targetPayload.meta.applicationUid = targets[i].applicationUid;
 
     if (refs) {
-      const currentRef = refs.find(element => element.appUid === targets[i].appUid);
+      const currentRef = refs.find(element => element.applicationUid === targets[i].applicationUid);
 
       if (currentRef) {
         targetPayload.meta.recordUid = currentRef.recordUid;
