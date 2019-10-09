@@ -1,4 +1,4 @@
-const CFM = require('@wice-devs/cfm')
+const CFM = require('@wice-devs/cfm')  // eslint-disable-line
 
 const cfm = new CFM();
 
