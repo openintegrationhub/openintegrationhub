@@ -1,4 +1,5 @@
 /* eslint no-await-in-loop: "off" */
+const lodash = require('lodash');
 
 const request = require('request-promise').defaults({
   simple: false,
@@ -53,7 +54,7 @@ async function getTargets(sourceFlow) {
     if (connections[i].source.flowId === sourceFlow) {
       const { targets } = connections[i];
       for (let j = 0; j < targets.length; j += 1) {
-        targetFlows.push(targets[j].flowId);
+        targetFlows.push({ flowId: targets[j].flowId, appUid: targets[j].appUid });
       }
     }
   }
@@ -63,17 +64,35 @@ async function getTargets(sourceFlow) {
 
 async function createDispatches(targets, payload) {
   const evs = [];
+  const newPayload = payload;
+  let refs;
+
+
+  if (newPayload.meta.refs) {
+    refs = payload.meta.refs;  // eslint-disable-line
+    delete newPayload.meta.refs;
+  }
 
   for (let i = 0; i < targets.length; i += 1) {
+    const targetPayload = newPayload;
+    targetPayload.meta.appUid = targets[i].appUid;
+
+    if (refs) {
+      const currentRef = refs.find(element => element.appUid === targets[i].appUid);
+
+      if (currentRef) {
+        targetPayload.meta.recordUid = currentRef.recordUid;
+      }
+    }
+
     const ev = {
       headers: {
-        name: `dispatch.${targets[i]}`,
+        name: `dispatch.${targets[i].flowId}`,
       },
-      payload,
+      payload: lodash.cloneDeep(targetPayload),
     };
     evs.push(ev);
   }
-
   return evs;
 }
 
