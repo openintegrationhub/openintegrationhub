@@ -26,15 +26,15 @@ async function spawnEvent() {
       {
         source: {
           flowId: 'abc',
-          appId: 'Snazzy',
+          appUid: 'Snazzy',
         },
         targets: [
           {
-            appId: 'Wice',
+            appUid: 'Wice',
             flowId: 'def',
           },
           {
-            appId: 'Outlook',
+            appUid: 'Outlook',
             flowId: 'ghi',
           },
         ],
@@ -60,7 +60,7 @@ async function spawnEvent() {
     },
     payload: {
       meta: {
-        appId: 'Snazzy',
+        appUid: 'Snazzy',
         flowId: 'abc',
       },
       data: {
