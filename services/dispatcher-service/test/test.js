@@ -192,7 +192,7 @@ describe('Event Handlers', () => {
       .post('')
       .reply(200, {});
 
-    await checkFlows(['def', 'ghi']);
+    await checkFlows([{ flowId: 'def', applicationUid: 'Wice' }, { flowId: 'ghi', applicationUid: 'Outlook' }]);
   });
 
   test('should generate correct events for a given configuration', async () => {

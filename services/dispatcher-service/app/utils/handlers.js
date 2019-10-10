@@ -14,7 +14,7 @@ async function checkFlows(targets) {
     try {
       const getOptions = {
         method: 'GET',
-        uri: `${config.flowRepoUrl}/flows/${targets[i]}`,
+        uri: `${config.flowRepoUrl}/flows/${targets[i].flowId}`,
         json: true,
         headers: {
           Authorization: `Bearer ${config.flowToken}`,
@@ -24,11 +24,11 @@ async function checkFlows(targets) {
       const response = await request(getOptions);
 
       if (response.statusCode !== 200) {
-        log.warn(`Flow with ID ${targets[i]} could not be fetched`);
+        log.warn(`Flow with ID ${targets[i].flowId} could not be fetched`);
       } else if (response.body.data.status === 'inactive') {
         const startOptions = {
           method: 'POST',
-          uri: `${config.flowRepoUrl}/flows/${targets[i]}/start`,
+          uri: `${config.flowRepoUrl}/flows/${targets[i].flowId}/start`,
           json: true,
           headers: {
             Authorization: `Bearer ${config.flowToken}`,
