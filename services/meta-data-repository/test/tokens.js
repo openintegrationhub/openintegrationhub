@@ -113,7 +113,7 @@ module.exports = {
             role: 'USER',
             iat: 1337,
             tenant: 't2',
-            permissions: [],
+            permissions: ['metadata.domains.crud'],
         },
     },
 };
