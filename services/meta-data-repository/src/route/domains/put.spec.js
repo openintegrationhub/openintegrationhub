@@ -62,9 +62,19 @@ describe('domains', () => {
             })
             .expect(200);
 
+        // put as admin INVALID DOMAIN ID
+        await request.put('/domains/not-existing')
+            .set(...global.admin)
+            .send({
+                name: 'fooUpdate',
+                description: 'bar',
+                public: false,
+            })
+            .expect(404);
+
         // put as non authorized
         await request.put(`/domains/${result.data.id}`)
-            .set(...global.user3)
+            .set(...global.tenantUser22)
             .send({
                 name: 'fooUpdate',
                 description: 'bar',
