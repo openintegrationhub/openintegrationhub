@@ -58,7 +58,11 @@ describe('HttpApi', () => {
             });
             sinon.stub(flowsDao, 'findById').resolves(flow);
             sinon.stub(secretsDao, 'findById').resolves({});
-            const { body, statusCode } = await request.get(`/v1/tasks/${flow.id}/steps/step_1`);
+
+            const { body, statusCode } = await request
+                .get(`/v1/tasks/${flow.id}/steps/step_1`)
+                .auth('iamtoken', 'token-value');
+
             expect(body).to.deep.equal({
                 id: 'step_1',
                 config: {
@@ -92,7 +96,11 @@ describe('HttpApi', () => {
                     password: 'ohhai'
                 }
             });
-            const { body, statusCode } = await request.get(`/v1/tasks/${flow.id}/steps/step_1`);
+
+            const { body, statusCode } = await request
+                .get(`/v1/tasks/${flow.id}/steps/step_1`)
+                .auth('iamtoken', 'token-value');
+
             expect(body).to.deep.equal({
                 id: 'step_1',
                 config: {
@@ -105,7 +113,11 @@ describe('HttpApi', () => {
             expect(statusCode).to.equal(200);
 
             expect(flowsDao.findById).to.have.been.calledOnceWith(flow.id);
-            expect(secretsDao.findById).to.have.been.calledOnceWith('cred123');
+            expect(secretsDao.findById).to.have.been.calledOnceWith('cred123', {
+                auth: {
+                    token: 'token-value'
+                }
+            });
         });
 
         it('should return error if flow is not found', async () => {
@@ -124,7 +136,10 @@ describe('HttpApi', () => {
             sinon.stub(flowsDao, 'findById').resolves(null);
             sinon.stub(secretsDao, 'findById').resolves(null);
 
-            const { body, statusCode } = await request.get(`/v1/tasks/${flow.id}/steps/step_1`);
+            const { body, statusCode } = await request
+                .get(`/v1/tasks/${flow.id}/steps/step_1`)
+                .auth('iamtoken', 'token-value');
+
             expect(body).to.deep.equal({
                 error: 'Flow is not found'
             });
@@ -149,14 +164,22 @@ describe('HttpApi', () => {
             });
             sinon.stub(flowsDao, 'findById').resolves(flow);
             sinon.stub(secretsDao, 'findById').resolves(null);
-            const { body, statusCode } = await request.get(`/v1/tasks/${flow.id}/steps/step_1`);
+
+            const { body, statusCode } = await request
+                .get(`/v1/tasks/${flow.id}/steps/step_1`)
+                .auth('iamtoken', 'token-value');
+
             expect(body).to.deep.equal({
                 error: 'Secret cred123 is not found'
             });
             expect(statusCode).to.equal(500);
 
             expect(flowsDao.findById).to.have.been.calledOnceWith(flow.id);
-            expect(secretsDao.findById).to.have.been.calledOnceWith('cred123');
+            expect(secretsDao.findById).to.have.been.calledOnceWith('cred123', {
+                auth: {
+                    token: 'token-value'
+                }
+            });
         });
     });
 });

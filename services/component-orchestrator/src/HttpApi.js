@@ -1,6 +1,7 @@
 const express = require('express');
 const Lib = require('backend-commons-lib');
 const { errors } = Lib;
+const auth = require('basic-auth');
 
 class HttpApi {
     /**
@@ -49,6 +50,7 @@ class HttpApi {
         }, 'Node info request');
 
         try {
+            const user = auth(req);
             const flow = await this._flowsDao.findById(req.params.flowId);
             if (!flow) {
                 throw new errors.ResourceNotFoundError('Flow is not found');
@@ -61,7 +63,11 @@ class HttpApi {
             const nodeConfig = node.fields || {};
             if (node.credentials_id) {
                 this._logger.trace({secretId: node.credentials_id}, 'About to get secret by ID');
-                const secret = await this._secretsDao.findById(node.credentials_id);
+                const secret = await this._secretsDao.findById(node.credentials_id, {
+                    auth: {
+                        token: user.pass
+                    }
+                });
                 if (!secret) {
                     throw new errors.ResourceNotFoundError(`Secret ${node.credentials_id} is not found`);
                 }

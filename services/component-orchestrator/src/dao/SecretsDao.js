@@ -11,13 +11,13 @@ module.exports = class OIHSecretsDao {
         this._logger = logger;
     }
 
-    async findById(secretId) {
+    async findById(secretId, {auth}) {
         const url = this._getSecretsServiceUrl(`/secrets/${secretId}`);
         const opts = {
             url,
             json: true,
             headers: {
-                authorization: `Bearer ${this._config.get('IAM_TOKEN')}`
+                authorization: `Bearer ${auth.token}`
             }
         };
 
