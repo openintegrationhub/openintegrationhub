@@ -20,6 +20,10 @@ class HttpApi {
         this._app.get('/healthcheck', this._healthcheck.bind(this));
     }
 
+    getApp() {
+        return this._app;
+    }
+
     /**
      * Start listening for incoming traffic on a port.
      * @param listenPort
