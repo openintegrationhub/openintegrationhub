@@ -143,7 +143,7 @@ describe('HttpApi', () => {
             expect(body).to.deep.equal({
                 error: 'Flow is not found'
             });
-            expect(statusCode).to.equal(500);
+            expect(statusCode).to.equal(404);
 
             expect(flowsDao.findById).to.have.been.calledOnceWith(flow.id);
             expect(secretsDao.findById).not.to.have.been.called;
@@ -172,7 +172,7 @@ describe('HttpApi', () => {
             expect(body).to.deep.equal({
                 error: 'Secret cred123 is not found'
             });
-            expect(statusCode).to.equal(500);
+            expect(statusCode).to.equal(404);
 
             expect(flowsDao.findById).to.have.been.calledOnceWith(flow.id);
             expect(secretsDao.findById).to.have.been.calledOnceWith('cred123', {

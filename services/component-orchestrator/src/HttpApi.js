@@ -17,8 +17,9 @@ class HttpApi {
         this._flowsDao = flowsDao;
         this._secretsDao = secretsDao;
         this._app = express();
-        this._app.get('/v1/tasks/:flowId/steps/:stepId', this._getStepInfo.bind(this));
+        this._app.get('/v1/tasks/:flowId/steps/:stepId', this._setIamToken.bind(this), this._getStepInfo.bind(this));
         this._app.get('/healthcheck', this._healthcheck.bind(this));
+        this._app.use(this._errorHandler.bind(this));
     }
 
     getApp() {
@@ -34,6 +35,23 @@ class HttpApi {
         this._app.listen(listenPort);
     }
 
+    _errorHandler(err, req, res, next) { //eslint-disable-line no-unused-vars
+        this._logger.error(err, 'Node info request failed');
+        return res.status(err.status || 500).json({
+            error: err.message || 'Unknown error'
+        });
+    }
+
+    _setIamToken(req, res, next) {
+        // Sailor passes an IAM token as a password part of the Basic auth header
+        const user = auth(req);
+        if (!user) {
+            return next(new Error('Failed to parse basic auth'));
+        }
+        req.iamToken = user.pass;
+        return next();
+    }
+
     /**
      * This API is required by flow nodes in order to get a node's configuration.
      * @param req
@@ -41,7 +59,7 @@ class HttpApi {
      * @returns {Promise<void>}
      * @private
      */
-    async _getStepInfo(req, res) {
+    async _getStepInfo(req, res, next) {
         this._logger.trace({
             params: req.params,
             query: req.query,
@@ -50,7 +68,6 @@ class HttpApi {
         }, 'Node info request');
 
         try {
-            const user = auth(req);
             const flow = await this._flowsDao.findById(req.params.flowId);
             if (!flow) {
                 throw new errors.ResourceNotFoundError('Flow is not found');
@@ -65,7 +82,7 @@ class HttpApi {
                 this._logger.trace({secretId: node.credentials_id}, 'About to get secret by ID');
                 const secret = await this._secretsDao.findById(node.credentials_id, {
                     auth: {
-                        token: user.pass
+                        token: req.iamToken
                     }
                 });
                 if (!secret) {
@@ -81,10 +98,7 @@ class HttpApi {
                 config: nodeConfig
             });
         } catch (e) {
-            this._logger.error(e, req.params, 'Node info request failed');
-            res.status(500);
-            res.json({error: e.message});
-            return;
+            return next(e);
         }
     }
 
