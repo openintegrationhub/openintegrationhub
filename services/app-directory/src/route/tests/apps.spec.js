@@ -117,6 +117,7 @@ describe('connectors', () => {
             urls: {
                 main: 'https://www.example.com/foo',
             },
+            authClient: 'someExternalId',
             status: 'DISABLED',
         };
 
@@ -137,6 +138,7 @@ describe('connectors', () => {
         expect(appResponse.name).toEqual(newValues.name);
         expect(appResponse.urls.main).toEqual(newValues.urls.main);
         expect(appResponse.status).toEqual(newValues.status);
+        expect(appResponse.authClient).toEqual(newValues.authClient);
     });
 
     test('Remove an app', async () => {

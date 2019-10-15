@@ -15,6 +15,7 @@ const app = new Schema({
     name: { type: String, index: { unique: true }, required: true },
     description: { type: String },
     img: { type: String },
+    authClient: { type: String },
     dataModels: [String],
     components: [component],
     isGlobal: Boolean,

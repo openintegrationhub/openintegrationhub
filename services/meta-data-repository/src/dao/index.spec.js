@@ -10,7 +10,7 @@ let server;
 
 describe('DAO adapter', () => {
     beforeAll(async () => {
-        port = await getPort();
+        port = 5101;
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
             mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'dao'),

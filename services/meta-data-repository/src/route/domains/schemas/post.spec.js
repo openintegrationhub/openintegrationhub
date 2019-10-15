@@ -13,7 +13,7 @@ let server;
 
 describe('schemas', () => {
     beforeAll(async () => {
-        port = await getPort();
+        port = 5114;
         conf.port = port;
 
         request = supertest(`http://localhost:${port}${conf.apiBase}`);

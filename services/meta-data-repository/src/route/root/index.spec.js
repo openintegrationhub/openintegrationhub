@@ -9,7 +9,7 @@ let server;
 
 describe('root', () => {
     beforeAll(async (done) => {
-        port = await getPort();
+        port = 5102;
         request = supertest(`http://localhost:${port}`);
         server = new Server({
             mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'root'),
