@@ -78,6 +78,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/meta-data-repository
     steps: *yarn_test_steps
+  app-directory-test:
+    docker: *node_env
+    working_directory: ~/oih/services/app-directory
+    steps: *yarn_test_steps
   component-orchestrator-test:
     docker: *node_mongo_env
     working_directory: ~/oih/services/component-orchestrator
@@ -146,6 +150,9 @@ workflows:
       - meta-data-repository-test:
           requires:
             - deps
+      - app-directory-test:
+          requires:
+            - deps
       - component-orchestrator-test:
           requires:
             - lib-component-orchestrator-test
@@ -191,6 +198,7 @@ workflows:
             - iam-test
             - web-ui-test
             - meta-data-repository-test
+            - app-directory-test
             - component-orchestrator-test
             - scheduler-test
             - secret-service-lib-test
