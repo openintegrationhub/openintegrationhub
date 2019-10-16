@@ -33,6 +33,9 @@ process.on('SIGINT', exitHandler.bind(null));
         const server = new Server({
             adapter: {
                 key: require('@openintegrationhub/secret-service/src/adapter/key/global'),
+                preprocessor: {
+                    microsoft: require('@openintegrationhub/secret-service/src/adapter/preprocessor/microsoft'),
+                },
             },
             eventBus,
         });

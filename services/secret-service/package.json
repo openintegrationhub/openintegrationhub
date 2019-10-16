@@ -7,6 +7,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "node index.js",
+    "watch": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
     "test": "echo \"noop\"",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/secret-service:${VERSION} -f Dockerfile ."
@@ -15,5 +16,8 @@
     "@basaas/node-logger": "1.1.5",
     "@openintegrationhub/secret-service": "1.2.5",
     "dotenv": "7.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "1.19.4"
   }
 }
