@@ -80,3 +80,9 @@ spec:
       - backend:
           serviceName: dispatcher-service
           servicePort: 3013
+  - host: app-directory.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: app-directory
+          servicePort: 3000
