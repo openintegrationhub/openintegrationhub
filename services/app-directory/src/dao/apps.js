@@ -10,7 +10,7 @@ module.exports = {
     async create(obj) {
         const app = new App({ ...obj });
         await app.save();
-        auditLog.info('app.create', { data: app });
+        auditLog.info('app.create', { data: app.toJSON() });
         return app.toJSON();
     },
     async find(query = {}) {

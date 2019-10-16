@@ -15,5 +15,5 @@ module.exports = {
     mongoDbConnection: optional('MONGODB_CONNECTION', `mongodb://localhost:27017/${pjson.name}`),
     mongoDbPoolSize: parseInt(process.env.MONGODB_POOL_SIZE, 10) || 5,
     debugMode: optional('DEBUG_MODE', 'false') === 'true',
-    originWhitelist: [].concat(process.env.ORIGIN_WHITELIST ? process.env.ORIGIN_WHITELIST.split(',') : []),
+    originWhitelist: [].concat(process.env.ORIGIN_WHITELIST ? process.env.ORIGIN_WHITELIST.split(',') : ['localhost', '127.0.0.1']),
 };

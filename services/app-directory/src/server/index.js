@@ -50,8 +50,8 @@ module.exports = class Server {
         // setup routes
         apiBase.use('/apps', require('./../route/apps')); // eslint-disable-line global-require
 
-        // this.app.use(conf.apiBase, cors(this.corsOptions), apiBase);
-        this.app.use(conf.apiBase, apiBase);
+        this.app.use(conf.apiBase, cors(this.corsOptions), apiBase);
+        // this.app.use(conf.apiBase, apiBase);
 
         // error middleware
         this.app.use(require('./../middleware/error').default);

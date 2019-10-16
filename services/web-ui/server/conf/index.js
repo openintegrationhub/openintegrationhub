@@ -7,10 +7,11 @@ module.exports = {
         namespace: optional('LOGGING_NAMESPACE', name),
     },
     endpoints: {
-        iam: optional('ENDPOINT_IAM', 'http://iam.openintegrationhub.com'),
-        flow: optional('ENDPOINT_FLOW', 'http://flow-repository.openintegrationhub.com'),
-        component: optional('ENDPOINT_COMPONENT', 'http://component-repository.openintegrationhub.com'),
-        metadata: optional('ENDPOINT_METADATA', 'http://metadata.openintegrationhub.com/api/v1'),
+        iam: optional('ENDPOINT_IAM', 'https://iam.openintegrationhub.com'),
+        flow: optional('ENDPOINT_FLOW', 'https://flow-repository.openintegrationhub.com'),
+        component: optional('ENDPOINT_COMPONENT', 'https://component-repository.openintegrationhub.com'),
+        metadata: optional('ENDPOINT_METADATA', 'https://metadata.openintegrationhub.com/api/v1'),
+        appDirectory: optional('ENDPOINT_APP_DIRECTORY', 'https://app-directory.openintegrationhub.com/api/v1'),
     },
     wellKnown: {
         version,

@@ -156,7 +156,7 @@ class Profile extends React.Component {
                     </FormControl>
 
                     {
-                        this.props.auth.role === 'ADMIN'
+                        this.props.auth.isAdmin
                                 && <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="tenant">tenant</InputLabel>
                                     <Select

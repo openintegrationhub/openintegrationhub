@@ -1,13 +1,13 @@
 const proxy = require('http-proxy-middleware');
 const conf = require('../server/conf');
 
-const ORIGIN = 'http://web-ui.openintegrationhub.com';
+const ORIGIN = 'https://web-ui.openintegrationhub.com';
 
 // eslint-disable-next-line func-names
 module.exports = function (app) {
     app.use(proxy('/iam-api', {
         pathRewrite: { '^/iam-api': '/' },
-        target: 'http://iam.openintegrationhub.com',
+        target: conf.endpoints.iam,
         changeOrigin: true,
         onProxyReq(proxyReq) {
             // add custom header to request
@@ -18,7 +18,18 @@ module.exports = function (app) {
 
     app.use(proxy('/flow-api', {
         pathRewrite: { '^/flow-api': '/' },
-        target: 'http://flow-repository.openintegrationhub.com',
+        target: conf.endpoints.flow,
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
+
+    app.use(proxy('/app-directory-api', {
+        pathRewrite: { '^/app-directory-api': '/' },
+        target: conf.endpoints.appDirectory,
         changeOrigin: true,
         onProxyReq(proxyReq) {
             // add custom header to request
@@ -29,7 +40,7 @@ module.exports = function (app) {
 
     app.use(proxy('/component-api', {
         pathRewrite: { '^/component-api': '/' },
-        target: 'http://component-repository.openintegrationhub.com',
+        target: conf.endpoints.component,
         changeOrigin: true,
         onProxyReq(proxyReq) {
             // add custom header to request
@@ -39,8 +50,8 @@ module.exports = function (app) {
     }));
     app.use(proxy('/metadata-api', {
         pathRewrite: { '^/metadata-api': '/' },
-        target: 'http://metadata.openintegrationhub.com/api/v1',
         changeOrigin: true,
+        target: conf.endpoints.metadata,
         onProxyReq(proxyReq) {
             // add custom header to request
             proxyReq.setHeader('Origin', ORIGIN);

@@ -27,7 +27,6 @@ describe('connectors', () => {
     });
 
     test('Create an app', async () => {
-
         const appData = {
             artifactId: 'com.foobar',
             name: 'FooBarApp',
@@ -117,7 +116,10 @@ describe('connectors', () => {
             urls: {
                 main: 'https://www.example.com/foo',
             },
-            authClient: 'someExternalId',
+            credentials: {
+                authClient: 'someExternalId',
+            },
+
             status: 'DISABLED',
         };
 
@@ -138,11 +140,10 @@ describe('connectors', () => {
         expect(appResponse.name).toEqual(newValues.name);
         expect(appResponse.urls.main).toEqual(newValues.urls.main);
         expect(appResponse.status).toEqual(newValues.status);
-        expect(appResponse.authClient).toEqual(newValues.authClient);
+        expect(appResponse.credentials.authClient).toEqual(newValues.credentials.authClient);
     });
 
     test('Remove an app', async () => {
-
         const appData = {
             artifactId: 'com.foobar3',
             name: 'FooBarApp3',

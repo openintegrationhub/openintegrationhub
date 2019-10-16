@@ -22,10 +22,10 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.props.checkLogin();
-        axios.interceptors.response.use(response => response, (error) => {
+        axios.interceptors.response.use(response => response, async (error) => {
             if (error.response.status === 401) {
                 console.log('REDIRECT TO LOGIN SCREEN', error);
-                props.resetLogin();
+                props.resetLogin(); // TODO: do not logout user if the 401 came from one of the services and not IAM
             }
             return Promise.reject(error);
         });

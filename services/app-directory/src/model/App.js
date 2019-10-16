@@ -6,6 +6,33 @@ const component = new Schema({
     type: { type: String, index: true, required: true },
     name: { type: String, index: true, required: true },
     uri: { type: String },
+    componentId: { type: String },
+}, { _id: false });
+
+const Operation = new Schema({
+    type: {
+        type: String,
+        enum: [
+            'action',
+            'trigger',
+        ],
+        required: true,
+    },
+    operationName: { type: String, required: true },
+    direction: {
+        type: String,
+        enum: [
+            'inbound',
+            'outbound',
+        ],
+        required: true,
+    },
+    componentId: { type: String },
+}, { _id: false });
+
+const SyncMapping = new Schema({
+    dataModel: { type: String, index: true, required: true },
+    operations: [Operation],
 }, { _id: false });
 
 const app = new Schema({
@@ -15,7 +42,10 @@ const app = new Schema({
     name: { type: String, index: { unique: true }, required: true },
     description: { type: String },
     img: { type: String },
-    authClient: { type: String },
+    credentials: {
+        customStructure: Schema.Types.Mixed,
+        authClient: { type: String },
+    },
     dataModels: [String],
     components: [component],
     isGlobal: Boolean,
@@ -24,10 +54,11 @@ const app = new Schema({
         main: String,
     },
     status: { type: String },
-    supportedConnections: {
-        inbound: Boolean,
-        outbound: Boolean,
-    }
+    // supportedConnections: {
+    //     inbound: Boolean,
+    //     outbound: Boolean,
+    // },
+    syncMappings: [SyncMapping],
 }, {
     timestamps: true,
 });
