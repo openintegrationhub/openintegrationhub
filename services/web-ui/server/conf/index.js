@@ -11,6 +11,7 @@ module.exports = {
         flow: optional('ENDPOINT_FLOW', 'http://flow-repository.openintegrationhub.com'),
         component: optional('ENDPOINT_COMPONENT', 'http://component-repository.openintegrationhub.com'),
         metadata: optional('ENDPOINT_METADATA', 'http://metadata.openintegrationhub.com/api/v1'),
+        secrets: optional('ENDPOINT_SECRETS', 'http://skm.openintegrationhub.com/api/v1'),
     },
     wellKnown: {
         version,

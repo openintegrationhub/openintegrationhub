@@ -1,5 +1,8 @@
 import axios from 'axios';
 import qs from 'qs';
+import { getConfig } from '../conf';
+
+const conf = getConfig();
 
 export const GET_CLIENTS = 'GET_CLIENTS_SUCCESS';
 export const PROCESS_CALLBACK = 'PROCESS_CALLBACK';
@@ -10,7 +13,7 @@ export const getClients = () => async (dispatch) => {
     try {
         const { data } = (await axios({
             method: 'get',
-            url: '/user/auth-clients',
+            url: `${conf.endpoints.secrets}/auth-clients`,
             withCredentials: true,
         })).data;
 
@@ -27,7 +30,7 @@ export const processCallback = query => async (dispatch) => {
     try {
         const { data } = await axios({
             method: 'get',
-            url: `/callback?${qs.stringify(query)}`,
+            url: `${conf.endpoints.secrets}/callback?${qs.stringify(query)}`,
             withCredentials: true,
         });
 
@@ -51,7 +54,7 @@ export const processAuth = (clientId, body) => async (dispatch) => {
     try {
         const { data } = (await axios({
             method: 'post',
-            url: `/user/start-flow/${clientId}`,
+            url: `${conf.endpoints.secrets}/auth-clients/${clientId}/start-flow`,
             withCredentials: true,
             data: {
                 data: body,

@@ -1,30 +1,15 @@
 import axios from 'axios';
+import { getConfig } from '../conf';
 
-export const GET_SECRET = 'GET_SECRET';
+const conf = getConfig();
 export const GET_SECRETS = 'GET_SECRETS';
-
-export const getSecret = secretId => async (dispatch) => {
-    try {
-        const { data } = (await axios({
-            method: 'get',
-            url: `/user/secrets/${secretId}`,
-            withCredentials: true,
-        })).data;
-        dispatch({
-            type: GET_SECRET,
-            config: data,
-        });
-    } catch (err) {
-        console.log(err);
-    }
-};
-
+export const GET_SECRETS_PAGE = 'GET_SECRETS_PAGE';
 
 export const getSecrets = () => async (dispatch) => {
     try {
         const { data } = (await axios({
             method: 'get',
-            url: '/user/secrets',
+            url: `${conf.endpoints.secrets}/secrets`,
             withCredentials: true,
         })).data;
 
@@ -37,23 +22,32 @@ export const getSecrets = () => async (dispatch) => {
     }
 };
 
-export const deleteSecret = secretId => async (dispatch) => {
+export const getSecretsPage = page => async (dispatch) => {
     try {
-        const { status } = await axios({
-            method: 'delete',
-            url: `/integrated-apps/secrets/${secretId}`,
+        const result = await axios({
+            method: 'get',
+            url: `${conf.endpoints.secrets}/secrets?page[number]=${page}`,
             withCredentials: true,
         });
-        if (status === 204) {
-            await axios({
-                method: 'delete',
-                url: `/user/secrets/${secretId}`,
-                withCredentials: true,
-            });
-            dispatch(getSecrets());
-        } else {
-            console.log('Error on delete Secret :', status);
-        }
+
+        dispatch({
+            type: GET_SECRETS_PAGE,
+            data: result.data.data,
+            meta: result.data.meta,
+        });
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const deleteSecret = secretId => async (dispatch) => {
+    try {
+        await axios({
+            method: 'delete',
+            url: `${conf.endpoints.secrets}/secrets/${secretId}`,
+            withCredentials: true,
+        });
+        dispatch(getSecrets());
     } catch (err) {
         console.log(err);
     }
