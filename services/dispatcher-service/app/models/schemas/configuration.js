@@ -13,7 +13,7 @@ const configuration = new Schema({
       _id: false,
       source: {
         _id: false,
-        appId: String,
+        applicationUid: String,
         domain: String,
         flowId: String,
       },
@@ -23,7 +23,7 @@ const configuration = new Schema({
           active: Boolean,
           flowId: String,
           routingKey: String,
-          appId: String,
+          applicationUid: String,
         },
       ],
     },

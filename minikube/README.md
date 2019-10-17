@@ -3,7 +3,7 @@
   <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
 </p>
 
-The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalization.
+Open source framework for easy data synchronization between business applications.
 
 Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
 

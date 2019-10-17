@@ -1,4 +1,5 @@
 /* eslint no-await-in-loop: "off" */
+const lodash = require('lodash');
 
 const request = require('request-promise').defaults({
   simple: false,
@@ -13,7 +14,7 @@ async function checkFlows(targets) {
     try {
       const getOptions = {
         method: 'GET',
-        uri: `${config.flowRepoUrl}/flows/${targets[i]}`,
+        uri: `${config.flowRepoUrl}/flows/${targets[i].flowId}`,
         json: true,
         headers: {
           Authorization: `Bearer ${config.flowToken}`,
@@ -23,11 +24,11 @@ async function checkFlows(targets) {
       const response = await request(getOptions);
 
       if (response.statusCode !== 200) {
-        log.warn(`Flow with ID ${targets[i]} could not be fetched`);
+        log.warn(`Flow with ID ${targets[i].flowId} could not be fetched`);
       } else if (response.body.data.status === 'inactive') {
         const startOptions = {
           method: 'POST',
-          uri: `${config.flowRepoUrl}/flows/${targets[i]}/start`,
+          uri: `${config.flowRepoUrl}/flows/${targets[i].flowId}/start`,
           json: true,
           headers: {
             Authorization: `Bearer ${config.flowToken}`,
@@ -53,7 +54,7 @@ async function getTargets(sourceFlow) {
     if (connections[i].source.flowId === sourceFlow) {
       const { targets } = connections[i];
       for (let j = 0; j < targets.length; j += 1) {
-        targetFlows.push(targets[j].flowId);
+        targetFlows.push({ flowId: targets[j].flowId, applicationUid: targets[j].applicationUid });
       }
     }
   }
@@ -63,17 +64,35 @@ async function getTargets(sourceFlow) {
 
 async function createDispatches(targets, payload) {
   const evs = [];
+  const newPayload = payload;
+  let refs;
+
+
+  if (newPayload.meta.refs) {
+    refs = payload.meta.refs;  // eslint-disable-line
+    delete newPayload.meta.refs;
+  }
 
   for (let i = 0; i < targets.length; i += 1) {
+    const targetPayload = newPayload;
+    targetPayload.meta.applicationUid = targets[i].applicationUid;
+
+    if (refs) {
+      const currentRef = refs.find(element => element.applicationUid === targets[i].applicationUid);
+
+      if (currentRef) {
+        targetPayload.meta.recordUid = currentRef.recordUid;
+      }
+    }
+
     const ev = {
       headers: {
-        name: `dispatch.${targets[i]}`,
+        name: `dispatch.${targets[i].flowId}`,
       },
-      payload,
+      payload: lodash.cloneDeep(targetPayload),
     };
     evs.push(ev);
   }
-
   return evs;
 }
 

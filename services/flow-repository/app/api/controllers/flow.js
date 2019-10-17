@@ -73,7 +73,7 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
 
   // filter[user]
   if (req.query.filter && req.query.filter.user !== undefined) {
-    if (!config.oihAdminRoles.includes(req.user.role)) {
+    if (!req.user.isAdmin) {
       return res.status(403).send({ errors: [{ message: 'Filtering by user is only available to admins', code: 403 }] });
     }
     filters.user = req.query.filter.user;

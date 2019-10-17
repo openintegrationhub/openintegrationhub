@@ -25,36 +25,66 @@ async function connectQueue() {
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'dispatcher-service' });
 
-  for (let i = 0; i < config.incomingEventNames.length; i += 1) {
-    await eventBus.subscribe(config.incomingEventNames[i], async (event) => {
-      log.info(`Received event: ${JSON.stringify(event.headers)}`);
+  await eventBus.subscribe(config.createEventName, async (event) => {
+    log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
-      if (!event.payload.meta || !event.payload.meta.flowId) {
-        log.warn('Received malformed event:');
-        log.warn(event.payload);
-        return event.ack();
-      }
-
-      const targets = await getTargets(event.payload.meta.flowId);
-
-      if (!targets) {
-        log.info('No targets found for event.');
-        return event.ack();
-      }
-
-      await checkFlows(targets);
-
-      const events = await createDispatches(targets, event.payload);
-      const promises = [];
-
-      for (let j = 0; j < events.length; j += 1) {
-        promises.push(publishQueue(events[j]));
-      }
-
-      await Promise.all(promises);
+    if (!event.payload.meta || !event.payload.meta.flowId) {
+      log.warn('Received malformed event:');
+      log.warn(event.payload);
       return event.ack();
-    });
-  }
+    }
+
+    const targets = await getTargets(event.payload.meta.flowId);
+
+    if (!targets) {
+      log.info('No targets found for event.');
+      return event.ack();
+    }
+
+    await checkFlows(targets);
+
+    const events = await createDispatches(targets, event.payload);
+    const promises = [];
+
+    for (let j = 0; j < events.length; j += 1) {
+      promises.push(publishQueue(events[j]));
+    }
+
+    await Promise.all(promises);
+    return event.ack();
+  });
+
+  await eventBus.subscribe(config.updateEventName, async (event) => {
+    log.info(`Received event: ${JSON.stringify(event.headers)}`);
+
+    const { payload } = event;
+
+    if (!payload.meta || !payload.meta.flowId) {
+      log.warn('Received malformed event:');
+      log.warn(event.payload);
+      return event.ack();
+    }
+
+    const targets = await getTargets(payload.meta.flowId);
+
+    if (!targets) {
+      log.info('No targets found for event.');
+      return event.ack();
+    }
+
+    await checkFlows(targets);
+
+    const events = await createDispatches(targets, payload);
+    const promises = [];
+
+    for (let j = 0; j < events.length; j += 1) {
+      promises.push(publishQueue(events[j]));
+    }
+
+    await Promise.all(promises);
+    return event.ack();
+  });
+
 
   await eventBus.connect();
 }

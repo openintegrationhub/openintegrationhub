@@ -26,15 +26,15 @@ async function spawnEvent() {
       {
         source: {
           flowId: 'abc',
-          appId: 'Snazzy',
+          applicationUid: 'Snazzy',
         },
         targets: [
           {
-            appId: 'Wice',
+            applicationUid: 'Wice',
             flowId: 'def',
           },
           {
-            appId: 'Outlook',
+            applicationUid: 'Outlook',
             flowId: 'ghi',
           },
         ],
@@ -56,11 +56,11 @@ async function spawnEvent() {
   // Create an event similar to one that the Data Hub would spawn
   const ev = {
     headers: {
-      name: config.incomingEventNames[0],
+      name: config.createEventName,
     },
     payload: {
       meta: {
-        appId: 'Snazzy',
+        applicationUid: 'Snazzy',
         flowId: 'abc',
       },
       data: {
