@@ -7,7 +7,6 @@ const Server = require('@openintegrationhub/secret-service');
 const { EventBus } = require('@openintegrationhub/event-bus');
 const conf = require('./src/conf');
 
-console.log(conf);
 const log = logger.getLogger(`${conf.logging.namespace}/main`);
 
 function exitHandler(options, err) {
@@ -34,6 +33,9 @@ process.on('SIGINT', exitHandler.bind(null));
         const server = new Server({
             adapter: {
                 key: require('@openintegrationhub/secret-service/src/adapter/key/global'),
+                preprocessor: {
+                    microsoft: require('@openintegrationhub/secret-service/src/adapter/preprocessor/microsoft'),
+                },
             },
             eventBus,
         });

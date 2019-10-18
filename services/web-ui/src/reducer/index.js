@@ -6,6 +6,8 @@ import roles from './roles';
 import flows from './flows';
 import components from './components';
 import metadata from './metadata';
+import authClients from './auth-clients';
+import secrets from './secrets';
 import { LOGOUT } from '../action/auth';
 
 const appReducer = combineReducers({
@@ -16,6 +18,8 @@ const appReducer = combineReducers({
     flows,
     components,
     metadata,
+    secrets,
+    authClients,
 });
 
 export default (state, action) => {

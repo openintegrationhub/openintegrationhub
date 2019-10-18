@@ -6,7 +6,7 @@ import { Route, Switch } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 import flow from 'lodash/flow';
 
-
+import Hook from '../hook';
 import Main from '../main';
 import Auth from '../auth';
 import LoginCheck from '../../component/login-check';
@@ -46,6 +46,7 @@ class App extends React.Component {
 
     render() {
         return <Switch>
+            <Route path="/hook" component={Hook} />
             <Route exact path="/auth" component={Auth} />
             <LoginCheck>
 
