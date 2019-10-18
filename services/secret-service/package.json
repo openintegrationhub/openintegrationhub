@@ -1,6 +1,6 @@
 {
   "name": "secret-service",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "description": "Service to manage Keys/Tokens of external services",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
-    "@openintegrationhub/secret-service": "1.3.1",
+    "@openintegrationhub/secret-service": "1.4.0",
     "dotenv": "7.0.0"
   },
   "devDependencies": {
