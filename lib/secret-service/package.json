@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/secret-service",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "ExpressJS based service to manage credentials and secrets.",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -15,6 +15,7 @@
     "@openintegrationhub/iam-utils": "1.5.2",
     "assert": "2.0.0",
     "base64url": "3.0.1",
+    "cors": "2.8.5",
     "dot-prop": "5.1.0",
     "dotenv": "8.2.0",
     "express": "4.17.1",
