@@ -1409,17 +1409,6 @@
     bunyan "1.8.12"
     lodash "4.17.11"
 
-"@openintegrationhub/iam-utils@1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@openintegrationhub/iam-utils/-/iam-utils-1.4.1.tgz#81d0a0dfa544b7b3c2ed1216dc226aa7b67ac257"
-  integrity sha512-ep+Y8uJZxBxs5sddliW+3jMgIZThmM0gLOXgshJT4DFMTmJ5Wandj2ypxLbAaaWutj4Kdj6Eys63LKsbLZoLIg==
-  dependencies:
-    "@basaas/node-logger" "1.1.5"
-    base64url "3.0.1"
-    node-cache "4.2.0"
-    request "2.88.0"
-    request-promise "4.2.4"
-
 "@openintegrationhub/iam-utils@1.5.2":
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/@openintegrationhub/iam-utils/-/iam-utils-1.5.2.tgz#7fb8e66e96793dcaa5d20f85ded2124cb2ce7558"
@@ -1430,29 +1419,6 @@
     node-cache "4.2.0"
     request "2.88.0"
     request-promise "4.2.4"
-
-"@openintegrationhub/secret-service@1.2.5":
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/@openintegrationhub/secret-service/-/secret-service-1.2.5.tgz#abc29a922a09066afa9919a28e3b568e8ad19d00"
-  integrity sha512-DrjKguMGyfLUT4XmIVaSVLDKD9R14Z3EiiaDikKeVZAVQY8y6eX7n5QHni7KeltJ2nFiycHm2nh9bSw8YN/RSQ==
-  dependencies:
-    "@basaas/node-logger" "1.1.5"
-    "@openintegrationhub/event-bus" "1.0.2"
-    "@openintegrationhub/iam-utils" "1.4.1"
-    assert "2.0.0"
-    base64url "3.0.1"
-    dot-prop "5.1.0"
-    dotenv "8.0.0"
-    express "4.17.1"
-    jsonwebtoken "8.5.1"
-    lru-cache "5.1.1"
-    moment "2.24.0"
-    mongoose "5.5.14"
-    morgan "1.9.1"
-    qs "6.7.0"
-    request "2.88.0"
-    request-promise "4.2.4"
-    swagger-ui-express "4.0.6"
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -13399,25 +13365,6 @@ mongoose@5.5.1:
     sift "7.0.1"
     sliced "1.0.1"
 
-mongoose@5.5.14:
-  version "5.5.14"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.5.14.tgz#fe70fa3b803206bdd703afa94b84492f4d7e64a9"
-  integrity sha512-BWrugOHZQLeiXlA9bA/xo9TvjZpV5O4T5vJJT7wsLmZyAi0heYkAPqzH206+NxgnPyAifqjrLR+M24vqXgugNQ==
-  dependencies:
-    async "2.6.2"
-    bson "~1.1.1"
-    kareem "2.3.0"
-    mongodb "3.2.7"
-    mongodb-core "3.2.7"
-    mongoose-legacy-pluralize "1.0.2"
-    mpath "0.6.0"
-    mquery "3.2.1"
-    ms "2.1.2"
-    regexp-clone "1.0.0"
-    safe-buffer "5.1.2"
-    sift "7.0.1"
-    sliced "1.0.1"
-
 mongoose@5.6.11:
   version "5.6.11"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.6.11.tgz#c63f557b702a02be8e20ec21d8f7776bdb9bd2d8"
@@ -18785,13 +18732,6 @@ swagger-ui-express@4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-4.0.2.tgz#8fae60038b990258dc14e07ea3427e93fb621622"
   integrity sha512-XZtXI2+SKT3fgvJSGg4P7Dtmkzr50uoSb09IxbUWmjL538TIGRMZtfdEkjZEEq44xgGNAxMryzBEUdUnkXr8dA==
-  dependencies:
-    swagger-ui-dist "^3.18.1"
-
-swagger-ui-express@4.0.6:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-4.0.6.tgz#c7a1cc3952a01017483b382d67e27196c82577c3"
-  integrity sha512-7YkBfVWRYjvnGITs7vygM8VNF91iUwX8ReHQaTD9I7q8Ky8SYXZ81gyFc+kovE34iSbCC1yW+n2oII3b3uSxXQ==
   dependencies:
     swagger-ui-dist "^3.18.1"
 
