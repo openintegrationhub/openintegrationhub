@@ -16,8 +16,8 @@ spec:
       - name: secret-service
         image: openintegrationhub/secret-service:latest
         env:
-        - name: CRYPTO_DISABLED
-          value: "true"
+        - name: ORIGINWHITELIST
+          value: openintegrationhub.com
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
@@ -43,7 +43,7 @@ spec:
           value: '3000'
         - name: API_BASE
           value: "/api/v1"
-        - name: LOGGING_LEVEL
+        - name: LOG_LEVEL
           value: "error"
         - name: TTL_AUTHFLOW
           value: "2m"

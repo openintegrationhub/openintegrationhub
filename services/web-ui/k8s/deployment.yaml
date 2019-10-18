@@ -18,6 +18,8 @@ spec:
         env:
         - name: PORT
           value: '3000'
+        - name: ENDPOINT_SECRETS
+          value: 'https://skm.openintegrationhub.com'
         - name: ENDPOINT_IAM
           value: 'http://iam.openintegrationhub.com'
         - name: ENDPOINT_FLOW
