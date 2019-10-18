@@ -52,3 +52,17 @@ export const deleteSecret = secretId => async (dispatch) => {
         console.log(err);
     }
 };
+
+export const createMixedSecret = ({ data }) => async (dispatch) => {
+    try {
+        await axios({
+            method: 'post',
+            url: `${conf.endpoints.secrets}/secrets`,
+            data,
+            withCredentials: true,
+        });
+        dispatch(getSecrets());
+    } catch (err) {
+        console.log(err);
+    }
+};

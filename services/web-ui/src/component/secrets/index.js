@@ -12,7 +12,7 @@ import {
     Add, NavigateNext, NavigateBefore,
 } from '@material-ui/icons';
 import Modal from '@material-ui/core/Modal';
-
+import AddSecret from './add-secret';
 // components
 import SecretTeaser from './secret-teaser';
 
@@ -21,9 +21,7 @@ import * as authClientsActions from '../../action/auth-clients';
 
 
 const useStyles = {
-    button: {
-        margin: '20px',
-    },
+
     wrapper: {
         padding: '20px 0',
         justifyContent: 'center',
@@ -33,11 +31,12 @@ const useStyles = {
         margin: 'auto',
         outline: 'none',
     },
+
 };
 
 class Secrets extends React.Component {
     state = {
-        addSecret: false,
+        showAddSecret: false,
         processingAuth: false,
     }
 
@@ -55,7 +54,7 @@ class Secrets extends React.Component {
 
     addSecret = () => {
         this.setState({
-            addSecret: true,
+            showAddSecret: true,
         });
     };
 
@@ -75,7 +74,13 @@ class Secrets extends React.Component {
         }
     };
 
-    startFlow(id) {
+    closeModal = () => {
+        this.setState({
+            showAddSecret: false,
+        });
+    }
+
+    startFlow = (id) => {
         const scope = '';
         this.props.processAuth(id, {
             ...(scope ? { scope } : {}),
@@ -85,6 +90,10 @@ class Secrets extends React.Component {
         this.setState({
             processingAuth: true,
         });
+    }
+
+    addMixed = (data) => {
+        this.props.createMixedSecret({ data });
     }
 
     render() {
@@ -138,32 +147,20 @@ class Secrets extends React.Component {
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    open={this.state.addSecret}
-                    onClose={() => { this.setState({ addSecret: false }); }}
+                    open={this.state.showAddSecret}
+                    onClose={() => { this.setState({ showAddSecret: false }); }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
-                        {this.state.processingAuth ? (
-                            <div>Processing auth ...</div>
-
-                        ) : (
-                            <React.Fragment>
-                                {this.props.authClients.available.map(client => (
-                                    <Button
-                                        key={client._id}
-                                        variant="contained"
-                                        className={classes.button}
-                                        onClick={this.startFlow.bind(this, client._id)}
-                                    >
-                                        {client.name}
-                                    </Button>
-                                ))}
-                            </React.Fragment>
-
-                        )}
+                        <AddSecret
+                            startFlow={this.startFlow}
+                            addMixed={this.addMixed}
+                            authClients={this.props.authClients}
+                            close={this.closeModal}
+                        />
                     </div>
                 </Modal>
-            </Container>
+            </Container >
         );
     }
 }

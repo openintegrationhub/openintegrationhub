@@ -1,7 +1,5 @@
 import React from 'react';
 import flow from 'lodash/flow';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
@@ -14,13 +12,11 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {
     Flare,
+    Code,
 } from '@material-ui/icons';
+import { getConfig } from '../../../conf';
 
-// Actions
-import {
-    deleteComponent, updateComponent,
-} from '../../../action/components';
-
+const conf = getConfig();
 const useStyles = {
     heading: {
         fontSize: '0.9375rem',
@@ -51,15 +47,11 @@ class SecretTeaser extends React.PureComponent {
     }
 
     render() {
-        return (
-            <Grid item xs={12}>
-                <ExpansionPanel>
-                    <ExpansionPanelSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1a-content"
-                        id="panel1a-header"
-                    >
-
+        const template = (() => {
+            switch (this.props.data.type) {
+            case conf.secret.type.OA2_AUTHORIZATION_CODE:
+                return (
+                    < React.Fragment >
                         <Grid container>
                             {
                                 this.props.data.logo
@@ -75,7 +67,44 @@ class SecretTeaser extends React.PureComponent {
                             <Grid item xs={3}><InputLabel>Provider:</InputLabel><Typography >{this.props.provider.name}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Type:</InputLabel><Typography >{TYPE_MAP[this.props.data.type]}</Typography></Grid>
                         </Grid>
+                    </React.Fragment >
+                );
+            case conf.secret.type.MIXED:
+                return (
+                    <React.Fragment>
+                        <Grid container>
+                            {
+                                this.props.data.logo
+                                    ? <Grid item xs={1}>
+                                        <img src={this.props.provider.logo} alt="Smiley face" height="42" width="42" />
+                                    </Grid>
 
+                                    : <Grid item xs={1}>
+                                        <Code style={{ height: '42', width: '42' }} />
+                                    </Grid>
+                            }
+                            <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
+                        </Grid>
+                    </React.Fragment>
+                );
+            default:
+                return (
+                    <React.Fragment>
+                    </React.Fragment>
+                );
+            }
+        })();
+
+        return (
+            <Grid item xs={12}>
+                <ExpansionPanel>
+                    <ExpansionPanelSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                    >
+
+                        {template}
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Grid container>
@@ -92,18 +121,6 @@ class SecretTeaser extends React.PureComponent {
     }
 }
 
-const mapStateToProps = state => ({
-    components: state.components,
-});
-const mapDispatchToProps = dispatch => bindActionCreators({
-    deleteComponent,
-    updateComponent,
-}, dispatch);
-
 export default flow(
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    ),
     withStyles(useStyles),
 )(SecretTeaser);

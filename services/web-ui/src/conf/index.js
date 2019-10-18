@@ -42,6 +42,16 @@ let config = {
             DISABLED: 'DISABLED',
         },
     },
+    secret: {
+        type: {
+            API_KEY: 'API_KEY',
+            OA1_TWO_LEGGED: 'OA1_TWO_LEGGED',
+            OA1_THREE_LEGGED: 'OA1_THREE_LEGGED',
+            OA2_AUTHORIZATION_CODE: 'OA2_AUTHORIZATION_CODE',
+            SIMPLE: 'SIMPLE',
+            MIXED: 'MIXED',
+        },
+    },
 };
 
 export function getConfig() {
