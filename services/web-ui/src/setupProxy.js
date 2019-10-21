@@ -47,6 +47,17 @@ module.exports = function (app) {
             // or log the req
         },
     }));
+
+    app.use(proxy('/secrets-api', {
+        pathRewrite: { '^/secrets-api': '/' },
+        target: 'http://127.0.0.1:9001/api/v1',
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
     // proxy server config
     app.use('/config', (req, res) => {
         res.send(conf);

@@ -22,7 +22,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Grid from '@material-ui/core/Grid';
 import {
-    Person, LockOpen, Business, SettingsInputComponent, LinearScale, Home as HomeIcon, AccountCircle, DeviceHub, Security,
+    Person, LockOpen, Business, SettingsInputComponent, LinearScale, Home as HomeIcon, AccountCircle, DeviceHub, Security, EnhancedEncryption,
 } from '@material-ui/icons';
 
 // Actions & Components
@@ -36,6 +36,7 @@ import Tenants from '../../component/tenants';
 import Flows from '../../component/flows';
 import Components from '../../component/components';
 import MetaData from '../../component/metadata';
+import Secrets from '../../component/secrets';
 import Roles from '../../component/roles';
 import Profile from '../../component/profile';
 
@@ -105,7 +106,7 @@ const styles = theme => ({
         paddingTop: '4px',
     },
 });
-
+const menuArr = ['Start', 'Profile', 'Flows', 'Components', 'Metadata', 'Secrets', 'Logout'];
 class Main extends React.Component {
     constructor(props) {
         super(props);
@@ -118,7 +119,6 @@ class Main extends React.Component {
     }
 
     componentDidMount() {
-        const menuArr = ['Start', 'Profile', 'Flows', 'Components', 'Metadata', 'Logout'];
         switch (this.props.auth.role) {
         case 'ADMIN':
             menuArr.splice(1, 0, 'Tenants');
@@ -135,17 +135,22 @@ class Main extends React.Component {
         });
     }
 
-    componentDidUpdate(prefProps) {
-        if (prefProps.auth !== this.props.auth) {
+    componentDidUpdate(prevProps) {
+        if (prevProps.auth !== this.props.auth) {
             let context = null;
-            const menuArr = ['Start', 'Profile', 'Flows', 'Components', 'Metadata', 'Logout'];
             switch (this.props.auth.role) {
             case 'ADMIN':
-                menuArr.splice(1, 0, 'Tenants');
-                menuArr.splice(1, 0, 'Users');
+                if (menuArr.indexOf('Tenants') === -1) {
+                    menuArr.splice(1, 0, 'Tenants');
+                }
+                if (menuArr.indexOf('Users') === -1) {
+                    menuArr.splice(1, 0, 'Users');
+                }
                 break;
             case 'TENANT_ADMIN':
-                menuArr.splice(1, 0, 'Users');
+                if (menuArr.indexOf('Users') === -1) {
+                    menuArr.splice(1, 0, 'Users');
+                }
                 break;
             default:
                 break;
@@ -161,203 +166,209 @@ class Main extends React.Component {
         }
     }
 
-  handleDrawerOpen = () => {
-      this.setState({ open: true });
-  };
+    handleDrawerOpen = () => {
+        this.setState({ open: true });
+    };
 
-  handleDrawerClose = () => {
-      this.setState({ open: false });
-  };
+    handleDrawerClose = () => {
+        this.setState({ open: false });
+    };
 
-  logout = () => {
-      this.props.logout();
-  };
+    logout = () => {
+        this.props.logout();
+    };
 
-  getTenants = () => {
-      if (this.props.auth.memberships && this.props.auth.memberships.length) {
-          return this.props.auth.memberships.map((tenant, index) => <option key={`tenant-${index}`} value={tenant.name}>{tenant.name}</option>);
-      }
-      return null;
-  }
+    getTenants = () => {
+        if (this.props.auth.memberships && this.props.auth.memberships.length) {
+            return this.props.auth.memberships.map((tenant, index) => <option key={`tenant-${index}`} value={tenant.name}>{tenant.name}</option>);
+        }
+        return null;
+    }
 
-  changeSelect = (event) => {
-      this.setState({
-          context: event.target.value,
-      });
-  }
+    changeSelect = (event) => {
+        this.setState({
+            context: event.target.value,
+        });
+    }
 
-  getMenuItems = () => <div>
-      {
-          this.state.menu.map((text) => {
-              switch (text) {
-              case 'Start':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/'); }}>
-                      <ListItemIcon><HomeIcon /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Profile':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/profile'); }}>
-                      <ListItemIcon><Person /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Users':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/users'); }}>
-                      <ListItemIcon><AccountCircle /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Tenants':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/tenants'); }}>
-                      <ListItemIcon><Business /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Roles':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/roles'); }}>
-                      <ListItemIcon><Security /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Flows':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/flows'); }}>
-                      <ListItemIcon><LinearScale /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Components':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/components'); }}>
-                      <ListItemIcon><SettingsInputComponent /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Metadata':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/metadata'); }}>
-                      <ListItemIcon><DeviceHub /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Logout':
-                  return <ListItem button key={text} onClick={this.logout}>
-                      <ListItemIcon><LockOpen /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              default:
-                  return null;
-              }
-          })
-      }
-  </div>;
+    getMenuItems = () => <div>
+        {
+            this.state.menu.map((text) => {
+                switch (text) {
+                case 'Start':
+                    return <ListItem button key={text} onClick={() => { this.props.history.push('/'); }}>
+                        <ListItemIcon><HomeIcon /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                case 'Profile':
+                    return <ListItem button key={text} onClick={() => { this.props.history.push('/profile'); }}>
+                        <ListItemIcon><Person /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                case 'Users':
+                    return <ListItem button key={text} onClick={() => { this.props.history.push('/users'); }}>
+                        <ListItemIcon><AccountCircle /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                case 'Tenants':
+                    return <ListItem button key={text} onClick={() => { this.props.history.push('/tenants'); }}>
+                        <ListItemIcon><Business /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                case 'Roles':
+                    return <ListItem button key={text} onClick={() => { this.props.history.push('/roles'); }}>
+                        <ListItemIcon><Security /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                case 'Flows':
+                    return <ListItem button key={text} onClick={() => { this.props.history.push('/flows'); }}>
+                        <ListItemIcon><LinearScale /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                case 'Components':
+                    return <ListItem button key={text} onClick={() => { this.props.history.push('/components'); }}>
+                        <ListItemIcon><SettingsInputComponent /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                case 'Metadata':
+                    return <ListItem button key={text} onClick={() => { this.props.history.push('/metadata'); }}>
+                        <ListItemIcon><DeviceHub /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                case 'Secrets':
+                    return <ListItem button key={text} onClick={() => { this.props.history.push('/secrets'); }}>
+                        <ListItemIcon><EnhancedEncryption /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                case 'Logout':
+                    return <ListItem button key={text} onClick={this.logout}>
+                        <ListItemIcon><LockOpen /></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>;
+                default:
+                    return null;
+                }
+            })
+        }
+    </div>;
 
-  render() {
-      const { classes, theme } = this.props;
-      const { open } = this.state;
+    render() {
+        const { classes, theme } = this.props;
+        const { open } = this.state;
 
-      return (
-          <Grid container className={classes.root}>
-              <CssBaseline />
-              <Drawer
-                  className={classes.drawer}
-                  variant="persistent"
-                  anchor="left"
-                  open={open}
-                  classes={{
-                      paper: classes.drawerPaper,
-                  }}
-              >
-                  <div className={classes.drawerHeader}>
-                      <IconButton onClick={this.handleDrawerClose}>
-                          {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                      </IconButton>
-                  </div>
+        return (
+            <Grid container className={classes.root}>
+                <CssBaseline />
+                <Drawer
+                    className={classes.drawer}
+                    variant="persistent"
+                    anchor="left"
+                    open={open}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div className={classes.drawerHeader}>
+                        <IconButton onClick={this.handleDrawerClose}>
+                            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                        </IconButton>
+                    </div>
 
-                  <List>
-                      {this.getMenuItems()}
-                  </List>
-              </Drawer>
-              <Grid item xs={12}>
-                  <AppBar
-                      className={classNames(classes.appBar, {
-                          [classes.appBarShift]: open,
-                      })}
-                  >
-                      <Toolbar disableGutters={!open}>
-                          <Grid container spacing={3}>
-                              <IconButton
-                                  color="inherit"
-                                  aria-label="Open drawer"
-                                  onClick={this.handleDrawerOpen}
-                                  className={classNames(classes.menuButton, open && classes.hide)}
-                              >
-                                  <MenuIcon />
-                              </IconButton>
+                    <List>
+                        {this.getMenuItems()}
+                    </List>
+                </Drawer>
+                <Grid item xs={12}>
+                    <AppBar
+                        className={classNames(classes.appBar, {
+                            [classes.appBarShift]: open,
+                        })}
+                    >
+                        <Toolbar disableGutters={!open}>
+                            <Grid container spacing={3}>
+                                <IconButton
+                                    color="inherit"
+                                    aria-label="Open drawer"
+                                    onClick={this.handleDrawerOpen}
+                                    className={classNames(classes.menuButton, open && classes.hide)}
+                                >
+                                    <MenuIcon />
+                                </IconButton>
 
-                              {
-                                  this.state.context && <Grid item xs={1}>
-                                      <NativeSelect
-                                          value={this.state.context}
-                                          onChange={this.changeSelect}
-                                          name="tenants"
-                                          className={classes.select}
-                                          inputProps={{ 'aria-label': 'age' }}
-                                      >
-                                          <option value="Global">{this.state.context}</option>
-                                          {
-                                              this.getTenants()
-                                          }
-                                      </NativeSelect>
-                                  </Grid>
-                              }
+                                {
+                                    this.state.context && <Grid item xs={1}>
+                                        <NativeSelect
+                                            value={this.state.context}
+                                            onChange={this.changeSelect}
+                                            name="tenants"
+                                            className={classes.select}
+                                            inputProps={{ 'aria-label': 'age' }}
+                                        >
+                                            <option value="Global">{this.state.context}</option>
+                                            {
+                                                this.getTenants()
+                                            }
+                                        </NativeSelect>
+                                    </Grid>
+                                }
 
-                              <Grid item xs={9}>
-                                  <img
-                                      src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
-                                      alt="Open Integration Hub"
-                                      id="logo"
-                                      data-height-percentage="54"
-                                      data-actual-width="271"
-                                      data-actual-height="40"
-                                  />
-                              </Grid>
-                              <Grid container item xs={2} justify='flex-end' wrap='nowrap'>
-                                  <Grid item style={{ marginTop: '10px' }}>
-                                      {this.props.auth.username}
-                                  </Grid>
-                                  <Grid item>
-                                      <Button
-                                          style={{
-                                              width: '100px',
-                                              marginTop: '3px',
-                                              marginLeft: '6px',
-                                          }}
-                                          onClick={() => {
-                                              this.props.history.push('/profile');
-                                          }}>
-                                          <Person />
-                                      </Button>
-                                  </Grid>
-                              </Grid>
+                                <Grid item xs={9}>
+                                    <img
+                                        src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
+                                        alt="Open Integration Hub"
+                                        id="logo"
+                                        data-height-percentage="54"
+                                        data-actual-width="271"
+                                        data-actual-height="40"
+                                    />
+                                </Grid>
+                                <Grid container item xs={2} justify='flex-end' wrap='nowrap'>
+                                    <Grid item style={{ marginTop: '10px' }}>
+                                        {this.props.auth.username}
+                                    </Grid>
+                                    <Grid item>
+                                        <Button
+                                            style={{
+                                                width: '100px',
+                                                marginTop: '3px',
+                                                marginLeft: '6px',
+                                            }}
+                                            onClick={() => {
+                                                this.props.history.push('/profile');
+                                            }}>
+                                            <Person />
+                                        </Button>
+                                    </Grid>
+                                </Grid>
 
-                          </Grid>
+                            </Grid>
 
-                      </Toolbar>
-                  </AppBar>
-              </Grid>
-              <Grid item xs={12}>
-                  <main
-                      className={classNames(classes.content, {
-                          [classes.contentShift]: open,
-                      })}
-                  >
-                      <Switch>
-                          <Route exact path="/" component={Home} />
-                          <Route exact path="/users" component={Users} />
-                          <Route exact path="/tenants" component={Tenants} />
-                          <Route exact path="/roles" component={Roles} />
-                          <Route exact path="/flows" component={Flows} />
-                          <Route exact path="/components" component={Components} />
-                          <Route exact path="/metadata" component={MetaData} />
-                          <Route exact path="/profile" component={Profile} />
-                      </Switch>
-                  </main>
-              </Grid>
+                        </Toolbar>
+                    </AppBar>
+                </Grid>
+                <Grid item xs={12}>
+                    <main
+                        className={classNames(classes.content, {
+                            [classes.contentShift]: open,
+                        })}
+                    >
+                        <Switch>
+                            <Route exact path="/" component={Home} />
+                            <Route exact path="/users" component={Users} />
+                            <Route exact path="/tenants" component={Tenants} />
+                            <Route exact path="/roles" component={Roles} />
+                            <Route exact path="/flows" component={Flows} />
+                            <Route exact path="/components" component={Components} />
+                            <Route exact path="/metadata" component={MetaData} />
+                            <Route exact path="/secrets" component={Secrets} />
+                            <Route exact path="/profile" component={Profile} />
+                        </Switch>
+                    </main>
+                </Grid>
 
-          </Grid>
-      );
-  }
+            </Grid>
+        );
+    }
 }
 
 Main.propTypes = {
