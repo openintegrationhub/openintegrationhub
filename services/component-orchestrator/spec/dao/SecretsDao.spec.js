@@ -5,14 +5,19 @@ const { expect } = require('chai');
 describe('SecretsDao', () => {
     let sd;
     let secretService;
+    const IAM_TOKEN = 'test-iam-token';
+    const options = {
+        auth: {
+            token: IAM_TOKEN
+        }
+    };
 
     beforeEach(() => {
         const config = {
             get(key) {
                 return this[key];
             },
-            SECRETS_SERVICE_BASE_URL: 'http://secret-service.com/api/v1',
-            IAM_TOKEN: 'kokoko'
+            SECRETS_SERVICE_BASE_URL: 'http://secret-service.com/api/v1'
         };
         const logger = {
             info: () => {},
@@ -24,7 +29,7 @@ describe('SecretsDao', () => {
         sd = new SecretsDao({config, logger});
         secretService = nock(config.SECRETS_SERVICE_BASE_URL, {
             reqheaders: {
-                authorization: `Bearer ${config.IAM_TOKEN}`,
+                authorization: `Bearer ${IAM_TOKEN}`,
             },
         });
     });
@@ -42,7 +47,7 @@ describe('SecretsDao', () => {
                     }
                 });
 
-            expect(await sd.findById('123')).to.deep.equal({
+            expect(await sd.findById('123', options)).to.deep.equal({
                 _id: '123',
                 value: {
                     some: 'data'
@@ -56,7 +61,7 @@ describe('SecretsDao', () => {
                 .get('/secrets/123')
                 .reply(404);
 
-            expect(await sd.findById('123')).to.be.null;
+            expect(await sd.findById('123', options)).to.be.null;
             expect(scope.isDone()).to.be.true;
         });
 
@@ -66,7 +71,7 @@ describe('SecretsDao', () => {
                 .reply(500);
 
             try {
-                await sd.findById('123');
+                await sd.findById('123', options);
                 throw new Error('Error is expected');
             } catch (e) {
                 expect(e.message).to.equal('Failed to fetch the secret 123');
