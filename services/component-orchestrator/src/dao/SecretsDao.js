@@ -21,7 +21,7 @@ module.exports = class OIHSecretsDao {
             }
         };
 
-        this._logger.trace({secretId}, 'Fetching the secret');
+        this._logger.trace({secretId, opts}, 'Fetching the secret');
         const { body, statusCode } = await getAsync(opts);
 
         if (statusCode === 200) {
@@ -32,6 +32,7 @@ module.exports = class OIHSecretsDao {
             return null;
         }
 
+        this._logger.trace({statusCode, body}, 'Failed to get the secret');
         throw new Error(`Failed to fetch the secret ${secretId}`);
     }
 
