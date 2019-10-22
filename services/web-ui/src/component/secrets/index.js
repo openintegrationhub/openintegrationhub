@@ -138,7 +138,7 @@ class Secrets extends React.Component {
                         this.props.secrets.secrets.length && this.props.secrets.secrets.map(item => <SecretTeaser
                             key={`secretTeaser-${item._id}`}
                             data={item}
-                            provider={this.props.authClients.available.find(client => client._id === item.value.authClientId) || {}}
+                            provider={item.value && item.value.authClientId ? (this.props.authClients.available.find(client => client._id === item.value.authClientId) || {}) : {}}
                             deleteSecret={() => { this.props.deleteSecret(item._id); }}
                         />)
                     }

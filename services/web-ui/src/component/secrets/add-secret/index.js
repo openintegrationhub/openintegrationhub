@@ -49,7 +49,6 @@ class AddSecret extends React.Component {
         const {
             classes,
         } = this.props;
-
         const template = (() => {
             switch (this.state.type) {
             case conf.secret.type.OA2_AUTHORIZATION_CODE:
@@ -61,7 +60,7 @@ class AddSecret extends React.Component {
                                     key={client._id}
                                     variant="contained"
                                     className={classes.button}
-                                    onClick={this.startFlow.bind(this, client._id)}
+                                    onClick={this.props.startFlow.bind(this, client._id)}
                                 >
                                     {client.name}
                                 </Button>
