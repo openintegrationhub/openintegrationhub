@@ -89,6 +89,7 @@ class HttpApi {
                     throw new errors.ResourceNotFoundError(`Secret ${node.credentials_id} is not found`);
                 }
                 Object.assign(nodeConfig, secret.value);
+                this._logger.trace({nodeConfig}, 'Got secret. Injected into the node config.');
             }
 
             res.status(200);
