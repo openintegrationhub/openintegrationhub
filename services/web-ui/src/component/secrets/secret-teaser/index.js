@@ -32,6 +32,7 @@ const useStyles = {
 
 const TYPE_MAP = {
     OA2_AUTHORIZATION_CODE: 'oAuth2',
+    MIXED: 'Mixed',
 };
 class SecretTeaser extends React.PureComponent {
     state = {
@@ -63,9 +64,10 @@ class SecretTeaser extends React.PureComponent {
                                         <Flare style={{ height: '42', width: '42' }} />
                                     </Grid>
                             }
+                            <Grid item xs={3}><InputLabel>Id:</InputLabel><Typography >{this.props.data._id}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Provider:</InputLabel><Typography >{this.props.provider.name}</Typography></Grid>
-                            <Grid item xs={3}><InputLabel>Type:</InputLabel><Typography >{TYPE_MAP[this.props.data.type]}</Typography></Grid>
+                            <Grid item xs={2}><InputLabel>Type:</InputLabel><Typography >{TYPE_MAP[this.props.data.type]}</Typography></Grid>
                         </Grid>
                     </React.Fragment >
                 );
@@ -83,7 +85,9 @@ class SecretTeaser extends React.PureComponent {
                                         <Code style={{ height: '42', width: '42' }} />
                                     </Grid>
                             }
+                            <Grid item xs={3}><InputLabel>Id:</InputLabel><Typography >{this.props.data._id}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
+                            <Grid item xs={3}><InputLabel>Type:</InputLabel><Typography >{TYPE_MAP[this.props.data.type]}</Typography></Grid>
                         </Grid>
                     </React.Fragment>
                 );
