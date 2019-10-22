@@ -23,6 +23,7 @@ module.exports = class OIHSecretsDao {
 
         this._logger.trace({secretId, opts}, 'Fetching the secret');
         const { body, statusCode } = await getAsync(opts);
+        this._logger.trace({body}, 'Got secret'); //@todo: remove this line
 
         if (statusCode === 200) {
             return _.get(body, 'data');
