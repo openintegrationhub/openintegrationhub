@@ -1,19 +1,23 @@
 {
   "name": "secret-service",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "description": "Service to manage Keys/Tokens of external services",
   "main": "index.js",
   "author": "Basaas GmbH",
   "license": "Apache-2.0",
   "scripts": {
     "start": "node index.js",
+    "watch": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
     "test": "echo \"noop\"",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/secret-service:${VERSION} -f Dockerfile ."
   },
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
-    "@openintegrationhub/secret-service": "1.2.5",
+    "@openintegrationhub/secret-service": "1.5.3",
     "dotenv": "7.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "1.19.4"
   }
 }
