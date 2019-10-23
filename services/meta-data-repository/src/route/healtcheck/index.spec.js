@@ -8,7 +8,7 @@ let server;
 
 describe('healthcheck', () => {
     beforeAll(async (done) => {
-        port = await getPort();
+        port = 5110;
         request = supertest(`http://localhost:${port}`);
         server = new Server({
             mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'healthcheck'),

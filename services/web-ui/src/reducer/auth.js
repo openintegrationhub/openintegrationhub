@@ -5,6 +5,8 @@ import {
 const initialState = {
     isLoggedIn: false,
     token: '',
+    isAdmin: false,
+    isTenantAdmin: false,
 };
 
 export default (state = initialState, action) => {
@@ -33,6 +35,8 @@ export default (state = initialState, action) => {
         return {
             ...state,
             ...action.user,
+            isAdmin: action.user.permissions && action.user.permissions.includes('all'),
+            isTenantAdmin: action.user.permissions && action.user.permissions.includes('tenant.all'),
         };
     default:
         return state;

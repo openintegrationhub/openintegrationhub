@@ -5,6 +5,7 @@ import tenants from './tenants';
 import roles from './roles';
 import flows from './flows';
 import components from './components';
+import apps from './apps';
 import metadata from './metadata';
 import authClients from './auth-clients';
 import secrets from './secrets';
@@ -17,6 +18,7 @@ const appReducer = combineReducers({
     auth,
     flows,
     components,
+    apps,
     metadata,
     secrets,
     authClients,

@@ -10,7 +10,7 @@ let server;
 
 describe('domains', () => {
     beforeAll(async () => {
-        port = await getPort();
+        port = 5105;
         conf.port = port;
 
         request = supertest(`http://localhost:${port}${conf.apiBase}`);

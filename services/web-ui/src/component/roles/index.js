@@ -136,7 +136,7 @@ class Roles extends React.Component {
 
                         </Grid>
                         {
-                            this.props.auth.role === 'ADMIN'
+                            this.props.auth.isAdmin
                             && <Grid item xs={8}>
                                 <InputLabel shrink={true}>Global</InputLabel>
                                 <Switch

@@ -96,7 +96,7 @@ class EditUser extends React.Component {
             }
         } else {
             let adminTenant = this.props.tenants.all.find(tenant => tenant._id === this.props.auth.tenant);
-            if (this.props.auth.role === 'ADMIN') {
+            if (this.props.auth.isAdmin) {
                 adminTenant = '';
             }
             this.props.setFormData({
@@ -239,7 +239,7 @@ class EditUser extends React.Component {
                     </FormControl>
 
                     {
-                        this.props.auth.role === 'ADMIN'
+                        this.props.auth.isAdmin
                                 && <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="tenant">tenant</InputLabel>
                                     <Select

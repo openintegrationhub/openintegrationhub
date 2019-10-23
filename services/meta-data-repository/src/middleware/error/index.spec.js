@@ -7,7 +7,7 @@ let request;
 
 describe('error', () => {
     beforeAll(async (done) => {
-        port = await getPort();
+        port = 5111;
         const host = `http://localhost:${port}`;
         request = supertest(host);
         done();

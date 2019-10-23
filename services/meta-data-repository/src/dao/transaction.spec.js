@@ -13,7 +13,7 @@ function timeout(ms) {
 
 describe('Transaction', () => {
     beforeAll(async () => {
-        port = await getPort();
+        port = 5100;
         server = new Server({
             mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'transaction'),
             port,

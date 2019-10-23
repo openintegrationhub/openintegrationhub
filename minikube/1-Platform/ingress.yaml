@@ -73,3 +73,9 @@ spec:
       - backend:
           serviceName: ils
           servicePort: 3003
+  - host: app-directory.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: app-directory
+          servicePort: 3000
