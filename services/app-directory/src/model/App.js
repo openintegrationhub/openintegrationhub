@@ -4,36 +4,34 @@ const { Schema } = mongoose;
 
 const component = new Schema({
     type: { type: String, index: true, required: true },
-    name: { type: String, index: true, required: true },
-    uri: { type: String },
     componentId: { type: String },
 }, { _id: false });
 
 const Operation = new Schema({
-    type: {
-        type: String,
-        enum: [
-            'action',
-            'trigger',
-        ],
-        required: true,
-    },
-    operationName: { type: String, required: true },
+    // type: {
+    //     type: String,
+    //     enum: [
+    //         'action',
+    //         'trigger',
+    //     ],
+    //     required: true,
+    // },
+    adapterOperation: { type: String },
+    transformerOperation: { type: String },
+    sdfAdapterOperation: { type: String },
     direction: {
         type: String,
         enum: [
             'inbound',
             'outbound',
         ],
-        required: true,
     },
-    componentId: { type: String },
 }, { _id: false });
 
-const SyncMapping = new Schema({
-    dataModel: { type: String, index: true, required: true },
-    operations: [Operation],
-}, { _id: false });
+// const SyncMapping = new Schema({
+//     dataModel: { type: String, index: true, required: true },
+//     operations: [Operation],
+// }, { _id: false });
 
 const app = new Schema({
     artifactId: {
@@ -43,11 +41,17 @@ const app = new Schema({
     description: { type: String },
     img: { type: String },
     credentials: {
-        customStructure: Schema.Types.Mixed,
+        type: String,
+        fields: Schema.Types.Mixed,
         authClient: { type: String },
+        scopes: { type: String },
     },
     dataModels: [String],
-    components: [component],
+    components: {
+        adapter: String,
+        transformer: String,
+        sdfAdapter: String,
+    },
     isGlobal: Boolean,
     tenant: String,
     urls: {
@@ -58,7 +62,7 @@ const app = new Schema({
     //     inbound: Boolean,
     //     outbound: Boolean,
     // },
-    syncMappings: [SyncMapping],
+    syncMappings: [Operation],
 }, {
     timestamps: true,
 });
