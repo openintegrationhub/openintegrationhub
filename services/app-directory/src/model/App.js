@@ -38,13 +38,13 @@ const app = new Schema({
         type: String, lowercase: true, index: { unique: true }, required: true,
     },
     name: { type: String, index: { unique: true }, required: true },
-    description: { type: String },
-    img: { type: String },
+    description: String,
+    img: String,
     credentials: {
-        type: String,
+        credentialsType: String,
         fields: Schema.Types.Mixed,
-        authClient: { type: String },
-        scopes: { type: String },
+        authClient: String,
+        scopes: String,
     },
     dataModels: [String],
     components: {
@@ -57,7 +57,7 @@ const app = new Schema({
     urls: {
         main: String,
     },
-    status: { type: String },
+    status: String,
     // supportedConnections: {
     //     inbound: Boolean,
     //     outbound: Boolean,

@@ -97,13 +97,11 @@ describe('connectors', () => {
             artifactId: 'com.foobar2',
             name: 'FooBarApp2',
             dataModels: ['people'],
-            connectors: [{
-                type: 'adapter',
-                name: 'foobar-adapter',
-            }, {
-                type: 'transformator',
-                name: 'foobar-transformator',
-            }],
+            components: {
+                adapter: 'fooAdapter',
+                transformer: 'barTransformer',
+                sdfAdapter: 'defaultSdf',
+            },
             isGlobal: true,
             urls: {
                 main: 'https://example.com/login',
@@ -117,6 +115,7 @@ describe('connectors', () => {
                 main: 'https://www.example.com/foo',
             },
             credentials: {
+                credentialsType: 'OAuth2',
                 authClient: 'someExternalId',
             },
 

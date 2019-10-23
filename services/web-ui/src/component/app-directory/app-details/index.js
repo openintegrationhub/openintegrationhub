@@ -42,7 +42,7 @@ class AppDetails extends React.Component {
         hasChanges: false,
         app: {
             credentials: {
-                type: null,
+                credentialsType: null,
                 fields: {},
                 authClient: null,
             },
@@ -202,7 +202,7 @@ class AppDetails extends React.Component {
                 ...this.state.app,
                 credentials: {
                     ...this.state.app.credentials,
-                    type: e.target.value,
+                    credentialsType: e.target.value,
                 },
             },
         });
@@ -233,7 +233,7 @@ class AppDetails extends React.Component {
             classes,
         } = this.props;
 
-        if (this.state.app.credentials.type === 'authClient') {
+        if (this.state.app.credentials.credentialsType === 'authClient') {
             return <FormControl fullWidth className={classes.margin}>
                 <TextField
                     label="Scopes"
@@ -356,14 +356,14 @@ class AppDetails extends React.Component {
 
                     <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">Credentials type</FormLabel>
-                        <RadioGroup name="credentialsType" value={this.state.app.credentials.type} onChange={this.changeCredentials.bind(this)}>
+                        <RadioGroup name="credentialsType" value={this.state.app.credentials.credentialsType} onChange={this.changeCredentials.bind(this)}>
                             <FormControlLabel value="authClient" control={<Radio />} label="authClient" />
                             <FormControlLabel value="basic" control={<Radio />} label="Simple / Basic (username, password)" />
                             <FormControlLabel value="mixed" control={<Radio />} label="Mixed (API Key, any other structure)" />
                         </RadioGroup>
                     </FormControl>
 
-                    {this.state.app.credentials.type === 'authClient' && <FormControl fullWidth className={classes.margin}>
+                    {this.state.app.credentials.credentialsType === 'authClient' && <FormControl fullWidth className={classes.margin}>
                         <InputLabel htmlFor="credentials">Auth client</InputLabel>
 
                         <Select
