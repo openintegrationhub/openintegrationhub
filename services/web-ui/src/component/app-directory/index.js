@@ -76,7 +76,6 @@ class AppDirectory extends React.Component {
     }
 
     setAppVal = (fieldName, e) => {
-        console.log('setAppVal', fieldName, e.target.value);
         let val = e.target.value;
         if (fieldName === 'isGlobal') {
             val = e.target.checked;
