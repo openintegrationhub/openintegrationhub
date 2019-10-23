@@ -14,30 +14,15 @@ build
 .env
 .idea
 npm-debug.log
-/nodemon*
-*.store
-/uploads/*
-/assets
-
-/logs/*
-
-/src/**/*.css
-/src/conf/conf.json
+nodemon.json
 
 *error.log
 **/*.gv
 
 jest_*
-globalConfig.json
+
 mockgoose*
 
 # environment settings
-.env
 .gccreds
 .nodemon-env
-keystore.json
-
-basaas-queue.json
-certs/
-
-clients.json
