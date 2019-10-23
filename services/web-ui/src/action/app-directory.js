@@ -38,24 +38,13 @@ export const getAppById = async (id) => {
     }
 };
 
-export const updateApp = data => async (dispatch) => {
-    try {
-        await axios({
-            method: 'patch',
-            url: `${conf.endpoints.appDirectory}/apps/${data._id}`,
-            withCredentials: true,
-            json: true,
-            data,
-        });
-
-        dispatch({
-            type: UPDATE_APP,
-        });
-        dispatch(getApps());
-    } catch (err) {
-        console.error(err);
-    }
-};
+export const updateApp = async data => axios({
+    method: 'patch',
+    url: `${conf.endpoints.appDirectory}/apps/${data._id}`,
+    withCredentials: true,
+    json: true,
+    data,
+});
 
 export const createApp = data => async (dispatch) => {
     try {

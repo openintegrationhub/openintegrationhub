@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 import {
     getAppById,
+    updateApp,
 } from '../../../action/app-directory';
 import { getComponents } from '../../../action/components';
 import { getClients } from '../../../action/auth-clients';
@@ -69,13 +70,13 @@ class AppDetails extends React.Component {
                     ...app,
                 },
             });
+            this.setComponentsData(app.components || {});
         } catch (e) {
             console.error(e);
         }
     }
 
     setAppVal = (fieldName, e) => {
-        console.log('setAppVal', fieldName, e.target.value);
         let val = e.target.value;
         if (fieldName === 'isGlobal') {
             val = e.target.checked;
@@ -85,6 +86,23 @@ class AppDetails extends React.Component {
                 ...this.state.app,
                 [fieldName]: val,
             },
+            hasChanges: true,
+        });
+    }
+
+    setComponentsData = (components = this.state.app.components) => {
+        const componentData = { ...this.state.componentData };
+        Object.keys(components).forEach((key) => {
+            const component = this.props.components.all.find(comp => comp.id === components[key]);
+            componentData[component.id] = {
+                ...component,
+                actions: component.descriptor.actions,
+                triggers: component.descriptor.triggers,
+            };
+        });
+
+        this.setState({
+            componentData,
         });
     }
 
@@ -109,34 +127,35 @@ class AppDetails extends React.Component {
                     triggers: component.descriptor.triggers,
                 },
             },
+            hasChanges: true,
         });
     }
 
-    addComponent = (e) => {
-        e.preventDefault();
-
-        const components = [...this.state.app.components];
-        const component = this.props.components.all.find(comp => comp.id === e.target.value);
-        components.push({
-            type: 'component',
-            name: component.name,
-            componentId: component.id,
-        });
-
-
-        this.setState({
-            app: {
-                ...this.state.app,
-                components,
-            },
-            componentData: {
-                [component.id]: {
-                    actions: component.descriptor.actions,
-                    triggers: component.descriptor.triggers,
-                },
-            },
-        });
-    }
+    // addComponent = (e) => {
+    //     e.preventDefault();
+    //
+    //     const components = [...this.state.app.components];
+    //     const component = this.props.components.all.find(comp => comp.id === e.target.value);
+    //     components.push({
+    //         type: 'component',
+    //         name: component.name,
+    //         componentId: component.id,
+    //     });
+    //
+    //
+    //     this.setState({
+    //         app: {
+    //             ...this.state.app,
+    //             components,
+    //         },
+    //         componentData: {
+    //             [component.id]: {
+    //                 actions: component.descriptor.actions,
+    //                 triggers: component.descriptor.triggers,
+    //             },
+    //         },
+    //     });
+    // }
 
     toggleDataModel = (dataModel, e) => {
         e.preventDefault();
@@ -154,31 +173,48 @@ class AppDetails extends React.Component {
                 ...this.state.app,
                 dataModels,
             },
+            hasChanges: true,
         });
-    }
+    };
 
-    removeComponent = (index, e) => {
+    handleAppUpdate = async (e) => {
         e.preventDefault();
 
-        const components = [...this.state.app.components];
+        if (!this.state.hasChanges) {
+            return;
+        }
 
-        const componentData = { ...this.state.componentData };
-        delete componentData[components[index].id];
-
-        components.splice(index, 1);
-
-        this.setState({
-            app: {
-                ...this.state.app,
-                components,
-            },
-            componentData,
-        });
+        try {
+            await updateApp(this.state.app);
+            this.setState({
+                hasChanges: 0,
+            });
+        } catch (err) {
+            console.error(err);
+        }
     }
 
-    changeAuthClient = (e) => {
-        console.log(e.target.value);
+    // removeComponent = (index, e) => {
+    //     e.preventDefault();
+    //
+    //     const components = [...this.state.app.components];
+    //
+    //     const componentData = { ...this.state.componentData };
+    //     delete componentData[components[index].id];
+    //
+    //     components.splice(index, 1);
+    //
+    //     this.setState({
+    //         app: {
+    //             ...this.state.app,
+    //             components,
+    //         },
+    //         componentData,
+    //         hasChanges: true,
+    //     });
+    // }
 
+    changeAuthClient = (e) => {
         e.preventDefault();
 
         this.setState({
@@ -189,12 +225,11 @@ class AppDetails extends React.Component {
                     authClient: e.target.value,
                 },
             },
+            hasChanges: true,
         });
     }
 
     changeCredentials = (e) => {
-        console.log(e.target.value);
-
         e.preventDefault();
 
         this.setState({
@@ -205,12 +240,11 @@ class AppDetails extends React.Component {
                     credentialsType: e.target.value,
                 },
             },
+            hasChanges: true,
         });
     }
 
     setCredentialsField = (fieldName, e) => {
-        console.log(e.target.value);
-
         e.preventDefault();
 
         this.setState({
@@ -224,6 +258,7 @@ class AppDetails extends React.Component {
                     },
                 },
             },
+            hasChanges: true,
         });
     }
 
@@ -266,6 +301,7 @@ class AppDetails extends React.Component {
                 ...this.state.app,
                 syncMappings,
             },
+            hasChanges: 1,
         });
     }
 
@@ -279,7 +315,7 @@ class AppDetails extends React.Component {
         return (
             <Grid item xs={12}>
 
-                <form onSubmit={this.updateComponent.bind(this)}>
+                <form onSubmit={this.handleAppUpdate.bind(this)}>
 
                     <FormControl fullWidth className={classes.margin}>
                         <TextField
@@ -472,11 +508,13 @@ class AppDetails extends React.Component {
                         <Button onClick={this.addNewMapping.bind(this)}>Add new mapping</Button>
                     </React.Fragment> : 'Please select an adapter and a transformer first' }
 
-                </form>
+                    <div>
+                        <Button variant="outlined" aria-label="Add" type={'submit'} disabled={!this.state.hasChanges}>
+                        Save
+                        </Button>
+                    </div>
 
-                <Button variant="outlined" aria-label="Add" type={'submit'} disabled={!this.state.hasChanges}>
-                    Save
-                </Button>
+                </form>
 
             </Grid>
         );
