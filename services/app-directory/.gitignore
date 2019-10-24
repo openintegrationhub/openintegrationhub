@@ -26,3 +26,4 @@ mockgoose*
 # environment settings
 .gccreds
 .nodemon-env
+/test/globalConfig*
