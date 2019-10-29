@@ -1,5 +1,5 @@
 import {
-    CREATE_APP, DELETE_APP, GET_APPS, UPDATE_APP
+    GET_APPS,
 } from '../action/app-directory';
 
 const initialState = {
