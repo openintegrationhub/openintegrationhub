@@ -1,4 +1,5 @@
 import {QueueCreator, AMQPLib, ConfigStore, Logger} from 'backend-commons-lib';
+import Snapshot from './models/snapshot';
 
 export interface ISnapshotsConsumerOptions {
     connection: AMQPLib.Connection;
@@ -36,7 +37,7 @@ export default class SnapshotsConsumer {
 
     private onMessage(msg: AMQPLib.Message, ch: AMQPLib.Channel): void {
         const json = JSON.parse(msg.content.toString());
-        this.logger.info({content: json}, 'Received snapshot');
+        this.logger.info({content: json, properties: msg.properties}, 'Received snapshot');
         ch.ack(msg);
     }
 }
