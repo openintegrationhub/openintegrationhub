@@ -43,7 +43,7 @@ class AppDetails extends React.Component {
         hasChanges: false,
         app: {
             credentials: {
-                credentialsType: null,
+                credentialsType: 'basic',
                 fields: {},
                 authClient: null,
             },
@@ -305,6 +305,37 @@ class AppDetails extends React.Component {
         });
     }
 
+    setSyncMappingField = (fieldName, index, e) => {
+        e.preventDefault();
+
+        const syncMappings = [...this.state.app.syncMappings];
+        syncMappings[index][fieldName] = e.target.value;
+
+        this.setState({
+            app: {
+                ...this.state.app,
+                syncMappings,
+            },
+            hasChanges: 1,
+        });
+    }
+
+    removeSyncMapping = (index, e) => {
+        e.preventDefault();
+
+        const syncMappings = [...this.state.app.syncMappings];
+
+        syncMappings.splice(index, 1);
+
+        this.setState({
+            app: {
+                ...this.state.app,
+                syncMappings,
+            },
+            hasChanges: 1,
+        });
+    }
+
     render() {
         const {
             classes,
@@ -349,7 +380,6 @@ class AppDetails extends React.Component {
                             value={this.state.app.description}
                             onChange={this.setAppVal.bind(this, 'description')}
                             margin="normal"
-                            required
                         />
                     </FormControl>
 
@@ -361,7 +391,6 @@ class AppDetails extends React.Component {
                             value={this.state.app.img}
                             onChange={this.setAppVal.bind(this, 'img')}
                             margin="normal"
-                            required
                         />
                     </FormControl>
 
@@ -476,34 +505,41 @@ class AppDetails extends React.Component {
 
                     {this.state.app.components.adapter && this.state.app.components.transformer ? <React.Fragment><h4>Sync Mappings</h4>
 
-                        {this.state.app.syncMappings.map((mapping, index) => <div key={index}>
+                        {this.state.app.syncMappings.map((mapping, index) => <div key={index} style={{ display: 'flex' }}>
                             <p>Index: {index},</p>
                             <p>
                             Direction
-                                <select>
+                                <select onChange={this.setSyncMappingField.bind(this, 'direction', index)} value={mapping.direction}>
                                     <option value={'inbound'}>inbound</option>
                                     <option value={'outbound'}>outbound</option>
                                 </select>
                             </p>
-                            <p>Adapter: {this.state.componentData[this.state.app.components.adapter] && this.state.componentData[this.state.app.components.adapter].name}</p>
-                            <select>
-                                <optgroup label="Actions">
-                                    {Object.keys(this.state.componentData[this.state.app.components.adapter].actions || {}).map(key => <option>{key}</option>)}
-                                </optgroup>
-                                <optgroup label="Triggers">
-                                    {Object.keys(this.state.componentData[this.state.app.components.adapter].triggers || {}).map(key => <option>{key}</option>)}
-                                </optgroup>
-                            </select>
+                            <p>Adapter: {this.state.componentData[this.state.app.components.adapter] && this.state.componentData[this.state.app.components.adapter].name}
 
-                            <p>Transformer: {this.state.componentData[this.state.app.components.transformer] && this.state.componentData[this.state.app.components.transformer].name}</p>
-                            <select>
-                                <optgroup label="Actions">
-                                    {Object.keys(this.state.componentData[this.state.app.components.transformer].actions || {}).map(key => <option>{key}</option>)}
-                                </optgroup>
-                                <optgroup label="Triggers">
-                                    {Object.keys(this.state.componentData[this.state.app.components.transformer].triggers || {}).map(key => <option>{key}</option>)}
-                                </optgroup>
-                            </select>
+                                <select onChange={this.setSyncMappingField.bind(this, 'adapterOperation', index)} value={mapping.adapterOperation}>
+                                    <optgroup label="Actions">
+                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].actions || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
+                                    </optgroup>
+                                    <optgroup label="Triggers">
+                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].triggers || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
+                                    </optgroup>
+                                </select>
+                            </p>
+
+                            <p>Transformer: {this.state.componentData[this.state.app.components.transformer] && this.state.componentData[this.state.app.components.transformer].name}
+
+                                <select onChange={this.setSyncMappingField.bind(this, 'transformerOperation', index)} value={mapping.transformerOperation} >
+                                    <optgroup label="Actions">
+                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].actions || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
+                                    </optgroup>
+                                    <optgroup label="Triggers">
+                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].triggers || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
+                                    </optgroup>
+                                </select>
+                            </p>
+                            <div>
+                                <Button type={'button'} onClick={this.removeSyncMapping.bind(this, index)}>Delete</Button>
+                            </div>
                         </div>)}
                         <Button onClick={this.addNewMapping.bind(this)}>Add new mapping</Button>
                     </React.Fragment> : 'Please select an adapter and a transformer first' }
