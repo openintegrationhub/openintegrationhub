@@ -7,20 +7,13 @@ import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import InputLabel from '@material-ui/core/InputLabel';
 import {
-    Add, NavigateNext, NavigateBefore,
+    Add,
 } from '@material-ui/icons';
 import Modal from '@material-ui/core/Modal';
 import {
     TextField, FormControl, FormControlLabel, Switch,
 } from '@material-ui/core';
-
-
-// components
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
-import AppDetails from './app-details';
 
 // actions
 import {
