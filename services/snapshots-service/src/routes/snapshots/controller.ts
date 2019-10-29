@@ -1,5 +1,4 @@
 import { RouterContext } from 'koa-router';
-import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
 

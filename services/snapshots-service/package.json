@@ -16,7 +16,7 @@
         "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts ./src",
         "pretest": "npm run eslint",
         "build:ts": "tsc",
-        "build:docker": "docker build -t openintegrationhub/data-hub:${VERSION} -f Dockerfile ../../"
+        "build:docker": "docker build -t openintegrationhub/snapshots-service:${VERSION} -f Dockerfile ../../"
     },
     "license": "UNLICENSED",
     "devDependencies": {
