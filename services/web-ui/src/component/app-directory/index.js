@@ -104,7 +104,7 @@ class AppDirectory extends React.Component {
                     </Grid>
 
                 </Grid>
-                <Grid container justify="center" spacing={2}>
+                <div>
                     {
                         this.props.apps.list.map(item => <AppTeaser
                             key={`appTeaser-${item._id}`}
@@ -113,7 +113,7 @@ class AppDirectory extends React.Component {
                             onDelete={() => {}}
                         />)
                     }
-                </Grid>
+                </div>
 
                 <Modal
                     aria-labelledby="simple-modal-title"
