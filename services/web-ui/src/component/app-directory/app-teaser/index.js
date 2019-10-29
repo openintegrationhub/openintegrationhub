@@ -7,6 +7,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -34,15 +35,23 @@ const useStyles = {
         margin: 'auto',
         outline: 'none',
     },
+    appIcon: {
+        width: '120px,',
+    },
 };
 
-const AppTeaser = props => <Grid container>
+const AppTeaser = props => <React.Fragment><Grid container xs={12} justify="center"
+    alignItems="center">
 
-    <Grid item xs={8}>
-        {props.name} ({props.artifactId})
+    <Grid item xs={2}>
+        {props.img && <img src={props.img} alt={props.name} style={{ width: '50px' }} />}
+    </Grid>
+    <Grid item xs={7}>
+        <h4>{props.name}</h4>
+        <smal>{props.artifactId}</smal>
     </Grid>
 
-    <Grid item xs={8}>
+    <Grid item xs={3}>
         <Link to={`/app-details/${props._id}`}>
             <Button variant="outlined" aria-label="Edit" onClick={props.onEdit}>
                 Update
@@ -52,6 +61,9 @@ const AppTeaser = props => <Grid container>
             Delete
         </Button>
     </Grid>
-</Grid>;
+</Grid>
+
+<Divider />
+</React.Fragment>;
 
 export default AppTeaser;
