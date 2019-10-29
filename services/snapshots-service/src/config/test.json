@@ -1,0 +1,4 @@
+{
+    "MONGODB_URI": "mongodb://localhost/snapshots-service",
+    "RABBITMQ_URI": "amqp://guest:guest@localhost/"
+}

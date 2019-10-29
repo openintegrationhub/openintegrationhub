@@ -18,6 +18,9 @@
     "nconf": "0.10.0"
   },
   "devDependencies": {
+    "@types/amqplib": "0.5.13",
+    "@types/bunyan": "1.8.6",
+    "@types/nconf": "0.10.0",
     "chai": "4.2.0",
     "eslint": "4.5.0",
     "eslint-plugin-mocha": "4.12.1",
