@@ -2,16 +2,15 @@ import React from 'react';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import moment from 'moment';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import { Close as CloseIcon } from '@material-ui/icons';
+// import { Close as CloseIcon } from '@material-ui/icons';
 
 // Actions
 import {
-    FormControl, FormControlLabel, Switch, TextField, Snackbar, IconButton, Select, InputLabel, MenuItem, Checkbox, FormLabel, Radio, RadioGroup,
+    FormControl, FormControlLabel, Switch, TextField, Snackbar, Select, InputLabel, MenuItem, Checkbox, FormLabel, Radio, RadioGroup,
 } from '@material-ui/core';
 import {
     getAppById,
@@ -32,11 +31,6 @@ const useStyles = {
         outline: 'none',
     },
 };
-
-const ComponentMiniTeaser = props => <div key={props._id}>
-    <div>Name: {props.name}</div>
-    <button type={'button'} onClick={props.removeComponent}>Remove</button>
-</div>;
 
 class AppDetails extends React.Component {
     state = {
