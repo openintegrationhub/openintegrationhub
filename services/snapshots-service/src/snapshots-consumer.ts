@@ -32,13 +32,29 @@ export default class SnapshotsConsumer {
             '#.snapshot'
         );
 
-        await ch.consume(queueName, msg => this.onMessage(msg, ch));
+        await ch.consume(queueName, msg => {
+            this.onMessage(msg)
+                .then(() => ch.ack(msg))
+                .catch(err => {
+                    this.logger.warn({err, msg}, 'Failed to process the message');
+                    ch.nack(msg, false, true);
+                });
+        });
     }
 
-    private onMessage(msg: AMQPLib.Message, ch: AMQPLib.Channel): void {
-        const json = JSON.parse(msg.content.toString());
-        this.logger.info({content: json, properties: msg.properties}, 'Received snapshot');
-        ch.ack(msg);
+    private async onMessage(msg: AMQPLib.Message): Promise<void> {
+        const snapshot = JSON.parse(msg.content.toString());
+        const { taskId: flowId, stepId } = msg.properties.headers;
+        this.logger.trace({flowId, stepId, snapshot}, 'Received snapshot');
+
+        await Snapshot.findOneAndUpdate({
+            flowId,
+            stepId
+        }, {
+            snapshot
+        }, {
+            upsert: true
+        });
     }
 }
 
