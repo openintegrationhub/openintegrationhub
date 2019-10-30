@@ -1,8 +1,9 @@
 import Koa from 'koa';
 import KoaRouter from 'koa-router';
 import { Server } from 'http';
-import Logger from 'bunyan';
+import { Logger, ConfigStore } from 'backend-commons-lib';
 import healthcheck from './routes/healthcheck';
+import snapshots from './routes/snapshots';
 import koaBunyanLogger from 'koa-bunyan-logger';
 import koaSwagger from 'koa2-swagger-ui';
 import errorResponder from './middleware/error-responder';
@@ -10,7 +11,7 @@ import * as path from 'path';
 import koaQs from 'koa-qs';
 
 export interface IServerOptions {
-    config: any;
+    config: ConfigStore;
     logger: Logger;
 }
 
@@ -20,7 +21,7 @@ export default class ObjectServer {
     private server: Server;
     private logger: Logger;
 
-    public constructor({config, logger}: IServerOptions) {
+    public constructor({logger}: IServerOptions) {
         this.api = new KoaRouter();
         this.koa = new Koa();
         this.logger = logger;
@@ -32,7 +33,8 @@ export default class ObjectServer {
             .use('/healthcheck', healthcheck([{
                 async healthcheck(): Promise<void> {
                 }
-            }]));
+            }]))
+            .use('/snapshots', snapshots());
 
         const swaggerUI = koaSwagger({
             routePrefix: '/api-docs',
