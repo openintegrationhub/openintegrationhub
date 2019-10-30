@@ -1,29 +1,19 @@
 import { RouterContext } from 'koa-router';
-import NotFound from '../../errors/api/NotFound';
-import Unauthorized from '../../errors/api/Unauthorized';
-
-interface IGteQuery {
-    $gte: string;
-}
+import Snapshot from '../../models/snapshot';
 
 export default class DataController {
-    public async getMany(ctx: RouterContext): Promise<void> {
-
-    }
-
     public async getOne(ctx: RouterContext): Promise<void> {
-
+        const { flowId, stepId } = ctx.params;
+        const doc = await Snapshot.findOne({flowId, stepId});
+        ctx.body = {
+            data: doc ? doc.snapshot : {}
+        };
     }
 
-    public async putOne(ctx: RouterContext): Promise<void> {
-
-    }
-
-    public async patchOne(ctx: RouterContext): Promise<void> {
-
-    }
-
-    public async postOne(ctx: RouterContext): Promise<void> {
-
+    public async deleteOne(ctx: RouterContext): Promise<void> {
+        const { flowId, stepId } = ctx.params;
+        await Snapshot.findOneAndDelete({flowId, stepId});
+        ctx.status = 204;
+        ctx.body = null;
     }
 }
