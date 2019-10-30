@@ -1,0 +1,351 @@
+{
+  "openapi" : "3.0.0",
+  "servers" : [ ],
+  "info" : {
+    "title" : "Data Hub",
+    "description" : "REST API for the OIH Data Hub Service.",
+    "version" : "1.0.0",
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags" : [ {
+    "name" : "data",
+    "description" : "Data related calls"
+  } ],
+  "paths" : {
+    "/data" : {
+      "post" : {
+        "tags" : [ "data" ],
+        "summary" : "Post a new data object.",
+        "description" : "Post a new data object.",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Data"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "$ref" : "#/components/schemas/MutableData"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get" : {
+        "tags" : [ "data" ],
+        "summary" : "Retrieve data.",
+        "description" : "Retrieve data.",
+        "parameters" : [ {
+          "name" : "page[size]",
+          "description" : "The amount of records per page returned. Defaults to 50.",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "name" : "page[number]",
+          "description" : "The number of the page to be returned. Defaults to 1.",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "created_since",
+          "description" : "Used to retrieve data records that we created since given timestamp",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "updated_since",
+          "description" : "Used to retrieve data records that we updated since given timestamp",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/MutableData"
+                      }
+                    },
+                    "meta" : {
+                      "$ref" : "#/components/schemas/Meta"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/data/{id}" : {
+      "get" : {
+        "tags" : [ "data" ],
+        "summary" : "Retrieve a data object with given ID.",
+        "description" : "Retrieve a data object with given ID.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "$ref" : "#/components/schemas/MutableData"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "data" ],
+        "summary" : "Replace the data object with given ID.",
+        "description" : "Replace the data object with given ID.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Data"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "$ref" : "#/components/schemas/MutableData"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "data" ],
+        "summary" : "Update the data object with given ID.",
+        "description" : "Update the data object with given ID.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Data"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "data" : {
+                      "$ref" : "#/components/schemas/MutableData"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "description" : "Token issued by IAM"
+      }
+    },
+    "schemas" : {
+      "Data" : {
+        "type" : "object",
+        "required" : [ "content" ],
+        "properties" : {
+          "domainId" : {
+            "type" : "string",
+            "description": "Object domain ID"
+          },
+          "schemaUri" : {
+            "type" : "string",
+            "description" : "Validation schema URI"
+          },
+          "content" : {
+            "type" : "object"
+          },
+          "refs" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AppDataRecord"
+            }
+          },
+          "owners" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Owner"
+            }
+          }
+        }
+      },
+      "Record" : {
+        "type" : "object",
+        "required" : [ "name", "createdAt", "updatedAt" ],
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updatedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "AppDataRecord" : {
+        "type" : "object",
+        "properties" : {
+          "applicationUid" : {
+            "type" : "string"
+          },
+          "recordUid" : {
+            "type" : "string"
+          },
+          "modificationHistory" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ModificationHistory"
+            }
+          }
+        }
+      },
+      "ModificationHistory" : {
+        "type" : "object",
+        "properties" : {
+          "user" : {
+            "type" : "string"
+          },
+          "operation" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "MutableData" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Data"
+        }, {
+          "$ref" : "#/components/schemas/Record"
+        } ]
+      },
+      "Meta" : {
+        "type" : "object",
+        "properties" : {
+          "page" : {
+            "type" : "integer"
+          },
+          "perPage" : {
+            "type" : "integer"
+          },
+          "total" : {
+            "type" : "integer"
+          },
+          "totalPages" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "Owner" : {
+        "type" : "object",
+        "required" : [ "id", "type" ],
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "description" : "External id of the owner",
+            "example" : "123"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "Type to discriminate owner's type",
+            "example" : "user"
+          }
+        }
+      }
+    }
+  },
+  "security" : [ {
+    "bearerAuth" : [ ]
+  } ]
+}
