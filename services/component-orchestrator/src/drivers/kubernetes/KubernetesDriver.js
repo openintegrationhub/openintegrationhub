@@ -137,7 +137,8 @@ class KubernetesDriver extends BaseDriver {
                 namespace: this._config.get('NAMESPACE'),
                 annotations: {
                     flowId: flow.id,
-                    nodeId: node.id
+                    stepId: node.id,
+                    nodeId: node.id,
                 }
             },
             spec: {
@@ -145,11 +146,11 @@ class KubernetesDriver extends BaseDriver {
                     metadata: {
                         labels: {
                             flowId: flow.id,
-                            nodeId: node.id
+                            stepId: node.id,
                         },
                         annotations: {
                             flowId: flow.id,
-                            nodeId: node.id
+                            stepId: node.id,
                         }
                     },
                     spec: {
