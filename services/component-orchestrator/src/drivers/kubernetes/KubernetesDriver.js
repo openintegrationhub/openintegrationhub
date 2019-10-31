@@ -143,7 +143,14 @@ class KubernetesDriver extends BaseDriver {
             spec: {
                 template: {
                     metadata: {
-                        labels: {}
+                        labels: {
+                            flowId: flow.id,
+                            nodeId: node.id
+                        },
+                        annotations: {
+                            flowId: flow.id,
+                            nodeId: node.id
+                        }
                     },
                     spec: {
                         restartPolicy: 'Never',

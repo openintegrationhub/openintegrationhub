@@ -135,7 +135,14 @@ describe('KubernetesDriver', () => {
                 'spec': {
                     'template': {
                         'metadata': {
-                            'labels': {}
+                            'labels': {
+                                'flowId': 'flow1',
+                                'nodeId': 'step1',
+                            },
+                            'annotations': {
+                                'flowId': 'flow1',
+                                'nodeId': 'step1',
+                            },
                         },
                         'spec': {
                             'containers': [
