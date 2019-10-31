@@ -41,7 +41,7 @@ VERSION=latest npm run build:docker
 
 ## How to deploy
 
-Kubernetes descriptors for Communication Router along with the other core platform microservices can be found in the [k8s](./k8s) directory.
+Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 
 ## Environment variables
 

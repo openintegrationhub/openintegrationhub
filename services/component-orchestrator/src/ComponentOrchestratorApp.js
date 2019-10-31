@@ -6,6 +6,7 @@ const FlowsDao = require('./dao/FlowsDao');
 const ComponentsDao = require('./dao/ComponentsDao');
 const TokensDao = require('./dao/TokensDao');
 const SecretsDao = require('./dao/SecretsDao');
+const SnapshotsDao = require('./dao/SnapshotsDao');
 const RabbitMqQueuesManager = require('./queues-manager/RabbitMqQueuesManager');
 const iamUtils = require('@openintegrationhub/iam-utils');
 
@@ -42,6 +43,7 @@ class ComponentOrchestratorApp extends App {
             componentsDao: asClass(ComponentsDao),
             secretsDao: asClass(SecretsDao),
             tokensDao: asClass(TokensDao),
+            snapshotsDao: asClass(SnapshotsDao),
             httpApi: asClass(HttpApi).singleton(),
             driver: asClass(KubernetesDriver),
             queuesManager: asClass(RabbitMqQueuesManager),
