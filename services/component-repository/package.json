@@ -19,7 +19,8 @@
   "dependencies": {
     "@openintegrationhub/component-repository": "*",
     "@openintegrationhub/event-bus": "*",
-    "backend-commons-lib": "*"
+    "backend-commons-lib": "*",
+    "dotenv": "8.2.0"
   },
   "devDependencies": {
     "chai": "4.2.0",

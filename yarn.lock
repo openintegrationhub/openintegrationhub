@@ -1409,17 +1409,6 @@
     bunyan "1.8.12"
     lodash "4.17.11"
 
-"@openintegrationhub/iam-utils@1.5.2":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@openintegrationhub/iam-utils/-/iam-utils-1.5.2.tgz#7fb8e66e96793dcaa5d20f85ded2124cb2ce7558"
-  integrity sha512-USnyT22oK/Z4PzhlX0VSG9Q8JU6WtJFjbZqDAgJT1IFWOKWI/OhJRMZLN0GFjnESJ1x/2yuYUvnpCp8Aqry6Kw==
-  dependencies:
-    "@basaas/node-logger" "1.1.5"
-    base64url "3.0.1"
-    node-cache "4.2.0"
-    request "2.88.0"
-    request-promise "4.2.4"
-
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
