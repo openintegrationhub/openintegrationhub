@@ -10,12 +10,14 @@ class HttpApi {
      * @param opts.logger
      * @param opts.flowsDao - Flow Data Access Object
      * @param opts.secretsDao - Secrets Data Access Object
+     * @param opts.snapshotsDao - Snapshots Data Access Object
      */
-    constructor({ config, logger, flowsDao, secretsDao }) {
+    constructor({ config, logger, flowsDao, secretsDao, snapshotsDao }) {
         this._config = config;
         this._logger = logger.child({service: 'HttpApi'});
         this._flowsDao = flowsDao;
         this._secretsDao = secretsDao;
+        this._snapshotsDao = snapshotsDao;
         this._app = express();
         this._app.get('/v1/tasks/:flowId/steps/:stepId', this._setIamToken.bind(this), this._getStepInfo.bind(this));
         this._app.get('/healthcheck', this._healthcheck.bind(this));
@@ -60,26 +62,22 @@ class HttpApi {
      * @private
      */
     async _getStepInfo(req, res, next) {
-        this._logger.trace({
-            params: req.params,
-            query: req.query,
-            headers: req.headers,
-            originalUrl: req.originalUrl
-        }, 'Node info request');
+        const { flowId, stepId } = req.params;
+        const logger = this._logger.child({flowId, stepId});
 
         try {
-            const flow = await this._flowsDao.findById(req.params.flowId);
+            const flow = await this._flowsDao.findById(flowId);
             if (!flow) {
                 throw new errors.ResourceNotFoundError('Flow is not found');
             }
-            const node = await flow.getNodeById(req.params.stepId);
+            const node = await flow.getNodeById(stepId);
             if (!node) {
                 throw new errors.ResourceNotFoundError('Node is not found');
             }
 
             const nodeConfig = node.fields || {};
             if (node.credentials_id) {
-                this._logger.trace({secretId: node.credentials_id}, 'About to get secret by ID');
+                logger.trace({secretId: node.credentials_id}, 'About to get secret by ID');
                 const secret = await this._secretsDao.findById(node.credentials_id, {
                     auth: {
                         token: req.iamToken
@@ -89,14 +87,26 @@ class HttpApi {
                     throw new errors.ResourceNotFoundError(`Secret ${node.credentials_id} is not found`);
                 }
                 Object.assign(nodeConfig, secret.value);
-                this._logger.trace({nodeConfig}, 'Got secret. Injected into the node config.');
+                logger.trace({nodeConfig}, 'Got secret. Injected into the node config.');
+            }
+
+            let snapshot = {};
+            try {
+                snapshot = await this._snapshotsDao.findOne({
+                    flowId,
+                    stepId,
+                    auth: { token: req.iamToken }
+                });
+            } catch (e) {
+                logger.warn(e, 'Failed to get snapshot');
             }
 
             res.status(200);
             res.json({
                 id: node.id,
                 function: node.function,
-                config: nodeConfig
+                config: nodeConfig,
+                snapshot
             });
         } catch (e) {
             return next(e);

@@ -15,6 +15,9 @@ describe('HttpApi', () => {
     const secretsDao = {
         findById() {}
     };
+    const snapshotsDao = {
+        findOne() {}
+    };
 
     beforeEach(() => {
         const config = {
@@ -27,7 +30,8 @@ describe('HttpApi', () => {
             config,
             logger,
             flowsDao,
-            secretsDao
+            secretsDao,
+            snapshotsDao
         });
         request = supertest(httpApi.getApp());
     });
@@ -58,6 +62,7 @@ describe('HttpApi', () => {
             });
             sinon.stub(flowsDao, 'findById').resolves(flow);
             sinon.stub(secretsDao, 'findById').resolves({});
+            sinon.stub(snapshotsDao, 'findOne').resolves({data: 'saved-snapshot'});
 
             const { body, statusCode } = await request
                 .get(`/v1/tasks/${flow.id}/steps/step_1`)
@@ -69,11 +74,21 @@ describe('HttpApi', () => {
                     field1: 'field1',
                 },
                 function: 'testFunction',
+                snapshot: {
+                    data: 'saved-snapshot'
+                }
             });
             expect(statusCode).to.equal(200);
 
             expect(flowsDao.findById).to.have.been.calledOnceWith(flow.id);
             expect(secretsDao.findById).not.to.have.been.called;
+            expect(snapshotsDao.findOne).to.have.been.calledOnceWith({
+                flowId: flow.id,
+                stepId: 'step_1',
+                auth: {
+                    token: 'token-value'
+                }
+            });
         });
 
         it('should return step configuration with credentials', async () => {
@@ -96,6 +111,7 @@ describe('HttpApi', () => {
                     password: 'ohhai'
                 }
             });
+            sinon.stub(snapshotsDao, 'findOne').resolves({data: 'saved-snapshot'});
 
             const { body, statusCode } = await request
                 .get(`/v1/tasks/${flow.id}/steps/step_1`)
@@ -109,11 +125,21 @@ describe('HttpApi', () => {
                     password: 'ohhai'
                 },
                 function: 'testFunction',
+                snapshot: {
+                    data: 'saved-snapshot'
+                }
             });
             expect(statusCode).to.equal(200);
 
             expect(flowsDao.findById).to.have.been.calledOnceWith(flow.id);
             expect(secretsDao.findById).to.have.been.calledOnceWith('cred123', {
+                auth: {
+                    token: 'token-value'
+                }
+            });
+            expect(snapshotsDao.findOne).to.have.been.calledOnceWith({
+                flowId: flow.id,
+                stepId: 'step_1',
                 auth: {
                     token: 'token-value'
                 }

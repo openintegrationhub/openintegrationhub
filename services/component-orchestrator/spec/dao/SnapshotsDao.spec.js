@@ -1,23 +1,23 @@
-const SecretsDao = require('../../src/dao/SecretsDao');
+const SnapshotsDao = require('../../src/dao/SnapshotsDao');
 const nock = require('nock');
 const { expect } = require('chai');
 
-describe('SecretsDao', () => {
+describe('SnapshotsDao', () => {
     let sd;
-    let secretService;
+    let snapshotsService;
     const IAM_TOKEN = 'test-iam-token';
-    const options = {
-        auth: {
-            token: IAM_TOKEN
-        }
+    const auth = {
+        token: IAM_TOKEN
     };
+    const flowId = 123;
+    const stepId = 1;
 
     beforeEach(() => {
         const config = {
             get(key) {
                 return this[key];
             },
-            SECRETS_SERVICE_BASE_URL: 'http://secret-service.com/api/v1'
+            SNAPSHOTS_SERVICE_BASE_URL: 'http://snapshots-service.com/api/v1'
         };
         const logger = {
             child() {
@@ -26,60 +26,53 @@ describe('SecretsDao', () => {
                     debug: () => {},
                     error: () => {},
                     trace: () => {}
-                };
+                }
             }
-
         };
 
-        sd = new SecretsDao({config, logger});
-        secretService = nock(config.SECRETS_SERVICE_BASE_URL, {
+        sd = new SnapshotsDao({config, logger});
+        snapshotsService = nock(config.SNAPSHOTS_SERVICE_BASE_URL, {
             reqheaders: {
                 authorization: `Bearer ${IAM_TOKEN}`,
             },
         });
     });
 
-    describe('#findById', () => {
+    describe('#findOne', () => {
         it('should return secret data', async () => {
-            const scope = secretService
-                .get('/secrets/123')
+            const scope = snapshotsService
+                .get(`/snapshots/flows/${flowId}/steps/${stepId}`)
                 .reply(200, {
                     data: {
-                        _id: '123',
-                        value: {
-                            some: 'data'
-                        }
+                        snapshot: 123
                     }
                 });
 
-            expect(await sd.findById('123', options)).to.deep.equal({
-                _id: '123',
-                value: {
-                    some: 'data'
-                }
+            expect(await sd.findOne({flowId, stepId, auth})).to.deep.equal({
+                snapshot: 123
             });
             expect(scope.isDone()).to.be.true;
         });
 
         it('should return null if not found', async () => {
-            const scope = secretService
-                .get('/secrets/123')
+            const scope = snapshotsService
+                .get(`/snapshots/flows/${flowId}/steps/${stepId}`)
                 .reply(404);
 
-            expect(await sd.findById('123', options)).to.be.null;
+            expect(await sd.findOne({flowId, stepId, auth})).to.be.null;
             expect(scope.isDone()).to.be.true;
         });
 
         it('should throw an error if unexpected status code is returned', async () => {
-            const scope = secretService
-                .get('/secrets/123')
+            const scope = snapshotsService
+                .get(`/snapshots/flows/${flowId}/steps/${stepId}`)
                 .reply(500);
 
             try {
-                await sd.findById('123', options);
+                await sd.findOne({flowId, stepId, auth});
                 throw new Error('Error is expected');
             } catch (e) {
-                expect(e.message).to.equal('Failed to fetch the secret 123');
+                expect(e.message).to.equal('Failed to fetch the snapshot 123:1');
             }
 
             expect(scope.isDone()).to.be.true;

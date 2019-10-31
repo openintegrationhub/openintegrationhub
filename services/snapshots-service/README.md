@@ -8,17 +8,17 @@ The revolution in data synchronization — the Open Integration Hub enables simp
 
 Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
 
-# Data Hub
+# Snapshots service
 
-Stores master data records.
+Stores flow snapshots.
 
 ## API docs
-
-[http://data-hub.openintegrationhub.com/api-docs](http://data-hub.openintegrationhub.com/api-docs).
+The service has an API, which is accessible only inside the cluster.
 
 ## Prerequisites
 
 - MongoDB
+- RabbitMQ
 
 ## Service Account
 
@@ -29,7 +29,7 @@ This service requires a service account with the following permissions:
 ## How to build
 
 ```docker
-docker build -t openintegrationhub/data-hub:latest -f Dockerfile ../../
+docker build -t openintegrationhub/snapshots-service-:latest -f Dockerfile ../../
 ```
 
 or

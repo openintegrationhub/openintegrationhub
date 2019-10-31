@@ -1,12 +1,13 @@
 {
     "COMPONENT_REPOSITORY_BASE_URL": "http://component-repository.oih-dev-ns.svc.cluster.local:1234",
-    "SECRETS_SERVICE_BASE_URL": "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1",
     "DEFAULT_CPU_LIMIT": "100m",
     "DEFAULT_MEM_LIMIT": "256Mi",
     "DEFAULT_CPU_REQUEST": "100m",
     "DEFAULT_MEM_REQUEST": "256Mi",
     "LISTEN_PORT": 1234,
     "NAMESPACE": "flows",
+    "SECRETS_SERVICE_BASE_URL": "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1",
     "SELF_API_URI": "http://api-service.oih-dev-ns.svc.cluster.local:1234",
+    "SNAPSHOTS_SERVICE_BASE_URL": "http://snapshots-service.oih-dev-ns.svc.cluster.local:1234",
     "TICK_INTERVAL": 10000
 }
