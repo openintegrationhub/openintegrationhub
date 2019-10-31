@@ -128,6 +128,7 @@ describe('KubernetesDriver', () => {
                     'annotations': {
                         'flowId': 'flow1',
                         'nodeId': 'step1',
+                        'stepId': 'step1'
                     },
                     'name': 'flow1step1',
                     'namespace': 'flows-ns'
@@ -137,11 +138,11 @@ describe('KubernetesDriver', () => {
                         'metadata': {
                             'labels': {
                                 'flowId': 'flow1',
-                                'nodeId': 'step1',
+                                'stepId': 'step1'
                             },
                             'annotations': {
                                 'flowId': 'flow1',
-                                'nodeId': 'step1',
+                                'stepId': 'step1',
                             },
                         },
                         'spec': {
