@@ -85,11 +85,11 @@ export default class DataController {
             throw new Unauthorized();
         }
 
-        Object.keys(dataObject.toJSON()).forEach(key => {
+        Object.keys(dataObject.toJSON()).forEach((key: keyof IDataObjectDocument) => {
             if (key === '_id') {
                 return;
             }
-            dataObject[<keyof IDataObjectDocument>key] = undefined;
+            (dataObject[key] as any) = undefined;
         });
 
         Object.assign(dataObject, body);
