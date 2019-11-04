@@ -14,6 +14,7 @@ const iamMock = require('./utils/iamMock.js');
 const Server = require('../app/server');
 const Configuration = require('../app/models/configuration');
 const { createDispatches, getTargets, checkFlows } = require('../app/utils/handlers');
+const { makeFlow, createFlows } = require('../app/utils/flowCreator');
 
 const mainServer = new Server();
 
@@ -257,5 +258,312 @@ describe('Event Handlers', () => {
     expect(events).toHaveLength(2);
     expect(events[0]).toEqual(ev1);
     expect(events[1]).toEqual(ev2);
+  });
+});
+
+describe('Flow Creation', () => {
+  test('Generate a valid inbound flow', async () => {
+    const getFlow = makeFlow(
+      'testAdapterId',
+      'testTransformerId',
+      'getPersons',
+      'transformPersonToOih',
+      'testSecretId',
+      'GET',
+    );
+
+    const reference = {
+      name: 'Hub&Spoke Flow',
+      description: 'This flow was automatically generated',
+      graph: {
+        nodes: [
+          {
+            id: 'step_1',
+            componentId: 'testAdapterId',
+            credentials_id: 'testSecretId',
+            name: 'Source Adapter',
+            function: 'getPersons',
+            description: 'Fetches data',
+          },
+          {
+            id: 'step_2',
+            componentId: 'testTransformerId',
+            name: 'Source Transformer',
+            function: 'transformPersonToOih',
+            description: 'Transforms data',
+          },
+          {
+            id: 'step_3',
+            componentId: '12345abcde',
+            name: 'SDF Adapter',
+            function: 'sendMessageToOih',
+            description: 'Passes data to SDF',
+          },
+        ],
+        edges: [
+          {
+            source: 'step_1',
+            target: 'step_2',
+          },
+          {
+            source: 'step_2',
+            target: 'step_3',
+          },
+        ],
+      },
+      type: 'ordinary',
+      cron: '* * * * *',
+    };
+
+    expect(getFlow).toEqual(reference);
+  });
+
+  test('Generate a valid outbound update flow', async () => {
+    const updateFlow = makeFlow(
+      'testAdapterId',
+      'testTransformerId',
+      'updatePerson',
+      'transformPersonFromOih',
+      'testSecretId',
+      'UPDATE',
+    );
+
+    const reference = {
+      name: 'Hub&Spoke Flow',
+      description: 'This flow was automatically generated',
+      graph: {
+        nodes: [
+          {
+            id: 'step_1',
+            componentId: '12345abcde',
+            name: 'SDF Adapter',
+            function: 'receiveEvents',
+            description: 'Receives data from SDF',
+          },
+          {
+            id: 'step_2',
+            componentId: 'testTransformerId',
+            name: 'Target Transformer',
+            function: 'transformPersonFromOih',
+            description: 'Transforms data',
+          },
+          {
+            id: 'step_3',
+            componentId: 'testAdapterId',
+            credentials_id: 'testSecretId',
+            name: 'Target Adapter',
+            function: 'updatePerson',
+            description: 'Pushes data',
+          },
+        ],
+        edges: [
+          {
+            source: 'step_1',
+            target: 'step_2',
+          },
+          {
+            source: 'step_2',
+            target: 'step_3',
+          },
+        ],
+      },
+      type: 'ordinary',
+      cron: '* * * * *',
+    };
+
+    expect(updateFlow).toEqual(reference);
+  });
+
+  test('Generate a valid outbound create flow', async () => {
+    const createFlow = makeFlow(
+      'testAdapterId',
+      'testTransformerId',
+      'updatePerson',
+      'transformPersonFromOih',
+      'testSecretId',
+      'CREATE',
+    );
+
+    const reference = {
+      name: 'Hub&Spoke Flow',
+      description: 'This flow was automatically generated',
+      graph: {
+        nodes: [
+          {
+            id: 'step_1',
+            componentId: '12345abcde',
+            name: 'SDF Adapter',
+            function: 'receiveEvents',
+            description: 'Receives data from SDF',
+          },
+          {
+            id: 'step_2',
+            componentId: 'testTransformerId',
+            name: 'Target Transformer',
+            function: 'transformPersonFromOih',
+            description: 'Transforms data',
+          },
+          {
+            id: 'step_3',
+            componentId: 'testAdapterId',
+            credentials_id: 'testSecretId',
+            name: 'Target Adapter',
+            function: 'updatePerson',
+            description: 'Pushes data',
+          },
+          {
+            id: 'step_4',
+            componentId: '12345abcde',
+            name: 'SDF Adapter',
+            function: 'processRecordUid',
+            description: 'Updates recordUid',
+          },
+        ],
+        edges: [
+          {
+            source: 'step_1',
+            target: 'step_2',
+          },
+          {
+            source: 'step_2',
+            target: 'step_3',
+          },
+          {
+            source: 'step_3',
+            target: 'step_4',
+          },
+        ],
+      },
+      type: 'ordinary',
+      cron: '* * * * *',
+    };
+
+    expect(createFlow).toEqual(reference);
+  });
+
+  test('Make calls to Flow Repository to create flows', async () => {
+    const getFlow = nock('http://localhost:3001/flows')
+      .post('', {
+        name: 'Hub&Spoke Flow',
+        description: 'This flow was automatically generated',
+        graph: {
+          nodes: [{
+            id: 'step_1', credentials_id: 'snazzySecretId', name: 'Source Adapter', function: 'getPersons', description: 'Fetches data',
+          }, {
+            id: 'step_2', name: 'Source Transformer', function: 'transformToOih', description: 'Transforms data',
+          }, {
+            id: 'step_3', componentId: '12345abcde', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
+          }],
+          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+      })
+      .reply(201, { data: { id: 'InboundId' } });
+
+    const createFlow = nock('http://localhost:3001/flows')
+      .post('', {
+        name: 'Hub&Spoke Flow',
+        description: 'This flow was automatically generated',
+        graph: {
+          nodes: [{
+            id: 'step_1', componentId: '12345abcde', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+          }, {
+            id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data',
+          }, {
+            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'createPerson', description: 'Pushes data',
+          }, {
+            id: 'step_4', componentId: '12345abcde', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+          }],
+          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }, { source: 'step_3', target: 'step_4' }],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+      })
+      .reply(201, { data: { id: 'OutboundIdCreate' } });
+
+    const updateFlow = nock('http://localhost:3001/flows')
+      .post('', {
+        name: 'Hub&Spoke Flow',
+        description: 'This flow was automatically generated',
+        graph: {
+          nodes: [{
+            id: 'step_1', componentId: '12345abcde', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+          }, {
+            id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data',
+          }, {
+            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'updatePerson', description: 'Pushes data',
+          }],
+          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+      })
+      .reply(201, { data: { id: 'OutboundIdUpdate' } });
+
+    const deleteFlow = nock('http://localhost:3001/flows')
+      .post('', {
+        name: 'Hub&Spoke Flow',
+        description: 'This flow was automatically generated',
+        graph: {
+          nodes: [{
+            id: 'step_1', componentId: '12345abcde', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+          }, {
+            id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data',
+          }, {
+            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'deletePerson', description: 'Pushes data',
+          }],
+          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+      })
+      .reply(201, { data: { id: 'OutboundIdDelete' } });
+
+    const applications = [
+      {
+        adapterComponentId: 'snazzyAdapterId',
+        transformerComponentId: 'snazzyTransformerId',
+        secretId: 'snazzySecretId',
+
+        inbound: {
+          active: true,
+          flows: [
+            {
+              transformerAction: 'transformToOih',
+              adapterAction: 'getPersons',
+            },
+          ],
+        },
+
+        outbound: {
+          active: true,
+          flows: [
+            {
+              operation: 'CREATE',
+              transformerAction: 'transformFromOih',
+              adapterAction: 'createPerson',
+            },
+            {
+              operation: 'UPDATE',
+              transformerAction: 'transformFromOih',
+              adapterAction: 'updatePerson',
+            },
+            {
+              operation: 'DELETE',
+              transformerAction: 'transformFromOih',
+              adapterAction: 'deletePerson',
+            },
+          ],
+        },
+      },
+    ];
+
+    const newApplications = await createFlows(applications, 'aBearerToken');
+
+    expect(newApplications[0].inbound.flows[0].flowId).toEqual('InboundId');
+    expect(newApplications[0].outbound.flows[0].flowId).toEqual('OutboundIdCreate');
+    expect(newApplications[0].outbound.flows[1].flowId).toEqual('OutboundIdUpdate');
+    expect(newApplications[0].outbound.flows[2].flowId).toEqual('OutboundIdDelete');
   });
 });
