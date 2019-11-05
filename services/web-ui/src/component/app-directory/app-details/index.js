@@ -18,7 +18,7 @@ import {
 } from '../../../action/app-directory';
 import { getComponents } from '../../../action/components';
 import { getClients } from '../../../action/auth-clients';
-import { getDomains } from '../../../action/metadata';
+import { getDomains, getDomainSchemas } from '../../../action/metadata';
 
 const useStyles = {
     heading: {
@@ -57,6 +57,9 @@ class AppDetails extends React.Component {
             await this.props.getComponents();
             await this.props.getClients();
             await this.props.getDomains();
+            for (const domain of this.props.dataModels) {
+                this.props.getDomainSchemas(domain.id);
+            }
             const app = await getAppById(this.props.match.params.id);
             this.setState({
                 app: {
@@ -288,6 +291,8 @@ class AppDetails extends React.Component {
             transformerOperation: '',
             sdfAdapterOperation: '',
             direction: 'inbound',
+            actionTypes: [],
+            dataModels: [],
         });
 
         this.setState({
@@ -302,8 +307,33 @@ class AppDetails extends React.Component {
     setSyncMappingField = (fieldName, index, e) => {
         e.preventDefault();
 
+        if (e.target.value === null) {
+            return;
+        }
+
         const syncMappings = [...this.state.app.syncMappings];
         syncMappings[index][fieldName] = e.target.value;
+
+        this.setState({
+            app: {
+                ...this.state.app,
+                syncMappings,
+            },
+            hasChanges: 1,
+        });
+    }
+
+    toggleSyncMappingField = (fieldName, index, e) => {
+        e.preventDefault();
+
+        console.log(e.target.value, e.target.checked);
+
+        const syncMappings = [...this.state.app.syncMappings];
+        if (!e.target.checked) {
+            syncMappings[index][fieldName].splice(syncMappings[index][fieldName].indexOf(e.target.value), 1);
+        } else {
+            syncMappings[index][fieldName].push(e.target.value);
+        }
 
         this.setState({
             app: {
@@ -436,33 +466,43 @@ class AppDetails extends React.Component {
                             {this.props.authClients.available.map(authClient => <MenuItem key={authClient._id} value={authClient._id}>{authClient.name}</MenuItem>)}
 
                         </Select>
+
+                        {this.getCredentialsBlock()}
+
                     </FormControl> }
 
                     <h3>Data models</h3>
 
-                    {this.props.dataModels.map(dataModel => <FormControlLabel
-                        key={dataModel.id}
-                        control={
-                            <Checkbox
-                                checked={this.state.app.dataModels.includes(dataModel.id)}
-                                onChange={this.toggleDataModel.bind(this, dataModel)}
-                                value={dataModel.id}
-                                color="primary"
-                            />
-                        }
-                        label={dataModel.name}
-                    />)}
+                    {this.props.dataModels.map(dataModel => <div
+                        key={dataModel.id}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={this.state.app.dataModels.includes(dataModel.id)}
+                                    onChange={this.toggleDataModel.bind(this, dataModel)}
+                                    value={dataModel.id}
+                                    color="primary"
+                                />
+                            }
+                            label={dataModel.name}
+                        />
+                        {this.props.domainSchemas[dataModel.id] && this.props.domainSchemas[dataModel.id].map(schema => <FormControlLabel
+                            key={schema.id}
+                            control={
+                                <Checkbox
+                                    onChange={() => {}}
+                                    value={schema.id}
+                                    color="primary"
+                                />
+                            }
+                            label={schema.name}
+                        />)}
+                    </div>)}
 
 
                     <h4>Connectors</h4>
 
                     <h6>Adapter</h6>
-                    {/* {this.state.app.components.find((component, index) => )} */}
-                    {/* <ComponentMiniTeaser */}
-                    {/*    {...component} */}
-                    {/*    key={index} */}
-                    {/*    removeComponent={this.removeComponent.bind(this, index)} */}
-                    {/* /> */}
                     <FormControl fullWidth className={classes.formControl}>
                         <InputLabel htmlFor="adapter">Adapter</InputLabel>
                         <Select
@@ -499,7 +539,7 @@ class AppDetails extends React.Component {
 
                     {this.state.app.components.adapter && this.state.app.components.transformer ? <React.Fragment><h4>Sync Mappings</h4>
 
-                        {this.state.app.syncMappings.map((mapping, index) => <div key={index} style={{ display: 'flex' }}>
+                        {this.state.app.syncMappings.map((mapping, index) => <div key={index}>
                             <p>Index: {index},</p>
                             <p>
                             Direction
@@ -511,6 +551,7 @@ class AppDetails extends React.Component {
                             <p>Adapter: {this.state.componentData[this.state.app.components.adapter] && this.state.componentData[this.state.app.components.adapter].name}
 
                                 <select onChange={this.setSyncMappingField.bind(this, 'adapterOperation', index)} value={mapping.adapterOperation}>
+                                    <option key={'-1'} value={null}>Select one</option>
                                     <optgroup label="Actions">
                                         {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].actions || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
                                     </optgroup>
@@ -523,6 +564,7 @@ class AppDetails extends React.Component {
                             <p>Transformer: {this.state.componentData[this.state.app.components.transformer] && this.state.componentData[this.state.app.components.transformer].name}
 
                                 <select onChange={this.setSyncMappingField.bind(this, 'transformerOperation', index)} value={mapping.transformerOperation} >
+                                    <option key={'-1'} value={null}>Select one</option>
                                     <optgroup label="Actions">
                                         {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].actions || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
                                     </optgroup>
@@ -531,9 +573,22 @@ class AppDetails extends React.Component {
                                     </optgroup>
                                 </select>
                             </p>
+                            <p>Operations:
+
+                                {['CREATE', 'UPDATE', 'DELETE'].map(op => <label key={op}><input onChange={this.toggleSyncMappingField.bind(this, 'actionTypes', index)} type={'checkbox'} value={op} checked={mapping.actionTypes.includes(op)} />{op}</label>)}
+
+                            </p>
+                            <p>Data models:
+
+                                {Object.keys(this.props.domainSchemas).map(key => <div key={key}>
+                                    <span>{this.props.dataModels.find(domain => domain.id === key).name}</span><br />
+                                    {this.props.domainSchemas[key].map(schema => <label key={schema.id}><input onChange={this.toggleSyncMappingField.bind(this, 'dataModels', index)} type={'checkbox'} value={schema.id} />{schema.name}</label>)}
+                                </div>)}
+                            </p>
                             <div>
-                                <Button type={'button'} onClick={this.removeSyncMapping.bind(this, index)}>Delete</Button>
+                                <Button variant="outlined" type={'button'} onClick={this.removeSyncMapping.bind(this, index)}>Delete</Button>
                             </div>
+                            <hr />
                         </div>)}
                         <Button onClick={this.addNewMapping.bind(this)}>Add new mapping</Button>
                     </React.Fragment> : 'Please select an adapter and a transformer first' }
@@ -557,11 +612,13 @@ const mapStateToProps = state => ({
     auth: state.auth,
     authClients: state.authClients,
     dataModels: state.metadata.domains,
+    domainSchemas: state.metadata.domainSchemas,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     getComponents,
     getClients,
     getDomains,
+    getDomainSchemas,
 }, dispatch);
 
 export default flow(

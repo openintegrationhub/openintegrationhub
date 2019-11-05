@@ -20,16 +20,13 @@ router.get('/', domainOwnerOrAllowed({}), async (req, res) => {
         SchemaDAO,
     );
 
-    let data;
-    let meta;
-
     // TODO authorization access to domainId?
-    data = await SchemaDAO.findByDomain({
+    const data = await SchemaDAO.findByDomain({
         domainId: req.domainId,
         options: pagination.props(),
     });
 
-    meta = {
+    const meta = {
         ...await pagination.calc({
             domainId: req.domainId,
         }),

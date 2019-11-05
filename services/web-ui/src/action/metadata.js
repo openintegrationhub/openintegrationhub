@@ -4,6 +4,7 @@ import { getConfig } from '../conf';
 
 const conf = getConfig();
 export const GET_DOMAINS = 'GET_DOMAINS';
+export const GET_DOMAIN_SCHEMAS = 'GET_DOMAIN_SCHEMAS';
 export const GET_METADATA_PAGE = 'GET_METADATA_PAGE';
 export const UPDATE_DOMAIN = 'UPDATE_DOMAIN';
 export const UPDATE_METADATA_ERROR = 'UPDATE_METADATA_ERROR';
@@ -24,6 +25,24 @@ export const getDomains = () => async (dispatch) => {
         dispatch({
             type: GET_DOMAINS,
             domains: result.data.data,
+            meta: result.data.meta,
+        });
+    } catch (err) {
+        console.log(err);
+    }
+};
+export const getDomainSchemas = domainId => async (dispatch) => {
+    try {
+        const result = await axios({
+            method: 'get',
+            url: `${conf.endpoints.metadata}/domains/${domainId}/schemas`,
+            withCredentials: true,
+        });
+
+        dispatch({
+            type: GET_DOMAIN_SCHEMAS,
+            data: result.data.data,
+            domainId,
             meta: result.data.meta,
         });
     } catch (err) {

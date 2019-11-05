@@ -29,13 +29,12 @@ module.exports = {
                 user: req.user,
             });
 
-            if (req.ownsDomain || (req.hasAll && req.user.tenant.toString() === domain.tenant.toString()) || req.user.isAdmin) {
+            if (req.ownsDomain || (req.hasAll && req.user.tenant && req.user.tenant.toString() === domain.tenant.toString()) || req.user.isAdmin) {
                 return next();
             }
 
             return next({ status: 403 });
         } catch (err) {
-
             if (err.name === 'CastError' || req.hasAll) {
                 return next({ status: 404 });
             }
@@ -46,7 +45,6 @@ module.exports = {
         }
     },
     hasReadAccess: async (req, res, next) => {
-
         try {
             const domain = await DomainDAO.findOne({
                 _id: req.params.id || req.domainId,
@@ -62,14 +60,12 @@ module.exports = {
             });
 
             if (domain.public || req.ownsDomain || req.user.tenant.toString() === domain.tenant.toString() || req.user.isAdmin) {
-
                 return next();
             }
 
             return next({
                 status: 403,
             });
-
         } catch (err) {
             if (err.name === 'CastError' || req.hasAll) {
                 return next({ status: 404 });
@@ -77,8 +73,7 @@ module.exports = {
             log.error(err);
             return next({
                 status: 500,
-            })
+            });
         }
-
-    }
+    },
 };
