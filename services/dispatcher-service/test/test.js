@@ -459,7 +459,7 @@ describe('Flow Creation', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'InboundId' } });
+      .reply(201, { data: { id: 'OutboundId' } });
 
     const createFlow = nock('http://localhost:3001/flows')
       .post('', {
@@ -480,7 +480,7 @@ describe('Flow Creation', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'OutboundIdCreate' } });
+      .reply(201, { data: { id: 'InboundIdCreate' } });
 
     const updateFlow = nock('http://localhost:3001/flows')
       .post('', {
@@ -499,7 +499,7 @@ describe('Flow Creation', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'OutboundIdUpdate' } });
+      .reply(201, { data: { id: 'InboundIdUpdate' } });
 
     const deleteFlow = nock('http://localhost:3001/flows')
       .post('', {
@@ -518,7 +518,7 @@ describe('Flow Creation', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'OutboundIdDelete' } });
+      .reply(201, { data: { id: 'InboundIdDelete' } });
 
     const applications = [
       {
@@ -526,7 +526,7 @@ describe('Flow Creation', () => {
         transformerComponentId: 'snazzyTransformerId',
         secretId: 'snazzySecretId',
 
-        inbound: {
+        outbound: {
           active: true,
           flows: [
             {
@@ -536,7 +536,7 @@ describe('Flow Creation', () => {
           ],
         },
 
-        outbound: {
+        inbound: {
           active: true,
           flows: [
             {
@@ -561,9 +561,9 @@ describe('Flow Creation', () => {
 
     const newApplications = await createFlows(applications, 'aBearerToken');
 
-    expect(newApplications[0].inbound.flows[0].flowId).toEqual('InboundId');
-    expect(newApplications[0].outbound.flows[0].flowId).toEqual('OutboundIdCreate');
-    expect(newApplications[0].outbound.flows[1].flowId).toEqual('OutboundIdUpdate');
-    expect(newApplications[0].outbound.flows[2].flowId).toEqual('OutboundIdDelete');
+    expect(newApplications[0].outbound.flows[0].flowId).toEqual('OutboundId');
+    expect(newApplications[0].inbound.flows[0].flowId).toEqual('InboundIdCreate');
+    expect(newApplications[0].inbound.flows[1].flowId).toEqual('InboundIdUpdate');
+    expect(newApplications[0].inbound.flows[2].flowId).toEqual('InboundIdDelete');
   });
 });

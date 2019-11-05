@@ -8,8 +8,8 @@ const request = require('request-promise').defaults({
 });
 const {
   sdfAdapterId,
-  sdfAdapterInboundAction,
-  sdfAdapterOutboundAction,
+  sdfAdapterReceiveAction,
+  sdfAdapterPublishAction,
   sdfAdapterRecordAction,
   flowRepoUrl,
 } = require('../config');
@@ -53,7 +53,7 @@ function makeFlow(
         id: 'step_3',
         componentId: sdfAdapterId,
         name: 'SDF Adapter',
-        function: sdfAdapterInboundAction,
+        function: sdfAdapterPublishAction,
         description: 'Passes data to SDF',
       },
     ];
@@ -74,7 +74,7 @@ function makeFlow(
         id: 'step_1',
         componentId: sdfAdapterId,
         name: 'SDF Adapter',
-        function: sdfAdapterOutboundAction,
+        function: sdfAdapterReceiveAction,
         description: 'Receives data from SDF',
       },
       {
@@ -129,9 +129,9 @@ async function createFlows(applications, token) {
   for (let i = 0; i < newApplications.length; i += 1) {
     const app = applications[i];
 
-    if (app.inbound.active) {
-      for (let j = 0; j < app.inbound.flows.length; j += 1) {
-        const current = app.inbound.flows[j];
+    if (app.outbound.active) {
+      for (let j = 0; j < app.outbound.flows.length; j += 1) {
+        const current = app.outbound.flows[j];
         const flow = makeFlow(app.adapterId,
           app.transformerId,
           current.adapterAction,
@@ -150,13 +150,13 @@ async function createFlows(applications, token) {
         };
         const response = await request(options);
 
-        app.inbound.flows[j].flowId = response.body.data.id;
+        app.outbound.flows[j].flowId = response.body.data.id;
       }
     }
 
-    if (app.outbound.active) {
-      for (let k = 0; k < app.outbound.flows.length; k += 1) {
-        const current = app.outbound.flows[k];
+    if (app.inbound.active) {
+      for (let k = 0; k < app.inbound.flows.length; k += 1) {
+        const current = app.inbound.flows[k];
         const flow = makeFlow(app.adapterId,
           app.transformerId,
           current.adapterAction,
@@ -175,7 +175,7 @@ async function createFlows(applications, token) {
         };
         const response = await request(options);
 
-        app.outbound.flows[k].flowId = response.body.data.id;
+        app.inbound.flows[k].flowId = response.body.data.id;
       }
     }
     newApplications[i] = app;

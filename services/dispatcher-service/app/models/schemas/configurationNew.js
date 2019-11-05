@@ -16,7 +16,7 @@ const configuration = new Schema({
       transformerComponentId: String,
       secretId: String,
 
-      inbound: {
+      outbound: {
         active: Boolean,
         flows: [
           {
@@ -27,7 +27,7 @@ const configuration = new Schema({
         ],
       },
 
-      outbound: {
+      inbound: {
         active: Boolean,
         flows: [
           {
