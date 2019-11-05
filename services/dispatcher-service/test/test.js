@@ -270,6 +270,8 @@ describe('Flow Creation', () => {
       'transformPersonToOih',
       'testSecretId',
       'GET',
+      'testDomainId',
+      'person',
     );
 
     const reference = {
@@ -291,6 +293,10 @@ describe('Flow Creation', () => {
             name: 'Source Transformer',
             function: 'transformPersonToOih',
             description: 'Transforms data',
+            fields: {
+              domainId: 'testDomainId',
+              schemaUri: 'person',
+            },
           },
           {
             id: 'step_3',
@@ -461,7 +467,7 @@ describe('Flow Creation', () => {
           nodes: [{
             id: 'step_1', credentials_id: 'snazzySecretId', name: 'Source Adapter', function: 'getPersons', description: 'Fetches data',
           }, {
-            id: 'step_2', name: 'Source Transformer', function: 'transformToOih', description: 'Transforms data',
+            id: 'step_2', name: 'Source Transformer', function: 'transformToOih', description: 'Transforms data', fields: { domainId: 'testDomainId', schemaUri: 'person' },
           }, {
             id: 'step_3', componentId: '12345abcde', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
           }],
@@ -547,6 +553,8 @@ describe('Flow Creation', () => {
             {
               transformerAction: 'transformToOih',
               adapterAction: 'getPersons',
+              domainId: 'testDomainId',
+              schemaUri: 'person',
             },
           ],
         },

@@ -22,6 +22,8 @@ const configuration = new Schema({
           {
             transformerAction: String,
             adapterAction: String,
+            domainId: String,
+            schemaUri: String,
             flowId: String,
           },
         ],
@@ -41,6 +43,8 @@ const configuration = new Schema({
             },
             transformerAction: String,
             adapterAction: String,
+            domainId: String,
+            schemaUri: String,
             flowId: String,
           },
         ],

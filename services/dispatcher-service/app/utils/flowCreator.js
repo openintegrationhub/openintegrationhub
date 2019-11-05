@@ -22,6 +22,8 @@ function makeFlow(
   transformerAction,
   credentials_id,
   operation,
+  domainId,
+  schemaUri,
 ) {
   const newFlow = {
     name: 'Hub&Spoke Flow',
@@ -48,6 +50,10 @@ function makeFlow(
         name: 'Source Transformer',
         function: transformerAction,
         description: 'Transforms data',
+        fields: {
+          domainId,
+          schemaUri,
+        },
       },
       {
         id: 'step_3',
@@ -133,7 +139,9 @@ async function createFlows(applications, token) {
           current.adapterAction,
           current.transformerAction,
           app.secretId,
-          'GET');
+          'GET',
+          current.domainId,
+          current.schemaUri);
 
         const options = {
           method: 'POST',
