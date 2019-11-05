@@ -355,6 +355,13 @@ describe('Flow Creation', () => {
             function: 'updatePerson',
             description: 'Pushes data',
           },
+          {
+            id: 'step_4',
+            componentId: '12345abcde',
+            name: 'SDF Adapter',
+            function: 'processRecordUid',
+            description: 'Updates recordUid',
+          },
         ],
         edges: [
           {
@@ -364,6 +371,10 @@ describe('Flow Creation', () => {
           {
             source: 'step_2',
             target: 'step_3',
+          },
+          {
+            source: 'step_3',
+            target: 'step_4',
           },
         ],
       },
@@ -493,8 +504,10 @@ describe('Flow Creation', () => {
             id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data',
           }, {
             id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'updatePerson', description: 'Pushes data',
+          }, {
+            id: 'step_4', componentId: '12345abcde', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
-          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }],
+          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }, { source: 'step_3', target: 'step_4' }],
         },
         type: 'ordinary',
         cron: '* * * * *',
@@ -512,8 +525,10 @@ describe('Flow Creation', () => {
             id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data',
           }, {
             id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'deletePerson', description: 'Pushes data',
+          }, {
+            id: 'step_4', componentId: '12345abcde', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
-          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }],
+          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }, { source: 'step_3', target: 'step_4' }],
         },
         type: 'ordinary',
         cron: '* * * * *',

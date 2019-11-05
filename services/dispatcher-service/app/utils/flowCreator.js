@@ -92,6 +92,13 @@ function makeFlow(
         function: adapterAction,
         description: 'Pushes data',
       },
+      {
+        id: 'step_4',
+        componentId: sdfAdapterId,
+        name: 'SDF Adapter',
+        function: sdfAdapterRecordAction,
+        description: 'Updates recordUid',
+      },
     ];
 
     newFlow.graph.edges = [
@@ -103,22 +110,11 @@ function makeFlow(
         source: 'step_2',
         target: 'step_3',
       },
-    ];
-
-    if (operation === 'CREATE') {
-      newFlow.graph.nodes.push({
-        id: 'step_4',
-        componentId: sdfAdapterId,
-        name: 'SDF Adapter',
-        function: sdfAdapterRecordAction,
-        description: 'Updates recordUid',
-      });
-
-      newFlow.graph.edges.push({
+      {
         source: 'step_3',
         target: 'step_4',
-      });
-    }
+      },
+    ];
   }
 
   return newFlow;
