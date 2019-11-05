@@ -295,7 +295,7 @@ describe('Flow Creation', () => {
             description: 'Transforms data',
             fields: {
               domainId: 'testDomainId',
-              schemaUri: 'person',
+              schema: 'person',
             },
           },
           {
@@ -467,7 +467,7 @@ describe('Flow Creation', () => {
           nodes: [{
             id: 'step_1', credentials_id: 'snazzySecretId', name: 'Source Adapter', function: 'getPersons', description: 'Fetches data',
           }, {
-            id: 'step_2', name: 'Source Transformer', function: 'transformToOih', description: 'Transforms data', fields: { domainId: 'testDomainId', schemaUri: 'person' },
+            id: 'step_2', name: 'Source Transformer', function: 'transformToOih', description: 'Transforms data', fields: { domainId: 'testDomainId', schema: 'person' },
           }, {
             id: 'step_3', componentId: '12345abcde', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
           }],
@@ -553,8 +553,7 @@ describe('Flow Creation', () => {
             {
               transformerAction: 'transformToOih',
               adapterAction: 'getPersons',
-              domainId: 'testDomainId',
-              schemaUri: 'person',
+              schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
             },
           ],
         },

@@ -23,7 +23,7 @@ function makeFlow(
   credentials_id,
   operation,
   domainId,
-  schemaUri,
+  schema,
 ) {
   const newFlow = {
     name: 'Hub&Spoke Flow',
@@ -52,7 +52,7 @@ function makeFlow(
         description: 'Transforms data',
         fields: {
           domainId,
-          schemaUri,
+          schema,
         },
       },
       {
@@ -134,14 +134,17 @@ async function createFlows(applications, token) {
     if (app.outbound.active) {
       for (let j = 0; j < app.outbound.flows.length; j += 1) {
         const current = app.outbound.flows[j];
+        const chunks = current.schemaUri.split('/');
+        const domainId = chunks[chunks.length - 3];
+        const schema = chunks[chunks.length - 1];
         const flow = makeFlow(app.adapterId,
           app.transformerId,
           current.adapterAction,
           current.transformerAction,
           app.secretId,
           'GET',
-          current.domainId,
-          current.schemaUri);
+          domainId,
+          schema);
 
         const options = {
           method: 'POST',
