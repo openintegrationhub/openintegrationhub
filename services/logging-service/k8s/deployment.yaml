@@ -20,6 +20,8 @@ spec:
         - name: logging-service
           image: 'openintegrationhub/logging-service:latest'
           env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: '/usr/lib/app/credentials/credentials.json'
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -29,6 +31,9 @@ spec:
               value: '1234'
             - name: LOG_LEVEL
               value: trace
+          volumeMounts:
+            - name: credentials
+              mountPath: '/usr/lib/app/credentials'
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: IfNotPresent
@@ -42,6 +47,13 @@ spec:
               port: 1234
           securityContext:
             privileged: false
+      volumes:
+        - name: credentials
+          secret:
+            secretName: logging-service
+            items:
+              - key: GCLOUD_CREDENTIALS
+                path: credentials.json
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:
