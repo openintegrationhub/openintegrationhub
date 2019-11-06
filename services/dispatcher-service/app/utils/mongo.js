@@ -41,7 +41,7 @@ const deleteConfig = tenant => new Promise(async (resolve) => {
 });
 
 const getConfigBySource = flowId => new Promise(async (resolve) => {
-  const configuration = await Configuration.findOne({ 'connections.source.flowId': flowId }).lean();
+  const configuration = await Configuration.findOne({ 'applications.outbound.flows.flowId': flowId }).lean();
   resolve(format(configuration));
 });
 

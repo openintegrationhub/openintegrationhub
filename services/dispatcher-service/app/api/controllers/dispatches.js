@@ -7,12 +7,15 @@ const { createDummyQueues } = require('../../utils/eventBus');
 const jsonParser = bodyParser.json();
 const router = express.Router();
 
-function getKeys(connections) {
+function getKeys(applications) {
   const keys = [];
-  for (let i = 0; i < connections.length; i += 1) {
-    const { targets } = connections[i];
-    for (let j = 0; j < targets.length; j += 1) {
-      keys.push(`dispatch.${targets[j].flowId}`);
+  for (let i = 0; i < applications.length; i += 1) {
+    const app = applications[i];
+
+    if (app.inbound.active) {
+      for (let j = 0; j < app.outbound.flows.length; j += 1) {
+        keys.push(`dispatch.${app.inbound.flows[j].flowId}`);
+      }
     }
   }
   return keys;
@@ -35,15 +38,15 @@ router.get('/', jsonParser, async (req, res) => {
 
 router.put('/', jsonParser, async (req, res) => {
   try {
-    const connections = req.body;
+    const applications = req.body;
     const configuration = {
-      connections,
+      applications,
     };
     configuration.tenant = req.user.tenant;
 
     const response = await storage.upsertConfig(configuration);
 
-    const keys = getKeys(connections);
+    const keys = getKeys(applications);
     await createDummyQueues(keys);
 
     return res.status(201).send({ meta: {}, data: response });

@@ -45,26 +45,84 @@ describe('Documentation', () => {
 });
 
 describe('API', () => {
-  const connections = [
+  const applications = [
     {
-      source: {
-        applicationUid: 'Snazzy',
-        domain: 'Addresses',
+      applicationName: 'SnazzyContacts',
+      applicationUid: 'snazzy1234',
+      adapterComponentId: 'snazzyAdapterId',
+      transformerComponentId: 'snazzyTransformerId',
+      secretId: 'snazzySecretId',
+
+      outbound: {
+        active: true,
+        flows: [
+          {
+            transformerAction: 'transformToOih',
+            adapterAction: 'getPersons',
+            schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+          },
+        ],
       },
-      targets: [
-        {
-          applicationUid: 'Wice',
-          routingKey: 'WiceAddressesABCDE',
-          flowId: 'ABCDE',
-          active: true,
-        },
-        {
-          applicationUid: 'Outlook',
-          routingKey: 'OutlookAddressesFGHI',
-          flowId: 'FGHI',
-          active: true,
-        },
-      ],
+
+      inbound: {
+        active: true,
+        flows: [
+          {
+            operation: 'CREATE',
+            transformerAction: 'transformFromOih',
+            adapterAction: 'createPerson',
+            schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+          },
+          {
+            operation: 'UPDATE',
+            transformerAction: 'transformFromOih',
+            adapterAction: 'updatePerson',
+            schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+          },
+          {
+            operation: 'DELETE',
+            transformerAction: 'transformFromOih',
+            adapterAction: 'deletePerson',
+            schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+          },
+        ],
+      },
+    },
+    {
+      applicationName: 'Wice CRM',
+      applicationUid: 'wice5678',
+      adapterComponentId: 'wiceAdapterId',
+      transformerComponentId: 'wiceTransformerId',
+      secretId: 'wiceSecretId',
+
+      outbound: {
+        active: true,
+        flows: [
+          {
+            transformerAction: 'transformToOih',
+            adapterAction: 'getPersons',
+            schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+          },
+        ],
+      },
+
+      inbound: {
+        active: true,
+        flows: [
+          {
+            operation: 'CREATE',
+            transformerAction: 'transformFromOih',
+            adapterAction: 'createContact',
+            schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+          },
+          {
+            operation: 'UPDATE',
+            transformerAction: 'transformFromOih',
+            adapterAction: 'updateContact',
+            schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+          },
+        ],
+      },
     },
   ];
 
@@ -75,12 +133,12 @@ describe('API', () => {
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send(
-        connections,
+        applications,
       );
     expect(res.status).toEqual(201);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.data.tenant).toEqual('TestTenant');
-    expect(res.body.data.connections).toEqual(connections);
+    expect(res.body.data.applications).toEqual(applications);
   });
 
   test('should get the new configuration', async () => {
@@ -92,7 +150,7 @@ describe('API', () => {
     expect(res.status).toEqual(200);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.data.tenant).toEqual('TestTenant');
-    expect(res.body.data.connections).toEqual(connections);
+    expect(res.body.data.applications).toEqual(applications);
   });
 
   test('should not get the new configuration from another tenant', async () => {
@@ -106,13 +164,30 @@ describe('API', () => {
   });
 
   test('should update the configuration', async () => {
-    const newConnections = connections;
-    newConnections[0].targets.push(
+    const newApplications = applications;
+    newApplications.push(
       {
-        applicationUid: 'GoogleContacts',
-        routingKey: 'GoogleContactsAddressesJKLM',
-        flowId: 'JLKM',
-        active: true,
+        applicationName: 'Google Contacts',
+        applicationUid: 'google1357',
+        adapterComponentId: 'googleAdapterId',
+        transformerComponentId: 'googleTransformerId',
+        secretId: 'googleSecretId',
+
+        outbound: {
+          active: false,
+          flows: [],
+        },
+
+        inbound: {
+          active: true,
+          flows: [
+            {
+              operation: 'CREATE',
+              transformerAction: 'transformFromOih',
+              adapterAction: 'createContact',
+            },
+          ],
+        },
       },
     );
     const res = await request
@@ -121,12 +196,12 @@ describe('API', () => {
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send(
-        newConnections,
+        newApplications,
       );
     expect(res.status).toEqual(201);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.data.tenant).toEqual('TestTenant');
-    expect(res.body.data.connections).toEqual(newConnections);
+    expect(res.body.data.applications).toEqual(newApplications);
 
     // Ensure it updates and does not insert
     const allConfigs = await Configuration.find().lean();
@@ -151,22 +226,116 @@ describe('Event Handlers', () => {
   beforeAll(async () => {
     const config = {
       tenant: 'Test Tenant',
-      connections: [
+      applications: [
         {
-          source: {
-            flowId: 'abc',
-            applicationUid: 'Snazzy',
+          applicationName: 'SnazzyContacts',
+          applicationUid: 'snazzy1234',
+          adapterComponentId: 'snazzyAdapterId',
+          transformerComponentId: 'snazzyTransformerId',
+          secretId: 'snazzySecretId',
+
+          outbound: {
+            active: true,
+            flows: [
+              {
+                transformerAction: 'transformToOih',
+                adapterAction: 'getPersons',
+                schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+                flowId: 'SnazzyOutbound',
+              },
+            ],
           },
-          targets: [
-            {
-              applicationUid: 'Wice',
-              flowId: 'def',
-            },
-            {
-              applicationUid: 'Outlook',
-              flowId: 'ghi',
-            },
-          ],
+
+          inbound: {
+            active: true,
+            flows: [
+              {
+                operation: 'CREATE',
+                transformerAction: 'transformFromOih',
+                adapterAction: 'createPerson',
+                schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+                flowId: 'SnazzyInboundCreate',
+              },
+              {
+                operation: 'UPDATE',
+                transformerAction: 'transformFromOih',
+                adapterAction: 'updatePerson',
+                schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+                flowId: 'SnazzyInboundUpdate',
+              },
+              {
+                operation: 'DELETE',
+                transformerAction: 'transformFromOih',
+                adapterAction: 'deletePerson',
+                schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+                flowId: 'SnazzyInboundDelete',
+              },
+            ],
+          },
+        },
+        {
+          applicationName: 'Wice CRM',
+          applicationUid: 'wice5678',
+          adapterComponentId: 'wiceAdapterId',
+          transformerComponentId: 'wiceTransformerId',
+          secretId: 'wiceSecretId',
+
+          outbound: {
+            active: true,
+            flows: [
+              {
+                transformerAction: 'transformToOih',
+                adapterAction: 'getPersons',
+                schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+                flowId: 'WiceOutbound',
+              },
+            ],
+          },
+
+          inbound: {
+            active: true,
+            flows: [
+              {
+                operation: 'CREATE',
+                transformerAction: 'transformFromOih',
+                adapterAction: 'createContact',
+                schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+                flowId: 'WiceInboundCreate',
+              },
+              {
+                operation: 'UPDATE',
+                transformerAction: 'transformFromOih',
+                adapterAction: 'updateContact',
+                schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+                flowId: 'WiceInboundUpdate',
+              },
+            ],
+          },
+        },
+        {
+          applicationName: 'Google Contacts',
+          applicationUid: 'google1357',
+          adapterComponentId: 'googleAdapterId',
+          transformerComponentId: 'googleTransformerId',
+          secretId: 'googleSecretId',
+
+          outbound: {
+            active: false,
+            flows: [],
+          },
+
+          inbound: {
+            active: true,
+            flows: [
+              {
+                operation: 'CREATE',
+                transformerAction: 'transformFromOih',
+                adapterAction: 'createContact',
+                schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+                flowId: 'GoogleInboundCreate',
+              },
+            ],
+          },
         },
       ],
     };
@@ -176,8 +345,8 @@ describe('Event Handlers', () => {
   });
 
   test('should get the target flow ids for a given source', async () => {
-    const targets = await getTargets('abc');
-    expect(targets).toEqual([{ flowId: 'def', applicationUid: 'Wice' }, { flowId: 'ghi', applicationUid: 'Outlook' }]);
+    const targets = await getTargets('SnazzyOutbound', 'CREATE');
+    expect(targets).toEqual([{ flowId: 'WiceInboundCreate', applicationUid: 'wice5678' }, { flowId: 'GoogleInboundCreate', applicationUid: 'google1357' }]);
   });
 
   test('should check flow repository for the status of flows', async () => {
