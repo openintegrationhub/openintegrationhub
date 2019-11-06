@@ -152,7 +152,7 @@ async function createFlows(applications, token) {
           url: `${flowRepoUrl}/flows`,
           body: flow,
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: token,
           },
         };
         const response = await request(options);

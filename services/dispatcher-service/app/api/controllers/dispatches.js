@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const log = require('../../utils/logger');
 const storage = require('../../utils/mongo');
 const { createDummyQueues } = require('../../utils/eventBus');
+const { createFlows } = require('../../utils/flowCreator');
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
@@ -36,16 +37,15 @@ router.get('/', jsonParser, async (req, res) => {
   }
 });
 
-router.put('/', jsonParser, async (req, res) => {
+router.post('/', jsonParser, async (req, res) => {
   try {
-    const applications = req.body;
+    const applications = await createFlows(req.body, req.headers.authorization);
     const configuration = {
       applications,
     };
     configuration.tenant = req.user.tenant;
 
     const response = await storage.upsertConfig(configuration);
-
     const keys = getKeys(applications);
     await createDummyQueues(keys);
 
