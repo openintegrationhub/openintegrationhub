@@ -46,6 +46,7 @@ describe('Documentation', () => {
 });
 
 describe('API', () => {
+  let configId;
   const applications = [
     {
       applicationName: 'SnazzyContacts',
@@ -136,7 +137,7 @@ describe('API', () => {
     }
 
     const res = await request
-      .put('/dispatches')
+      .post('/dispatches')
       .set('Authorization', 'Bearer userToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -158,9 +159,42 @@ describe('API', () => {
     expect(res.body.data.applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
   });
 
-  test('should get the new configuration', async () => {
+  test('should get all configurations', async () => {
     const res = await request
       .get('/dispatches')
+      .set('Authorization', 'Bearer userToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.data[0].tenant).toEqual('TestTenant');
+    expect(res.body.data[0].applications).toHaveLength(2);
+    expect(res.body.data[0].applications[0].outbound.flows).toHaveLength(1);
+    expect(res.body.data[0].applications[0].outbound.flows[0].flowId).toEqual('AutoFlow0');
+    expect(res.body.data[0].applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
+    expect(res.body.data[0].applications[0].inbound.flows).toHaveLength(3);
+    expect(res.body.data[0].applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
+    expect(res.body.data[0].applications[1].outbound.flows).toHaveLength(1);
+    expect(res.body.data[0].applications[1].outbound.flows[0].flowId).toEqual('AutoFlow4');
+    expect(res.body.data[0].applications[1].inbound.flows).toHaveLength(2);
+    expect(res.body.data[0].applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
+
+    configId = res.body.data[0].id;
+  });
+
+  test('should not get the new configuration from another tenant', async () => {
+    const res = await request
+      .get('/dispatches')
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(404);
+    expect(res.text).not.toHaveLength(0);
+  });
+
+  test('should single get only the new configuration', async () => {
+    const res = await request
+      .get(`/dispatches/${configId}`)
       .set('Authorization', 'Bearer userToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -179,16 +213,6 @@ describe('API', () => {
     expect(res.body.data.applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
   });
 
-  test('should not get the new configuration from another tenant', async () => {
-    const res = await request
-      .get('/dispatches')
-      .set('Authorization', 'Bearer guestToken')
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json');
-    expect(res.status).toEqual(404);
-    expect(res.text).not.toHaveLength(0);
-  });
-
   test('should delete the configuration', async () => {
     for (let i = 0; i < 7; i += 1) {
       nock(`http://localhost:3001/flows/AutoFlow${i}`)
@@ -197,7 +221,7 @@ describe('API', () => {
     }
 
     const res = await request
-      .delete('/dispatches')
+      .delete(`/dispatches/${configId}`)
       .set('Authorization', 'Bearer userToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');

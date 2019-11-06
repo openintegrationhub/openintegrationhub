@@ -1,23 +1,37 @@
 /* eslint no-use-before-define: "off" */
 /* eslint no-underscore-dangle: "off" */
 
-// const mongoose = require('mongoose');
-// const config = require('../config');
-
 const Configuration = require('../models/configuration');
-// const log = require('./logger');
+const log = require('./logger'); //eslint-disable-line
 
 const format = (configuration) => {
   const newConfig = configuration;
   if (newConfig && typeof newConfig === 'object') {
-    delete newConfig._id;
-    delete newConfig.__v;
+    if (Array.isArray(newConfig)) {
+      for (let i = 0; i < newConfig.length; i += 1) {
+        newConfig[i].id = newConfig[i]._id;
+        delete newConfig[i]._id;
+        delete newConfig[i].__v;
+      }
+    } else {
+      newConfig.id = newConfig._id;
+      delete newConfig._id;
+      delete newConfig.__v;
+    }
   }
   return newConfig;
 };
 
-const getConfig = tenant => new Promise(async (resolve) => {
-  const configuration = await Configuration.findOne({ tenant }).lean();
+const getConfigs = tenant => new Promise(async (resolve) => {
+  const configurations = await Configuration.find({ tenant }).lean();
+  if (!configurations || configurations.length === 0) {
+    resolve(false);
+  }
+  resolve(format(configurations));
+});
+
+const getOneConfig = (tenant, id) => new Promise(async (resolve) => {
+  const configuration = await Configuration.findOne({ tenant, _id: id }).lean();
   resolve(format(configuration));
 });
 
@@ -31,9 +45,9 @@ const upsertConfig = data => new Promise(async (resolve) => {
   resolve(format(configuration));
 });
 
-const deleteConfig = tenant => new Promise(async (resolve) => {
+const deleteConfig = (tenant, id) => new Promise(async (resolve) => {
   const configuration = await Configuration.findOneAndDelete(
-    { tenant },
+    { tenant, _id: id },
     { useFindAndModify: false },
   )
     .lean();
@@ -46,5 +60,5 @@ const getConfigBySource = flowId => new Promise(async (resolve) => {
 });
 
 module.exports = {
-  getConfig, upsertConfig, deleteConfig, getConfigBySource,
+  getConfigs, getOneConfig, upsertConfig, deleteConfig, getConfigBySource,
 };
