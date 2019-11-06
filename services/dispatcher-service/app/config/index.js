@@ -7,6 +7,10 @@ const general = {
   updateEventName: process.env.UPDATE_EVENT_NAME || 'data-hub.record.updated',
   flowRepoUrl: process.env.FLOWREPO_URL || 'http://localhost:3001',
   flowToken: process.env.FLOW_TOKEN || 'exampleToken',
+  sdfAdapterId: process.env.SDF_ID || '12345abcde',
+  sdfAdapterPublishAction: process.env.SDF_INBOUND || 'sendMessageToOih',
+  sdfAdapterReceiveAction: process.env.SDF_OUTBOUND || 'receiveEvents',
+  sdfAdapterRecordAction: process.env.SDF_RECORD || 'processRecordUid',
 };
 
 module.exports = general;

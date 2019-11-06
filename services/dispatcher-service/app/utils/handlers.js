@@ -44,17 +44,32 @@ async function checkFlows(targets) {
   }
 }
 
-async function getTargets(sourceFlow) {
+async function getTargets(sourceFlow, operation) {
   const configuration = await storage.getConfigBySource(sourceFlow);
   if (!configuration) return false;
-  const { connections } = configuration;
+  const { applications } = configuration;
   const targetFlows = [];
+  let schemaUri;
 
-  for (let i = 0; i < connections.length; i += 1) {
-    if (connections[i].source.flowId === sourceFlow) {
-      const { targets } = connections[i];
-      for (let j = 0; j < targets.length; j += 1) {
-        targetFlows.push({ flowId: targets[j].flowId, applicationUid: targets[j].applicationUid });
+  // Find source, get its schema, then discard it for further processing
+  for (let i = 0; i < applications.length; i += 1) {
+    const app = applications[i];
+    const found = app.outbound.flows.find(flow => flow.flowId === sourceFlow);
+    if (found) {
+      schemaUri = found.schemaUri;  //eslint-disable-line
+      applications.splice(i, 1);
+      break;
+    }
+  }
+
+  for (let j = 0; j < applications.length; j += 1) {
+    const app = applications[j];
+    if (app.inbound.active) {
+      for (let k = 0; k < app.inbound.flows.length; k += 1) {
+        const flow = app.inbound.flows[k];
+        if (flow.operation === operation && flow.schemaUri === schemaUri) {
+          targetFlows.push({ flowId: flow.flowId, applicationUid: app.applicationUid });
+        }
       }
     }
   }

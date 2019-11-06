@@ -1,18 +1,23 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const log = require('../../utils/logger');
 const storage = require('../../utils/mongo');
 const { createDummyQueues } = require('../../utils/eventBus');
+const { createFlows, deleteFlows } = require('../../utils/flowCreator');
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
 
-function getKeys(connections) {
+function getKeys(applications) {
   const keys = [];
-  for (let i = 0; i < connections.length; i += 1) {
-    const { targets } = connections[i];
-    for (let j = 0; j < targets.length; j += 1) {
-      keys.push(`dispatch.${targets[j].flowId}`);
+  for (let i = 0; i < applications.length; i += 1) {
+    const app = applications[i];
+
+    if (app.inbound.active) {
+      for (let j = 0; j < app.outbound.flows.length; j += 1) {
+        keys.push(`dispatch.${app.inbound.flows[j].flowId}`);
+      }
     }
   }
   return keys;
@@ -20,7 +25,7 @@ function getKeys(connections) {
 
 router.get('/', jsonParser, async (req, res) => {
   try {
-    const response = await storage.getConfig(req.user.tenant);
+    const response = await storage.getConfigs(req.user.tenant);
 
     if (!response) {
       return res.status(404).send({ errors: [{ status: 404, message: 'Tenant has no config' }] });
@@ -33,17 +38,34 @@ router.get('/', jsonParser, async (req, res) => {
   }
 });
 
-router.put('/', jsonParser, async (req, res) => {
+router.get('/:id', jsonParser, async (req, res) => {
   try {
-    const connections = req.body;
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).send({ errors: [{ message: 'Invalid id', code: 400 }] });
+    }
+    const response = await storage.getOneConfig(req.user.tenant, req.params.id);
+
+    if (!response) {
+      return res.status(404).send({ errors: [{ status: 404, message: 'Config not found' }] });
+    }
+
+    return res.status(200).send({ meta: {}, data: response });
+  } catch (e) {
+    log.error(e);
+    return res.status(500).send(e);
+  }
+});
+
+router.post('/', jsonParser, async (req, res) => {
+  try {
+    const applications = await createFlows(req.body, req.headers.authorization);
     const configuration = {
-      connections,
+      applications,
     };
     configuration.tenant = req.user.tenant;
 
     const response = await storage.upsertConfig(configuration);
-
-    const keys = getKeys(connections);
+    const keys = getKeys(applications);
     await createDummyQueues(keys);
 
     return res.status(201).send({ meta: {}, data: response });
@@ -53,14 +75,27 @@ router.put('/', jsonParser, async (req, res) => {
   }
 });
 
-router.delete('/', jsonParser, async (req, res) => {
+router.delete('/:id', jsonParser, async (req, res) => {  //eslint-disable-line
   try {
-    await storage.deleteConfig(req.user.tenant);
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).send({ errors: [{ message: 'Invalid id', code: 400 }] });
+    }
 
-    return res.status(200).send('Deletion successful');
+    const config = await storage.getOneConfig(req.user.tenant, req.params.id);
+
+    if (!config) {
+      return res.status(404).send({ errors: [{ message: 'No config found', code: 404 }] });
+    }
+    await storage.deleteConfig(req.user.tenant, req.params.id);
+
+    res.status(200).send('Deletion successful');
+
+    await deleteFlows(config);
   } catch (e) {
     log.error(e);
-    return res.status(500).send(e);
+    if (!res.headersSent) {
+      return res.status(500).send(e);
+    }
   }
 });
 
