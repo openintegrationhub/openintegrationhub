@@ -136,7 +136,7 @@ describe('API', () => {
     }
 
     const res = await request
-      .post('/dispatches')
+      .put('/dispatches')
       .set('Authorization', 'Bearer userToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -189,52 +189,13 @@ describe('API', () => {
     expect(res.text).not.toHaveLength(0);
   });
 
-  // test('should update the configuration', async () => {
-  //   const newApplications = applications;
-  //   newApplications.push(
-  //     {
-  //       applicationName: 'Google Contacts',
-  //       applicationUid: 'google1357',
-  //       adapterComponentId: 'googleAdapterId',
-  //       transformerComponentId: 'googleTransformerId',
-  //       secretId: 'googleSecretId',
-  //
-  //       outbound: {
-  //         active: false,
-  //         flows: [],
-  //       },
-  //
-  //       inbound: {
-  //         active: true,
-  //         flows: [
-  //           {
-  //             operation: 'CREATE',
-  //             transformerAction: 'transformFromOih',
-  //             adapterAction: 'createContact',
-  //           },
-  //         ],
-  //       },
-  //     },
-  //   );
-  //   const res = await request
-  //     .put('/dispatches')
-  //     .set('Authorization', 'Bearer userToken')
-  //     .set('accept', 'application/json')
-  //     .set('Content-Type', 'application/json')
-  //     .send(
-  //       newApplications,
-  //     );
-  //   expect(res.status).toEqual(201);
-  //   expect(res.text).not.toHaveLength(0);
-  //   expect(res.body.data.tenant).toEqual('TestTenant');
-  //   expect(res.body.data.applications).toEqual(newApplications);
-  //
-  //   // Ensure it updates and does not insert
-  //   const allConfigs = await Configuration.find().lean();
-  //   expect(allConfigs).toHaveLength(1);
-  // });
-
   test('should delete the configuration', async () => {
+    for (let i = 0; i < 7; i += 1) {
+      nock(`http://localhost:3001/flows/AutoFlow${i}`)
+        .delete('')
+        .reply(200);
+    }
+
     const res = await request
       .delete('/dispatches')
       .set('Authorization', 'Bearer userToken')
@@ -457,7 +418,7 @@ describe('Event Handlers', () => {
 });
 
 describe('Flow Creation', () => {
-  test('Generate a valid inbound flow', async () => {
+  test('should generate a valid inbound flow', async () => {
     const getFlow = makeFlow(
       'testAdapterId',
       'testTransformerId',
@@ -519,7 +480,7 @@ describe('Flow Creation', () => {
     expect(getFlow).toEqual(reference);
   });
 
-  test('Generate a valid outbound update flow', async () => {
+  test('should generate a valid outbound update flow', async () => {
     const updateFlow = makeFlow(
       'testAdapterId',
       'testTransformerId',
@@ -586,7 +547,7 @@ describe('Flow Creation', () => {
     expect(updateFlow).toEqual(reference);
   });
 
-  test('Generate a valid outbound create flow', async () => {
+  test('should generate a valid outbound create flow', async () => {
     const createFlow = makeFlow(
       'testAdapterId',
       'testTransformerId',
@@ -653,8 +614,8 @@ describe('Flow Creation', () => {
     expect(createFlow).toEqual(reference);
   });
 
-  test('Make calls to Flow Repository to create flows', async () => {
-    const getFlow = nock('http://localhost:3001/flows')
+  test('should make calls to Flow Repository to create flows', async () => {
+    nock('http://localhost:3001/flows')
       .post('', {
         name: 'Hub&Spoke Flow',
         description: 'This flow was automatically generated',
@@ -673,7 +634,7 @@ describe('Flow Creation', () => {
       })
       .reply(201, { data: { id: 'OutboundId' } });
 
-    const createFlow = nock('http://localhost:3001/flows')
+    nock('http://localhost:3001/flows')
       .post('', {
         name: 'Hub&Spoke Flow',
         description: 'This flow was automatically generated',
@@ -694,7 +655,7 @@ describe('Flow Creation', () => {
       })
       .reply(201, { data: { id: 'InboundIdCreate' } });
 
-    const updateFlow = nock('http://localhost:3001/flows')
+    nock('http://localhost:3001/flows')
       .post('', {
         name: 'Hub&Spoke Flow',
         description: 'This flow was automatically generated',
@@ -715,7 +676,7 @@ describe('Flow Creation', () => {
       })
       .reply(201, { data: { id: 'InboundIdUpdate' } });
 
-    const deleteFlow = nock('http://localhost:3001/flows')
+    nock('http://localhost:3001/flows')
       .post('', {
         name: 'Hub&Spoke Flow',
         description: 'This flow was automatically generated',

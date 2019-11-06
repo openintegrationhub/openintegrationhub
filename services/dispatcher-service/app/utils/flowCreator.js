@@ -177,7 +177,7 @@ async function createFlows(applications, token) {
           json: true,
           body: flow,
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: token,
           },
         };
         const response = await request(options);
@@ -190,4 +190,31 @@ async function createFlows(applications, token) {
   return newApplications;
 }
 
-module.exports = { createFlows, makeFlow };
+async function deleteFlows(config, token) {
+  const flowIds = [];
+
+  for (let i = 0; i < config.applications.length; i += 1) {
+    const app = config.applications[i];
+    for (let j = 0; j < app.inbound.flows.length; j += 1) {
+      flowIds.push(app.inbound.flows[j].flowId);
+    }
+
+    for (let k = 0; k < app.outbound.flows.length; k += 1) {
+      flowIds.push(app.outbound.flows[k].flowId);
+    }
+  }
+
+  for (let j = 0; j < flowIds.length; j += 1) {
+    const options = {
+      method: 'DELETE',
+      url: `${flowRepoUrl}/flows/${flowIds[j]}`,
+      json: true,
+      headers: {
+        Authorization: token,
+      },
+    };
+    await request(options);
+  }
+}
+
+module.exports = { createFlows, makeFlow, deleteFlows };

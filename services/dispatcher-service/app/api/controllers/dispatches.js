@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const log = require('../../utils/logger');
 const storage = require('../../utils/mongo');
 const { createDummyQueues } = require('../../utils/eventBus');
-const { createFlows } = require('../../utils/flowCreator');
+const { createFlows, deleteFlows } = require('../../utils/flowCreator');
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
@@ -37,7 +37,7 @@ router.get('/', jsonParser, async (req, res) => {
   }
 });
 
-router.post('/', jsonParser, async (req, res) => {
+router.put('/', jsonParser, async (req, res) => {
   try {
     const applications = await createFlows(req.body, req.headers.authorization);
     const configuration = {
@@ -56,14 +56,19 @@ router.post('/', jsonParser, async (req, res) => {
   }
 });
 
-router.delete('/', jsonParser, async (req, res) => {
+router.delete('/', jsonParser, async (req, res) => {  //eslint-disable-line
   try {
+    const config = await storage.getConfig(req.user.tenant);
     await storage.deleteConfig(req.user.tenant);
 
-    return res.status(200).send('Deletion successful');
+    res.status(200).send('Deletion successful');
+
+    await deleteFlows(config);
   } catch (e) {
     log.error(e);
-    return res.status(500).send(e);
+    if (!res.headersSent) {
+      return res.status(500).send(e);
+    }
   }
 });
 
