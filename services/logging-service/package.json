@@ -1,7 +1,7 @@
 {
-    "name": "snapshots-service",
+    "name": "logging-service",
     "version": "0.0.2",
-    "description": "Service for managing flow snapshots",
+    "description": "Service for getting flow execution logs",
     "main": "dist/index.js",
     "directories": {
         "doc": "docs"
@@ -16,18 +16,16 @@
         "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts ./src",
         "pretest": "npm run eslint",
         "build:ts": "tsc",
-        "build:docker": "docker build -t openintegrationhub/snapshots-service:${VERSION} -f Dockerfile ../../"
+        "build:docker": "docker build -t openintegrationhub/logging-service:${VERSION} -f Dockerfile ../../"
     },
     "license": "UNLICENSED",
     "devDependencies": {
         "@types/chai": "4.1.7",
         "@types/koa-bodyparser": "4.3.0",
-        "@types/koa-bunyan-logger": "2.1.1",
         "@types/koa-qs": "2.0.0",
         "@types/koa-router": "7.0.42",
         "@types/lodash": "4.14.135",
         "@types/mocha": "5.2.7",
-        "@types/mongoose": "5.5.7",
         "@types/nock": "10.0.3",
         "@types/supertest": "2.0.8",
         "@typescript-eslint/eslint-plugin": "1.9.0",
@@ -42,16 +40,15 @@
         "typescript": "3.5.2"
     },
     "dependencies": {
+        "@google-cloud/logging": "5.5.4",
         "@openintegrationhub/iam-utils": "*",
         "backend-commons-lib": "*",
         "bunyan": "1.8.12",
         "koa": "2.7.0",
         "koa-bodyparser": "4.2.1",
-        "koa-bunyan-logger": "2.1.0",
         "koa-qs": "2.0.0",
         "koa-router": "7.4.0",
         "koa2-swagger-ui": "2.14.0",
-        "lodash": "4.17.11",
-        "mongoose": "5.6.3"
+        "lodash": "4.17.11"
     }
 }
