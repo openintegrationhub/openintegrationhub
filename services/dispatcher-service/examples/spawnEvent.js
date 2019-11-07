@@ -1,4 +1,7 @@
 // This script saves a configuration and spawns an event that will create further dispatches in a local environment
+// To use it, first start a local instance of the dispatcher service, using "npm start"
+// Then run this script using "node ./spawnEvent"
+// The instance of the dispatcher then ought to receive the event and process it
 // Requires a local mongoDB and rabbitMQ
 
 const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/event-bus');
@@ -20,24 +23,102 @@ async function spawnEvent() {
   await Configuration.findOneAndDelete({ tenant: 'Test Tenant' });
 
   // Create an example configuration
+  // This one links three apps, each with outbound and inbound flows
   const conf = {
     tenant: 'Test Tenant',
-    connections: [
+    applications: [
       {
-        source: {
-          flowId: 'abc',
-          applicationUid: 'Snazzy',
+        applicationName: 'Snazzy Contacts',
+        applicationUid: 'snazzy1234',
+        adapterComponentId: 'Irrelevant for this example',
+        transformerComponentId: 'Irrelevant for this example',
+        secretId: 'Irrelevant for this example',
+
+        outbound: {
+          active: true,
+          flows: [
+            {
+              transformerAction: 'Irrelevant for this example',
+              adapterAction: 'Irrelevant for this example',
+              schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+              flowId: 'SnazzyOutbound',
+            },
+          ],
         },
-        targets: [
-          {
-            applicationUid: 'Wice',
-            flowId: 'def',
-          },
-          {
-            applicationUid: 'Outlook',
-            flowId: 'ghi',
-          },
-        ],
+        inbound: {
+          active: true,
+          flows: [
+            {
+              transformerAction: 'Irrelevant for this example',
+              adapterAction: 'Irrelevant for this example',
+              schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+              operation: 'CREATE',
+              flowId: 'SnazzyInboundCreate',
+            },
+          ],
+        },
+      },
+      {
+        applicationName: 'Wice CRM',
+        applicationUid: 'wice5678',
+        adapterComponentId: 'Irrelevant for this example',
+        transformerComponentId: 'Irrelevant for this example',
+        secretId: 'Irrelevant for this example',
+
+        outbound: {
+          active: true,
+          flows: [
+            {
+              transformerAction: 'Irrelevant for this example',
+              adapterAction: 'Irrelevant for this example',
+              schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+              flowId: 'WiceOutbound',
+            },
+          ],
+        },
+        inbound: {
+          active: true,
+          flows: [
+            {
+              transformerAction: 'Irrelevant for this example',
+              adapterAction: 'Irrelevant for this example',
+              schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+              operation: 'CREATE',
+              flowId: 'WiceInboundCreate',
+            },
+          ],
+        },
+      },
+      {
+        applicationName: 'Google Contacts',
+        applicationUid: 'google1357',
+        adapterComponentId: 'Irrelevant for this example',
+        transformerComponentId: 'Irrelevant for this example',
+        secretId: 'Irrelevant for this example',
+
+        outbound: {
+          active: true,
+          flows: [
+            {
+              transformerAction: 'Irrelevant for this example',
+              adapterAction: 'Irrelevant for this example',
+              schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+              flowId: 'GoogleOutbound',
+            },
+          ],
+        },
+        inbound: {
+          active: true,
+          flows: [
+            {
+              transformerAction: 'Irrelevant for this example',
+              adapterAction: 'Irrelevant for this example',
+              schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+              operation: 'CREATE',
+              flowId: 'GoogleInboundCreate',
+            },
+          ],
+        },
       },
     ],
   };
@@ -60,8 +141,22 @@ async function spawnEvent() {
     },
     payload: {
       meta: {
-        applicationUid: 'Snazzy',
-        flowId: 'abc',
+        applicationUid: 'snazzy1234',
+        flowId: 'SnazzyOutbound',
+        refs: [
+          {
+            applicationUid: 'snazzy1234',
+            recordUid: 'abcd',
+          },
+          {
+            applicationUid: 'wice5678',
+            recordUid: 'efgh',
+          },
+          {
+            applicationUid: 'google1357',
+            recordUid: 'ijkl',
+          },
+        ],
       },
       data: {
         firstName: 'Jane',

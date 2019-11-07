@@ -5,7 +5,7 @@ const general = {
   amqpUrl: process.env.QUEUE_URL || 'amqp://guest:guest@localhost:5672',
   createEventName: process.env.CREATE_EVENT_NAME || 'data-hub.record.created',
   updateEventName: process.env.UPDATE_EVENT_NAME || 'data-hub.record.updated',
-  updateEventName: process.env.DELETE_EVENT_NAME || 'data-hub.record.deleted',
+  deleteEventName: process.env.DELETE_EVENT_NAME || 'data-hub.record.deleted',
   createOperation: process.env.CREATE_OPERATION || 'CREATE',
   updateOperation: process.env.UPDATE_OPERATION || 'UPDATE',
   deleteOperation: process.env.DELETE_OPERATION || 'DELETE',
