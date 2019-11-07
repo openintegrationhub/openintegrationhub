@@ -26,10 +26,10 @@ spec:
                   name: snapshots-service
                   key: MONGODB_URI
             - name: RABBITMQ_URI
-                valueFrom:
-                  secretKeyRef:
-                    name: snapshots-service
-                    key: RABBITMQ_URI
+              valueFrom:
+                secretKeyRef:
+                  name: snapshots-service
+                  key: RABBITMQ_URI
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:

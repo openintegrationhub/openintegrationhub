@@ -8,31 +8,54 @@ const { Schema } = mongoose;
 // Define schema
 const configuration = new Schema({
   tenant: String,
-  connections: [
+  applications: [
     {
       _id: false,
-      source: {
+      applicationName: String,
+      applicationUid: String,
+      adapterComponentId: String,
+      transformerComponentId: String,
+      secretId: String,
+
+      outbound: {
         _id: false,
-        applicationUid: String,
-        domain: String,
-        flowId: String,
+        active: Boolean,
+        flows: [
+          {
+            _id: false,
+            transformerAction: String,
+            adapterAction: String,
+            schemaUri: String,
+            flowId: String,
+          },
+        ],
       },
-      targets: [
-        {
-          _id: false,
-          active: Boolean,
-          flowId: String,
-          routingKey: String,
-          applicationUid: String,
-        },
-      ],
+
+      inbound: {
+        _id: false,
+        active: Boolean,
+        flows: [
+          {
+            _id: false,
+            operation: {
+              type: String,
+              enum: [
+                'CREATE',
+                'UPDATE',
+                'DELETE',
+              ],
+            },
+            transformerAction: String,
+            adapterAction: String,
+            schemaUri: String,
+            flowId: String,
+          },
+        ],
+      },
     },
   ],
 },
 { collection: 'configurations', timestamps: true });
-
-configuration.index({ 'connections.source.flowId': 1 });
-configuration.index({ tenant: 1 }, { unique: true });
 
 
 module.exports.configuration = configuration;

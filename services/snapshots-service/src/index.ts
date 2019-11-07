@@ -16,7 +16,8 @@ export default class SnapshotsServiceApp extends App {
         const mongooseOptions = {
             socketTimeoutMS: 60000,
             useCreateIndex: true,
-            useNewUrlParser: true
+            useNewUrlParser: true,
+            useFindAndModify: false
         };
 
         await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);

@@ -1,10 +1,13 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: iam
   namespace: oih-dev-ns
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: iam
   minReadySeconds: 10
   revisionHistoryLimit: 2
   template:

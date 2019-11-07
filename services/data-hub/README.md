@@ -40,7 +40,7 @@ VERSION=latest npm run build:docker
 
 ## How to deploy
 
-Kubernetes descriptors for Component Repository along with the other core platform microservices can be found in the [k8s](./k8s) directory.
+Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 
 ## Environment variables
 
@@ -51,4 +51,5 @@ Kubernetes descriptors for Component Repository along with the other core platfo
 | IAM_TOKEN | Token of the service account. |
 | LOG_LEVEL | Log level for logger. |
 | MONGODB_URI | MongoDB connection string. |
+| RABBITMQ_URI | RabbitMQ connection string. |
 | PORT | Port for HTTP interface. |

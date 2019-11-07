@@ -12,18 +12,19 @@ module.exports = class OIHSecretsDao {
     }
 
     async findById(secretId, {auth}) {
+        const logger = this._logger.child({secretId});
         const url = this._getSecretsServiceUrl(`/secrets/${secretId}`);
         const opts = {
             url,
             json: true,
+            timeout: 5000,
             headers: {
                 authorization: `Bearer ${auth.token}`
             }
         };
 
-        this._logger.trace({secretId, opts}, 'Fetching the secret');
+        logger.trace({opts}, 'Fetching the secret');
         const { body, statusCode } = await getAsync(opts);
-        this._logger.trace({body}, 'Got secret'); //@todo: remove this line
 
         if (statusCode === 200) {
             return _.get(body, 'data');
@@ -33,7 +34,7 @@ module.exports = class OIHSecretsDao {
             return null;
         }
 
-        this._logger.trace({statusCode, body}, 'Failed to get the secret');
+        logger.trace({statusCode, body}, 'Failed to get the secret');
         throw new Error(`Failed to fetch the secret ${secretId}`);
     }
 

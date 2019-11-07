@@ -20,10 +20,15 @@ describe('SecretsDao', () => {
             SECRETS_SERVICE_BASE_URL: 'http://secret-service.com/api/v1'
         };
         const logger = {
-            info: () => {},
-            debug: () => {},
-            error: () => {},
-            trace: () => {}
+            child() {
+                return {
+                    info: () => {},
+                    debug: () => {},
+                    error: () => {},
+                    trace: () => {}
+                };
+            }
+
         };
 
         sd = new SecretsDao({config, logger});
