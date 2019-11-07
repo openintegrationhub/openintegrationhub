@@ -159,7 +159,13 @@ async function createFlows(applications, token) {
           };
           const response = await request(options);
 
-          app.outbound.flows[j].flowId = response.body.data.id;
+          if (response.statusCode === 201) {
+            app.outbound.flows[j].flowId = response.body.data.id;
+          } else {
+            log.error('Could not create flow:');
+            log.error(response.statusCode);
+            log.error(JSON.stringify(response.body));
+          }
         }
       }
 
@@ -184,7 +190,13 @@ async function createFlows(applications, token) {
           };
           const response = await request(options);
 
-          app.inbound.flows[k].flowId = response.body.data.id;
+          if (response.statusCode === 201) {
+            app.inbound.flows[k].flowId = response.body.data.id;
+          } else {
+            log.error('Could not create flow:');
+            log.error(response.statusCode);
+            log.error(JSON.stringify(response.body));
+          }
         }
       }
       newApplications[i] = app;
