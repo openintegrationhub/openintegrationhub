@@ -165,6 +165,7 @@ async function createFlows(applications, token) {
             log.error('Could not create flow:');
             log.error(response.statusCode);
             log.error(JSON.stringify(response.body));
+            return false;
           }
         }
       }
@@ -196,6 +197,7 @@ async function createFlows(applications, token) {
             log.error('Could not create flow:');
             log.error(response.statusCode);
             log.error(JSON.stringify(response.body));
+            return false;
           }
         }
       }

@@ -480,7 +480,7 @@ describe('Flow Creation', () => {
           },
           {
             id: 'step_3',
-            componentId: '12345abcde',
+            componentId: '5d2484d2a422ca001bda5690',
             name: 'SDF Adapter',
             function: 'sendMessageToOih',
             description: 'Passes data to SDF',
@@ -521,7 +521,7 @@ describe('Flow Creation', () => {
         nodes: [
           {
             id: 'step_1',
-            componentId: '12345abcde',
+            componentId: '5d2484d2a422ca001bda5690',
             name: 'SDF Adapter',
             function: 'receiveEvents',
             description: 'Receives data from SDF',
@@ -543,7 +543,7 @@ describe('Flow Creation', () => {
           },
           {
             id: 'step_4',
-            componentId: '12345abcde',
+            componentId: '5d2484d2a422ca001bda5690',
             name: 'SDF Adapter',
             function: 'processRecordUid',
             description: 'Updates recordUid',
@@ -588,7 +588,7 @@ describe('Flow Creation', () => {
         nodes: [
           {
             id: 'step_1',
-            componentId: '12345abcde',
+            componentId: '5d2484d2a422ca001bda5690',
             name: 'SDF Adapter',
             function: 'receiveEvents',
             description: 'Receives data from SDF',
@@ -610,7 +610,7 @@ describe('Flow Creation', () => {
           },
           {
             id: 'step_4',
-            componentId: '12345abcde',
+            componentId: '5d2484d2a422ca001bda5690',
             name: 'SDF Adapter',
             function: 'processRecordUid',
             description: 'Updates recordUid',
@@ -649,7 +649,7 @@ describe('Flow Creation', () => {
           }, {
             id: 'step_2', name: 'Source Transformer', function: 'transformToOih', description: 'Transforms data', fields: { domainId: 'testDomainId', schema: 'person' },
           }, {
-            id: 'step_3', componentId: '12345abcde', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
+            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
           }],
           edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }],
         },
@@ -664,13 +664,13 @@ describe('Flow Creation', () => {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
-            id: 'step_1', componentId: '12345abcde', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
           }, {
             id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data',
           }, {
             id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'createPerson', description: 'Pushes data',
           }, {
-            id: 'step_4', componentId: '12345abcde', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_4', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
           edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }, { source: 'step_3', target: 'step_4' }],
         },
@@ -685,13 +685,13 @@ describe('Flow Creation', () => {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
-            id: 'step_1', componentId: '12345abcde', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
           }, {
             id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data',
           }, {
             id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'updatePerson', description: 'Pushes data',
           }, {
-            id: 'step_4', componentId: '12345abcde', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_4', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
           edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }, { source: 'step_3', target: 'step_4' }],
         },
@@ -706,13 +706,13 @@ describe('Flow Creation', () => {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
-            id: 'step_1', componentId: '12345abcde', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
           }, {
             id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data',
           }, {
             id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'deletePerson', description: 'Pushes data',
           }, {
-            id: 'step_4', componentId: '12345abcde', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_4', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
           edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }, { source: 'step_3', target: 'step_4' }],
         },

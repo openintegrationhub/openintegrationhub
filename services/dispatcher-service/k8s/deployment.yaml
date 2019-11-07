@@ -40,6 +40,8 @@ spec:
                 secretKeyRef:
                   name: dispatcher-service
                   key: 'flowtoken'
+            - name: "SDF_ID"
+              value: "5d2484d2a422ca001bda5690"
           resources:
             limits:
               cpu: '0.1'
