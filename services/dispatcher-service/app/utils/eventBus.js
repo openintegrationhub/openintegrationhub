@@ -34,7 +34,7 @@ async function connectQueue() {
       return event.ack();
     }
 
-    const targets = await getTargets(event.payload.meta.flowId);
+    const targets = await getTargets(event.payload.meta.flowId, config.createOperation);
 
     if (!targets) {
       log.info('No targets found for event.');
@@ -65,7 +65,38 @@ async function connectQueue() {
       return event.ack();
     }
 
-    const targets = await getTargets(payload.meta.flowId);
+    const targets = await getTargets(payload.meta.flowId, config.updateOperation);
+
+    if (!targets) {
+      log.info('No targets found for event.');
+      return event.ack();
+    }
+
+    await checkFlows(targets);
+
+    const events = await createDispatches(targets, payload);
+    const promises = [];
+
+    for (let j = 0; j < events.length; j += 1) {
+      promises.push(publishQueue(events[j]));
+    }
+
+    await Promise.all(promises);
+    return event.ack();
+  });
+
+  await eventBus.subscribe(config.deleteEventName, async (event) => {
+    log.info(`Received event: ${JSON.stringify(event.headers)}`);
+
+    const { payload } = event;
+
+    if (!payload.meta || !payload.meta.flowId) {
+      log.warn('Received malformed event:');
+      log.warn(event.payload);
+      return event.ack();
+    }
+
+    const targets = await getTargets(payload.meta.flowId, config.deleteOperation);
 
     if (!targets) {
       log.info('No targets found for event.');
