@@ -139,14 +139,16 @@ async function createFlows(applications, token) {
           const chunks = current.schemaUri.split('/');
           const domainId = chunks[chunks.length - 3];
           const schema = chunks[chunks.length - 1];
-          const flow = makeFlow(app.adapterId,
-            app.transformerId,
+          const flow = makeFlow(
+            app.adapterComponentId,
+            app.transformerComponentId,
             current.adapterAction,
             current.transformerAction,
             app.secretId,
             'GET',
             domainId,
-            schema);
+            schema,
+          );
 
           const options = {
             method: 'POST',
@@ -173,12 +175,14 @@ async function createFlows(applications, token) {
       if (app.inbound.active) {
         for (let k = 0; k < app.inbound.flows.length; k += 1) {
           const current = app.inbound.flows[k];
-          const flow = makeFlow(app.adapterId,
-            app.transformerId,
+          const flow = makeFlow(
+            app.adapterComponentId,
+            app.transformerComponentId,
             current.adapterAction,
             current.transformerAction,
             app.secretId,
-            current.operation);
+            current.operation,
+          );
 
           const options = {
             method: 'POST',
