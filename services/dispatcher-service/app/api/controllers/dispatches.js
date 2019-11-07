@@ -95,7 +95,7 @@ router.delete('/:id', jsonParser, async (req, res) => {  //eslint-disable-line
 
     res.status(200).send('Deletion successful');
 
-    await deleteFlows(config);
+    await deleteFlows(config, req.headers.authorization);
   } catch (e) {
     log.error(e);
     if (!res.headersSent) {
