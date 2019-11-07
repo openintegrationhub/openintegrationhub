@@ -151,6 +151,7 @@ async function createFlows(applications, token) {
             'GET',
             domainId,
             schema,
+            app.fields,
           );
 
           const options = {
