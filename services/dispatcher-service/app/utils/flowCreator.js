@@ -151,6 +151,7 @@ async function createFlows(applications, token) {
             'GET',
             domainId,
             schema,
+            app.fields,
           );
 
           const options = {
@@ -185,6 +186,7 @@ async function createFlows(applications, token) {
             current.transformerAction,
             app.secretId,
             current.operation,
+            app.fields,
           );
 
           const options = {
