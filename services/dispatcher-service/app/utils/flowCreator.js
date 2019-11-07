@@ -6,6 +6,7 @@ const request = require('request-promise').defaults({
   simple: false,
   resolveWithFullResponse: true,
 });
+const log = require('./logger');
 const {
   sdfAdapterId,
   sdfAdapterReceiveAction,
