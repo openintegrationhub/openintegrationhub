@@ -186,6 +186,7 @@ async function createFlows(applications, token) {
             current.transformerAction,
             app.secretId,
             current.operation,
+            app.fields,
           );
 
           const options = {
