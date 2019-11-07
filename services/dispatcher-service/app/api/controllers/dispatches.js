@@ -59,6 +59,11 @@ router.get('/:id', jsonParser, async (req, res) => {
 router.post('/', jsonParser, async (req, res) => {
   try {
     const applications = await createFlows(req.body, req.headers.authorization);
+
+    if (!applications) {
+      return res.status(500).send({ errors: [{ message: 'Could not create flows', code: 500 }] });
+    }
+
     const configuration = {
       applications,
     };
@@ -90,7 +95,7 @@ router.delete('/:id', jsonParser, async (req, res) => {  //eslint-disable-line
 
     res.status(200).send('Deletion successful');
 
-    await deleteFlows(config);
+    await deleteFlows(config, req.headers.authorization);
   } catch (e) {
     log.error(e);
     if (!res.headersSent) {
