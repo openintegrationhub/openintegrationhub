@@ -160,7 +160,7 @@ async function createFlows(applications, token) {
           const response = await request(options);
 
           if (response.statusCode === 201) {
-            app.inbound.flows[k].flowId = response.body.data.id;
+            app.outbound.flows[j].flowId = response.body.data.id;
           } else {
             log.error('Could not create flow:');
             log.error(response.statusCode);
