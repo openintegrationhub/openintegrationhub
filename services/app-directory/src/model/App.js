@@ -43,7 +43,7 @@ const app = new Schema({
         authClient: String,
         scopes: String,
     },
-    dataModels: [String],
+    // dataModels: [String],
     components: {
         adapter: String,
         transformer: String,

@@ -10,8 +10,28 @@ import Button from '@material-ui/core/Button';
 
 // Actions
 import {
-    FormControl, FormControlLabel, Switch, TextField, Snackbar, Select, InputLabel, MenuItem, Checkbox, FormLabel, Radio, RadioGroup,
+    FormControl,
+    FormControlLabel,
+    Container,
+    Switch,
+    TextField,
+    Snackbar,
+    Select,
+    InputLabel,
+    MenuItem,
+    Checkbox,
+    FormLabel,
+    Radio,
+    RadioGroup,
+    Table,
+    TableHead,
+    TableCell,
+    TableBody,
+    TableRow,
+    IconButton,
+    ListSubheader,
 } from '@material-ui/core';
+import { Delete } from '@material-ui/icons';
 import {
     getAppById,
     updateApp,
@@ -30,6 +50,14 @@ const useStyles = {
         margin: 'auto',
         outline: 'none',
     },
+    wrapper: {
+        padding: '20px 0',
+        justifyContent: 'center',
+    },
+    formControl: {
+        margin: '10px',
+        minWidth: 120,
+    },
 };
 
 class AppDetails extends React.Component {
@@ -41,7 +69,7 @@ class AppDetails extends React.Component {
                 fields: {},
                 authClient: null,
             },
-            dataModels: [],
+            // dataModels: [],
             syncMappings: [],
             isGlobal: false,
             components: {
@@ -305,7 +333,7 @@ class AppDetails extends React.Component {
     }
 
     setSyncMappingField = (fieldName, index, e) => {
-        e.preventDefault();
+        // e.preventDefault();
 
         if (e.target.value === null) {
             return;
@@ -324,7 +352,7 @@ class AppDetails extends React.Component {
     }
 
     toggleSyncMappingField = (fieldName, index, e) => {
-        e.preventDefault();
+        // e.preventDefault();
 
         console.log(e.target.value, e.target.checked);
 
@@ -334,6 +362,21 @@ class AppDetails extends React.Component {
         } else {
             syncMappings[index][fieldName].push(e.target.value);
         }
+
+        this.setState({
+            app: {
+                ...this.state.app,
+                syncMappings,
+            },
+            hasChanges: 1,
+        });
+    }
+
+    toggleDataModelsForSyncMapping = (fieldName, index, e) => {
+        console.log(e.target.value, e.target.checked);
+
+        const syncMappings = [...this.state.app.syncMappings];
+        syncMappings[index][fieldName] = e.target.value;
 
         this.setState({
             app: {
@@ -365,60 +408,70 @@ class AppDetails extends React.Component {
             classes,
         } = this.props;
 
-        const filteredComponents = this.props.components.all.filter(component => component.id !== this.state.app.components.adapter && component.id !== this.state.app.components.transformer);
+        const domainModelsSelect = [];
+        Object.keys(this.props.domainSchemas).forEach((domainsKey) => {
+            domainModelsSelect.push(<ListSubheader>{this.props.dataModels.find(domain => domain.id === domainsKey).name}</ListSubheader>);
+            this.props.domainSchemas[domainsKey].forEach((schema) => {
+                domainModelsSelect.push(<MenuItem key={schema.id} value={schema.id}>
+                    {schema.name}
+                </MenuItem>);
+            });
+        });
+
 
         return (
-            <Grid item xs={12}>
+            <Container className={classes.wrapper}>
+                <Grid item xs={12}>
 
-                <form onSubmit={this.handleAppUpdate.bind(this)}>
+                    <form onSubmit={this.handleAppUpdate.bind(this)}>
 
-                    <FormControl fullWidth className={classes.margin}>
-                        <TextField
-                            id="artifact-id"
-                            label="Artifact Id"
-                            className={classes.textField}
-                            value={this.state.app.artifactId}
-                            onChange={this.setAppVal.bind(this, 'artifactId')}
-                            margin="normal"
-                            required
-                        />
-                    </FormControl>
+                        <FormControl fullWidth className={classes.margin}>
+                            <TextField
+                                id="artifact-id"
+                                label="Artifact Id"
+                                className={classes.textField}
+                                value={this.state.app.artifactId}
+                                onChange={this.setAppVal.bind(this, 'artifactId')}
+                                margin="normal"
+                                required
+                            />
+                        </FormControl>
 
-                    <FormControl fullWidth className={classes.margin}>
-                        <TextField
-                            id="app-name"
-                            label="App name"
-                            className={classes.textField}
-                            value={this.state.app.name}
-                            onChange={this.setAppVal.bind(this, 'name')}
-                            margin="normal"
-                            required
-                        />
-                    </FormControl>
+                        <FormControl fullWidth className={classes.margin}>
+                            <TextField
+                                id="app-name"
+                                label="App name"
+                                className={classes.textField}
+                                value={this.state.app.name}
+                                onChange={this.setAppVal.bind(this, 'name')}
+                                margin="normal"
+                                required
+                            />
+                        </FormControl>
 
-                    <FormControl fullWidth className={classes.margin}>
-                        <TextField
-                            id="app-desc"
-                            label="Description"
-                            className={classes.textField}
-                            value={this.state.app.description}
-                            onChange={this.setAppVal.bind(this, 'description')}
-                            margin="normal"
-                        />
-                    </FormControl>
+                        <FormControl fullWidth className={classes.margin}>
+                            <TextField
+                                id="app-desc"
+                                label="Description"
+                                className={classes.textField}
+                                value={this.state.app.description}
+                                onChange={this.setAppVal.bind(this, 'description')}
+                                margin="normal"
+                            />
+                        </FormControl>
 
-                    <FormControl fullWidth className={classes.margin}>
-                        <TextField
-                            id="app-img"
-                            label="Image / Thumbnail"
-                            className={classes.textField}
-                            value={this.state.app.img}
-                            onChange={this.setAppVal.bind(this, 'img')}
-                            margin="normal"
-                        />
-                    </FormControl>
+                        <FormControl fullWidth className={classes.margin}>
+                            <TextField
+                                id="app-img"
+                                label="Image / Thumbnail"
+                                className={classes.textField}
+                                value={this.state.app.img}
+                                onChange={this.setAppVal.bind(this, 'img')}
+                                margin="normal"
+                            />
+                        </FormControl>
 
-                    {this.props.auth.isAdmin
+                        {this.props.auth.isAdmin
                     && <FormControl fullWidth className={classes.margin}>
                         <FormControlLabel
                             control={
@@ -443,165 +496,212 @@ class AppDetails extends React.Component {
                         /> : null}
                     </FormControl>}
 
-                    <FormControl component="fieldset" className={classes.formControl}>
-                        <FormLabel component="legend">Credentials type</FormLabel>
-                        <RadioGroup name="credentialsType" value={this.state.app.credentials.credentialsType} onChange={this.changeCredentials.bind(this)}>
-                            <FormControlLabel value="authClient" control={<Radio />} label="authClient" />
-                            <FormControlLabel value="basic" control={<Radio />} label="Simple / Basic (username, password)" />
-                            <FormControlLabel value="mixed" control={<Radio />} label="Mixed (API Key, any other structure)" />
-                        </RadioGroup>
-                    </FormControl>
+                        <FormControl component="fieldset" className={classes.formControl}>
+                            <FormLabel component="legend">Credentials type</FormLabel>
+                            <RadioGroup name="credentialsType" value={this.state.app.credentials.credentialsType} onChange={this.changeCredentials.bind(this)}>
+                                <FormControlLabel value="authClient" control={<Radio />} label="authClient" />
+                                <FormControlLabel value="basic" control={<Radio />} label="Simple / Basic (username, password)" />
+                                <FormControlLabel value="mixed" control={<Radio />} label="Mixed (API Key, any other structure)" />
+                            </RadioGroup>
+                        </FormControl>
 
-                    {this.state.app.credentials.credentialsType === 'authClient' && <FormControl fullWidth className={classes.margin}>
-                        <InputLabel htmlFor="credentials">Auth client</InputLabel>
+                        {this.state.app.credentials.credentialsType === 'authClient' && <FormControl fullWidth className={classes.margin}>
+                            <InputLabel htmlFor="credentials">Auth client</InputLabel>
 
-                        <Select
-                            value={this.state.app.credentials.authClient}
-                            onChange={this.changeAuthClient.bind(this)}
-                            inputProps={{
-                                name: 'authClient',
-                                id: 'credentials',
-                            }}
-                        >
-                            {this.props.authClients.available.map(authClient => <MenuItem key={authClient._id} value={authClient._id}>{authClient.name}</MenuItem>)}
+                            <Select
+                                value={this.state.app.credentials.authClient}
+                                onChange={this.changeAuthClient.bind(this)}
+                                inputProps={{
+                                    name: 'authClient',
+                                    id: 'credentials',
+                                }}
+                            >
+                                {this.props.authClients.available.map(authClient => <MenuItem key={authClient._id} value={authClient._id}>{authClient.name}</MenuItem>)}
 
-                        </Select>
+                            </Select>
 
-                        {this.getCredentialsBlock()}
+                            {this.getCredentialsBlock()}
 
-                    </FormControl> }
+                        </FormControl> }
 
-                    <h3>Data models</h3>
+                        {/* <h3>Data models</h3> */}
 
-                    {this.props.dataModels.map(dataModel => <div
-                        key={dataModel.id}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={this.state.app.dataModels.includes(dataModel.id)}
-                                    onChange={this.toggleDataModel.bind(this, dataModel)}
-                                    value={dataModel.id}
-                                    color="primary"
-                                />
-                            }
-                            label={dataModel.name}
-                        />
-                        {this.props.domainSchemas[dataModel.id] && this.props.domainSchemas[dataModel.id].map(schema => <FormControlLabel
-                            key={schema.id}
-                            control={
-                                <Checkbox
-                                    onChange={() => {}}
-                                    value={schema.id}
-                                    color="primary"
-                                />
-                            }
-                            label={schema.name}
-                        />)}
-                    </div>)}
-
-
-                    <h4>Connectors</h4>
-
-                    <h6>Adapter</h6>
-                    <FormControl fullWidth className={classes.formControl}>
-                        <InputLabel htmlFor="adapter">Adapter</InputLabel>
-                        <Select
-                            value={this.state.app.components.adapter}
-                            onChange={this.updateComponent.bind(this, 'adapter')}
-                            inputProps={{
-                                name: 'adapter',
-                                id: 'adapter',
-                            }}
-                        >
-                            {filteredComponents.map(comp => <MenuItem key={comp.id} value={comp.id}>{comp.name}</MenuItem>)}
-
-                        </Select>
-                    </FormControl>
-                    <div>Selected Adapter: {this.state.app.components.adapter}</div>
-
-                    <h6>Transformer</h6>
-                    <FormControl fullWidth className={classes.formControl}>
-                        <InputLabel htmlFor="transformer">Transformer</InputLabel>
-                        <Select
-                            value={this.state.app.components.transformer}
-                            onChange={this.updateComponent.bind(this, 'transformer')}
-                            inputProps={{
-                                name: 'transformer',
-                                id: 'transformer',
-                            }}
-                        >
-                            {filteredComponents.map(comp => <MenuItem key={comp.id} value={comp.id}>{comp.name}</MenuItem>)}
-
-                        </Select>
-                    </FormControl>
-                    <div>Selected Transformer: {this.state.app.components.transformer}</div>
+                        {/* {this.props.dataModels.map(dataModel => <div */}
+                        {/*    key={dataModel.id}> */}
+                        {/*    <FormControlLabel */}
+                        {/*        control={ */}
+                        {/*            <Checkbox */}
+                        {/*                checked={this.state.app.dataModels.includes(dataModel.id)} */}
+                        {/*                onChange={this.toggleDataModel.bind(this, dataModel)} */}
+                        {/*                value={dataModel.id} */}
+                        {/*                color="primary" */}
+                        {/*            /> */}
+                        {/*        } */}
+                        {/*        label={dataModel.name} */}
+                        {/*    /> */}
+                        {/*    {this.props.domainSchemas[dataModel.id] && this.props.domainSchemas[dataModel.id].map(schema => <FormControlLabel */}
+                        {/*        key={schema.id} */}
+                        {/*        control={ */}
+                        {/*            <Checkbox */}
+                        {/*                onChange={() => {}} */}
+                        {/*                value={schema.id} */}
+                        {/*                color="primary" */}
+                        {/*            /> */}
+                        {/*        } */}
+                        {/*        label={schema.name} */}
+                        {/*    />)} */}
+                        {/* </div>)} */}
 
 
-                    {this.state.app.components.adapter && this.state.app.components.transformer ? <React.Fragment><h4>Sync Mappings</h4>
+                        <h3>Connectors</h3>
 
-                        {this.state.app.syncMappings.map((mapping, index) => <div key={index}>
-                            <p>Index: {index},</p>
-                            <p>
-                            Direction
-                                <select onChange={this.setSyncMappingField.bind(this, 'direction', index)} value={mapping.direction}>
-                                    <option value={'inbound'}>inbound</option>
-                                    <option value={'outbound'}>outbound</option>
-                                </select>
-                            </p>
-                            <p>Adapter: {this.state.componentData[this.state.app.components.adapter] && this.state.componentData[this.state.app.components.adapter].name}
+                        <h4>Adapter</h4>
+                        <FormControl fullWidth className={classes.formControl}>
+                            <InputLabel htmlFor="adapter">Adapter</InputLabel>
+                            <Select
+                                value={this.state.app.components.adapter}
+                                onChange={this.updateComponent.bind(this, 'adapter')}
+                                inputProps={{
+                                    name: 'adapter',
+                                    id: 'adapter',
+                                }}
+                            >
+                                {this.props.components.all.map(comp => <MenuItem key={comp.id} value={comp.id}>{comp.name}</MenuItem>)}
 
-                                <select onChange={this.setSyncMappingField.bind(this, 'adapterOperation', index)} value={mapping.adapterOperation}>
-                                    <option key={'-1'} value={null}>Select one</option>
-                                    <optgroup label="Actions">
-                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].actions || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
-                                    </optgroup>
-                                    <optgroup label="Triggers">
-                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].triggers || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
-                                    </optgroup>
-                                </select>
-                            </p>
+                            </Select>
+                        </FormControl>
 
-                            <p>Transformer: {this.state.componentData[this.state.app.components.transformer] && this.state.componentData[this.state.app.components.transformer].name}
+                        <h4>Transformer</h4>
+                        <FormControl fullWidth className={classes.formControl}>
+                            <InputLabel htmlFor="transformer">Transformer</InputLabel>
+                            <Select
+                                value={this.state.app.components.transformer}
+                                onChange={this.updateComponent.bind(this, 'transformer')}
+                                inputProps={{
+                                    name: 'transformer',
+                                    id: 'transformer',
+                                }}
+                            >
+                                {this.props.components.all.map(comp => <MenuItem key={comp.id} value={comp.id}>{comp.name}</MenuItem>)}
 
-                                <select onChange={this.setSyncMappingField.bind(this, 'transformerOperation', index)} value={mapping.transformerOperation} >
-                                    <option key={'-1'} value={null}>Select one</option>
-                                    <optgroup label="Actions">
-                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].actions || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
-                                    </optgroup>
-                                    <optgroup label="Triggers">
-                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].triggers || {} : {}).map(key => <option key={key} value={key}>{key}</option>)}
-                                    </optgroup>
-                                </select>
-                            </p>
-                            <p>Operations:
+                            </Select>
+                        </FormControl>
 
-                                {['CREATE', 'UPDATE', 'DELETE'].map(op => <label key={op}><input onChange={this.toggleSyncMappingField.bind(this, 'actionTypes', index)} type={'checkbox'} value={op} checked={mapping.actionTypes.includes(op)} />{op}</label>)}
 
-                            </p>
-                            <p>Data models:
+                        {this.state.app.components.adapter && this.state.app.components.transformer ? <React.Fragment><h3>Sync Mappings</h3>
 
-                                {Object.keys(this.props.domainSchemas).map(key => <div key={key}>
-                                    <span>{this.props.dataModels.find(domain => domain.id === key).name}</span><br />
-                                    {this.props.domainSchemas[key].map(schema => <label key={schema.id}><input onChange={this.toggleSyncMappingField.bind(this, 'dataModels', index)} type={'checkbox'} value={schema.id} />{schema.name}</label>)}
-                                </div>)}
-                            </p>
-                            <div>
-                                <Button variant="outlined" type={'button'} onClick={this.removeSyncMapping.bind(this, index)}>Delete</Button>
-                            </div>
-                            <hr />
-                        </div>)}
-                        <Button onClick={this.addNewMapping.bind(this)}>Add new mapping</Button>
-                    </React.Fragment> : 'Please select an adapter and a transformer first' }
+                            <Table className={classes.table} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Direction</TableCell>
+                                        <TableCell align="right">Adapter method</TableCell>
+                                        <TableCell align="right">Transformer method</TableCell>
+                                        <TableCell align="right">Supported operation</TableCell>
+                                        <TableCell align="right">Support data models</TableCell>
+                                        <TableCell align="right">Actions</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {this.state.app.syncMappings.map((mapping, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell component="th" scope="row">
+                                                <Select value={mapping.direction}
+                                                    onChange={this.setSyncMappingField.bind(this, 'direction', index)}
+                                                    required
+                                                    displayEmpty>
+                                                    <MenuItem value="">
+                                                        <em>Select one</em>
+                                                    </MenuItem>
+                                                    <MenuItem value={'inbound'}>inbound</MenuItem>
+                                                    <MenuItem value={'outbound'}>outbound</MenuItem>
+                                                </Select>
+                                            </TableCell>
+                                            <TableCell align="right">
 
-                    <div>
-                        <Button variant="outlined" aria-label="Add" type={'submit'} disabled={!this.state.hasChanges}>
+                                                <Select onChange={this.setSyncMappingField.bind(this, 'adapterOperation', index)} value={mapping.adapterOperation}
+                                                    required
+                                                >
+                                                    <MenuItem value="">
+                                                        <em>Select one</em>
+                                                    </MenuItem>
+                                                    <ListSubheader>Actions</ListSubheader>
+                                                    {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].actions || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                    <ListSubheader>Triggers</ListSubheader>
+                                                    {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                </Select>
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Select
+                                                    required
+
+                                                    onChange={this.setSyncMappingField.bind(this, 'transformerOperation', index)} value={mapping.transformerOperation} >
+                                                    <MenuItem value="">
+                                                        <em>Select one</em>
+                                                    </MenuItem>
+                                                    <ListSubheader>Actions</ListSubheader>
+                                                    {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].actions || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                    <ListSubheader>Triggers</ListSubheader>
+                                                    {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                </Select>
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {['CREATE', 'UPDATE', 'DELETE'].map(op => <FormControlLabel
+                                                    key={op}
+                                                    control={
+                                                        <Checkbox
+                                                            checked={mapping.actionTypes.includes(op)}
+                                                            onChange={this.toggleSyncMappingField.bind(this, 'actionTypes', index)}
+                                                            value={op}
+                                                            inputProps={{
+                                                                'aria-label': 'primary checkbox',
+                                                            }}
+                                                        />
+                                                    }
+                                                    label={op}
+                                                />)}
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Select
+                                                    labelId="demo-mutiple-name-label"
+                                                    id="demo-mutiple-name"
+                                                    multiple
+                                                    value={mapping.dataModels}
+                                                    onChange={this.toggleDataModelsForSyncMapping.bind(this, 'dataModels', index)}
+                                                    MenuProps={{
+                                                        PaperProps: {
+                                                            style: {
+                                                                maxHeight: 48 * 4.5 + 8,
+                                                                width: 250,
+                                                            },
+                                                        },
+                                                    }}
+                                                >
+                                                    {domainModelsSelect}
+
+                                                </Select>
+                                            </TableCell>
+                                            <TableCell align="right"><IconButton edge="end" aria-label="comments" onClick={this.removeSyncMapping.bind(this, index)}>
+                                                <Delete />
+                                            </IconButton></TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+
+
+                            <Button variant={'outlined'} color={'primary'} onClick={this.addNewMapping.bind(this)}>+ Add new mapping</Button>
+                        </React.Fragment> : 'Please select an adapter and a transformer first' }
+
+                        <div>
+                            <Button variant="outlined" aria-label="Add" type={'submit'} disabled={!this.state.hasChanges}>
                         Save
-                        </Button>
-                    </div>
+                            </Button>
+                        </div>
 
-                </form>
+                    </form>
 
-            </Grid>
+                </Grid>
+            </Container>
         );
     }
 }
