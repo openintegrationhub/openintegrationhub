@@ -70,6 +70,18 @@
         "summary": "Adds a dispatch configuration",
         "description": "Necessary flows are automatically created.",
         "operationId": "addConfig",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {"$ref": "#/components/schemas/MutableApplications"}
+              }
+            }
+          },
+          "description": "The connections of the configuration.",
+          "required": true
+        },
         "responses": {
           "201": {
             "description": "The created configuration.",
@@ -85,17 +97,6 @@
               }
             }
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MutableConfig"
-              }
-            }
-          },
-          "description": "The connections of the configuration.",
-          "required": true
         }
       }
       },
