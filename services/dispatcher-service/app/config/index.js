@@ -11,7 +11,7 @@ const general = {
   deleteOperation: process.env.DELETE_OPERATION || 'DELETE',
   flowRepoUrl: process.env.FLOWREPO_URL || 'http://localhost:3001',
   flowToken: process.env.FLOW_TOKEN || 'exampleToken',
-  sdfAdapterId: process.env.SDF_ID || '12345abcde',
+  sdfAdapterId: process.env.SDF_ID || '5d2484d2a422ca001bda5690',
   sdfAdapterPublishAction: process.env.SDF_INBOUND || 'sendMessageToOih',
   sdfAdapterReceiveAction: process.env.SDF_OUTBOUND || 'receiveEvents',
   sdfAdapterRecordAction: process.env.SDF_RECORD || 'processRecordUid',
