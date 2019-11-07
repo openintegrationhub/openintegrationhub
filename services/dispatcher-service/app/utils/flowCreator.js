@@ -127,93 +127,102 @@ function makeFlow(
 }
 
 async function createFlows(applications, token) {
-  const newApplications = lodash.cloneDeep(applications);
-  for (let i = 0; i < newApplications.length; i += 1) {
-    const app = applications[i];
+  try {
+    const newApplications = lodash.cloneDeep(applications);
+    for (let i = 0; i < newApplications.length; i += 1) {
+      const app = applications[i];
 
-    if (app.outbound.active) {
-      for (let j = 0; j < app.outbound.flows.length; j += 1) {
-        const current = app.outbound.flows[j];
-        const chunks = current.schemaUri.split('/');
-        const domainId = chunks[chunks.length - 3];
-        const schema = chunks[chunks.length - 1];
-        const flow = makeFlow(app.adapterId,
-          app.transformerId,
-          current.adapterAction,
-          current.transformerAction,
-          app.secretId,
-          'GET',
-          domainId,
-          schema);
+      if (app.outbound.active) {
+        for (let j = 0; j < app.outbound.flows.length; j += 1) {
+          const current = app.outbound.flows[j];
+          const chunks = current.schemaUri.split('/');
+          const domainId = chunks[chunks.length - 3];
+          const schema = chunks[chunks.length - 1];
+          const flow = makeFlow(app.adapterId,
+            app.transformerId,
+            current.adapterAction,
+            current.transformerAction,
+            app.secretId,
+            'GET',
+            domainId,
+            schema);
 
-        const options = {
-          method: 'POST',
-          json: true,
-          url: `${flowRepoUrl}/flows`,
-          body: flow,
-          headers: {
-            Authorization: token,
-          },
-        };
-        const response = await request(options);
+          const options = {
+            method: 'POST',
+            json: true,
+            url: `${flowRepoUrl}/flows`,
+            body: flow,
+            headers: {
+              Authorization: token,
+            },
+          };
+          const response = await request(options);
 
-        app.outbound.flows[j].flowId = response.body.data.id;
+          app.outbound.flows[j].flowId = response.body.data.id;
+        }
       }
-    }
 
-    if (app.inbound.active) {
-      for (let k = 0; k < app.inbound.flows.length; k += 1) {
-        const current = app.inbound.flows[k];
-        const flow = makeFlow(app.adapterId,
-          app.transformerId,
-          current.adapterAction,
-          current.transformerAction,
-          app.secretId,
-          current.operation);
+      if (app.inbound.active) {
+        for (let k = 0; k < app.inbound.flows.length; k += 1) {
+          const current = app.inbound.flows[k];
+          const flow = makeFlow(app.adapterId,
+            app.transformerId,
+            current.adapterAction,
+            current.transformerAction,
+            app.secretId,
+            current.operation);
 
-        const options = {
-          method: 'POST',
-          url: `${flowRepoUrl}/flows`,
-          json: true,
-          body: flow,
-          headers: {
-            Authorization: token,
-          },
-        };
-        const response = await request(options);
+          const options = {
+            method: 'POST',
+            url: `${flowRepoUrl}/flows`,
+            json: true,
+            body: flow,
+            headers: {
+              Authorization: token,
+            },
+          };
+          const response = await request(options);
 
-        app.inbound.flows[k].flowId = response.body.data.id;
+          app.inbound.flows[k].flowId = response.body.data.id;
+        }
       }
+      newApplications[i] = app;
     }
-    newApplications[i] = app;
+    return newApplications;
+  } catch (e) {
+    log.error(`Error while creating flows: ${e}`);
+    return false;
   }
-  return newApplications;
 }
 
 async function deleteFlows(config, token) {
-  const flowIds = [];
+  try {
+    const flowIds = [];
 
-  for (let i = 0; i < config.applications.length; i += 1) {
-    const app = config.applications[i];
-    for (let j = 0; j < app.inbound.flows.length; j += 1) {
-      flowIds.push(app.inbound.flows[j].flowId);
+    for (let i = 0; i < config.applications.length; i += 1) {
+      const app = config.applications[i];
+      for (let j = 0; j < app.inbound.flows.length; j += 1) {
+        flowIds.push(app.inbound.flows[j].flowId);
+      }
+
+      for (let k = 0; k < app.outbound.flows.length; k += 1) {
+        flowIds.push(app.outbound.flows[k].flowId);
+      }
     }
 
-    for (let k = 0; k < app.outbound.flows.length; k += 1) {
-      flowIds.push(app.outbound.flows[k].flowId);
+    for (let j = 0; j < flowIds.length; j += 1) {
+      const options = {
+        method: 'DELETE',
+        url: `${flowRepoUrl}/flows/${flowIds[j]}`,
+        json: true,
+        headers: {
+          Authorization: token,
+        },
+      };
+      await request(options);
     }
-  }
-
-  for (let j = 0; j < flowIds.length; j += 1) {
-    const options = {
-      method: 'DELETE',
-      url: `${flowRepoUrl}/flows/${flowIds[j]}`,
-      json: true,
-      headers: {
-        Authorization: token,
-      },
-    };
-    await request(options);
+  } catch (e) {
+    log.error(`Error while deleting flows: ${e}`);
   }
 }
 
