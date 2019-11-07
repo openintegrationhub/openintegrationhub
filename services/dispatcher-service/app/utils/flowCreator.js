@@ -25,6 +25,7 @@ function makeFlow(
   operation,
   domainId,
   schema,
+  fields,
 ) {
   const newFlow = {
     name: 'Hub&Spoke Flow',
@@ -41,6 +42,7 @@ function makeFlow(
         id: 'step_1',
         componentId: adapterId,
         credentials_id,
+        fields,
         name: 'Source Adapter',
         function: adapterAction,
         description: 'Fetches data',
@@ -95,6 +97,7 @@ function makeFlow(
         id: 'step_3',
         componentId: adapterId,
         credentials_id,
+        fields,
         name: 'Target Adapter',
         function: adapterAction,
         description: 'Pushes data',
