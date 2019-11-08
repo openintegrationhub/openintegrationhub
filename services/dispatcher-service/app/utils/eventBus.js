@@ -36,7 +36,7 @@ async function connectQueue() {
 
     const targets = await getTargets(event.payload.meta.flowId, config.createOperation);
 
-    if (!targets) {
+    if (!targets || targets.length === 0) {
       log.info('No targets found for event.');
       return event.ack();
     }
@@ -57,7 +57,6 @@ async function connectQueue() {
 
   await eventBus.subscribe(config.updateEventName, async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
-    log.debug(`Full event: ${JSON.stringify(event)}`);
 
     if (!event.payload.meta || !event.payload.meta.flowId) {
       log.warn('Received malformed event:');
@@ -67,12 +66,10 @@ async function connectQueue() {
 
     const targets = await getTargets(event.payload.meta.flowId, config.updateOperation);
 
-    if (!targets) {
+    if (!targets || targets.length === 0) {
       log.info('No targets found for event.');
       return event.ack();
     }
-
-    log.debug(`Generated targets: ${JSON.stringify(targets)}`);
 
     await checkFlows(targets);
 
@@ -99,7 +96,7 @@ async function connectQueue() {
 
     const targets = await getTargets(event.payload.meta.flowId, config.deleteOperation);
 
-    if (!targets) {
+    if (!targets || targets.length === 0) {
       log.info('No targets found for event.');
       return event.ack();
     }
