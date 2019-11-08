@@ -88,7 +88,7 @@ async function connectQueue() {
   await eventBus.subscribe(config.deleteEventName, async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
-    if (!payload.meta || !payload.meta.flowId) {
+    if (!event.payload.meta || !event.payload.meta.flowId) {
       log.warn('Received malformed event:');
       log.warn(event.payload);
       return event.ack();
