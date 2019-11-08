@@ -57,6 +57,7 @@ async function connectQueue() {
 
   await eventBus.subscribe(config.updateEventName, async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
+    log.debug(`Full event: ${JSON.stringify(event)}`);
 
     if (!event.payload.meta || !event.payload.meta.flowId) {
       log.warn('Received malformed event:');
@@ -70,6 +71,8 @@ async function connectQueue() {
       log.info('No targets found for event.');
       return event.ack();
     }
+
+    log.debug(`Generated targets: ${JSON.stringify(targets)}`);
 
     await checkFlows(targets);
 
