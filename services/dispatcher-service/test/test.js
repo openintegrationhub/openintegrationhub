@@ -442,20 +442,23 @@ describe('Event Handlers', () => {
 });
 
 describe('Flow Creation', () => {
-  test('should generate a valid inbound flow', async () => {
+  test('should generate a valid outbound flow', async () => {
     const getFlow = makeFlow(
-      'testAdapterId',
-      'testTransformerId',
-      'getPersons',
-      'transformPersonToOih',
-      'testSecretId',
-      'GET',
-      'testDomainId',
-      'person',
+      {
+        applicationName: 'Test Application',
+        adapterComponentId: 'testAdapterId',
+        transformerComponentId: 'testTransformerId',
+        secretId: 'testSecretId',
+      },
+      {
+        adapterAction: 'getPersons',
+        transformerAction: 'transformPersonToOih',
+        schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+      },
     );
 
     const reference = {
-      name: 'Hub&Spoke Flow',
+      name: 'H&S Outbound Flow for Test Application',
       description: 'This flow was automatically generated',
       graph: {
         nodes: [
@@ -463,14 +466,14 @@ describe('Flow Creation', () => {
             id: 'step_1',
             componentId: 'testAdapterId',
             credentials_id: 'testSecretId',
-            name: 'Source Adapter',
+            name: 'Test Application Adapter',
             function: 'getPersons',
             description: 'Fetches data',
           },
           {
             id: 'step_2',
             componentId: 'testTransformerId',
-            name: 'Source Transformer',
+            name: 'Test Application Transformer',
             function: 'transformPersonToOih',
             description: 'Transforms data',
             fields: {
@@ -504,18 +507,24 @@ describe('Flow Creation', () => {
     expect(getFlow).toEqual(reference);
   });
 
-  test('should generate a valid outbound update flow', async () => {
+  test('should generate a valid inbound update flow', async () => {
     const updateFlow = makeFlow(
-      'testAdapterId',
-      'testTransformerId',
-      'updatePerson',
-      'transformPersonFromOih',
-      'testSecretId',
-      'UPDATE',
+      {
+        applicationName: 'Test Application',
+        adapterComponentId: 'testAdapterId',
+        transformerComponentId: 'testTransformerId',
+        secretId: 'testSecretId',
+      },
+      {
+        adapterAction: 'updatePerson',
+        transformerAction: 'transformPersonFromOih',
+        schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+        operation: 'UPDATE',
+      },
     );
 
     const reference = {
-      name: 'Hub&Spoke Flow',
+      name: 'H&S Inbound Flow for Test Application',
       description: 'This flow was automatically generated',
       graph: {
         nodes: [
@@ -529,7 +538,7 @@ describe('Flow Creation', () => {
           {
             id: 'step_2',
             componentId: 'testTransformerId',
-            name: 'Target Transformer',
+            name: 'Test Application Transformer',
             function: 'transformPersonFromOih',
             description: 'Transforms data',
           },
@@ -537,7 +546,7 @@ describe('Flow Creation', () => {
             id: 'step_3',
             componentId: 'testAdapterId',
             credentials_id: 'testSecretId',
-            name: 'Target Adapter',
+            name: 'Test Application Adapter',
             function: 'updatePerson',
             description: 'Pushes data',
           },
@@ -571,18 +580,24 @@ describe('Flow Creation', () => {
     expect(updateFlow).toEqual(reference);
   });
 
-  test('should generate a valid outbound create flow', async () => {
+  test('should generate a valid inbound create flow', async () => {
     const createFlow = makeFlow(
-      'testAdapterId',
-      'testTransformerId',
-      'updatePerson',
-      'transformPersonFromOih',
-      'testSecretId',
-      'CREATE',
+      {
+        applicationName: 'Test Application',
+        adapterComponentId: 'testAdapterId',
+        transformerComponentId: 'testTransformerId',
+        secretId: 'testSecretId',
+      },
+      {
+        adapterAction: 'createPerson',
+        transformerAction: 'transformPersonFromOih',
+        schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+        operation: 'CREATE',
+      },
     );
 
     const reference = {
-      name: 'Hub&Spoke Flow',
+      name: 'H&S Inbound Flow for Test Application',
       description: 'This flow was automatically generated',
       graph: {
         nodes: [
@@ -596,7 +611,7 @@ describe('Flow Creation', () => {
           {
             id: 'step_2',
             componentId: 'testTransformerId',
-            name: 'Target Transformer',
+            name: 'Test Application Transformer',
             function: 'transformPersonFromOih',
             description: 'Transforms data',
           },
@@ -604,8 +619,8 @@ describe('Flow Creation', () => {
             id: 'step_3',
             componentId: 'testAdapterId',
             credentials_id: 'testSecretId',
-            name: 'Target Adapter',
-            function: 'updatePerson',
+            name: 'Test Application Adapter',
+            function: 'createPerson',
             description: 'Pushes data',
           },
           {
@@ -641,13 +656,13 @@ describe('Flow Creation', () => {
   test('should make calls to Flow Repository to create flows', async () => {
     nock('http://localhost:3001/flows')
       .post('', {
-        name: 'Hub&Spoke Flow',
+        name: 'H&S Outbound Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
-            id: 'step_1', credentials_id: 'snazzySecretId', name: 'Source Adapter', function: 'getPersons', description: 'Fetches data', componentId: 'snazzyAdapterId',
+            id: 'step_1', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'getPersons', description: 'Fetches data', componentId: 'snazzyAdapterId',
           }, {
-            id: 'step_2', name: 'Source Transformer', function: 'transformToOih', description: 'Transforms data', fields: { domainId: 'testDomainId', schema: 'person' }, componentId: 'snazzyTransformerId',
+            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformToOih', description: 'Transforms data', fields: { domainId: 'testDomainId', schema: 'person' }, componentId: 'snazzyTransformerId',
           }, {
             id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
           }],
@@ -660,15 +675,15 @@ describe('Flow Creation', () => {
 
     nock('http://localhost:3001/flows')
       .post('', {
-        name: 'Hub&Spoke Flow',
+        name: 'H&S Inbound Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
             id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
           }, {
-            id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
+            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformFromOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
           }, {
-            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'createPerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
+            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'createPerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           }, {
             id: 'step_4', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
@@ -681,15 +696,15 @@ describe('Flow Creation', () => {
 
     nock('http://localhost:3001/flows')
       .post('', {
-        name: 'Hub&Spoke Flow',
+        name: 'H&S Inbound Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
             id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
           }, {
-            id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
+            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformFromOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
           }, {
-            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'updatePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
+            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'updatePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           }, {
             id: 'step_4', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
@@ -702,15 +717,15 @@ describe('Flow Creation', () => {
 
     nock('http://localhost:3001/flows')
       .post('', {
-        name: 'Hub&Spoke Flow',
+        name: 'H&S Inbound Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
             id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
           }, {
-            id: 'step_2', name: 'Target Transformer', function: 'transformFromOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
+            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformFromOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
           }, {
-            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Target Adapter', function: 'deletePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
+            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'deletePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           }, {
             id: 'step_4', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
@@ -723,6 +738,7 @@ describe('Flow Creation', () => {
 
     const applications = [
       {
+        applicationName: 'Snazzy Contacts',
         adapterComponentId: 'snazzyAdapterId',
         transformerComponentId: 'snazzyTransformerId',
         secretId: 'snazzySecretId',

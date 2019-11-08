@@ -14,7 +14,7 @@ module.exports = {
     'jest',
   ],
   parserOptions: {
-    ecmaVersion: 8,
+    ecmaVersion: 2018,
     sourceType: 'module',
   },
   extends: 'airbnb-base',

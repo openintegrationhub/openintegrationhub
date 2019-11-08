@@ -13,71 +13,22 @@ const {
   sdfAdapterPublishAction,
   sdfAdapterRecordAction,
   flowRepoUrl,
+  createOperation,
+  updateOperation,
+  deleteOperation,
 } = require('../config');
 
 
-function makeFlow(
-  adapterId,
-  transformerId,
-  adapterAction,
-  transformerAction,
-  credentials_id,
-  operation,
-  domainId,
-  schema,
-  fields,
-) {
+function makeFlow(app, flow) {
   const newFlow = {
-    name: 'Hub&Spoke Flow',
     description: 'This flow was automatically generated',
     graph: {},
     type: 'ordinary',
     cron: '* * * * *',
   };
 
-
-  if (operation === 'GET') {
-    newFlow.graph.nodes = [
-      {
-        id: 'step_1',
-        componentId: adapterId,
-        credentials_id,
-        fields,
-        name: 'Source Adapter',
-        function: adapterAction,
-        description: 'Fetches data',
-      },
-      {
-        id: 'step_2',
-        componentId: transformerId,
-        name: 'Source Transformer',
-        function: transformerAction,
-        description: 'Transforms data',
-        fields: {
-          domainId,
-          schema,
-        },
-      },
-      {
-        id: 'step_3',
-        componentId: sdfAdapterId,
-        name: 'SDF Adapter',
-        function: sdfAdapterPublishAction,
-        description: 'Passes data to SDF',
-      },
-    ];
-
-    newFlow.graph.edges = [
-      {
-        source: 'step_1',
-        target: 'step_2',
-      },
-      {
-        source: 'step_2',
-        target: 'step_3',
-      },
-    ];
-  } else {
+  if ([createOperation, updateOperation, deleteOperation].includes(flow.operation)) {
+    newFlow.name = `H&S Inbound Flow for ${app.applicationName}`;
     newFlow.graph.nodes = [
       {
         id: 'step_1',
@@ -88,18 +39,19 @@ function makeFlow(
       },
       {
         id: 'step_2',
-        componentId: transformerId,
-        name: 'Target Transformer',
-        function: transformerAction,
+        componentId: app.transformerComponentId,
+        name: `${app.applicationName} Transformer`,
+        function: flow.transformerAction,
         description: 'Transforms data',
       },
       {
         id: 'step_3',
-        componentId: adapterId,
-        credentials_id,
-        fields,
-        name: 'Target Adapter',
-        function: adapterAction,
+        componentId: app.adapterComponentId,
+        credentials_id: app.secretId,
+        ...(app.secretId && { credentials_id: app.secretId }),
+        ...(app.fields && { fields: app.fields }),
+        name: `${app.applicationName} Adapter`,
+        function: flow.adapterAction,
         description: 'Pushes data',
       },
       {
@@ -125,6 +77,57 @@ function makeFlow(
         target: 'step_4',
       },
     ];
+  } else {
+    newFlow.name = `H&S Outbound Flow for ${app.applicationName}`;
+    let domainId;
+    let schema;
+
+    if (flow.schemaUri) {
+      const chunks = flow.schemaUri.split('/');
+      domainId = chunks[chunks.length - 3];
+      schema = chunks[chunks.length - 1];
+    }
+
+    newFlow.graph.nodes = [
+      {
+        id: 'step_1',
+        componentId: app.adapterComponentId,
+        ...(app.secretId && { credentials_id: app.secretId }),
+        ...(app.fields && { fields: app.fields }),
+        name: `${app.applicationName} Adapter`,
+        function: flow.adapterAction,
+        description: 'Fetches data',
+      },
+      {
+        id: 'step_2',
+        componentId: app.transformerComponentId,
+        name: `${app.applicationName} Transformer`,
+        function: flow.transformerAction,
+        description: 'Transforms data',
+        fields: {
+          domainId,
+          schema,
+        },
+      },
+      {
+        id: 'step_3',
+        componentId: sdfAdapterId,
+        name: 'SDF Adapter',
+        function: sdfAdapterPublishAction,
+        description: 'Passes data to SDF',
+      },
+    ];
+
+    newFlow.graph.edges = [
+      {
+        source: 'step_1',
+        target: 'step_2',
+      },
+      {
+        source: 'step_2',
+        target: 'step_3',
+      },
+    ];
   }
 
   return newFlow;
@@ -139,19 +142,10 @@ async function createFlows(applications, token) {
       if (app.outbound.active) {
         for (let j = 0; j < app.outbound.flows.length; j += 1) {
           const current = app.outbound.flows[j];
-          const chunks = current.schemaUri.split('/');
-          const domainId = chunks[chunks.length - 3];
-          const schema = chunks[chunks.length - 1];
           const flow = makeFlow(
-            app.adapterComponentId,
-            app.transformerComponentId,
-            current.adapterAction,
-            current.transformerAction,
-            app.secretId,
+            app,
+            current,
             'GET',
-            domainId,
-            schema,
-            app.fields,
           );
 
           const options = {
@@ -180,13 +174,8 @@ async function createFlows(applications, token) {
         for (let k = 0; k < app.inbound.flows.length; k += 1) {
           const current = app.inbound.flows[k];
           const flow = makeFlow(
-            app.adapterComponentId,
-            app.transformerComponentId,
-            current.adapterAction,
-            current.transformerAction,
-            app.secretId,
-            current.operation,
-            app.fields,
+            app,
+            current,
           );
 
           const options = {
