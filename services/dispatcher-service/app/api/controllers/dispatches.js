@@ -15,7 +15,7 @@ function getKeys(applications) {
     const app = applications[i];
 
     if (app.inbound.active) {
-      for (let j = 0; j < app.outbound.flows.length; j += 1) {
+      for (let j = 0; j < app.inbound.flows.length; j += 1) {
         keys.push(`dispatch.${app.inbound.flows[j].flowId}`);
       }
     }
