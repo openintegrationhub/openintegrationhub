@@ -445,6 +445,7 @@ describe('Flow Creation', () => {
   test('should generate a valid outbound flow', async () => {
     const getFlow = makeFlow(
       {
+        applicationUid: 'test1234',
         applicationName: 'Test Application',
         adapterComponentId: 'testAdapterId',
         transformerComponentId: 'testTransformerId',
@@ -469,6 +470,11 @@ describe('Flow Creation', () => {
             name: 'Test Application Adapter',
             function: 'getPersons',
             description: 'Fetches data',
+            fields: {
+              applicationUid: 'test1234',
+              domainId: 'testDomainId',
+              schema: 'person',
+            },
           },
           {
             id: 'step_2',
@@ -476,10 +482,6 @@ describe('Flow Creation', () => {
             name: 'Test Application Transformer',
             function: 'transformPersonToOih',
             description: 'Transforms data',
-            fields: {
-              domainId: 'testDomainId',
-              schema: 'person',
-            },
           },
           {
             id: 'step_3',
@@ -660,9 +662,9 @@ describe('Flow Creation', () => {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
-            id: 'step_1', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'getPersons', description: 'Fetches data', componentId: 'snazzyAdapterId',
+            id: 'step_1', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'getPersons', description: 'Fetches data', componentId: 'snazzyAdapterId', fields: { domainId: 'testDomainId', schema: 'person', applicationUid: 'snazzy1234' },
           }, {
-            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformToOih', description: 'Transforms data', fields: { domainId: 'testDomainId', schema: 'person' }, componentId: 'snazzyTransformerId',
+            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformToOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
           }, {
             id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
           }],
@@ -738,6 +740,7 @@ describe('Flow Creation', () => {
 
     const applications = [
       {
+        applicationUid: 'snazzy1234',
         applicationName: 'Snazzy Contacts',
         adapterComponentId: 'snazzyAdapterId',
         transformerComponentId: 'snazzyTransformerId',
