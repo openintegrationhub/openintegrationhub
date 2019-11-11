@@ -93,7 +93,12 @@ function makeFlow(app, flow) {
         id: 'step_1',
         componentId: app.adapterComponentId,
         ...(app.secretId && { credentials_id: app.secretId }),
-        ...(app.fields && { fields: app.fields }),
+        fields: {
+          domainId,
+          schema,
+          applicationUid: app.applicationUid,
+          ...app.fields,
+        },
         name: `${app.applicationName} Adapter`,
         function: flow.adapterAction,
         description: 'Fetches data',
@@ -104,10 +109,6 @@ function makeFlow(app, flow) {
         name: `${app.applicationName} Transformer`,
         function: flow.transformerAction,
         description: 'Transforms data',
-        fields: {
-          domainId,
-          schema,
-        },
       },
       {
         id: 'step_3',
