@@ -14,7 +14,7 @@ export default ({config, logger}: ILogsRouterOptions) => {
     const controller = new Controller({config, logger});
     return new KoaRouter()
         .use(bodyParser())
-        .use(koaMiddleware)
+        // .use(koaMiddleware)
         .get('/flows/:flowId/steps/:stepId', (ctx: RouterContext) => controller.getOne(ctx))
         .routes();
 }
