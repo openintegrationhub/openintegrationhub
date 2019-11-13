@@ -4,7 +4,7 @@ const cfm = new CFM();
 
 // Set rules for address-schema
 cfm.setRules({
-    uniqArray: ['addresses', 'contactData', 'categories'],
+    uniqArray: ['contactData.[]', 'addresses.[]', 'categories.[]'],
     copyNew: [
         'middleName',
         'jobTitle',
