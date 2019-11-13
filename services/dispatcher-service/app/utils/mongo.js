@@ -35,14 +35,10 @@ const getOneConfig = (tenant, id) => new Promise(async (resolve) => {
   resolve(format(configuration));
 });
 
-const upsertConfig = data => new Promise(async (resolve) => {
-  const configuration = await Configuration.findOneAndUpdate(
-    { tenant: data.tenant },
-    data,
-    { upsert: true, new: true, useFindAndModify: false },
-  )
-    .lean();
-  resolve(format(configuration));
+const createConfig = data => new Promise(async (resolve) => {
+  const saveConfig = new Configuration(data);
+  const response = await saveConfig.save();
+  resolve(format(response));
 });
 
 const deleteConfig = (tenant, id) => new Promise(async (resolve) => {
@@ -60,5 +56,5 @@ const getConfigBySource = flowId => new Promise(async (resolve) => {
 });
 
 module.exports = {
-  getConfigs, getOneConfig, upsertConfig, deleteConfig, getConfigBySource,
+  getConfigs, getOneConfig, createConfig, deleteConfig, getConfigBySource,
 };

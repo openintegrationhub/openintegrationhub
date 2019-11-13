@@ -28,7 +28,7 @@ function makeFlow(app, flow) {
   };
 
   if ([createOperation, updateOperation, deleteOperation].includes(flow.operation)) {
-    newFlow.name = `H&S Inbound Flow for ${app.applicationName}`;
+    newFlow.name = `H&S Inbound ${flow.operation} Flow for ${app.applicationName}`;
     newFlow.graph.nodes = [
       {
         id: 'step_1',

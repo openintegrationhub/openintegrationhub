@@ -526,7 +526,7 @@ describe('Flow Creation', () => {
     );
 
     const reference = {
-      name: 'H&S Inbound Flow for Test Application',
+      name: 'H&S Inbound UPDATE Flow for Test Application',
       description: 'This flow was automatically generated',
       graph: {
         nodes: [
@@ -599,7 +599,7 @@ describe('Flow Creation', () => {
     );
 
     const reference = {
-      name: 'H&S Inbound Flow for Test Application',
+      name: 'H&S Inbound CREATE Flow for Test Application',
       description: 'This flow was automatically generated',
       graph: {
         nodes: [
@@ -677,7 +677,7 @@ describe('Flow Creation', () => {
 
     nock('http://localhost:3001/flows')
       .post('', {
-        name: 'H&S Inbound Flow for Snazzy Contacts',
+        name: 'H&S Inbound CREATE Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
@@ -698,7 +698,7 @@ describe('Flow Creation', () => {
 
     nock('http://localhost:3001/flows')
       .post('', {
-        name: 'H&S Inbound Flow for Snazzy Contacts',
+        name: 'H&S Inbound UPDATE Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
@@ -719,7 +719,7 @@ describe('Flow Creation', () => {
 
     nock('http://localhost:3001/flows')
       .post('', {
-        name: 'H&S Inbound Flow for Snazzy Contacts',
+        name: 'H&S Inbound DELETE Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{

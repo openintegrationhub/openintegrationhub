@@ -88,8 +88,11 @@ async function createDispatches(targets, payload) {
     delete newPayload.meta.refs;
   }
 
+
   for (let i = 0; i < targets.length; i += 1) {
-    const targetPayload = newPayload;
+    const targetPayload = lodash.cloneDeep(newPayload);
+    delete targetPayload.meta.applicationUid;
+    delete targetPayload.meta.recordUid;
     targetPayload.meta.applicationUid = targets[i].applicationUid;
 
     if (refs) {
