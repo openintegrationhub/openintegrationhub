@@ -69,7 +69,7 @@ router.post('/', jsonParser, async (req, res) => {
     };
     configuration.tenant = req.user.tenant;
 
-    const response = await storage.upsertConfig(configuration);
+    const response = await storage.createConfig(configuration);
     const keys = getKeys(applications);
     await createDummyQueues(keys);
 
