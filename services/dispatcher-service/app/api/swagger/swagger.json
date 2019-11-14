@@ -265,7 +265,7 @@
               }
             },
             {
-              "name": "appid",
+              "name": "appId",
               "in": "path",
               "description": "MongoDB _id of the application (not appUid) to remove",
               "required": true,
