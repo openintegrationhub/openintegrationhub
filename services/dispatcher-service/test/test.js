@@ -47,6 +47,7 @@ describe('Documentation', () => {
 
 describe('API', () => {
   let configId;
+  let appId;
   const applications = [
     {
       applicationName: 'SnazzyContacts',
@@ -192,12 +193,97 @@ describe('API', () => {
     expect(res.text).not.toHaveLength(0);
   });
 
+  test('should add a new app to the configuration', async () => {
+    nock('http://localhost:3001/flows')
+      .post('')
+      .reply(201, { data: { id: 'GoogleFlow' } });
+
+    const res = await request
+      .put(`/dispatches/${configId}/app`)
+      .set('Authorization', 'Bearer userToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(
+        {
+          applicationName: 'Google Contacts',
+          applicationUid: 'google1357',
+          adapterComponentId: 'googleAdapterId',
+          transformerComponentId: 'googleTransformerId',
+          secretId: 'googleSecretId',
+
+          outbound: {
+            active: true,
+            flows: [
+              {
+                transformerAction: 'transformToOih',
+                adapterAction: 'getContacts',
+                schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+              },
+            ],
+          },
+          inbound: {
+            active: false,
+          },
+        },
+      );
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.data.tenant).toEqual('TestTenant');
+    expect(res.body.data.applications).toHaveLength(3);
+    expect(res.body.data.applications[0].outbound.flows).toHaveLength(1);
+    expect(res.body.data.applications[0].outbound.flows[0].flowId).toEqual('AutoFlow0');
+    expect(res.body.data.applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
+    expect(res.body.data.applications[0].inbound.flows).toHaveLength(3);
+    expect(res.body.data.applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
+    expect(res.body.data.applications[1].outbound.flows).toHaveLength(1);
+    expect(res.body.data.applications[1].outbound.flows[0].flowId).toEqual('AutoFlow4');
+    expect(res.body.data.applications[1].inbound.flows).toHaveLength(2);
+    expect(res.body.data.applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
+    expect(res.body.data.applications[2].applicationName).toEqual('Google Contacts');
+    expect(res.body.data.applications[2].outbound.flows).toHaveLength(1);
+    expect(res.body.data.applications[2].outbound.flows[0].flowId).toEqual('GoogleFlow');
+    expect(res.body.data.applications[2].inbound.flows).toHaveLength(0);
+  });
+
   test('should single get only the new configuration', async () => {
     const res = await request
       .get(`/dispatches/${configId}`)
       .set('Authorization', 'Bearer userToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.data.tenant).toEqual('TestTenant');
+    expect(res.body.data.applications).toHaveLength(3);
+    expect(res.body.data.applications[0].outbound.flows).toHaveLength(1);
+    expect(res.body.data.applications[0].outbound.flows[0].flowId).toEqual('AutoFlow0');
+    expect(res.body.data.applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
+    expect(res.body.data.applications[0].inbound.flows).toHaveLength(3);
+    expect(res.body.data.applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
+    expect(res.body.data.applications[1].outbound.flows).toHaveLength(1);
+    expect(res.body.data.applications[1].outbound.flows[0].flowId).toEqual('AutoFlow4');
+    expect(res.body.data.applications[1].inbound.flows).toHaveLength(2);
+    expect(res.body.data.applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
+    expect(res.body.data.applications[2].applicationName).toEqual('Google Contacts');
+    expect(res.body.data.applications[2].outbound.flows).toHaveLength(1);
+    expect(res.body.data.applications[2].outbound.flows[0].flowId).toEqual('GoogleFlow');
+    expect(res.body.data.applications[2].inbound.flows).toHaveLength(0);
+
+    appId = res.body.data.applications[2]._id;
+  });
+
+  test('should remove an app from the configuration', async () => {
+    nock('http://localhost:3001/flows/GoogleFlow')
+      .delete('')
+      .reply(200);
+
+    const res = await request
+      .delete(`/dispatches/${configId}/app/${appId}`)
+      .set('Authorization', 'Bearer userToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
     expect(res.status).toEqual(200);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.data.tenant).toEqual('TestTenant');
@@ -219,6 +305,7 @@ describe('API', () => {
         .delete('')
         .reply(200);
     }
+
 
     const res = await request
       .delete(`/dispatches/${configId}`)

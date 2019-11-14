@@ -209,12 +209,12 @@ async function createFlows(applications, token) {
   }
 }
 
-async function deleteFlows(config, token) {
+async function deleteFlows(applications, token) {
   try {
     const flowIds = [];
 
-    for (let i = 0; i < config.applications.length; i += 1) {
-      const app = config.applications[i];
+    for (let i = 0; i < applications.length; i += 1) {
+      const app = applications[i];
       for (let j = 0; j < app.inbound.flows.length; j += 1) {
         flowIds.push(app.inbound.flows[j].flowId);
       }
