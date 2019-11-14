@@ -1,3 +1,5 @@
+/* eslint no-underscore-dangle: "off" */
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -86,10 +88,9 @@ router.post('/', jsonParser, async (req, res) => {
 // Add one or several apps to an existing configuration
 router.put('/:id/app', jsonParser, async (req, res) => {
   try {
-    const config = await storage.getOneConfig(req.user.tenant, req.params.id);
     let data = req.body;
-
     if (!Array.isArray(data)) data = [data];
+    const config = await storage.getOneConfig(req.user.tenant, req.params.id);
 
     if (!config) {
       return res.status(404).send({ errors: [{ code: 404, message: 'No config found' }] });
@@ -113,12 +114,33 @@ router.put('/:id/app', jsonParser, async (req, res) => {
 });
 
 // Delete a single app from an existing configuration
-router.delete('/:id/app/:appId', jsonParser, async (req, res) => {
+router.delete('/:id/app/:appId', jsonParser, async (req, res) => {  //eslint-disable-line
   try {
-    return res.status(200).send('App deleted');
+    const config = await storage.getOneConfig(req.user.tenant, req.params.id);
+
+    if (!config) {
+      return res.status(404).send({ errors: [{ code: 404, message: 'No config found' }] });
+    }
+
+    const index = config.applications.findIndex(app => app._id.toString() === req.params.appId);
+
+    if (index === -1) {
+      return res.status(404).send({ errors: [{ code: 404, message: 'No app found' }] });
+    }
+
+    const app = config.applications[index];
+    config.applications.splice(index, 1);
+
+    const response = await storage.updateConfig(config);
+
+    res.status(200).send({ meta: {}, data: response });
+
+    await deleteFlows([app], req.headers.authorization);
   } catch (e) {
     log.error(e);
-    return res.status(500).send(e);
+    if (!res.headersSent) {
+      return res.status(500).send(e);
+    }
   }
 });
 
@@ -138,7 +160,7 @@ router.delete('/:id', jsonParser, async (req, res) => {  //eslint-disable-line
 
     res.status(200).send('Deletion successful');
 
-    await deleteFlows(config, req.headers.authorization);
+    await deleteFlows(config.applications, req.headers.authorization);
   } catch (e) {
     log.error(e);
     if (!res.headersSent) {
