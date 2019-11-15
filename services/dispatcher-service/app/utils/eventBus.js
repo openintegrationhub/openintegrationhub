@@ -14,7 +14,7 @@ async function publishQueue(ev) {
   try {
     const newEvent = new Event(ev);
     await eventBus.publish(newEvent);
-    log.info(`Published event: ${JSON.stringify(ev)}`);
+    log.info(`Published event: ${JSON.stringify(ev.headers)}`);
   } catch (err) {
     log.error(err);
   }
@@ -36,7 +36,7 @@ async function connectQueue() {
 
     const targets = await getTargets(event.payload.meta.flowId, config.createOperation);
 
-    if (!targets) {
+    if (!targets || targets.length === 0) {
       log.info('No targets found for event.');
       return event.ack();
     }
@@ -44,6 +44,7 @@ async function connectQueue() {
     await checkFlows(targets);
 
     const events = await createDispatches(targets, event.payload);
+    log.info(`About to publish ${events.length} dispatches`);
     const promises = [];
 
     for (let j = 0; j < events.length; j += 1) {
@@ -57,28 +58,27 @@ async function connectQueue() {
   await eventBus.subscribe(config.updateEventName, async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
-    const { payload } = event;
-
-    if (!payload.meta || !payload.meta.flowId) {
+    if (!event.payload.meta || !event.payload.meta.flowId) {
       log.warn('Received malformed event:');
       log.warn(event.payload);
       return event.ack();
     }
 
-    const targets = await getTargets(payload.meta.flowId, config.updateOperation);
+    const targets = await getTargets(event.payload.meta.flowId, config.updateOperation);
 
-    if (!targets) {
+    if (!targets || targets.length === 0) {
       log.info('No targets found for event.');
       return event.ack();
     }
 
     await checkFlows(targets);
 
-    const events = await createDispatches(targets, payload);
+    const events = await createDispatches(targets, event.payload);
+    log.info(`About to publish ${events.length} dispatches`);
     const promises = [];
 
-    for (let j = 0; j < events.length; j += 1) {
-      promises.push(publishQueue(events[j]));
+    for (let k = 0; k < events.length; k += 1) {
+      promises.push(publishQueue(events[k]));
     }
 
     await Promise.all(promises);
@@ -88,28 +88,27 @@ async function connectQueue() {
   await eventBus.subscribe(config.deleteEventName, async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
-    const { payload } = event;
-
-    if (!payload.meta || !payload.meta.flowId) {
+    if (!event.payload.meta || !event.payload.meta.flowId) {
       log.warn('Received malformed event:');
       log.warn(event.payload);
       return event.ack();
     }
 
-    const targets = await getTargets(payload.meta.flowId, config.deleteOperation);
+    const targets = await getTargets(event.payload.meta.flowId, config.deleteOperation);
 
-    if (!targets) {
+    if (!targets || targets.length === 0) {
       log.info('No targets found for event.');
       return event.ack();
     }
 
     await checkFlows(targets);
 
-    const events = await createDispatches(targets, payload);
+    const events = await createDispatches(targets, event.payload);
+    log.info(`About to publish ${events.length} dispatches`);
     const promises = [];
 
-    for (let j = 0; j < events.length; j += 1) {
-      promises.push(publishQueue(events[j]));
+    for (let l = 0; l < events.length; l += 1) {
+      promises.push(publishQueue(events[l]));
     }
 
     await Promise.all(promises);

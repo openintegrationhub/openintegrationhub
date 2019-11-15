@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const log = require('../../utils/logger');
+const log = require('../../utils/logger');  //eslint-disable-line
 const { reportHealth } = require('../../utils/eventBus');
 
 const jsonParser = bodyParser.json();
@@ -39,7 +39,6 @@ router.get('/', jsonParser, async (req, res) => {
   if (response.status === 'pass') {
     return res.status(200).send(response);
   }
-  log.error(response);
   return res.status(500).send(response);
 });
 

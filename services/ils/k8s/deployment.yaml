@@ -22,6 +22,11 @@ spec:
                 secretKeyRef:
                   name: ils
                   key: 'mongourl'
+            - name: SCHEMA_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ils
+                  key: 'iamtoken'
           resources:
             limits:
               cpu: '0.1'

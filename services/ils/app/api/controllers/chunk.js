@@ -18,6 +18,7 @@ const chunkSchema = require('../../models/schemas/chunk.json');
 const log = require('../../config/logger');
 
 const { validateSchema, validateSplitSchema } = require('../utils/validator');
+const { schemaToken } = require('../../config/index');
 const {
   createChunk,
   fetchSchema,
@@ -261,8 +262,11 @@ router.post('/', jsonParser, async (req, res) => {
  * @return {Object} - object containing valid property and meta data
  */
 router.post('/validate', jsonParser, async (req, res) => {
-  const { payload, token, ilaId } = req.body;
+  const { payload, ilaId } = req.body;
   const valid = chunkValidator(req.body);
+
+  let token = req.body.token; //eslint-disable-line
+  if (!token) token = schemaToken;
 
   const validIlaId = await ilaIdValidator(ilaId);
 

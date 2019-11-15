@@ -10,7 +10,6 @@ const configuration = new Schema({
   tenant: String,
   applications: [
     {
-      _id: false,
       applicationName: String,
       applicationUid: String,
       adapterComponentId: String,
