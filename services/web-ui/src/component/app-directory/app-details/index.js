@@ -594,11 +594,11 @@ class AppDetails extends React.Component {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>Direction</TableCell>
-                                        <TableCell align="right">Adapter method</TableCell>
-                                        <TableCell align="right">Transformer method</TableCell>
-                                        <TableCell align="right">Supported operation</TableCell>
-                                        <TableCell align="right">Support data models</TableCell>
-                                        <TableCell align="right">Actions</TableCell>
+                                        <TableCell>Adapter method</TableCell>
+                                        <TableCell>Transformer method</TableCell>
+                                        <TableCell>Supported operation</TableCell>
+                                        <TableCell>Support data models</TableCell>
+                                        <TableCell>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -616,7 +616,7 @@ class AppDetails extends React.Component {
                                                     <MenuItem value={'outbound'}>outbound</MenuItem>
                                                 </Select>
                                             </TableCell>
-                                            <TableCell align="right">
+                                            <TableCell>
 
                                                 <Select onChange={this.setSyncMappingField.bind(this, 'adapterOperation', index)} value={mapping.adapterOperation}
                                                     required
@@ -630,7 +630,7 @@ class AppDetails extends React.Component {
                                                     {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
                                                 </Select>
                                             </TableCell>
-                                            <TableCell align="right">
+                                            <TableCell>
                                                 <Select
                                                     required
 
@@ -644,7 +644,7 @@ class AppDetails extends React.Component {
                                                     {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
                                                 </Select>
                                             </TableCell>
-                                            <TableCell align="right">
+                                            <TableCell>
                                                 {['CREATE', 'UPDATE', 'DELETE'].map(op => <FormControlLabel
                                                     key={op}
                                                     control={
@@ -660,7 +660,7 @@ class AppDetails extends React.Component {
                                                     label={op}
                                                 />)}
                                             </TableCell>
-                                            <TableCell align="right">
+                                            <TableCell>
                                                 <Select
                                                     labelId="demo-mutiple-name-label"
                                                     id="demo-mutiple-name"
@@ -680,7 +680,7 @@ class AppDetails extends React.Component {
 
                                                 </Select>
                                             </TableCell>
-                                            <TableCell align="right"><IconButton edge="end" aria-label="comments" onClick={this.removeSyncMapping.bind(this, index)}>
+                                            <TableCell><IconButton edge="end" aria-label="comments" onClick={this.removeSyncMapping.bind(this, index)}>
                                                 <Delete />
                                             </IconButton></TableCell>
                                         </TableRow>

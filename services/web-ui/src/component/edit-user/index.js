@@ -108,6 +108,9 @@ class EditUser extends React.Component {
                 status: conf.account.status.ACTIVE,
                 password: '',
             });
+            this.setState({
+                selectableroles: this.props.roles.all,
+            });
         }
     }
 
