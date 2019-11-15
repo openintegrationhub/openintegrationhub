@@ -19,9 +19,12 @@ import { getRoles } from '../../action/roles';
 
 
 class App extends React.Component {
+    state = {
+        initialLoginCheckDone: false,
+    }
+
     constructor(props) {
         super(props);
-        this.props.checkLogin();
         axios.interceptors.response.use(response => response, async (error) => {
             if (error.response.status === 401) {
                 console.log('REDIRECT TO LOGIN SCREEN', error);
@@ -29,22 +32,32 @@ class App extends React.Component {
             }
             return Promise.reject(error);
         });
-        props.getUsers();
-        props.getRoles();
-        props.getTenants();
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         document.title = 'Web UI';
+        await this.props.checkLogin();
+
+        this.props.getUsers();
+        this.props.getRoles();
+        this.props.getTenants();
+
+        this.setState({
+            initialLoginCheckDone: 1,
+        });
     }
 
-    componentDidUpdate() {
-        if (!this.props.auth && !this.props.auth.isLoggedIn) {
-            this.props.checkLogin();
+    async componentDidUpdate() {
+        if (!this.props.auth || !this.props.auth.isLoggedIn) {
+            await this.props.checkLogin();
         }
     }
 
     render() {
+        if (!this.state.initialLoginCheckDone) {
+            return null;
+        }
+
         return <Switch>
             <Route path="/hook" component={Hook} />
             <Route exact path="/auth" component={Auth} />

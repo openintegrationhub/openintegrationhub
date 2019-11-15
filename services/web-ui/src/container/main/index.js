@@ -116,24 +116,9 @@ class Main extends React.Component {
         super(props);
 
         this.state = {
-            menu: [],
             open: false,
             context: null,
         };
-    }
-
-    componentDidMount() {
-        if (this.props.auth.isAdmin) {
-            menuArr.splice(1, 0, 'Tenants');
-            menuArr.splice(1, 0, 'Users');
-        }
-        if (this.props.auth.isTenantAdmin) {
-            menuArr.splice(1, 0, 'Users');
-        }
-
-        this.setState({
-            menu: menuArr,
-        });
     }
 
     // componentDidUpdate(prefProps) {
@@ -182,71 +167,81 @@ class Main extends React.Component {
       });
   }
 
-  getMenuItems = () => <div>
-      {
-          this.state.menu.map((text) => {
-              switch (text) {
-              case 'Start':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/'); }}>
-                      <ListItemIcon><HomeIcon /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Profile':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/profile'); }}>
-                      <ListItemIcon><Person /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Users':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/users'); }}>
-                      <ListItemIcon><AccountCircle /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Tenants':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/tenants'); }}>
-                      <ListItemIcon><Business /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Roles':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/roles'); }}>
-                      <ListItemIcon><Security /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Flows':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/flows'); }}>
-                      <ListItemIcon><LinearScale /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'App-Directory':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/app-directory'); }}>
-                      <ListItemIcon><AppsIcon /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Components':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/components'); }}>
-                      <ListItemIcon><SettingsInputComponent /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Metadata':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/metadata'); }}>
-                      <ListItemIcon><DeviceHub /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Secrets':
-                  return <ListItem button key={text} onClick={() => { this.props.history.push('/secrets'); }}>
-                      <ListItemIcon><EnhancedEncryption /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              case 'Logout':
-                  return <ListItem button key={text} onClick={this.logout}>
-                      <ListItemIcon><LockOpen /></ListItemIcon>
-                      <ListItemText primary={text} />
-                  </ListItem>;
-              default:
-                  return null;
-              }
-          })
+  getMenuItems = () => {
+      const menuCopy = [...menuArr];
+      if (this.props.auth.isAdmin) {
+          menuCopy.splice(1, 0, 'Tenants');
+          menuCopy.splice(1, 0, 'Users');
       }
-  </div>;
+      if (this.props.auth.isTenantAdmin) {
+          menuCopy.splice(1, 0, 'Users');
+      }
+      return <div>
+          {
+              menuCopy.map((text) => {
+                  switch (text) {
+                  case 'Start':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/'); }}>
+                          <ListItemIcon><HomeIcon /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'Profile':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/profile'); }}>
+                          <ListItemIcon><Person /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'Users':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/users'); }}>
+                          <ListItemIcon><AccountCircle /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'Tenants':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/tenants'); }}>
+                          <ListItemIcon><Business /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'Roles':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/roles'); }}>
+                          <ListItemIcon><Security /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'Flows':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/flows'); }}>
+                          <ListItemIcon><LinearScale /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'App-Directory':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/app-directory'); }}>
+                          <ListItemIcon><AppsIcon /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'Components':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/components'); }}>
+                          <ListItemIcon><SettingsInputComponent /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'Metadata':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/metadata'); }}>
+                          <ListItemIcon><DeviceHub /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'Secrets':
+                      return <ListItem button key={text} onClick={() => { this.props.history.push('/secrets'); }}>
+                          <ListItemIcon><EnhancedEncryption /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  case 'Logout':
+                      return <ListItem button key={text} onClick={this.logout}>
+                          <ListItemIcon><LockOpen /></ListItemIcon>
+                          <ListItemText primary={text} />
+                      </ListItem>;
+                  default:
+                      return null;
+                  }
+              })
+          }
+      </div>;
+  }
 
   render() {
       const { classes, theme } = this.props;

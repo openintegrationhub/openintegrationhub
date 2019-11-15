@@ -30,8 +30,8 @@ spec:
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"
               value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
-            - name: ORIGINWHITELIST
-              value: openintegrationhub.com
+            - name: ORIGIN_WHITELIST
+              value: openintegrationhub.com,http://web-ui.openintegrationhub.com,https://web-ui.openintegrationhub.com
             - name: PORT
               value: '3000'
             - name: API_BASE
