@@ -8,6 +8,9 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
+const request = require('request');
+const { URL } = require('url');
+const path = require('path');
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 const { publishQueue } = require('../../utils/eventBus');
@@ -279,5 +282,27 @@ router.delete('/:id', can(config.flowWritePermission), jsonParser, async (req, r
   }
 });
 
+// Get step logs
+router.get('/:id/steps/:stepId/logs', async (req, res) => {
+  const flow = await storage.getFlowById(req.params.id, req.user);
+
+  if (!flow) {
+    return res.status(404).send({ errors: [{ message: 'Flow not found', code: 404 }] });
+  }
+
+  const { id: flowId, stepId } = req.params;
+  const url = new URL(config.loggingServiceBaseUrl);
+  url.pathname = path.join(url.pathname, `/logs/flows/${flowId}/steps/${stepId}`);
+
+  const options = {
+    url: url.toString(),
+    qs: req.query,
+    headers: {
+      authorization: `Bearer ${process.env.IAM_TOKEN}`,
+    },
+    json: true,
+  };
+  return request.get(options).pipe(res);
+});
 
 module.exports = router;

@@ -13,6 +13,8 @@ const general = {
 
   // Designates which storage system (Mongo, Kubernetes, MySQL, etc.) is used
   storage: 'mongo',
+
+  loggingServiceBaseUrl: process.env.LOGGING_SERVICE_BASE_URL || 'http://logging-service.oih-dev-ns.svc.cluster.local:1234',
 };
 
 module.exports = general;
