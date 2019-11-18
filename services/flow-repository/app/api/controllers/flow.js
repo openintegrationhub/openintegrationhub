@@ -293,7 +293,7 @@ router.get('/:id/steps/:stepId/logs', async (req, res) => {
     url: `${config.loggingServiceBaseUrl}/logs/flows/${flowId}/steps/${stepId}`,
     qs: req.query,
     headers: {
-      authorization: req.headers.authorization,
+      authorization: `Bearer ${process.env.IAM_TOKEN}`,
     },
     json: true,
   };
