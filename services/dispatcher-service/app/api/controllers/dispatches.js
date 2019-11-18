@@ -30,10 +30,6 @@ router.get('/', jsonParser, async (req, res) => {
   try {
     const response = await storage.getConfigs(req.user.tenant);
 
-    // if (!response) {
-    //   return res.status(404).send({ errors: [{ status: 404, message: 'Tenant has no config' }] });
-    // }
-
     return res.status(200).send({ meta: {}, data: response || [] });
   } catch (e) {
     log.error(e);
@@ -138,7 +134,7 @@ router.patch('/:id/app/:appId', jsonParser, async (req, res) => {
     });
 
     // TODO: Create a diff stop flows affected by any change
-    
+
     const response = await storage.updateConfig(config);
 
     return res.status(200).send({ meta: {}, data: response });
