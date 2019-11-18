@@ -38,6 +38,17 @@ module.exports = function (app) {
         },
     }));
 
+    app.use(proxy('/dispatcher-api', {
+        pathRewrite: { '^/dispatcher-api': '/' },
+        target: conf.endpoints.dispatcher,
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
+
     app.use(proxy('/component-api', {
         pathRewrite: { '^/component-api': '/' },
         target: conf.endpoints.component,

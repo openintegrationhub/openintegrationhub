@@ -12,14 +12,21 @@ import {
 } from '@material-ui/icons';
 import Modal from '@material-ui/core/Modal';
 import {
-    TextField, FormControl, FormControlLabel, Switch,
+    TextField, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup,
 } from '@material-ui/core';
 
 // actions
 import {
-    getApps, createApp, deleteApp, updateApp,
+    getApps,
 } from '../../action/app-directory';
-import AppTeaser from './app-teaser';
+import {
+    getDispatcherConfigs,
+    createDispatcherConfig,
+    deleteDispatcherConfig,
+} from '../../action/hub-spoke';
+
+import { getDomains } from '../../action/metadata';
+import DispatcherConfigTeaser from './teaser';
 
 
 const useStyles = {
@@ -31,52 +38,45 @@ const useStyles = {
         backgroundColor: 'white',
         margin: 'auto',
         outline: 'none',
-        padding: '30px',
     },
 };
 
-class AppDirectory extends React.Component {
+class HubAndSpoke extends React.Component {
     state = {
-        currentState: null,
-        addApp: false,
-        app: {
-            artifactId: '',
+        addEntity: false,
+        entity: {
+            dataModel: '',
             name: '',
-            isGlobal: false,
         },
     }
 
     async componentDidMount() {
         await this.props.getApps();
+        await this.props.getDispatcherConfigs();
+        await this.props.getDomains();
     }
 
-    addNewApp = async (e) => {
+    addNewEntity = async (e) => {
         e.preventDefault();
-        await this.props.createApp({ ...this.state.app });
+        await this.props.createDispatcherConfig({ ...this.state.entity });
         this.setState({
-            addApp: false,
+            addEntity: false,
         });
     }
 
-    toggleAddApp = async (e) => {
+    toggleAddEntity = async (e) => {
         e.preventDefault();
         this.setState({
-            addApp: true,
-            app: {
-                ...this.state.app,
-                isGlobal: !!(this.props.auth.isAdmin && !this.props.auth.tenant),
-            },
+            addEntity: true,
         });
     }
 
-    setAppVal = (fieldName, e) => {
-        let val = e.target.value;
-        if (fieldName === 'isGlobal') {
-            val = e.target.checked;
-        }
+    setEntityVal = (fieldName, e) => {
+        const val = e.target.value;
+        console.log(fieldName, val, e.target.value);
         this.setState({
-            app: {
-                ...this.state.app,
+            entity: {
+                ...this.state.entity,
                 [fieldName]: val,
             },
         });
@@ -92,7 +92,7 @@ class AppDirectory extends React.Component {
                 <Grid container spacing={2}>
 
                     <Grid item xs={6}>
-                        <Button variant="outlined" aria-label="Add" onClick={this.toggleAddApp.bind(this)}>
+                        <Button variant="outlined" aria-label="Add" onClick={this.toggleAddEntity.bind(this)}>
                         Add<Add/>
                         </Button>
                     </Grid>
@@ -100,8 +100,8 @@ class AppDirectory extends React.Component {
                 </Grid>
                 <div>
                     {
-                        this.props.apps.list.map(item => <AppTeaser
-                            key={`appTeaser-${item._id}`}
+                        this.props.hubAndSpoke.list.map(item => <DispatcherConfigTeaser
+                            key={`teaser-${item.id}`}
                             {...item}
                             onEdit={() => {}}
                             onDelete={() => {}}
@@ -112,51 +112,36 @@ class AppDirectory extends React.Component {
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
-                    open={this.state.addApp}
+                    open={this.state.addEntity}
                     onClose={ () => { this.setState({ addApp: false }); }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
                         <Grid container justify="center" spacing={2}>
-                            <form onSubmit={this.addNewApp}>
+                            <form onSubmit={this.addNewEntity}>
                                 <FormControl fullWidth className={classes.margin}>
                                     <TextField
-                                        id="artifact-id"
-                                        label="Artifact Id"
+                                        id="config-name"
+                                        label="Name"
                                         className={classes.textField}
-                                        value={this.state.app.artifactId}
-                                        onChange={this.setAppVal.bind(this, 'artifactId')}
+                                        value={this.state.entity.name}
+                                        onChange={this.setEntityVal.bind(this, 'name')}
                                         margin="normal"
                                         required
                                     />
                                 </FormControl>
 
-                                <FormControl fullWidth className={classes.margin}>
-                                    <TextField
-                                        id="app-name"
-                                        label="App name"
-                                        className={classes.textField}
-                                        value={this.state.app.name}
-                                        onChange={this.setAppVal.bind(this, 'name')}
-                                        margin="normal"
-                                        required
-                                    />
+                                <FormControl component="fieldset" className={classes.formControl}>
+                                    <FormLabel component="legend">Data model</FormLabel>
+                                    <RadioGroup aria-label="dataModel" name="dataModel" value={this.state.entity.dataModel} onChange={this.setEntityVal.bind(this, 'dataModel')}>
+                                        {this.props.dataModels.map(dataModel => <FormControlLabel key={dataModel.id} value={dataModel.id} control={<Radio />} label={dataModel.name} />)}
+                                    </RadioGroup>
                                 </FormControl>
 
-                                {this.props.auth.isAdmin
-                                && <FormControl fullWidth className={classes.margin}>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch checked={this.state.app.isGlobal} onChange={this.setAppVal.bind(this, 'isGlobal')} value="isGlobal" />
-                                        }
-                                        label="App is global"
-                                    />
-                                </FormControl>}
-
-                                <Button variant="contained" className={classes.button} aria-label="Add" onClick={this.addNewApp}>
+                                <Button variant="contained" className={classes.button} aria-label="Add" onClick={this.addNewEntity}>
                                         Save
                                 </Button>
-                                <Button variant="contained" className={classes.button} aria-label="Cancel" onClick={() => { this.setState({ addApp: false }); }}>
+                                <Button variant="contained" className={classes.button} aria-label="Cancel" onClick={() => { this.setState({ addEntity: false }); }}>
                                     Cancel
                                 </Button>
                             </form>
@@ -172,13 +157,16 @@ class AppDirectory extends React.Component {
 
 const mapStateToProps = state => ({
     apps: state.apps,
+    dataModels: state.metadata.domains,
     auth: state.auth,
+    hubAndSpoke: state.hubAndSpoke,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     getApps,
-    createApp,
-    updateApp,
-    deleteApp,
+    getDomains,
+    getDispatcherConfigs,
+    createDispatcherConfig,
+    deleteDispatcherConfig,
 }, dispatch);
 
 export default flow(
@@ -187,4 +175,4 @@ export default flow(
         mapDispatchToProps,
     ),
     withStyles(useStyles),
-)(AppDirectory);
+)(HubAndSpoke);
