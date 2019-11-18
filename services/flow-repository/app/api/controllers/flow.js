@@ -9,6 +9,8 @@ const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
+const { URL } = require('url');
+const path = require('path');
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 const { publishQueue } = require('../../utils/eventBus');
@@ -289,8 +291,11 @@ router.get('/:id/steps/:stepId/logs', async (req, res) => {
   }
 
   const { id: flowId, stepId } = req.params;
+  const url = new URL(config.loggingServiceBaseUrl);
+  url.pathname = path.join(url.pathname, `/logs/flows/${flowId}/steps/${stepId}`);
+
   const options = {
-    url: `${config.loggingServiceBaseUrl}/logs/flows/${flowId}/steps/${stepId}`,
+    url: url.toString(),
     qs: req.query,
     headers: {
       authorization: `Bearer ${process.env.IAM_TOKEN}`,
