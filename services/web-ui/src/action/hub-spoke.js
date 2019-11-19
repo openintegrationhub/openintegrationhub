@@ -57,14 +57,14 @@ export const createDispatcherConfig = data => async (dispatch) => {
     }
 };
 
-export const updateDispatcherConfig = async (id, appData) => {
+export const updateDispatcherConfig = async (id, payload) => {
     try {
         const { data } = await axios({
-            method: 'put',
-            url: `${conf.endpoints.dispatcher}/dispatches/${id}/app`,
+            method: 'patch',
+            url: `${conf.endpoints.dispatcher}/dispatches/${id}`,
             withCredentials: true,
             json: true,
-            data: appData,
+            data: payload,
         });
 
         return data.data;

@@ -12,15 +12,18 @@ import Button from '@material-ui/core/Button';
 import {
     FormControl,
     Container,
-    TextField,
+    TextField, InputLabel, Select, MenuItem,
 } from '@material-ui/core';
 import Modal from '@material-ui/core/Modal';
+import {
+    getSecrets,
+} from '../../../action/secrets';
 import {
     getApps,
 } from '../../../action/app-directory';
 import { getDomains, getDomainSchemas } from '../../../action/metadata';
 import {
-    getDispatcherConfig, updateDispatcherConfig, deleteAppFromDispatcherConfig, updateAppInDispatcherConfig,
+    getDispatcherConfig, updateDispatcherConfig,
 } from '../../../action/hub-spoke';
 import AppTeaser from '../../app-directory/app-teaser';
 
@@ -36,7 +39,7 @@ const useStyles = {
         padding: '30px',
     },
     wrapper: {
-        padding: '20px 0',
+        paddingTop: '20px',
         justifyContent: 'center',
     },
     formControl: {
@@ -52,11 +55,15 @@ const useStyles = {
         width: '20%',
         height: '100%',
         minWidth: 120,
-        backgroundColor: 'orange',
+        backgroundColor: '#ffba89',
 
         minHeight: '400px',
         marginBottom: '20px',
         marginRight: '30px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '2em',
     },
     connectedApps: {
         flex: '2',
@@ -74,6 +81,9 @@ const useStyles = {
     directionActive: {
         opacity: 1,
     },
+    secretsWrapper: {
+        width: '300px',
+    }
 };
 
 class DispatcherConfigDetails extends React.Component {
@@ -89,6 +99,7 @@ class DispatcherConfigDetails extends React.Component {
         try {
             await this.props.getApps();
             await this.props.getDomains();
+            await this.props.getSecrets();
             for (const domain of this.props.dataModels) {
                 this.props.getDomainSchemas(domain.id);
             }
@@ -126,9 +137,13 @@ class DispatcherConfigDetails extends React.Component {
         }
 
         try {
-            // await updateApp(this.state.app);
+            const resp = await updateDispatcherConfig(this.state.entity.id, { ...this.state.entity });
             this.setState({
                 hasChanges: 0,
+                entity: {
+                    ...this.state.entity,
+                    ...resp,
+                },
             });
         } catch (err) {
             console.error(err);
@@ -142,12 +157,16 @@ class DispatcherConfigDetails extends React.Component {
     }
 
     toggleDirectionForApp = async (appId, direction) => {
-        const app = this.state.entity.applications.find(_app => _app._id === appId);
+        const applications = [...this.state.entity.applications];
+        const app = applications.find(_app => _app._id === appId);
         app[direction].active = !app[direction].active;
 
-        const resp = await updateAppInDispatcherConfig(this.state.entity.id, appId, app);
         this.setState({
-            applications: resp.applications,
+            entity: {
+                ...this.state.entity,
+                applications,
+            },
+            hasChanges: 1,
         });
     }
 
@@ -179,6 +198,7 @@ class DispatcherConfigDetails extends React.Component {
 
     addApp = async (appId) => {
         const app = this.props.apps.list.find(_app => _app._id === appId);
+        const applications = [...this.state.entity.applications];
         const newApp = {
             applicationName: app.name,
             applicationUid: app.artifactId,
@@ -189,24 +209,47 @@ class DispatcherConfigDetails extends React.Component {
 
             outbound: this.getAppFlowsForDirection(app, 'outbound'),
         };
-        console.log('newApp', newApp);
 
-        const resp = await updateDispatcherConfig(this.state.entity.id, newApp);
-        resp.id = resp.id || resp._id;
-
+        applications.push(newApp);
         this.setState({
             addApp: false,
-            entity: resp,
+            entity: {
+                ...this.state.entity,
+                applications,
+            },
+            hasChanges: 1,
         });
     }
 
-    removeApp = async (appId) => {
-        const resp = await deleteAppFromDispatcherConfig(this.state.entity.id, appId);
-        resp.id = resp.id || resp._id;
+    removeApp = async (index) => {
+        const applications = [...this.state.entity.applications];
+
+        applications.splice(index, 1);
 
         this.setState({
             addApp: false,
-            entity: resp,
+            entity: {
+                ...this.state.entity,
+                applications,
+            },
+            hasChanges: 1,
+        });
+    }
+
+    setSecretForApp = (appId, e) => {
+        console.log(appId, e.target.value);
+        const applications = [...this.state.entity.applications];
+
+        const app = applications.find(_app => _app._id === appId);
+        app.secretId = e.target.value;
+
+        this.setState({
+            addApp: false,
+            entity: {
+                ...this.state.entity,
+                applications,
+            },
+            hasChanges: 1,
         });
     }
 
@@ -214,16 +257,6 @@ class DispatcherConfigDetails extends React.Component {
         const {
             classes,
         } = this.props;
-
-        // const domainModelsSelect = [];
-        // Object.keys(this.props.domainSchemas).forEach((domainsKey) => {
-        //     domainModelsSelect.push(<ListSubheader>{this.props.dataModels.find(domain => domain.id === domainsKey).name}</ListSubheader>);
-        //     this.props.domainSchemas[domainsKey].forEach((schema) => {
-        //         domainModelsSelect.push(<MenuItem key={schema.id} value={schema.id}>
-        //             {schema.name}
-        //         </MenuItem>);
-        //     });
-        // });
 
         return (
             <Container className={classes.wrapper}>
@@ -260,9 +293,9 @@ class DispatcherConfigDetails extends React.Component {
                         </FormControl>
 
                         <div className={classes.hubWrapper}>
-                            <div className={classes.hub}>Hub</div>
+                            <div className={classes.hub}>OIH HUB</div>
                             <div className={classes.connectedApps}>
-                                {this.state.entity.applications.map((connectedApp) => {
+                                {this.state.entity.applications.map((connectedApp, index) => {
                                     const appData = this.props.apps.list.find(app => app.artifactId === connectedApp.applicationUid);
                                     return <div key={appData._id} className={classes.connectedAppContainer}>
                                         <div style={{ width: '120px' }}>
@@ -270,8 +303,25 @@ class DispatcherConfigDetails extends React.Component {
                                             {connectedApp.outbound.flows.length ? <button type={'button'} onClick={this.toggleDirectionForApp.bind(this, connectedApp._id, 'outbound')} className={`${classes.direction} ${connectedApp.outbound.active ? classes.directionActive : ''}`}>Outbound &lt;--</button> : null}
                                         </div>
                                         <AppTeaser {...appData} hideControls={true} />
+                                        <FormControl className={`${classes.margin} ${classes.secretsWrapper}`}>
+                                            <InputLabel htmlFor="secretId">Secret</InputLabel>
+
+                                            <Select
+                                                value={connectedApp.secretId}
+                                                onChange={this.setSecretForApp.bind(this, connectedApp._id)}
+                                                inputProps={{
+                                                    name: 'secret',
+                                                    id: 'secretId',
+                                                }}
+                                            >
+                                                <MenuItem key={'null'} value={null}>No value</MenuItem>
+                                                {this.props.secrets.map(secret => <MenuItem key={secret._id} value={secret._id}>{secret.name}</MenuItem>)}
+
+                                            </Select>
+
+                                        </FormControl>
                                         <div>
-                                            <Button variant={'outlined'} type={'button'} onClick={this.removeApp.bind(this, connectedApp._id)}>Delete</Button>
+                                            <Button variant={'outlined'} type={'button'} onClick={this.removeApp.bind(this, index)}>Delete</Button>
                                         </div>
                                     </div>;
                                 })}
@@ -297,6 +347,7 @@ const mapStateToProps = state => ({
     apps: state.apps,
     hubAndSpoke: state.hubAndSpoke,
     auth: state.auth,
+    secrets: state.secrets.secrets,
     authClients: state.authClients,
     dataModels: state.metadata.domains,
     domainSchemas: state.metadata.domainSchemas,
@@ -304,6 +355,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
     getDomains,
     getApps,
+    getSecrets,
     getDomainSchemas,
 }, dispatch);
 

@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
 // actions
+import { Container } from '@material-ui/core';
 import { getTenants } from '../../action/tenants';
 // import EditTenant from '../edit-tenant';
 
@@ -58,7 +59,7 @@ class Tenants extends React.Component {
             classes,
         } = this.props;
         return (
-            <div className={classes.wrapper}>
+            <Container className={classes.wrapper}>
                 <Grid item xs={12} className={classes.tools}>
                     <Button variant="outlined" aria-label="Add" onClick={this.addTenant}>
                         Add<AddIcon/>
@@ -79,7 +80,7 @@ class Tenants extends React.Component {
                     <Table data={this.props.tenants.all} editHandler={this.editHandler} type='tenant'/>
                 </Grid>
 
-            </div>
+            </Container>
         );
     }
 }
