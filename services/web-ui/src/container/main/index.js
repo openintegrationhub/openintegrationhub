@@ -109,6 +109,10 @@ const styles = theme => ({
         width: '100%',
         paddingTop: '4px',
     },
+    drawerIcon: {
+        marginRight: '20px',
+        width: 'auto',
+    },
 });
 
 const MENU = {
@@ -264,12 +268,12 @@ class Main extends React.Component {
                       })}
                   >
                       <Toolbar disableGutters={!open}>
-                          <Grid container spacing={3}>
+                          <Grid container>
                               <IconButton
                                   color="inherit"
                                   aria-label="Open drawer"
                                   onClick={this.handleDrawerOpen}
-                                  className={classNames(classes.menuButton, open && classes.hide)}
+                                  className={classNames(classes.menuButton, classes.drawerIcon, open && classes.hide)}
                               >
                                   <MenuIcon />
                               </IconButton>

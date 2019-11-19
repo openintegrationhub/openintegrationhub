@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
 // Actions
+import { Container } from '@material-ui/core';
 import { getUsers } from '../../action/users';
 import { getTenants } from '../../action/tenants';
 import { getRoles } from '../../action/roles';
@@ -60,7 +61,7 @@ class Users extends React.Component {
         } = this.props;
         if (this.props.users && this.props.users.all.length) {
             return (
-                <div className={classes.wrapper}>
+                <Container className={classes.wrapper}>
                     <Grid item xs={12} className={classes.tools}>
                         <Button variant="outlined" aria-label="Add" onClick={this.addUser}>
                             Add<AddIcon/>
@@ -80,7 +81,7 @@ class Users extends React.Component {
                         <Table data={this.props.users.all} editHandler={this.editHandler} type='user'/>
                     </Grid>
 
-                </div>
+                </Container>
             );
         }
         return null;
