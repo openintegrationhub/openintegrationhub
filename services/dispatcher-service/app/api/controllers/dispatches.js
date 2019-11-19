@@ -186,7 +186,8 @@ router.patch('/:id', jsonParser, async (req, res) => {  //eslint-disable-line
 
     const newConfig = await updateConfigFlows(config, req.body, req.headers.authorization);
 
-    const response = await storage.updateConfig(newConfig, req.params.id);
+
+    const response = await storage.updateConfig(newConfig);
 
     res.status(200).send({ meta: {}, data: response });
   } catch (e) {

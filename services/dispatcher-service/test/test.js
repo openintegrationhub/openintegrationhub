@@ -145,12 +145,14 @@ describe('API', () => {
       .set('Content-Type', 'application/json')
       .send(
         {
+          name: 'TestConfig',
           applications,
         },
       );
     expect(res.status).toEqual(201);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.data.tenant).toEqual('TestTenant');
+    expect(res.body.data.name).toEqual('TestConfig');
     expect(res.body.data.applications).toHaveLength(2);
     expect(res.body.data.applications[0].outbound.flows).toHaveLength(1);
     expect(res.body.data.applications[0].outbound.flows[0].flowId).toEqual('AutoFlow0');
@@ -182,7 +184,7 @@ describe('API', () => {
     expect(res.body.data[0].applications[1].outbound.flows[0].flowId).toEqual('AutoFlow4');
     expect(res.body.data[0].applications[1].inbound.flows).toHaveLength(2);
     expect(res.body.data[0].applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
-    config = res.body.data[0];
+
     configId = res.body.data[0].id;
   });
 
@@ -300,33 +302,59 @@ describe('API', () => {
     expect(res.body.data.applications[1].outbound.flows[0].flowId).toEqual('AutoFlow4');
     expect(res.body.data.applications[1].inbound.flows).toHaveLength(2);
     expect(res.body.data.applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
+    config = res.body.data;
   });
 
-  // test('update the entire configuration', async () => {
-  //   const updatedConfig = lodash.cloneDeep(config);
-  //
-  //   updatedConfig.name = 'New and Updated!';
-  //
-  //   const res = await request
-  //     .delete(`/dispatches/${configId}/app/${appId}`)
-  //     .set('Authorization', 'Bearer userToken')
-  //     .set('accept', 'application/json')
-  //     .set('Content-Type', 'application/json');
-  //
-  //   expect(res.status).toEqual(200);
-  //   expect(res.text).not.toHaveLength(0);
-  //   expect(res.body.data.tenant).toEqual('TestTenant');
-  //   expect(res.body.data.applications).toHaveLength(2);
-  //   expect(res.body.data.applications[0].outbound.flows).toHaveLength(1);
-  //   expect(res.body.data.applications[0].outbound.flows[0].flowId).toEqual('AutoFlow0');
-  //   expect(res.body.data.applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
-  //   expect(res.body.data.applications[0].inbound.flows).toHaveLength(3);
-  //   expect(res.body.data.applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
-  //   expect(res.body.data.applications[1].outbound.flows).toHaveLength(1);
-  //   expect(res.body.data.applications[1].outbound.flows[0].flowId).toEqual('AutoFlow4');
-  //   expect(res.body.data.applications[1].inbound.flows).toHaveLength(2);
-  //   expect(res.body.data.applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
-  // });
+  test('update the entire configuration', async () => {
+    nock('http://localhost:3001/flows/AutoFlow3')
+      .delete('')
+      .reply(200);
+
+    nock('http://localhost:3001/flows/AutoFlow4')
+      .delete('')
+      .reply(200);
+
+    nock('http://localhost:3001/flows')
+      .post('')
+      .reply(201, { data: { id: 'PatchFlow' } });
+
+    const updatedConfig = lodash.cloneDeep(config);
+
+    updatedConfig.name = 'UpdatedConfig';
+
+    updatedConfig.applications[0].inbound.flows.splice(2, 1);
+    updatedConfig.applications[1].outbound.active = false;
+    updatedConfig.applications[1].outbound.flows.splice(0, 1);
+    updatedConfig.applications[1].inbound.flows.push({
+      operation: 'DELETE',
+      transformerAction: 'transformFromOih',
+      adapterAction: 'deletePerson',
+      schemaUri: 'http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person',
+    });
+
+    const res = await request
+      .patch(`/dispatches/${configId}`)
+      .set('Authorization', 'Bearer userToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(updatedConfig);
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toHaveLength(0);
+    expect(res.body.data.tenant).toEqual('TestTenant');
+    expect(res.body.data.name).toEqual('UpdatedConfig');
+    expect(res.body.data.applications).toHaveLength(2);
+    expect(res.body.data.applications[0].outbound.flows).toHaveLength(1);
+    expect(res.body.data.applications[0].outbound.flows[0].flowId).toEqual('AutoFlow0');
+    expect(res.body.data.applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
+    expect(res.body.data.applications[0].inbound.flows).toHaveLength(2);
+    expect(res.body.data.applications[0].inbound.flows[0].flowId).toEqual('AutoFlow1');
+    expect(res.body.data.applications[1].outbound.flows).toHaveLength(0);
+    expect(res.body.data.applications[1].outbound.active).toEqual(false);
+    expect(res.body.data.applications[1].inbound.flows).toHaveLength(3);
+    expect(res.body.data.applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
+    expect(res.body.data.applications[1].inbound.flows[2].flowId).toEqual('PatchFlow');
+  });
 
   test('should delete the configuration', async () => {
     for (let i = 0; i < 7; i += 1) {
@@ -334,6 +362,10 @@ describe('API', () => {
         .delete('')
         .reply(200);
     }
+
+    nock('http://localhost:3001/flows/PatchFlow')
+      .delete('')
+      .reply(200);
 
 
     const res = await request
