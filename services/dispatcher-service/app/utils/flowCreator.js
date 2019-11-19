@@ -143,30 +143,32 @@ async function createFlows(applications, token) {
       if (app.outbound.active) {
         for (let j = 0; j < app.outbound.flows.length; j += 1) {
           const current = app.outbound.flows[j];
-          const flow = makeFlow(
-            app,
-            current,
-            'GET',
-          );
+          if (!current.flowId) {
+            const flow = makeFlow(
+              app,
+              current,
+              'GET',
+            );
 
-          const options = {
-            method: 'POST',
-            json: true,
-            url: `${flowRepoUrl}/flows`,
-            body: flow,
-            headers: {
-              Authorization: token,
-            },
-          };
-          const response = await request(options);
+            const options = {
+              method: 'POST',
+              json: true,
+              url: `${flowRepoUrl}/flows`,
+              body: flow,
+              headers: {
+                Authorization: token,
+              },
+            };
+            const response = await request(options);
 
-          if (response.statusCode === 201) {
-            app.outbound.flows[j].flowId = response.body.data.id;
-          } else {
-            log.error('Could not create flow:');
-            log.error(response.statusCode);
-            log.error(JSON.stringify(response.body));
-            return false;
+            if (response.statusCode === 201) {
+              app.outbound.flows[j].flowId = response.body.data.id;
+            } else {
+              log.error('Could not create flow:');
+              log.error(response.statusCode);
+              log.error(JSON.stringify(response.body));
+              return false;
+            }
           }
         }
       }
@@ -174,29 +176,31 @@ async function createFlows(applications, token) {
       if (app.inbound.active) {
         for (let k = 0; k < app.inbound.flows.length; k += 1) {
           const current = app.inbound.flows[k];
-          const flow = makeFlow(
-            app,
-            current,
-          );
+          if (!current.flowId) {
+            const flow = makeFlow(
+              app,
+              current,
+            );
 
-          const options = {
-            method: 'POST',
-            url: `${flowRepoUrl}/flows`,
-            json: true,
-            body: flow,
-            headers: {
-              Authorization: token,
-            },
-          };
-          const response = await request(options);
+            const options = {
+              method: 'POST',
+              url: `${flowRepoUrl}/flows`,
+              json: true,
+              body: flow,
+              headers: {
+                Authorization: token,
+              },
+            };
+            const response = await request(options);
 
-          if (response.statusCode === 201) {
-            app.inbound.flows[k].flowId = response.body.data.id;
-          } else {
-            log.error('Could not create flow:');
-            log.error(response.statusCode);
-            log.error(JSON.stringify(response.body));
-            return false;
+            if (response.statusCode === 201) {
+              app.inbound.flows[k].flowId = response.body.data.id;
+            } else {
+              log.error('Could not create flow:');
+              log.error(response.statusCode);
+              log.error(JSON.stringify(response.body));
+              return false;
+            }
           }
         }
       }
@@ -209,21 +213,8 @@ async function createFlows(applications, token) {
   }
 }
 
-async function deleteFlows(applications, token) {
+async function deleteFlowsById(flowIds, token) {
   try {
-    const flowIds = [];
-
-    for (let i = 0; i < applications.length; i += 1) {
-      const app = applications[i];
-      for (let j = 0; j < app.inbound.flows.length; j += 1) {
-        flowIds.push(app.inbound.flows[j].flowId);
-      }
-
-      for (let k = 0; k < app.outbound.flows.length; k += 1) {
-        flowIds.push(app.outbound.flows[k].flowId);
-      }
-    }
-
     for (let j = 0; j < flowIds.length; j += 1) {
       const options = {
         method: 'DELETE',
@@ -240,4 +231,48 @@ async function deleteFlows(applications, token) {
   }
 }
 
-module.exports = { createFlows, makeFlow, deleteFlows };
+function getFlowIds(applications) {
+  try {
+    const flowIds = [];
+
+    for (let i = 0; i < applications.length; i += 1) {
+      const app = applications[i];
+      for (let j = 0; j < app.inbound.flows.length; j += 1) {
+        flowIds.push(app.inbound.flows[j].flowId);
+      }
+
+      for (let k = 0; k < app.outbound.flows.length; k += 1) {
+        flowIds.push(app.outbound.flows[k].flowId);
+      }
+    }
+
+    return flowIds;
+  } catch (e) {
+    log.error(`Error while collecting flow Ids: ${e}`);
+    return false;
+  }
+}
+
+
+async function deleteFlows(applications, token) {
+  const flowIds = getFlowIds(applications);
+  await deleteFlowsById(flowIds, token);
+}
+
+
+async function updateConfigFlows(original, incoming, token) {
+  const newConfig = lodash.cloneDeep(incoming);
+  const oldFlowIds = getFlowIds(original.applications);
+  const newFlowIds = getFlowIds(incoming.applications);
+
+  const deletedFlows = oldFlowIds.filter(uid => !newFlowIds.includes(uid));
+
+  newConfig.applications = await createFlows(newConfig.applications, token);
+  await deleteFlowsById(deletedFlows);
+
+  return newConfig;
+}
+
+module.exports = {
+  createFlows, makeFlow, deleteFlows, updateConfigFlows,
+};
