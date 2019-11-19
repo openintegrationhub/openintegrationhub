@@ -61,7 +61,7 @@ const deleteConfig = (tenant, id) => new Promise(async (resolve) => {
     { useFindAndModify: false },
   )
     .lean();
-  resolve(configuration);
+  resolve(format(configuration));
 });
 
 const getConfigBySource = flowId => new Promise(async (resolve) => {

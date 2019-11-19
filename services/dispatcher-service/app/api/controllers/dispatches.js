@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const log = require('../../utils/logger');
 const storage = require('../../utils/mongo');
 const { createDummyQueues } = require('../../utils/eventBus');
-const { createFlows, deleteFlows } = require('../../utils/flowCreator');
+const { createFlows, deleteFlows, updateConfigFlows } = require('../../utils/flowCreator');
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
@@ -136,6 +136,28 @@ router.delete('/:id/app/:appId', jsonParser, async (req, res) => {  //eslint-dis
     res.status(200).send({ meta: {}, data: response });
 
     await deleteFlows([app], req.headers.authorization);
+  } catch (e) {
+    log.error(e);
+    if (!res.headersSent) {
+      return res.status(500).send(e);
+    }
+  }
+});
+
+// Modify an exiting configuration
+router.patch('/:id', jsonParser, async (req, res) => {  //eslint-disable-line
+  try {
+    const config = await storage.getOneConfig(req.user.tenant, req.params.id);
+
+    if (!config) {
+      return res.status(404).send({ errors: [{ code: 404, message: 'No config found' }] });
+    }
+
+    const newConfig = await updateConfigFlows(config, req.body, req.headers.authorization);
+
+    const response = await storage.updateConfig(newConfig, req.params.id);
+
+    res.status(200).send({ meta: {}, data: response });
   } catch (e) {
     log.error(e);
     if (!res.headersSent) {
