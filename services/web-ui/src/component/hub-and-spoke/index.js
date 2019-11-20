@@ -38,6 +38,13 @@ const useStyles = {
         backgroundColor: 'white',
         margin: 'auto',
         outline: 'none',
+        padding: '30px',
+    },
+    button: {
+        margin: '10px',
+    },
+    formControl: {
+        margin: '10px 0',
     },
 };
 
@@ -54,6 +61,14 @@ class HubAndSpoke extends React.Component {
         await this.props.getApps();
         await this.props.getDispatcherConfigs();
         await this.props.getDomains();
+        if (this.props.dataModels.length) {
+            this.setState({
+                entity: {
+                    ...this.state.entity,
+                    dataModel: this.props.dataModels[0].id,
+                },
+            });
+        }
     }
 
     addNewEntity = async (e) => {
@@ -104,7 +119,9 @@ class HubAndSpoke extends React.Component {
                             key={`teaser-${item.id}`}
                             {...item}
                             onEdit={() => {}}
-                            onDelete={() => {}}
+                            onDelete={async () => {
+                                await this.props.deleteDispatcherConfig(item.id);
+                            }}
                         />)
                     }
                 </div>
@@ -131,19 +148,21 @@ class HubAndSpoke extends React.Component {
                                     />
                                 </FormControl>
 
-                                <FormControl component="fieldset" className={classes.formControl}>
+                                <FormControl fullWidth component="fieldset" className={classes.formControl}>
                                     <FormLabel component="legend">Data model</FormLabel>
-                                    <RadioGroup aria-label="dataModel" name="dataModel" value={this.state.entity.dataModel} onChange={this.setEntityVal.bind(this, 'dataModel')}>
+                                    <RadioGroup required aria-label="dataModel" name="dataModel" value={this.state.entity.dataModel} onChange={this.setEntityVal.bind(this, 'dataModel')}>
                                         {this.props.dataModels.map(dataModel => <FormControlLabel key={dataModel.id} value={dataModel.id} control={<Radio />} label={dataModel.name} />)}
                                     </RadioGroup>
                                 </FormControl>
 
-                                <Button variant="contained" className={classes.button} aria-label="Add" onClick={this.addNewEntity}>
+                                <div style={{ textAlign: 'center' }}>
+                                    <Button variant="contained" className={classes.button} aria-label="Add" type={'submit'}>
                                         Save
-                                </Button>
-                                <Button variant="contained" className={classes.button} aria-label="Cancel" onClick={() => { this.setState({ addEntity: false }); }}>
-                                    Cancel
-                                </Button>
+                                    </Button>
+                                    <Button variant="contained" className={classes.button} aria-label="Cancel" type={'button'} onClick={() => { this.setState({ addEntity: false }); }}>
+                                        Cancel
+                                    </Button>
+                                </div>
                             </form>
                         </Grid>
 
