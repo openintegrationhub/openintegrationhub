@@ -13,8 +13,17 @@ const DispatcherConfigTeaser = props => <React.Fragment><Grid container xs={12} 
         {props.img && <img src={props.img} alt={props.name} style={{ width: '50px' }} />}
     </Grid>
     <Grid item xs={7}>
-        <h4>{props.name}</h4>
-        <small>{props.dataModel}</small>
+        <h4>Name: {props.name}</h4>
+        <small>Data domain: {props.domain && props.domain.name}</small>
+        <div style={{ height: '50px', display: 'flex', alignItems: 'center' }}>
+            <span>Connected apps: </span>
+            {props.apps.map(app => <img
+                key={app._id}
+                src={app.img}
+                alt={app.name}
+                style={{ width: '20px', margin: '5px' }}
+            />)}
+        </div>
     </Grid>
 
     <Grid item xs={3}>
