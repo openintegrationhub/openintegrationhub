@@ -1,5 +1,5 @@
 FROM node:8.16.1-alpine
-LABEL NAME="meta-data-repository"
+LABEL NAME="reports-analytics"
 ARG local
 
 ADD package.json /tmp/package.json

@@ -30,7 +30,7 @@ const server = new Server({
 (async () => {
     try {
         await server.start();
-        log.info(`Listening on port ${conf.port}`);
+        log.info('Service started');
     } catch (err) {
         exitHandler(null, err);
     }
