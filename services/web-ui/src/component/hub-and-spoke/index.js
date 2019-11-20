@@ -118,6 +118,8 @@ class HubAndSpoke extends React.Component {
                         this.props.hubAndSpoke.list.map(item => <DispatcherConfigTeaser
                             key={`teaser-${item.id}`}
                             {...item}
+                            apps={item.applications.map(app => this.props.apps.list.find(_app => app.applicationUid === _app.artifactId))}
+                            domain={this.props.dataModels.find(dm => dm.id === item.dataModel)}
                             onEdit={() => {}}
                             onDelete={async () => {
                                 await this.props.deleteDispatcherConfig(item.id);
