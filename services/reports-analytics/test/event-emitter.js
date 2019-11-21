@@ -1,33 +1,39 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
-
 const {
-    Event, EventBusManager, events, EventBus,
+    Event, events, EventBus,
 } = require('@openintegrationhub/event-bus');
+const conf = require('../src/conf');
 
+const getRandomInt = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const randomProperty = function (obj) {
+    const keys = Object.keys(obj);
+    return obj[keys[keys.length * Math.random() << 0]];
+};
 
 (async () => {
-    const eventBus = new EventBus({ serviceName: 'test', rabbitmqUri: process.env.RABBITMQ_URI });
+    const eventBus = new EventBus({ serviceName: conf.log.namespace, rabbitmqUri: process.env.RABBITMQ_URI });
     await eventBus.connect();
 
-    // EventBusManager.init({ eventBus, serviceName: 'test' });
+    while (true) {
+        const name = events[randomProperty(events)];
+        console.log(name);
+        await eventBus.publish(new Event({
+            headers: {
+                name,
+            },
+            payload: { foo: 'bar1' },
+        }));
+        await sleep(getRandomInt(200, 2000));
+    }
 
-    const event = new Event({
-        headers: {
-            name: events['secrets.secret.created'],
-        },
-        payload: { foo: 'bar' },
-    });
-
-    eventBus.publish(event);
+    await eventBus.disconnect();
+    process.exit(0);
 })();
-
-
-// this.eventBus.subscribe(events['iam.tenant.deleted'], async (event) => {
-//     // try {
-//     //     await event.ack();
-//     // } catch (err) {
-//     //     logger.error('failed to delete domains on iam.tenant.deleted for event', event);
-//     //     logger.error(err);
-//     // }
-// });
