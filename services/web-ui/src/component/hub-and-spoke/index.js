@@ -103,7 +103,7 @@ class HubAndSpoke extends React.Component {
         } = this.props;
 
         return (
-            <Container className={classes.wrapper}>
+            <Container className={classes.wrapper} maxWidth={'md'}>
                 <Grid container spacing={2}>
 
                     <Grid item xs={6}>
@@ -113,7 +113,7 @@ class HubAndSpoke extends React.Component {
                     </Grid>
 
                 </Grid>
-                <div>
+                <div style={{ marginTop: '24px' }}>
                     {
                         this.props.hubAndSpoke.list.map(item => <DispatcherConfigTeaser
                             key={`teaser-${item.id}`}

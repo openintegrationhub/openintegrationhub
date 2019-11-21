@@ -6,7 +6,10 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-// import { Close as CloseIcon } from '@material-ui/icons';
+import Paper from '@material-ui/core/Paper';
+import {
+    Delete, ArrowForward, ArrowBack, Add, Save,
+} from '@material-ui/icons';
 
 // Actions
 import {
@@ -50,20 +53,22 @@ const useStyles = {
         display: 'flex',
         minWidth: 240,
         minHeight: 480,
+        marginTop: '32px',
     },
     hub: {
         width: '20%',
-        height: '100%',
         minWidth: 120,
-        backgroundColor: '#ffba89',
-
-        minHeight: '400px',
-        marginBottom: '20px',
-        marginRight: '30px',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: '2em',
+        fontSize: '1.6em',
+        padding: '32px',
+    },
+    oihLogo: {
+        width: '100%',
+        display: 'block',
+        marginBottom: '16px',
     },
     connectedApps: {
         flex: '2',
@@ -74,16 +79,55 @@ const useStyles = {
     connectedAppContainer: {
         display: 'flex',
     },
+    directionContainer: {
+        width: '180px',
+        padding: '0 32px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+    },
     direction: {
-        display: 'block',
-        opacity: 0.2,
+        opacity: 0.7,
+        margin: '4px 0',
+        border: '1px dashed rgba(0,0,0,0.6)',
+        backgroundColor: 'transparent',
+        borderRadius: '4px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '4px 8px',
+        outline: 'none',
+        fontWeight: '600',
+        minWidth: '100px',
     },
     directionActive: {
         opacity: 1,
+        backgroundColor: '#ff8200',
+        border: '1px solid transparent',
+        color: 'white',
+    },
+    directionActiveOutbound: {
+        opacity: 1,
+        backgroundColor: '#ff2473',
+        border: '1px solid transparent',
+        color: 'white',
     },
     secretsWrapper: {
-        width: '300px',
-    }
+        width: '100%',
+    },
+    modalFooter: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
+        width: '100%',
+        marginTop: '24px',
+        borderTop: '1px solid rgba(0,0,0,0.08)',
+        paddingTop: '16px',
+    },
+    actionWrapper: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+    },
 };
 
 class DispatcherConfigDetails extends React.Component {
@@ -156,9 +200,9 @@ class DispatcherConfigDetails extends React.Component {
         });
     }
 
-    toggleDirectionForApp = async (appId, direction) => {
+    toggleDirectionForApp = async (index, direction) => {
         const applications = [...this.state.entity.applications];
-        const app = applications.find(_app => _app._id === appId);
+        const app = applications[index];
         app[direction].active = !app[direction].active;
 
         this.setState({
@@ -236,11 +280,10 @@ class DispatcherConfigDetails extends React.Component {
         });
     }
 
-    setSecretForApp = (appId, e) => {
-        console.log(appId, e.target.value);
+    setSecretForApp = (index, e) => {
         const applications = [...this.state.entity.applications];
 
-        const app = applications.find(_app => _app._id === appId);
+        const app = applications[index];
         app.secretId = e.target.value;
 
         this.setState({
@@ -259,7 +302,8 @@ class DispatcherConfigDetails extends React.Component {
         } = this.props;
 
         return (
-            <Container className={classes.wrapper}>
+            <Container className={classes.wrapper} maxWidth={'md'}>
+                <h1>Edit</h1>
                 <Grid item xs={12}>
 
                     <Modal
@@ -293,45 +337,59 @@ class DispatcherConfigDetails extends React.Component {
                         </FormControl>
 
                         <div className={classes.hubWrapper}>
-                            <div className={classes.hub}>OIH HUB</div>
+                            <Paper className={classes.hub}>
+                                <img className={classes.oihLogo} src="https://www.openintegrationhub.org/wp-content/uploads/2018/09/large-oih-bildmarke.png" alt="OIH HUB" />
+                                <span>OIH HUB</span>
+                            </Paper>
                             <div className={classes.connectedApps}>
                                 {this.state.entity.applications.map((connectedApp, index) => {
                                     const appData = this.props.apps.list.find(app => app.artifactId === connectedApp.applicationUid);
                                     return <div key={appData._id} className={classes.connectedAppContainer}>
-                                        <div style={{ width: '120px' }}>
-                                            {connectedApp.inbound.flows.length ? <button type={'button'} onClick={this.toggleDirectionForApp.bind(this, connectedApp._id, 'inbound')} className={`${classes.direction} ${connectedApp.inbound.active ? classes.directionActive : ''}`}>Inbound --&gt;</button> : null}
-                                            {connectedApp.outbound.flows.length ? <button type={'button'} onClick={this.toggleDirectionForApp.bind(this, connectedApp._id, 'outbound')} className={`${classes.direction} ${connectedApp.outbound.active ? classes.directionActive : ''}`}>Outbound &lt;--</button> : null}
+                                        <div className={classes.directionContainer}>
+                                            {connectedApp.inbound.flows.length ? <button type={'button'} onClick={this.toggleDirectionForApp.bind(this, index, 'inbound')} className={`${classes.direction} ${connectedApp.inbound.active ? classes.directionActive : ''}`}><ArrowForward style={{ marginRight: '4px' }}/><span>Inbound</span></button> : null}
+                                            {connectedApp.outbound.flows.length ? <button type={'button'} onClick={this.toggleDirectionForApp.bind(this, index, 'outbound')} className={`${classes.direction} ${connectedApp.outbound.active ? classes.directionActiveOutbound : ''}`}><ArrowBack style={{ marginRight: '4px' }}/><span>Outbound</span></button> : null}
                                         </div>
-                                        <AppTeaser {...appData} hideControls={true} />
-                                        <FormControl className={`${classes.margin} ${classes.secretsWrapper}`}>
-                                            <InputLabel htmlFor="secretId">Secret</InputLabel>
+                                        <Grid container style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                            <Paper style={{ width: '100%', margin: '16px 0', height: 'fit-content' }}>
+                                                <Grid container>
+                                                    <Grid item xs={7}>
+                                                        <AppTeaser {...appData} hideControls={true} />
+                                                    </Grid>
+                                                    <Grid item xs={3} className={classes.actionWrapper}>
+                                                        <FormControl className={`${classes.margin} ${classes.secretsWrapper}`}>
+                                                            <InputLabel htmlFor="secretId">Secret</InputLabel>
+                                                            <Select
+                                                                value={connectedApp.secretId}
+                                                                onChange={this.setSecretForApp.bind(this, index)}
+                                                                inputProps={{
+                                                                    name: 'secret',
+                                                                    id: 'secretId',
+                                                                }}
+                                                            >
+                                                                <MenuItem key={'null'} value={null}>No value</MenuItem>
+                                                                {this.props.secrets.map(secret => <MenuItem key={secret._id} value={secret._id}>{secret.name}</MenuItem>)}
 
-                                            <Select
-                                                value={connectedApp.secretId}
-                                                onChange={this.setSecretForApp.bind(this, connectedApp._id)}
-                                                inputProps={{
-                                                    name: 'secret',
-                                                    id: 'secretId',
-                                                }}
-                                            >
-                                                <MenuItem key={'null'} value={null}>No value</MenuItem>
-                                                {this.props.secrets.map(secret => <MenuItem key={secret._id} value={secret._id}>{secret.name}</MenuItem>)}
+                                                            </Select>
 
-                                            </Select>
-
-                                        </FormControl>
-                                        <div>
-                                            <Button variant={'outlined'} type={'button'} onClick={this.removeApp.bind(this, index)}>Delete</Button>
-                                        </div>
+                                                        </FormControl>
+                                                    </Grid>
+                                                    <Grid item xs={1} className={classes.actionWrapper} style={{ marginLeft: '8px' }}>
+                                                        <Button variant={'text'} type={'button'} onClick={this.removeApp.bind(this, index)}><Delete/></Button>
+                                                    </Grid>
+                                                </Grid>
+                                            </Paper>
+                                        </Grid>
                                     </div>;
                                 })}
-                                <Button className={classes.addNewApp} variant="outlined" type={'button'} onClick={this.toggleAddApp.bind(this)}>Add new app</Button>
+                                <Grid xs={12} className={classes.modalFooter}>
+                                    <Button className={classes.addNewApp} variant="outlined" type={'button'} onClick={this.toggleAddApp.bind(this)}><Add style={{ marginRight: '4px' }}/> Add new app</Button>
+                                </Grid>
                             </div>
                         </div>
 
-                        <div>
+                        <div className={classes.modalFooter}>
                             <Button variant="outlined" aria-label="Add" type={'submit'} disabled={!this.state.hasChanges}>
-                        Save
+                                <Save style={{ marginRight: '4px' }} /> Save
                             </Button>
                         </div>
 
