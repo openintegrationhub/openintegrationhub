@@ -19,17 +19,17 @@ spec:
         - name: LOG_LEVEL
           value: "error"
         - name: GRAFANA_URL
-          value: ""
+          value: "https://grafana.openintegrationhub.com"
         - name: GRAFANA_TOKEN
           value: ""
         - name: MONGODB_CONNECTION
           value: ""
         - name: INFLUXDB_DATABASE
-          value: ""
+          value: "statistics"
         - name: INFLUX_HOST
-          value: ""
+          value: "influxdb.oih-dev-ns.svc.cluster.local"
         - name: RABBITMQ_URI
-          value: ""
+          value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
         ports:
         - containerPort: 3000
         livenessProbe:
@@ -44,7 +44,3 @@ spec:
             port: 3000
           initialDelaySeconds: 10
           timeoutSeconds: 1
-        resources:
-          limits:
-            cpu: '0.1'
-            memory: 500Mi
