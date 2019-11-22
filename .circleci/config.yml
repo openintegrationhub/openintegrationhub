@@ -78,6 +78,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/meta-data-repository
     steps: *yarn_test_steps
+  reports-analytics-test:
+    docker: *node_env
+    working_directory: ~/oih/services/reports-analytics
+    steps: *yarn_test_steps
   app-directory-test:
     docker: *node_env
     working_directory: ~/oih/services/app-directory
@@ -150,6 +154,9 @@ workflows:
       - meta-data-repository-test:
           requires:
             - deps
+      - reports-analytics-test:
+          requires:
+            - deps
       - app-directory-test:
           requires:
             - deps
@@ -198,6 +205,7 @@ workflows:
             - iam-test
             - web-ui-test
             - meta-data-repository-test
+            - reports-analytics-test
             - app-directory-test
             - component-orchestrator-test
             - scheduler-test
