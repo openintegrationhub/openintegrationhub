@@ -31,6 +31,10 @@ spec:
               value: '1234'
             - name: LOG_LEVEL
               value: trace
+          resources:
+            limits:
+              cpu: 0.1
+              memory: 512Mi
           volumeMounts:
             - name: credentials
               mountPath: '/usr/lib/app/credentials'

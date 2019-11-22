@@ -35,6 +35,8 @@ import Users from '../../component/users';
 import Tenants from '../../component/tenants';
 import Flows from '../../component/flows';
 import Components from '../../component/components';
+import HubAndSpoke from '../../component/hub-and-spoke';
+import HubAndSpokeDetails from '../../component/hub-and-spoke/details';
 import AppDirectory from '../../component/app-directory';
 import AppDetails from '../../component/app-directory/app-details';
 import MetaData from '../../component/metadata';
@@ -107,9 +109,73 @@ const styles = theme => ({
         width: '100%',
         paddingTop: '4px',
     },
+    drawerIcon: {
+        marginRight: '20px',
+        width: 'auto',
+    },
 });
 
-const menuArr = ['Start', 'Profile', 'Flows', 'App-Directory', 'Components', 'Metadata', 'Secrets', 'Logout'];
+const MENU = {
+    START: {
+        label: 'Start',
+        icon: <HomeIcon />,
+        path: '/',
+    },
+    PROFILE: {
+        label: 'Profile',
+        icon: <Person />,
+        path: '/profile',
+    },
+    FLOWS: {
+        label: 'Flows',
+        icon: <LinearScale />,
+        path: '/flows',
+    },
+    ROLES: {
+        label: 'Roles',
+        icon: <Security />,
+        path: '/roles',
+    },
+    APP_DIRECTORY: {
+        label: 'App-Directory',
+        icon: <AppsIcon />,
+        path: '/app-directory',
+    },
+    HUB_AND_SPOKE: {
+        label: 'Hub & Spoke',
+        icon: <AppsIcon />,
+        path: '/hub-and-spoke',
+    },
+    COMPONENTS: {
+        label: 'Components',
+        icon: <SettingsInputComponent />,
+        path: '/components',
+    },
+    METADATA: {
+        label: 'Metadata',
+        icon: <DeviceHub />,
+        path: '/metadata',
+    },
+    SECRETS: {
+        label: 'Secrets',
+        icon: <EnhancedEncryption />,
+        path: '/secrets',
+    },
+};
+
+const ADMIN_MENU = {
+    USERS: {
+        label: 'Users',
+        icon: <AccountCircle />,
+        path: '/users',
+    },
+    TENANTS: {
+        label: 'Tenants',
+        icon: <Business />,
+        path: '/tenants',
+    },
+
+};
 
 class Main extends React.Component {
     constructor(props) {
@@ -120,27 +186,6 @@ class Main extends React.Component {
             context: null,
         };
     }
-
-    // componentDidUpdate(prefProps) {
-    //     if (prefProps.auth !== this.props.auth) {
-    //         let context = null;
-    //         if (this.props.auth.isAdmin) {
-    //             menuArr.splice(1, 0, 'Tenants');
-    //             menuArr.splice(1, 0, 'Users');
-    //         }
-    //         if (this.props.auth.isTenantAdmin) {
-    //             menuArr.splice(1, 0, 'Users');
-    //         }
-    //         if (this.props.auth.memberships && this.props.auth.memberships.length) {
-    //             context = this.props.auth.memberships.find(tenant => tenant.name === 'Global').name;
-    //             if (context !== 'Global') context = this.props.auth.memberships[0].name;
-    //         }
-    //         this.setState({
-    //             menu: menuArr,
-    //             context,
-    //         });
-    //     }
-    // }
 
   handleDrawerOpen = () => {
       this.setState({ open: true });
@@ -168,78 +213,25 @@ class Main extends React.Component {
   }
 
   getMenuItems = () => {
-      const menuCopy = [...menuArr];
+      const menuCopy = [...Object.values(MENU)];
       if (this.props.auth.isAdmin) {
-          menuCopy.splice(1, 0, 'Tenants');
-          menuCopy.splice(1, 0, 'Users');
+          menuCopy.splice(1, 0, ADMIN_MENU.TENANTS);
+          menuCopy.splice(1, 0, ADMIN_MENU.USERS);
       }
       if (this.props.auth.isTenantAdmin) {
-          menuCopy.splice(1, 0, 'Users');
+          menuCopy.splice(1, 0, ADMIN_MENU.USERS);
       }
       return <div>
           {
-              menuCopy.map((text) => {
-                  switch (text) {
-                  case 'Start':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/'); }}>
-                          <ListItemIcon><HomeIcon /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'Profile':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/profile'); }}>
-                          <ListItemIcon><Person /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'Users':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/users'); }}>
-                          <ListItemIcon><AccountCircle /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'Tenants':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/tenants'); }}>
-                          <ListItemIcon><Business /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'Roles':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/roles'); }}>
-                          <ListItemIcon><Security /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'Flows':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/flows'); }}>
-                          <ListItemIcon><LinearScale /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'App-Directory':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/app-directory'); }}>
-                          <ListItemIcon><AppsIcon /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'Components':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/components'); }}>
-                          <ListItemIcon><SettingsInputComponent /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'Metadata':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/metadata'); }}>
-                          <ListItemIcon><DeviceHub /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'Secrets':
-                      return <ListItem button key={text} onClick={() => { this.props.history.push('/secrets'); }}>
-                          <ListItemIcon><EnhancedEncryption /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  case 'Logout':
-                      return <ListItem button key={text} onClick={this.logout}>
-                          <ListItemIcon><LockOpen /></ListItemIcon>
-                          <ListItemText primary={text} />
-                      </ListItem>;
-                  default:
-                      return null;
-                  }
-              })
+              menuCopy.map(menuItem => <ListItem button key={menuItem.label} onClick={() => { this.props.history.push(menuItem.path); }}>
+                  <ListItemIcon>{menuItem.icon}</ListItemIcon>
+                  <ListItemText primary={menuItem.label} />
+              </ListItem>)
           }
+          <ListItem button key={'Logout'} onClick={this.logout}>
+              <ListItemIcon><LockOpen /></ListItemIcon>
+              <ListItemText primary={'Logout'} />
+          </ListItem>
       </div>;
   }
 
@@ -276,12 +268,12 @@ class Main extends React.Component {
                       })}
                   >
                       <Toolbar disableGutters={!open}>
-                          <Grid container spacing={3}>
+                          <Grid container>
                               <IconButton
                                   color="inherit"
                                   aria-label="Open drawer"
                                   onClick={this.handleDrawerOpen}
-                                  className={classNames(classes.menuButton, open && classes.hide)}
+                                  className={classNames(classes.menuButton, classes.drawerIcon, open && classes.hide)}
                               >
                                   <MenuIcon />
                               </IconButton>
@@ -350,6 +342,8 @@ class Main extends React.Component {
                           <Route exact path="/roles" component={Roles} />
                           <Route exact path="/flows" component={Flows} />
                           <Route exact path="/components" component={Components} />
+                          <Route exact path="/hub-and-spoke" component={HubAndSpoke} />
+                          <Route exact path="/hub-and-spoke/:id" component={HubAndSpokeDetails} />
                           <Route exact path="/app-directory" component={AppDirectory} />
                           <Route exact path="/app-details/:id" component={AppDetails} />
                           <Route exact path="/metadata" component={MetaData} />

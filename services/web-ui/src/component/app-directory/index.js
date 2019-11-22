@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
+
 import {
     Add,
 } from '@material-ui/icons';
@@ -31,8 +32,27 @@ const useStyles = {
         backgroundColor: 'white',
         margin: 'auto',
         outline: 'none',
+        padding: '32px',
+    },
+    button: {
+        // backgroundColor: '#ff8200',
+        // color: '#ff8200',
+        // '&:hover': {
+        //     color: '#E67500',
+        // },
+        marginLeft: '8px',
+    },
+    modalFooter: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
+        width: '100%',
+        marginTop: '24px',
+    },
+    container: {
+        marginTop: '24px',
     },
 };
+
 
 class AppDirectory extends React.Component {
     state = {
@@ -87,17 +107,17 @@ class AppDirectory extends React.Component {
         } = this.props;
 
         return (
-            <Container className={classes.wrapper}>
+            <Container className={classes.wrapper} maxWidth={'md'}>
                 <Grid container spacing={2}>
 
                     <Grid item xs={6}>
                         <Button variant="outlined" aria-label="Add" onClick={this.toggleAddApp.bind(this)}>
-                        Add<Add/>
+                            Add <Add/>
                         </Button>
                     </Grid>
 
                 </Grid>
-                <div>
+                <div className={classes.container}>
                     {
                         this.props.apps.list.map(item => <AppTeaser
                             key={`appTeaser-${item._id}`}
@@ -118,6 +138,7 @@ class AppDirectory extends React.Component {
                     <div className={classes.modal}>
                         <Grid container justify="center" spacing={2}>
                             <form onSubmit={this.addNewApp}>
+                                <h3>Add App</h3>
                                 <FormControl fullWidth className={classes.margin}>
                                     <TextField
                                         id="artifact-id"
@@ -151,13 +172,15 @@ class AppDirectory extends React.Component {
                                         label="App is global"
                                     />
                                 </FormControl>}
-
-                                <Button variant="contained" className={classes.button} aria-label="Add" onClick={this.addNewApp}>
+                                <div className={classes.modalFooter}>
+                                    <Button variant="text" className={classes.button} aria-label="Add" onClick={this.addNewApp}>
                                         Save
-                                </Button>
-                                <Button variant="contained" className={classes.button} aria-label="Cancel" onClick={() => { this.setState({ addApp: false }); }}>
+                                    </Button>
+
+                                    <Button variant="text" className={classes.button} aria-label="Cancel" onClick={() => { this.setState({ addApp: false }); }}>
                                     Cancel
-                                </Button>
+                                    </Button>
+                                </div>
                             </form>
                         </Grid>
 
