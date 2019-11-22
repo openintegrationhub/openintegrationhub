@@ -22,7 +22,10 @@ class Server {
   constructor() {
     this.app = express();
     this.app.disable('x-powered-by');
-    this.app.use(cors());
+    this.app.use(cors({
+      origin: true,
+      credentials: true,
+    }));
     this.app.options('*', cors());
     global.queueHealth = false;
   }

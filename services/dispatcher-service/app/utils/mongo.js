@@ -40,11 +40,12 @@ const updateConfig = data => new Promise(async (resolve) => {
   const config = data;
   delete config.id;
 
-  const response = Configuration.findOneAndUpdate(
+  const response = await Configuration.findOneAndUpdate(
     { _id: id },
     config,
     { new: true, useFindAndModify: false },
-  );
+  ).lean();
+
 
   resolve(format(response));
 });
@@ -61,7 +62,7 @@ const deleteConfig = (tenant, id) => new Promise(async (resolve) => {
     { useFindAndModify: false },
   )
     .lean();
-  resolve(configuration);
+  resolve(format(configuration));
 });
 
 const getConfigBySource = flowId => new Promise(async (resolve) => {

@@ -31,7 +31,7 @@ import {
     IconButton,
     ListSubheader,
 } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { Delete, Save } from '@material-ui/icons';
 import {
     getAppById,
     updateApp,
@@ -58,6 +58,22 @@ const useStyles = {
         margin: '10px',
         minWidth: 120,
     },
+    contentWrapper: {
+        maxWidth: '1080px',
+        margin: 'auto',
+        display: 'block',
+    },
+    h2: {
+        margin: '0 0 16px 0',
+    },
+
+    h3: {
+        margin: '16px 0 8px 0',
+    },
+    headlineContainer: {
+        marginTop: '60px',
+    },
+
 };
 
 class AppDetails extends React.Component {
@@ -420,11 +436,11 @@ class AppDetails extends React.Component {
 
 
         return (
-            <Container className={classes.wrapper}>
-                <Grid item xs={12}>
-
+            <Container className={classes.wrapper} fixed>
+                <Grid item xs={12} justify="center" className={classes.contentWrapper}>
+                    <h1>Edit App</h1>
                     <form onSubmit={this.handleAppUpdate.bind(this)}>
-
+                        <h2 className={classes.h2}>General</h2>
                         <FormControl fullWidth className={classes.margin}>
                             <TextField
                                 id="artifact-id"
@@ -496,7 +512,7 @@ class AppDetails extends React.Component {
                         /> : null}
                     </FormControl>}
 
-                        <FormControl component="fieldset" className={classes.formControl}>
+                        <FormControl component="fieldset" className={classes.formControl} style={{ marginTop: '16px' }}>
                             <FormLabel component="legend">Credentials type</FormLabel>
                             <RadioGroup name="credentialsType" value={this.state.app.credentials.credentialsType} onChange={this.changeCredentials.bind(this)}>
                                 <FormControlLabel value="authClient" control={<Radio />} label="authClient" />
@@ -553,9 +569,11 @@ class AppDetails extends React.Component {
                         {/* </div>)} */}
 
 
-                        <h3>Connectors</h3>
+                        <Grid xs={12} className={classes.headlineContainer} container>
+                            <h2 className={classes.h2}>Connectors</h2>
+                        </Grid>
 
-                        <h4>Adapter</h4>
+                        <h3 className={classes.h3}>Adapter</h3>
                         <FormControl fullWidth className={classes.formControl}>
                             <InputLabel htmlFor="adapter">Adapter</InputLabel>
                             <Select
@@ -588,115 +606,123 @@ class AppDetails extends React.Component {
                         </FormControl>
 
 
-                        {this.state.app.components.adapter && this.state.app.components.transformer ? <React.Fragment><h3>Sync Mappings</h3>
-
-                            <Table className={classes.table} aria-label="simple table">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Direction</TableCell>
-                                        <TableCell>Adapter method</TableCell>
-                                        <TableCell>Transformer method</TableCell>
-                                        <TableCell>Supported operation</TableCell>
-                                        <TableCell>Support data models</TableCell>
-                                        <TableCell>Actions</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {this.state.app.syncMappings.map((mapping, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell component="th" scope="row">
-                                                <Select value={mapping.direction}
-                                                    onChange={this.setSyncMappingField.bind(this, 'direction', index)}
-                                                    required
-                                                    displayEmpty>
-                                                    <MenuItem value="">
-                                                        <em>Select one</em>
-                                                    </MenuItem>
-                                                    <MenuItem value={'inbound'}>inbound</MenuItem>
-                                                    <MenuItem value={'outbound'}>outbound</MenuItem>
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell>
-
-                                                <Select onChange={this.setSyncMappingField.bind(this, 'adapterOperation', index)} value={mapping.adapterOperation}
-                                                    required
-                                                >
-                                                    <MenuItem value="">
-                                                        <em>Select one</em>
-                                                    </MenuItem>
-                                                    <ListSubheader>Actions</ListSubheader>
-                                                    {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].actions || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
-                                                    <ListSubheader>Triggers</ListSubheader>
-                                                    {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Select
-                                                    required
-
-                                                    onChange={this.setSyncMappingField.bind(this, 'transformerOperation', index)} value={mapping.transformerOperation} >
-                                                    <MenuItem value="">
-                                                        <em>Select one</em>
-                                                    </MenuItem>
-                                                    <ListSubheader>Actions</ListSubheader>
-                                                    {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].actions || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
-                                                    <ListSubheader>Triggers</ListSubheader>
-                                                    {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell>
-                                                {['CREATE', 'UPDATE', 'DELETE'].map(op => <FormControlLabel
-                                                    key={op}
-                                                    control={
-                                                        <Checkbox
-                                                            checked={mapping.actionTypes.includes(op)}
-                                                            onChange={this.toggleSyncMappingField.bind(this, 'actionTypes', index)}
-                                                            value={op}
-                                                            inputProps={{
-                                                                'aria-label': 'primary checkbox',
-                                                            }}
-                                                        />
-                                                    }
-                                                    label={op}
-                                                />)}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Select
-                                                    labelId="demo-mutiple-name-label"
-                                                    id="demo-mutiple-name"
-                                                    multiple
-                                                    value={mapping.dataModels}
-                                                    onChange={this.toggleDataModelsForSyncMapping.bind(this, 'dataModels', index)}
-                                                    MenuProps={{
-                                                        PaperProps: {
-                                                            style: {
-                                                                maxHeight: 48 * 4.5 + 8,
-                                                                width: 250,
-                                                            },
-                                                        },
-                                                    }}
-                                                >
-                                                    {domainModelsSelect}
-
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell><IconButton edge="end" aria-label="comments" onClick={this.removeSyncMapping.bind(this, index)}>
-                                                <Delete />
-                                            </IconButton></TableCell>
+                        {this.state.app.components.adapter && this.state.app.components.transformer ? <React.Fragment>
+                            <Grid xs={12} className={classes.headlineContainer} container style={{ marginBottom: '24px' }}>
+                                <Grid xs={9} item style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                    <h2 className={classes.h2} style={{ marginBottom: '0' }}>Sync Mappings</h2>
+                                </Grid>
+                                <Grid xs={3} item style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                                    <Button variant={'outlined'} onClick={this.addNewMapping.bind(this)}>+ Add new mapping</Button>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} justify="center" className={classes.contentWrapper}>
+                                <Table className={classes.table} aria-label="simple table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Direction</TableCell>
+                                            <TableCell>Adapter method</TableCell>
+                                            <TableCell>Transformer method</TableCell>
+                                            <TableCell>Supported operation</TableCell>
+                                            <TableCell>Support data models</TableCell>
+                                            <TableCell>Actions</TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHead>
+                                    <TableBody>
+                                        {this.state.app.syncMappings.map((mapping, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell component="th" scope="row">
+                                                    <Select value={mapping.direction}
+                                                        onChange={this.setSyncMappingField.bind(this, 'direction', index)}
+                                                        required
+                                                        displayEmpty>
+                                                        <MenuItem value="">
+                                                            <em>Select one</em>
+                                                        </MenuItem>
+                                                        <MenuItem value={'inbound'}>inbound</MenuItem>
+                                                        <MenuItem value={'outbound'}>outbound</MenuItem>
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell>
+
+                                                    <Select onChange={this.setSyncMappingField.bind(this, 'adapterOperation', index)} value={mapping.adapterOperation}
+                                                        required
+                                                    >
+                                                        <MenuItem value="">
+                                                            <em>Select one</em>
+                                                        </MenuItem>
+                                                        <ListSubheader>Actions</ListSubheader>
+                                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].actions || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                        <ListSubheader>Triggers</ListSubheader>
+                                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Select
+                                                        required
+
+                                                        onChange={this.setSyncMappingField.bind(this, 'transformerOperation', index)} value={mapping.transformerOperation} >
+                                                        <MenuItem value="">
+                                                            <em>Select one</em>
+                                                        </MenuItem>
+                                                        <ListSubheader>Actions</ListSubheader>
+                                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].actions || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                        <ListSubheader>Triggers</ListSubheader>
+                                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {['CREATE', 'UPDATE', 'DELETE'].map(op => <FormControlLabel
+                                                        key={op}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={mapping.actionTypes.includes(op)}
+                                                                onChange={this.toggleSyncMappingField.bind(this, 'actionTypes', index)}
+                                                                value={op}
+                                                                inputProps={{
+                                                                    'aria-label': 'primary checkbox',
+                                                                }}
+                                                            />
+                                                        }
+                                                        label={op}
+                                                    />)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Select
+                                                        labelId="demo-mutiple-name-label"
+                                                        id="demo-mutiple-name"
+                                                        multiple
+                                                        value={mapping.dataModels}
+                                                        onChange={this.toggleDataModelsForSyncMapping.bind(this, 'dataModels', index)}
+                                                        MenuProps={{
+                                                            PaperProps: {
+                                                                style: {
+                                                                    maxHeight: 48 * 4.5 + 8,
+                                                                    width: 250,
+                                                                },
+                                                            },
+                                                        }}
+                                                    >
+                                                        {domainModelsSelect}
+
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell><IconButton edge="end" aria-label="comments" onClick={this.removeSyncMapping.bind(this, index)}>
+                                                    <Delete />
+                                                </IconButton></TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </Grid>
 
 
-                            <Button variant={'outlined'} color={'primary'} onClick={this.addNewMapping.bind(this)}>+ Add new mapping</Button>
                         </React.Fragment> : 'Please select an adapter and a transformer first' }
 
-                        <div>
-                            <Button variant="outlined" aria-label="Add" type={'submit'} disabled={!this.state.hasChanges}>
-                        Save
+                        <Grid xs={12} container className={classes.headlineContainer} style={{ marginBottom: '60px', flexDirection: 'row-reverse' }}>
+                            <Button variant="contained" aria-label="Add" type={'submit'} disabled={!this.state.hasChanges}>
+                                <Save style={{ marginRight: '4px' }} /> Save
                             </Button>
-                        </div>
+                        </Grid>
 
                     </form>
 

@@ -6,6 +6,7 @@ import roles from './roles';
 import flows from './flows';
 import components from './components';
 import apps from './apps';
+import hubAndSpoke from './hubSpoke';
 import metadata from './metadata';
 import authClients from './auth-clients';
 import secrets from './secrets';
@@ -19,6 +20,7 @@ const appReducer = combineReducers({
     flows,
     components,
     apps,
+    hubAndSpoke,
     metadata,
     secrets,
     authClients,

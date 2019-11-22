@@ -10,6 +10,7 @@ spec:
     matchLabels:
       app: grafana
   replicas: 1
+  minReadySeconds: 10
   template:
     metadata:
       labels:
@@ -21,14 +22,14 @@ spec:
       containers:
       - name: master
         image: grafana/grafana:latest
-          env:
-          - name: GF_LOG_LEVEL
-            value: "error"
-          - name: GF_INSTALL_PLUGINS
-            value: "grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource"
-          volumeMounts:
-          - mountPath: /var/lib/grafana
-            name: grafana-pdisk
+        env:
+        - name: GF_LOG_LEVEL
+          value: "error"
+        - name: GF_INSTALL_PLUGINS
+          value: "grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource"
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          name: grafana-pdisk
         ports:
           - containerPort: 3000
         livenessProbe:
