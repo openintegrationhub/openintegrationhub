@@ -50,10 +50,6 @@ spec:
             port: 8086
           initialDelaySeconds: 10
           timeoutSeconds: 1
-        resources:
-          limits:
-            cpu: 200m
-            memory: 1500Mi
       volumes:
       - name: influx-pdisk
         gcePersistentDisk:
