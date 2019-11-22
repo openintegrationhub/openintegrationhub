@@ -86,3 +86,9 @@ spec:
       - backend:
           serviceName: app-directory
           servicePort: 3000
+  - host: grafana.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: grafana
+          servicePort: 80
