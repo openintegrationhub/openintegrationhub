@@ -22,8 +22,16 @@ spec:
           value: "https://grafana.openintegrationhub.com"
         - name: GRAFANA_TOKEN
           value: ""
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: reports-analytics
+              key: iamtoken
         - name: MONGODB_CONNECTION
-          value: ""
+          valueFrom:
+            secretKeyRef:
+              name: reports-analytics
+              key: mongourl
         - name: INFLUXDB_DATABASE
           value: "statistics"
         - name: INFLUX_HOST
