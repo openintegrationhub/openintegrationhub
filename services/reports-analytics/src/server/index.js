@@ -42,6 +42,7 @@ module.exports = class Server {
     async setupExpress() {
         this.app = express();
         this.app.disable('x-powered-by');
+        this.app.use('/healthcheck', require('./../route/healthcheck'));
         this.app.use('/grafana-proxy', require('../route/grafana-proxy'));
     }
 
