@@ -7,5 +7,6 @@ module.exports = {
     },
     tags: [
         'event_name',
+        'service_name',
     ],
 };
