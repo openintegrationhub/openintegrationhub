@@ -21,11 +21,13 @@ spec:
         - name: ENDPOINT_SECRETS
           value: 'https://skm.openintegrationhub.com'
         - name: ENDPOINT_IAM
-          value: 'http://iam.openintegrationhub.com'
+          value: 'https://iam.openintegrationhub.com'
         - name: ENDPOINT_FLOW
-          value: 'http://flow-repository.openintegrationhub.com'
+          value: 'https://flow-repository.openintegrationhub.com'
+        - name: ENDPOINT_DISPATCHER
+          value: 'https://dispatcher-service.openintegrationhub.com'
         - name: ENDPOINT_COMPONENT
-          value: http://component-repository.openintegrationhub.com        
+          value: https://component-repository.openintegrationhub.com
         ports:
         - containerPort: 3000
         livenessProbe:

@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button';
 // Actions
 import {
     FormControl,
+    CircularProgress,
     FormControlLabel,
     Container,
     Switch,
@@ -74,6 +75,12 @@ const useStyles = {
         marginTop: '60px',
     },
 
+    loader: {
+        margin: 'auto',
+        marginTop: '100px',
+        display: 'block',
+    },
+
 };
 
 class AppDetails extends React.Component {
@@ -94,6 +101,7 @@ class AppDetails extends React.Component {
             },
         },
         componentData: {},
+        isLoading: true,
     }
 
     async componentDidMount() {
@@ -105,13 +113,15 @@ class AppDetails extends React.Component {
                 this.props.getDomainSchemas(domain.id);
             }
             const app = await getAppById(this.props.match.params.id);
+            this.setComponentsData(app.components || {});
+
             this.setState({
                 app: {
                     ...this.state.app,
                     ...app,
                 },
+                isLoading: false,
             });
-            this.setComponentsData(app.components || {});
         } catch (e) {
             console.error(e);
         }
@@ -434,6 +444,9 @@ class AppDetails extends React.Component {
             });
         });
 
+        if (this.state.isLoading) {
+            return <CircularProgress color={'secondary'} className={classes.loader} />;
+        }
 
         return (
             <Container className={classes.wrapper} fixed>
@@ -450,6 +463,7 @@ class AppDetails extends React.Component {
                                 onChange={this.setAppVal.bind(this, 'artifactId')}
                                 margin="normal"
                                 required
+                                disabled={true}
                             />
                         </FormControl>
 
