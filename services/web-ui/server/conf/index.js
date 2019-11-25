@@ -15,6 +15,13 @@ module.exports = {
         dispatcher: optional('ENDPOINT_DISPATCHER', 'https://dispatcher-service.openintegrationhub.com'),
         secrets: optional('ENDPOINT_SECRETS', 'https://skm.openintegrationhub.com/api/v1'),
     },
+    misc: {
+        reports: {
+            img1: optional('REPORTS_IMG1', 'https://reports-analytics.openintegrationhub.com/grafana-proxy/render/d-solo/apSj8axZk/overview?orgId=1&from=$(FROM)&to=now&theme=dark&panelId=4&width=1400&height=700&tz=Europe%2FBerlin'),
+            img2: optional('REPORTS_IMG2', 'https://reports-analytics.openintegrationhub.com/grafana-proxy/render/d-solo/apSj8axZk/overview?orgId=1&from=$(FROM)&to=now&theme=dark&panelId=2&width=1400&height=700&tz=Europe%2FBerlin'),
+            serviceUi: optional('REPORTS_UI', 'https://grafana.openintegrationhub.com/d/apSj8axZk/overview?orgId=1'),
+        },
+    },
     wellKnown: {
         version,
     },

@@ -21,7 +21,10 @@ spec:
         - name: GRAFANA_URL
           value: "https://grafana.openintegrationhub.com"
         - name: GRAFANA_TOKEN
-          value: ""
+          valueFrom:
+            secretKeyRef:
+              name: reports-analytics
+              key: grafanatoken
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:

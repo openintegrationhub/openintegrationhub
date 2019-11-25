@@ -5,7 +5,15 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import flow from 'lodash/flow';
 // Ui
-import { Grid, Button } from '@material-ui/core';
+import {
+    Grid,
+    Button,
+    FormControl,
+    FormLabel,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import {
     Person,
@@ -17,6 +25,7 @@ import {
 } from '../../action/flows';
 import { getTenants } from '../../action/tenants';
 import { getUsers } from '../../action/users';
+import { getConfig } from '../../conf';
 
 const useStyles = {
     avatar: {
@@ -54,6 +63,17 @@ const useStyles = {
         borderRadius: '15px',
         margin: '20px',
     },
+    reportsImg: {
+        width: '80%',
+        marginBottom: '20px',
+        maxWidth: '80vw',
+    },
+    reportsImgContainer: {
+        textAlign: 'center',
+    },
+    reportsContainer: {
+        marginTop: '40px',
+    },
 };
 
 class Home extends React.Component {
@@ -61,6 +81,7 @@ class Home extends React.Component {
         super(props);
         this.state = {
             showSideSheet: false,
+            reportsTimeRange: 'now-24h',
         };
         props.getFlows();
         props.getUsers();
@@ -109,6 +130,12 @@ class Home extends React.Component {
                 </Grid>);
         }
         return null;
+    }
+
+    changeReportsTimeRange = (e) => {
+        this.setState({
+            reportsTimeRange: e.target.value,
+        });
     }
 
     render() {
@@ -179,6 +206,24 @@ class Home extends React.Component {
                     }
 
                 </Grid>
+                {this.props.auth.isAdmin ? <Grid container item xs={12} spacing={5} className={classes.reportsContainer}>
+                    <Grid item xs={11} className={classes.headline}>Reports</Grid>
+                    <Grid item xs={12} className={classes.reportsImgContainer}>
+                        <div>
+                            <FormControl component="fieldset" className={classes.formControl} style={{ marginTop: '16px' }}>
+                                <FormLabel component="legend">Choose time range</FormLabel>
+                                <RadioGroup name="credentialsType" value={this.state.reportsTimeRange} onChange={this.changeReportsTimeRange.bind(this)} style={{ flexDirection: 'row', marginBottom: '24px' }}>
+                                    <FormControlLabel value="now-1h" control={<Radio />} label="last hour" />
+                                    <FormControlLabel value="now-12h" control={<Radio />} label="12 hours" />
+                                    <FormControlLabel value="now-24h" control={<Radio />} label="24 hours" />
+                                    <FormControlLabel value="now-3d" control={<Radio />} label="3 days" />
+                                </RadioGroup>
+                            </FormControl>
+                        </div>
+                        <a href={getConfig().misc.reports.serviceUi} rel='noopener noreferrer' target='_blank'><img alt={'Events'} className={classes.reportsImg} src={getConfig().misc.reports.img1.replace('$(FROM)', this.state.reportsTimeRange)} /></a>
+                        <a href={getConfig().misc.reports.serviceUi} rel='noopener noreferrer' target='_blank'><img alt={'Aggregated Events'} className={classes.reportsImg} src={getConfig().misc.reports.img2.replace('$(FROM)', this.state.reportsTimeRange)} /></a>
+                    </Grid>
+                </Grid> : null}
             </Grid>
         );
     }
