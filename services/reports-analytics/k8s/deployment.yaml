@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: reports-analytics
+  namespace: oih-dev-ns
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: reports-analytics
+    spec:
+      containers:
+      - name: reports-analytics
+        image: openintegrationhub/reports-analytics:latest
+        env:
+        - name: LOG_LEVEL
+          value: "error"
+        - name: GRAFANA_URL
+          value: "https://grafana.openintegrationhub.com"
+        - name: GRAFANA_TOKEN
+          value: ""
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: reports-analytics
+              key: iamtoken
+        - name: MONGODB_CONNECTION
+          valueFrom:
+            secretKeyRef:
+              name: reports-analytics
+              key: mongourl
+        - name: INFLUXDB_DATABASE
+          value: "statistics"
+        - name: INFLUX_HOST
+          value: "influxdb.oih-dev-ns.svc.cluster.local"
+        - name: RABBITMQ_URI
+          value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3000
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
