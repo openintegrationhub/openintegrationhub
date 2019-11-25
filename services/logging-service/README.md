@@ -27,6 +27,7 @@ The service has an API, which is accessible only inside the cluster.
 
 
 **Query params**
+
 | Name | Required | Description |
 | --- | --- | --- |
 | pageSize | no | Number of log items to retrieve. Default: 1000. |
