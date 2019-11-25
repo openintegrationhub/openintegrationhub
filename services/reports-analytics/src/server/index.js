@@ -93,6 +93,7 @@ module.exports = class Server {
                 },
                 tags: {
                     event_name: event.name,
+                    service_name: event.serviceName,
                 },
                 // use event creation time in nanoseconds
                 timestamp: `${event.createdAt}000000`,
