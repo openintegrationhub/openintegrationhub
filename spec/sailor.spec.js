@@ -93,7 +93,7 @@ describe('Sailor', () => {
 
             sailor.prepare()
                 .then(() => sailor.init({}))
-                .then((result) =>{
+                .then((result) => {
                     expect(result).toEqual('this_is_a_string');
                     done();
                 })
@@ -117,7 +117,7 @@ describe('Sailor', () => {
 
             sailor.prepare()
                 .then(() => sailor.init({}))
-                .then((result) =>{
+                .then((result) => {
                     expect(result).toEqual({
                         subscriptionId: '_subscription_123'
                     });
@@ -207,7 +207,7 @@ describe('Sailor', () => {
 
         beforeEach(() => {
             fakeAMQPConnection = jasmine.createSpyObj('AMQPConnection', [
-                'connect','sendData','sendError','sendRebound','ack','reject',
+                'connect', 'sendData', 'sendError', 'sendRebound', 'ack', 'reject',
                 'sendSnapshot', 'sendHttpReply'
             ]);
 
@@ -234,7 +234,7 @@ describe('Sailor', () => {
 
                     const sendDataCalls = fakeAMQPConnection.sendData.calls;
 
-                    expect(sendDataCalls[0].args[0]).toEqual({ items: [1,2,3,4,5,6] });
+                    expect(sendDataCalls[0].args[0]).toEqual({ items: [1, 2, 3, 4, 5, 6] });
                     expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
 
                     expect(sendDataCalls[0].args[1]).toEqual({
@@ -260,6 +260,66 @@ describe('Sailor', () => {
                     expect(fakeAMQPConnection.ack).toHaveBeenCalled();
                     expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                     expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
+                    done();
+                })
+                .catch(done); //todo: use done.fail after migration to Jasmine 2.x
+        });
+
+        it('should call sendData() with extended headers', done => {
+
+            const customVars = {
+                ELASTICIO_ADDITIONAL_VARS_FOR_HEADERS: 'ELASTICIO_FIRST, ELASTICIO_SECOND_ELASTICIO_ENV,'
+                    + 'ELASTICIO_NOT_PRESENT',
+                ELASTICIO_RANDOM: 'random',
+                ELASTICIO_FIRST: 'first',
+                ELASTICIO_SECOND_ELASTICIO_ENV: 'second',
+                ELASTICIO_THIRD: 'third'
+            };
+
+            settings = require('../lib/settings').readFrom(Object.assign({}, envVars, customVars));
+            settings.FUNCTION = 'data_trigger';
+            const sailor = new Sailor(settings);
+
+            spyOn(sailor.apiClient.tasks, 'retrieveStep').andCallFake((taskId, stepId) => {
+                expect(taskId).toEqual('5559edd38968ec0736000003');
+                expect(stepId).toEqual('step_1');
+                return Q({});
+            });
+
+            sailor.connect()
+                .then(() => sailor.prepare())
+                .then(() => sailor.processMessage(payload, message))
+                .then(() => {
+                    expect(sailor.apiClient.tasks.retrieveStep).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.connect).toHaveBeenCalled();
+                    expect(fakeAMQPConnection.sendData).toHaveBeenCalled();
+
+                    const sendDataCalls = fakeAMQPConnection.sendData.calls;
+
+                    expect(sendDataCalls[0].args[0]).toEqual({ items: [1, 2, 3, 4, 5, 6] });
+                    expect(sendDataCalls[0].args[1]).toEqual(jasmine.any(Object));
+                    expect(sendDataCalls[0].args[1]).toEqual({
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            first: 'first',
+                            secondElasticioEnv: 'second',
+                            notPresent: undefined,
+                            execId: 'some-exec-id',
+                            taskId: '5559edd38968ec0736000003',
+                            userId: '5559edd38968ec0736000002',
+                            workspaceId: '5559edd38968ec073600683',
+                            containerId: 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+                            stepId: 'step_1',
+                            compId: '5559edd38968ec0736000456',
+                            function: 'data_trigger',
+                            start: jasmine.any(Number),
+                            cid: 1,
+                            end: jasmine.any(Number),
+                            messageId: jasmine.any(String)
+                        }
+                    });
                     done();
                 })
                 .catch(done); //todo: use done.fail after migration to Jasmine 2.x
@@ -474,7 +534,8 @@ describe('Sailor', () => {
                 expect(fakeAMQPConnection.ack.callCount).toEqual(1);
                 expect(fakeAMQPConnection.ack.calls[0].args[0]).toEqual(message);
             }
-            test().then(done,done);
+
+            test().then(done, done);
         });
 
         it('should call sendRebound() and ack()', done => {

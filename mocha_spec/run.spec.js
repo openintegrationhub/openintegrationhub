@@ -354,7 +354,7 @@ describe('Integration Test', () => {
                             return requestBody;
                         });
 
-                        // response for a subscription request, which performed inside of init method
+                    // response for a subscription request, which performed inside of init method
                     nock('https://api.acme.com')
                         .post('/subscribe')
                         .reply(200, {
@@ -672,6 +672,84 @@ describe('Integration Test', () => {
                     amqpHelper.publishMessage(inputMessage);
                 });
             });
+        });
+
+        describe('when env ELASTICIO_ADDITIONAL_VARS_FOR_HEADERS is set', () => {
+
+            beforeEach(() => {
+                env.ELASTICIO_ADDITIONAL_VARS_FOR_HEADERS = 'ELASTICIO_FIRST, ELASTICIO_SECOND_ELASTICIO_ENV ,'
+                    + 'ELASTICIO_NOT_PRESENT';
+
+                env.ELASTICIO_RANDOM = 'random';
+                env.ELASTICIO_FIRST = 'first';
+                env.ELASTICIO_SECOND_ELASTICIO_ENV = 'second';
+            });
+
+            afterEach(() => {
+                delete env.ELASTICIO_ADDITIONAL_VARS_FOR_HEADERS;
+                delete env.ELASTICIO_RANDOM;
+                delete env.FIRST;
+                delete env.ELASTICIO_SECOND_ELASTICIO_ENV;
+            });
+
+            it('should run trigger successfully and pass additional vars to headers', (done) => {
+
+
+                helpers.mockApiTaskStepResponse();
+
+                nock('https://api.acme.com')
+                    .post('/subscribe')
+                    .reply(200, {
+                        id: 'subscription_12345'
+                    })
+                    .get('/customers')
+                    .reply(200, customers);
+
+                amqpHelper.on('data', ({ properties, body }, queueName) => {
+                    expect(queueName).to.eql(amqpHelper.nextStepQueue);
+
+                    delete properties.headers.start;
+                    delete properties.headers.end;
+                    delete properties.headers.cid;
+
+                    expect(properties.headers).to.deep.equal({
+                        first: 'first',
+                        secondElasticioEnv: 'second',
+                        execId: env.ELASTICIO_EXEC_ID,
+                        taskId: env.ELASTICIO_FLOW_ID,
+                        workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                        containerId: env.ELASTICIO_CONTAINER_ID,
+                        userId: env.ELASTICIO_USER_ID,
+                        stepId: env.ELASTICIO_STEP_ID,
+                        compId: env.ELASTICIO_COMP_ID,
+                        function: env.ELASTICIO_FUNCTION,
+                        threadId,
+                        parentMessageId: parentMessageId,
+                        messageId
+                    });
+
+                    expect(body).to.deep.equal({
+                        originalMsg: inputMessage,
+                        customers: customers,
+                        subscription: {
+                            id: 'subscription_12345',
+                            cfg: {
+                                apiKey: 'secret'
+                            }
+                        }
+                    });
+
+                    done();
+                });
+
+                run = requireRun();
+
+                amqpHelper.publishMessage(inputMessage, {
+                    parentMessageId,
+                    threadId
+                });
+            });
+
         });
 
         describe('when reply_to header is set', () => {
