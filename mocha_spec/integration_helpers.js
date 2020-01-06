@@ -32,6 +32,22 @@ class AmqpHelper extends EventEmitter {
         env.ELASTICIO_TIMEOUT = 3000;
     }
 
+    // optional callback `done` is used in order to pass exceptions (e.g. from assertions in tests) to mocha callback
+    on(event, handler, done = undefined) {
+        if (!done) {
+            return super.on(event, handler);
+        }
+
+        return super.on(event, (...args) => {
+            try {
+                handler(...args);
+                done();
+            } catch (e) {
+                done(e);
+            }
+        });
+    }
+
     publishMessage(message, { parentMessageId, threadId } = {}, headers = {}) {
         return this.subscriptionChannel.publish(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
@@ -43,6 +59,7 @@ class AmqpHelper extends EventEmitter {
                     workspaceId: env.ELASTICIO_WORKSPACE_ID,
                     userId: env.ELASTICIO_USER_ID,
                     threadId,
+                    stepId: message.headers.stepId,
                     messageId: parentMessageId
                 }, headers)
             });

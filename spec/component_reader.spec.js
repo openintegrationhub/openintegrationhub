@@ -89,7 +89,9 @@ describe('Component reader', () => {
         runs(() => {
             expect(promise.isRejected()).toEqual(true);
             var err = promise.inspect().reason;
-            expect(err.message).toEqual(
+            const { message } = err;
+            const [errMessage] = message.split('\n');
+            expect(errMessage).toEqual(
                 'Failed to load file \'./triggers/trigger_with_wrong_dependency.js\': '
                 + 'Cannot find module \'../not-found-dependency\''
             );
