@@ -54,3 +54,4 @@ Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 | MONGODB_URI | MongoDB connection string. |
 | PORT | Port for HTTP interface. |
 | RABBITMQ_URI | RabbitMQ connection string. |
+| INTROSPECT_ENDPOINT_BASIC | URL of the introspection endpoint of the IAM deployment. |
