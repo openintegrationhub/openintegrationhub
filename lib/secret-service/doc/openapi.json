@@ -38,7 +38,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200"
+                  "$ref" : "#/components/schemas/AuthClient"
                 }
               }
             }
@@ -57,7 +57,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/body"
+                "$ref" : "#/components/schemas/MutableAuthClient"
               }
             }
           }
@@ -68,7 +68,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/body"
+                  "$ref" : "#/components/schemas/AuthClient"
                 }
               }
             }
@@ -142,7 +142,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/body_1"
+                "$ref" : "#/components/schemas/MutableAuthClient"
               }
             }
           }
@@ -195,7 +195,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/body_2"
+                "$ref" : "#/components/schemas/AuthFlow"
               }
             }
           },
@@ -280,7 +280,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200_1"
+                  "$ref" : "#/components/schemas/Secret"
                 }
               }
             }
@@ -299,7 +299,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/body_3"
+                "$ref" : "#/components/schemas/MutableSecret"
               }
             }
           }
@@ -310,7 +310,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200_2"
+                  "$ref" : "#/components/schemas/Secret"
                 }
               }
             }
@@ -347,7 +347,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200_2"
+                  "$ref" : "#/components/schemas/Secret"
                 }
               }
             }
@@ -411,7 +411,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/body_4"
+                "$ref" : "#/components/schemas/MutableSecret"
               }
             }
           }
@@ -422,7 +422,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_200_2"
+                  "$ref" : "#/components/schemas/Secret"
                 }
               }
             }
@@ -437,9 +437,6 @@
       }
     },
     "/healthcheck" : {
-      "servers" : [ {
-        "url" : "/"
-      } ],
       "get" : {
         "tags" : [ "Misc" ],
         "summary" : "Retrieve health status",
@@ -577,6 +574,21 @@
             }
           }
         } ]
+      },
+      "MutableThreeLeggedOAuth2Client_endpoints" : {
+        "type" : "object",
+        "properties" : {
+          "auth" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          },
+          "userinfo" : {
+            "type" : "string"
+          }
+
+        }
       },
       "ThreeLeggedOAuth2Client" : {
         "allOf" : [ {
@@ -746,6 +758,20 @@
           "type" : {
             "type" : "string",
             "description" : "Type of Owner entity, e.g. GROUP, TENANT, USER, etc."
+          }
+        }
+      },
+      "AuthFlow" : {
+        "type" : "object",
+        "properties" : {
+          "scope" : {
+            "type" : "string"
+          },
+          "secretName" : {
+            "type" : "string"
+          },
+          "successUrl" : {
+            "type" : "string"
           }
         }
       },
