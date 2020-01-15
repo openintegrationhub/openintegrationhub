@@ -36,6 +36,10 @@ spec:
                   key: IAM_TOKEN
             - name: LOG_LEVEL
               value: trace
+            - name: "INTROSPECT_ENDPOINT_BASIC"
+              value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
+            - name:  CORS_ORIGIN_WHITELIST
+              value: 'openintegrationhub.com,http://web-ui.openintegrationhub.com'
           resources:
             limits:
               cpu: 0.1
