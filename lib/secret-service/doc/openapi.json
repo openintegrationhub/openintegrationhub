@@ -10,7 +10,7 @@
     "version" : "0.1.0"
   },
   "servers" : [ {
-    "url" : "/"
+    "url" : "/api/v1"
   } ],
   "tags" : [ {
     "name" : "Auth clients",
@@ -437,6 +437,9 @@
       }
     },
     "/healthcheck" : {
+      "servers" : [ {
+        "url" : "/"
+      } ],
       "get" : {
         "tags" : [ "Misc" ],
         "summary" : "Retrieve health status",
