@@ -13,36 +13,40 @@ spec:
         app: web-ui
     spec:
       containers:
-      - name: web-ui
-        image: openintegrationhub/web-ui:latest
-        env:
-        - name: PORT
-          value: '3000'
-        - name: ENDPOINT_SECRETS
-          value: 'https://skm.openintegrationhub.com'
-        - name: ENDPOINT_IAM
-          value: 'https://iam.openintegrationhub.com'
-        - name: ENDPOINT_FLOW
-          value: 'https://flow-repository.openintegrationhub.com'
-        - name: ENDPOINT_DISPATCHER
-          value: 'https://dispatcher-service.openintegrationhub.com'
-        - name: ENDPOINT_COMPONENT
-          value: https://component-repository.openintegrationhub.com
-        ports:
-        - containerPort: 3000
-        livenessProbe:
-          httpGet:
-            path: /healthcheck
-            port: 3000
-          initialDelaySeconds: 120
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            path: /healthcheck
-            port: 3000
-          initialDelaySeconds: 10
-          timeoutSeconds: 1
-        resources:
-          limits:
-            cpu: '0.1'
-            memory: 500Mi
+        - name: web-ui
+          image: openintegrationhub/web-ui:latest
+          env:
+            - name: PORT
+              value: '3000'
+            - name: ENDPOINT_SECRETS
+              value: 'https://skm.openintegrationhub.com/api/v1'
+            - name: ENDPOINT_IAM
+              value: 'https://iam.openintegrationhub.com'
+            - name: ENDPOINT_FLOW
+              value: 'https://flow-repository.openintegrationhub.com'
+            - name: ENDPOINT_DISPATCHER
+              value: 'https://dispatcher-service.openintegrationhub.com'
+            - name: ENDPOINT_METADATA
+              value: 'https://metadata.openintegrationhub.com/api/v1'
+            - name: ENDPOINT_APP_DIRECTORY
+              value: 'https://app-directory.openintegrationhub.com/api/v1'
+            - name: ENDPOINT_COMPONENT
+              value: 'https://component-repository.openintegrationhub.com'
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3000
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3000
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: '0.1'
+              memory: 500Mi
