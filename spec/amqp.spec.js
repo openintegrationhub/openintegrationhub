@@ -114,6 +114,65 @@ describe('AMQP', () => {
             }, () => done(new Error('Exception should not be thrown')));
     });
 
+    it('Should send message channel when process data after `drain` event', done => {
+        const amqp = new Amqp(settings);
+        amqp.publishChannel = {
+            publish: () => true,
+            on: () => true
+        };
+        spyOn(amqp.publishChannel, 'publish')
+            .andCallFake((exchangeName, routingKey, payloadBuffer, options, cb) => {
+                cb(null, 'Success');
+                return false;
+            });
+        spyOn(amqp.publishChannel, 'on')
+            .andCallFake((event, cb) => event === 'drain' && cb());
+        const props = {
+            contentType: 'application/json',
+            contentEncoding: 'utf8',
+            mandatory: true,
+            headers: {
+                taskId: 'task1234567890',
+                stepId: 'step_456'
+            }
+        };
+
+        amqp.sendData({
+            headers: {
+                'some-other-header': 'headerValue'
+            },
+            body: 'Message content'
+        }, props)
+            .then((result) => {
+
+                expect(result).toEqual(true);
+
+                expect(amqp.publishChannel.on).toHaveBeenCalled();
+                expect(amqp.publishChannel.on.calls[0].args).toEqual(['drain', jasmine.any(Function)]);
+
+                expect(amqp.publishChannel.publish).toHaveBeenCalled();
+                expect(amqp.publishChannel.publish.callCount).toEqual(1);
+
+                const publishParameters = amqp.publishChannel.publish.calls[0].args;
+
+                expect(publishParameters).toEqual([
+                    settings.PUBLISH_MESSAGES_TO,
+                    settings.DATA_ROUTING_KEY,
+                    jasmine.any(Object),
+                    props,
+                    jasmine.any(Function)
+                ]);
+                const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                expect(payload).toEqual({
+                    headers: {
+                        'some-other-header': 'headerValue'
+                    },
+                    body: 'Message content'
+                });
+                done();
+            }, () => done(new Error('Exception should not be thrown')));
+    });
+
     it('Should send message async to outgoing channel when process data', done => {
         const amqp = new Amqp(settings);
         amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['on']);
