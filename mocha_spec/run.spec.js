@@ -40,7 +40,7 @@ describe('Integration Test', () => {
         delete env.ELASTICIO_HOOK_SHUTDOWN;
 
         co(function* gen() {
-            yield run.disconnect();
+            yield run._disconnectOnly();
             done();
         }).catch(done);
 
@@ -427,7 +427,7 @@ describe('Integration Test', () => {
 
                     // sailor persists startup data via sailor-support API
                     let hooksDataRequest;
-                    const hooksDataNock = nock('https://apidotelasticidotio')
+                    const hooksDataNock = nock(env.ELASTICIO_API_URI)
                         .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                             subscriptionResult: {
@@ -516,7 +516,7 @@ describe('Integration Test', () => {
                     let hooksDataRequest2;
 
                     // sailor persists startup data via sailor-support API
-                    const hooksDataNock1 = nock('https://apidotelasticidotio')
+                    const hooksDataNock1 = nock(env.ELASTICIO_API_URI)
                         .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                             subscriptionResult: {
@@ -533,13 +533,13 @@ describe('Integration Test', () => {
                         });
 
                     // sailor removes data in order to resolve conflict
-                    const hooksDataDeleteNock = nock('https://apidotelasticidotio')
+                    const hooksDataDeleteNock = nock(env.ELASTICIO_API_URI)
                         .matchHeader('Connection', 'Keep-Alive')
                         .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                         .reply(204);
 
                     // sailor persists startup data via sailor-support API
-                    const hooksDataNock2 = nock('https://apidotelasticidotio')
+                    const hooksDataNock2 = nock(env.ELASTICIO_API_URI)
                         .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                             subscriptionResult: {
@@ -636,13 +636,13 @@ describe('Integration Test', () => {
                     helpers.mockApiTaskStepResponse();
 
                     // sailor persists startup data via sailor-support API
-                    const hooksDataNock = nock('https://apidotelasticidotio')
+                    const hooksDataNock = nock(env.ELASTICIO_API_URI)
                         .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
                         .reply(201);
 
                     // sailor removes data in order to resolve conflict
-                    const hooksDataDeleteNock = nock('https://apidotelasticidotio')
+                    const hooksDataDeleteNock = nock(env.ELASTICIO_API_URI)
                         .matchHeader('Connection', 'Keep-Alive')
                         .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                         .reply(400);
@@ -708,7 +708,7 @@ describe('Integration Test', () => {
                     helpers.mockApiTaskStepResponse();
 
                     // sailor persists startup data via sailor-support API
-                    const hooksDataNock = nock('https://apidotelasticidotio')
+                    const hooksDataNock = nock(env.ELASTICIO_API_URI)
                         .matchHeader('Connection', 'Keep-Alive')
                         .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
                         .reply(201);
@@ -914,7 +914,7 @@ describe('Integration Test', () => {
 
     describe('when sailor is being invoked for shutdown', () => {
         describe('when hooksdata is found', () => {
-            it('should execute shutdown successfully', (done) => {
+            it('should execute shutdown hook successfully', (done) => {
 
                 env.ELASTICIO_HOOK_SHUTDOWN = '1';
 
@@ -933,13 +933,13 @@ describe('Integration Test', () => {
                     });
 
                 // sailor retrieves startup data via sailor-support API
-                const hooksDataGetNock = nock('https://apidotelasticidotio')
+                const hooksDataGetNock = nock(env.ELASTICIO_API_URI)
                     .matchHeader('Connection', 'Keep-Alive')
                     .get('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                     .reply(200, subsriptionResponse);
 
                 // sailor removes startup data via sailor-support API
-                const hooksDataDeleteNock = nock('https://apidotelasticidotio')
+                const hooksDataDeleteNock = nock(env.ELASTICIO_API_URI)
                     .matchHeader('Connection', 'Keep-Alive')
                     .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                     .reply(204);
@@ -970,7 +970,7 @@ describe('Integration Test', () => {
 
         describe('when request for hooksdata is failed with an error', () => {
             // @todo
-            it('should not execute shutdown');
+            it('should not execute shutdown hook');
         });
 
         describe('when shutdown hook method is not found', () => {
