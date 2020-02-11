@@ -75,8 +75,8 @@ describe('Sailor', () => {
         };
     });
 
-    describe('runHookInit', () => {
-        it('should runHookInit properly if developer returned a plain string in init', done => {
+    describe('init', () => {
+        it('should init properly if developer returned a plain string in init', done => {
             settings.FUNCTION = 'init_trigger_returns_string';
 
             const sailor = new Sailor(settings);
@@ -92,7 +92,7 @@ describe('Sailor', () => {
             });
 
             sailor.prepare()
-                .then(() => sailor.runHookInit({}))
+                .then(() => sailor.init({}))
                 .then((result) => {
                     expect(result).toEqual('this_is_a_string');
                     done();
@@ -100,7 +100,7 @@ describe('Sailor', () => {
                 .catch(done);
         });
 
-        it('should runHookInit properly if developer returned a promise', done => {
+        it('should init properly if developer returned a promise', done => {
             settings.FUNCTION = 'init_trigger';
 
             const sailor = new Sailor(settings);
@@ -116,7 +116,7 @@ describe('Sailor', () => {
             });
 
             sailor.prepare()
-                .then(() => sailor.runHookInit({}))
+                .then(() => sailor.init({}))
                 .then((result) => {
                     expect(result).toEqual({
                         subscriptionId: '_subscription_123'

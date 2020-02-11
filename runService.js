@@ -7,9 +7,9 @@ const serviceMethod = process.argv[2];
 debug('About to execute %s', serviceMethod);
 
 service.processService(serviceMethod, process.env)
-    .catch(logger.criticalErrorAndExit.bind(logger, 'processService.catch'))
+    .catch(logger.criticalErrorAndExit)
     .done(() => {
         process.exit(0);
     });
 
-process.on('uncaughtException', logger.criticalErrorAndExit.bind(logger, 'runService.uncaughtException'));
+process.on('uncaughtException', logger.criticalErrorAndExit);

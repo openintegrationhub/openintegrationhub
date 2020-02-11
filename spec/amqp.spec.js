@@ -942,20 +942,18 @@ describe('AMQP', () => {
         });
     });
 
-    it('Should disconnect from all channels and connection', (done) => {
+    it('Should disconnect from all channels and connection', () => {
+
         const amqp = new Amqp(settings);
         amqp.subscribeChannel = jasmine.createSpyObj('subscribeChannel', ['close']);
         amqp.publishChannel = jasmine.createSpyObj('subscribeChannel', ['close']);
-        amqp.amqp = jasmine.createSpyObj('amqp', ['close', 'removeAllListeners']);
+        amqp.amqp = jasmine.createSpyObj('amqp', ['close']);
 
-        amqp.disconnect()
-            .then(() => {
-                expect(amqp.subscribeChannel.close.callCount).toEqual(1);
-                expect(amqp.publishChannel.close.callCount).toEqual(1);
-                expect(amqp.amqp.close.callCount).toEqual(1);
-                expect(amqp.amqp.removeAllListeners).toHaveBeenCalledWith('close');
-                done();
-            })
-            .catch(done);
+        amqp.disconnect();
+
+        expect(amqp.subscribeChannel.close.callCount).toEqual(1);
+        expect(amqp.publishChannel.close.callCount).toEqual(1);
+        expect(amqp.amqp.close.callCount).toEqual(1);
     });
+
 });

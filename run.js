@@ -3,6 +3,8 @@ const Sailor = require('./lib/sailor.js').Sailor;
 const settings = require('./lib/settings.js').readFrom(process.env);
 const co = require('co');
 
+exports.disconnect = disconnect;
+
 let sailor;
 let disconnectRequired;
 
@@ -16,7 +18,7 @@ co(function* putOutToSea() {
         sailor.reportError = () => {
         };
         yield sailor.prepare();
-        yield sailor.runHookShutdown();
+        yield sailor.shutdown();
         return;
     }
 
@@ -29,35 +31,40 @@ co(function* putOutToSea() {
         yield sailor.startup();
     }
 
-    yield sailor.runHookInit();
+    yield sailor.init();
     yield sailor.run();
 }).catch((e) => {
     if (sailor) {
         sailor.reportError(e);
     }
-    logger.criticalErrorAndExit('putOutToSea.catch', e);
+    logger.criticalErrorAndExit(e);
 });
 
 process.on('SIGTERM', function onSigterm() {
     logger.info('Received SIGTERM');
-    gracefulShutdown();
+    disconnectAndExit();
 });
 
 process.on('SIGINT', function onSigint() {
     logger.info('Received SIGINT');
-    gracefulShutdown();
+    disconnectAndExit();
 });
 
-process.on('uncaughtException', logger.criticalErrorAndExit.bind(logger, 'process.uncaughtException'));
+process.on('uncaughtException', logger.criticalErrorAndExit);
+
+function disconnect() {
+    return co(function* putIn() {
+        logger.info('Disconnecting...');
+        return yield sailor.disconnect();
+    });
+}
 
 function disconnectAndExit() {
     if (!disconnectRequired) {
         return;
     }
-    disconnectRequired = false;
     co(function* putIn() {
-        logger.info('Disconnecting...');
-        yield sailor.disconnect();
+        yield disconnect();
         logger.info('Successfully disconnected');
         process.exit();
     }).catch((err) => {
@@ -65,25 +72,3 @@ function disconnectAndExit() {
         process.exit(-1);
     });
 }
-
-function _disconnectOnly() {
-    if (!disconnectRequired) {
-        return Promise.resolve();
-    }
-    return sailor.disconnect();
-}
-
-function gracefulShutdown() {
-    if (!disconnectRequired) {
-        return;
-    }
-
-    if (!sailor) {
-        logger.warn('Something went wrong – sailor is falsy');
-        return;
-    }
-
-    sailor.scheduleShutdown().then(disconnectAndExit);
-}
-
-exports._disconnectOnly = _disconnectOnly;
