@@ -14,4 +14,6 @@ function process(msg, cfg, snapshot) {
             hai: 'there'
         }
     });
+    // eslint-disable-next-line no-invalid-this
+    this.emit('end');
 }

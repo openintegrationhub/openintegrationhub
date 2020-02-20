@@ -44,7 +44,8 @@ describe('AMQP', () => {
             headers: {
                 taskId: 'task1234567890',
                 execId: 'exec1234567890',
-                reply_to: 'replyTo1234567890'
+                reply_to: 'replyTo1234567890',
+                protocolVersion: 2
             },
             deliveryMode: undefined,
             priority: undefined,
@@ -81,6 +82,65 @@ describe('AMQP', () => {
             mandatory: true,
             headers: {
                 taskId: 'task1234567890',
+                stepId: 'step_456',
+                protocolVersion: 2
+            }
+        };
+
+        amqp.sendData({
+            headers: {
+                'some-other-header': 'headerValue'
+            },
+            body: 'Message content'
+        }, props)
+            .then(() => {
+                expect(amqp.publishChannel.publish).toHaveBeenCalled();
+                expect(amqp.publishChannel.publish.callCount).toEqual(1);
+
+                const publishParameters = amqp.publishChannel.publish.calls[0].args;
+                expect(publishParameters).toEqual([
+                    settings.PUBLISH_MESSAGES_TO,
+                    settings.DATA_ROUTING_KEY,
+                    jasmine.any(Buffer),
+                    {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            taskId: 'task1234567890',
+                            stepId: 'step_456',
+                            protocolVersion: 1
+                        }
+                    },
+                    jasmine.any(Function)
+                ]);
+                const payload = encryptor.decryptMessageContent(publishParameters[2], 'base64');
+                expect(payload).toEqual({
+                    headers: {
+                        'some-other-header': 'headerValue'
+                    },
+                    body: 'Message content'
+                });
+                done();
+            }, () => done(new Error('Exception should not be thrown')));
+    });
+
+    it('Should send message to outgoing channel when process data for protocol version 1', done => {
+        const amqp = new Amqp(settings);
+        delete amqp.settings.ELASTICIO_PROTOCOL_VERSION;
+        amqp.publishChannel = jasmine.createSpyObj('publishChannel', ['on']);
+        amqp.publishChannel.publish = () => true;
+        spyOn(amqp.publishChannel, 'publish')
+            .andCallFake((exchangeName, routingKey, payloadBuffer, options, cb) => {
+                cb(null, 'Success');
+                return true;
+            });
+        const props = {
+            contentType: 'application/json',
+            contentEncoding: 'utf8',
+            mandatory: true,
+            headers: {
+                taskId: 'task1234567890',
                 stepId: 'step_456'
             }
         };
@@ -99,11 +159,20 @@ describe('AMQP', () => {
                 expect(publishParameters).toEqual([
                     settings.PUBLISH_MESSAGES_TO,
                     settings.DATA_ROUTING_KEY,
-                    jasmine.any(Object),
-                    props,
+                    jasmine.any(Buffer),
+                    {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            taskId: 'task1234567890',
+                            stepId: 'step_456',
+                            protocolVersion: 1
+                        }
+                    },
                     jasmine.any(Function)
                 ]);
-                const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                const payload = encryptor.decryptMessageContent(publishParameters[2], 'base64');
                 expect(payload).toEqual({
                     headers: {
                         'some-other-header': 'headerValue'
@@ -133,13 +202,15 @@ describe('AMQP', () => {
             mandatory: true,
             headers: {
                 taskId: 'task1234567890',
-                stepId: 'step_456'
+                stepId: 'step_456',
+                protocolVersion: 2
             }
         };
 
         amqp.sendData({
             headers: {
-                'some-other-header': 'headerValue'
+                'some-other-header': 'headerValue',
+                'protocolVersion': 2
             },
             body: 'Message content'
         }, props)
@@ -159,13 +230,23 @@ describe('AMQP', () => {
                     settings.PUBLISH_MESSAGES_TO,
                     settings.DATA_ROUTING_KEY,
                     jasmine.any(Object),
-                    props,
+                    {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            taskId: 'task1234567890',
+                            stepId: 'step_456',
+                            protocolVersion: 1
+                        }
+                    },
                     jasmine.any(Function)
                 ]);
-                const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                const payload = encryptor.decryptMessageContent(publishParameters[2], 'base64');
                 expect(payload).toEqual({
                     headers: {
-                        'some-other-header': 'headerValue'
+                        'some-other-header': 'headerValue',
+                        'protocolVersion': 2
                     },
                     body: 'Message content'
                 });
@@ -188,7 +269,8 @@ describe('AMQP', () => {
             mandatory: true,
             headers: {
                 taskId: 'task1234567890',
-                stepId: 'step_456'
+                stepId: 'step_456',
+                protocolVersion: 1
             }
         };
         // One request every 500 ms
@@ -197,12 +279,25 @@ describe('AMQP', () => {
 
         async function test() {
             for (let i = 0; i < 3; i++) {
-                await amqp.sendData({
-                    headers: {
-                        'some-other-header': 'headerValue'
+                await amqp.sendData(
+                    {
+                        headers: {
+                            'some-other-header': 'headerValue'
+                        },
+                        body: 'Message content'
                     },
-                    body: 'Message content'
-                }, props, throttle);
+                    {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            taskId: 'task1234567890',
+                            stepId: 'step_456',
+                            protocolVersion: 2
+                        }
+                    },
+                    throttle
+                );
             }
         }
 
@@ -225,7 +320,7 @@ describe('AMQP', () => {
                 jasmine.any(Function)
             ]);
 
-            const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+            const payload = encryptor.decryptMessageContent(publishParameters[2], 'base64');
             expect(payload).toEqual({
                 headers: {
                     'some-other-header': 'headerValue'
@@ -270,7 +365,8 @@ describe('AMQP', () => {
             mandatory: true,
             headers: {
                 taskId: 'task1234567890',
-                stepId: 'step_456'
+                stepId: 'step_456',
+                protocolVersion: 1
             }
         };
 
@@ -289,11 +385,20 @@ describe('AMQP', () => {
                     settings.PUBLISH_MESSAGES_TO,
                     settings.DATA_ROUTING_KEY,
                     jasmine.any(Object),
-                    props,
+                    {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            taskId: 'task1234567890',
+                            stepId: 'step_456',
+                            protocolVersion: 1
+                        }
+                    },
                     jasmine.any(Function)
                 ]);
 
-                const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                const payload = encryptor.decryptMessageContent(publishParameters[2], 'base64');
                 expect(payload).toEqual({
                     headers: {
                         'some-other-header': 'headerValue'
@@ -317,7 +422,8 @@ describe('AMQP', () => {
             mandatory: true,
             headers: {
                 taskId: 'task1234567890',
-                stepId: 'step_456'
+                stepId: 'step_456',
+                protocolVersion: 1
             }
         };
 
@@ -337,11 +443,20 @@ describe('AMQP', () => {
                     settings.PUBLISH_MESSAGES_TO,
                     settings.DATA_ROUTING_KEY,
                     jasmine.any(Object),
-                    props,
+                    {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            taskId: 'task1234567890',
+                            stepId: 'step_456',
+                            protocolVersion: 1
+                        }
+                    },
                     jasmine.any(Function)
                 ]);
 
-                const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                const payload = encryptor.decryptMessageContent(publishParameters[2], 'base64');
                 expect(payload).toEqual({
                     headers: {
                         'some-other-header': 'headerValue'
@@ -388,10 +503,22 @@ describe('AMQP', () => {
                 const publishParameters = amqp.publishChannel.publish.calls[0].args;
                 expect(publishParameters[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
                 expect(publishParameters[1]).toEqual('my-special-routing-key');
-                expect(publishParameters[2].toString()).toEqual(encryptor.encryptMessageContent(msg));
-                expect(publishParameters[3]).toEqual(props);
+                expect(publishParameters[2].toString('hex')).toEqual(
+                    encryptor.encryptMessageContent(msg, 'base64').toString('hex')
+                );
+                expect(publishParameters[3]).toEqual({
+                    contentType: 'application/json',
+                    contentEncoding: 'utf8',
+                    mandatory: true,
+                    headers: {
+                        taskId: 'task1234567890',
+                        stepId: 'step_456',
+                        reply_to: 'my-special-routing-key',
+                        protocolVersion: 1
+                    }
+                });
 
-                const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                const payload = encryptor.decryptMessageContent(publishParameters[2], 'base64');
                 expect(payload).toEqual(msg);
                 done();
             }, () => done(new Error('Exception should not be thrown')));
@@ -459,7 +586,8 @@ describe('AMQP', () => {
             mandatory: true,
             headers: {
                 taskId: 'task1234567890',
-                stepId: 'step_456'
+                stepId: 'step_456',
+                protocolVersion: 2
             }
         };
 
@@ -473,11 +601,20 @@ describe('AMQP', () => {
                     settings.PUBLISH_MESSAGES_TO,
                     'my-special-routing-key',
                     jasmine.any(Object),
-                    props,
+                    {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            taskId: 'task1234567890',
+                            stepId: 'step_456',
+                            protocolVersion: 1
+                        }
+                    },
                     jasmine.any(Function)
                 ]);
 
-                const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                const payload = encryptor.decryptMessageContent(publishParameters[2], 'base64');
                 expect(payload).toEqual({
                     headers: {},
                     body: {
@@ -505,11 +642,12 @@ describe('AMQP', () => {
             mandatory: true,
             headers: {
                 taskId: 'task1234567890',
-                stepId: 'step_456'
+                stepId: 'step_456',
+                protocolVersion: 1
             }
         };
 
-        amqp.sendError(new Error('Test error'), props, message.content)
+        amqp.sendError(new Error('Test error'), props, message)
             .then(() => {
 
                 expect(amqp.publishChannel.publish).toHaveBeenCalled();
@@ -520,13 +658,22 @@ describe('AMQP', () => {
                     settings.PUBLISH_MESSAGES_TO,
                     settings.ERROR_ROUTING_KEY,
                     jasmine.any(Object),
-                    props,
+                    {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            taskId: 'task1234567890',
+                            stepId: 'step_456',
+                            protocolVersion: 1
+                        }
+                    },
                     jasmine.any(Function)
                 ]);
 
                 const payload = JSON.parse(publishParameters[2].toString());
-                payload.error = encryptor.decryptMessageContent(payload.error);
-                payload.errorInput = encryptor.decryptMessageContent(payload.errorInput);
+                payload.error = encryptor.decryptMessageContent(payload.error, 'base64');
+                payload.errorInput = encryptor.decryptMessageContent(payload.errorInput, 'base64');
 
                 expect(payload).toEqual({
                     error: {
@@ -570,11 +717,12 @@ describe('AMQP', () => {
             headers: {
                 taskId: 'task1234567890',
                 stepId: 'step_456',
-                reply_to: 'my-special-routing-key'
+                reply_to: 'my-special-routing-key',
+                protocolVersion: 1
             }
         };
 
-        amqp.sendError(new Error('Test error'), props, message.content)
+        amqp.sendError(new Error('Test error'), props, message)
             .then(() => {
                 expect(amqp.publishChannel.publish).toHaveBeenCalled();
                 expect(amqp.publishChannel.publish.callCount).toEqual(2);
@@ -583,11 +731,21 @@ describe('AMQP', () => {
                 expect(publishParameters.length).toEqual(5);
                 expect(publishParameters[0]).toEqual(settings.PUBLISH_MESSAGES_TO);
                 expect(publishParameters[1]).toEqual('5559edd38968ec0736000003:step_1:1432205514864:error');
-                expect(publishParameters[3]).toEqual(props);
+                expect(publishParameters[3]).toEqual({
+                    contentType: 'application/json',
+                    contentEncoding: 'utf8',
+                    mandatory: true,
+                    headers: {
+                        taskId: 'task1234567890',
+                        stepId: 'step_456',
+                        reply_to: 'my-special-routing-key',
+                        protocolVersion: 1
+                    }
+                });
 
                 let payload = JSON.parse(publishParameters[2].toString());
-                payload.error = encryptor.decryptMessageContent(payload.error);
-                payload.errorInput = encryptor.decryptMessageContent(payload.errorInput);
+                payload.error = encryptor.decryptMessageContent(payload.error, 'base64');
+                payload.errorInput = encryptor.decryptMessageContent(payload.errorInput, 'base64');
 
                 expect(payload).toEqual(expectedErrorPayload);
 
@@ -604,11 +762,12 @@ describe('AMQP', () => {
                         'taskId': 'task1234567890',
                         'stepId': 'step_456',
                         'reply_to': 'my-special-routing-key',
-                        'x-eio-error-response': true
+                        'x-eio-error-response': true,
+                        'protocolVersion': 1
                     }
                 });
 
-                payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                payload = encryptor.decryptMessageContent(publishParameters[2].toString(), 'base64');
 
                 expect(payload).toEqual(expectedErrorPayload.error);
                 done();
@@ -631,11 +790,12 @@ describe('AMQP', () => {
             mandatory: true,
             headers: {
                 taskId: 'task1234567890',
-                stepId: 'step_456'
+                stepId: 'step_456',
+                protocolVersion: 2
             }
         };
 
-        amqp.sendError(new Error('Test error'), props, '')
+        amqp.sendError(new Error('Test error'), props, {})
             .then(() => {
                 expect(amqp.publishChannel.publish).toHaveBeenCalled();
                 expect(amqp.publishChannel.publish.callCount).toEqual(1);
@@ -645,7 +805,7 @@ describe('AMQP', () => {
                 expect(publishParameters[1]).toEqual('5559edd38968ec0736000003:step_1:1432205514864:error');
 
                 const payload = JSON.parse(publishParameters[2].toString());
-                payload.error = encryptor.decryptMessageContent(payload.error);
+                payload.error = encryptor.decryptMessageContent(payload.error, 'base64');
 
                 expect(payload).toEqual({
                     error: {
@@ -656,7 +816,16 @@ describe('AMQP', () => {
                     // no errorInput should be here
                 });
 
-                expect(publishParameters[3]).toEqual(props);
+                expect(publishParameters[3]).toEqual({
+                    contentType: 'application/json',
+                    contentEncoding: 'utf8',
+                    mandatory: true,
+                    headers: {
+                        taskId: 'task1234567890',
+                        stepId: 'step_456',
+                        protocolVersion: 2
+                    }
+                });
                 done();
             }, () => done(new Error('Exception should not be thrown')));
     });
@@ -678,7 +847,8 @@ describe('AMQP', () => {
             mandatory: true,
             headers: {
                 taskId: 'task1234567890',
-                stepId: 'step_456'
+                stepId: 'step_456',
+                protocolVersion: 2
             }
         };
 
@@ -693,7 +863,7 @@ describe('AMQP', () => {
                 expect(publishParameters[1]).toEqual('5559edd38968ec0736000003:step_1:1432205514864:error');
 
                 const payload = JSON.parse(publishParameters[2].toString());
-                payload.error = encryptor.decryptMessageContent(payload.error);
+                payload.error = encryptor.decryptMessageContent(payload.error, 'base64');
 
                 expect(payload).toEqual({
                     error: {
@@ -703,7 +873,16 @@ describe('AMQP', () => {
                     }
                     // no errorInput should be here
                 });
-                expect(publishParameters[3]).toEqual(props);
+                expect(publishParameters[3]).toEqual({
+                    contentType: 'application/json',
+                    contentEncoding: 'utf8',
+                    mandatory: true,
+                    headers: {
+                        taskId: 'task1234567890',
+                        stepId: 'step_456',
+                        protocolVersion: 2
+                    }
+                });
                 done();
             }, () => done(new Error('Exception should not be thrown')));
     });
@@ -729,7 +908,8 @@ describe('AMQP', () => {
                 stepId: 'step_1',
                 compId: 'comp1',
                 function: 'list',
-                start: '1432815685034'
+                start: '1432815685034',
+                protocolVersion: 2
             }
         };
 
@@ -755,13 +935,14 @@ describe('AMQP', () => {
                             compId: 'comp1',
                             function: 'list',
                             start: '1432815685034',
-                            reboundIteration: 1
+                            reboundIteration: 1,
+                            protocolVersion: 2
                         }
                     },
                     jasmine.any(Function)
                 ]);
 
-                const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                const payload = encryptor.decryptMessageContent(publishParameters[2]);
                 expect(payload).toEqual({ content: 'Message content' });
                 done();
             }, () => done(new Error('Exception should not be thrown')));
@@ -789,7 +970,8 @@ describe('AMQP', () => {
                 stepId: 'step_1',
                 compId: 'comp1',
                 function: 'list',
-                start: '1432815685034'
+                start: '1432815685034',
+                protocolVersion: 2
             }
         };
 
@@ -818,13 +1000,14 @@ describe('AMQP', () => {
                             compId: 'comp1',
                             function: 'list',
                             start: '1432815685034',
-                            reboundIteration: 3
+                            reboundIteration: 3,
+                            protocolVersion: 2
                         }
                     },
                     jasmine.any(Function)
                 ]);
 
-                const payload = encryptor.decryptMessageContent(publishParameters[2].toString());
+                const payload = encryptor.decryptMessageContent(publishParameters[2]);
                 expect(payload).toEqual({ content: 'Message content' });
                 done();
             }, () => done(new Error('Exception should not be thrown')));
@@ -851,7 +1034,8 @@ describe('AMQP', () => {
                 stepId: 'step_1',
                 compId: 'comp1',
                 function: 'list',
-                start: '1432815685034'
+                start: '1432815685034',
+                protocolVersion: 2
             }
         };
 
@@ -867,14 +1051,27 @@ describe('AMQP', () => {
                 expect(publishParameters).toEqual([
                     settings.PUBLISH_MESSAGES_TO,
                     settings.ERROR_ROUTING_KEY,
-                    jasmine.any(Object),
-                    props,
+                    jasmine.any(Buffer),
+                    {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf8',
+                        mandatory: true,
+                        headers: {
+                            execId: 'exec1234567890',
+                            taskId: 'task1234567890',
+                            stepId: 'step_1',
+                            compId: 'comp1',
+                            function: 'list',
+                            start: '1432815685034',
+                            protocolVersion: 2
+                        }
+                    },
                     jasmine.any(Function)
                 ]);
 
                 const payload = JSON.parse(publishParameters[2].toString());
-                payload.error = encryptor.decryptMessageContent(payload.error);
-                payload.errorInput = encryptor.decryptMessageContent(payload.errorInput);
+                payload.error = encryptor.decryptMessageContent(payload.error, 'base64');
+                payload.errorInput = encryptor.decryptMessageContent(payload.errorInput, 'base64');
 
                 expect(payload.error.message).toEqual('Rebound limit exceeded');
                 expect(payload.errorInput).toEqual({ content: 'Message content' });
@@ -908,7 +1105,93 @@ describe('AMQP', () => {
         expect(amqp.subscribeChannel.reject.calls[0].args[1]).toEqual(false);
     });
 
-    it('Should listen queue and pass decrypted message to client function', () => {
+    it('Should listen queue and pass decrypted message to client function with protocol version 1', () => {
+
+        const message = {
+            fields: {
+                consumerTag: 'abcde',
+                deliveryTag: 12345,
+                exchange: 'test',
+                routingKey: 'test.hello'
+            },
+            properties: {
+                contentType: 'application/json',
+                contentEncoding: 'utf8',
+                headers: {
+                    taskId: 'task1234567890',
+                    execId: 'exec1234567890',
+                    reply_to: 'replyTo1234567890'
+                },
+                deliveryMode: undefined,
+                priority: undefined,
+                correlationId: undefined,
+                replyTo: undefined,
+                expiration: undefined,
+                messageId: undefined,
+                timestamp: undefined,
+                type: undefined,
+                userId: undefined,
+                appId: undefined,
+                mandatory: true,
+                clusterId: ''
+            },
+            content: encryptor.encryptMessageContent(
+                { content: 'Message content' },
+                'base64'
+            )
+        };
+
+        const amqp = new Amqp(settings);
+        let rejectedMessage;
+        const clientFunction = jasmine.createSpy('clientFunction');
+        amqp.subscribeChannel = jasmine.createSpyObj(
+            'subscribeChannel',
+            [
+                'consume',
+                'prefetch',
+                'reject'
+            ]
+        );
+        amqp.subscribeChannel.consume.andCallFake((queueName, callback) => {
+            callback(message);
+        });
+        amqp.subscribeChannel.reject.andCallFake(message => {
+            rejectedMessage = message;
+        });
+
+        runs(() => {
+            amqp.listenQueue('testQueue', clientFunction);
+        });
+
+        waitsFor(() => clientFunction.callCount > 0 || !!rejectedMessage);
+
+        runs(() => {
+            expect(rejectedMessage).toBeUndefined();
+            expect(amqp.subscribeChannel.prefetch).toHaveBeenCalledWith(1);
+            expect(clientFunction.callCount).toEqual(1);
+            expect(clientFunction.calls[0].args[0]).toEqual(
+                {
+                    headers: {
+                        reply_to: 'replyTo1234567890'
+                    },
+                    content: 'Message content'
+                }
+            );
+            expect(clientFunction.calls[0].args[1]).toEqual(message);
+            //eslint-disable-next-line max-len
+            expect(clientFunction.calls[0].args[1].content.toString('hex')).toEqual(
+                encryptor.encryptMessageContent(
+                    { content: 'Message content' }, 'base64'
+                ).toString('hex')
+            );
+
+            expect(encryptor.decryptMessageContent).toHaveBeenCalledWith(
+                message.content,
+                'base64'
+            );
+        });
+    });
+    it('Should listen queue and pass decrypted message to client function with protocol version 2', () => {
 
         const amqp = new Amqp(settings);
         const clientFunction = jasmine.createSpy('clientFunction');
@@ -936,9 +1219,14 @@ describe('AMQP', () => {
             );
             expect(clientFunction.calls[0].args[1]).toEqual(message);
             //eslint-disable-next-line max-len
-            expect(clientFunction.calls[0].args[1].content).toEqual(encryptor.encryptMessageContent({ content: 'Message content' }));
+            expect(clientFunction.calls[0].args[1].content.toString('hex')).toEqual(
+                encryptor.encryptMessageContent({ content: 'Message content' }).toString('hex')
+            );
 
-            expect(encryptor.decryptMessageContent).toHaveBeenCalledWith(message.content, message.properties.headers);
+            expect(encryptor.decryptMessageContent).toHaveBeenCalledWith(
+                message.content,
+                undefined
+            );
         });
     });
 

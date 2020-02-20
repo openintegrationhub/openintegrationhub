@@ -18,4 +18,6 @@ async function process(msg, cfg, snapshot) {
         });
         console.log('Message %s was sent', i);
     }
+    // eslint-disable-next-line no-invalid-this
+    this.emit('end');
 }

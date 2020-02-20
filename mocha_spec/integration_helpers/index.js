@@ -7,7 +7,7 @@ const PREFIX = 'sailor_nodejs_integration_test';
 const nock = require('nock');
 const ShellTester = require('./ShellTester');
 const express = require('express');
-
+const encryptor = require('../../lib/encryptor');
 const FAKE_API_PORT = 1244; // most likely the port won't be taken – https://www.adminsub.net/tcp-udp-port-finder/1244
 
 const env = process.env;
@@ -41,37 +41,28 @@ class AmqpHelper extends EventEmitter {
         env.ELASTICIO_TIMEOUT = 3000;
     }
 
-    // optional callback `done` is used in order to pass exceptions (e.g. from assertions in tests) to mocha callback
-    on(event, handler, done = undefined) {
-        if (!done) {
-            return super.on(event, handler);
-        }
-
-        return super.on(event, (...args) => {
-            try {
-                handler(...args);
-                done();
-            } catch (e) {
-                done(e);
-            }
-        });
-    }
-
     publishMessage(message, { parentMessageId, threadId } = {}, headers = {}) {
+        let msgHeaders = Object.assign({
+            execId: env.ELASTICIO_EXEC_ID,
+            taskId: env.ELASTICIO_FLOW_ID,
+            workspaceId: env.ELASTICIO_WORKSPACE_ID,
+            userId: env.ELASTICIO_USER_ID,
+            threadId,
+            stepId: message.headers.stepId,
+            messageId: parentMessageId
+        }, headers);
+        const protocolVersion = Number(msgHeaders.protocolVersion || 1);
         return this.subscriptionChannel.publish(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_DATA_ROUTING_KEY,
-            new Buffer(JSON.stringify(message)), {
-                headers: Object.assign({
-                    execId: env.ELASTICIO_EXEC_ID,
-                    taskId: env.ELASTICIO_FLOW_ID,
-                    workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                    userId: env.ELASTICIO_USER_ID,
-                    threadId,
-                    stepId: message.headers.stepId,
-                    messageId: parentMessageId
-                }, headers)
-            });
+            encryptor.encryptMessageContent(
+                message,
+                protocolVersion < 2 ? 'base64' : undefined
+            ),
+            {
+                headers: msgHeaders
+            }
+        );
     }
 
     *prepareQueues() {
@@ -115,6 +106,7 @@ class AmqpHelper extends EventEmitter {
 
         yield publishChannel.purgeQueue(this.nextStepQueue);
         yield publishChannel.purgeQueue(this.nextStepErrorQueue);
+        yield publishChannel.purgeQueue(this.httpReplyQueueName);
         yield publishChannel.purgeQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
         this.subscriptionChannel = subscriptionChannel;
@@ -161,18 +153,8 @@ class AmqpHelper extends EventEmitter {
     }
 
     consumer(queue, message) {
-        this.publishChannel.ack(message);
-
-        const emittedMessage = JSON.parse(message.content.toString());
-
-        const data = {
-            properties: message.properties,
-            body: emittedMessage.body,
-            emittedMessage
-        };
-
-        this.dataMessages.push(data);
-        this.emit('data', data, queue);
+        this.dataMessages.push(message);
+        this.emit('data', message, queue);
     }
 
     retrieveAllMessagesNotConsumedBySailor(timeout = 1000) {
@@ -184,8 +166,12 @@ class AmqpHelper extends EventEmitter {
                 env.ELASTICIO_LISTEN_MESSAGES_ON,
                 (message) => {
                     this.subscriptionChannel.ack(message);
+                    const protocolVersion = Number(message.properties.headers.protocolVersion || 1);
 
-                    const emittedMessage = JSON.parse(message.content.toString());
+                    const emittedMessage = encryptor.decryptMessageContent(
+                        message.content,
+                        protocolVersion < 2 ? 'base64' : undefined
+                    );
 
                     const entry = {
                         properties: message.properties,
@@ -234,6 +220,9 @@ function prepareEnv() {
     env.ELASTICIO_API_USERNAME = 'test@test.com';
     env.ELASTICIO_API_KEY = '5559edd';
     env.ELASTICIO_FLOW_WEBHOOK_URI = 'https://in.elastic.io/hooks/' + env.ELASTICIO_FLOW_ID;
+
+    env.ELASTICIO_MESSAGE_CRYPTO_PASSWORD = 'testCryptoPassword';
+    env.ELASTICIO_MESSAGE_CRYPTO_IV = 'iv=any16_symbols';
 
     env.DEBUG = 'sailor:debug';
 }

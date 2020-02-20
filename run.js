@@ -1,12 +1,12 @@
 const logger = require('./lib/logging.js');
 const Sailor = require('./lib/sailor.js').Sailor;
-const settings = require('./lib/settings.js').readFrom(process.env);
+const settings = require('./lib/settings.js');
 const co = require('co');
 
 let sailor;
 let disconnectRequired;
 
-co(function* putOutToSea() {
+async function putOutToSea(settings) {
     sailor = new Sailor(settings);
 
     //eslint-disable-next-line no-extra-boolean-cast
@@ -15,28 +15,23 @@ co(function* putOutToSea() {
         //eslint-disable-next-line no-empty-function
         sailor.reportError = () => {
         };
-        yield sailor.prepare();
-        yield sailor.runHookShutdown();
+        await sailor.prepare();
+        await sailor.runHookShutdown();
         return;
     }
 
     disconnectRequired = true;
-    yield sailor.connect();
-    yield sailor.prepare();
+    await sailor.connect();
+    await sailor.prepare();
 
     //eslint-disable-next-line no-extra-boolean-cast
     if (!!settings.STARTUP_REQUIRED) {
-        yield sailor.startup();
+        await sailor.startup();
     }
 
-    yield sailor.runHookInit();
-    yield sailor.run();
-}).catch((e) => {
-    if (sailor) {
-        sailor.reportError(e);
-    }
-    logger.criticalErrorAndExit('putOutToSea.catch', e);
-});
+    await sailor.runHookInit();
+    await sailor.run();
+}
 
 process.on('SIGTERM', function onSigterm() {
     logger.info('Received SIGTERM');
@@ -86,4 +81,20 @@ function gracefulShutdown() {
     sailor.scheduleShutdown().then(disconnectAndExit);
 }
 
+async function run(settings) {
+    try {
+        await putOutToSea(settings);
+    } catch (e) {
+        if (sailor) {
+            sailor.reportError(e);
+        }
+        logger.criticalErrorAndExit('putOutToSea.catch', e);
+    }
+}
+
 exports._disconnectOnly = _disconnectOnly;
+exports.run = run;
+
+if (require.main === module || process.mainModule.filename === __filename) {
+    run(settings.readFrom(process.env));
+}

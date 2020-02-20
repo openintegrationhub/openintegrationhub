@@ -1,7 +1,7 @@
 {
   "name": "elasticio-sailor-nodejs",
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
-  "version": "2.6.4",
+  "version": "2.6.5",
   "main": "run.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint lib spec mocha_spec lib run.js runService.js",
