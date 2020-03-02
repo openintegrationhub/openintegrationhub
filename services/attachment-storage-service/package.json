@@ -28,8 +28,8 @@
         "@types/jsonwebtoken": "8.3.2",
         "@types/koa": "2.0.48",
         "@types/koa-bunyan-logger": "2.1.0",
-        "@types/koa-jwt": "3.3.0",
         "@types/koa-router": "7.0.40",
+        "@types/lodash": "4.14.149",
         "@types/mocha": "5.2.6",
         "@types/mocha-steps": "1.1.1",
         "@types/nconf": "0.10.0",
@@ -50,12 +50,12 @@
         "supertest": "4.0.2",
         "ts-node": "8.0.2",
         "ts-node-dev": "1.0.0-pre.32",
-        "typescript": "3.3.3333"
+        "typescript": "3.8.3"
     },
     "dependencies": {
         "@elastic.io/bunyan-logger": "1.0.4",
-        "@openintegrationhub/attachment-storage-service": "*",
-        "@openintegrationhub/iam-utils": "*",
+        "@openintegrationhub/attachment-storage-service": "0.0.3",
+        "@openintegrationhub/iam-utils": "1.5.3",
         "ioredis": "4.9.0",
         "koa": "2.7.0",
         "koa-bunyan-logger": "2.1.0",
