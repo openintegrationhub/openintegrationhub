@@ -27,6 +27,14 @@ spec:
           value: 'http://flow-repository.localoih.com'
         - name: ENDPOINT_COMPONENT
           value: 'http://component-repository.localoih.com'
+        - name: ENDPOINT_SECRETS
+          value: 'http://skm.localoih.com/api/v1'
+        - name: ENDPOINT_DISPATCHER
+          value: 'http://dispatcher-service.localoih.com'
+        - name: ENDPOINT_METADATA
+          value: 'http://metadata.localoih.com/api/v1'
+        - name: ENDPOINT_APP_DIRECTORY
+          value: 'http://app-directory.localoih.com/api/v1'
         ports:
         - containerPort: 3000
         livenessProbe:
