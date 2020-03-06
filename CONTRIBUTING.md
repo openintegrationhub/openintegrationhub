@@ -61,8 +61,8 @@ In addition to the previously defined definition of done some rules only apply f
 
 Pull Requests are the way concrete changes are made to the repository.
 
-- Assign all development leads or the appropiate team lead to the pull request ([@drobiazko](https://github.com/drobiazko), [@sachmerz](https://github.com/sachmerz), [@hschmidthh](https://github.com/hschmidthh), [@philecs](https://github.com/philecs))
-- If you don't know whom to assign, choose: [@philecs](https://github.com/philecs)
+- Assign all development leads or the appropiate team lead to the pull request ([@drobiazko](https://github.com/drobiazko), [@sachmerz](https://github.com/sachmerz), [@hschmidthh](https://github.com/hschmidthh), [@RobinBrinkmann](https://github.com/RobinBrinkmann))
+- If you don't know whom to assign, choose: [@RobinBrinkmann](https://github.com/RobinBrinkmann)
 - Select an appropriate label (choose the dependent `service` and/or `framework`(e.g. Smart Data Framework) or if no current label fits choose `general`) 
 
 <a id="developers-certificate-of-origin"></a>
