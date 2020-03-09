@@ -148,7 +148,16 @@ workflows:
       - iam-test:
           requires:
             - deps
+      - web-ui-test:
+          requires:
+            - deps
+      - meta-data-repository-test:
+          requires:
+            - deps
       - reports-analytics-test:
+          requires:
+            - deps
+      - app-directory-test:
           requires:
             - deps
       - component-orchestrator-test:
@@ -163,9 +172,6 @@ workflows:
       - flow-repository-test:
           requires:
             - deps
-      - app-directory-test:
-          requires:
-            - deps
       - audit-log-test:
           requires:
             - deps
@@ -173,9 +179,6 @@ workflows:
           requires:
             - deps
       - lib-backend-commons-lib-test:
-          requires:
-            - deps
-      - web-ui-test:
           requires:
             - deps
       - lib-component-orchestrator-test:
@@ -194,9 +197,6 @@ workflows:
           requires:
             - lib-backend-commons-lib-test
       - ils-test:
-          requires:
-            - deps
-      - meta-data-repository-test:
           requires:
             - deps
       - test:
