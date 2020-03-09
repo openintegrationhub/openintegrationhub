@@ -79,3 +79,9 @@ spec:
       - backend:
           serviceName: app-directory
           servicePort: 3000
+  - host: dispatcher-service.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: dispatcher-service
+          servicePort: 3013
