@@ -13,7 +13,7 @@ describe('connectors', () => {
         port = await getPort();
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-apps`,
+            mongoDbConnection: `${global.__MONGO_URI__}apps`,
             port,
         });
         iamMock.setup();
