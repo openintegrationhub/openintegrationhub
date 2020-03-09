@@ -10,7 +10,7 @@ const setName = 'jestset';
 
 const mongod = new MongoMemoryReplSet({
     binary: {
-        version: 'latest',
+        version: '3.6.17',
     },
     instanceOpts: [
         { storageEngine: 'wiredTiger' },
