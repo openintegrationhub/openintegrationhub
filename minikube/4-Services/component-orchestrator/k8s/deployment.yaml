@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: component-orchestrator
-          image: 'openintegrationhub/component-orchestrator:local'
+          image: 'openintegrationhub/component-orchestrator:latest'
           env:
             - name: COMPONENT_REPOSITORY_BASE_URL
               value: 'http://component-repository-service.oih-dev-ns.svc.cluster.local:1234'
