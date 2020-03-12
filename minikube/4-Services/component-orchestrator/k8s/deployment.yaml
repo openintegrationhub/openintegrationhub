@@ -18,10 +18,12 @@ spec:
     spec:
       containers:
         - name: component-orchestrator
-          image: 'openintegrationhub/component-orchestrator:latest'
+          image: 'openintegrationhub/component-orchestrator:local'
           env:
             - name: COMPONENT_REPOSITORY_BASE_URL
               value: 'http://component-repository-service.oih-dev-ns.svc.cluster.local:1234'
+            - name: SECRETS_SERVICE_BASE_URL
+              value: 'http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1'
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
