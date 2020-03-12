@@ -33,7 +33,8 @@ class ComponentOrchestratorApp extends App {
         };
         await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
         const iamClient = iamUtils.createClient({
-            iamToken: config.get('IAM_TOKEN')
+            iamToken: config.get('IAM_TOKEN'),
+            baseUrl: config.get('IAM_BASE_URL')
         });
 
         container.register({
