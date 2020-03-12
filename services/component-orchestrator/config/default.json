@@ -1,5 +1,6 @@
 {
     "COMPONENT_REPOSITORY_BASE_URL": "http://component-repository.oih-dev-ns.svc.cluster.local:1234",
+    "IAM_BASE_URL": "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1",
     "DEFAULT_CPU_LIMIT": "100m",
     "DEFAULT_MEM_LIMIT": "256Mi",
     "DEFAULT_CPU_REQUEST": "100m",

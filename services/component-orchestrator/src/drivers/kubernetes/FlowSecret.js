@@ -41,7 +41,7 @@ class FlowSecret {
             metadata: this.metadata,
             data: Object.entries(this.data).reduce((hash, entry) => {
                 const [ key, value ] = entry;
-                hash[key] = toBase64(value);
+                if (value !== undefined) hash[key] = toBase64(value);
                 return hash;
             }, {})
         };
@@ -57,7 +57,7 @@ class FlowSecret {
             metadata: descriptor.metadata,
             data: Object.entries(descriptor.data || {}).reduce((hash, entry) => {
                 const [ key, value ] = entry;
-                hash[key] = fromBase64(value);
+                if (value !== undefined) hash[key] = fromBase64(value);
                 return hash;
             }, {})
         });
