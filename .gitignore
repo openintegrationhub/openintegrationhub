@@ -4,3 +4,4 @@ node_modules
 .idea
 out.log
 err.log
+.nyc_output

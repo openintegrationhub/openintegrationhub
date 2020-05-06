@@ -10,7 +10,13 @@ const encryptor = require('../lib/encryptor');
 const settings = require('../lib/settings');
 
 const env = process.env;
-
+function requireRun() {
+    //@todo it would be great to use something like this https://github.com/jveski/shelltest
+    const path = '../run.js';
+    const resolved = require.resolve(path);
+    delete require.cache[resolved];
+    return require(path);
+}
 describe('Integration Test', () => {
     const customers = [
         {
@@ -47,7 +53,7 @@ describe('Integration Test', () => {
 
     let sinon;
     beforeEach(() => {
-        sinon = sinonjs.sandbox.create();
+        sinon = sinonjs.createSandbox();
     });
     afterEach(() => {
         sinon.restore();
@@ -581,7 +587,7 @@ describe('Integration Test', () => {
 
                             runner = requireRun();
 
-                            await amqpHelper.publishMessage(inputMessage);
+                            await amqpHelper.publishMessage(inputMessage, { threadId });
 
                             const [{ message, queueName }] = await Promise.all([
                                 new Promise(resolve => amqpHelper.on(
@@ -624,7 +630,8 @@ describe('Integration Test', () => {
                                 stepId: env.ELASTICIO_STEP_ID,
                                 compId: env.ELASTICIO_COMP_ID,
                                 function: env.ELASTICIO_FUNCTION,
-                                protocolVersion
+                                protocolVersion,
+                                threadId
                             });
 
                             expect(body).to.deep.equal({
@@ -704,7 +711,7 @@ describe('Integration Test', () => {
 
                             runner = requireRun();
 
-                            await amqpHelper.publishMessage(inputMessage);
+                            await amqpHelper.publishMessage(inputMessage, { threadId });
 
                             const [{ message, queueName }] = await Promise.all([
                                 new Promise(resolve => amqpHelper.on(
@@ -755,7 +762,8 @@ describe('Integration Test', () => {
                                 stepId: env.ELASTICIO_STEP_ID,
                                 compId: env.ELASTICIO_COMP_ID,
                                 function: env.ELASTICIO_FUNCTION,
-                                protocolVersion: protocolVersion
+                                protocolVersion: protocolVersion,
+                                threadId
                             });
 
                             expect(body).to.deep.equal({
@@ -811,7 +819,7 @@ describe('Integration Test', () => {
 
                             runner = requireRun();
 
-                            await amqpHelper.publishMessage(inputMessage);
+                            await amqpHelper.publishMessage(inputMessage, { threadId });
 
                             const [{ message, queueName }] = await Promise.all([
                                 new Promise(resolve => amqpHelper.on(
@@ -849,7 +857,8 @@ describe('Integration Test', () => {
                                 stepId: env.ELASTICIO_STEP_ID,
                                 compId: env.ELASTICIO_COMP_ID,
                                 function: sailorSettings.FUNCTION,
-                                protocolVersion: protocolVersion
+                                protocolVersion: protocolVersion,
+                                threadId
                             });
 
                             expect(body).to.deep.equal({
@@ -884,7 +893,7 @@ describe('Integration Test', () => {
 
                             runner = requireRun();
 
-                            await amqpHelper.publishMessage(inputMessage);
+                            await amqpHelper.publishMessage(inputMessage, { threadId });
 
                             const [{ message, queueName }] = await Promise.all([
                                 new Promise(resolve => amqpHelper.on(
@@ -914,7 +923,8 @@ describe('Integration Test', () => {
                                 stepId: env.ELASTICIO_STEP_ID,
                                 compId: env.ELASTICIO_COMP_ID,
                                 function: sailorSettings.FUNCTION,
-                                protocolVersion: protocolVersion
+                                protocolVersion: protocolVersion,
+                                threadId
                             });
 
                             expect(body).to.deep.equal({
@@ -1031,7 +1041,8 @@ describe('Integration Test', () => {
                             .reply(200, customers);
 
                         await amqpHelper.publishMessage(inputMessage, {}, {
-                            reply_to: amqpHelper.httpReplyQueueRoutingKey
+                            reply_to: amqpHelper.httpReplyQueueRoutingKey,
+                            threadId
                         });
 
                         runner = requireRun();
@@ -1065,7 +1076,8 @@ describe('Integration Test', () => {
                             compId: env.ELASTICIO_COMP_ID,
                             function: env.ELASTICIO_FUNCTION,
                             reply_to: amqpHelper.httpReplyQueueRoutingKey,
-                            protocolVersion: 1
+                            protocolVersion: 1,
+                            threadId
                         });
 
                         expect(emittedMessage).to.eql({
@@ -1080,7 +1092,11 @@ describe('Integration Test', () => {
 
                 describe('when sailor could not init the module', () => {
                     it('should publish init errors to RabbitMQ', async () => {
-                        const logCriticalErrorStub = sinon.stub(logging, 'criticalErrorAndExit');
+                        // NOTICE, don't touch this.
+                        // it produces side effect, disabling exit at error
+                        // see lib/logging.js
+                        // So make eslint to shut up
+                        const logCriticalErrorStub = sinon.stub(logging, 'criticalErrorAndExit'); // eslint-disable-line
 
                         env.ELASTICIO_FUNCTION = 'fails_to_init';
 
@@ -1106,7 +1122,7 @@ describe('Integration Test', () => {
 
                         expect(error.message).to.equal('OMG. I cannot init');
 
-                        expect(properties.headers).to.eql({
+                        expect(properties.headers).to.deep.include({
                             execId: env.ELASTICIO_EXEC_ID,
                             taskId: env.ELASTICIO_FLOW_ID,
                             workspaceId: env.ELASTICIO_WORKSPACE_ID,
@@ -1193,10 +1209,4 @@ describe('Integration Test', () => {
     });
 });
 
-function requireRun() {
-    //@todo it would be great to use something like this https://github.com/jveski/shelltest
-    const path = '../run.js';
-    const resolved = require.resolve(path);
-    delete require.cache[resolved];
-    return require(path);
-}
+

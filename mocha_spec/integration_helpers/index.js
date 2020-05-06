@@ -37,8 +37,8 @@ class AmqpHelper extends EventEmitter {
         env.ELASTICIO_ERROR_ROUTING_KEY = PREFIX + ':routing_key:error';
         env.ELASTICIO_REBOUND_ROUTING_KEY = PREFIX + ':routing_key:rebound';
         env.ELASTICIO_SNAPSHOT_ROUTING_KEY = PREFIX + ':routing_key:snapshot';
-
-        env.ELASTICIO_TIMEOUT = 3000;
+        env.ELASTICIO_AMQP_PUBLISH_RETRY_ATTEMPTS = 3;
+        env.ELASTICIO_AMQP_PUBLISH_MAX_RETRY_DELAY = 60 * 1000;
     }
 
     publishMessage(message, { parentMessageId, threadId } = {}, headers = {}) {

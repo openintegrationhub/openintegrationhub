@@ -1,7 +1,7 @@
 {
   "name": "elasticio-sailor-nodejs",
   "description": "The official elastic.io library for bootstrapping and executing for Node.js connectors",
-  "version": "2.6.5",
+  "version": "2.6.6",
   "main": "run.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint lib spec mocha_spec lib run.js runService.js",
@@ -19,14 +19,13 @@
     "bunyan": "1.8.10",
     "co": "4.6.0",
     "debug": "3.1.0",
-    "elasticio-rest-node": "1.2.3",
+    "elasticio-rest-node": "1.2.5-dev1",
     "event-to-promise": "0.8.0",
     "lodash": "4.17.4",
     "p-throttle": "2.1.0",
     "q": "1.4.1",
     "request-promise-native": "1.0.5",
     "requestretry": "3.1.0",
-    "self-addressed": "0.3.0",
     "uuid": "3.0.1"
   },
   "devDependencies": {
@@ -45,7 +44,8 @@
     "nock": "10.0.6",
     "nsp": "2.8.1",
     "request": "2.88.0",
-    "sinon": "7.4.2"
+    "sinon": "7.4.2",
+    "sinon-chai": "3.5.0"
   },
   "repository": "elasticio/sailor-nodejs",
   "license": "Apache-2.0"

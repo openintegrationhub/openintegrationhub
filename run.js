@@ -33,18 +33,6 @@ async function putOutToSea(settings) {
     await sailor.run();
 }
 
-process.on('SIGTERM', function onSigterm() {
-    logger.info('Received SIGTERM');
-    gracefulShutdown();
-});
-
-process.on('SIGINT', function onSigint() {
-    logger.info('Received SIGINT');
-    gracefulShutdown();
-});
-
-process.on('uncaughtException', logger.criticalErrorAndExit.bind(logger, 'process.uncaughtException'));
-
 function disconnectAndExit() {
     if (!disconnectRequired) {
         return;
@@ -96,5 +84,17 @@ exports._disconnectOnly = _disconnectOnly;
 exports.run = run;
 
 if (require.main === module || process.mainModule.filename === __filename) {
+    process.on('SIGTERM', function onSigterm() {
+        logger.info('Received SIGTERM');
+        gracefulShutdown();
+    });
+
+    process.on('SIGINT', function onSigint() {
+        logger.info('Received SIGINT');
+        gracefulShutdown();
+    });
+
+    process.on('uncaughtException', logger.criticalErrorAndExit.bind(logger, 'process.uncaughtException'));
+
     run(settings.readFrom(process.env));
 }

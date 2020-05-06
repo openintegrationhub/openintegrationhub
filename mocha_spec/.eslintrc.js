@@ -11,6 +11,6 @@ module.exports = {
         mocha: true
     },
     'parserOptions': {
-        'ecmaVersion': 8
+        'ecmaVersion': 2018
     }
 };

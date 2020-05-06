@@ -5,9 +5,23 @@ describe('Executor', () => {
     var TaskExec = require('../lib/executor.js').TaskExec;
     var payload = { content: 'MessageContent' };
     var cfg = {};
+    const apiClientStub = {};
+    const amqpConnStub = {};
+    const configStub = {};
+    const loggerOptions = {};
+    const taskVars = {};
+    const defaultTaskExecArgs = {
+        loggerOptions,
+        variables: taskVars,
+        services: {
+            apiClient: apiClientStub,
+            config: configStub,
+            amqp: amqpConnStub
+        }
+    };
 
     it('Should execute passthrough trigger and emit all events - data, end', () => {
-        var taskexec = new TaskExec();
+        var taskexec = new TaskExec(defaultTaskExecArgs);
 
         //eslint-disable-next-line no-empty-function
         taskexec.on('error', () => {});
@@ -29,7 +43,7 @@ describe('Executor', () => {
     });
 
     it('Should reject if module is missing', () => {
-        var taskexec = new TaskExec();
+        var taskexec = new TaskExec(defaultTaskExecArgs);
         //eslint-disable-next-line no-empty-function
         taskexec.on('error', () => {});
         spyOn(taskexec, 'emit').andCallThrough();
@@ -49,7 +63,7 @@ describe('Executor', () => {
     });
 
     it('Should execute rebound_trigger and emit all events - rebound, end', () => {
-        var taskexec = new TaskExec();
+        var taskexec = new TaskExec(defaultTaskExecArgs);
         //eslint-disable-next-line no-empty-function
         taskexec.on('error', () => {});
         spyOn(taskexec, 'emit').andCallThrough();
@@ -70,7 +84,7 @@ describe('Executor', () => {
     });
 
     it('Should execute complex trigger, and emit all 6 events', () => {
-        var taskexec = new TaskExec();
+        var taskexec = new TaskExec(defaultTaskExecArgs);
         //eslint-disable-next-line no-empty-function
         taskexec.on('error', () => {});
         spyOn(taskexec, 'emit').andCallThrough();
@@ -85,7 +99,7 @@ describe('Executor', () => {
 
         runs(() => {
             expect(taskexec.emit).toHaveBeenCalled();
-            expect(taskexec.emit.callCount).toEqual(5);
+            expect(taskexec.emit.callCount).toEqual(6);
             expect(taskexec.emit.calls[0].args[0]).toEqual('data');
             expect(taskexec.emit.calls[0].args[1]).toEqual({ content: 'Data 1' });
             expect(taskexec.emit.calls[1].args[0]).toEqual('error');
@@ -96,11 +110,12 @@ describe('Executor', () => {
             expect(taskexec.emit.calls[3].args[1].message).toEqual('Error 2');
             expect(taskexec.emit.calls[4].args[0]).toEqual('data');
             expect(taskexec.emit.calls[4].args[1]).toEqual({ content: 'Data 3' });
+            expect(taskexec.emit.calls[5].args[0]).toEqual('end');
         });
     });
 
     it('Should execute test_trigger and emit all events - 3 data events, 3 errors, 3 rebounds, 1 end', () => {
-        var taskexec = new TaskExec();
+        var taskexec = new TaskExec(defaultTaskExecArgs);
         //eslint-disable-next-line no-empty-function
         taskexec.on('error', () => {});
         spyOn(taskexec, 'emit').andCallThrough();
@@ -136,7 +151,7 @@ describe('Executor', () => {
     describe('Promises', () => {
 
         it('Should execute a Promise trigger and emit all events - data, end', () => {
-            var taskexec = new TaskExec();
+            var taskexec = new TaskExec(defaultTaskExecArgs);
 
             //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
@@ -162,7 +177,7 @@ describe('Executor', () => {
         });
 
         it('Should execute a Promise.resolve() trigger and emit end', () => {
-            var taskexec = new TaskExec();
+            var taskexec = new TaskExec(defaultTaskExecArgs);
 
             //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
@@ -198,7 +213,7 @@ describe('Executor', () => {
         it('Should execute a Promise trigger and emit all events - data, end', () => {
 
 
-            var taskexec = new TaskExec();
+            var taskexec = new TaskExec(defaultTaskExecArgs);
 
             //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
@@ -237,7 +252,7 @@ describe('Executor', () => {
                 });
 
 
-            var taskexec = new TaskExec();
+            var taskexec = new TaskExec(defaultTaskExecArgs);
 
             //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
@@ -287,7 +302,7 @@ describe('Executor', () => {
                 });
 
 
-            var taskexec = new TaskExec();
+            var taskexec = new TaskExec(defaultTaskExecArgs);
 
             //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
@@ -330,7 +345,7 @@ describe('Executor', () => {
 
     describe('async process function', () => {
         it('should work', () => {
-            const taskexec = new TaskExec();
+            const taskexec = new TaskExec(defaultTaskExecArgs);
 
             //eslint-disable-next-line no-empty-function
             taskexec.on('error', () => {});
@@ -379,7 +394,8 @@ describe('Executor', () => {
                             stream: testStream
                         }
                     ]
-                }
+                },
+                services: defaultTaskExecArgs.services
             });
         });
 
@@ -419,7 +435,8 @@ describe('Executor', () => {
                     threadId: 'threadId',
                     messageId: 'messageId',
                     parentMessageId: 'parentMessageId'
-                }
+                },
+                services: defaultTaskExecArgs.services
             });
 
             taskExec.logger.info('info');
