@@ -74,7 +74,7 @@ async function run(settings) {
         await putOutToSea(settings);
     } catch (e) {
         if (sailor) {
-            sailor.reportError(e);
+            await sailor.reportError(e);
         }
         logger.criticalErrorAndExit('putOutToSea.catch', e);
     }

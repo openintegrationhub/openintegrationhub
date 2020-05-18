@@ -1095,8 +1095,7 @@ describe('Integration Test', () => {
                         // NOTICE, don't touch this.
                         // it produces side effect, disabling exit at error
                         // see lib/logging.js
-                        // So make eslint to shut up
-                        const logCriticalErrorStub = sinon.stub(logging, 'criticalErrorAndExit'); // eslint-disable-line
+                        sinon.stub(logging, 'criticalErrorAndExit');
 
                         env.ELASTICIO_FUNCTION = 'fails_to_init';
 
@@ -1119,9 +1118,7 @@ describe('Integration Test', () => {
                         const emittedMessage = JSON.parse(content);
                         const error = encryptor.decryptMessageContent(emittedMessage.error, 'base64');
                         expect(queueName).to.eql(amqpHelper.nextStepErrorQueue);
-
                         expect(error.message).to.equal('OMG. I cannot init');
-
                         expect(properties.headers).to.deep.include({
                             execId: env.ELASTICIO_EXEC_ID,
                             taskId: env.ELASTICIO_FLOW_ID,
