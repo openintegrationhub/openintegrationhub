@@ -16,7 +16,7 @@
 
 ## Building components in Node.js
 
-If you plan to build a component for [elastic.io platform](http://www.elastic.io) in Node.js then you can visit our dedicated documentation page which describes [how to build a component in node.js](https://support.elastic.io/support/solutions/articles/14000027123-how-to-build-a-component-in-node-js).
+If you plan to build a component for [elastic.io platform](http://www.elastic.io) in Node.js then you can visit our dedicated documentation page which describes [how to build a component in node.js](https://docs.elastic.io/guides/building-nodejs-component).
 
 ### Before you start
 
@@ -24,15 +24,15 @@ Before you can deploy any code into our system **you must be a registered elasti
 
 > Any attempt to deploy a code into our platform without a registration would fail.
 
-After the registration and opening of the account you must **[upload your SSH Key](https://support.elastic.io/support/solutions/articles/14000038794-manage-your-ssh-keys)** into our platform.
+After the registration and opening of the account you must **[upload your SSH Key](https://docs.elastic.io/guides/ssh-keys)** into our platform.
 
 > If you fail to upload you SSH Key you will get **permission denied** error during the deployment.
 
 ### Getting Started
 
 After registration and uploading of your SSH Key you can proceed to deploy it into our system. At this stage we suggest you to:
-*   [Create a team](https://docs.elastic.io/guides/teams-and-repos.html#creating-a-developer-team) to work on your new component. This is not required but will be automatically created using random naming by our system so we suggest you name your team accordingly.
-*   [Create a repository](https://docs.elastic.io/guides/teams-and-repos.html#create-a-component-repository) inside the team to deploy your new component code.
+*   [Create a team](https://docs.elastic.io/guides/teams-and-repos#creating-a-developer-team) to work on your new component. This is not required but will be automatically created using random naming by our system so we suggest you name your team accordingly.
+*   [Create a repository](https://docs.elastic.io/guides/teams-and-repos#create-a-component-repository) inside the team to deploy your new component code.
 
 ### Examples of Node.js components
 
