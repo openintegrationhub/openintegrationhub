@@ -1114,4 +1114,26 @@ describe('AMQP', () => {
         expect(amqp.amqp.close).to.have.been.calledOnce;
         expect(amqp.amqp.removeAllListeners).to.have.been.calledOnce.and.calledWith('close');
     });
+    describe('_getDelay', () => {
+        let amqp;
+        beforeEach(() => {
+            amqp = new Amqp(settings);
+        });
+        it('should return defaultDelay * 2^^iteration as delay', () => {
+            expect(amqp._getDelay(100, 300 * 1000, 0)).to.equal(100);
+            expect(amqp._getDelay(100, 300 * 1000, 1)).to.equal(200);
+            expect(amqp._getDelay(100, 300 * 1000, 2)).to.equal(400);
+            expect(amqp._getDelay(100, 300 * 1000, 4)).to.equal(1600);
+        });
+        it('should return default delay for first iteration', () => {
+            expect(amqp._getDelay(100, 300 * 1000, 0)).to.equal(100);
+        });
+        it('should reutrn maxDelay if calculated delay is greater then maxDelay', () => {
+            expect(amqp._getDelay(100, 300 * 1000, 12)).to.equal(300 * 1000);
+            expect(amqp._getDelay(100, 300 * 1000, 15)).to.equal(300 * 1000);
+        });
+        it('should reutrn maxDelay if calculated delay is infinity then maxDelay', () => {
+            expect(amqp._getDelay(100, 300 * 1000, 1e6)).to.equal(300 * 1000);
+        });
+    });
 });
