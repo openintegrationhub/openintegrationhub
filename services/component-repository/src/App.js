@@ -1,6 +1,6 @@
 const { App } = require('backend-commons-lib');
 const { Server } = require('@openintegrationhub/component-repository');
-const { EventBus } = require('@openintegrationhub/event-bus');
+const { EventBus, Event } = require('@openintegrationhub/event-bus');
 
 class ComponentRepositoryApp extends App {
     async _run() {
@@ -16,6 +16,8 @@ class ComponentRepositoryApp extends App {
                     transport: undefined
                 })
             }).singleton(),
+            event: asClass(Event)
+            .singleton(),
             server: asClass(Server)
                 .singleton()
                 .inject(() => ({iam: undefined})) //use default iam middleware
