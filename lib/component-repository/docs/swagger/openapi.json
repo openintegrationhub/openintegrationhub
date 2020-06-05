@@ -225,7 +225,7 @@
       }
     },
     "/components/global/{id}/start": {
-      "get": {
+      "post": {
         "tags": ["components"],
         "summary": "Start a global component by ID",
         "description": "Returns a success message",
@@ -265,7 +265,7 @@
       }
     },
     "/components/global/{id}/stop": {
-      "get": {
+      "post": {
         "tags": ["components"],
         "summary": "Stop a global component by ID",
         "description": "Returns a success message",
