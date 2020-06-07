@@ -64,11 +64,13 @@ and then
 
 to adjust the resource limits before starting again.
 
-In particular, ensure that its ingress module is enabled (`minikube addons enable ingress`).  Also make certain that `kubectl` is configured to use minikube. To see if its correctly configured use
+In particular, ensure that its ingress module is enabled.  
 
-    `kubectl config current-context
-    or
-    cluster info`
+    minikube addons enable ingress
+
+Also make certain that `kubectl` is configured to use minikube. To see if its correctly configured use
+
+    kubectl config current-context
 
 For further information about how to set up minikube, see here:
 
@@ -105,7 +107,9 @@ a **Windows** distribution, you can find the host files under:
 
 ```console
 c:\windows\system32\etc\hosts
+
 or
+
 c:\windows\system32\drivers\etc\hosts
 
 then add
@@ -139,9 +143,7 @@ Create a service account and token for the other services in the OIH IAM. Using 
 
 ### Login as Admin
 
- _Path_:
-
-`/login`
+POST `/login`
 
 _Request Body:_
 
@@ -164,9 +166,7 @@ Use the returned `token` as a Bearer token for the remaining requests.
 
 ### Create a Service Account
 
-_Path:_
-
-`/api/v1/users`
+POST `/api/v1/users`
 
 _Request Body:_
 
@@ -188,26 +188,7 @@ _Request Body:_
 
 ```json
 {
-  "id": "string",
-  "username": "string",
-  "firstname": "string",
-  "lastname": "string",
-  "status": "active",
-  "tenant": "string",
-  "roles": [
-    {
-      "name": "string",
-      "permissions": [
-        "all"
-      ],
-      "scope": "string"
-    }
-  ],
-  "permissions": [
-    "all"
-  ],
-  "confirmed": true,
-  "img": "string"
+  "id": "string"
 }
 ```
 
@@ -215,9 +196,7 @@ Use the returned `id` in the following request to create the token.
 
 ### Create persistent Service Token
 
-_Path:_
-
-`/api/v1/tokens`
+POST `/api/v1/tokens`
 
 _Request Body:_
 
