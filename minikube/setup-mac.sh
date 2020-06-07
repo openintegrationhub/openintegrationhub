@@ -2,14 +2,60 @@
 
 set -e
 
+# constants
+
+SERVICE_ACCOUNT_USERNAME=test@test.de
+SERVICE_ACCOUNT_PASSWORD=testtest1234
+
+# preserve newlines in substitutions
+IFS=
+
 admin_token=""
 service_account_id=""
 service_account_token=""
+service_account_token_encoded=""
 result=""
 
 function cleanup {
     echo "Cleaing up..."
     sudo -k
+}
+
+function checkTools {
+    needed_tools=( curl kubectl minikube base64 )
+    for i in "${needed_tools[@]}"
+    do
+        if ! type "${i}" > /dev/null; then
+            echo "Please install '${i}' and run this script again"
+            exit 1
+        fi
+    done
+}
+
+function updateHostsFile {
+    ip_address=$(minikube ip)
+    host_names=( app-directory.localoih.com iam.localoih.com skm.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com component-repository.localoih.com dispatcher-service.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com web-ui.localoih.com )
+
+    # https://stackoverflow.com/questions/19339248/append-line-to-etc-hosts-file-with-shell-script/37824076#37824076
+    for host_name in "${host_names[@]}"
+    do
+        # find existing instances in the host file and save the line numbers
+        matches_in_hosts="$(grep -n $host_name /etc/hosts | cut -f1 -d:)"
+        host_entry="${ip_address} ${host_name}"
+
+        if [ ! -z "$matches_in_hosts" ]
+        then
+            echo "Updating existing hosts entry: $host_entry"
+            # iterate over the line numbers on which matches were found
+            while read -r line_number; do
+                # replace the text of each line with the desired host entry
+                sudo sed -i '' "${line_number}s/.*/${host_entry} /" /etc/hosts
+            done <<< "$matches_in_hosts"
+        else
+            echo "Adding new hosts entry: $host_entry"
+            echo "$host_entry" | sudo tee -a /etc/hosts > /dev/null
+        fi
+    done
 }
 
 function waitForServiceStatus {
@@ -21,6 +67,13 @@ function waitForServiceStatus {
         sleep 2
         status=$(curl --write-out %{http_code} --silent --output /dev/null $1)
     done 
+}
+
+function waitForIngress {
+    while [ -z $(kubectl get pods --all-namespaces | grep 'ingress-nginx-controller.*Running') ]; do 
+        echo "Waiting for ingress..."
+        sleep 2
+    done
 }
 
 function postJSON {
@@ -55,12 +108,12 @@ EOM
 function createServiceAccount {
     read -r -d '' JSON << EOM || true
     {
-        "username":"test1@test.de",
+        "username":"$SERVICE_ACCOUNT_USERNAME",
         "firstname":"a",
         "lastname":"b",
         "role":"SERVICE_ACCOUNT",
         "status":"ACTIVE",
-        "password":"asd",
+        "password":"$SERVICE_ACCOUNT_PASSWORD",
         "permissions":[
             "all"
         ]
@@ -68,7 +121,6 @@ function createServiceAccount {
 EOM
     postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
     service_account_id=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
-    echo $service_account_id
 }
 
 function setServiceAccountToken {
@@ -82,96 +134,76 @@ function setServiceAccountToken {
 EOM
     postJSON http://iam.localoih.com/api/v1/tokens "$JSON" "$admin_token"
     service_account_token=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
-    echo $service_account_token
+}
+
+function addTokenToSecret {
+    service_account_token_encoded=$(echo $service_account_token | base64)
+    new_secret=$(cat ./3-Secret/SharedSecret.yaml | python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('REPLACE ME','$service_account_token_encoded'))")
+    echo $new_secret > ./3-Secret/SharedSecret.yaml
+}
+
+function removeTokenFromSecret {
+    new_secret=$(cat ./3-Secret/SharedSecret.yaml | python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('$service_account_token_encoded','REPLACE ME'))")
+    echo $new_secret > ./3-Secret/SharedSecret.yaml
 }
 
 
 trap cleanup EXIT
 
-# echo "WARNING: OIH kubernetes setup will be reseted."
-# sudo -v
+echo "WARNING: OIH kubernetes setup will be reseted."
+sudo -v
 
-# ###
-# ### 1. check for required tools
-# ###
+###
+### 1. check for required tools
+###
 
-# needed_tools=( curl kubectl minikube )
-# for i in "${needed_tools[@]}"
-# do
-# 	if ! type "${i}" > /dev/null; then
-#         echo "Please install '${i}' and run this script again"
-#         exit 1
-#     fi
-# done
+checkTools
 
-# ###
-# ### 2. setup minikube
-# ###
+###
+### 2. setup minikube
+###
 
-# # restart minikube
-# minikube stop
-# minikube start --memory 8192 --cpus 4
+# restart minikube
+minikube stop
+minikube addons enable ingress
+minikube addons enable dashboard
+minikube start --memory 8192 --cpus 4
 
-# # remove oih resources
-# kubectl -n oih-dev-ns delete po,svc,pv,pvc --all
-# kubectl -n flows delete po,svc,pv,pvc --all
+# remove oih resources
+kubectl -n oih-dev-ns delete pods,services,deployments --all
+kubectl -n oih-dev-ns delete pvc --all
+kubectl delete pv local-volume || true
+kubectl delete ns oih-dev-ns || true
 
-# kubectl delete ns oih-dev-ns || true
-# kubectl delete ns flows || true
+kubectl -n flows delete pods,services,deployments --all
+kubectl delete ns flows || true
 
-# minikube addons enable ingress
+###
+### 3. insert/update hosts entries
+###
 
-# ###
-# ### 3. insert/update hosts entries
-# ###
+updateHostsFile
 
-# ip_address=$(minikube ip)
-# host_names=( app-directory.localoih.com iam.localoih.com skm.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com component-repository.localoih.com dispatcher-service.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com web-ui.localoih.com )
+waitForIngress
 
-# # https://stackoverflow.com/questions/19339248/append-line-to-etc-hosts-file-with-shell-script/37824076#37824076
-# for host_name in "${host_names[@]}"
-# do
-#     # find existing instances in the host file and save the line numbers
-#     matches_in_hosts="$(grep -n $host_name /etc/hosts | cut -f1 -d:)"
-#     host_entry="${ip_address} ${host_name}"
+###
+### 4. deploy platform base
+###
 
-#     if [ ! -z "$matches_in_hosts" ]
-#     then
-#         echo "Updating existing hosts entry."
-#         # iterate over the line numbers on which matches were found
-#         while read -r line_number; do
-#             # replace the text of each line with the desired host entry
-#             sudo sed -i '' "${line_number}s/.*/${host_entry} /" /etc/hosts
-#         done <<< "$matches_in_hosts"
-#     else
-#         echo "Adding new hosts entry."
-#         echo "$host_entry" | sudo tee -a /etc/hosts > /dev/null
-#     fi
-# done
+kubectl apply -f ./1-Platform
 
-# # TODO: better check for ingress status READY ?
-# waitForServiceStatus "http://$ip_address" "404"
+###
+### 5. deploy IAM
+###
 
-# ###
-# ### 4. deploy platform base
-# ###
-
-# kubectl apply -f ./1-Platform
-
-# ###
-# ### 5. deploy IAM
-# ###
-
-# kubectl apply -f ./2-IAM
-# waitForServiceStatus "http://iam.localoih.com" "200"
+kubectl apply -f ./2-IAM
+waitForServiceStatus "http://iam.localoih.com" "200"
 
 ###
 ### 6. set admin token
 ###
 
 setAdminToken
-
-echo $admin_token
 
 ###
 ### 7. setup service account
@@ -184,6 +216,20 @@ setServiceAccountToken
 ### 8. replace token in secret and apply settings
 ###
 
-sed -i -e 's/REPLACE ME/$serviceAccountToken/g' ./SharedSecret
+addTokenToSecret
+kubectl apply -f ./3-Secret
+removeTokenFromSecret
+
+###
+### 9. deploy framework services
+###
+
+kubectl apply -Rf ./4-Services
+
+###
+### 10. open dashboard
+###
+
+minikube dashboard
 
 sudo -k
