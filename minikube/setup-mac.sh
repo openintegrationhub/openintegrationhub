@@ -14,6 +14,8 @@ admin_token=""
 service_account_id=""
 service_account_token=""
 service_account_token_encoded=""
+timer_component_id=""
+node_component_id=""
 result=""
 
 function cleanup {
@@ -149,6 +151,76 @@ function removeTokenFromSecret {
     echo $new_secret > ./3-Secret/SharedSecret.yaml
 }
 
+function createTimerComponent {
+    read -r -d '' JSON << EOM || true
+    {
+        "data": {
+            "distribution":{
+                "type":"docker",
+                "image":"elasticio/timer:ca9a6fea391ffa8f7c8593bd2a04143212ab63f6"
+            },
+            "access":"public",
+            "name":"Timer",
+            "description":"Timer component that periodically triggers flows on a given interval"
+        }
+    }
+EOM
+    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
+    timer_component_id=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+}
+
+function createNodeComponent {
+    read -r -d '' JSON << EOM || true
+    {
+        "data": {
+            "distribution": {
+                "type": "docker",
+                "image": "elasticio/code-component:7bc2535df2f8a35c3653455e5becc701b010d681"
+            },
+            "access": "public",
+            "name": "Node.js code",
+            "description": "Node.js code component that executes the provided code"
+        }
+    }
+EOM
+    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
+    node_component_id=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+}
+
+function createFlow {
+    read -r -d '' JSON << EOM || true
+    {
+        "name":"Timer To Code Component Example",
+        "description:": "This flow periodically triggers the flow and sends request to webhook.site",
+        "graph":{
+            "nodes":[
+                {
+                "id":"step_1",
+                "componentId":"$timer_component_id",
+                "function":"timer"
+                },
+                {
+                "id":"step_2",
+                "componentId":"$node_component_id",
+                "function":"execute",
+                "fields":{
+                    "code":"function* run() {console.log('Calling external URL');yield request.post({uri: 'ADD WEBHOOK URL HERE', body: msg, json: true});}"
+                }
+                }
+            ],
+            "edges":[
+                {
+                "source":"step_1",
+                "target":"step_2"
+                }
+            ]
+        },
+        "cron":"*/2 * * * *"
+    }
+EOM
+    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+    node_component_id=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+}
 
 trap cleanup EXIT
 
@@ -228,7 +300,17 @@ removeTokenFromSecret
 kubectl apply -Rf ./4-Services
 
 ###
-### 10. open dashboard
+### 10. add example components and flow
+###
+
+waitForServiceStatus http://component-repository.localoih.com/components 401
+createTimerComponent
+createNodeComponent
+waitForServiceStatus http://flow-repository.localoih.com/flows 401
+createFlow
+
+###
+### 11. open dashboard
 ###
 
 minikube dashboard
