@@ -185,7 +185,6 @@ kubectl delete ns flows || true
 ###
 
 updateHostsFile
-
 waitForIngress
 
 ###
