@@ -22,7 +22,7 @@ function cleanup {
 }
 
 function checkTools {
-    needed_tools=( curl kubectl minikube base64 )
+    needed_tools=( curl kubectl minikube base64 python3 )
     for i in "${needed_tools[@]}"
     do
         if ! type "${i}" > /dev/null; then
@@ -70,9 +70,11 @@ function waitForServiceStatus {
 }
 
 function waitForIngress {
-    while [ -z $(kubectl get pods --all-namespaces | grep 'ingress-nginx-controller.*Running') ]; do 
+    ingress_status=$(kubectl get pods --all-namespaces || true);
+    while [ -z "$(grep 'ingress-nginx-controller.*Running' <<< $ingress_status)" ]; do 
         echo "Waiting for ingress..."
         sleep 2
+        ingress_status=$(kubectl get pods --all-namespaces || true);
     done
 }
 
@@ -137,7 +139,7 @@ EOM
 }
 
 function addTokenToSecret {
-    service_account_token_encoded=$(echo $service_account_token | base64)
+    service_account_token_encoded=$(echo -n $service_account_token | base64)
     new_secret=$(cat ./3-Secret/SharedSecret.yaml | python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('REPLACE ME','$service_account_token_encoded'))")
     echo $new_secret > ./3-Secret/SharedSecret.yaml
 }
