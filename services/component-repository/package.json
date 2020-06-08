@@ -2,7 +2,7 @@
   "name": "component-repository",
   "description": "Component repository",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=8"
@@ -18,15 +18,16 @@
   },
   "dependencies": {
     "@openintegrationhub/component-repository": "*",
-    "@openintegrationhub/event-bus": "*",
+    "@openintegrationhub/event-bus": "^1.1.3",
     "backend-commons-lib": "*",
-    "dotenv": "8.2.0"
+    "bunyan": "^1.8.12",
+    "dotenv": "^8.2.0"
   },
   "devDependencies": {
     "chai": "4.2.0",
     "eslint": "4.18.2",
-    "eslint-plugin-mocha": "4.12.1",
-    "eslint-plugin-node": "6.0.1",
+    "eslint-plugin-mocha": "^4.12.1",
+    "eslint-plugin-node": "^6.0.1",
     "mocha": "6.0.1",
     "sinon": "7.2.4",
     "sinon-chai": "3.3.0"
