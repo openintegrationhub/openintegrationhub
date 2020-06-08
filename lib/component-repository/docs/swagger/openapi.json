@@ -1,261 +1,341 @@
 {
-  "openapi" : "3.0.0",
-  "info" : {
-    "description" : "Component repository is a service used to manage components in the Open Integration Hub.",
-    "version" : "1.0.0",
-    "title" : "Component Repository",
-    "license" : {
-      "name" : "Apache 2.0",
-      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Component repository is a service used to manage components in the Open Integration Hub.",
+    "version": "1.0.0",
+    "title": "Component Repository",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "tags" : [ {
-    "name" : "components",
-    "description" : "Component management"
-  } ],
-  "paths" : {
-    "/components/" : {
-      "get" : {
-        "tags" : [ "components" ],
-        "summary" : "Retrieve all components",
-        "description" : "Retrieve all components from the repository.",
-        "operationId" : "getComponents",
-        "parameters" : [ {
-          "name" : "page[size]",
-          "description" : "The amount of components per page returned. Defaults to 50.",
-          "in" : "query",
-          "schema" : {
-            "type" : "integer"
+  "tags": [{
+    "name": "components",
+    "description": "Component management"
+  }],
+  "paths": {
+    "/components/": {
+      "get": {
+        "tags": ["components"],
+        "summary": "Retrieve all components",
+        "description": "Retrieve all components from the repository.",
+        "operationId": "getComponents",
+        "parameters": [{
+          "name": "page[size]",
+          "description": "The amount of components per page returned. Defaults to 50.",
+          "in": "query",
+          "schema": {
+            "type": "integer"
           }
         }, {
-          "name" : "page[number]",
-          "description" : "The number of the page to be returned. Defaults to 1.",
-          "in" : "query",
-          "schema" : {
-            "type" : "integer"
+          "name": "page[number]",
+          "description": "The number of the page to be returned. Defaults to 1.",
+          "in": "query",
+          "schema": {
+            "type": "integer"
           }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "object",
-                  "properties" : {
-                    "data" : {
-                      "type" : "array",
-                      "items" : {
-                        "$ref" : "#/components/schemas/MutableComponent"
+        }],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MutableComponent"
                       }
                     },
-                    "meta" : {
-                      "$ref" : "#/components/schemas/Meta"
+                    "meta": {
+                      "$ref": "#/components/schemas/Meta"
                     }
                   }
                 }
               }
             }
           },
-          "401" : {
-            "$ref" : "#/components/responses/UnauthorizedError"
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           }
         }
       },
-      "post" : {
-        "tags" : [ "components" ],
-        "summary" : "Create a component",
-        "description" : "Create a component",
-        "operationId" : "createComponent",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "object",
-                "properties" : {
-                  "data" : {
-                    "$ref" : "#/components/schemas/MutableComponent"
+      "post": {
+        "tags": ["components"],
+        "summary": "Create a component",
+        "description": "Create a component",
+        "operationId": "createComponent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/MutableComponent"
                   }
                 }
               }
             }
           }
         },
-        "responses" : {
-          "201" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "object",
-                  "properties" : {
-                    "data" : {
-                      "$ref" : "#/components/schemas/MutableComponent"
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MutableComponent"
                     }
                   }
                 }
               }
             }
           },
-          "401" : {
-            "$ref" : "#/components/responses/UnauthorizedError"
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           }
         }
       }
     },
-    "/components/{id}" : {
-      "get" : {
-        "tags" : [ "components" ],
-        "summary" : "Find component by ID",
-        "description" : "Returns a component with given ID",
-        "operationId" : "getComponentById",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "ID of component to return",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
+    "/components/{id}": {
+      "get": {
+        "tags": ["components"],
+        "summary": "Find component by ID",
+        "description": "Returns a component with given ID",
+        "operationId": "getComponentById",
+        "parameters": [{
+          "name": "id",
+          "in": "path",
+          "description": "ID of component to return",
+          "required": true,
+          "schema": {
+            "type": "string"
           }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "object",
-                  "properties" : {
-                    "data" : {
-                      "$ref" : "#/components/schemas/MutableComponent"
+        }],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MutableComponent"
                     }
                   }
                 }
               }
             }
           },
-          "400" : {
-            "description" : "Invalid ID supplied"
+          "400": {
+            "description": "Invalid ID supplied"
           },
-          "401" : {
-            "$ref" : "#/components/responses/UnauthorizedError"
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           },
-          "404" : {
-            "description" : "Component with given ID not found"
+          "404": {
+            "description": "Component with given ID not found"
           }
         }
       },
-      "patch" : {
-        "tags" : [ "components" ],
-        "summary" : "Update a component",
-        "description" : "Update a component",
-        "operationId" : "updateComponent",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "ID of component to update",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
+      "patch": {
+        "tags": ["components"],
+        "summary": "Update a component",
+        "description": "Update a component",
+        "operationId": "updateComponent",
+        "parameters": [{
+          "name": "id",
+          "in": "path",
+          "description": "ID of component to update",
+          "required": true,
+          "schema": {
+            "type": "string"
           }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "object",
-                "properties" : {
-                  "data" : {
-                    "$ref" : "#/components/schemas/MutableComponent"
+        }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/MutableComponent"
                   }
                 }
               }
             }
           }
         },
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "object",
-                  "properties" : {
-                    "data" : {
-                      "$ref" : "#/components/schemas/MutableComponent"
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MutableComponent"
                     }
                   }
                 }
               }
             }
           },
-          "401" : {
-            "$ref" : "#/components/responses/UnauthorizedError"
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           },
-          "404" : {
-            "description" : "Component with given ID not found"
+          "404": {
+            "description": "Component with given ID not found"
           }
         }
       },
-      "delete" : {
-        "tags" : [ "components" ],
-        "summary" : "Delete a component",
-        "description" : "Delete a component",
-        "operationId" : "deleteComponent",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "ID of component to update",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
+      "delete": {
+        "tags": ["components"],
+        "summary": "Delete a component",
+        "description": "Delete a component",
+        "operationId": "deleteComponent",
+        "parameters": [{
+          "name": "id",
+          "in": "path",
+          "description": "ID of component to update",
+          "required": true,
+          "schema": {
+            "type": "string"
           }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "The component was deleted successfully"
+        }],
+        "responses": {
+          "204": {
+            "description": "The component was deleted successfully"
           },
-          "401" : {
-            "$ref" : "#/components/responses/UnauthorizedError"
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           },
-          "404" : {
-            "description" : "Component with given ID not found"
+          "404": {
+            "description": "Component with given ID not found"
+          }
+        }
+      }
+    },
+    "/components/global/{id}/start": {
+      "post": {
+        "tags": ["components"],
+        "summary": "Start a global component by ID",
+        "description": "Returns a success message",
+        "operationId": "startGlobalComponentById",
+        "parameters": [{
+          "name": "id",
+          "in": "path",
+          "description": "ID of global component to start",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/GlobalComponentStart"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "Component with given ID not found"
+          }
+        }
+      }
+    },
+    "/components/global/{id}/stop": {
+      "post": {
+        "tags": ["components"],
+        "summary": "Stop a global component by ID",
+        "description": "Returns a success message",
+        "operationId": "stopGlobalComponentById",
+        "parameters": [{
+          "name": "id",
+          "in": "path",
+          "description": "ID of global component to stop",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/GlobalComponentStop"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "Component with given ID not found"
           }
         }
       }
     }
   },
-  "components" : {
-    "securitySchemes" : {
-      "bearerAuth" : {
-        "type" : "http",
-        "scheme" : "bearer",
-        "description" : "Token issued by IAM"
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token issued by IAM"
       }
     },
-    "responses" : {
-      "UnauthorizedError" : {
-        "description" : "Access token is missing or invalid"
+    "responses": {
+      "UnauthorizedError": {
+        "description": "Access token is missing or invalid"
       }
     },
-    "schemas" : {
-      "MutableComponent" : {
-        "type" : "object",
-        "required" : [ "name", "distribution" ],
-        "properties" : {
-          "name" : {
-            "type" : "string",
-            "example" : "My Component"
+    "schemas": {
+      "MutableComponent": {
+        "type": "object",
+        "required": ["name", "distribution"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Component"
           },
-          "description" : {
-            "type" : "string",
-            "example" : "My Component"
+          "description": {
+            "type": "string",
+            "example": "My Component"
           },
-          "access" : {
-            "type" : "string",
-            "enum" : [ "private", "public" ],
-            "default" : "private",
-            "example" : "public"
+          "access": {
+            "type": "string",
+            "enum": ["private", "public"],
+            "default": "private",
+            "example": "public"
           },
           "applicationUid": {
             "type": "string",
@@ -267,110 +347,136 @@
             "description": "Component Logo URL",
             "example": "https://my-component.com/logo.png"
           },
-          "descriptor" : {
-            "type" : "object",
-            "description" : "Component descriptor (component.json) which contains a component meta information."
+          "descriptor": {
+            "type": "object",
+            "description": "Component descriptor (component.json) which contains a component meta information."
           },
-          "distribution" : {
-            "$ref" : "#/components/schemas/ComponentDistribution"
+          "distribution": {
+            "$ref": "#/components/schemas/ComponentDistribution"
           },
-          "owners" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/Owner"
+          "owners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Owner"
             }
           }
         }
       },
-      "ComponentDistribution" : {
-        "allOf" : [ {
-          "type" : "object",
-          "required" : [ "type" ],
-          "properties" : {
-            "type" : {
-              "type" : "string",
-              "enum" : [ "docker", "slug" ]
+      "ComponentDistribution": {
+        "allOf": [{
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["docker", "slug"]
             }
           }
         }, {
-          "oneOf" : [ {
-            "$ref" : "#/components/schemas/ComponentDockerDistribution"
+          "oneOf": [{
+            "$ref": "#/components/schemas/ComponentDockerDistribution"
           }, {
-            "$ref" : "#/components/schemas/ComponentSlugDistribution"
-          } ]
-        } ],
-        "example" : {
-          "type" : "docker",
-          "image" : "openintegrationhub/email",
-          "registrySecretId" : "5b62c919fd98ea00112d52e7"
+            "$ref": "#/components/schemas/ComponentSlugDistribution"
+          }]
+        }],
+        "example": {
+          "type": "docker",
+          "image": "openintegrationhub/email",
+          "registrySecretId": "5b62c919fd98ea00112d52e7"
         }
       },
-      "ComponentDockerDistribution" : {
-        "type" : "object",
-        "required" : [ "image" ],
-        "properties" : {
-          "image" : {
-            "type" : "string",
-            "description" : "Docker image",
-            "example" : "openintegrationhub/email:v1.0.0"
+      "ComponentDockerDistribution": {
+        "type": "object",
+        "required": ["image"],
+        "properties": {
+          "image": {
+            "type": "string",
+            "description": "Docker image",
+            "example": "openintegrationhub/email:v1.0.0"
           },
-          "registrySecretId" : {
-            "type" : "string",
-            "description" : "ID of a secret, which contains Docker registry credentials",
-            "example" : "5b62c919fd98ea00112d52e7"
+          "registrySecretId": {
+            "type": "string",
+            "description": "ID of a secret, which contains Docker registry credentials",
+            "example": "5b62c919fd98ea00112d52e7"
           }
         }
       },
-      "ComponentSlugDistribution" : {
-        "type" : "object",
-        "required" : [ "slugUrl" ],
-        "properties" : {
-          "slugUrl" : {
-            "type" : "string",
-            "description" : "URL to a slug, containing a compomponent source code"
+      "ComponentSlugDistribution": {
+        "type": "object",
+        "required": ["slugUrl"],
+        "properties": {
+          "slugUrl": {
+            "type": "string",
+            "description": "URL to a slug, containing a compomponent source code"
           }
         }
       },
-      "Owner" : {
-        "type" : "object",
-        "required" : [ "id", "type" ],
-        "properties" : {
-          "id" : {
-            "type" : "string",
-            "description" : "External id of the owner",
-            "example" : "123"
+      "Owner": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "External id of the owner",
+            "example": "123"
           },
-          "type" : {
-            "type" : "string",
-            "description" : "Type to discriminate owner's type",
-            "example" : "user"
+          "type": {
+            "type": "string",
+            "description": "Type to discriminate owner's type",
+            "example": "user"
           }
         }
       },
-      "Meta" : {
-        "type" : "object",
-        "properties" : {
-          "page" : {
-            "type" : "integer",
-            "description" : "Current page (1-based numbering)"
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page (1-based numbering)"
           },
-          "perPage" : {
-            "type" : "integer",
-            "description" : "Number of objects per page"
+          "perPage": {
+            "type": "integer",
+            "description": "Number of objects per page"
           },
-          "total" : {
-            "type" : "integer",
-            "description" : "Total number of objects"
+          "total": {
+            "type": "integer",
+            "description": "Total number of objects"
           },
-          "totalPages" : {
-            "type" : "integer",
-            "description" : "Total number of pages"
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of pages"
+          }
+        }
+      },
+      "GlobalComponentStart": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Component started"
+          },
+          "code": {
+            "type": "string",
+            "example": 200
+          }
+        }
+      },
+      "GlobalComponentStop": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Component stopped"
+          },
+          "code": {
+            "type": "string",
+            "example": 200
           }
         }
       }
     }
   },
-  "security" : [ {
-    "bearerAuth" : [ ]
-  } ]
+  "security": [{
+    "bearerAuth": []
+  }]
 }
