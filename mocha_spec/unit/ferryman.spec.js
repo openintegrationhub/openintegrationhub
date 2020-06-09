@@ -11,7 +11,7 @@ const Settings = require('../../lib/settings');
 const amqp = require('../../lib/amqp.js');
 const encryptor = require('../../lib/encryptor.js');
 
-describe('Ferryman', () => {
+describe.only('Ferryman', () => {
     let settings;
     let sandbox;
     let envVars;
@@ -196,7 +196,9 @@ describe('Ferryman', () => {
                         workspaceId: '5559edd38968ec073600683',
                         threadId: uuid.v4(),
                         messageId: uuid.v4(),
-                        parentMessageId: uuid.v4()
+                        parentMessageId: uuid.v4(),
+                        taskId: '5559edd38968ec0736000003',
+                        stepId: 'step_1'
                     },
                     deliveryMode: undefined,
                     priority: undefined,
