@@ -459,7 +459,7 @@ describe.only('Ferryman', () => {
                 settings.NO_SELF_PASSTRHOUGH = true;
                 const ferryman = new Ferryman(settings);
 
-                sandbox.stub(Ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
+                sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
                     expect(taskId).to.deep.equal('5559edd38968ec0736000003');
                     expect(stepId).to.deep.equal('step_1');
                     return Promise.resolve({ is_passthrough: true });
