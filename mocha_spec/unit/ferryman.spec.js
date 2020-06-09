@@ -168,7 +168,7 @@ describe('Ferryman', () => {
         beforeEach(() => {
             fakeAMQPConnection = {
                 connect: sandbox.stub(),
-                sendData: sandbox.stub(),
+                sendBackChannel: sandbox.stub(),
                 sendError: sandbox.stub(),
                 sendRebound: sandbox.stub(),
                 ack: sandbox.stub(),
@@ -215,7 +215,7 @@ describe('Ferryman', () => {
             };
         });
 
-        it('should call sendData() and ack() if success', async () => {
+        it('should call sendBackChannel() and ack() if success', async () => {
             settings.FUNCTION = 'data_trigger';
             const ferryman = new Ferryman(settings);
 
@@ -231,7 +231,7 @@ describe('Ferryman', () => {
             await ferryman.processMessage(payload, message);
             expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(2);
             expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-            expect(fakeAMQPConnection.sendData).to.have.been.calledOnce.and.calledWith(
+            expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
                 { items: [1, 2, 3, 4, 5, 6] },
                 sinon.match({
                     'cid': 1,
@@ -255,7 +255,7 @@ describe('Ferryman', () => {
             expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
         });
 
-        it('should call sendData() with extended headers', async () => {
+        it('should call sendBackChannel() with extended headers', async () => {
 
             const customVars = {
                 ELASTICIO_ADDITIONAL_VARS_FOR_HEADERS: 'ELASTICIO_FIRST, ELASTICIO_SECOND_ELASTICIO_ENV,'
@@ -281,7 +281,7 @@ describe('Ferryman', () => {
             await ferryman.processMessage(payload, message);
             expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(2);
             expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-            expect(fakeAMQPConnection.sendData).to.have.been.calledOnce.and.calledWith(
+            expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
                 { items: [1, 2, 3, 4, 5, 6] },
                 sinon.match({
                     'first': 'first',
@@ -304,7 +304,7 @@ describe('Ferryman', () => {
             );
         });
 
-        it('should call sendData() and ack() only once', async () => {
+        it('should call sendBackChannel() and ack() only once', async () => {
             settings.FUNCTION = 'end_after_data_twice';
             const ferryman = new Ferryman(settings);
 
@@ -319,7 +319,7 @@ describe('Ferryman', () => {
             await ferryman.processMessage(payload, message);
             expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(2);
             expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-            expect(fakeAMQPConnection.sendData).to.have.been.calledOnce;
+            expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce;
             expect(fakeAMQPConnection.reject).not.to.have.been.called;
             expect(fakeAMQPConnection.ack).to.have.been.calledOnce;
         });
@@ -348,7 +348,7 @@ describe('Ferryman', () => {
             await ferryman.processMessage(psPayload, message);
             expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(2);
             expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-            expect(fakeAMQPConnection.sendData).to.have.been.calledOnce.and.calledWith(
+            expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
                 {
                     body: {
                         param1: 'Value1'
@@ -412,7 +412,7 @@ describe('Ferryman', () => {
                 await ferryman.processMessage(psPayload, message);
                 expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(2);
                 expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-                expect(fakeAMQPConnection.sendData).to.have.been.calledOnce.and.calledWith(
+                expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
                     {
                         body: {
                             param1: 'Value1'
@@ -477,7 +477,7 @@ describe('Ferryman', () => {
                 await ferryman.processMessage(psPayload, message);
                 expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(2);
                 expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-                expect(fakeAMQPConnection.sendData).to.have.been.calledOnce.and.calledWith(
+                expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
                     {
                         body: {
                             param1: 'Value1'
@@ -534,7 +534,7 @@ describe('Ferryman', () => {
             await ferryman.connect();
             await ferryman.prepare();
             await ferryman.processMessage(psPayload, message);
-            expect(fakeAMQPConnection.sendData).to.have.been.calledOnce.and.calledWith(sinon.match({
+            expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(sinon.match({
                 body: {
                     var1: 'val1',
                     var2: 'val2'
@@ -839,7 +839,7 @@ describe('Ferryman', () => {
             expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
 
             // data
-            expect(fakeAMQPConnection.sendData).to.have.callCount(3);
+            expect(fakeAMQPConnection.sendBackChannel).to.have.callCount(3);
 
             // error
             expect(fakeAMQPConnection.sendError).to.have.callCount(2);
@@ -887,7 +887,7 @@ describe('Ferryman', () => {
                 })
             );
 
-            expect(fakeAMQPConnection.sendData).to.have.been.calledOnce.and.calledWith(
+            expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
                 {
                     body: {}
                 },
@@ -955,7 +955,7 @@ describe('Ferryman', () => {
                 })
             );
 
-            expect(fakeAMQPConnection.sendData).not.to.have.been.called;
+            expect(fakeAMQPConnection.sendBackChannel).not.to.have.been.called;
             expect(fakeAMQPConnection.ack).not.to.have.been.called;
 
             // error
