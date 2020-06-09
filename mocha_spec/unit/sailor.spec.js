@@ -506,7 +506,7 @@ describe('Sailor', () => {
             }
         );
 
-        it('should provide access to flow vairables', async () => {
+        it('should provide access to flow variables', async () => {
             settings.FUNCTION = 'use_flow_variables';
             const sailor = new Sailor(settings);
 

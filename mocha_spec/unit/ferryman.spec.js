@@ -511,7 +511,7 @@ describe('Ferryman', () => {
             }
         );
 
-        it('should provide access to flow vairables', async () => {
+        it('should provide access to flow variables', async () => {
             settings.FUNCTION = 'use_flow_variables';
             const ferryman = new Ferryman(settings);
 
