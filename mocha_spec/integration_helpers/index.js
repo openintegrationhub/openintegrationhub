@@ -33,6 +33,9 @@ class AmqpHelper extends EventEmitter {
     prepareEnv() {
         env.ELASTICIO_LISTEN_MESSAGES_ON = PREFIX + ':messages';
         env.ELASTICIO_PUBLISH_MESSAGES_TO = PREFIX + ':exchange';
+
+        env.ELASTICIO_BACK_CHANNEL = PREFIX + ':back_channel';
+
         env.ELASTICIO_DATA_ROUTING_KEY = PREFIX + ':routing_key:message';
         env.ELASTICIO_ERROR_ROUTING_KEY = PREFIX + ':routing_key:error';
         env.ELASTICIO_REBOUND_ROUTING_KEY = PREFIX + ':routing_key:rebound';
@@ -69,9 +72,15 @@ class AmqpHelper extends EventEmitter {
         const amqp = yield amqplib.connect(env.ELASTICIO_AMQP_URI);
         this._amqp = amqp;
         const subscriptionChannel = yield amqp.createChannel();
+
+        const backChannel = yield amqp.createChannel();
+
         const publishChannel = yield amqp.createChannel();
 
         yield subscriptionChannel.assertQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
+
+        yield backChannel.assertQueue(env.ELASTICIO_BACK_CHANNEL);
+
         yield publishChannel.assertQueue(this.nextStepQueue);
         yield publishChannel.assertQueue(this.nextStepErrorQueue);
 
@@ -83,9 +92,16 @@ class AmqpHelper extends EventEmitter {
         yield subscriptionChannel.assertExchange(env.ELASTICIO_LISTEN_MESSAGES_ON, 'direct', exchangeOptions);
         yield publishChannel.assertExchange(env.ELASTICIO_PUBLISH_MESSAGES_TO, 'direct', exchangeOptions);
 
+        yield backChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
+
         yield subscriptionChannel.bindQueue(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_LISTEN_MESSAGES_ON,
+            env.ELASTICIO_DATA_ROUTING_KEY);
+
+        yield backChannel.bindQueue(
+            env.ELASTICIO_BACK_CHANNEL,
+            env.ELASTICIO_BACK_CHANNEL,
             env.ELASTICIO_DATA_ROUTING_KEY);
 
         yield publishChannel.bindQueue(
@@ -109,7 +125,12 @@ class AmqpHelper extends EventEmitter {
         yield publishChannel.purgeQueue(this.httpReplyQueueName);
         yield publishChannel.purgeQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
+        yield publishChannel.purgeQueue(env.BACK_CHANNEL);
+
         this.subscriptionChannel = subscriptionChannel;
+
+        this.backChannel = backChannel;
+
         this.publishChannel = publishChannel;
     }
 
