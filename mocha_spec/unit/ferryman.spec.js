@@ -409,6 +409,8 @@ describe.only('Ferryman', () => {
                     }
                 };
 
+                console.log('psPayload', JSON.stringify(psPayload));
+
                 await ferryman.connect();
                 await ferryman.prepare();
                 await ferryman.processMessage(psPayload, message);
@@ -425,7 +427,7 @@ describe.only('Ferryman', () => {
                                     key: 'value'
                                 }
                             },
-                            step_0: {
+                            step_1: {
                                 body: { param1: 'Value1' }
                             }
                         }
@@ -473,6 +475,8 @@ describe.only('Ferryman', () => {
                         }
                     }
                 };
+
+                console.log('psPayload', JSON.stringify(psPayload));
 
                 await ferryman.connect();
                 await ferryman.prepare();
