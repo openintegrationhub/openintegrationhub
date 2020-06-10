@@ -581,7 +581,7 @@ describe.only('Integration Test for globalRun', () => {
                             let hooksDataRequest;
                             const hooksDataNock = nock(env.ELASTICIO_API_URI)
                                 .matchHeader('Connection', 'Keep-Alive')
-                                .post('/ferryman-support/hooks/task/5559edd38968ec0736000003/startup/data', {
+                                .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                                     subscriptionResult: {
                                         status: 'ok'
                                     }
@@ -682,7 +682,7 @@ describe.only('Integration Test for globalRun', () => {
                             // ferryman persists startup data via ferryman-support API
                             const hooksDataNock1 = nock(env.ELASTICIO_API_URI)
                                 .matchHeader('Connection', 'Keep-Alive')
-                                .post('/ferryman-support/hooks/task/5559edd38968ec0736000003/startup/data', {
+                                .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                                     subscriptionResult: {
                                         status: 'ok'
                                     }
@@ -699,13 +699,13 @@ describe.only('Integration Test for globalRun', () => {
                             // ferryman removes data in order to resolve conflict
                             const hooksDataDeleteNock = nock(env.ELASTICIO_API_URI)
                                 .matchHeader('Connection', 'Keep-Alive')
-                                .delete('/ferryman-support/hooks/task/5559edd38968ec0736000003/startup/data')
+                                .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                                 .reply(204);
 
                             // ferryman persists startup data via ferryman-support API
                             const hooksDataNock2 = nock(env.ELASTICIO_API_URI)
                                 .matchHeader('Connection', 'Keep-Alive')
-                                .post('/ferryman-support/hooks/task/5559edd38968ec0736000003/startup/data', {
+                                .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {
                                     subscriptionResult: {
                                         status: 'ok'
                                     }
@@ -814,13 +814,13 @@ describe.only('Integration Test for globalRun', () => {
                             // ferryman persists startup data via ferryman-support API
                             const hooksDataNock = nock(env.ELASTICIO_API_URI)
                                 .matchHeader('Connection', 'Keep-Alive')
-                                .post('/ferryman-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
+                                .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
                                 .reply(201);
 
                             // ferryman removes data in order to resolve conflict
                             const hooksDataDeleteNock = nock(env.ELASTICIO_API_URI)
                                 .matchHeader('Connection', 'Keep-Alive')
-                                .delete('/ferryman-support/hooks/task/5559edd38968ec0736000003/startup/data')
+                                .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                                 .reply(400);
 
                             // response for a subscription request, which performed inside of init method
@@ -898,7 +898,7 @@ describe.only('Integration Test for globalRun', () => {
                             // ferryman persists startup data via ferryman-support API
                             const hooksDataNock = nock(env.ELASTICIO_API_URI)
                                 .matchHeader('Connection', 'Keep-Alive')
-                                .post('/ferryman-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
+                                .post('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data', {})
                                 .reply(201);
 
                             // response for a subscription request, which performed inside of init method
@@ -1175,13 +1175,13 @@ describe.only('Integration Test for globalRun', () => {
                 // ferryman retrieves startup data via ferryman-support API
                 const hooksDataGetNock = nock(ferrymanSettings.API_URI)
                     .matchHeader('Connection', 'Keep-Alive')
-                    .get('/ferryman-support/hooks/task/5559edd38968ec0736000003/startup/data')
+                    .get('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                     .reply(200, subsriptionResponse);
 
                 // ferryman removes startup data via ferryman-support API
                 const hooksDataDeleteNock = nock(ferrymanSettings.API_URI)
                     .matchHeader('Connection', 'Keep-Alive')
-                    .delete('/ferryman-support/hooks/task/5559edd38968ec0736000003/startup/data')
+                    .delete('/sailor-support/hooks/task/5559edd38968ec0736000003/startup/data')
                     .reply(204);
 
                 helpers.mockApiTaskStepResponse();
