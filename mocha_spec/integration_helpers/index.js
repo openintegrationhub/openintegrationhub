@@ -65,8 +65,9 @@ class AmqpHelper extends EventEmitter {
         }
 
         if (backChannel === true) {
+            console.log('backChannel.publish');
             return this.backChannel.publish(
-                env.ELASTICIO_LISTEN_MESSAGES_ON,
+                env.ELASTICIO_BACK_CHANNEL,
                 routingKey,
                 encryptor.encryptMessageContent(
                     message,
@@ -125,7 +126,7 @@ class AmqpHelper extends EventEmitter {
         yield backChannel.bindQueue(
             env.ELASTICIO_BACK_CHANNEL,
             env.ELASTICIO_BACK_CHANNEL,
-            env.ELASTICIO_DATA_ROUTING_KEY);
+            '*');
 
         yield publishChannel.bindQueue(
             this.nextStepQueue,
@@ -148,7 +149,7 @@ class AmqpHelper extends EventEmitter {
         yield publishChannel.purgeQueue(this.httpReplyQueueName);
         yield publishChannel.purgeQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
-        yield publishChannel.purgeQueue(env.BACK_CHANNEL);
+        yield backChannel.purgeQueue(env.ELASTICIO_BACK_CHANNEL);
 
         this.subscriptionChannel = subscriptionChannel;
 
