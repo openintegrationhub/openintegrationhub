@@ -96,13 +96,18 @@ describe.only('Integration Test for globalRun', () => {
 
                     runner = requireRun();
 
-                    console.log('publish!!', parentMessageId, threadId);
-                    await amqpHelper.publishMessage(inputMessage, {
-                        parentMessageId,
-                        threadId
-                    });
+                    console.log('publish:', parentMessageId, threadId);
+                    // message, { parentMessageId, threadId } = {}, headers = {}, backChannel
+                    await amqpHelper.publishMessage(inputMessage,
+                        {
+                            parentMessageId,
+                            threadId
+                        },
+                        {},
+                        true
+                    );
 
-                    console.log('This!!', message, queueNames);
+                    console.log('Step2', message, queueNames);
                     const [{ message, queueName }] = await Promise.all([
                         new Promise(resolve => amqpHelper.on(
                             'data',
@@ -186,7 +191,8 @@ describe.only('Integration Test for globalRun', () => {
                         },
                         {
                             protocolVersion: 2
-                        }
+                        },
+                        true,
                     );
 
                     runner = requireRun();
@@ -284,7 +290,7 @@ describe.only('Integration Test for globalRun', () => {
                     await amqpHelper.publishMessage(psMsg, {
                         parentMessageId,
                         threadId
-                    });
+                    },{}, true);
 
                     runner = requireRun();
 
@@ -380,7 +386,7 @@ describe.only('Integration Test for globalRun', () => {
                         await amqpHelper.publishMessage(psMsg, {
                             parentMessageId,
                             threadId
-                        });
+                        },{}, true);
 
                         runner = requireRun();
 
