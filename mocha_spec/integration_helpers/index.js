@@ -63,7 +63,7 @@ class AmqpHelper extends EventEmitter {
         console.log('message', message);
         if ('x-eio-routing-key' in message.headers) {
             routingKey = message.properties.headers['x-eio-routing-key'];
-            msgHeaders['x-eio-routing-key'] = message.properties.headers['x-eio-routing-key'];
+            // msgHeaders['x-eio-routing-key'] = message.properties.headers['x-eio-routing-key'];
         }
 
 
