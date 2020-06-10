@@ -17,7 +17,7 @@ function requireRun() {
     delete require.cache[resolved];
     return require(path);
 }
-describe('Integration Test for globalRun', () => {
+describe.only('Integration Test for globalRun', () => {
     const customers = [
         {
             name: 'Homer Simpson'
@@ -32,7 +32,8 @@ describe('Integration Test for globalRun', () => {
     beforeEach(() => {
         inputMessage = {
             headers: {
-                stepId: 'step_1'
+                'stepId': 'step_1',
+                'x-eio-routing-key': 'tenant.12345'
             },
             body: {
                 message: 'Just do it!'
@@ -95,11 +96,13 @@ describe('Integration Test for globalRun', () => {
 
                     runner = requireRun();
 
+                    console.log('publish!!', parentMessageId, threadId);
                     await amqpHelper.publishMessage(inputMessage, {
                         parentMessageId,
                         threadId
                     });
 
+                    console.log('This!!', message, queueNames);
                     const [{ message, queueName }] = await Promise.all([
                         new Promise(resolve => amqpHelper.on(
                             'data',

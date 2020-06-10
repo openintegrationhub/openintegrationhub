@@ -44,7 +44,7 @@ class AmqpHelper extends EventEmitter {
         env.ELASTICIO_AMQP_PUBLISH_MAX_RETRY_DELAY = 60 * 1000;
     }
 
-    publishMessage(message, { parentMessageId, threadId } = {}, headers = {}) {
+    publishMessage(message, { parentMessageId, threadId } = {}, headers = {}, copyRoutingKey) {
         let msgHeaders = Object.assign({
             execId: env.ELASTICIO_EXEC_ID,
             taskId: env.ELASTICIO_FLOW_ID,
@@ -54,10 +54,19 @@ class AmqpHelper extends EventEmitter {
             stepId: message.headers.stepId,
             messageId: parentMessageId
         }, headers);
+
         const protocolVersion = Number(msgHeaders.protocolVersion || 1);
+
+        console.log(env.ELASTICIO_DATA_ROUTING_KEY);
+        let routingKey = env.ELASTICIO_DATA_ROUTING_KEY;
+
+        console.log('message', message);
+        if ('x-eio-routing-key' in message.headers) {routingKey = message.properties.headers['x-eio-routing-key'];}
+
+
         return this.subscriptionChannel.publish(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
-            env.ELASTICIO_DATA_ROUTING_KEY,
+            routingKey,
             encryptor.encryptMessageContent(
                 message,
                 protocolVersion < 2 ? 'base64' : undefined
