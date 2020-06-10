@@ -61,7 +61,10 @@ class AmqpHelper extends EventEmitter {
         let routingKey = env.ELASTICIO_DATA_ROUTING_KEY;
 
         console.log('message', message);
-        if ('x-eio-routing-key' in message.headers) {routingKey = message.properties.headers['x-eio-routing-key'];}
+        if ('x-eio-routing-key' in message.headers) {
+            routingKey = message.properties.headers['x-eio-routing-key'];
+            msgHeaders['x-eio-routing-key'] = message.properties.headers['x-eio-routing-key'];
+        }
 
 
         return this.subscriptionChannel.publish(
