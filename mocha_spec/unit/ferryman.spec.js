@@ -197,7 +197,6 @@ describe('Ferryman', () => {
                         threadId: uuid.v4(),
                         messageId: uuid.v4(),
                         parentMessageId: uuid.v4(),
-                        taskId: '5559edd38968ec0736000003',
                         stepId: 'step_1'
                     },
                     deliveryMode: undefined,

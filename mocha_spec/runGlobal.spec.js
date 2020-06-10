@@ -59,7 +59,7 @@ describe('Integration Test for globalRun', () => {
         sinon.restore();
     });
 
-    describe.only('when ferryman is being invoked for message processing', () => {
+    describe('when ferryman is being invoked for message processing', () => {
         let parentMessageId;
         let threadId;
         let messageId;
