@@ -1082,17 +1082,18 @@ describe.only('Integration Test for globalRun', () => {
                         delete properties.headers.messageId;
 
                         expect(properties.headers).to.eql({
-                            execId: env.ELASTICIO_EXEC_ID,
-                            taskId: env.ELASTICIO_FLOW_ID,
-                            workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                            containerId: env.ELASTICIO_CONTAINER_ID,
-                            userId: env.ELASTICIO_USER_ID,
-                            stepId: env.ELASTICIO_STEP_ID,
-                            compId: env.ELASTICIO_COMP_ID,
-                            function: env.ELASTICIO_FUNCTION,
-                            reply_to: amqpHelper.httpReplyQueueRoutingKey,
-                            protocolVersion: 1,
-                            threadId
+                            'execId': env.ELASTICIO_EXEC_ID,
+                            'taskId': env.ELASTICIO_FLOW_ID,
+                            'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                            'containerId': env.ELASTICIO_CONTAINER_ID,
+                            'userId': env.ELASTICIO_USER_ID,
+                            'stepId': env.ELASTICIO_STEP_ID,
+                            'compId': env.ELASTICIO_COMP_ID,
+                            'function': env.ELASTICIO_FUNCTION,
+                            'reply_to': amqpHelper.httpReplyQueueRoutingKey,
+                            'protocolVersion': 1,
+                            threadId,
+                            'x-eio-routing-key': 'sailor_nodejs_integration_test:routing_key:message'
                         });
 
                         expect(emittedMessage).to.eql({
