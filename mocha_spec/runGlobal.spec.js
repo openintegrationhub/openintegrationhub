@@ -106,8 +106,8 @@ describe.only('Integration Test for globalRun', () => {
                         {},
                         true
                     );
+                    console.log('After Publish');
 
-                    console.log('Step2', message, queueNames);
                     const [{ message, queueName }] = await Promise.all([
                         new Promise(resolve => amqpHelper.on(
                             'data',
@@ -115,6 +115,7 @@ describe.only('Integration Test for globalRun', () => {
                         )),
                         runner.run(settings.readFrom(process.env))
                     ]);
+                    console.log('After run');
 
                     const { properties, content } = message;
                     const { body } = encryptor.decryptMessageContent(content, encoding);

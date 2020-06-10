@@ -7,6 +7,7 @@ let ferryman;
 let disconnectRequired;
 
 async function putOutToSea(settings) {
+
     ferryman = new Ferryman(settings);
 
     //eslint-disable-next-line no-extra-boolean-cast
@@ -16,6 +17,7 @@ async function putOutToSea(settings) {
         ferryman.reportError = () => {
         };
         await ferryman.prepare();
+
         await ferryman.runHookShutdown();
         return;
     }
@@ -30,6 +32,7 @@ async function putOutToSea(settings) {
     }
 
     await ferryman.runHookInit();
+
     await ferryman.run();
 }
 
