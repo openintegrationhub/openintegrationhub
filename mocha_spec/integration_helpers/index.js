@@ -286,6 +286,11 @@ function mockApiTaskStepResponse(response) {
         .matchHeader('Connection', 'Keep-Alive')
         .get(`/v1/tasks/${env.ELASTICIO_FLOW_ID}/steps/${env.ELASTICIO_STEP_ID}`)
         .reply(200, Object.assign(defaultResponse, response));
+
+    nock(env.ELASTICIO_API_URI)
+        .matchHeader('Connection', 'Keep-Alive')
+        .get(`/v1/tasks/${env.ELASTICIO_FLOW_ID}/steps/${env.ELASTICIO_STEP_ID}`)
+        .reply(200, Object.assign(defaultResponse, response));
 }
 
 let fakeApiServer;

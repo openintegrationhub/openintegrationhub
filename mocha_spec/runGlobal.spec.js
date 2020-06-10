@@ -32,8 +32,8 @@ describe.only('Integration Test for globalRun', () => {
     beforeEach(() => {
         inputMessage = {
             headers: {
-                'stepId': 'step_1',
-                'x-eio-routing-key': 'tenant.12345'
+                stepId: 'step_1'
+                // 'x-eio-routing-key': 'tenant.12345'
             },
             body: {
                 message: 'Just do it!'
@@ -128,18 +128,18 @@ describe.only('Integration Test for globalRun', () => {
                     delete properties.headers.messageId;
 
                     expect(properties.headers).to.deep.equal({
-                        'execId': env.ELASTICIO_EXEC_ID,
-                        'taskId': env.ELASTICIO_FLOW_ID,
-                        'workspaceId': env.ELASTICIO_WORKSPACE_ID,
-                        'containerId': env.ELASTICIO_CONTAINER_ID,
-                        'userId': env.ELASTICIO_USER_ID,
-                        'stepId': env.ELASTICIO_STEP_ID,
-                        'compId': env.ELASTICIO_COMP_ID,
-                        'function': env.ELASTICIO_FUNCTION,
+                        execId: env.ELASTICIO_EXEC_ID,
+                        taskId: env.ELASTICIO_FLOW_ID,
+                        workspaceId: env.ELASTICIO_WORKSPACE_ID,
+                        containerId: env.ELASTICIO_CONTAINER_ID,
+                        userId: env.ELASTICIO_USER_ID,
+                        stepId: env.ELASTICIO_STEP_ID,
+                        compId: env.ELASTICIO_COMP_ID,
+                        function: env.ELASTICIO_FUNCTION,
                         threadId,
                         parentMessageId,
-                        'protocolVersion': protocolVersion,
-                        'x-eio-routing-key': 'test.hello'
+                        protocolVersion: protocolVersion
+                        // 'x-eio-routing-key': 'test.hello'
                     });
 
                     delete properties.headers;
@@ -272,8 +272,8 @@ describe.only('Integration Test for globalRun', () => {
                     const psMsg = {
                         id: messageId,
                         headers: {
-                            'x-custom-component-header': '123_abc',
-                            'x-eio-routing-key': 'tenant.12345'
+                            'x-custom-component-header': '123_abc'
+                            // 'x-eio-routing-key': 'tenant.12345'
 
                         },
                         body: {
@@ -476,8 +476,8 @@ describe.only('Integration Test for globalRun', () => {
                         },
                         headers: {
                             'x-custom-component-header': '123_abc',
-                            'stepId': 'step_1',
-                            'x-eio-routing-key': 'tenant.12345'
+                            'stepId': 'step_1'
+                            // 'x-eio-routing-key': 'tenant.12345'
                         }
                     });
 
@@ -508,8 +508,8 @@ describe.only('Integration Test for globalRun', () => {
                     });
 
                     expect(passthrough.step_2.headers).to.deep.eql({
-                        'x-custom-component-header': '123_abc',
-                        'x-eio-routing-key': 'tenant.12345'
+                        'x-custom-component-header': '123_abc'
+                        // 'x-eio-routing-key': 'tenant.12345'
                     });
                     expect(passthrough.step_2.body).to.deep.eql({
                         hai: 'there',
