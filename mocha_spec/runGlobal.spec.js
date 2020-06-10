@@ -265,7 +265,9 @@ describe.only('Integration Test for globalRun', () => {
                     const psMsg = {
                         id: messageId,
                         headers: {
-                            'x-custom-component-header': '123_abc'
+                            'x-custom-component-header': '123_abc',
+                            'x-eio-routing-key': 'tenant.12345'
+
                         },
                         body: {
                             message: 'Just do it'
@@ -467,7 +469,8 @@ describe.only('Integration Test for globalRun', () => {
                         },
                         headers: {
                             'x-custom-component-header': '123_abc',
-                            'stepId': 'step_1'
+                            'stepId': 'step_1',
+                            'x-eio-routing-key': 'tenant.12345'
                         }
                     });
 
@@ -498,7 +501,8 @@ describe.only('Integration Test for globalRun', () => {
                     });
 
                     expect(passthrough.step_2.headers).to.deep.eql({
-                        'x-custom-component-header': '123_abc'
+                        'x-custom-component-header': '123_abc',
+                        'x-eio-routing-key': 'tenant.12345'
                     });
                     expect(passthrough.step_2.body).to.deep.eql({
                         hai: 'there',
