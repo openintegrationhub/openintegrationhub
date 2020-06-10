@@ -65,7 +65,7 @@ describe.only('Integration Test for globalRun', () => {
         let threadId;
         let messageId;
 
-        let amqpHelper = helpers.amqp();
+        let amqpHelper = helpers.amqpGlobal();
         beforeEach(async () => {
             await amqpHelper.prepare();
             threadId = uuid.v4();
