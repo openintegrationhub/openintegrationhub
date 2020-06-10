@@ -389,7 +389,7 @@ describe.only('Ferryman', () => {
         it(
             'should augment emitted message with passthrough with data from incoming message '
             + 'if NO_SELF_PASSTRHOUGH set', async () => {
-                message.properties.headers.stepId = 'step_0';
+                message.properties.headers.stepId = 'step_1';
                 settings.FUNCTION = 'passthrough';
                 settings.NO_SELF_PASSTRHOUGH = true;
                 const ferryman = new Ferryman(settings);
@@ -408,8 +408,6 @@ describe.only('Ferryman', () => {
                         }
                     }
                 };
-
-                console.log('psPayload', JSON.stringify(psPayload));
 
                 await ferryman.connect();
                 await ferryman.prepare();
@@ -457,6 +455,9 @@ describe.only('Ferryman', () => {
             'should not augment emitted message with passthrough with data from incoming message '
             + 'if NO_SELF_PASSTRHOUGH set without stepId header',
             async () => {
+
+                delete message.properties.headers.stepId;
+
                 settings.FUNCTION = 'passthrough';
                 settings.NO_SELF_PASSTRHOUGH = true;
                 const ferryman = new Ferryman(settings);
@@ -467,6 +468,7 @@ describe.only('Ferryman', () => {
                     return Promise.resolve({ is_passthrough: true });
                 });
 
+
                 const psPayload = {
                     body: payload,
                     passthrough: {
@@ -476,7 +478,6 @@ describe.only('Ferryman', () => {
                     }
                 };
 
-                console.log('psPayload', JSON.stringify(psPayload));
 
                 await ferryman.connect();
                 await ferryman.prepare();
@@ -502,7 +503,7 @@ describe.only('Ferryman', () => {
                         'userId': '5559edd38968ec0736000002',
                         'containerId': 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
                         'workspaceId': '5559edd38968ec073600683',
-                        'stepId': 'step_1',
+                        // 'stepId': 'step_1',
                         'compId': '5559edd38968ec0736000456',
                         'function': 'passthrough',
                         'start': sinon.match.number,
@@ -514,6 +515,8 @@ describe.only('Ferryman', () => {
                 );
 
                 expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
+
+                message.properties.headers.stepId = 'step_1';
             }
         );
 
