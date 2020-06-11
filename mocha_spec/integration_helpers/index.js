@@ -44,7 +44,7 @@ class AmqpHelper extends EventEmitter {
         env.ELASTICIO_AMQP_PUBLISH_MAX_RETRY_DELAY = 60 * 1000;
     }
 
-    publishMessage(message, { parentMessageId, threadId } = {}, headers = {}, backChannel) {
+    publishMessage(message, { parentMessageId, threadId } = {}, headers = {}) {
         let msgHeaders = Object.assign({
             execId: env.ELASTICIO_EXEC_ID,
             taskId: env.ELASTICIO_FLOW_ID,
@@ -62,21 +62,6 @@ class AmqpHelper extends EventEmitter {
         // if ('x-eio-routing-key' in message.headers) {
         //     routingKey = message.headers['x-eio-routing-key'];
         //     // msgHeaders['x-eio-routing-key'] = message.properties.headers['x-eio-routing-key'];
-        // }
-
-        // if (backChannel === true) {
-        //     console.log('backChannel.publish');
-        //     return this.backChannel.publish(
-        //         env.ELASTICIO_BACK_CHANNEL,
-        //         routingKey,
-        //         encryptor.encryptMessageContent(
-        //             message,
-        //             protocolVersion < 2 ? 'base64' : undefined
-        //         ),
-        //         {
-        //             headers: msgHeaders
-        //         }
-        //     );
         // }
 
         return this.subscriptionChannel.publish(
@@ -267,7 +252,7 @@ class AmqpHelperGlobal extends EventEmitter {
         env.ELASTICIO_AMQP_PUBLISH_MAX_RETRY_DELAY = 60 * 1000;
     }
 
-    publishMessage(message, { parentMessageId, threadId } = {}, headers = {}, backChannel) {
+    publishMessage(message, { parentMessageId, threadId } = {}, headers = {}) {
         let msgHeaders = Object.assign({
             execId: env.ELASTICIO_EXEC_ID,
             taskId: env.ELASTICIO_FLOW_ID,
@@ -285,21 +270,6 @@ class AmqpHelperGlobal extends EventEmitter {
         // if ('x-eio-routing-key' in message.headers) {
         //     routingKey = message.headers['x-eio-routing-key'];
         //     // msgHeaders['x-eio-routing-key'] = message.properties.headers['x-eio-routing-key'];
-        // }
-
-        // if (backChannel === true) {
-        //     console.log('backChannel.publish');
-        //     return this.backChannel.publish(
-        //         env.ELASTICIO_BACK_CHANNEL,
-        //         routingKey,
-        //         encryptor.encryptMessageContent(
-        //             message,
-        //             protocolVersion < 2 ? 'base64' : undefined
-        //         ),
-        //         {
-        //             headers: msgHeaders
-        //         }
-        //     );
         // }
 
         return this.subscriptionChannel.publish(
@@ -337,7 +307,7 @@ class AmqpHelperGlobal extends EventEmitter {
         };
 
         yield subscriptionChannel.assertExchange(env.ELASTICIO_LISTEN_MESSAGES_ON, 'direct', exchangeOptions);
-        yield publishChannel.assertExchange(env.ELASTICIO_PUBLISH_MESSAGES_TO, 'direct', exchangeOptions);
+        yield publishChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
 
         // yield backChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
 
@@ -353,18 +323,18 @@ class AmqpHelperGlobal extends EventEmitter {
 
         yield publishChannel.bindQueue(
             this.nextStepQueue,
-            env.ELASTICIO_PUBLISH_MESSAGES_TO,
+            env.ELASTICIO_BACK_CHANNEL,
             env.ELASTICIO_DATA_ROUTING_KEY);
 
         yield publishChannel.bindQueue(
             this.nextStepErrorQueue,
-            env.ELASTICIO_PUBLISH_MESSAGES_TO,
+            env.ELASTICIO_BACK_CHANNEL,
             env.ELASTICIO_ERROR_ROUTING_KEY);
 
         yield publishChannel.assertQueue(this.httpReplyQueueName);
         yield publishChannel.bindQueue(
             this.httpReplyQueueName,
-            env.ELASTICIO_PUBLISH_MESSAGES_TO,
+            env.ELASTICIO_BACK_CHANNEL,
             this.httpReplyQueueRoutingKey);
 
         yield publishChannel.purgeQueue(this.nextStepQueue);

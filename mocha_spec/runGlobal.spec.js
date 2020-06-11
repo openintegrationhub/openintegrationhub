@@ -17,7 +17,7 @@ function requireRun() {
     delete require.cache[resolved];
     return require(path);
 }
-describe.only('Integration Test for globalRun', () => {
+describe('Integration Test for globalRun', () => {
     const customers = [
         {
             name: 'Homer Simpson'
@@ -96,8 +96,6 @@ describe.only('Integration Test for globalRun', () => {
 
                     runner = requireRun();
 
-                    console.log('publish:', parentMessageId, threadId);
-                    // message, { parentMessageId, threadId } = {}, headers = {}, backChannel
                     await amqpHelper.publishMessage(inputMessage,
                         {
                             parentMessageId,
@@ -106,7 +104,6 @@ describe.only('Integration Test for globalRun', () => {
                         {},
                         true
                     );
-                    console.log('After Publish');
 
                     const [{ message, queueName }] = await Promise.all([
                         new Promise(resolve => amqpHelper.on(
@@ -115,7 +112,6 @@ describe.only('Integration Test for globalRun', () => {
                         )),
                         runner.run(settings.readFrom(process.env))
                     ]);
-                    console.log('After run');
 
                     const { properties, content } = message;
                     const { body } = encryptor.decryptMessageContent(content, encoding);
@@ -128,18 +124,18 @@ describe.only('Integration Test for globalRun', () => {
                     delete properties.headers.messageId;
 
                     expect(properties.headers).to.deep.equal({
-                        execId: env.ELASTICIO_EXEC_ID,
-                        taskId: env.ELASTICIO_FLOW_ID,
-                        workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                        containerId: env.ELASTICIO_CONTAINER_ID,
-                        userId: env.ELASTICIO_USER_ID,
-                        stepId: env.ELASTICIO_STEP_ID,
-                        compId: env.ELASTICIO_COMP_ID,
-                        function: env.ELASTICIO_FUNCTION,
+                        'execId': env.ELASTICIO_EXEC_ID,
+                        'taskId': env.ELASTICIO_FLOW_ID,
+                        'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                        'containerId': env.ELASTICIO_CONTAINER_ID,
+                        'userId': env.ELASTICIO_USER_ID,
+                        'stepId': env.ELASTICIO_STEP_ID,
+                        'compId': env.ELASTICIO_COMP_ID,
+                        'function': env.ELASTICIO_FUNCTION,
                         threadId,
                         parentMessageId,
-                        protocolVersion: protocolVersion
-                        // 'x-eio-routing-key': 'test.hello'
+                        'protocolVersion': protocolVersion,
+                        'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                     });
 
                     delete properties.headers;
@@ -217,17 +213,18 @@ describe.only('Integration Test for globalRun', () => {
                     delete properties.headers.messageId;
 
                     expect(properties.headers).to.deep.equal({
-                        execId: env.ELASTICIO_EXEC_ID,
-                        taskId: env.ELASTICIO_FLOW_ID,
-                        workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                        containerId: env.ELASTICIO_CONTAINER_ID,
-                        userId: env.ELASTICIO_USER_ID,
-                        stepId: env.ELASTICIO_STEP_ID,
-                        compId: env.ELASTICIO_COMP_ID,
-                        function: env.ELASTICIO_FUNCTION,
+                        'execId': env.ELASTICIO_EXEC_ID,
+                        'taskId': env.ELASTICIO_FLOW_ID,
+                        'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                        'containerId': env.ELASTICIO_CONTAINER_ID,
+                        'userId': env.ELASTICIO_USER_ID,
+                        'stepId': env.ELASTICIO_STEP_ID,
+                        'compId': env.ELASTICIO_COMP_ID,
+                        'function': env.ELASTICIO_FUNCTION,
                         threadId,
                         parentMessageId,
-                        protocolVersion: protocolVersion
+                        'protocolVersion': protocolVersion,
+                        'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                     });
 
                     delete properties.headers;
@@ -273,6 +270,7 @@ describe.only('Integration Test for globalRun', () => {
                         id: messageId,
                         headers: {
                             'x-custom-component-header': '123_abc'
+                            // 'stepId': env.ELASTICIO_STEP_ID
                             // 'x-eio-routing-key': 'tenant.12345'
 
                         },
@@ -314,17 +312,18 @@ describe.only('Integration Test for globalRun', () => {
                     delete properties.headers.messageId;
 
                     expect(properties.headers).to.deep.equal({
-                        taskId: env.ELASTICIO_FLOW_ID,
-                        execId: env.ELASTICIO_EXEC_ID,
-                        workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                        containerId: env.ELASTICIO_CONTAINER_ID,
-                        userId: env.ELASTICIO_USER_ID,
+                        'taskId': env.ELASTICIO_FLOW_ID,
+                        'execId': env.ELASTICIO_EXEC_ID,
+                        'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                        'containerId': env.ELASTICIO_CONTAINER_ID,
+                        'userId': env.ELASTICIO_USER_ID,
                         threadId,
-                        stepId: env.ELASTICIO_STEP_ID,
-                        compId: env.ELASTICIO_COMP_ID,
-                        function: env.ELASTICIO_FUNCTION,
+                        // 'stepId': env.ELASTICIO_STEP_ID,
+                        'compId': env.ELASTICIO_COMP_ID,
+                        'function': env.ELASTICIO_FUNCTION,
                         parentMessageId,
-                        protocolVersion: protocolVersion
+                        'protocolVersion': protocolVersion,
+                        'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                     });
 
                     expect(passthrough.step_1).to.deep.eql(psMsg.passthrough.step_1);
@@ -370,7 +369,7 @@ describe.only('Integration Test for globalRun', () => {
 
                         const psMsg = {
                             headers: {
-                                stepId: 'step_1'
+                                stepId: 'step_2'
                             },
                             body: {
                                 message: 'Just do it!'
@@ -403,14 +402,17 @@ describe.only('Integration Test for globalRun', () => {
                         const { passthrough } = encryptor.decryptMessageContent(content, encoding);
                         expect(queueName).to.eql(amqpHelper.nextStepQueue);
 
+                        const localHeaders = inputMessage.headers;
+                        localHeaders.stepId = 'step_2';
+
                         expect(passthrough).to.deep.eql({
                             step_oth: {
                                 id: 'id-56',
                                 body: { a: 1 },
                                 attachments: {}
                             },
-                            step_1: {
-                                headers: inputMessage.headers,
+                            step_2: {
+                                headers: localHeaders ,
                                 body: inputMessage.body
                             }
                         });
@@ -422,17 +424,18 @@ describe.only('Integration Test for globalRun', () => {
                         delete properties.headers.messageId;
 
                         expect(properties.headers).to.deep.equal({
-                            taskId: env.ELASTICIO_FLOW_ID,
-                            execId: env.ELASTICIO_EXEC_ID,
-                            workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                            containerId: env.ELASTICIO_CONTAINER_ID,
-                            userId: env.ELASTICIO_USER_ID,
+                            'taskId': env.ELASTICIO_FLOW_ID,
+                            'execId': env.ELASTICIO_EXEC_ID,
+                            'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                            'containerId': env.ELASTICIO_CONTAINER_ID,
+                            'userId': env.ELASTICIO_USER_ID,
                             threadId,
-                            stepId: env.ELASTICIO_STEP_ID,
-                            compId: env.ELASTICIO_COMP_ID,
-                            function: env.ELASTICIO_FUNCTION,
+                            'stepId': env.ELASTICIO_STEP_ID,
+                            'compId': env.ELASTICIO_COMP_ID,
+                            'function': env.ELASTICIO_FUNCTION,
                             parentMessageId,
-                            protocolVersion: protocolVersion
+                            'protocolVersion': protocolVersion,
+                            'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                         });
 
                         delete properties.headers;
@@ -476,8 +479,8 @@ describe.only('Integration Test for globalRun', () => {
                         },
                         headers: {
                             'x-custom-component-header': '123_abc',
-                            'stepId': 'step_1'
-                            // 'x-eio-routing-key': 'tenant.12345'
+                            'stepId': 'step_2',
+                            'x-eio-routing-key': 'tenant.12345'
                         }
                     });
 
@@ -509,6 +512,7 @@ describe.only('Integration Test for globalRun', () => {
 
                     expect(passthrough.step_2.headers).to.deep.eql({
                         'x-custom-component-header': '123_abc'
+                        // 'stepId': 'step_2'
                         // 'x-eio-routing-key': 'tenant.12345'
                     });
                     expect(passthrough.step_2.body).to.deep.eql({
@@ -524,17 +528,18 @@ describe.only('Integration Test for globalRun', () => {
                     delete properties.headers.messageId;
 
                     expect(properties.headers).to.deep.equal({
-                        taskId: env.ELASTICIO_FLOW_ID,
-                        execId: env.ELASTICIO_EXEC_ID,
-                        workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                        containerId: env.ELASTICIO_CONTAINER_ID,
-                        userId: env.ELASTICIO_USER_ID,
+                        'taskId': env.ELASTICIO_FLOW_ID,
+                        'execId': env.ELASTICIO_EXEC_ID,
+                        'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                        'containerId': env.ELASTICIO_CONTAINER_ID,
+                        'userId': env.ELASTICIO_USER_ID,
                         threadId,
-                        stepId: env.ELASTICIO_STEP_ID,
-                        compId: env.ELASTICIO_COMP_ID,
-                        function: env.ELASTICIO_FUNCTION,
+                        'stepId': env.ELASTICIO_STEP_ID,
+                        'compId': env.ELASTICIO_COMP_ID,
+                        'function': env.ELASTICIO_FUNCTION,
                         parentMessageId,
-                        protocolVersion
+                        protocolVersion,
+                        'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                     });
 
                     delete properties.headers;
@@ -637,16 +642,17 @@ describe.only('Integration Test for globalRun', () => {
                             delete properties.headers.messageId;
 
                             expect(properties.headers).to.eql({
-                                execId: env.ELASTICIO_EXEC_ID,
-                                taskId: env.ELASTICIO_FLOW_ID,
-                                workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                                containerId: env.ELASTICIO_CONTAINER_ID,
-                                userId: env.ELASTICIO_USER_ID,
-                                stepId: env.ELASTICIO_STEP_ID,
-                                compId: env.ELASTICIO_COMP_ID,
-                                function: env.ELASTICIO_FUNCTION,
+                                'execId': env.ELASTICIO_EXEC_ID,
+                                'taskId': env.ELASTICIO_FLOW_ID,
+                                'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                                'containerId': env.ELASTICIO_CONTAINER_ID,
+                                'userId': env.ELASTICIO_USER_ID,
+                                'stepId': env.ELASTICIO_STEP_ID,
+                                'compId': env.ELASTICIO_COMP_ID,
+                                'function': env.ELASTICIO_FUNCTION,
                                 protocolVersion,
-                                threadId
+                                threadId,
+                                'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                             });
 
                             expect(body).to.deep.equal({
@@ -769,16 +775,17 @@ describe.only('Integration Test for globalRun', () => {
                             delete properties.headers.messageId;
 
                             expect(properties.headers).to.eql({
-                                execId: env.ELASTICIO_EXEC_ID,
-                                taskId: env.ELASTICIO_FLOW_ID,
-                                workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                                containerId: env.ELASTICIO_CONTAINER_ID,
-                                userId: env.ELASTICIO_USER_ID,
-                                stepId: env.ELASTICIO_STEP_ID,
-                                compId: env.ELASTICIO_COMP_ID,
-                                function: env.ELASTICIO_FUNCTION,
-                                protocolVersion: protocolVersion,
-                                threadId
+                                'execId': env.ELASTICIO_EXEC_ID,
+                                'taskId': env.ELASTICIO_FLOW_ID,
+                                'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                                'containerId': env.ELASTICIO_CONTAINER_ID,
+                                'userId': env.ELASTICIO_USER_ID,
+                                'stepId': env.ELASTICIO_STEP_ID,
+                                'compId': env.ELASTICIO_COMP_ID,
+                                'function': env.ELASTICIO_FUNCTION,
+                                'protocolVersion': protocolVersion,
+                                threadId,
+                                'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                             });
 
                             expect(body).to.deep.equal({
@@ -864,16 +871,17 @@ describe.only('Integration Test for globalRun', () => {
                             delete properties.headers.messageId;
 
                             expect(properties.headers).to.eql({
-                                execId: env.ELASTICIO_EXEC_ID,
-                                taskId: env.ELASTICIO_FLOW_ID,
-                                workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                                containerId: env.ELASTICIO_CONTAINER_ID,
-                                userId: env.ELASTICIO_USER_ID,
-                                stepId: env.ELASTICIO_STEP_ID,
-                                compId: env.ELASTICIO_COMP_ID,
-                                function: ferrymanSettings.FUNCTION,
-                                protocolVersion: protocolVersion,
-                                threadId
+                                'execId': env.ELASTICIO_EXEC_ID,
+                                'taskId': env.ELASTICIO_FLOW_ID,
+                                'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                                'containerId': env.ELASTICIO_CONTAINER_ID,
+                                'userId': env.ELASTICIO_USER_ID,
+                                'stepId': env.ELASTICIO_STEP_ID,
+                                'compId': env.ELASTICIO_COMP_ID,
+                                'function': ferrymanSettings.FUNCTION,
+                                'protocolVersion': protocolVersion,
+                                threadId,
+                                'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                             });
 
                             expect(body).to.deep.equal({
@@ -930,16 +938,17 @@ describe.only('Integration Test for globalRun', () => {
                             delete properties.headers.messageId;
 
                             expect(properties.headers).to.eql({
-                                execId: env.ELASTICIO_EXEC_ID,
-                                taskId: env.ELASTICIO_FLOW_ID,
-                                workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                                containerId: env.ELASTICIO_CONTAINER_ID,
-                                userId: env.ELASTICIO_USER_ID,
-                                stepId: env.ELASTICIO_STEP_ID,
-                                compId: env.ELASTICIO_COMP_ID,
-                                function: ferrymanSettings.FUNCTION,
-                                protocolVersion: protocolVersion,
-                                threadId
+                                'execId': env.ELASTICIO_EXEC_ID,
+                                'taskId': env.ELASTICIO_FLOW_ID,
+                                'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                                'containerId': env.ELASTICIO_CONTAINER_ID,
+                                'userId': env.ELASTICIO_USER_ID,
+                                'stepId': env.ELASTICIO_STEP_ID,
+                                'compId': env.ELASTICIO_COMP_ID,
+                                'function': ferrymanSettings.FUNCTION,
+                                'protocolVersion': protocolVersion,
+                                threadId,
+                                'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                             });
 
                             expect(body).to.deep.equal({
@@ -1011,19 +1020,20 @@ describe.only('Integration Test for globalRun', () => {
                         delete properties.headers.messageId;
 
                         expect(properties.headers).to.deep.equal({
-                            first: 'first',
-                            secondElasticioEnv: 'second',
-                            execId: env.ELASTICIO_EXEC_ID,
-                            taskId: env.ELASTICIO_FLOW_ID,
-                            workspaceId: env.ELASTICIO_WORKSPACE_ID,
-                            containerId: env.ELASTICIO_CONTAINER_ID,
-                            userId: env.ELASTICIO_USER_ID,
-                            stepId: env.ELASTICIO_STEP_ID,
-                            compId: env.ELASTICIO_COMP_ID,
-                            function: env.ELASTICIO_FUNCTION,
+                            'first': 'first',
+                            'secondElasticioEnv': 'second',
+                            'execId': env.ELASTICIO_EXEC_ID,
+                            'taskId': env.ELASTICIO_FLOW_ID,
+                            'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                            'containerId': env.ELASTICIO_CONTAINER_ID,
+                            'userId': env.ELASTICIO_USER_ID,
+                            'stepId': env.ELASTICIO_STEP_ID,
+                            'compId': env.ELASTICIO_COMP_ID,
+                            'function': env.ELASTICIO_FUNCTION,
                             threadId,
                             parentMessageId,
-                            protocolVersion
+                            protocolVersion,
+                            'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                         });
 
                         expect(body).to.deep.equal({
@@ -1093,7 +1103,7 @@ describe.only('Integration Test for globalRun', () => {
                             'reply_to': amqpHelper.httpReplyQueueRoutingKey,
                             'protocolVersion': 1,
                             threadId,
-                            'x-eio-routing-key': 'sailor_nodejs_integration_test:routing_key:message'
+                            'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
                         });
 
                         expect(emittedMessage).to.eql({
