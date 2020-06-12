@@ -7,8 +7,38 @@ set -e
 SERVICE_ACCOUNT_USERNAME=test@test.de
 SERVICE_ACCOUNT_PASSWORD=testtest1234
 
+EXPOSED_SERVICES=( \
+app-directory.localoih.com \
+iam.localoih.com \
+skm.localoih.com \
+flow-repository.localoih.com \
+auditlog.localoih.com \
+metadata.localoih.com \
+component-repository.localoih.com \
+dispatcher-service.localoih.com \
+webhooks.localoih.com \
+attachment-storage-service.localoih.com \
+data-hub.localoih.com \
+ils.localoih.com \
+web-ui.localoih.com \
+)
+
+REQUIRED_TOOLS=( \
+curl \
+kubectl \
+minikube \
+base64 \
+python3 \
+)
+# minikube settings
+
+MK_MEMORY=8192
+MK_CPUS=4
+
 # preserve newlines in substitutions
 IFS=
+
+# script cache
 
 admin_token=""
 service_account_id=""
@@ -24,8 +54,7 @@ function cleanup {
 }
 
 function checkTools {
-    needed_tools=( curl kubectl minikube base64 python3 )
-    for i in "${needed_tools[@]}"
+    for i in "${REQUIRED_TOOLS[@]}"
     do
         if ! type "${i}" > /dev/null; then
             echo "Please install '${i}' and run this script again"
@@ -36,10 +65,9 @@ function checkTools {
 
 function updateHostsFile {
     ip_address=$(minikube ip)
-    host_names=( app-directory.localoih.com iam.localoih.com skm.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com component-repository.localoih.com dispatcher-service.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com web-ui.localoih.com )
 
     # https://stackoverflow.com/questions/19339248/append-line-to-etc-hosts-file-with-shell-script/37824076#37824076
-    for host_name in "${host_names[@]}"
+    for host_name in "${EXPOSED_SERVICES[@]}"
     do
         # find existing instances in the host file and save the line numbers
         matches_in_hosts="$(grep -n $host_name /etc/hosts | cut -f1 -d:)"
@@ -241,7 +269,7 @@ checkTools
 minikube stop
 minikube addons enable ingress
 minikube addons enable dashboard
-minikube start --memory 8192 --cpus 4
+minikube start --memory $MK_MEMORY --cpus $MK_CPUS
 
 # remove oih resources
 kubectl -n oih-dev-ns delete pods,services,deployments --all
@@ -270,7 +298,7 @@ kubectl apply -f ./1-Platform
 ###
 
 kubectl apply -f ./2-IAM
-waitForServiceStatus "http://iam.localoih.com" "200"
+waitForServiceStatus http://iam.localoih.com 200
 
 ###
 ### 6. set admin token
