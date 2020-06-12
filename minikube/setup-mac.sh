@@ -8,27 +8,27 @@ SERVICE_ACCOUNT_USERNAME=test@test.de
 SERVICE_ACCOUNT_PASSWORD=testtest1234
 
 EXPOSED_SERVICES=( \
-app-directory.localoih.com \
-iam.localoih.com \
-skm.localoih.com \
-flow-repository.localoih.com \
-auditlog.localoih.com \
-metadata.localoih.com \
-component-repository.localoih.com \
-dispatcher-service.localoih.com \
-webhooks.localoih.com \
-attachment-storage-service.localoih.com \
-data-hub.localoih.com \
-ils.localoih.com \
-web-ui.localoih.com \
+    app-directory.localoih.com \
+    iam.localoih.com \
+    skm.localoih.com \
+    flow-repository.localoih.com \
+    auditlog.localoih.com \
+    metadata.localoih.com \
+    component-repository.localoih.com \
+    dispatcher-service.localoih.com \
+    webhooks.localoih.com \
+    attachment-storage-service.localoih.com \
+    data-hub.localoih.com \
+    ils.localoih.com \
+    web-ui.localoih.com \
 )
 
 REQUIRED_TOOLS=( \
-curl \
-kubectl \
-minikube \
-base64 \
-python3 \
+    curl \
+    kubectl \
+    minikube \
+    base64 \
+    python3 \
 )
 # minikube settings
 
@@ -66,21 +66,15 @@ function checkTools {
 function updateHostsFile {
     ip_address=$(minikube ip)
 
-    # https://stackoverflow.com/questions/19339248/append-line-to-etc-hosts-file-with-shell-script/37824076#37824076
     for host_name in "${EXPOSED_SERVICES[@]}"
     do
-        # find existing instances in the host file and save the line numbers
-        matches_in_hosts="$(grep -n $host_name /etc/hosts | cut -f1 -d:)"
+        match_in_hosts="$(grep $host_name /etc/hosts | cut -f1)"
         host_entry="${ip_address} ${host_name}"
-
-        if [ ! -z "$matches_in_hosts" ]
+        if [ ! -z "$match_in_hosts" ]
         then
             echo "Updating existing hosts entry: $host_entry"
-            # iterate over the line numbers on which matches were found
-            while read -r line_number; do
-                # replace the text of each line with the desired host entry
-                sudo sed -i '' "${line_number}s/.*/${host_entry} /" /etc/hosts
-            done <<< "$matches_in_hosts"
+            updated_hosts=$(cat /etc/hosts | python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('$match_in_hosts','$host_entry'))")
+            echo $updated_hosts | sudo tee /etc/hosts > /dev/null
         else
             echo "Adding new hosts entry: $host_entry"
             echo "$host_entry" | sudo tee -a /etc/hosts > /dev/null
@@ -101,6 +95,7 @@ function waitForServiceStatus {
 
 function waitForIngress {
     ingress_status=$(kubectl get pods --all-namespaces || true);
+    echo $ingress_status
     while [ -z "$(grep 'ingress-nginx-controller.*Running' <<< $ingress_status)" ]; do 
         echo "Waiting for ingress..."
         sleep 2
@@ -169,7 +164,13 @@ EOM
 }
 
 function addTokenToSecret {
-    service_account_token_encoded=$(echo -n $service_account_token | base64)
+    echo | base64 -w0 > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        service_account_token_encoded=$(echo -n $service_account_token | base64 -w0)
+    else
+        service_account_token_encoded=$(echo -n $service_account_token | base64)
+    fi
+
     new_secret=$(cat ./3-Secret/SharedSecret.yaml | python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('REPLACE ME','$service_account_token_encoded'))")
     echo $new_secret > ./3-Secret/SharedSecret.yaml
 }
