@@ -49,7 +49,7 @@ describe('Integration Test for globalRun', () => {
         delete env.ELASTICIO_HOOK_SHUTDOWN;
 
         await runner._disconnectOnly();
-        nock.cleanAll();
+        // nock.cleanAll();
     });
 
     let sinon;

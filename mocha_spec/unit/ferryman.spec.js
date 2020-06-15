@@ -26,8 +26,8 @@ const response = {
         _account: '1234567890'
     }
 };
-nock('https://localhost:2345')
-    .get(`/snapshots/flows/${flowId}/steps/${stepId}`)
+nock(`https://localhost:2345/snapshots/flows/${flowId}/steps/${stepId}`)
+    .get()
     .reply(200, response)
     .persist();
 
