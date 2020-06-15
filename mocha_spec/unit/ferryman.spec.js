@@ -15,21 +15,23 @@ const nock = require('nock');
 const flowId = '5559edd38968ec0736000003';
 const stepId = 'step_1';
 
-const response = {
-    data: {
-        flowId,
-        stepId,
-        snapshot: { timeStamp: 1234567890 },
-        owners: []
-    },
-    config: {
-        _account: '1234567890'
-    }
-};
-nock(`https://localhost:2345/snapshots/flows/${flowId}/steps/${stepId}`)
-    .get()
-    .reply(200, response)
-    .persist();
+function setNocks() {
+    const response = {
+        data: {
+            flowId,
+            stepId,
+            snapshot: { timeStamp: 1234567890 },
+            owners: []
+        },
+        config: {
+            _account: '1234567890'
+        }
+    };
+    nock(`https://localhost:2345/snapshots/flows/${flowId}/steps/${stepId}`)
+        .get()
+        .reply(200, response)
+        .persist();
+}
 
 describe('Ferryman', () => {
     let settings;
@@ -73,6 +75,8 @@ describe('Ferryman', () => {
         envVars.ELASTICIO_SNAPSHOTS_SERVICE_BASE_URL = 'https://localhost:2345';
 
         settings = Settings.readFrom(envVars);
+
+        setNocks();
     });
     afterEach(() => {
         sandbox.restore();
@@ -81,6 +85,7 @@ describe('Ferryman', () => {
         let ferryman;
         beforeEach(() => {
             ferryman = new Ferryman(settings);
+            setNocks();
         });
         it('should copy stepId header', () => {
             const stepId = 'step_1';
@@ -237,7 +242,7 @@ describe('Ferryman', () => {
                 },
                 content: Buffer.from(encryptor.encryptMessageContent(payload))
             };
-
+            setNocks();
         });
 
         it('should call sendBackChannel() and ack() if success', async () => {
