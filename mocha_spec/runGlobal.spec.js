@@ -44,7 +44,7 @@ describe('Integration Test for globalRun', () => {
 
         nock(`https://localhost:2345/snapshots/flows/5559edd38968ec0736000003/steps`)
             .get(`/step_1`)
-            .reply(200, (uri, requestBody) => {console.log('Nock called in runGlobal!'); return { bla: 'blubb' };});
+            .reply(200, (uri, requestBody) => {console.log('Nock called in runGlobal!'); return { data: { snapshot: 'blubb' } };});
     });
 
     afterEach(async () => {
