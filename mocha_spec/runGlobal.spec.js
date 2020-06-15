@@ -41,6 +41,10 @@ describe('Integration Test for globalRun', () => {
         };
         helpers.prepareEnv();
         env.ELASTICIO_FUNCTION = 'init_trigger';
+
+        nock(`https://localhost:2345/snapshots/flows/5559edd38968ec0736000003/steps`)
+            .get(`/step_1`)
+            .reply(200, (uri, requestBody) => {console.log('Nock called in runGlobal!'); return { bla: 'blubb' };});
     });
 
     afterEach(async () => {
@@ -49,7 +53,7 @@ describe('Integration Test for globalRun', () => {
         delete env.ELASTICIO_HOOK_SHUTDOWN;
 
         await runner._disconnectOnly();
-        // nock.cleanAll();
+        nock.cleanAll();
     });
 
     let sinon;

@@ -48,7 +48,7 @@ describe('Integration Test', () => {
         delete env.ELASTICIO_HOOK_SHUTDOWN;
 
         await runner._disconnectOnly();
-        // nock.cleanAll();
+        nock.cleanAll();
     });
 
     let sinon;

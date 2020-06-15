@@ -26,10 +26,7 @@ const response = {
         _account: '1234567890'
     }
 };
-nock(`https://localhost:2345/snapshots/flows/${flowId}/steps/${stepId}`)
-    .get()
-    .reply(200, response)
-    .persist();
+
 
 describe('Ferryman', () => {
     let settings;
@@ -73,9 +70,14 @@ describe('Ferryman', () => {
         envVars.ELASTICIO_SNAPSHOTS_SERVICE_BASE_URL = 'https://localhost:2345';
 
         settings = Settings.readFrom(envVars);
+
+        nock(`https://localhost:2345/snapshots/flows/${flowId}/steps`)
+            .get(`/${stepId}`)
+            .reply(200, (uri, requestBody) => {console.log('Nock called!'); return { bla: 'blubb' };});
     });
     afterEach(() => {
         sandbox.restore();
+        nock.cleanAll();
     });
     describe('readIncomingMessageHeaders', () => {
         let ferryman;
