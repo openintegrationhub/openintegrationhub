@@ -10,11 +10,32 @@ const { Ferryman } = require('../../lib/ferryman');
 const Settings = require('../../lib/settings');
 const amqp = require('../../lib/amqp.js');
 const encryptor = require('../../lib/encryptor.js');
+const nock = require('nock');
+
+const flowId = '5559edd38968ec0736000003';
+const stepId = 'step_1';
+
+const response = {
+    data: {
+        flowId,
+        stepId,
+        snapshot: { timeStamp: 1234567890 },
+        owners: []
+    },
+    config: {
+        _account: '1234567890'
+    }
+};
+nock('https://localhost:2345')
+    .get(`/snapshots/flows/${flowId}/steps/${stepId}`)
+    .reply(200, response)
+    .persist();
 
 describe('Ferryman', () => {
     let settings;
     let sandbox;
     let envVars;
+
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         envVars = {};
@@ -48,6 +69,8 @@ describe('Ferryman', () => {
         envVars.ELASTICIO_API_URI = 'http://apihost.com';
         envVars.ELASTICIO_API_USERNAME = 'test@test.com';
         envVars.ELASTICIO_API_KEY = '5559edd';
+
+        envVars.ELASTICIO_SNAPSHOTS_SERVICE_BASE_URL = 'https://localhost:2345';
 
         settings = Settings.readFrom(envVars);
     });
@@ -214,6 +237,7 @@ describe('Ferryman', () => {
                 },
                 content: Buffer.from(encryptor.encryptMessageContent(payload))
             };
+
         });
 
         it('should call sendBackChannel() and ack() if success', async () => {
