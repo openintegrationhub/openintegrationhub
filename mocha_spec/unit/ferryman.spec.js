@@ -15,18 +15,6 @@ const nock = require('nock');
 const flowId = '5559edd38968ec0736000003';
 const stepId = 'step_1';
 
-const response = {
-    data: {
-        flowId,
-        stepId,
-        snapshot: { timeStamp: 1234567890 },
-        owners: []
-    },
-    config: {
-        _account: '1234567890'
-    }
-};
-
 
 describe('Ferryman', () => {
     let settings;
@@ -75,6 +63,7 @@ describe('Ferryman', () => {
             .get(`/${stepId}`)
             .reply(200, (uri, requestBody) => {console.log('Nock called!'); return { bla: 'blubb' };});
     });
+
     afterEach(() => {
         sandbox.restore();
         nock.cleanAll();
