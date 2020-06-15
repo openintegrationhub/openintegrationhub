@@ -61,7 +61,7 @@ describe('Ferryman', () => {
 
         nock(`https://localhost:2345/snapshots/flows/${flowId}/steps`)
             .get(`/${stepId}`)
-            .reply(200, (uri, requestBody) => {console.log('Nock called!'); return { data: { snapshot: 'blubb' } };});
+            .reply(200, { data: { snapshot: 'blubb' } });
     });
 
     afterEach(() => {
