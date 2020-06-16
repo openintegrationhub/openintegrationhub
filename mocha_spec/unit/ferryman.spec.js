@@ -872,7 +872,7 @@ describe('Ferryman', () => {
             expect(fakeAMQPConnection.sendBackChannel).to.have.callCount(3);
 
             // error
-            expect(fakeAMQPConnection.sendError).to.have.callCount(1);
+            expect(fakeAMQPConnection.sendError).to.have.callCount(2);
 
             // ack
             expect(fakeAMQPConnection.reject).to.have.been.calledOnce.and.calledWith(message);
