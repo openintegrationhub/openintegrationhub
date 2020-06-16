@@ -1224,14 +1224,14 @@ describe('Integration Test for globalRun', () => {
             });
         });
 
-        describe('when request for hooksdata is failed with an error', () => {
-            // @todo
-            it('should not execute shutdown hook');
-        });
-
-        describe('when shutdown hook method is not found', () => {
-            // @todo
-            it('should not thrown error and just finish process');
-        });
+        // describe('when request for hooksdata is failed with an error', () => {
+        //     // @todo
+        //     it('should not execute shutdown hook');
+        // });
+        //
+        // describe('when shutdown hook method is not found', () => {
+        //     // @todo
+        //     it('should not thrown error and just finish process');
+        // });
     });
 });

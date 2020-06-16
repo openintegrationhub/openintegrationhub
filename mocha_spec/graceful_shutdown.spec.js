@@ -205,10 +205,10 @@ describe('Graceful shutdown', function test() {
         });
     });
 
-    describe('start, two messages, wait for the first message processed, shutdown', () => {
-        // FIXME –  I don't know how to test this without making a Wunderwaffe
-        it('should shutdown after processing of the last message');
-    });
+    // describe('start, two messages, wait for the first message processed, shutdown', () => {
+    //     // FIXME –  I don't know how to test this without making a Wunderwaffe
+    //     it('should shutdown after processing of the last message');
+    // });
 
     describe('start, two messages, fast processing, wait, shutdown', () => {
         it('should shutdown shortly', async () => {
