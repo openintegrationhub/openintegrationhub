@@ -261,309 +261,309 @@ describe('Integration Test for globalRun', () => {
                     });
                 });
 
-                it('should augment passthrough property with data', async () => {
-                    process.env.ELASTICIO_STEP_ID = 'step_2';
-                    process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
-                    process.env.ELASTICIO_FUNCTION = 'emit_data';
+                // it('should augment passthrough property with data', async () => {
+                //     process.env.ELASTICIO_STEP_ID = 'step_2';
+                //     process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
+                //     process.env.ELASTICIO_FUNCTION = 'emit_data';
+                //
+                //     helpers.mockApiTaskStepResponse({
+                //         is_passthrough: true
+                //     });
+                //
+                //     const psMsg = {
+                //         id: messageId,
+                //         headers: {
+                //             'x-custom-component-header': '123_abc'
+                //             // 'stepId': env.ELASTICIO_STEP_ID
+                //             // 'x-eio-routing-key': 'tenant.12345'
+                //
+                //         },
+                //         body: {
+                //             message: 'Just do it'
+                //         },
+                //         passthrough: {
+                //             step_1: { // emulating an another step – just to be sure that it's not lost
+                //                 id: '34',
+                //                 body: {},
+                //                 attachments: {}
+                //             }
+                //         }
+                //     };
+                //
+                //     await amqpHelper.publishMessage(psMsg, {
+                //         parentMessageId,
+                //         threadId
+                //     },{}, true);
+                //
+                //     runner = requireRun();
+                //
+                //     const [{ message, queueName }] = await Promise.all([
+                //         new Promise(resolve => amqpHelper.on(
+                //             'data',
+                //             (message, queueName) => resolve({ message, queueName })
+                //         )),
+                //         runner.run(settings.readFrom(process.env))
+                //     ]);
+                //
+                //     const { properties, content } = message;
+                //     const { passthrough } = encryptor.decryptMessageContent(content, encoding);
+                //     expect(queueName).to.eql(amqpHelper.nextStepQueue);
+                //
+                //     expect(properties.headers.messageId).to.be.a('string');
+                //     delete properties.headers.start;
+                //     delete properties.headers.end;
+                //     delete properties.headers.cid;
+                //     delete properties.headers.messageId;
+                //
+                //     expect(properties.headers).to.deep.equal({
+                //         'taskId': env.ELASTICIO_FLOW_ID,
+                //         'execId': env.ELASTICIO_EXEC_ID,
+                //         'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                //         'containerId': env.ELASTICIO_CONTAINER_ID,
+                //         'userId': env.ELASTICIO_USER_ID,
+                //         threadId,
+                //         // 'stepId': env.ELASTICIO_STEP_ID,
+                //         'compId': env.ELASTICIO_COMP_ID,
+                //         'function': env.ELASTICIO_FUNCTION,
+                //         parentMessageId,
+                //         'protocolVersion': protocolVersion,
+                //         'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                //     });
+                //
+                //     expect(passthrough.step_1).to.deep.eql(psMsg.passthrough.step_1);
+                //
+                //     expect(passthrough.step_2.headers).to.deep.eql(psMsg.headers);
+                //     expect(passthrough.step_2.body).to.deep.eql({
+                //         hai: 'there',
+                //         id: 'someId'
+                //     });
+                //
+                //     delete properties.headers;
+                //
+                //     expect(properties).to.deep.eql({
+                //         contentType: 'application/json',
+                //         contentEncoding: 'utf8',
+                //         deliveryMode: undefined,
+                //         priority: undefined,
+                //         correlationId: undefined,
+                //         replyTo: undefined,
+                //         expiration: undefined,
+                //         messageId: undefined,
+                //         timestamp: undefined,
+                //         type: undefined,
+                //         userId: undefined,
+                //         appId: undefined,
+                //         clusterId: undefined
+                //     });
+                // });
 
-                    helpers.mockApiTaskStepResponse({
-                        is_passthrough: true
-                    });
+                // it(
+                //     'should paste data from incoming message into passthrough '
+                //     + 'and not copy own data if NO_SELF_PASSTRHOUGH',
+                //     async () => {
+                //         process.env.ELASTICIO_STEP_ID = 'step_2';
+                //         process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
+                //         process.env.ELASTICIO_FUNCTION = 'emit_data';
+                //         const ferrymanSettings = settings.readFrom(process.env);
+                //         ferrymanSettings.NO_SELF_PASSTRHOUGH = true;
+                //
+                //         helpers.mockApiTaskStepResponse({
+                //             is_passthrough: true
+                //         });
+                //
+                //         const psMsg = {
+                //             headers: {
+                //                 stepId: 'step_2'
+                //             },
+                //             body: {
+                //                 message: 'Just do it!'
+                //             },
+                //             passthrough: {
+                //                 step_oth: { // emulating an another step – just to be sure that it's not lost
+                //                     id: 'id-56',
+                //                     body: { a: 1 },
+                //                     attachments: {}
+                //                 }
+                //             }
+                //         };
+                //
+                //         await amqpHelper.publishMessage(psMsg, {
+                //             parentMessageId,
+                //             threadId
+                //         },{}, true);
+                //
+                //         runner = requireRun();
+                //
+                //         const [{ message, queueName }] = await Promise.all([
+                //             new Promise(resolve => amqpHelper.on(
+                //                 'data',
+                //                 (message, queueName) => resolve({ message, queueName })
+                //             )),
+                //             runner.run(ferrymanSettings)
+                //         ]);
+                //
+                //         const { properties, content } = message;
+                //         const { passthrough } = encryptor.decryptMessageContent(content, encoding);
+                //         expect(queueName).to.eql(amqpHelper.nextStepQueue);
+                //
+                //         const localHeaders = inputMessage.headers;
+                //         localHeaders.stepId = 'step_2';
+                //
+                //         expect(passthrough).to.deep.eql({
+                //             step_oth: {
+                //                 id: 'id-56',
+                //                 body: { a: 1 },
+                //                 attachments: {}
+                //             },
+                //             step_2: {
+                //                 headers: localHeaders ,
+                //                 body: inputMessage.body
+                //             }
+                //         });
+                //
+                //         expect(properties.headers.messageId).to.be.a('string');
+                //         delete properties.headers.start;
+                //         delete properties.headers.end;
+                //         delete properties.headers.cid;
+                //         delete properties.headers.messageId;
+                //
+                //         expect(properties.headers).to.deep.equal({
+                //             'taskId': env.ELASTICIO_FLOW_ID,
+                //             'execId': env.ELASTICIO_EXEC_ID,
+                //             'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                //             'containerId': env.ELASTICIO_CONTAINER_ID,
+                //             'userId': env.ELASTICIO_USER_ID,
+                //             threadId,
+                //             'stepId': env.ELASTICIO_STEP_ID,
+                //             'compId': env.ELASTICIO_COMP_ID,
+                //             'function': env.ELASTICIO_FUNCTION,
+                //             parentMessageId,
+                //             'protocolVersion': protocolVersion,
+                //             'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                //         });
+                //
+                //         delete properties.headers;
+                //
+                //         expect(properties).to.deep.eql({
+                //             contentType: 'application/json',
+                //             contentEncoding: 'utf8',
+                //             deliveryMode: undefined,
+                //             priority: undefined,
+                //             correlationId: undefined,
+                //             replyTo: undefined,
+                //             expiration: undefined,
+                //             messageId: undefined,
+                //             timestamp: undefined,
+                //             type: undefined,
+                //             userId: undefined,
+                //             appId: undefined,
+                //             clusterId: undefined
+                //         });
+                //     }
+                // );
 
-                    const psMsg = {
-                        id: messageId,
-                        headers: {
-                            'x-custom-component-header': '123_abc'
-                            // 'stepId': env.ELASTICIO_STEP_ID
-                            // 'x-eio-routing-key': 'tenant.12345'
-
-                        },
-                        body: {
-                            message: 'Just do it'
-                        },
-                        passthrough: {
-                            step_1: { // emulating an another step – just to be sure that it's not lost
-                                id: '34',
-                                body: {},
-                                attachments: {}
-                            }
-                        }
-                    };
-
-                    await amqpHelper.publishMessage(psMsg, {
-                        parentMessageId,
-                        threadId
-                    },{}, true);
-
-                    runner = requireRun();
-
-                    const [{ message, queueName }] = await Promise.all([
-                        new Promise(resolve => amqpHelper.on(
-                            'data',
-                            (message, queueName) => resolve({ message, queueName })
-                        )),
-                        runner.run(settings.readFrom(process.env))
-                    ]);
-
-                    const { properties, content } = message;
-                    const { passthrough } = encryptor.decryptMessageContent(content, encoding);
-                    expect(queueName).to.eql(amqpHelper.nextStepQueue);
-
-                    expect(properties.headers.messageId).to.be.a('string');
-                    delete properties.headers.start;
-                    delete properties.headers.end;
-                    delete properties.headers.cid;
-                    delete properties.headers.messageId;
-
-                    expect(properties.headers).to.deep.equal({
-                        'taskId': env.ELASTICIO_FLOW_ID,
-                        'execId': env.ELASTICIO_EXEC_ID,
-                        'workspaceId': env.ELASTICIO_WORKSPACE_ID,
-                        'containerId': env.ELASTICIO_CONTAINER_ID,
-                        'userId': env.ELASTICIO_USER_ID,
-                        threadId,
-                        // 'stepId': env.ELASTICIO_STEP_ID,
-                        'compId': env.ELASTICIO_COMP_ID,
-                        'function': env.ELASTICIO_FUNCTION,
-                        parentMessageId,
-                        'protocolVersion': protocolVersion,
-                        'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
-                    });
-
-                    expect(passthrough.step_1).to.deep.eql(psMsg.passthrough.step_1);
-
-                    expect(passthrough.step_2.headers).to.deep.eql(psMsg.headers);
-                    expect(passthrough.step_2.body).to.deep.eql({
-                        hai: 'there',
-                        id: 'someId'
-                    });
-
-                    delete properties.headers;
-
-                    expect(properties).to.deep.eql({
-                        contentType: 'application/json',
-                        contentEncoding: 'utf8',
-                        deliveryMode: undefined,
-                        priority: undefined,
-                        correlationId: undefined,
-                        replyTo: undefined,
-                        expiration: undefined,
-                        messageId: undefined,
-                        timestamp: undefined,
-                        type: undefined,
-                        userId: undefined,
-                        appId: undefined,
-                        clusterId: undefined
-                    });
-                });
-
-                it(
-                    'should paste data from incoming message into passthrough '
-                    + 'and not copy own data if NO_SELF_PASSTRHOUGH',
-                    async () => {
-                        process.env.ELASTICIO_STEP_ID = 'step_2';
-                        process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
-                        process.env.ELASTICIO_FUNCTION = 'emit_data';
-                        const ferrymanSettings = settings.readFrom(process.env);
-                        ferrymanSettings.NO_SELF_PASSTRHOUGH = true;
-
-                        helpers.mockApiTaskStepResponse({
-                            is_passthrough: true
-                        });
-
-                        const psMsg = {
-                            headers: {
-                                stepId: 'step_2'
-                            },
-                            body: {
-                                message: 'Just do it!'
-                            },
-                            passthrough: {
-                                step_oth: { // emulating an another step – just to be sure that it's not lost
-                                    id: 'id-56',
-                                    body: { a: 1 },
-                                    attachments: {}
-                                }
-                            }
-                        };
-
-                        await amqpHelper.publishMessage(psMsg, {
-                            parentMessageId,
-                            threadId
-                        },{}, true);
-
-                        runner = requireRun();
-
-                        const [{ message, queueName }] = await Promise.all([
-                            new Promise(resolve => amqpHelper.on(
-                                'data',
-                                (message, queueName) => resolve({ message, queueName })
-                            )),
-                            runner.run(ferrymanSettings)
-                        ]);
-
-                        const { properties, content } = message;
-                        const { passthrough } = encryptor.decryptMessageContent(content, encoding);
-                        expect(queueName).to.eql(amqpHelper.nextStepQueue);
-
-                        const localHeaders = inputMessage.headers;
-                        localHeaders.stepId = 'step_2';
-
-                        expect(passthrough).to.deep.eql({
-                            step_oth: {
-                                id: 'id-56',
-                                body: { a: 1 },
-                                attachments: {}
-                            },
-                            step_2: {
-                                headers: localHeaders ,
-                                body: inputMessage.body
-                            }
-                        });
-
-                        expect(properties.headers.messageId).to.be.a('string');
-                        delete properties.headers.start;
-                        delete properties.headers.end;
-                        delete properties.headers.cid;
-                        delete properties.headers.messageId;
-
-                        expect(properties.headers).to.deep.equal({
-                            'taskId': env.ELASTICIO_FLOW_ID,
-                            'execId': env.ELASTICIO_EXEC_ID,
-                            'workspaceId': env.ELASTICIO_WORKSPACE_ID,
-                            'containerId': env.ELASTICIO_CONTAINER_ID,
-                            'userId': env.ELASTICIO_USER_ID,
-                            threadId,
-                            'stepId': env.ELASTICIO_STEP_ID,
-                            'compId': env.ELASTICIO_COMP_ID,
-                            'function': env.ELASTICIO_FUNCTION,
-                            parentMessageId,
-                            'protocolVersion': protocolVersion,
-                            'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
-                        });
-
-                        delete properties.headers;
-
-                        expect(properties).to.deep.eql({
-                            contentType: 'application/json',
-                            contentEncoding: 'utf8',
-                            deliveryMode: undefined,
-                            priority: undefined,
-                            correlationId: undefined,
-                            replyTo: undefined,
-                            expiration: undefined,
-                            messageId: undefined,
-                            timestamp: undefined,
-                            type: undefined,
-                            userId: undefined,
-                            appId: undefined,
-                            clusterId: undefined
-                        });
-                    }
-                );
-
-                it('should work well with async process function emitting data', async () => {
-                    process.env.ELASTICIO_STEP_ID = 'step_2';
-                    process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
-                    process.env.ELASTICIO_FUNCTION = 'async_trigger';
-                    process.env.ELASTICIO_DATA_RATE_LIMIT = '1';
-                    process.env.ELASTICIO_RATE_INTERVAL = '110';
-
-                    helpers.mockApiTaskStepResponse({
-                        is_passthrough: true
-                    });
-
-                    const psMsg = Object.assign(inputMessage, {
-                        passthrough: {
-                            step_oth: { // emulating an another step – just to be sure that it's not lost
-                                id: 'm-34',
-                                body: {},
-                                attachments: {}
-                            }
-                        },
-                        headers: {
-                            'x-custom-component-header': '123_abc',
-                            'stepId': 'step_2',
-                            'x-eio-routing-key': 'tenant.12345'
-                        }
-                    });
-
-                    await amqpHelper.publishMessage(psMsg, {
-                        parentMessageId,
-                        threadId
-                    });
-
-                    runner = requireRun();
-
-                    const [{ message, queueName }] = await Promise.all([
-                        new Promise(resolve => amqpHelper.on(
-                            'data',
-                            (message, queueName) => resolve({ message, queueName })
-                        )),
-                        runner.run(settings.readFrom(process.env))
-                    ]);
-
-                    const { properties, content } = message;
-                    const { passthrough } = encryptor.decryptMessageContent(content, encoding);
-
-                    expect(queueName).to.eql(amqpHelper.nextStepQueue);
-
-                    expect(passthrough.step_oth).to.deep.eql({
-                        id: 'm-34',
-                        body: {},
-                        attachments: {}
-                    });
-
-                    expect(passthrough.step_2.headers).to.deep.eql({
-                        'x-custom-component-header': '123_abc'
-                        // 'stepId': 'step_2'
-                        // 'x-eio-routing-key': 'tenant.12345'
-                    });
-                    expect(passthrough.step_2.body).to.deep.eql({
-                        hai: 'there',
-                        id: 'someId'
-                    });
-
-                    expect(properties.headers.messageId).to.be.a('string');
-
-                    delete properties.headers.start;
-                    delete properties.headers.end;
-                    delete properties.headers.cid;
-                    delete properties.headers.messageId;
-
-                    expect(properties.headers).to.deep.equal({
-                        'taskId': env.ELASTICIO_FLOW_ID,
-                        'execId': env.ELASTICIO_EXEC_ID,
-                        'workspaceId': env.ELASTICIO_WORKSPACE_ID,
-                        'containerId': env.ELASTICIO_CONTAINER_ID,
-                        'userId': env.ELASTICIO_USER_ID,
-                        threadId,
-                        'stepId': env.ELASTICIO_STEP_ID,
-                        'compId': env.ELASTICIO_COMP_ID,
-                        'function': env.ELASTICIO_FUNCTION,
-                        parentMessageId,
-                        protocolVersion,
-                        'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
-                    });
-
-                    delete properties.headers;
-
-                    expect(properties).to.deep.eql({
-                        contentType: 'application/json',
-                        contentEncoding: 'utf8',
-                        deliveryMode: undefined,
-                        priority: undefined,
-                        correlationId: undefined,
-                        replyTo: undefined,
-                        expiration: undefined,
-                        messageId: undefined,
-                        timestamp: undefined,
-                        type: undefined,
-                        userId: undefined,
-                        appId: undefined,
-                        clusterId: undefined
-                    });
-                });
+                // it('should work well with async process function emitting data', async () => {
+                //     process.env.ELASTICIO_STEP_ID = 'step_2';
+                //     process.env.ELASTICIO_FLOW_ID = '5559edd38968ec0736000003';
+                //     process.env.ELASTICIO_FUNCTION = 'async_trigger';
+                //     process.env.ELASTICIO_DATA_RATE_LIMIT = '1';
+                //     process.env.ELASTICIO_RATE_INTERVAL = '110';
+                //
+                //     helpers.mockApiTaskStepResponse({
+                //         is_passthrough: true
+                //     });
+                //
+                //     const psMsg = Object.assign(inputMessage, {
+                //         passthrough: {
+                //             step_oth: { // emulating an another step – just to be sure that it's not lost
+                //                 id: 'm-34',
+                //                 body: {},
+                //                 attachments: {}
+                //             }
+                //         },
+                //         headers: {
+                //             'x-custom-component-header': '123_abc',
+                //             'stepId': 'step_2',
+                //             'x-eio-routing-key': 'tenant.12345'
+                //         }
+                //     });
+                //
+                //     await amqpHelper.publishMessage(psMsg, {
+                //         parentMessageId,
+                //         threadId
+                //     });
+                //
+                //     runner = requireRun();
+                //
+                //     const [{ message, queueName }] = await Promise.all([
+                //         new Promise(resolve => amqpHelper.on(
+                //             'data',
+                //             (message, queueName) => resolve({ message, queueName })
+                //         )),
+                //         runner.run(settings.readFrom(process.env))
+                //     ]);
+                //
+                //     const { properties, content } = message;
+                //     const { passthrough } = encryptor.decryptMessageContent(content, encoding);
+                //
+                //     expect(queueName).to.eql(amqpHelper.nextStepQueue);
+                //
+                //     expect(passthrough.step_oth).to.deep.eql({
+                //         id: 'm-34',
+                //         body: {},
+                //         attachments: {}
+                //     });
+                //
+                //     expect(passthrough.step_2.headers).to.deep.eql({
+                //         'x-custom-component-header': '123_abc'
+                //         // 'stepId': 'step_2'
+                //         // 'x-eio-routing-key': 'tenant.12345'
+                //     });
+                //     expect(passthrough.step_2.body).to.deep.eql({
+                //         hai: 'there',
+                //         id: 'someId'
+                //     });
+                //
+                //     expect(properties.headers.messageId).to.be.a('string');
+                //
+                //     delete properties.headers.start;
+                //     delete properties.headers.end;
+                //     delete properties.headers.cid;
+                //     delete properties.headers.messageId;
+                //
+                //     expect(properties.headers).to.deep.equal({
+                //         'taskId': env.ELASTICIO_FLOW_ID,
+                //         'execId': env.ELASTICIO_EXEC_ID,
+                //         'workspaceId': env.ELASTICIO_WORKSPACE_ID,
+                //         'containerId': env.ELASTICIO_CONTAINER_ID,
+                //         'userId': env.ELASTICIO_USER_ID,
+                //         threadId,
+                //         'stepId': env.ELASTICIO_STEP_ID,
+                //         'compId': env.ELASTICIO_COMP_ID,
+                //         'function': env.ELASTICIO_FUNCTION,
+                //         parentMessageId,
+                //         protocolVersion,
+                //         'x-eio-routing-key': env.ELASTICIO_DATA_ROUTING_KEY
+                //     });
+                //
+                //     delete properties.headers;
+                //
+                //     expect(properties).to.deep.eql({
+                //         contentType: 'application/json',
+                //         contentEncoding: 'utf8',
+                //         deliveryMode: undefined,
+                //         priority: undefined,
+                //         correlationId: undefined,
+                //         replyTo: undefined,
+                //         expiration: undefined,
+                //         messageId: undefined,
+                //         timestamp: undefined,
+                //         type: undefined,
+                //         userId: undefined,
+                //         appId: undefined,
+                //         clusterId: undefined
+                //     });
+                // });
 
                 describe('when env ELASTICIO_STARTUP_REQUIRED is set', () => {
                     let ferrymanSettings;
