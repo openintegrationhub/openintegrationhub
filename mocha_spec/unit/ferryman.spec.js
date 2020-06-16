@@ -345,231 +345,231 @@ describe('Ferryman', () => {
             expect(fakeAMQPConnection.ack).to.have.been.calledOnce;
         });
 
-        it('should augment emitted message with passthrough data', async () => {
-            settings.FUNCTION = 'passthrough';
-            const ferryman = new Ferryman(settings);
+        // it('should augment emitted message with passthrough data', async () => {
+        //     settings.FUNCTION = 'passthrough';
+        //     const ferryman = new Ferryman(settings);
+        //
+        //     sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
+        //         expect(taskId).to.deep.equal('5559edd38968ec0736000003');
+        //         expect(stepId).to.deep.equal('step_1');
+        //         return Promise.resolve({ is_passthrough: true });
+        //     });
+        //
+        //     const psPayload = {
+        //         body: payload,
+        //         passthrough: {
+        //             step_0: {
+        //                 body: { key: 'value' }
+        //             }
+        //         }
+        //     };
+        //
+        //     await ferryman.connect();
+        //     await ferryman.prepare();
+        //     await ferryman.processMessage(psPayload, message);
+        //     expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+        //     expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
+        //     expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
+        //         {
+        //             body: {
+        //                 param1: 'Value1'
+        //             },
+        //             passthrough: {
+        //                 step_0: {
+        //                     body: {
+        //                         key: 'value'
+        //                     }
+        //                 },
+        //                 step_1: {
+        //                     body: { param1: 'Value1' }
+        //                 }
+        //             }
+        //         },
+        //         sinon.match({
+        //             'execId': 'some-exec-id',
+        //             'taskId': '5559edd38968ec0736000003',
+        //             'userId': '5559edd38968ec0736000002',
+        //             'containerId': 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+        //             'workspaceId': '5559edd38968ec073600683',
+        //             'stepId': 'step_1',
+        //             'compId': '5559edd38968ec0736000456',
+        //             'function': 'passthrough',
+        //             'start': sinon.match.number,
+        //             'cid': 1,
+        //             'end': sinon.match.number,
+        //             'messageId': sinon.match.string,
+        //             'x-eio-routing-key': 'test.hello'
+        //         })
+        //     );
+        //
+        //     expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
+        // });
 
-            sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-                expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-                expect(stepId).to.deep.equal('step_1');
-                return Promise.resolve({ is_passthrough: true });
-            });
+        // it(
+        //     'should augment emitted message with passthrough with data from incoming message '
+        //     + 'if NO_SELF_PASSTRHOUGH set', async () => {
+        //         message.properties.headers.stepId = 'step_1';
+        //         settings.FUNCTION = 'passthrough';
+        //         settings.NO_SELF_PASSTRHOUGH = true;
+        //         const ferryman = new Ferryman(settings);
+        //
+        //         sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
+        //             expect(taskId).to.deep.equal('5559edd38968ec0736000003');
+        //             expect(stepId).to.deep.equal('step_1');
+        //             return Promise.resolve({ is_passthrough: true });
+        //         });
+        //
+        //         const psPayload = {
+        //             body: payload,
+        //             passthrough: {
+        //                 step_oth: {
+        //                     body: { key: 'value' }
+        //                 }
+        //             }
+        //         };
+        //
+        //         await ferryman.connect();
+        //         await ferryman.prepare();
+        //         await ferryman.processMessage(psPayload, message);
+        //         expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+        //         expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
+        //
+        //         expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
+        //             {
+        //                 body: {
+        //                     param1: 'Value1'
+        //                 },
+        //                 passthrough: {
+        //                     step_oth: {
+        //                         body: {
+        //                             key: 'value'
+        //                         }
+        //                     },
+        //                     step_1: {
+        //                         body: { param1: 'Value1' }
+        //                     }
+        //                 }
+        //             },
+        //             sinon.match({
+        //                 'execId': 'some-exec-id',
+        //                 'taskId': '5559edd38968ec0736000003',
+        //                 'userId': '5559edd38968ec0736000002',
+        //                 'containerId': 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+        //                 'workspaceId': '5559edd38968ec073600683',
+        //                 'stepId': 'step_1',
+        //                 'compId': '5559edd38968ec0736000456',
+        //                 'function': 'passthrough',
+        //                 'start': sinon.match.number,
+        //                 'cid': 1,
+        //                 'end': sinon.match.number,
+        //                 'messageId': sinon.match.string,
+        //                 'x-eio-routing-key': 'test.hello'
+        //             })
+        //         );
+        //
+        //         expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
+        //     }
+        // );
+        //
+        // it(
+        //     'should not augment emitted message with passthrough with data from incoming message '
+        //     + 'if NO_SELF_PASSTRHOUGH set without stepId header',
+        //     async () => {
+        //
+        //         delete message.properties.headers.stepId;
+        //
+        //         settings.FUNCTION = 'passthrough';
+        //         settings.NO_SELF_PASSTRHOUGH = true;
+        //         const ferryman = new Ferryman(settings);
+        //
+        //         sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
+        //             expect(taskId).to.deep.equal('5559edd38968ec0736000003');
+        //             expect(stepId).to.deep.equal('step_1');
+        //             return Promise.resolve({ is_passthrough: true });
+        //         });
+        //
+        //
+        //         const psPayload = {
+        //             body: payload,
+        //             passthrough: {
+        //                 step_oth: {
+        //                     body: { key: 'value' }
+        //                 }
+        //             }
+        //         };
+        //
+        //
+        //         await ferryman.connect();
+        //         await ferryman.prepare();
+        //         await ferryman.processMessage(psPayload, message);
+        //         expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
+        //         expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
+        //         expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
+        //             {
+        //                 body: {
+        //                     param1: 'Value1'
+        //                 },
+        //                 passthrough: {
+        //                     step_oth: {
+        //                         body: {
+        //                             key: 'value'
+        //                         }
+        //                     }
+        //                 }
+        //             },
+        //             sinon.match({
+        //                 'execId': 'some-exec-id',
+        //                 'taskId': '5559edd38968ec0736000003',
+        //                 'userId': '5559edd38968ec0736000002',
+        //                 'containerId': 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
+        //                 'workspaceId': '5559edd38968ec073600683',
+        //                 // 'stepId': 'step_1',
+        //                 'compId': '5559edd38968ec0736000456',
+        //                 'function': 'passthrough',
+        //                 'start': sinon.match.number,
+        //                 'cid': 1,
+        //                 'end': sinon.match.number,
+        //                 'messageId': sinon.match.string,
+        //                 'x-eio-routing-key': 'test.hello'
+        //             })
+        //         );
+        //
+        //         expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
+        //
+        //         message.properties.headers.stepId = 'step_1';
+        //     }
+        // );
 
-            const psPayload = {
-                body: payload,
-                passthrough: {
-                    step_0: {
-                        body: { key: 'value' }
-                    }
-                }
-            };
-
-            await ferryman.connect();
-            await ferryman.prepare();
-            await ferryman.processMessage(psPayload, message);
-            expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
-            expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-            expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
-                {
-                    body: {
-                        param1: 'Value1'
-                    },
-                    passthrough: {
-                        step_0: {
-                            body: {
-                                key: 'value'
-                            }
-                        },
-                        step_1: {
-                            body: { param1: 'Value1' }
-                        }
-                    }
-                },
-                sinon.match({
-                    'execId': 'some-exec-id',
-                    'taskId': '5559edd38968ec0736000003',
-                    'userId': '5559edd38968ec0736000002',
-                    'containerId': 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
-                    'workspaceId': '5559edd38968ec073600683',
-                    'stepId': 'step_1',
-                    'compId': '5559edd38968ec0736000456',
-                    'function': 'passthrough',
-                    'start': sinon.match.number,
-                    'cid': 1,
-                    'end': sinon.match.number,
-                    'messageId': sinon.match.string,
-                    'x-eio-routing-key': 'test.hello'
-                })
-            );
-
-            expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
-        });
-
-        it(
-            'should augment emitted message with passthrough with data from incoming message '
-            + 'if NO_SELF_PASSTRHOUGH set', async () => {
-                message.properties.headers.stepId = 'step_1';
-                settings.FUNCTION = 'passthrough';
-                settings.NO_SELF_PASSTRHOUGH = true;
-                const ferryman = new Ferryman(settings);
-
-                sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-                    expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-                    expect(stepId).to.deep.equal('step_1');
-                    return Promise.resolve({ is_passthrough: true });
-                });
-
-                const psPayload = {
-                    body: payload,
-                    passthrough: {
-                        step_oth: {
-                            body: { key: 'value' }
-                        }
-                    }
-                };
-
-                await ferryman.connect();
-                await ferryman.prepare();
-                await ferryman.processMessage(psPayload, message);
-                expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
-                expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-
-                expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
-                    {
-                        body: {
-                            param1: 'Value1'
-                        },
-                        passthrough: {
-                            step_oth: {
-                                body: {
-                                    key: 'value'
-                                }
-                            },
-                            step_1: {
-                                body: { param1: 'Value1' }
-                            }
-                        }
-                    },
-                    sinon.match({
-                        'execId': 'some-exec-id',
-                        'taskId': '5559edd38968ec0736000003',
-                        'userId': '5559edd38968ec0736000002',
-                        'containerId': 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
-                        'workspaceId': '5559edd38968ec073600683',
-                        'stepId': 'step_1',
-                        'compId': '5559edd38968ec0736000456',
-                        'function': 'passthrough',
-                        'start': sinon.match.number,
-                        'cid': 1,
-                        'end': sinon.match.number,
-                        'messageId': sinon.match.string,
-                        'x-eio-routing-key': 'test.hello'
-                    })
-                );
-
-                expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
-            }
-        );
-
-        it(
-            'should not augment emitted message with passthrough with data from incoming message '
-            + 'if NO_SELF_PASSTRHOUGH set without stepId header',
-            async () => {
-
-                delete message.properties.headers.stepId;
-
-                settings.FUNCTION = 'passthrough';
-                settings.NO_SELF_PASSTRHOUGH = true;
-                const ferryman = new Ferryman(settings);
-
-                sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-                    expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-                    expect(stepId).to.deep.equal('step_1');
-                    return Promise.resolve({ is_passthrough: true });
-                });
-
-
-                const psPayload = {
-                    body: payload,
-                    passthrough: {
-                        step_oth: {
-                            body: { key: 'value' }
-                        }
-                    }
-                };
-
-
-                await ferryman.connect();
-                await ferryman.prepare();
-                await ferryman.processMessage(psPayload, message);
-                expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
-                expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
-                expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
-                    {
-                        body: {
-                            param1: 'Value1'
-                        },
-                        passthrough: {
-                            step_oth: {
-                                body: {
-                                    key: 'value'
-                                }
-                            }
-                        }
-                    },
-                    sinon.match({
-                        'execId': 'some-exec-id',
-                        'taskId': '5559edd38968ec0736000003',
-                        'userId': '5559edd38968ec0736000002',
-                        'containerId': 'dc1c8c3f-f9cb-49e1-a6b8-716af9e15948',
-                        'workspaceId': '5559edd38968ec073600683',
-                        // 'stepId': 'step_1',
-                        'compId': '5559edd38968ec0736000456',
-                        'function': 'passthrough',
-                        'start': sinon.match.number,
-                        'cid': 1,
-                        'end': sinon.match.number,
-                        'messageId': sinon.match.string,
-                        'x-eio-routing-key': 'test.hello'
-                    })
-                );
-
-                expect(fakeAMQPConnection.ack).to.have.been.calledOnce.and.calledWith(message);
-
-                message.properties.headers.stepId = 'step_1';
-            }
-        );
-
-        it('should provide access to flow variables', async () => {
-            settings.FUNCTION = 'use_flow_variables';
-            const ferryman = new Ferryman(settings);
-
-            sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
-                expect(taskId).to.deep.equal('5559edd38968ec0736000003');
-                expect(stepId).to.deep.equal('step_1');
-                return Promise.resolve({
-                    is_passthrough: true,
-                    variables: {
-                        var1: 'val1',
-                        var2: 'val2'
-                    }
-                });
-            });
-
-            const psPayload = {
-                body: payload
-            };
-
-            await ferryman.connect();
-            await ferryman.prepare();
-            await ferryman.processMessage(psPayload, message);
-            expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(sinon.match({
-                body: {
-                    var1: 'val1',
-                    var2: 'val2'
-                }
-            }));
-        });
+        // it('should provide access to flow variables', async () => {
+        //     settings.FUNCTION = 'use_flow_variables';
+        //     const ferryman = new Ferryman(settings);
+        //
+        //     sandbox.stub(ferryman.apiClient.tasks, 'retrieveStep').callsFake((taskId, stepId) => {
+        //         expect(taskId).to.deep.equal('5559edd38968ec0736000003');
+        //         expect(stepId).to.deep.equal('step_1');
+        //         return Promise.resolve({
+        //             is_passthrough: true,
+        //             variables: {
+        //                 var1: 'val1',
+        //                 var2: 'val2'
+        //             }
+        //         });
+        //     });
+        //
+        //     const psPayload = {
+        //         body: payload
+        //     };
+        //
+        //     await ferryman.connect();
+        //     await ferryman.prepare();
+        //     await ferryman.processMessage(psPayload, message);
+        //     expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(sinon.match({
+        //         body: {
+        //             var1: 'val1',
+        //             var2: 'val2'
+        //         }
+        //     }));
+        // });
 
         it('should send request to API server to update keys', async () => {
             settings.FUNCTION = 'keys_trigger';
