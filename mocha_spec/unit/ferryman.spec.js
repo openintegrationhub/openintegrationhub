@@ -61,7 +61,12 @@ describe('Ferryman', () => {
 
         nock(`https://localhost:2345/snapshots/flows/${flowId}/steps`)
             .get(`/${stepId}`)
-            .reply(200, { data: { snapshot: 'blubb' } });
+            .reply(200, { data: {
+                snapshot: {
+                    id: '123456789',
+                    value: 'abc'
+                }
+            } });
     });
 
     afterEach(() => {
@@ -428,6 +433,7 @@ describe('Ferryman', () => {
                 await ferryman.processMessage(psPayload, message);
                 expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
                 expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
+
                 expect(fakeAMQPConnection.sendBackChannel).to.have.been.calledOnce.and.calledWith(
                     {
                         body: {
@@ -701,7 +707,8 @@ describe('Ferryman', () => {
                 expect(stepId).to.deep.equal('step_1');
                 return Promise.resolve({
                     snapshot: {
-                        someId: 'someData'
+                        id: '123456789',
+                        value: 'abc'
                     }
                 });
             });
@@ -709,15 +716,15 @@ describe('Ferryman', () => {
             await ferryman.prepare();
             await ferryman.connect();
             const payload = {
-                updateSnapshot: { updated: 'value' }
+                updateSnapshot: { value: 'new value' }
             };
             await ferryman.processMessage(payload, message);
             expect(ferryman.apiClient.tasks.retrieveStep).to.have.callCount(1);
-            const expectedSnapshot = { someId: 'someData', updated: 'value' };
+            const expectedSnapshot = { id: '123456789', value: 'new value' };
             expect(fakeAMQPConnection.connect).to.have.been.calledOnce;
 
             expect(fakeAMQPConnection.sendSnapshot).to.have.been.calledOnce.and.calledWith(
-                { updated: 'value' },
+                { value: 'new value' },
                 sinon.match({
                     'taskId': '5559edd38968ec0736000003',
                     'execId': 'some-exec-id',
