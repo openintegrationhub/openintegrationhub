@@ -69,13 +69,13 @@ function updateHostsFile {
 
     for host_name in "${EXPOSED_SERVICES[@]}"
     do
-        match_in_hosts="$(grep $host_name /etc/hosts | cut -f1)"
+        match_in_hosts="$(grep "$host_name" /etc/hosts | cut -f1)"
         host_entry="${cluster_ip} ${host_name}"
         if [ ! -z "$match_in_hosts" ]
         then
             echo "Updating existing hosts entry: $host_entry"
-            updated_hosts=$(cat /etc/hosts | python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('$match_in_hosts','$host_entry'))")
-            echo $updated_hosts | sudo tee /etc/hosts > /dev/null
+            updated_hosts=$(python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('$match_in_hosts','$host_entry'))" < /etc/hosts)
+            echo "$updated_hosts" | sudo tee /etc/hosts > /dev/null
         else
             echo "Adding new hosts entry: $host_entry"
             echo "$host_entry" | sudo tee -a /etc/hosts > /dev/null
@@ -87,17 +87,17 @@ function waitForServiceStatus {
     # $1 - serviceUrl
     # $2 - serviceStatus
     status="000"
-    while [ $status != $2 ]; do
+    while [ $status != "$2" ]; do
         echo "Waiting for $1"
         sleep 2
-        status=$(curl --write-out %{http_code} --silent --output /dev/null $1)
+        status=$(curl -w "%{http_code}" --silent --output /dev/null "$1")
     done 
 }
 
 function waitForIngress {
     ingress_status=$(kubectl get pods --all-namespaces || true);
-    echo $ingress_status
-    while [ -z "$(grep 'ingress-nginx-controller.*Running' <<< $ingress_status)" ]; do 
+    echo "$ingress_status"
+    while [ -z "$(grep 'ingress-nginx-controller.*Running' <<< "$ingress_status")" ]; do 
         echo "Waiting for ingress..."
         sleep 2
         ingress_status=$(kubectl get pods --all-namespaces || true);
@@ -116,7 +116,7 @@ function postJSON {
         --fail \
         --request POST \
         --data "$2" \
-        $1
+        "$1"
     )
     status=$?
     result=$res
@@ -130,7 +130,7 @@ function setAdminToken {
     }
 EOM
     postJSON http://iam.localoih.com/login "$JSON"
-    admin_token=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
+    admin_token=$(echo "$result"| python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
 }
 
 function createServiceAccount {
@@ -148,7 +148,7 @@ function createServiceAccount {
     }
 EOM
     postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
-    service_account_id=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+    service_account_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
 }
 
 function setServiceAccountToken {
@@ -161,24 +161,24 @@ function setServiceAccountToken {
     }
 EOM
     postJSON http://iam.localoih.com/api/v1/tokens "$JSON" "$admin_token"
-    service_account_token=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
+    service_account_token=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
 }
 
 function addTokenToSecret {
     echo | base64 -w0 > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        service_account_token_encoded=$(echo -n $service_account_token | base64 -w0)
+        service_account_token_encoded=$(echo -n "$service_account_token" | base64 -w0)
     else
-        service_account_token_encoded=$(echo -n $service_account_token | base64)
+        service_account_token_encoded=$(echo -n "$service_account_token" | base64)
     fi
 
-    new_secret=$(cat ./3-Secret/SharedSecret.yaml | python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('REPLACE ME','$service_account_token_encoded'))")
-    echo $new_secret > ./3-Secret/SharedSecret.yaml
+    new_secret=$(python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('REPLACE ME','$service_account_token_encoded'))" < ./3-Secret/SharedSecret.yaml)
+    echo "$new_secret" > ./3-Secret/SharedSecret.yaml
 }
 
 function removeTokenFromSecret {
-    new_secret=$(cat ./3-Secret/SharedSecret.yaml | python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('$service_account_token_encoded','REPLACE ME'))")
-    echo $new_secret > ./3-Secret/SharedSecret.yaml
+    new_secret=$(python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('$service_account_token_encoded','REPLACE ME'))" < ./3-Secret/SharedSecret.yaml)
+    echo "$new_secret" > ./3-Secret/SharedSecret.yaml
 }
 
 function createTimerComponent {
@@ -196,7 +196,7 @@ function createTimerComponent {
     }
 EOM
     postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
-    timer_component_id=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+    timer_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
 function createNodeComponent {
@@ -214,7 +214,7 @@ function createNodeComponent {
     }
 EOM
     postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
-    node_component_id=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+    node_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
 function createFlow {
@@ -249,7 +249,7 @@ function createFlow {
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
-    node_component_id=$(echo $result | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+    node_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
 trap cleanup EXIT
@@ -266,11 +266,6 @@ checkTools
 ###
 ### 2. setup minikube
 ###
-
-# start
-
-kubectl delete validatingwebhookconfiguration ingress-nginx-admission || true
-
 minikube start --memory $MK_MEMORY --cpus $MK_CPUS
 minikube addons enable ingress
 minikube addons enable dashboard
@@ -289,7 +284,6 @@ kubectl delete ns flows || true
 ###
 
 updateHostsFile
-
 
 waitForIngress
 
