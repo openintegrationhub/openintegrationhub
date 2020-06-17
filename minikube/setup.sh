@@ -71,7 +71,7 @@ function updateHostsFile {
     do
         match_in_hosts="$(grep "$host_name" /etc/hosts | cut -f1)"
         host_entry="${cluster_ip} ${host_name}"
-        if [ ! -z "$match_in_hosts" ]
+        if [ -n "$match_in_hosts" ]
         then
             echo "Updating existing hosts entry: $host_entry"
             updated_hosts=$(python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('$match_in_hosts','$host_entry'))" < /etc/hosts)
@@ -96,8 +96,7 @@ function waitForServiceStatus {
 
 function waitForIngress {
     ingress_status=$(kubectl get pods --all-namespaces || true);
-    echo "$ingress_status"
-    while [ -z "$(grep 'ingress-nginx-controller.*Running' <<< "$ingress_status")" ]; do 
+    while [ -z "$(grep 'ingress-nginx-controller.*1/1' <<< "$ingress_status")" ]; do 
         echo "Waiting for ingress..."
         sleep 2
         ingress_status=$(kubectl get pods --all-namespaces || true);
@@ -254,7 +253,7 @@ EOM
 
 trap cleanup EXIT
 
-echo "WARNING: OIH kubernetes setup will be reseted."
+echo "WARNING: OIH kubernetes setup will be restored."
 sudo -v
 
 ###
