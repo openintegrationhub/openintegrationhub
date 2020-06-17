@@ -40,6 +40,7 @@ IFS=
 
 # script cache
 
+cluster_ip=""
 admin_token=""
 service_account_id=""
 service_account_token=""
@@ -64,12 +65,12 @@ function checkTools {
 }
 
 function updateHostsFile {
-    ip_address=$(minikube ip)
+    cluster_ip=$(minikube ip)
 
     for host_name in "${EXPOSED_SERVICES[@]}"
     do
         match_in_hosts="$(grep $host_name /etc/hosts | cut -f1)"
-        host_entry="${ip_address} ${host_name}"
+        host_entry="${cluster_ip} ${host_name}"
         if [ ! -z "$match_in_hosts" ]
         then
             echo "Updating existing hosts entry: $host_entry"
@@ -87,7 +88,7 @@ function waitForServiceStatus {
     # $2 - serviceStatus
     status="000"
     while [ $status != $2 ]; do
-        echo "Waiting for $1 with status $2"
+        echo "Waiting for $1"
         sleep 2
         status=$(curl --write-out %{http_code} --silent --output /dev/null $1)
     done 
@@ -266,11 +267,13 @@ checkTools
 ### 2. setup minikube
 ###
 
-# restart minikube
-minikube stop
+# start
+
+kubectl delete validatingwebhookconfiguration ingress-nginx-admission || true
+
+minikube start --memory $MK_MEMORY --cpus $MK_CPUS
 minikube addons enable ingress
 minikube addons enable dashboard
-minikube start --memory $MK_MEMORY --cpus $MK_CPUS
 
 # remove oih resources
 kubectl -n oih-dev-ns delete pods,services,deployments --all
@@ -286,6 +289,8 @@ kubectl delete ns flows || true
 ###
 
 updateHostsFile
+
+
 waitForIngress
 
 ###
