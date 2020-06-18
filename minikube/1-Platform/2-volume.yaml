@@ -2,8 +2,8 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: local-volume
-  namespace: oih-dev-ns
 spec:
+  persistentVolumeReclaimPolicy: Recycle
   accessModes:
     - ReadWriteOnce
   capacity:
