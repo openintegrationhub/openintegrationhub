@@ -7,6 +7,7 @@
     "lint": "eslint index.js src spec",
     "pretest": "npm run lint",
     "test": "mocha spec --recursive",
+    "coverage": "nyc mocha spec --recursive",
     "start": "node index.js",
     "start:dev": "LOG_LEVEL=trace NODE_ENV=development npm start | bunyan",
     "start:nodemon": "LOG_LEVEL=trace NODE_ENV=development nodemon index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/component-orchestrator/src | bunyan",
@@ -37,7 +38,8 @@
     "eslint-plugin-node": "6.0.1",
     "mocha": "5.2.0",
     "nock": "10.0.6",
-    "nodemon": "^2.0.4",
+    "nodemon": "2.0.4",
+    "nyc": "15.1.0",
     "sinon": "7.2.2",
     "sinon-chai": "3.3.0",
     "supertest": "4.0.2"
