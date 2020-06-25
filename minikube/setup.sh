@@ -15,6 +15,7 @@ EXPOSED_SERVICES=( \
     auditlog.localoih.com \
     metadata.localoih.com \
     component-repository.localoih.com \
+    snapshots-service.localoih.com \
     dispatcher-service.localoih.com \
     webhooks.localoih.com \
     attachment-storage-service.localoih.com \

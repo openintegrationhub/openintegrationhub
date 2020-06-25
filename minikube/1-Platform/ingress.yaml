@@ -43,6 +43,12 @@ spec:
       - backend:
           serviceName: component-repository-service
           servicePort: 1234
+  - host: snapshots-service.localoih.com
+    http:
+      paths:
+      - backend:
+          serviceName: snapshots-service
+          servicePort: 1234
   - host: webhooks.localoih.com
     http:
       paths:
