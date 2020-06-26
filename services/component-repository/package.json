@@ -11,8 +11,10 @@
     "lint": "eslint index.js src spec",
     "pretest": "npm run lint",
     "test": "mocha spec --recursive",
+    "coverage": "nyc mocha spec --recursive",
     "start": "node index.js",
     "start:dev": "LOG_LEVEL=trace NODE_ENV=development npm start | bunyan",
+    "start:nodemon": "LOG_LEVEL=trace NODE_ENV=development nodemon index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/component-repository/src | bunyan",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/component-repository:${VERSION} -f Dockerfile ../../"
   },
@@ -29,6 +31,8 @@
     "eslint-plugin-mocha": "^4.12.1",
     "eslint-plugin-node": "^6.0.1",
     "mocha": "6.0.1",
+    "nodemon": "2.0.4",
+    "nyc": "15.1.0",
     "sinon": "7.2.4",
     "sinon-chai": "3.3.0"
   },
