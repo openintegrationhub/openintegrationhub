@@ -33,7 +33,7 @@
     "eslint-plugin-json": "^1.2.1",
     "eslint-plugin-mocha": "^5.2.0",
     "fs": "0.0.1-security",
-    "jest": "^26.1.0",
+    "jest": "^24.7.1",
     "dotenv": "^8.2.0",
     "nock": "^13.0.2",
     "jest-environment-node": "^26.1.0",

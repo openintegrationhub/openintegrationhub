@@ -35,7 +35,7 @@
     "eslint-plugin-json": "^1.4.0",
     "eslint-plugin-mocha": "^5.2.0",
     "fs": "0.0.1-security",
-    "jest": "26.1.0",
+    "jest": "24.7.1",
     "jest-environment-node": "^24.7.1",
     "mongodb-memory-server": "^6.6.1",
     "nock": "11.3.3",
