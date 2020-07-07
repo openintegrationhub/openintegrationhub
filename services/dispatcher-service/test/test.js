@@ -188,14 +188,15 @@ describe('API', () => {
     configId = res.body.data[0].id;
   });
 
-  xtest('should not get the new configuration from another tenant', async () => {
+  test('should not get the new configuration from another tenant', async () => {
     const res = await request
       .get('/dispatches')
       .set('Authorization', 'Bearer guestToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
-    expect(res.status).toEqual(404);
+    expect(res.status).toEqual(200);
     expect(res.text).not.toHaveLength(0);
+    expect(res.body.data).toHaveLength(0);
   });
 
   test('should add a new app to the configuration', async () => {
