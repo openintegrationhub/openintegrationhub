@@ -106,7 +106,6 @@ describe('SPLIT chunks', () => {
   });
 });
 
-
 describe('GET splitted chunks', () => {
   test('should return 200 and splitted chunks', async () => {
     const { splitKey } = chunk4.splitSchema[0].meta;

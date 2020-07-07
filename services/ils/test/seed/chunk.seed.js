@@ -361,8 +361,8 @@ const chunk15 = {
   },
 };
 
-const createInvalidChunk = nock('http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address')
-  .get('')
+const createInvalidChunk = nock('http://metadata.openintegrationhub.com')
+  .get('/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address')
   .reply(200, {
     data: {
       id: '5d305efa0cbe7c00115c7d96',
@@ -395,9 +395,9 @@ const createInvalidChunk = nock('http://metadata.openintegrationhub.com/api/v1/d
     },
   });
 
-const createValidChunk = nock('http://metadata.openintegrationhub.com/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address')
+const createValidChunk = nock('http://metadata.openintegrationhub.com')
   .persist()
-  .get('')
+  .get('/api/v1/domains/5d3031a20cbe7c00115c7d8f/schemas/address')
   .reply(200, {
     data: {
       id: '5d305efa0cbe7c00115c7d96',

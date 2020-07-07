@@ -6,7 +6,7 @@
  * @param {Object} schema - Schema object containing all properties
  * @return {Boolean} - return boolen if schema is invalid
  */
-const validateSchema = schema => schema === ''
+const validateSchema = (schema) => schema === ''
   || typeof schema === 'string'
   || typeof schema === 'number'
   || schema === undefined
@@ -44,7 +44,7 @@ const validateUri = (uri) => {
  * @param {Object} schema - Schema object containing all properties
  * @return {Boolean} - return boolen if schema is valid
  */
-const validateSplitSchema = schema => schema.length === 0
+const validateSplitSchema = (schema) => schema.length === 0
  || schema === ''
  || typeof schema === 'string'
  || typeof schema === 'number'
