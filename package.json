@@ -16,7 +16,6 @@
   "dependencies": {
     "amqplib": "^0.5.6",
     "bunyan": "^1.8.14",
-    "co": "4.6.0",
     "debug": "4.1.1",
     "elasticio-rest-node": "1.2.6",
     "event-to-promise": "0.8.0",

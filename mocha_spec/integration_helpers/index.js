@@ -1,6 +1,5 @@
 'use strict';
 
-const co = require('co');
 const amqplib = require('amqplib');
 const { EventEmitter } = require('events');
 const PREFIX = 'sailor_nodejs_integration_test';
@@ -78,64 +77,64 @@ class AmqpHelper extends EventEmitter {
         );
     }
 
-    *prepareQueues() {
-        const amqp = yield amqplib.connect(env.ELASTICIO_AMQP_URI);
+    async prepareQueues() {
+        const amqp = await amqplib.connect(env.ELASTICIO_AMQP_URI);
         this._amqp = amqp;
-        const subscriptionChannel = yield amqp.createChannel();
+        const subscriptionChannel = await amqp.createChannel();
 
-        const backChannel = yield amqp.createChannel();
+        const backChannel = await amqp.createChannel();
 
-        const publishChannel = yield amqp.createChannel();
+        const publishChannel = await amqp.createChannel();
 
-        yield subscriptionChannel.assertQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
+        await subscriptionChannel.assertQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
-        // yield backChannel.assertQueue(env.ELASTICIO_BACK_CHANNEL);
+        // await backChannel.assertQueue(env.ELASTICIO_BACK_CHANNEL);
 
-        yield publishChannel.assertQueue(this.nextStepQueue);
-        yield publishChannel.assertQueue(this.nextStepErrorQueue);
+        await publishChannel.assertQueue(this.nextStepQueue);
+        await publishChannel.assertQueue(this.nextStepErrorQueue);
 
         const exchangeOptions = {
             durable: true,
             autoDelete: false
         };
 
-        yield subscriptionChannel.assertExchange(env.ELASTICIO_LISTEN_MESSAGES_ON, 'direct', exchangeOptions);
-        yield publishChannel.assertExchange(env.ELASTICIO_PUBLISH_MESSAGES_TO, 'direct', exchangeOptions);
+        await subscriptionChannel.assertExchange(env.ELASTICIO_LISTEN_MESSAGES_ON, 'direct', exchangeOptions);
+        await publishChannel.assertExchange(env.ELASTICIO_PUBLISH_MESSAGES_TO, 'direct', exchangeOptions);
 
-        // yield backChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
+        // await backChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
 
-        yield subscriptionChannel.bindQueue(
+        await subscriptionChannel.bindQueue(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_DATA_ROUTING_KEY);
 
-        // yield backChannel.bindQueue(
+        // await backChannel.bindQueue(
         //     env.ELASTICIO_BACK_CHANNEL,
         //     env.ELASTICIO_BACK_CHANNEL,
         //     '*');
 
-        yield publishChannel.bindQueue(
+        await publishChannel.bindQueue(
             this.nextStepQueue,
             env.ELASTICIO_PUBLISH_MESSAGES_TO,
             env.ELASTICIO_DATA_ROUTING_KEY);
 
-        yield publishChannel.bindQueue(
+        await publishChannel.bindQueue(
             this.nextStepErrorQueue,
             env.ELASTICIO_PUBLISH_MESSAGES_TO,
             env.ELASTICIO_ERROR_ROUTING_KEY);
 
-        yield publishChannel.assertQueue(this.httpReplyQueueName);
-        yield publishChannel.bindQueue(
+        await publishChannel.assertQueue(this.httpReplyQueueName);
+        await publishChannel.bindQueue(
             this.httpReplyQueueName,
             env.ELASTICIO_PUBLISH_MESSAGES_TO,
             this.httpReplyQueueRoutingKey);
 
-        yield publishChannel.purgeQueue(this.nextStepQueue);
-        yield publishChannel.purgeQueue(this.nextStepErrorQueue);
-        yield publishChannel.purgeQueue(this.httpReplyQueueName);
-        yield publishChannel.purgeQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
+        await publishChannel.purgeQueue(this.nextStepQueue);
+        await publishChannel.purgeQueue(this.nextStepErrorQueue);
+        await publishChannel.purgeQueue(this.httpReplyQueueName);
+        await publishChannel.purgeQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
-        // yield backChannel.purgeQueue(env.ELASTICIO_BACK_CHANNEL);
+        // await backChannel.purgeQueue(env.ELASTICIO_BACK_CHANNEL);
 
         this.subscriptionChannel = subscriptionChannel;
 
@@ -144,43 +143,39 @@ class AmqpHelper extends EventEmitter {
         this.publishChannel = publishChannel;
     }
 
-    cleanUp() {
-        return co(function* gen() {
-            this.removeAllListeners();
-            this.dataMessages = [];
-            yield Promise.all([
-                this.publishChannel.cancel('sailor_nodejs_1'),
-                this.publishChannel.cancel('sailor_nodejs_2'),
-                this.publishChannel.cancel('sailor_nodejs_3')
-            ]);
-            yield this._amqp.close();
-        }.bind(this));
+    async cleanUp() {
+        this.removeAllListeners();
+        this.dataMessages = [];
+        await Promise.all([
+            this.publishChannel.cancel('sailor_nodejs_1'),
+            this.publishChannel.cancel('sailor_nodejs_2'),
+            this.publishChannel.cancel('sailor_nodejs_3')
+        ]);
+        await this._amqp.close();
     }
 
-    prepare() {
+    async prepare() {
         const that = this;
-        return co(function * gen() {
-            that.prepareEnv();
-            yield that.prepareQueues();
+        that.prepareEnv();
+        await that.prepareQueues();
 
-            yield that.publishChannel.consume(
-                that.nextStepQueue,
-                that.consumer.bind(that, that.nextStepQueue),
-                { consumerTag: 'sailor_nodejs_1' }
-            );
+        await that.publishChannel.consume(
+            that.nextStepQueue,
+            that.consumer.bind(that, that.nextStepQueue),
+            { consumerTag: 'sailor_nodejs_1' }
+        );
 
-            yield that.publishChannel.consume(
-                that.nextStepErrorQueue,
-                that.consumer.bind(that, that.nextStepErrorQueue),
-                { consumerTag: 'sailor_nodejs_2' }
-            );
+        await that.publishChannel.consume(
+            that.nextStepErrorQueue,
+            that.consumer.bind(that, that.nextStepErrorQueue),
+            { consumerTag: 'sailor_nodejs_2' }
+        );
 
-            yield that.publishChannel.consume(
-                that.httpReplyQueueName,
-                that.consumer.bind(that, that.httpReplyQueueName),
-                { consumerTag: 'sailor_nodejs_3' }
-            );
-        });
+        await that.publishChannel.consume(
+            that.httpReplyQueueName,
+            that.consumer.bind(that, that.httpReplyQueueName),
+            { consumerTag: 'sailor_nodejs_3' }
+        );
     }
 
     consumer(queue, message) {
@@ -188,37 +183,35 @@ class AmqpHelper extends EventEmitter {
         this.emit('data', message, queue);
     }
 
-    retrieveAllMessagesNotConsumedBySailor(timeout = 1000) {
-        return co(function* gen() {
-            const consumerTag = 'tmp_consumer';
-            const data = [];
+    async retrieveAllMessagesNotConsumedBySailor(timeout = 1000) {
+        const consumerTag = 'tmp_consumer';
+        const data = [];
 
-            yield this.subscriptionChannel.consume(
-                env.ELASTICIO_LISTEN_MESSAGES_ON,
-                (message) => {
-                    this.subscriptionChannel.ack(message);
-                    const protocolVersion = Number(message.properties.headers.protocolVersion || 1);
+        await this.subscriptionChannel.consume(
+            env.ELASTICIO_LISTEN_MESSAGES_ON,
+            (message) => {
+                this.subscriptionChannel.ack(message);
+                const protocolVersion = Number(message.properties.headers.protocolVersion || 1);
 
-                    const emittedMessage = encryptor.decryptMessageContent(
-                        message.content,
-                        protocolVersion < 2 ? 'base64' : undefined
-                    );
+                const emittedMessage = encryptor.decryptMessageContent(
+                    message.content,
+                    protocolVersion < 2 ? 'base64' : undefined
+                );
 
-                    const entry = {
-                        properties: message.properties,
-                        body: emittedMessage.body,
-                        emittedMessage
-                    };
-                    data.push(entry);
-                },
-                { consumerTag }
-            );
-            yield new Promise(resolve => setTimeout(resolve, timeout));
+                const entry = {
+                    properties: message.properties,
+                    body: emittedMessage.body,
+                    emittedMessage
+                };
+                data.push(entry);
+            },
+            { consumerTag }
+        );
+        await new Promise(resolve => setTimeout(resolve, timeout));
 
-            yield this.subscriptionChannel.cancel(consumerTag);
+        await this.subscriptionChannel.cancel(consumerTag);
 
-            return data;
-        }.bind(this));
+        return data;
     }
 }
 
@@ -286,64 +279,64 @@ class AmqpHelperGlobal extends EventEmitter {
         );
     }
 
-    *prepareQueues() {
-        const amqp = yield amqplib.connect(env.ELASTICIO_AMQP_URI);
+    async prepareQueues() {
+        const amqp = await amqplib.connect(env.ELASTICIO_AMQP_URI);
         this._amqp = amqp;
-        const subscriptionChannel = yield amqp.createChannel();
+        const subscriptionChannel = await amqp.createChannel();
 
-        const backChannel = yield amqp.createChannel();
+        const backChannel = await amqp.createChannel();
 
-        const publishChannel = yield amqp.createChannel();
+        const publishChannel = await amqp.createChannel();
 
-        yield subscriptionChannel.assertQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
+        await subscriptionChannel.assertQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
-        // yield backChannel.assertQueue(env.ELASTICIO_BACK_CHANNEL);
+        // await backChannel.assertQueue(env.ELASTICIO_BACK_CHANNEL);
 
-        yield publishChannel.assertQueue(this.nextStepQueue);
-        yield publishChannel.assertQueue(this.nextStepErrorQueue);
+        await publishChannel.assertQueue(this.nextStepQueue);
+        await publishChannel.assertQueue(this.nextStepErrorQueue);
 
         const exchangeOptions = {
             durable: true,
             autoDelete: false
         };
 
-        yield subscriptionChannel.assertExchange(env.ELASTICIO_LISTEN_MESSAGES_ON, 'direct', exchangeOptions);
-        yield publishChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
+        await subscriptionChannel.assertExchange(env.ELASTICIO_LISTEN_MESSAGES_ON, 'direct', exchangeOptions);
+        await publishChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
 
-        // yield backChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
+        // await backChannel.assertExchange(env.ELASTICIO_BACK_CHANNEL, 'direct', exchangeOptions);
 
-        yield subscriptionChannel.bindQueue(
+        await subscriptionChannel.bindQueue(
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_LISTEN_MESSAGES_ON,
             env.ELASTICIO_DATA_ROUTING_KEY);
 
-        // yield backChannel.bindQueue(
+        // await backChannel.bindQueue(
         //     env.ELASTICIO_BACK_CHANNEL,
         //     env.ELASTICIO_BACK_CHANNEL,
         //     '*');
 
-        yield publishChannel.bindQueue(
+        await publishChannel.bindQueue(
             this.nextStepQueue,
             env.ELASTICIO_BACK_CHANNEL,
             env.ELASTICIO_DATA_ROUTING_KEY);
 
-        yield publishChannel.bindQueue(
+        await publishChannel.bindQueue(
             this.nextStepErrorQueue,
             env.ELASTICIO_BACK_CHANNEL,
             env.ELASTICIO_ERROR_ROUTING_KEY);
 
-        yield publishChannel.assertQueue(this.httpReplyQueueName);
-        yield publishChannel.bindQueue(
+        await publishChannel.assertQueue(this.httpReplyQueueName);
+        await publishChannel.bindQueue(
             this.httpReplyQueueName,
             env.ELASTICIO_BACK_CHANNEL,
             this.httpReplyQueueRoutingKey);
 
-        yield publishChannel.purgeQueue(this.nextStepQueue);
-        yield publishChannel.purgeQueue(this.nextStepErrorQueue);
-        yield publishChannel.purgeQueue(this.httpReplyQueueName);
-        yield publishChannel.purgeQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
+        await publishChannel.purgeQueue(this.nextStepQueue);
+        await publishChannel.purgeQueue(this.nextStepErrorQueue);
+        await publishChannel.purgeQueue(this.httpReplyQueueName);
+        await publishChannel.purgeQueue(env.ELASTICIO_LISTEN_MESSAGES_ON);
 
-        // yield backChannel.purgeQueue(env.ELASTICIO_BACK_CHANNEL);
+        // await backChannel.purgeQueue(env.ELASTICIO_BACK_CHANNEL);
 
         this.subscriptionChannel = subscriptionChannel;
 
@@ -352,43 +345,39 @@ class AmqpHelperGlobal extends EventEmitter {
         this.publishChannel = publishChannel;
     }
 
-    cleanUp() {
-        return co(function* gen() {
-            this.removeAllListeners();
-            this.dataMessages = [];
-            yield Promise.all([
-                this.publishChannel.cancel('sailor_nodejs_1'),
-                this.publishChannel.cancel('sailor_nodejs_2'),
-                this.publishChannel.cancel('sailor_nodejs_3')
-            ]);
-            yield this._amqp.close();
-        }.bind(this));
+    async cleanUp() {
+        this.removeAllListeners();
+        this.dataMessages = [];
+        await Promise.all([
+            this.publishChannel.cancel('sailor_nodejs_1'),
+            this.publishChannel.cancel('sailor_nodejs_2'),
+            this.publishChannel.cancel('sailor_nodejs_3')
+        ]);
+        await this._amqp.close();
     }
 
-    prepare() {
+    async prepare() {
         const that = this;
-        return co(function * gen() {
-            that.prepareEnv();
-            yield that.prepareQueues();
+        that.prepareEnv();
+        await that.prepareQueues();
 
-            yield that.publishChannel.consume(
-                that.nextStepQueue,
-                that.consumer.bind(that, that.nextStepQueue),
-                { consumerTag: 'sailor_nodejs_1' }
-            );
+        await that.publishChannel.consume(
+            that.nextStepQueue,
+            that.consumer.bind(that, that.nextStepQueue),
+            { consumerTag: 'sailor_nodejs_1' }
+        );
 
-            yield that.publishChannel.consume(
-                that.nextStepErrorQueue,
-                that.consumer.bind(that, that.nextStepErrorQueue),
-                { consumerTag: 'sailor_nodejs_2' }
-            );
+        await that.publishChannel.consume(
+            that.nextStepErrorQueue,
+            that.consumer.bind(that, that.nextStepErrorQueue),
+            { consumerTag: 'sailor_nodejs_2' }
+        );
 
-            yield that.publishChannel.consume(
-                that.httpReplyQueueName,
-                that.consumer.bind(that, that.httpReplyQueueName),
-                { consumerTag: 'sailor_nodejs_3' }
-            );
-        });
+        await that.publishChannel.consume(
+            that.httpReplyQueueName,
+            that.consumer.bind(that, that.httpReplyQueueName),
+            { consumerTag: 'sailor_nodejs_3' }
+        );
     }
 
     consumer(queue, message) {
@@ -396,37 +385,35 @@ class AmqpHelperGlobal extends EventEmitter {
         this.emit('data', message, queue);
     }
 
-    retrieveAllMessagesNotConsumedBySailor(timeout = 1000) {
-        return co(function* gen() {
-            const consumerTag = 'tmp_consumer';
-            const data = [];
+    async retrieveAllMessagesNotConsumedBySailor(timeout = 1000) {
+        const consumerTag = 'tmp_consumer';
+        const data = [];
 
-            yield this.subscriptionChannel.consume(
-                env.ELASTICIO_LISTEN_MESSAGES_ON,
-                (message) => {
-                    this.subscriptionChannel.ack(message);
-                    const protocolVersion = Number(message.properties.headers.protocolVersion || 1);
+        await this.subscriptionChannel.consume(
+            env.ELASTICIO_LISTEN_MESSAGES_ON,
+            (message) => {
+                this.subscriptionChannel.ack(message);
+                const protocolVersion = Number(message.properties.headers.protocolVersion || 1);
 
-                    const emittedMessage = encryptor.decryptMessageContent(
-                        message.content,
-                        protocolVersion < 2 ? 'base64' : undefined
-                    );
+                const emittedMessage = encryptor.decryptMessageContent(
+                    message.content,
+                    protocolVersion < 2 ? 'base64' : undefined
+                );
 
-                    const entry = {
-                        properties: message.properties,
-                        body: emittedMessage.body,
-                        emittedMessage
-                    };
-                    data.push(entry);
-                },
-                { consumerTag }
-            );
-            yield new Promise(resolve => setTimeout(resolve, timeout));
+                const entry = {
+                    properties: message.properties,
+                    body: emittedMessage.body,
+                    emittedMessage
+                };
+                data.push(entry);
+            },
+            { consumerTag }
+        );
+        await new Promise(resolve => setTimeout(resolve, timeout));
 
-            yield this.subscriptionChannel.cancel(consumerTag);
+        await this.subscriptionChannel.cancel(consumerTag);
 
-            return data;
-        }.bind(this));
+        return data;
     }
 }
 

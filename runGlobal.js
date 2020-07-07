@@ -1,7 +1,6 @@
 const logger = require('./lib/logging.js');
 const Ferryman = require('./lib/ferryman.js').Ferryman;
 const settings = require('./lib/settings.js');
-const co = require('co');
 
 let ferryman;
 let disconnectRequired;
@@ -36,20 +35,20 @@ async function putOutToSea(settings) {
     await ferryman.run();
 }
 
-function disconnectAndExit() {
+async function disconnectAndExit() {
     if (!disconnectRequired) {
         return;
     }
     disconnectRequired = false;
-    co(function* putIn() {
+    try {
         logger.info('Disconnecting...');
-        yield ferryman.disconnect();
+        await ferryman.disconnect();
         logger.info('Successfully disconnected');
         process.exit();
-    }).catch((err) => {
+    } catch (err) {
         logger.error('Unable to disconnect', err.stack);
         process.exit(-1);
-    });
+    }
 }
 
 function _disconnectOnly() {

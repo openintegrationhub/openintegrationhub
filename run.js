@@ -1,7 +1,6 @@
 const logger = require('./lib/logging.js');
 const Sailor = require('./lib/sailor.js').Sailor;
 const settings = require('./lib/settings.js');
-const co = require('co');
 
 let sailor;
 let disconnectRequired;
@@ -33,20 +32,20 @@ async function putOutToSea(settings) {
     await sailor.run();
 }
 
-function disconnectAndExit() {
+async function disconnectAndExit() {
     if (!disconnectRequired) {
         return;
     }
     disconnectRequired = false;
-    co(function* putIn() {
+    try {
         logger.info('Disconnecting...');
-        yield sailor.disconnect();
+        await sailor.disconnect();
         logger.info('Successfully disconnected');
         process.exit();
-    }).catch((err) => {
+    } catch (err) {
         logger.error('Unable to disconnect', err.stack);
         process.exit(-1);
-    });
+    }
 }
 
 function _disconnectOnly() {
