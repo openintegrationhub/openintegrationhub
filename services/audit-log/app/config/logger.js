@@ -3,7 +3,6 @@ const bformat = require('bunyan-format');
 
 const formatOut = bformat({ outputMode: 'long' /* , levelInString: true */ });
 
-
 const log = bunyan.createLogger({
   name: 'app',
   streams: [

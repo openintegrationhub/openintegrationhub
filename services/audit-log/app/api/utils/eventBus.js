@@ -59,7 +59,6 @@ async function reportHealth() {
   return (eventBus._connected); // eslint-disable-line
 }
 
-
 module.exports = {
   connectQueue, disconnectQueue, reportHealth,
 };
