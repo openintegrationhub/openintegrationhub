@@ -193,7 +193,7 @@ describe('Integration Test for globalRun', () => {
                         {
                             protocolVersion: 2
                         },
-                        true,
+                        true
                     );
 
                     runner = requireRun();

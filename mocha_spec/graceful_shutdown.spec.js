@@ -15,14 +15,15 @@ describe('Graceful shutdown', function test() {
         }
     };
 
-    let fakeApiServer;
+    // let fakeApiServer;
     let amqpHelper = helpers.amqp();
 
     beforeEach(async () => {
         helpers.prepareEnv();
         await amqpHelper.prepare();
 
-        fakeApiServer = await helpers.fakeApiServerStart();
+        // fakeApiServer =
+        await helpers.fakeApiServerStart();
     });
 
     afterEach(async () => {

@@ -1,3 +1,5 @@
+/* eslint no-use-before-define: "off" */
+
 describe('Service', () => {
     var service = require('../lib/service');
     var nock = require('nock');
