@@ -16,7 +16,7 @@ aliases:
       - restore_cache:
           keys:
             - yarn-deps-{{ .Branch }}-{{ .Revision }}
-      - run: yarn test --ignore-engines
+      - run: yarn test
   - &build_steps
       - setup_remote_docker
       - restore_cache:
