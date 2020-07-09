@@ -1,0 +1,7 @@
+coverage
+node_modules
+.DS_Store
+.idea
+out.log
+err.log
+.nyc_output

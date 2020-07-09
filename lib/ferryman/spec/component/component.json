@@ -1,0 +1,103 @@
+{
+  "title": "Client component",
+  "description": "Client component description",
+  "external": true,
+  "credentials": {
+  },
+  "triggers": {
+    "data_trigger": {
+      "main": "./triggers/data_trigger.js",
+      "title": "Get data"
+    },
+    "end_after_data_twice": {
+      "main": "./triggers/end_after_data_twice.js",
+      "title": "Emitting end twice after data"
+    },
+    "end_after_error_twice": {
+      "main": "./triggers/end_after_error_twice.js",
+      "title": "Emitting end twice after error"
+    },
+    "init_trigger": {
+      "main": "./triggers/init_trigger.js",
+      "title": "Init data"
+    },
+    "init_trigger_returns_string": {
+      "main": "./triggers/init_trigger_returns_string.js",
+      "title": "Init data"
+    },
+    "rebound_trigger": {
+      "main": "./triggers/rebound_trigger.js",
+      "title": "Rebound"
+    },
+    "keys_trigger": {
+      "main": "./triggers/keys_trigger.js",
+      "title": "Error"
+    },
+    "error_trigger": {
+      "main": "./triggers/error_trigger.js",
+      "title": "Error"
+    },
+    "datas_and_errors": {
+      "main": "./triggers/datas_and_errors.js",
+      "title": "Both data and error"
+    },
+    "passthrough": {
+      "main": "./triggers/passthrough.js",
+      "title": "Emit the same message which received"
+    },
+    "missing_trigger": {
+      "main": "./triggers/missing_trigger.js",
+      "title": "Error"
+    },
+    "trigger_with_wrong_dependency": {
+      "main": "./triggers/trigger_with_wrong_dependency.js",
+      "title": "Trigger with wrong dependency"
+    },
+    "syntax_error_trigger": {
+      "main": "./triggers/syntax_error_trigger.js",
+      "title": "Trigger with syntax error in file"
+    },
+    "invalid_trigger": {
+      "title": "Error"
+    }
+  },
+  "actions": {
+    "update": {
+      "main": "./actions/update.js",
+      "title": "Update a record",
+      "metadata": {
+        "in": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "title": "Customer id",
+              "type": "string",
+              "required": true
+            },
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "required": false
+            }
+          }
+        }
+      }
+    },
+    "update1": {
+      "main": "./actions/update1.js",
+      "title": "Update a record"
+    },
+    "update2": {
+      "main": "./actions/update2.js",
+      "title": "Update a record"
+    },
+    "http_reply": {
+      "main": "./actions/httpReply.js",
+      "title": "Http Reply"
+    },
+    "use_flow_variables" : {
+        "main": "./actions/flow_variables.js",
+        "title": "Flow variables"
+    }
+  }
+}
