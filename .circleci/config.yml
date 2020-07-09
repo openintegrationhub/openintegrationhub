@@ -6,6 +6,9 @@ aliases:
   - &node_mongo_env
     - image: circleci/node:10-stretch
     - image: circleci/mongo:3.6
+  - &node_amqp_env
+    - image: circleci/node:10-stretch
+    - image: rabbitmq:3.8.5-alpine
   - &run_npm_install
     name: Installing Dependencies
     command: yarn --ignore-engines
@@ -119,7 +122,7 @@ jobs:
     working_directory: ~/oih/lib/component-repository
     steps: *yarn_test_steps
   lib-ferryman-test:
-    docker: *node_mongo_env
+    docker: *node_amqp_env
     working_directory: ~/oih/lib/ferryman
     steps: *yarn_test_steps
   flow-repository-test:
