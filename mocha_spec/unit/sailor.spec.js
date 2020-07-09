@@ -34,6 +34,9 @@ describe('Sailor', () => {
 
         envVars.ELASTICIO_LISTEN_MESSAGES_ON = '5559edd38968ec0736000003:step_1:1432205514864:messages';
         envVars.ELASTICIO_PUBLISH_MESSAGES_TO = 'userexchange:5527f0ea43238e5d5f000001';
+
+        envVars.ELASTICIO_BACK_CHANNEL = 'backChannel:5527f0ea43238e5d5f000001';
+
         envVars.ELASTICIO_DATA_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:message';
         envVars.ELASTICIO_ERROR_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:error';
         envVars.ELASTICIO_REBOUND_ROUTING_KEY = '5559edd38968ec0736000003:step_1:1432205514864:rebound';
@@ -503,7 +506,7 @@ describe('Sailor', () => {
             }
         );
 
-        it('should provide access to flow vairables', async () => {
+        it('should provide access to flow variables', async () => {
             settings.FUNCTION = 'use_flow_variables';
             const sailor = new Sailor(settings);
 

@@ -1,35 +1,38 @@
 const logger = require('./lib/logging.js');
-const Sailor = require('./lib/sailor.js').Sailor;
+const Ferryman = require('./lib/ferryman.js').Ferryman;
 const settings = require('./lib/settings.js');
 
-let sailor;
+let ferryman;
 let disconnectRequired;
 
 async function putOutToSea(settings) {
-    sailor = new Sailor(settings);
+
+    ferryman = new Ferryman(settings);
 
     //eslint-disable-next-line no-extra-boolean-cast
     if (!!settings.HOOK_SHUTDOWN) {
         disconnectRequired = false;
         //eslint-disable-next-line no-empty-function
-        sailor.reportError = () => {
+        ferryman.reportError = () => {
         };
-        await sailor.prepare();
-        await sailor.runHookShutdown();
+        await ferryman.prepare();
+
+        await ferryman.runHookShutdown();
         return;
     }
 
     disconnectRequired = true;
-    await sailor.connect();
-    await sailor.prepare();
+    await ferryman.connect();
+    await ferryman.prepare();
 
     //eslint-disable-next-line no-extra-boolean-cast
     if (!!settings.STARTUP_REQUIRED) {
-        await sailor.startup();
+        await ferryman.startup();
     }
 
-    await sailor.runHookInit();
-    await sailor.run();
+    await ferryman.runHookInit();
+
+    await ferryman.run();
 }
 
 async function disconnectAndExit() {
@@ -39,7 +42,7 @@ async function disconnectAndExit() {
     disconnectRequired = false;
     try {
         logger.info('Disconnecting...');
-        await sailor.disconnect();
+        await ferryman.disconnect();
         logger.info('Successfully disconnected');
         process.exit();
     } catch (err) {
@@ -52,7 +55,7 @@ function _disconnectOnly() {
     if (!disconnectRequired) {
         return Promise.resolve();
     }
-    return sailor.disconnect();
+    return ferryman.disconnect();
 }
 
 function gracefulShutdown() {
@@ -60,20 +63,20 @@ function gracefulShutdown() {
         return;
     }
 
-    if (!sailor) {
-        logger.warn('Something went wrong – sailor is falsy');
+    if (!ferryman) {
+        logger.warn('Something went wrong – ferryman is falsy');
         return;
     }
 
-    sailor.scheduleShutdown().then(disconnectAndExit);
+    ferryman.scheduleShutdown().then(disconnectAndExit);
 }
 
 async function run(settings) {
     try {
         await putOutToSea(settings);
     } catch (e) {
-        if (sailor) {
-            await sailor.reportError(e);
+        if (ferryman) {
+            await ferryman.reportError(e);
         }
         logger.criticalErrorAndExit('putOutToSea.catch', e);
     }

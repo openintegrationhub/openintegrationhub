@@ -1,3 +1,5 @@
+/* eslint no-use-before-define: "off" */
+
 describe('Service', () => {
     var service = require('../lib/service');
     var nock = require('nock');
@@ -19,6 +21,7 @@ describe('Service', () => {
             env.ELASTICIO_API_URI = 'http://apihost.com';
             env.ELASTICIO_API_USERNAME = 'test@test.com';
             env.ELASTICIO_API_KEY = '5559edd';
+            env.ELASTICIO_SNAPSHOTS_SERVICE_BASE_URL = 'https://localhost:2345';
             return env;
         }
 
