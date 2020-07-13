@@ -24,23 +24,25 @@ const log = bunyan.createLogger({
   src: true, // disable in production
 });
 
-const fs = require('fs');
+// const fs = require('fs');
 
-function exitHandler(options, exitCode) {
-  if (options === 'fatal') log.fatal(exitCode);
-
-  Object.keys(log.streams).forEach((stream) => {
-    try {
-      stream.stream.end();
-    } catch (e) {
-      console.log(`ERROR: ${e}`);
-    }
-  });
-  fs.appendFileSync('error.log', `{status: "Process got terminated! Logging data might be incomplete",time: "${Date.now()}"}"\n`);
-}
+// function exitHandler(options, exitCode) {
+//   if (options === 'fatal') log.fatal(exitCode);
+//
+//   Object.keys(log.streams).forEach((stream) => {
+//     try {
+//       stream.stream.end();
+//     } catch (e) {
+//       console.log(`ERROR: ${e}`);
+//     }
+//   });
+//   fs.appendFileSync(
+//     'error.log',
+//     `{status: "Process got terminated!",time: "${Date.now()}"}"\n`);
+// }
 
 // do something when app is closing
-process.on('exit', exitHandler.bind(null, { cleanup: true }));
-process.on('uncaughtException', exitHandler.bind('fatal', { cleanup: false }));
+// process.on('exit', exitHandler.bind(null, { cleanup: true }));
+// process.on('uncaughtException', exitHandler.bind('fatal', { cleanup: false }));
 
 module.exports = log;
