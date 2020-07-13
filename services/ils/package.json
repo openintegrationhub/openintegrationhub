@@ -1,6 +1,6 @@
 {
   "name": "ils",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Integration Layer Service",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "express": "^4.16.3",
     "generate-schema": "^2.6.0",
     "mongoose": "^5.4.13",
-    "request": "^2.87.0",
+    "request": "^2.88.2",
     "request-promise": "^4.2.2",
     "swagger-ui-express": "^4.1.4"
   },
