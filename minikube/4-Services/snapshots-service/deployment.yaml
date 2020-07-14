@@ -20,6 +20,8 @@ spec:
         - name: snapshots-service
           image: "openintegrationhub/snapshots-service:latest"
           env:
+            - name: LOG_LEVEL
+              value: trace
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:

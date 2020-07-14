@@ -40,7 +40,7 @@ MK_CPUS=4
 IFS=
 
 # script cache
-
+os=""
 cluster_ip=""
 admin_token=""
 service_account_id=""
@@ -53,6 +53,16 @@ result=""
 function cleanup {
     echo "Cleaing up..."
     sudo -k
+}
+
+function checkOS {
+    unameOut="$(uname -s)"
+    case "${unameOut}" in
+        Linux*)     os=Linux;;
+        Darwin*)    os=Darwin;;
+        *)          echo "Unsupported operating system" && exit 1
+    esac
+    echo "Operating System: $os"
 }
 
 function checkTools {
@@ -165,13 +175,12 @@ EOM
 }
 
 function addTokenToSecret {
-    echo | base64 -w0 > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
+    if [ "$os" == "Linux" ]; then
         service_account_token_encoded=$(echo -n "$service_account_token" | base64 -w0)
     else
         service_account_token_encoded=$(echo -n "$service_account_token" | base64)
     fi
-
+    service_account_token_encoded=$(echo -n "$service_account_token" | base64)
     new_secret=$(python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('REPLACE ME','$service_account_token_encoded'))" < ./3-Secret/SharedSecret.yaml)
     echo "$new_secret" > ./3-Secret/SharedSecret.yaml
 }
@@ -262,6 +271,7 @@ sudo -v
 ###
 
 checkTools
+checkOS
 
 ###
 ### 2. setup minikube

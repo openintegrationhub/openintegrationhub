@@ -24,6 +24,7 @@ class KubernetesDriver extends BaseDriver {
         }
     }
 
+
     async _createRunningFlowNode(flow, node, flowNodeSecret, component) {
         const descriptor = await this._generateAppDefinition(flow, node, flowNodeSecret, component);
         this._logger.trace(descriptor, 'going to deploy a job to k8s');
@@ -158,7 +159,7 @@ class KubernetesDriver extends BaseDriver {
                         containers: [{
                             image,
                             name: 'apprunner',
-                            imagePullPolicy: 'Always',
+                            imagePullPolicy: this._config.get('KUBERNETES_IMAGE_PULL_POLICY') || 'Always',
                             envFrom: [{
                                 secretRef: {
                                     name: nodeSecret.metadata.name
@@ -197,6 +198,9 @@ class KubernetesDriver extends BaseDriver {
 
     _prepareEnvVars(flow, node, vars) {
         let envVars = Object.assign({}, vars);
+
+        envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
+        envVars.BACK_CHANNEL = envVars.AMQP_URI
         envVars.EXEC_ID = uuid().replace(/-/g, '');
         envVars.STEP_ID = node.id;
         envVars.FLOW_ID = flow.id;
@@ -212,6 +216,8 @@ class KubernetesDriver extends BaseDriver {
             env['ELASTICIO_' + k] = v;
             return env;
         }, {});
+        envVars.LOG_LEVEL = 'trace'
+
         return Object.assign(envVars, node.env);
     }
 }

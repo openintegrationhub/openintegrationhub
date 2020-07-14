@@ -10,7 +10,7 @@
     "coverage": "nyc mocha spec --recursive",
     "start": "node index.js",
     "start:dev": "LOG_LEVEL=trace NODE_ENV=development npm start | bunyan",
-    "start:nodemon": "LOG_LEVEL=trace NODE_ENV=development nodemon index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/component-orchestrator/src | bunyan",
+    "start:nodemon": "LOG_LEVEL=trace NODE_ENV=development nodemon -r dotenv/config index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/component-orchestrator/src | bunyan",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/component-orchestrator:${VERSION} -f Dockerfile ../../"
   },
@@ -33,6 +33,7 @@
   "devDependencies": {
     "bunyan": "1.8.12",
     "chai": "4.2.0",
+    "dotenv": "^8.2.0",
     "eslint": "4.5.0",
     "eslint-plugin-mocha": "4.12.1",
     "eslint-plugin-node": "6.0.1",
