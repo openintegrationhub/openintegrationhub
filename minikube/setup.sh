@@ -180,7 +180,7 @@ function addTokenToSecret {
     else
         service_account_token_encoded=$(echo -n "$service_account_token" | base64)
     fi
-    service_account_token_encoded=$(echo -n "$service_account_token" | base64)
+
     new_secret=$(python3 -c "import sys;lines=sys.stdin.read();print(lines.replace('REPLACE ME','$service_account_token_encoded'))" < ./3-Secret/SharedSecret.yaml)
     echo "$new_secret" > ./3-Secret/SharedSecret.yaml
 }
