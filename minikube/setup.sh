@@ -51,7 +51,6 @@ node_component_id=""
 result=""
 
 function cleanup {
-    echo "Cleaing up..."
     sudo -k
 }
 
@@ -357,5 +356,4 @@ createFlow
 
 waitForServiceStatus http://web-ui.localoih.com 200
 echo "Setup done. Visit -> http://web-ui.localoih.com"
-
-sudo -k
+echo "or run 'minikube dashboard'"
