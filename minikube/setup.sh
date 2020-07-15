@@ -36,6 +36,19 @@ REQUIRED_TOOLS=( \
 MK_MEMORY=8192
 MK_CPUS=4
 
+skip_services=()
+# check arguments
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -s | --skip )           shift
+                                IFS=', ' read -r -a skip_services <<< "$1"
+                                echo "Will skip following deployments: ${skip_services[*]}"
+                                ;;
+    esac
+    shift
+done
+
 # preserve newlines in substitutions
 IFS=
 
@@ -46,9 +59,16 @@ admin_token=""
 service_account_id=""
 service_account_token=""
 service_account_token_encoded=""
+
 timer_component_id=""
 node_component_id=""
+
+development_component_id=""
+
 result=""
+
+
+
 
 function cleanup {
     sudo -k
@@ -225,6 +245,24 @@ EOM
     node_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
+function createDevComponent {
+    read -r -d '' JSON << EOM || true
+    {
+        "data": {
+            "distribution": {
+                "type": "docker",
+                "image": "oih/connector:latest"
+            },
+            "access": "public",
+            "name": "Development Component",
+            "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'"
+        }
+    }
+EOM
+    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
+    development_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+}
+
 function createFlow {
     read -r -d '' JSON << EOM || true
     {
@@ -257,7 +295,36 @@ function createFlow {
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
-    node_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+}
+
+function createDevFlow {
+    read -r -d '' JSON << EOM || true
+    {
+        "name": "LocalDevFlow",
+        "graph": {
+            "nodes": [
+                {
+                    "id": "step_1",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_2",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                }
+            ],
+            "edges": [
+                {
+                    "source": "step_1",
+                    "target": "step_2"
+                }
+            ]
+        },
+        "cron": "*/2 * * * *"
+    }
+EOM
+    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
 
 trap cleanup EXIT
@@ -347,13 +414,25 @@ kubectl apply -Rf ./4-Services
 waitForServiceStatus http://component-repository.localoih.com/components 401
 createTimerComponent
 createNodeComponent
+createDevComponent
+
 waitForServiceStatus http://flow-repository.localoih.com/flows 401
 createFlow
+createDevFlow
 
 ###
 ### 11. Point to web ui if ready
 ###
 
 waitForServiceStatus http://web-ui.localoih.com 200
+echo "Service account token: $service_account_token"
 echo "Setup done. Visit -> http://web-ui.localoih.com"
-echo "or run 'minikube dashboard'"
+
+###
+### 12. Open dashboard
+###
+
+# end sudo session
+sudo -k
+
+minikube dashboard
