@@ -209,6 +209,20 @@ function removeTokenFromSecret {
     echo "$new_secret" > ./3-Secret/SharedSecret.yaml
 }
 
+function deployServices {
+    for dir in ./4-Services/*
+    do
+        service_name="${dir/'./4-Services/'/''}"
+        if [[ ! "${skip_services[*]}" =~ ${service_name} ]]
+        then
+            echo "Deploy $dir"
+            kubectl apply -Rf "$dir"
+        else
+            echo "Skip $dir"
+        fi
+    done
+}
+
 function createTimerComponent {
     read -r -d '' JSON << EOM || true
     {
@@ -405,7 +419,8 @@ removeTokenFromSecret
 ### 9. deploy framework services
 ###
 
-kubectl apply -Rf ./4-Services
+deployServices
+# kubectl apply -Rf ./4-Services
 
 ###
 ### 10. add example components and flow
