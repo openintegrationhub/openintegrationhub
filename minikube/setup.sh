@@ -105,12 +105,12 @@ function waitForServiceStatus {
     done 
 }
 
-function waitForIngress {
-    ingress_status=$(kubectl get pods --all-namespaces || true);
-    while [ -z "$(grep 'ingress-nginx-controller.*1/1' <<< "$ingress_status")" ]; do 
-        echo "Waiting for ingress..."
+function waitForPodStatus {
+    pod_status=$(kubectl get pods --all-namespaces || true);
+    while [ -z "$(grep "$1" <<< "$pod_status")" ]; do 
+        echo "Waiting for $1..."
         sleep 2
-        ingress_status=$(kubectl get pods --all-namespaces || true);
+        pod_status=$(kubectl get pods --all-namespaces || true);
     done
 }
 
@@ -295,13 +295,17 @@ kubectl delete ns flows || true
 
 updateHostsFile
 
-waitForIngress
+waitForPodStatus ingress-nginx-controller.*1/1
 
 ###
 ### 4. deploy platform base
 ###
 
 kubectl apply -f ./1-Platform
+
+waitForPodStatus mongodb.*1/1
+waitForPodStatus rabbitmq.*1/1
+waitForPodStatus redis.*1/1
 
 ###
 ### 5. deploy IAM
