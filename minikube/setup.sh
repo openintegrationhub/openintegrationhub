@@ -352,9 +352,10 @@ waitForServiceStatus http://flow-repository.localoih.com/flows 401
 createFlow
 
 ###
-### 11. open dashboard
+### 11. Point to web ui if ready
 ###
 
-minikube dashboard
+waitForServiceStatus http://web-ui.localoih.com 200
+echo "Setup done. Visit -> http://web-ui.localoih.com"
 
 sudo -k
