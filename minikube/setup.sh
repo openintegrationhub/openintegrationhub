@@ -212,13 +212,14 @@ function removeTokenFromSecret {
 function deployServices {
     for dir in ./4-Services/*
     do
-        service_name="${dir/'./4-Services/'/''}"
-        if [[ ! "${skip_services[*]}" =~ ${service_name} ]]
+        service_name=$(echo "$dir" | sed "s/.\/4-Services\///")
+
+        if [[ " ${skip_services[*]} " == *" $service_name "* ]]
         then
-            echo "Deploy $dir"
-            kubectl apply -Rf "$dir"
+            echo "Skip $service_name"
         else
-            echo "Skip $dir"
+            echo "Deploy $service_name"
+            kubectl apply -Rf "$dir"
         fi
     done
 }
