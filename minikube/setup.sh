@@ -39,18 +39,22 @@ MK_CPUS=4
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+# argument cache
 skip_services=()
+start_proxy="false"
 # check arguments
 
-while [ "$1" != "" ]; do
-    case $1 in
-        -s | --skip )           shift
-                                IFS=', ' read -r -a skip_services <<< "$1"
-                                echo "Will skip following deployments: ${skip_services[*]}"
-                                ;;
-    esac
-    shift
-done
+while getopts s:p: option 
+do 
+    case "${option}" 
+    in 
+    s)  IFS=', ' read -r -a skip_services <<< "${OPTARG}"
+        echo "Will skip following deployments: ${skip_services[*]}";; 
+    p)  start_proxy="${OPTARG}"
+        echo "Will start proxy";; 
+    *) ;;
+    esac 
+done 
 
 # preserve newlines in substitutions
 IFS=
@@ -69,9 +73,6 @@ node_component_id=""
 development_component_id=""
 
 result=""
-
-
-
 
 function cleanup {
     sudo -k
@@ -349,6 +350,15 @@ function writeDotEnvFile {
     echo "export IAM_TOKEN=$service_account_token" > "$SCRIPTPATH"/.env
 }
 
+function startProxy {
+    if [ "$start_proxy" == "true" ]; then
+        kubectl -n oih-dev-ns port-forward service/mongodb-service 27017:27017 &
+        kubectl -n oih-dev-ns port-forward service/rabbitmq-service 15672:15672 &
+        kubectl -n oih-dev-ns port-forward service/rabbitmq-service 5672:5672 &
+        kubectl -n oih-dev-ns port-forward service/redis-service 6379:6379 &
+    fi
+}
+
 trap cleanup EXIT
 
 echo "WARNING: OIH kubernetes setup will be restored."
@@ -448,7 +458,6 @@ createDevFlow
 ###
 
 waitForServiceStatus http://web-ui.localoih.com 200
-echo "Service account token: $service_account_token"
 echo "Setup done. Visit -> http://web-ui.localoih.com"
 
 ###
@@ -458,10 +467,24 @@ echo "Setup done. Visit -> http://web-ui.localoih.com"
 writeDotEnvFile
 
 ###
-### 13. Open dashboard
+### 12. Write .env file
+###
+
+writeDotEnvFile
+
+###
+### 13. Proxy db and queue connections
+###
+
+startProxy
+
+###
+### 14. Open dashboard
 ###
 
 # end sudo session
 sudo -k
+
+
 
 minikube dashboard
