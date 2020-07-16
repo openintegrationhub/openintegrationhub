@@ -14,7 +14,7 @@ class KubernetesDriver extends BaseDriver {
     }
 
     async createApp(flow, node, envVars, component) {
-        this._logger.info({flow: flow.id}, 'Going to deploy job to k8s');
+        this._logger.info({ flow: flow.id }, 'Going to deploy job to k8s');
         try {
             const env = this._prepareEnvVars(flow, node, envVars);
             const flowNodeSecret = await this._ensureFlowNodeSecret(flow, node, env);
@@ -28,7 +28,7 @@ class KubernetesDriver extends BaseDriver {
     async _createRunningFlowNode(flow, node, flowNodeSecret, component) {
         const descriptor = await this._generateAppDefinition(flow, node, flowNodeSecret, component);
         this._logger.trace(descriptor, 'going to deploy a job to k8s');
-        const result = await this._batchClient.jobs.post({body: descriptor});
+        const result = await this._batchClient.jobs.post({ body: descriptor });
         return new KubernetesRunningFlowNode(result.body);
     }
 
@@ -44,7 +44,7 @@ class KubernetesDriver extends BaseDriver {
 
     async _updateFlowNodeSecret(flowSecret) {
         const secretName = flowSecret.name;
-        this._logger.debug({secretName}, 'About to update the secret');
+        this._logger.debug({ secretName }, 'About to update the secret');
         const response = await this._coreClient.secrets(secretName).put({
             body: flowSecret.toDescriptor()
         });
@@ -70,7 +70,7 @@ class KubernetesDriver extends BaseDriver {
 
     async _createFlowNodeSecret(flow, node, data) {
         const secretName = this._getFlowNodeSecretName(flow, node);
-        this._logger.debug({secretName}, 'About to create a secret');
+        this._logger.debug({ secretName }, 'About to create a secret');
 
         const flowSecret = new FlowSecret({
             metadata: {
@@ -90,7 +90,7 @@ class KubernetesDriver extends BaseDriver {
 
     async destroyApp(app) {
         //TODO wait until job really will be deleted
-        this._logger.info({name: app.name}, 'going to undeploy job from k8s');
+        this._logger.info({ name: app.name }, 'going to undeploy job from k8s');
         try {
             await this._batchClient.jobs.delete({
                 name: app.name,
@@ -111,8 +111,8 @@ class KubernetesDriver extends BaseDriver {
 
     async _deleteFlowNodeSecret(flowId, nodeId) {
         try {
-            const secretName = this._getFlowNodeSecretName({id: flowId}, {id: nodeId});
-            this._logger.trace({secretName}, 'Deleting flow secret');
+            const secretName = this._getFlowNodeSecretName({ id: flowId }, { id: nodeId });
+            this._logger.trace({ secretName }, 'Deleting flow secret');
             await this._coreClient.secrets(secretName).delete();
         } catch (e) {
             if (e.statusCode !== 404) {
@@ -126,7 +126,7 @@ class KubernetesDriver extends BaseDriver {
     }
 
     async _generateAppDefinition(flow, node, nodeSecret, component) {
-        let appId = flow.id +'.'+ node.id;
+        let appId = flow.id + '.' + node.id;
         appId = appId.toLowerCase().replace(/[^0-9a-z]/g, '');
         const image = _.get(component, 'distribution.image');
 
@@ -199,7 +199,11 @@ class KubernetesDriver extends BaseDriver {
     _prepareEnvVars(flow, node, vars) {
         let envVars = Object.assign({}, vars);
 
-        envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
+        // if running from host use cluster internal references instead
+        if (this._config.get('RUNNING_ON_HOST') === 'true') {
+            envVars.SNAPSHOTS_SERVICE_BASE_URL = 'http://snapshots-service.oih-dev-ns.svc.cluster.local:1234';
+        }
+        // envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
         envVars.BACK_CHANNEL = envVars.AMQP_URI
         envVars.EXEC_ID = uuid().replace(/-/g, '');
         envVars.STEP_ID = node.id;
