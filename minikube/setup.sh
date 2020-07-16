@@ -36,6 +36,9 @@ REQUIRED_TOOLS=( \
 MK_MEMORY=8192
 MK_CPUS=4
 
+# Absolute path this script is in, thus /home/user/bin
+SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 skip_services=()
 # check arguments
 
@@ -342,6 +345,10 @@ EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
 
+function writeDotEnvFile {
+    echo "export IAM_TOKEN=$service_account_token" > "$SCRIPTPATH"/.env
+}
+
 trap cleanup EXIT
 
 echo "WARNING: OIH kubernetes setup will be restored."
@@ -445,7 +452,13 @@ echo "Service account token: $service_account_token"
 echo "Setup done. Visit -> http://web-ui.localoih.com"
 
 ###
-### 12. Open dashboard
+### 12. Write .env file
+###
+
+writeDotEnvFile
+
+###
+### 13. Open dashboard
 ###
 
 # end sudo session
