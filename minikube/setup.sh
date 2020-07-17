@@ -316,10 +316,10 @@ EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
 
-function createDevFlow {
+function createDevConsecutiveFlow {
     read -r -d '' JSON << EOM || true
     {
-        "name": "LocalDevFlow",
+        "name": "LocalDevFlow (Consecutive)",
         "graph": {
             "nodes": [
                 {
@@ -331,12 +331,60 @@ function createDevFlow {
                     "id": "step_2",
                     "componentId": "$development_component_id",
                     "function": "testTrigger"
+                },
+                {
+                    "id": "step_3",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
                 }
             ],
             "edges": [
                 {
                     "source": "step_1",
                     "target": "step_2"
+                },
+                {
+                    "source": "step_2",
+                    "target": "step_3"
+                }
+            ]
+        },
+        "cron": "*/2 * * * *"
+    }
+EOM
+    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+}
+
+function createDevConcurrentFlow {
+    read -r -d '' JSON << EOM || true
+    {
+        "name": "LocalDevFlow (Concurrent)",
+        "graph": {
+            "nodes": [
+                {
+                    "id": "step_1",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_2",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_3",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                }
+            ],
+            "edges": [
+                {
+                    "source": "step_1",
+                    "target": "step_2"
+                },
+                {
+                    "source": "step_1",
+                    "target": "step_3"
                 }
             ]
         },
@@ -450,8 +498,11 @@ createNodeComponent
 createDevComponent
 
 waitForServiceStatus http://flow-repository.localoih.com/flows 401
+
 createFlow
-createDevFlow
+
+createDevConsecutiveFlow
+createDevConcurrentFlow
 
 ###
 ### 11. Point to web ui if ready
@@ -459,12 +510,6 @@ createDevFlow
 
 waitForServiceStatus http://web-ui.localoih.com 200
 echo "Setup done. Visit -> http://web-ui.localoih.com"
-
-###
-### 12. Write .env file
-###
-
-writeDotEnvFile
 
 ###
 ### 12. Write .env file
