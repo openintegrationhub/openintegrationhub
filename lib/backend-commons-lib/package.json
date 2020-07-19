@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint ./index.js ./src",
-    "test": "npm run lint"
+    "test": "mocha spec --recursive"
   },
   "author": "Open Integration Hub",
   "license": "APL-2.0",
