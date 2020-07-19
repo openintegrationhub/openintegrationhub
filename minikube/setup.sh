@@ -51,7 +51,7 @@ do
     s)  IFS=', ' read -r -a skip_services <<< "${OPTARG}"
         echo "Will skip following deployments: ${skip_services[*]}";; 
     p)  start_proxy="${OPTARG}"
-        echo "Will start proxy";; 
+        echo "Will start proxy";;
     *) ;;
     esac 
 done 
@@ -122,16 +122,17 @@ function waitForServiceStatus {
     # $2 - serviceStatus
     status="000"
     while [ $status != "$2" ]; do
-        echo "Waiting for $1"
+        echo -e "\e[36mWaiting for $1\e[0m"
         sleep 2
         status=$(curl -w "%{http_code}" --silent --output /dev/null "$1")
     done 
 }
 
 function waitForPodStatus {
+    # $1 - pod regular expression
     pod_status=$(kubectl get pods --all-namespaces || true);
     while [ -z "$(grep "$1" <<< "$pod_status")" ]; do 
-        echo "Waiting for $1..."
+        echo -e "\e[36mWaiting for $1\e[0m"
         sleep 2
         pod_status=$(kubectl get pods --all-namespaces || true);
     done
@@ -216,13 +217,13 @@ function removeTokenFromSecret {
 function deployServices {
     for dir in ./4-Services/*
     do
+        IFS=' '
         service_name=$(echo "$dir" | sed "s/.\/4-Services\///")
-
         if [[ " ${skip_services[*]} " == *" $service_name "* ]]
         then
-            echo "Skip $service_name"
+            echo -e "\e[33mSkip $service_name\e[0m"
         else
-            echo "Deploy $service_name"
+            echo -e "\e[32mDeploy $service_name\e[0m"
             kubectl apply -Rf "$dir"
         fi
     done
@@ -315,6 +316,29 @@ function createFlow {
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
+
+function createDevSimpleFlow {
+    read -r -d '' JSON << EOM || true
+    {
+        "name":"Simplest flow (single component)",
+        "description:": "just one component",
+        "graph":{
+            "nodes":[
+                {
+                    "id": "step_1",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                }
+            ],
+            "edges":[
+            ]
+        },
+        "cron":"*/2 * * * *"
+    }
+EOM
+    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+}
+
 
 function createDevConsecutiveFlow {
     read -r -d '' JSON << EOM || true
@@ -501,8 +525,10 @@ waitForServiceStatus http://flow-repository.localoih.com/flows 401
 
 createFlow
 
+createDevSimpleFlow
 createDevConsecutiveFlow
 createDevConcurrentFlow
+
 
 ###
 ### 11. Point to web ui if ready
