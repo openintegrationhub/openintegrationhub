@@ -10,22 +10,25 @@ class RabbitMqQueuesManager extends QueuesManager {
         super();
         this._config = config;
         this._logger = logger;
-        this._rabbitmqManagement = new RabbitMqManagementService({config, logger});
+        this._rabbitmqManagement = new RabbitMqManagementService({ config, logger });
         this._channelPromise = amqpConnection.createChannel();
         this._queueCreator = queueCreator;
         this._credentialsStorage = credentialsStorage || new InMemoryCredentialsStorage();
     }
 
-    async createForFlow(flow) {
-        return await this._queueCreator.makeQueuesForTheFlow(flow);
-    }
+    // async createForFlow(flow) {
+    //     console.log('############## Create for flow')
+    //     return await this._queueCreator.makeQueuesForTheFlow(flow);
+    // }
 
-    async updateForFlow(flow) {
-        await this._deleteQueuesForFlow(flow);
-        await this._queueCreator.makeQueuesForTheFlow(flow);
-    }
+    // async updateForFlow(flow) {
+    //     console.log('############## Update for flow')
+    //     await this._deleteQueuesForFlow(flow);
+    //     await this._queueCreator.makeQueuesForTheFlow(flow);
+    // }
 
     async deleteForFlow(flow) {
+        console.log('############## Delete for flow')
         await this._deleteQueuesForFlow(flow);
         await this._deleteRabbitMqCredentialsForFlow(flow);
     }
@@ -62,16 +65,16 @@ class RabbitMqQueuesManager extends QueuesManager {
         const username = `${flow.id}_${node.id}`.toLowerCase().replace(/[^a-z0-9]/g, '');
         const password = uuid();
 
-        this._logger.trace({username, password}, 'About to create RabbitMQ user');
+        this._logger.trace({ username, password }, 'About to create RabbitMQ user');
         // @todo: create node user
         await this._rabbitmqManagement.createFlowUser({
             username,
             password,
             flow
         });
-        this._logger.trace({username}, 'Created RabbitMQ user');
+        this._logger.trace({ username }, 'Created RabbitMQ user');
 
-        const newCreds = {username, password};
+        const newCreds = { username, password };
         await this._saveRabbitMqCredential(flow, node, newCreds);
 
         return newCreds;
@@ -86,7 +89,7 @@ class RabbitMqQueuesManager extends QueuesManager {
     }
 
     _deleteRabbitMqCredential(flow, node) {
-        this._logger.info({flowId: flow.id, nodeId: node.id}, 'About to remove credential');
+        this._logger.info({ flowId: flow.id, nodeId: node.id }, 'About to remove credential');
         return this._credentialsStorage.remove(flow.id, node.id);
     }
 
@@ -95,7 +98,7 @@ class RabbitMqQueuesManager extends QueuesManager {
         for (const item of flowCredentials) {
             this._logger.trace(item.credential, 'About to delete RabbitMQ credential');
             await this._rabbitmqManagement.deleteUser(item.credential);
-            await this._deleteRabbitMqCredential(flow, {id: item.nodeId});
+            await this._deleteRabbitMqCredential(flow, { id: item.nodeId });
         }
     }
 
@@ -127,18 +130,18 @@ class RabbitMqQueuesManager extends QueuesManager {
         for (let queue of queues) {
             const name = queue.name;
             const flowId = name.split(':')[0];
-            index[flowId] = index[flowId] || {queues: [], exchanges: [], bindings: []};
+            index[flowId] = index[flowId] || { queues: [], exchanges: [], bindings: [] };
             index[flowId].queues.push(name);
         }
         for (let exchange of exchanges) {
             const flowId = exchange.name;
-            index[flowId] = index[flowId] || {queues: [], exchanges: [], bindings: []};
+            index[flowId] = index[flowId] || { queues: [], exchanges: [], bindings: [] };
             index[flowId].exchanges.push(exchange.name);
         }
         for (let binding of bindings) {
             const queueName = binding.destination;
             const flowId = queueName.split(':')[0];
-            index[flowId] = index[flowId] || {queues: [], exchanges: [], bindings: []};
+            index[flowId] = index[flowId] || { queues: [], exchanges: [], bindings: [] };
             index[flowId].bindings.push(binding);
         }
         return index;
