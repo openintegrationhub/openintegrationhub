@@ -2,7 +2,7 @@ const uuid = require('uuid/v1');
 const { SchedulePublisher } = require('@openintegrationhub/scheduler');
 
 class OIH_SchedulePublisher extends SchedulePublisher {
-    constructor({logger, queueCreator, channel}) {
+    constructor({ logger, queueCreator, channel }) {
         super();
         this._logger = logger;
         this._queueCreator = queueCreator;
@@ -10,7 +10,7 @@ class OIH_SchedulePublisher extends SchedulePublisher {
     }
 
     async scheduleFlow(flow) { //eslint-disable-line no-unused-vars
-        this._logger.trace({flowId: flow.id}, 'schedule flow tick');
+        this._logger.trace({ flowId: flow.id }, 'schedule flow tick');
 
         const scheduleRecord = {
             'taskId': flow.id,
@@ -39,7 +39,7 @@ class OIH_SchedulePublisher extends SchedulePublisher {
             this._queueCreator.getAmqpStepConfig(flow, flow.getFirstNode().id).messagesQueue,
             Buffer.from(JSON.stringify(msg)),
             {
-                headers:  scheduleRecord
+                headers: scheduleRecord
             }
         );
     }
