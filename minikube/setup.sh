@@ -71,6 +71,7 @@ timer_component_id=""
 node_component_id=""
 
 development_component_id=""
+development_global_component_id=""
 
 result=""
 
@@ -283,6 +284,25 @@ EOM
     development_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
+function createDevGlobalComponent {
+    read -r -d '' JSON << EOM || true
+    {
+        "data": {
+            "distribution": {
+                "type": "docker",
+                "image": "oih/connector:latest"
+            },
+            "access": "public",
+            "isGlobal": true,
+            "name": "Global Development Component",
+            "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'"
+        }
+    }
+EOM
+    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
+    development_global_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+}
+
 function createFlow {
     read -r -d '' JSON << EOM || true
     {
@@ -338,7 +358,6 @@ function createDevSimpleFlow {
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
-
 
 function createDevConsecutiveFlow {
     read -r -d '' JSON << EOM || true
@@ -408,6 +427,45 @@ function createDevConcurrentFlow {
                 },
                 {
                     "source": "step_1",
+                    "target": "step_3"
+                }
+            ]
+        },
+        "cron": "*/2 * * * *"
+    }
+EOM
+    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+}
+
+function createDevGlobalFlow {
+    read -r -d '' JSON << EOM || true
+    {
+        "name": "LocalDevFlow with global component (Consecutive)",
+        "graph": {
+            "nodes": [
+                {
+                    "id": "step_1",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_2",
+                    "componentId": "$development_global_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_3",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                }
+            ],
+            "edges": [
+                {
+                    "source": "step_1",
+                    "target": "step_2"
+                },
+                {
+                    "source": "step_2",
                     "target": "step_3"
                 }
             ]
@@ -520,6 +578,7 @@ waitForServiceStatus http://component-repository.localoih.com/components 401
 createTimerComponent
 createNodeComponent
 createDevComponent
+createDevGlobalComponent
 
 waitForServiceStatus http://flow-repository.localoih.com/flows 401
 
@@ -528,6 +587,7 @@ createFlow
 createDevSimpleFlow
 createDevConsecutiveFlow
 createDevConcurrentFlow
+createDevGlobalFlow
 
 
 ###
