@@ -2,9 +2,9 @@ const url = require('url');
 const RabbitmqManagement = require('rabbitmq-stats');
 
 class RabbitMqManagementService {
-    constructor({config, logger}) {
+    constructor({ config, logger }) {
         this._config = config;
-        this._logger = logger.child({service: 'RabbitmqManagement'});
+        this._logger = logger.child({ service: 'RabbitmqManagement' });
         this._client = this._createClient();
     }
 
@@ -53,7 +53,7 @@ class RabbitMqManagementService {
      * @param {Flow} flow - Flow instance
      * @returns {Promise<void>}
      */
-    async createFlowUser({ username, password, flow }) {
+    async createFlowUser({ username, password, flow, backchannel }) {
         const userBody = {
             //@todo it would be great to pass a password_hash instead of a password
             // http://www.rabbitmq.com/passwords.html#computing-password-hash
@@ -64,7 +64,7 @@ class RabbitMqManagementService {
         await this._client.putUser(username, userBody);
 
         const readRegex = `^${flow.id}:`;
-        const writeRegex = `^${flow.id}$`;
+        const writeRegex = `^${backchannel}$`;
         const permissionsBody = {
             // https://www.rabbitmq.com/access-control.html
             // The regular expression '^$', i.e. matching nothing but the empty string,

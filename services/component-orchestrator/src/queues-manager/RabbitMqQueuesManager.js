@@ -5,30 +5,40 @@ const { QueuesManager } = require('@openintegrationhub/component-orchestrator');
 const InMemoryCredentialsStorage = require('./credentials-storage/InMemoryCredentialsStorage');
 const RabbitMqManagementService = require('./RabbitMqManagementService');
 
+const BACKCHANNEL_EXCHANGE = 'orchestrator_backchannel'
+const BACKCHANNEL_MESSAGES_QUEUE = `${BACKCHANNEL_EXCHANGE}:messages`
+const BACKCHANNEL_REBOUNDS_QUEUE = `${BACKCHANNEL_EXCHANGE}:rebounds`
+
+const BACKCHANNEL_INPUT_KEY = `${BACKCHANNEL_EXCHANGE}.input`
+const BACKCHANNEL_REQUEUE_KEY = `${BACKCHANNEL_EXCHANGE}.requeue`
+const BACKCHANNEL_REBOUND_KEY = `${BACKCHANNEL_EXCHANGE}.rebound`
+const BACKCHANNEL_DEAD_LETTER_KEY = `${BACKCHANNEL_EXCHANGE}.deadletter`
+
 class RabbitMqQueuesManager extends QueuesManager {
-    constructor({ amqpConnection, queueCreator, logger, config, credentialsStorage }) {
+    constructor({ queueCreator, queuePubSub, logger, config, credentialsStorage }) {
         super();
         this._config = config;
         this._logger = logger;
         this._rabbitmqManagement = new RabbitMqManagementService({ config, logger });
-        this._channelPromise = amqpConnection.createChannel();
         this._queueCreator = queueCreator;
+        this._queuePubSub = queuePubSub;
         this._credentialsStorage = credentialsStorage || new InMemoryCredentialsStorage();
     }
 
-    // async createForFlow(flow) {
-    //     console.log('############## Create for flow')
-    //     return await this._queueCreator.makeQueuesForTheFlow(flow);
-    // }
+    async setupBackchannel() {
+        await this._queueCreator.prepareExchange(BACKCHANNEL_EXCHANGE)
+        await this._queueCreator.assertMessagesQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_DEAD_LETTER_KEY);
+        await this._queueCreator.assertReboundsQueue(BACKCHANNEL_REBOUNDS_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_REQUEUE_KEY);
+        await this._queueCreator.bindQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_INPUT_KEY);
+        await this._queueCreator.bindQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_REQUEUE_KEY);
+        await this._queueCreator.bindQueue(BACKCHANNEL_REBOUNDS_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_REBOUND_KEY);
+    }
 
-    // async updateForFlow(flow) {
-    //     console.log('############## Update for flow')
-    //     await this._deleteQueuesForFlow(flow);
-    //     await this._queueCreator.makeQueuesForTheFlow(flow);
-    // }
+    async subscribeBackchannel() {
+        this._queuePubSub.subscribe()
+    }
 
     async deleteForFlow(flow) {
-        console.log('############## Delete for flow')
         await this._deleteQueuesForFlow(flow);
         await this._deleteRabbitMqCredentialsForFlow(flow);
     }
@@ -70,7 +80,8 @@ class RabbitMqQueuesManager extends QueuesManager {
         await this._rabbitmqManagement.createFlowUser({
             username,
             password,
-            flow
+            flow,
+            backchannel: BACKCHANNEL_EXCHANGE
         });
         this._logger.trace({ username }, 'Created RabbitMQ user');
 
@@ -108,12 +119,11 @@ class RabbitMqQueuesManager extends QueuesManager {
         const queuesStructure = await this._getQueuesStructure();
         // delete all queues
         if (queuesStructure[flowId]) {
-            const channel = await this._channelPromise;
             for (let queue of queuesStructure[flowId].queues) {
-                await channel.deleteQueue(queue);
+                await this._queueCreator.deleteQueue(queue);
             }
             for (let exchange of queuesStructure[flowId].exchanges) {
-                await channel.deleteExchange(exchange);
+                await this._queueCreator.deleteExchange(exchange);
             }
         }
     }

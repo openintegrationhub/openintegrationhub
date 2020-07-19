@@ -14,7 +14,6 @@ describe('RabbitMqQueuesManager', () => {
     let driver;
     let queueCreator;
     let amqpChannel;
-    let amqpConnection;
 
     function createConfig(conf = {}) {
         return {
@@ -46,10 +45,6 @@ describe('RabbitMqQueuesManager', () => {
         sinon.stub(amqpChannel, 'deleteQueue').resolves();
         sinon.stub(amqpChannel, 'deleteExchange').resolves();
 
-        amqpConnection = {
-            createChannel: () => Promise.resolve(amqpChannel)
-        };
-
         flowsDao = {
             findAll: () => { },
             ensureFinalizer: () => { },
@@ -71,7 +66,6 @@ describe('RabbitMqQueuesManager', () => {
         im = new RabbitMqQueuesManager({
             config,
             logger,
-            amqpConnection,
             queueCreator,
             driver
         });
@@ -80,24 +74,6 @@ describe('RabbitMqQueuesManager', () => {
     afterEach(() => {
         sinon.restore();
     });
-
-    // describe('#createForFlow', () => {
-    //     it('should create needed infrastructure', async () => {
-    //         const flow = {id: 'flow1'};
-    //         await im.createForFlow(flow);
-    //         expect(queueCreator.makeQueuesForTheFlow).to.have.been.calledOnceWithExactly(flow);
-    //     });
-    // });
-
-    // describe('#updateForFlow', () => {
-    //     it('should re-create needed infrastructure', async () => {
-    //         const flow = {id: 'flow1'};
-    //         sinon.stub(im, '_deleteQueuesForFlow').resolves();
-    //         await im.updateForFlow(flow, {});
-    //         expect(im._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow);
-    //         expect(queueCreator.makeQueuesForTheFlow).to.have.been.calledOnceWithExactly(flow);
-    //     });
-    // });
 
     describe('#deleteForFlow', () => {
         it('should delete infrastructure for the given flow', async () => {
@@ -133,24 +109,6 @@ describe('RabbitMqQueuesManager', () => {
                 AMQP_URI: 'amqp://kurt:cobain@localhost',
                 SOME: 'stuff'
             });
-        });
-    });
-
-    describe('#_deleteQueuesForFlow', () => {
-        it('should delete queues and exchanges', async () => {
-            const flow = { id: 'flow1' };
-            const queuesStructure = {
-                flow1: {
-                    queues: ['flow1:step1'],
-                    exchanges: ['flow1']
-                }
-            };
-            sinon.stub(im, '_getQueuesStructure').resolves(queuesStructure);
-
-            await im._deleteQueuesForFlow(flow);
-
-            expect(im._getQueuesStructure).to.have.been.calledOnce;
-            //@todo: more expectations
         });
     });
 

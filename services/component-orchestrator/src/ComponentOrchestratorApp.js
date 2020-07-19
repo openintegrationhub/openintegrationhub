@@ -1,4 +1,4 @@
-const { QueueCreator, App } = require('backend-commons-lib');
+const { QueueCreator, QueuePubSub, App } = require('backend-commons-lib');
 const { ComponentOrchestrator } = require('@openintegrationhub/component-orchestrator');
 const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
 const HttpApi = require('./HttpApi');
@@ -25,7 +25,10 @@ class ComponentOrchestratorApp extends App {
         await k8s.start();
 
         const channel = await amqp.getConnection().createChannel();
+
         const queueCreator = new QueueCreator(channel);
+        const queuePubSub = new QueuePubSub(channel)
+
         const mongooseOptions = {
             socketTimeoutMS: 60000,
             useCreateIndex: true,
@@ -39,6 +42,9 @@ class ComponentOrchestratorApp extends App {
 
         container.register({
             queueCreator: asValue(queueCreator),
+            queuesManager: asClass(RabbitMqQueuesManager),
+            queuePubSub: asValue(queuePubSub),
+
             iamClient: asValue(iamClient),
             flowsDao: asClass(FlowsDao),
             componentsDao: asClass(ComponentsDao),
@@ -47,7 +53,6 @@ class ComponentOrchestratorApp extends App {
             snapshotsDao: asClass(SnapshotsDao),
             httpApi: asClass(HttpApi).singleton(),
             driver: asClass(KubernetesDriver),
-            queuesManager: asClass(RabbitMqQueuesManager),
             credentialsStorage: asClass(MongoDbCredentialsStorage),
             eventBus: asClass(EventBus, {
                 injector: () => ({
