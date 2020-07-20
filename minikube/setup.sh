@@ -331,7 +331,7 @@ function createFlow {
                 }
             ]
         },
-        "cron":"*/2 * * * *"
+        "cron":"*/1 * * * *"
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
@@ -353,7 +353,7 @@ function createDevSimpleFlow {
             "edges":[
             ]
         },
-        "cron":"*/2 * * * *"
+        "cron":"*/1 * * * *"
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
@@ -392,7 +392,7 @@ function createDevConsecutiveFlow {
                 }
             ]
         },
-        "cron": "*/2 * * * *"
+        "cron": "*/1 * * * *"
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
@@ -431,7 +431,7 @@ function createDevConcurrentFlow {
                 }
             ]
         },
-        "cron": "*/2 * * * *"
+        "cron": "*/1 * * * *"
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
@@ -440,7 +440,7 @@ EOM
 function createDevGlobalFlow {
     read -r -d '' JSON << EOM || true
     {
-        "name": "LocalDevFlow with global component (Consecutive)",
+        "name": "LocalDevFlow with global component (Concurrent)",
         "graph": {
             "nodes": [
                 {
@@ -457,6 +457,41 @@ function createDevGlobalFlow {
                     "id": "step_3",
                     "componentId": "$development_component_id",
                     "function": "testTrigger"
+                },
+                {
+                    "id": "step_4",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_5",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_6",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_7",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_8",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_9",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_10",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
                 }
             ],
             "edges": [
@@ -465,12 +500,40 @@ function createDevGlobalFlow {
                     "target": "step_2"
                 },
                 {
-                    "source": "step_2",
+                    "source": "step_1",
                     "target": "step_3"
+                },
+                {
+                    "source": "step_2",
+                    "target": "step_4"
+                },
+                {
+                    "source": "step_2",
+                    "target": "step_5"
+                },
+                {
+                    "source": "step_3",
+                    "target": "step_6"
+                },
+                {
+                    "source": "step_3",
+                    "target": "step_7"
+                },
+                {
+                    "source": "step_7",
+                    "target": "step_8"
+                },
+                {
+                    "source": "step_7",
+                    "target": "step_9"
+                },
+                {
+                    "source": "step_7",
+                    "target": "step_10"
                 }
             ]
         },
-        "cron": "*/2 * * * *"
+        "cron": "*/1 * * * *"
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
