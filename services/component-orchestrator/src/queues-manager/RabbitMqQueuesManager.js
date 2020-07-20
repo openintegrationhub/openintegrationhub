@@ -34,8 +34,12 @@ class RabbitMqQueuesManager extends QueuesManager {
         await this._queueCreator.bindQueue(BACKCHANNEL_REBOUNDS_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_REBOUND_KEY);
     }
 
-    async subscribeBackchannel() {
-        this._queuePubSub.subscribe()
+    async subscribeBackchannel(callback) {
+        const processCallback = async (message) => {
+            await callback(message)
+            await this._queuePubSub.ack(message)
+        }
+        this._queuePubSub.subscribe(BACKCHANNEL_MESSAGES_QUEUE, processCallback.bind(this))
     }
 
     async deleteForFlow(flow) {

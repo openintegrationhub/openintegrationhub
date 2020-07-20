@@ -44,7 +44,7 @@ class ComponentOrchestratorApp extends App {
             queueCreator: asValue(queueCreator),
             queuesManager: asClass(RabbitMqQueuesManager),
             queuePubSub: asValue(queuePubSub),
-
+            channel: asValue(channel),
             iamClient: asValue(iamClient),
             flowsDao: asClass(FlowsDao),
             componentsDao: asClass(ComponentsDao),
