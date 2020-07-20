@@ -10,7 +10,7 @@
     "coverage": "nyc mocha spec --recursive",
     "start": "node index.js",
     "start:dev": "LOG_LEVEL=trace NODE_ENV=development npm start | bunyan",
-    "start:nodemon": "LOG_LEVEL=trace NODE_ENV=development nodemon -r dotenv/config index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/component-orchestrator/src | bunyan",
+    "start:nodemon": "NODE_ENV=development nodemon -r dotenv/config index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/component-orchestrator/src | bunyan",
     "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/component-orchestrator:${VERSION} -f Dockerfile ../../"
