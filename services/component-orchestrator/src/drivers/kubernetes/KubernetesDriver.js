@@ -91,9 +91,9 @@ class KubernetesDriver extends BaseDriver {
     async destroyApp(app) {
         //TODO wait until job really will be deleted
         this._logger.info({ name: app.name }, 'going to undeploy job from k8s');
+
         try {
-            await this._batchClient.jobs.delete({
-                name: app.name,
+            await this._batchClient.jobs(app.name).delete({
                 body: {
                     kind: 'DeleteOptions',
                     apiVersion: 'batch/v1',
