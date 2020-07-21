@@ -597,6 +597,7 @@ clearMinikube
 minikube start --memory $MK_MEMORY --cpus $MK_CPUS
 minikube addons enable ingress
 minikube addons enable dashboard
+minikube addons enable metrics-server
 
 # remove oih resources
 kubectl -n oih-dev-ns delete pods,services,deployments --all
