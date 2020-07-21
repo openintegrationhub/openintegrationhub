@@ -42,24 +42,9 @@ SCRIPTPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 # argument cache
 skip_services=()
 start_proxy="false"
-# check arguments
+clear_minikube="false"
 
-while getopts s:p: option 
-do 
-    case "${option}" 
-    in 
-    s)  IFS=', ' read -r -a skip_services <<< "${OPTARG}"
-        echo "Will skip following deployments: ${skip_services[*]}";; 
-    p)  start_proxy="${OPTARG}"
-        echo "Will start proxy";;
-    *) ;;
-    esac 
-done 
-
-# preserve newlines in substitutions
-IFS=
-
-# script cache
+# script cache and settings
 os=""
 cluster_ip=""
 admin_token=""
@@ -75,6 +60,9 @@ development_global_component_id=""
 
 result=""
 
+# escape
+esc="\e"
+
 function cleanup {
     sudo -k
 }
@@ -87,6 +75,12 @@ function checkOS {
         *)          echo "Unsupported operating system" && exit 1
     esac
     echo "Operating System: $os"
+}
+
+function colorEcho {
+    # $1 bash color code
+    # $2 text
+    echo -e "${esc}[$1m$2${esc}[0m"
 }
 
 function checkTools {
@@ -123,7 +117,7 @@ function waitForServiceStatus {
     # $2 - serviceStatus
     status="000"
     while [ $status != "$2" ]; do
-        echo -e "\e[36mWaiting for $1\e[0m"
+        colorEcho 36 "Waiting for $1"
         sleep 2
         status=$(curl -w "%{http_code}" --silent --output /dev/null "$1")
     done 
@@ -133,7 +127,7 @@ function waitForPodStatus {
     # $1 - pod regular expression
     pod_status=$(kubectl get pods --all-namespaces || true);
     while [ -z "$(grep "$1" <<< "$pod_status")" ]; do 
-        echo -e "\e[36mWaiting for $1\e[0m"
+        colorEcho 36 "Waiting for $1"
         sleep 2
         pod_status=$(kubectl get pods --all-namespaces || true);
     done
@@ -222,9 +216,9 @@ function deployServices {
         service_name=$(echo "$dir" | sed "s/.\/4-Services\///")
         if [[ " ${skip_services[*]} " == *" $service_name "* ]]
         then
-            echo -e "\e[33mSkip $service_name\e[0m"
+            colorEcho 33 "Skip $service_name"
         else
-            echo -e "\e[32mDeploy $service_name\e[0m"
+            colorEcho 32 "Deploy $service_name"
             kubectl apply -Rf "$dir"
         fi
     done
@@ -552,7 +546,38 @@ function startProxy {
     fi
 }
 
+function clearMinikube {
+    if [ "$clear_minikube" == "true" ]; then
+        minikube delete
+    fi
+}
+
 trap cleanup EXIT
+
+checkOS
+
+if [ "$os" == "Darwin" ]; then
+    esc="\x1B"
+fi
+
+# check arguments
+
+while getopts "cs:p" option 
+do 
+    case "${option}" 
+    in 
+    c)  clear_minikube="true"
+        colorEcho 32 "- clear minikube";;
+    s)  IFS=', ' read -r -a skip_services <<< "${OPTARG}"
+        colorEcho 32 "- skip deployments: ${skip_services[*]}";;
+    p)  start_proxy="true"
+        colorEcho 32 "- start proxy";;
+    *) ;;
+    esac 
+done 
+
+# preserve newlines in substitutions
+IFS=
 
 echo "WARNING: OIH kubernetes setup will be restored."
 sudo -v
@@ -562,11 +587,13 @@ sudo -v
 ###
 
 checkTools
-checkOS
 
 ###
 ### 2. setup minikube
 ###
+
+clearMinikube
+
 minikube start --memory $MK_MEMORY --cpus $MK_CPUS
 minikube addons enable ingress
 minikube addons enable dashboard
@@ -652,7 +679,6 @@ createDevConsecutiveFlow
 createDevConcurrentFlow
 createDevGlobalFlow
 
-
 ###
 ### 11. Point to web ui if ready
 ###
@@ -667,18 +693,22 @@ echo "Setup done. Visit -> http://web-ui.localoih.com"
 writeDotEnvFile
 
 ###
-### 13. Proxy db and queue connections
+### 13. Print pod status
+###
+
+kubectl -n oih-dev-ns get pods
+
+###
+### 14. Proxy db and queue connections
 ###
 
 startProxy
 
 ###
-### 14. Open dashboard
+### 15. Open dashboard
 ###
 
 # end sudo session
 sudo -k
-
-
 
 minikube dashboard
