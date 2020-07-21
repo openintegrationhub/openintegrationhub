@@ -90,7 +90,7 @@ class KubernetesDriver extends BaseDriver {
 
     async destroyApp(app) {
         //TODO wait until job really will be deleted
-        this._logger.info({ name: app.name }, 'going to undeploy job from k8s');
+        this._logger.info({ name: app.name }, 'Going to delete deployment from k8s');
 
         try {
             await this._appsClient.deployments(app.name).delete({
@@ -102,7 +102,7 @@ class KubernetesDriver extends BaseDriver {
             });
         } catch (e) {
             if (e.statusCode !== 404) {
-                this._logger.error(e, 'failed to undeploy job');
+                this._logger.error(e, 'Failed to delete deployment');
             }
         }
 
