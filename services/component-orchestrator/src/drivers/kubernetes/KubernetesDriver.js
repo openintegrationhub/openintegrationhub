@@ -10,25 +10,25 @@ class KubernetesDriver extends BaseDriver {
         this._config = config;
         this._logger = logger;
         this._coreClient = k8s.getCoreClient();
-        this._batchClient = k8s.getBatchClient();
+        this._appsClient = k8s.getAppsClient()
     }
 
-    async createApp(flow, node, envVars, component) {
-        this._logger.info({ flow: flow.id }, 'Going to deploy job to k8s');
+    async createApp(flow, node, envVars, component, deploymentOptions) {
+        this._logger.info({ flow: flow.id }, 'Going to apply deployment to k8s');
         try {
             const env = this._prepareEnvVars(flow, node, envVars);
             const flowNodeSecret = await this._ensureFlowNodeSecret(flow, node, env);
-            await this._createRunningFlowNode(flow, node, flowNodeSecret, component);
+            await this._createRunningFlowNode(flow, node, flowNodeSecret, component, deploymentOptions);
         } catch (e) {
-            this._logger.error(e, 'Failed to deploy the job');
+            this._logger.error(e, 'Failed to apply the deployment');
         }
     }
 
 
-    async _createRunningFlowNode(flow, node, flowNodeSecret, component) {
-        const descriptor = await this._generateAppDefinition(flow, node, flowNodeSecret, component);
-        this._logger.trace(descriptor, 'going to deploy a job to k8s');
-        const result = await this._batchClient.jobs.post({ body: descriptor });
+    async _createRunningFlowNode(flow, node, flowNodeSecret, component, deploymentOptions) {
+        const descriptor = await this._generateAppDefinition(flow, node, flowNodeSecret, component, deploymentOptions);
+        this._logger.trace(descriptor);
+        const result = await this._appsClient.deployments.post({ body: descriptor });
         return new KubernetesRunningFlowNode(result.body);
     }
 
@@ -93,10 +93,10 @@ class KubernetesDriver extends BaseDriver {
         this._logger.info({ name: app.name }, 'going to undeploy job from k8s');
 
         try {
-            await this._batchClient.jobs(app.name).delete({
+            await this._appsClient.deployments(app.name).delete({
                 body: {
                     kind: 'DeleteOptions',
-                    apiVersion: 'batch/v1',
+                    apiVersion: 'apps/v1',
                     propagationPolicy: 'Foreground'
                 }
             });
@@ -122,17 +122,20 @@ class KubernetesDriver extends BaseDriver {
     }
 
     async getAppList() {
-        return ((await this._batchClient.jobs.get()).body.items || []).map(i => new KubernetesRunningFlowNode(i));
+        return ((await this._appsClient.deployments.get()).body.items || []).map(i => new KubernetesRunningFlowNode(i));
     }
 
-    async _generateAppDefinition(flow, node, nodeSecret, component) {
+    async _generateAppDefinition(flow, node, nodeSecret, component, {
+        imagePullPolicy = 'Always',
+        replicas = 1
+    }) {
         let appId = flow.id + '.' + node.id;
         appId = appId.toLowerCase().replace(/[^0-9a-z]/g, '');
         const image = _.get(component, 'distribution.image');
 
         return {
-            apiVersion: 'batch/v1',
-            kind: 'Job',
+            apiVersion: 'apps/v1',
+            kind: 'Deployment',
             metadata: {
                 name: appId,
                 namespace: this._config.get('NAMESPACE'),
@@ -143,6 +146,13 @@ class KubernetesDriver extends BaseDriver {
                 }
             },
             spec: {
+                replicas,
+                selector: {
+                    matchLabels: {
+                        flowId: flow.id,
+                        stepId: node.id,
+                    }
+                },
                 template: {
                     metadata: {
                         labels: {
@@ -155,11 +165,10 @@ class KubernetesDriver extends BaseDriver {
                         }
                     },
                     spec: {
-                        restartPolicy: 'Never',
                         containers: [{
                             image,
                             name: 'apprunner',
-                            imagePullPolicy: this._config.get('KUBERNETES_IMAGE_PULL_POLICY') || 'Always',
+                            imagePullPolicy,
                             envFrom: [{
                                 secretRef: {
                                     name: nodeSecret.metadata.name

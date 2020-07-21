@@ -9,7 +9,7 @@ const { expect } = chai;
 describe('KubernetesDriver', () => {
     let driver;
     let coreClient;
-    let batchClient;
+    let appsClient;
 
     beforeEach(() => {
         const config = {
@@ -34,18 +34,18 @@ describe('KubernetesDriver', () => {
 
         };
 
-        batchClient = {
-            jobs: {
+        appsClient = {
+            deployments: {
                 post: () => {}
             }
         };
 
         const k8s = {
             getCoreClient: () => coreClient,
-            getBatchClient: () => batchClient
+            getAppsClient: () => appsClient
         };
 
-        sinon.stub(batchClient.jobs, 'post').resolves();
+        sinon.stub(appsClient.deployments, 'post').resolves();
 
         driver = new KubernetesDriver({config, logger, k8s});
     });
@@ -79,11 +79,11 @@ describe('KubernetesDriver', () => {
     describe('#_createRunningFlowNode', () => {
         it('should create RunningFlowNode instance', async () => {
             sinon.stub(driver, '_generateAppDefinition').returns({kind: 'Job'});
-            batchClient.jobs.post.resolves({
+            appsClient.deployments.post.resolves({
                 body: {
-                    kind: 'Job',
-                        metadata: {
-                        name: 'new-job'
+                    kind: 'Deployment',
+                    metadata: {
+                        name: 'new-deployment'
                     }
                 }
             });
@@ -91,9 +91,9 @@ describe('KubernetesDriver', () => {
             const flow = {id: 'flow1'};
             const node = {id: 'node1'};
             const flowNodeSecret = {id: 'flow-secret'};
-            const result = await driver._createRunningFlowNode(flow, node, flowNodeSecret);
+            const result = await driver._createRunningFlowNode(flow, node, flowNodeSecret, {});
             expect(result instanceof KubernetesRunningFlowNode).to.be.true;
-            expect(result.name).to.equal('new-job');
+            expect(result.name).to.equal('new-deployment');
         });
     });
 
@@ -120,10 +120,11 @@ describe('KubernetesDriver', () => {
                 }
             };
 
-            const result = await driver._generateAppDefinition(flow, node, secret, component);
+            const result = await driver._generateAppDefinition(flow, node, secret, component, {});
+
             expect(result).to.deep.equal({
-                'apiVersion': 'batch/v1',
-                'kind': 'Job',
+                'apiVersion': 'apps/v1',
+                'kind': 'Deployment',
                 'metadata': {
                     'annotations': {
                         'flowId': 'flow1',
@@ -134,6 +135,13 @@ describe('KubernetesDriver', () => {
                     'namespace': 'flows-ns'
                 },
                 'spec': {
+                   'replicas': 1,
+                    'selector': {
+                        'matchLabels': {
+                            'flowId': 'flow1',
+                            'stepId': 'step1'
+                    }
+                    },
                     'template': {
                         'metadata': {
                             'labels': {
@@ -170,7 +178,6 @@ describe('KubernetesDriver', () => {
                                     }
                                 }
                             ],
-                            'restartPolicy': 'Never'
                         }
                     }
                 }
