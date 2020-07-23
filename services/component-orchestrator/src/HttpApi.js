@@ -12,14 +12,17 @@ class HttpApi {
      * @param opts.secretsDao - Secrets Data Access Object
      * @param opts.snapshotsDao - Snapshots Data Access Object
      */
-    constructor({ config, logger, flowsDao, secretsDao, snapshotsDao }) {
+    constructor({ config, logger, flowsDao, secretsDao, snapshotsDao, componentOrchestrator }) {
         this._config = config;
         this._logger = logger.child({ service: 'HttpApi' });
+        this._componentOrchestrator = componentOrchestrator
         this._flowsDao = flowsDao;
         this._secretsDao = secretsDao;
         this._snapshotsDao = snapshotsDao;
         this._app = express();
         this._app.get('/v1/tasks/:flowId/steps/:stepId', this._setIamToken.bind(this), this._getStepInfo.bind(this));
+        this._app.get('/v1/components/:componentId/start', this._setIamToken.bind(this), this._getStepInfo.bind(this));
+        this._app.get('/v1/components/:componentId/stop', this._setIamToken.bind(this), this._getStepInfo.bind(this));
         this._app.get('/healthcheck', this._healthcheck.bind(this));
         this._app.use(this._errorHandler.bind(this));
     }
@@ -45,7 +48,7 @@ class HttpApi {
     }
 
     _setIamToken(req, res, next) {
-        // Sailor passes an IAM token as a password part of the Basic auth header
+        // Ferryman passes an IAM token as a password part of the Basic auth header
         const user = auth(req);
         if (!user) {
             return next(new Error('Failed to parse basic auth'));
@@ -109,6 +112,32 @@ class HttpApi {
                 config: nodeConfig,
                 snapshot
             });
+        } catch (e) {
+            return next(e);
+        }
+    }
+
+    async _startComponent(req, res, next) {
+        const { componentId } = req.params;
+        const logger = this._logger.child({ flowId, stepId });
+
+        try {
+            const flow = await this._flowsDao.findById(flowId);
+
+            res.sendStatus(200);
+        } catch (e) {
+            return next(e);
+        }
+    }
+
+    async _stopComponent(req, res, next) {
+        const { componentId } = req.params;
+        const logger = this._logger.child({ flowId, stepId });
+
+        try {
+            const flow = await this._flowsDao.findById(flowId);
+
+            res.sendStatus(200);
         } catch (e) {
             return next(e);
         }
