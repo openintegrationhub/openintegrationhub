@@ -4,8 +4,22 @@ set -e
 
 # constants
 
+TENANT_1_NAME="Tenant 1"
+TENANT_1_ADMIN="ta1@example.com"
+TENANT_1_ADMIN_PASSWORD="1234"
+TENANT_1_USER="tu1@example.com"
+TENANT_1_USER_PASSWORD="1234"
+
+TENANT_2_NAME="Tenant 2"
+TENANT_2_ADMIN="ta2@example.com"
+TENANT_2_ADMIN_PASSWORD="1234"
+TENANT_2_USER="tu2@example.com"
+TENANT_2_USER_PASSWORD="1234"
+
 SERVICE_ACCOUNT_USERNAME=test@test.de
 SERVICE_ACCOUNT_PASSWORD=testtest1234
+
+######
 
 EXPOSED_SERVICES=( \
     app-directory.localoih.com \
@@ -48,6 +62,15 @@ clear_minikube="false"
 os=""
 cluster_ip=""
 admin_token=""
+
+tenant_1_id=""
+tenant_1_admin_id=""
+tenant_1_user_id=""
+
+tenant_2_id=""
+tenant_2_admin_id=""
+tenant_2_user_id=""
+
 service_account_id=""
 service_account_token=""
 service_account_token_encoded=""
@@ -151,6 +174,7 @@ function postJSON {
     result=$res
 }
 
+
 function setAdminToken {
     read -r -d '' JSON << EOM || true
     {
@@ -178,6 +202,88 @@ function createServiceAccount {
 EOM
     postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
     service_account_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+}
+
+function createTenantAndUsers_1 {
+    # create tenant
+    read -r -d '' JSON << EOM || true
+    {
+        "name": "$TENANT_1_NAME",
+        "confirmed": true,
+        "status": "ACTIVE"
+    }
+EOM
+    postJSON http://iam.localoih.com/api/v1/tenants "$JSON" "$admin_token"
+    tenant_1_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+
+    # create tenant admin
+    read -r -d '' JSON << EOM || true
+    {
+        "status" : "ACTIVE",
+        "confirmed": true,
+        "role": "TENANT_ADMIN",
+        "permissions": ["all"],
+        "username": "$TENANT_1_ADMIN",
+        "password": "$TENANT_1_ADMIN_PASSWORD",
+        "tenant": "$tenant_1_id"
+    }
+EOM
+    postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
+    tenant_1_admin_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+    # create user
+    read -r -d '' JSON << EOM || true
+    {
+        "status" : "ACTIVE",
+        "confirmed": true,
+        "role": "USER",
+        "username": "$TENANT_1_USER",
+        "password": "$TENANT_1_USER_PASSWORD",
+        "tenant": "$tenant_1_id"
+    }
+EOM
+    postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
+    tenant_1_user_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+}
+
+function createTenantAndUsers_2 {
+    # create tenant
+    read -r -d '' JSON << EOM || true
+    {
+        "name": "$TENANT_2_NAME",
+        "confirmed": true,
+        "status": "ACTIVE"
+    }
+EOM
+    postJSON http://iam.localoih.com/api/v1/tenants "$JSON" "$admin_token"
+    tenant_2_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+
+    # create tenant admin
+    read -r -d '' JSON << EOM || true
+    {
+        "status" : "ACTIVE",
+        "confirmed": true,
+        "role": "TENANT_ADMIN",
+        "permissions": ["all"],
+        "username": "$TENANT_2_ADMIN",
+        "password": "$TENANT_2_ADMIN_PASSWORD",
+        "tenant": "$tenant_2_id"
+    }
+EOM
+    postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
+    tenant_2_admin_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+    # create user
+    read -r -d '' JSON << EOM || true
+    {
+        "status" : "ACTIVE",
+        "confirmed": true,
+        "role": "USER",
+        "username": "$TENANT_2_USER",
+        "password": "$TENANT_2_USER_PASSWORD",
+        "tenant": "$tenant_2_id"
+    }
+EOM
+    postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
+    tenant_2_user_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
 }
 
 function setServiceAccountToken {
@@ -271,6 +377,30 @@ function createDevComponent {
             "access": "public",
             "name": "Development Component",
             "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'"
+        }
+    }
+EOM
+    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
+    development_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+}
+
+function createDevPrivateComponent {
+    read -r -d '' JSON << EOM || true
+    {
+        "data": {
+            "distribution": {
+                "type": "docker",
+                "image": "oih/connector:latest"
+            },
+            "access": "private",
+            "name": "Development Component (Private)",
+            "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'",
+            "owners": [
+                {
+                    "id": "$tenant_2_user_id",
+                    "type": "user"
+                }
+            ]
         }
     }
 EOM
@@ -640,7 +770,14 @@ waitForServiceStatus http://iam.localoih.com 200
 setAdminToken
 
 ###
-### 7. setup service account
+### 7a. create accounts
+###
+
+createTenantAndUsers_1
+createTenantAndUsers_2
+
+###
+### 7b. setup service account
 ###
 
 createServiceAccount
@@ -670,6 +807,9 @@ createTimerComponent
 createNodeComponent
 createDevComponent
 createDevGlobalComponent
+
+# create for tenant_2_user_id
+createDevPrivateComponent
 
 waitForServiceStatus http://flow-repository.localoih.com/flows 401
 
