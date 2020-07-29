@@ -322,10 +322,24 @@ function deployServices {
         service_name=$(echo "$dir" | sed "s/.\/4-Services\///")
         if [[ " ${skip_services[*]} " == *" $service_name "* ]]
         then
-            colorEcho 33 "Skip $service_name"
+            colorEcho 33 "Deploy $service_name (temporary)"
         else
             colorEcho 32 "Deploy $service_name"
-            kubectl apply -Rf "$dir"
+        fi
+        kubectl apply -Rf "$dir"
+    done
+}
+
+function removeTemporaryServices {
+    for dir in ./4-Services/*
+    do
+        IFS=' '
+        service_name=$(echo "$dir" | sed "s/.\/4-Services\///")
+        if [[ " ${skip_services[*]} " == *" $service_name "* ]]
+        then
+            colorEcho 33 "Removing $service_name"
+            kubectl -n oih-dev-ns delete services "$service_name" || true
+            kubectl -n oih-dev-ns delete deployment "$service_name" || true
         fi
     done
 }
@@ -821,32 +835,38 @@ createDevConcurrentFlow
 createDevGlobalFlow
 
 ###
-### 11. Point to web ui if ready
+### 11. Remove temporary deployments
+###
+
+removeTemporaryServices
+
+###
+### 12. Point to web ui if ready
 ###
 
 waitForServiceStatus http://web-ui.localoih.com 200
 echo "Setup done. Visit -> http://web-ui.localoih.com"
 
 ###
-### 12. Write .env file
+### 13. Write .env file
 ###
 
 writeDotEnvFile
 
 ###
-### 13. Print pod status
+### 14. Print pod status
 ###
 
 kubectl -n oih-dev-ns get pods
 
 ###
-### 14. Proxy db and queue connections
+### 15. Proxy db and queue connections
 ###
 
 startProxy
 
 ###
-### 15. Open dashboard
+### 16. Open dashboard
 ###
 
 # end sudo session
