@@ -25,7 +25,7 @@ import locale from 'react-json-editor-ajrm/locale/en';
 
 // Actions
 import {
-    deleteComponent, updateComponent,
+    deleteComponent, updateComponent, startComponent,
 } from '../../../action/components';
 
 const useStyles = {
@@ -41,7 +41,7 @@ const useStyles = {
 };
 
 class ComponentTeaser extends React.PureComponent {
-    state= {
+    state = {
         editComponent: false,
         editorData: null,
         wasChanged: false,
@@ -93,7 +93,7 @@ class ComponentTeaser extends React.PureComponent {
         );
     }
 
-    editOpen= () => {
+    editOpen = () => {
         this.setState({
             editComponent: true,
         });
@@ -101,6 +101,10 @@ class ComponentTeaser extends React.PureComponent {
 
     deleteComponent = () => {
         this.props.deleteComponent(this.props.data.id);
+    }
+
+    startComponent = () => {
+        this.props.startComponent(this.props.data);
     }
 
     updateComponent = () => {
@@ -139,11 +143,11 @@ class ComponentTeaser extends React.PureComponent {
                             {
                                 this.props.data.logo
                                     ? <Grid item xs={1}>
-                                        <img src={this.props.data.logo} alt="Smiley face" height="42" width="42"/>
+                                        <img src={this.props.data.logo} alt="Smiley face" height="42" width="42" />
                                     </Grid>
 
                                     : <Grid item xs={1}>
-                                        <AddBox style={{ height: '42', width: '42' }}/>
+                                        <AddBox style={{ height: '42', width: '42' }} />
                                     </Grid>
                             }
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
@@ -156,21 +160,21 @@ class ComponentTeaser extends React.PureComponent {
 
                             {
                                 this.props.data.descriptor && Object.prototype.hasOwnProperty.call(this.props.data.descriptor, 'triggers')
-                                    && (
-                                        <Grid item xs={12}><h3>Triggers</h3>
-                                            {this.getTrigger(this.props.data.descriptor.triggers)}
-                                        </Grid>
-                                    )
+                                && (
+                                    <Grid item xs={12}><h3>Triggers</h3>
+                                        {this.getTrigger(this.props.data.descriptor.triggers)}
+                                    </Grid>
+                                )
                             }
 
 
                             {
                                 this.props.data.descriptor && Object.prototype.hasOwnProperty.call(this.props.data.descriptor, 'actions')
-                                    && (
-                                        <Grid item xs={12}><h3>Actions</h3>
-                                            {this.getActions(this.props.data.descriptor.actions)}
-                                        </Grid>
-                                    )
+                                && (
+                                    <Grid item xs={12}><h3>Actions</h3>
+                                        {this.getActions(this.props.data.descriptor.actions)}
+                                    </Grid>
+                                )
                             }
 
                             <Grid item xs={12}><h3>Distribution</h3>
@@ -185,6 +189,10 @@ class ComponentTeaser extends React.PureComponent {
                                 <Button variant="outlined" aria-label="next" onClick={this.editOpen}>
                                     Update
                                 </Button>
+                                {this.props.data.isGlobal && <Button variant="outlined" aria-label="next" onClick={this.startComponent}>
+                                    Start
+                                </Button>}
+
                                 <Button variant="outlined" aria-label="next" onClick={this.deleteComponent}>
                                     Delete
                                 </Button>
@@ -196,17 +204,17 @@ class ComponentTeaser extends React.PureComponent {
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
                     open={this.state.editComponent}
-                    onClose={ () => { this.setState({ editComponent: false }); }}
+                    onClose={() => { this.setState({ editComponent: false }); }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
                         <JSONInput
-                            id = 'jsonEdit'
-                            locale = {locale}
-                            theme = 'dark_vscode_tribute'
-                            placeholder = {this.props.data}
-                            height = '550px'
-                            width = '600px'
+                            id='jsonEdit'
+                            locale={locale}
+                            theme='dark_vscode_tribute'
+                            placeholder={this.props.data}
+                            height='550px'
+                            width='600px'
                             onChange={this.editorChange.bind(this)}
                         />
                         <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ editComponent: false }); }}>
@@ -229,6 +237,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
     deleteComponent,
     updateComponent,
+    startComponent,
 }, dispatch);
 
 export default flow(

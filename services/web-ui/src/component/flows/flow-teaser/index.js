@@ -49,12 +49,12 @@ const useStyles = {
 };
 
 class FlowTeaser extends React.PureComponent {
-    state= {
+    state = {
         editFlow: false,
         editorData: null,
     }
 
-    editOpen= (e) => {
+    editOpen = (e) => {
         e.stopPropagation();
         this.setState({
             editFlow: true,
@@ -93,16 +93,16 @@ class FlowTeaser extends React.PureComponent {
 
     getStatus(classes) {
         switch (this.props.data.status) {
-        case 'starting':
-            return <span className={classes.indicator} style={{ backgroundColor: 'yellow' }}/>;
-        case 'stopping':
-            return <span className={classes.indicator} style={{ backgroundColor: 'red' }}/>;
-        case 'active':
-            return <span className={classes.indicator} style={{ backgroundColor: 'green' }}/>;
-        case 'inactive':
-            return <span className={classes.indicator} style={{ backgroundColor: 'grey' }}/>;
-        default:
-            return null;
+            case 'starting':
+                return <span className={classes.indicator} style={{ backgroundColor: 'yellow' }} />;
+            case 'stopping':
+                return <span className={classes.indicator} style={{ backgroundColor: 'red' }} />;
+            case 'active':
+                return <span className={classes.indicator} style={{ backgroundColor: 'green' }} />;
+            case 'inactive':
+                return <span className={classes.indicator} style={{ backgroundColor: 'grey' }} />;
+            default:
+                return null;
         }
     }
 
@@ -110,6 +110,7 @@ class FlowTeaser extends React.PureComponent {
         const {
             classes,
         } = this.props;
+
         return (
             <Grid item xs={12}>
                 <ExpansionPanel>
@@ -126,16 +127,16 @@ class FlowTeaser extends React.PureComponent {
                                 && <Grid item xs={3}><InputLabel>Status:</InputLabel><Typography >{this.getStatus(classes)} {this.props.data.status}</Typography></Grid>}
                             <Grid item xs={3}>
                                 <Button aria-label="next" onClick={this.editOpen}>
-                                    <Edit/>
+                                    <Edit />
                                 </Button>
                                 <Button aria-label="next" onClick={this.deleteFlow}>
-                                    <Delete/>
+                                    <Delete />
                                 </Button>
                                 <Button aria-label="next" onClick={this.startFlow}>
-                                    <PlayArrow/>
+                                    <PlayArrow />
                                 </Button>
                                 <Button aria-label="next" onClick={this.stopFlow}>
-                                    <Stop/>
+                                    <Stop />
                                 </Button>
                             </Grid>
                         </Grid>
@@ -179,17 +180,17 @@ class FlowTeaser extends React.PureComponent {
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
                     open={this.state.editFlow}
-                    onClose={ () => { this.setState({ editFlow: false }); }}
+                    onClose={() => { this.setState({ editFlow: false }); }}
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                     <div className={classes.modal}>
                         <JSONInput
-                            id = 'jsonEdit'
-                            locale = {locale}
-                            theme = 'dark_vscode_tribute'
-                            placeholder = {this.props.data}
-                            height = '550px'
-                            width = '600px'
+                            id='jsonEdit'
+                            locale={locale}
+                            theme='dark_vscode_tribute'
+                            placeholder={this.props.data}
+                            height='550px'
+                            width='600px'
                             onChange={this.editorChange.bind(this)}
                         />
                         <Button variant="outlined" aria-label="Add" onClick={() => { this.setState({ editFlow: false }); }}>

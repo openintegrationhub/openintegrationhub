@@ -5,6 +5,7 @@ import { getConfig } from '../conf';
 const conf = getConfig();
 export const GET_COMPONENTS = 'GET_COMPONENTS';
 export const GET_COMPONENTS_PAGE = 'GET_COMPONENTS_PAGE';
+export const START_COMPONENT = 'START_COMPONENT';
 export const UPDATE_COMPONENT = 'UPDATE_COMPONENT';
 export const UPDATE_COMPONENT_ERROR = 'UPDATE_COMPONENT_ERROR';
 export const CREATE_COMPONENT = 'CREATE_COMPONENT';
@@ -69,6 +70,25 @@ export const updateComponent = component => async (dispatch) => {
         });
     }
 };
+
+export const startComponent = component => async (dispatch) => {
+    try {
+        await axios({
+            method: 'post',
+            url: `${conf.endpoints.component}/components/global/${component.id}/start`,
+            withCredentials: true,
+            json: true,
+        });
+
+        dispatch({
+            type: START_COMPONENT,
+        });
+        dispatch(getComponents());
+    } catch (err) {
+        console.log(err);
+    }
+};
+
 
 export const createComponent = data => async (dispatch) => {
     try {

@@ -1,12 +1,12 @@
 module.exports = ({ logger, componentOrchestrator }) => async (event) => {
-    try {
-      const { payload } = event;
-      console.log('process event')
-      await componentOrchestrator.startComponent(payload.component)
+  try {
+    const { payload } = event;
 
-      await event.ack();
-    } catch (err) {
-      logger.error({ err, event }, 'Unable to process event');
-      await event.nack();
-    }
-  };
+    await componentOrchestrator.startComponent(payload)
+
+    await event.ack();
+  } catch (err) {
+    logger.error({ err, event }, 'Unable to process event');
+    await event.nack();
+  }
+};

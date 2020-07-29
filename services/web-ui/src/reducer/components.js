@@ -1,5 +1,5 @@
 import {
-    GET_COMPONENTS, UPDATE_COMPONENT, UPDATE_COMPONENT_ERROR, GET_COMPONENTS_PAGE,
+    GET_COMPONENTS, UPDATE_COMPONENT, UPDATE_COMPONENT_ERROR, GET_COMPONENTS_PAGE, START_COMPONENT,
 } from '../action/components';
 
 const initialState = {
@@ -10,35 +10,40 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-    case GET_COMPONENTS:
-        return {
-            ...state,
-            error: null,
-            all: [
-                ...action.components,
-            ],
-            meta: { ...action.meta },
-        };
-    case GET_COMPONENTS_PAGE:
-        return {
-            ...state,
-            error: null,
-            all: [
-                ...action.components,
-            ],
-            meta: { ...action.meta },
-        };
-    case UPDATE_COMPONENT:
-        return {
-            ...state,
-            error: null,
-        };
-    case UPDATE_COMPONENT_ERROR:
-        return {
-            ...state,
-            error: action.err,
-        };
-    default:
-        return state;
+        case GET_COMPONENTS:
+            return {
+                ...state,
+                error: null,
+                all: [
+                    ...action.components,
+                ],
+                meta: { ...action.meta },
+            };
+        case GET_COMPONENTS_PAGE:
+            return {
+                ...state,
+                error: null,
+                all: [
+                    ...action.components,
+                ],
+                meta: { ...action.meta },
+            };
+        case START_COMPONENT:
+            return {
+                ...state,
+                error: null,
+            };
+        case UPDATE_COMPONENT:
+            return {
+                ...state,
+                error: null,
+            };
+        case UPDATE_COMPONENT_ERROR:
+            return {
+                ...state,
+                error: action.err,
+            };
+        default:
+            return state;
     }
 };
