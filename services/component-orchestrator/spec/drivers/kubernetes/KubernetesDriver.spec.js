@@ -1,5 +1,5 @@
 const KubernetesDriver = require('../../../src/drivers/kubernetes/KubernetesDriver');
-const FlowSecret = require('../../../src/drivers/kubernetes/FlowSecret');
+const FlowSecret = require('../../../src/drivers/kubernetes/Secret');
 const KubernetesRunningFlowNode = require('../../../src/drivers/kubernetes/KubernetesRunningFlowNode');
 const sinon = require('sinon');
 const chai = require('chai');
@@ -58,7 +58,7 @@ describe('KubernetesDriver', () => {
         it('should deploy a new app into K8s', async () => {
             const flowSecret = new FlowSecret();
             sinon.stub(driver, '_prepareEnvVars').returns({container: 'env-vars'});
-            sinon.stub(driver, '_ensureFlowNodeSecret').resolves(flowSecret);
+            sinon.stub(driver, '_ensureSecret').resolves(flowSecret);
             sinon.stub(driver, '_createRunningFlowNode').resolves();
 
             const flow = {id: 'flow1'};
@@ -67,7 +67,7 @@ describe('KubernetesDriver', () => {
             await driver.createApp(flow, node, envVars);
 
             expect(driver._prepareEnvVars).to.have.been.calledOnceWith(flow, node, envVars);
-            expect(driver._ensureFlowNodeSecret).to.have.been.calledOnceWith(
+            expect(driver._ensureSecret).to.have.been.calledOnceWith(
                 flow,
                 node,
                 {container: 'env-vars'}

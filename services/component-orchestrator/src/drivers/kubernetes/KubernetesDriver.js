@@ -2,7 +2,7 @@ const { BaseDriver } = require('@openintegrationhub/component-orchestrator');
 const uuid = require('uuid/v4');
 const _ = require('lodash');
 const KubernetesRunningFlowNode = require('./KubernetesRunningFlowNode');
-const FlowSecret = require('./FlowSecret');
+const Secret = require('./Secret');
 
 class KubernetesDriver extends BaseDriver {
     constructor({ config, logger, k8s }) {
@@ -17,8 +17,8 @@ class KubernetesDriver extends BaseDriver {
         this._logger.info({ flow: flow.id }, 'Going to apply deployment to k8s');
         try {
             const env = this._prepareEnvVars(flow, node, envVars);
-            const flowNodeSecret = await this._ensureFlowNodeSecret(flow, node, env);
-            await this._createRunningFlowNode(flow, node, flowNodeSecret, component, deploymentOptions);
+            const secret = await this._ensureSecret(flow, node, env);
+            await this._createRunningFlowNode(flow, node, secret, component, deploymentOptions);
         } catch (e) {
             this._logger.error(e, 'Failed to apply the deployment');
         }
@@ -32,10 +32,10 @@ class KubernetesDriver extends BaseDriver {
         return new KubernetesRunningFlowNode(result.body);
     }
 
-    async _ensureFlowNodeSecret(flow, node, secretEnvVars) {
+    async _ensureSecret(flow, node, secretEnvVars) {
         const flowSecret = await this._getFlowNodeSecret(flow, node);
         if (!flowSecret) {
-            return this._createFlowNodeSecret(flow, node, secretEnvVars);
+            return this._createSecret(flow, node, secretEnvVars);
         }
 
         flowSecret.data = secretEnvVars;
@@ -48,14 +48,14 @@ class KubernetesDriver extends BaseDriver {
         const response = await this._coreClient.secrets(secretName).put({
             body: flowSecret.toDescriptor()
         });
-        return new FlowSecret(response.body);
+        return new Secret(response.body);
     }
 
-    async _getFlowNodeSecret(flow, node) {
+    async _getSecret(flow, node) {
         try {
-            const secretName = this._getFlowNodeSecretName(flow, node);
+            const secretName = this._getSecretName(flow, node);
             const result = await this._coreClient.secrets(secretName).get();
-            return FlowSecret.fromDescriptor(result.body);
+            return Secret.fromDescriptor(result.body);
         } catch (e) {
             if (e.statusCode === 404) {
                 return null;
@@ -64,15 +64,15 @@ class KubernetesDriver extends BaseDriver {
         }
     }
 
-    _getFlowNodeSecretName(flow, node) {
+    _getSecretName(flow, node) {
         return `${flow.id}${node.id}`.toLowerCase().replace(/[^0-9a-z]/g, '');
     }
 
-    async _createFlowNodeSecret(flow, node, data) {
-        const secretName = this._getFlowNodeSecretName(flow, node);
+    async _createSecret(flow, node, data) {
+        const secretName = this._getSecretName(flow, node);
         this._logger.debug({ secretName }, 'About to create a secret');
 
-        const flowSecret = new FlowSecret({
+        const secret = new Secret({
             metadata: {
                 name: secretName,
                 namespace: this._config.get('NAMESPACE')
@@ -81,11 +81,11 @@ class KubernetesDriver extends BaseDriver {
         });
 
         const response = await this._coreClient.secrets.post({
-            body: flowSecret.toDescriptor()
+            body: secret.toDescriptor()
         });
         this._logger.debug('Secret has been created');
 
-        return new FlowSecret(response.body);
+        return new Secret(response.body);
     }
 
     async destroyApp(app) {
