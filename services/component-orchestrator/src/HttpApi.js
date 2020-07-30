@@ -117,32 +117,6 @@ class HttpApi {
         }
     }
 
-    async _startComponent(req, res, next) {
-        const { componentId } = req.params;
-        const logger = this._logger.child({ flowId, stepId });
-
-        try {
-            const flow = await this._flowsDao.findById(flowId);
-
-            res.sendStatus(200);
-        } catch (e) {
-            return next(e);
-        }
-    }
-
-    async _stopComponent(req, res, next) {
-        const { componentId } = req.params;
-        const logger = this._logger.child({ flowId, stepId });
-
-        try {
-            const flow = await this._flowsDao.findById(flowId);
-
-            res.sendStatus(200);
-        } catch (e) {
-            return next(e);
-        }
-    }
-
     /**
      * Healthcheck endpoint.
      * @param req

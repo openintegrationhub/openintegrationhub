@@ -9,7 +9,6 @@ module.exports = ({ eventBus, flowStarting, flowStopping, flowExecute, component
 
     for (let [topic, handler] of Object.entries(handlers)) {
         eventBus.subscribe(topic, handler);
-        console.log(topic, handler)
     }
 
     return {
