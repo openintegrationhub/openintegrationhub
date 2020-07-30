@@ -25,7 +25,7 @@ import locale from 'react-json-editor-ajrm/locale/en';
 
 // Actions
 import {
-    deleteComponent, updateComponent, startComponent,
+    deleteComponent, updateComponent, startComponent, stopComponent,
 } from '../../../action/components';
 
 const useStyles = {
@@ -74,6 +74,7 @@ class ComponentTeaser extends React.PureComponent {
         );
     }
 
+
     getActions(data) {
         return (
             Object.keys(data).map((key, index) => (<ExpansionPanel key={`actions-${index}`} expandicon={<ExpandMoreIcon />}>
@@ -105,6 +106,10 @@ class ComponentTeaser extends React.PureComponent {
 
     startComponent = () => {
         this.props.startComponent(this.props.data);
+    }
+
+    stopComponent = () => {
+        this.props.stopComponent(this.props.data);
     }
 
     updateComponent = () => {
@@ -189,9 +194,14 @@ class ComponentTeaser extends React.PureComponent {
                                 <Button variant="outlined" aria-label="next" onClick={this.editOpen}>
                                     Update
                                 </Button>
-                                {this.props.data.isGlobal && <Button variant="outlined" aria-label="next" onClick={this.startComponent}>
-                                    Start
-                                </Button>}
+                                {this.props.data.isGlobal && <>
+                                    <Button variant="outlined" aria-label="next" onClick={this.startComponent}>
+                                        Start
+                                    </Button>
+                                    <Button variant="outlined" aria-label="next" onClick={this.startComponent}>
+                                        Stop
+                                    </Button>
+                                </>}
 
                                 <Button variant="outlined" aria-label="next" onClick={this.deleteComponent}>
                                     Delete
@@ -238,6 +248,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     deleteComponent,
     updateComponent,
     startComponent,
+    stopComponent,
 }, dispatch);
 
 export default flow(
