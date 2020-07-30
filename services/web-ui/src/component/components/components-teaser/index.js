@@ -198,7 +198,7 @@ class ComponentTeaser extends React.PureComponent {
                                     <Button variant="outlined" aria-label="next" onClick={this.startComponent}>
                                         Start
                                     </Button>
-                                    <Button variant="outlined" aria-label="next" onClick={this.startComponent}>
+                                    <Button variant="outlined" aria-label="next" onClick={this.stopComponent}>
                                         Stop
                                     </Button>
                                 </>}
