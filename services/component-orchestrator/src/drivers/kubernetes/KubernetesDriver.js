@@ -13,47 +13,57 @@ class KubernetesDriver extends BaseDriver {
         this._appsClient = k8s.getAppsClient()
     }
 
-    async createApp(flow, node, envVars, component, deploymentOptions) {
-        this._logger.info({ flow: flow.id }, 'Going to apply deployment to k8s');
+    async createLocalDeployment(flow, node, envVars, component, deploymentOptions) {
+        this._logger.info({ flow: flow.id }, 'Going to apply local deployment to k8s');
         try {
-            const env = this._prepareEnvVars(flow, node, envVars);
-            const secret = await this._ensureSecret(flow, node, env);
+            const env =  this._preparePrivateEnvVars(flow, node, envVars);
+            const secret = await this._ensureSecret(`${flow.id}${node.id}`, env);
             await this._createRunningFlowNode(flow, node, secret, component, deploymentOptions);
         } catch (e) {
-            this._logger.error(e, 'Failed to apply the deployment');
+            this._logger.error(e, 'Failed to apply local deployment');
         }
     }
 
+    async createGlobalDeployment(envVars, component, deploymentOptions) {
+        this._logger.info({ component: component._id }, 'Going to apply global deployment to k8s');
+        try {
+            const env =  this._preparePrivateEnvVars(component, envVars);
+            const secret = await this._ensureSecret(`global_${component._id}`, env);
+            await this._createRunningFlowNode(flow, node, secret, component, deploymentOptions);
+        } catch (e) {
+            this._logger.error(e, 'Failed to apply global deployment');
+        }
+    }
 
-    async _createRunningFlowNode(flow, node, flowNodeSecret, component, deploymentOptions) {
-        const descriptor = await this._generateAppDefinition(flow, node, flowNodeSecret, component, deploymentOptions);
+    async _createRunningFlowNode(flow, node, secret, component, deploymentOptions) {
+        const descriptor = await this._generateAppDefinition(flow, node, secret, component, deploymentOptions);
         this._logger.trace(descriptor);
         const result = await this._appsClient.deployments.post({ body: descriptor });
         return new KubernetesRunningFlowNode(result.body);
     }
 
-    async _ensureSecret(flow, node, secretEnvVars) {
-        const flowSecret = await this._getFlowNodeSecret(flow, node);
+    async _ensureSecret(name, secretEnvVars) {
+        const flowSecret = await this._getSecret(name);
         if (!flowSecret) {
-            return this._createSecret(flow, node, secretEnvVars);
+            return this._createSecret(name, secretEnvVars);
         }
 
         flowSecret.data = secretEnvVars;
-        return this._updateFlowNodeSecret(flowSecret);
+        return this._updateSecret(flowSecret);
     }
 
-    async _updateFlowNodeSecret(flowSecret) {
-        const secretName = flowSecret.name;
+    async _updateSecret(secret) {
+        const secretName = secret.name;
         this._logger.debug({ secretName }, 'About to update the secret');
         const response = await this._coreClient.secrets(secretName).put({
-            body: flowSecret.toDescriptor()
+            body: secret.toDescriptor()
         });
         return new Secret(response.body);
     }
 
-    async _getSecret(flow, node) {
+    async _getSecret(name) {
         try {
-            const secretName = this._getSecretName(flow, node);
+            const secretName = this._getSecretName(name);
             const result = await this._coreClient.secrets(secretName).get();
             return Secret.fromDescriptor(result.body);
         } catch (e) {
@@ -64,12 +74,12 @@ class KubernetesDriver extends BaseDriver {
         }
     }
 
-    _getSecretName(flow, node) {
-        return `${flow.id}${node.id}`.toLowerCase().replace(/[^0-9a-z]/g, '');
+    _getSecretName(name) {
+        return name.toLowerCase().replace(/[^0-9a-z]/g, '');
     }
 
-    async _createSecret(flow, node, data) {
-        const secretName = this._getSecretName(flow, node);
+    async _createSecret(name, data) {
+        const secretName = this._getSecretName(name);
         this._logger.debug({ secretName }, 'About to create a secret');
 
         const secret = new Secret({
@@ -125,7 +135,7 @@ class KubernetesDriver extends BaseDriver {
         return ((await this._appsClient.deployments.get()).body.items || []).map(i => new KubernetesRunningFlowNode(i));
     }
 
-    async _generateAppDefinition(flow, node, nodeSecret, component, {
+    async _generateDefinition(flow, node, nodeSecret, component, {
         imagePullPolicy = 'Always',
         replicas = 1
     }) {
@@ -205,7 +215,7 @@ class KubernetesDriver extends BaseDriver {
         };
     }
 
-    _prepareEnvVars(flow, node, vars) {
+    _prepareEnvVars(vars) {
         let envVars = Object.assign({}, vars);
 
         // if running from host use cluster internal references instead
@@ -215,11 +225,7 @@ class KubernetesDriver extends BaseDriver {
         // envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
         envVars.BACK_CHANNEL = envVars.AMQP_URI
         envVars.EXEC_ID = uuid().replace(/-/g, '');
-        envVars.STEP_ID = node.id;
-        envVars.FLOW_ID = flow.id;
-        envVars.USER_ID = flow.startedBy;
-        envVars.COMP_ID = node.componentId;
-        envVars.FUNCTION = node.function;
+
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
         envVars.API_USERNAME = 'iam_token';
         envVars.API_KEY = envVars.IAM_TOKEN;
@@ -230,8 +236,25 @@ class KubernetesDriver extends BaseDriver {
             return env;
         }, {});
         envVars.LOG_LEVEL = 'trace'
+        return envVars
+    }
 
+    _prepareLocalEnvVars(flow, node, vars) {
+        let envVars = this._prepareEnvVars(vars);
+        envVars.STEP_ID = node.id;
+        envVars.FLOW_ID = flow.id;
+        envVars.USER_ID = flow.startedBy;
+        envVars.COMP_ID = node.componentId;
+        envVars.FUNCTION = node.function;
         return Object.assign(envVars, node.env);
+    }
+
+    _prepareGlobalEnvVars(component, startedBy, vars) {
+        let envVars = this._prepareEnvVars(vars);
+        envVars.USER_ID = startedBy;
+        envVars.COMP_ID = component._id;
+        envVars.FUNCTION = component.function;
+        return Object.assign(envVars, component.env);
     }
 }
 
