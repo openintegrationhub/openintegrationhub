@@ -76,7 +76,7 @@ class RabbitMqQueuesManager extends QueuesManager {
             return creds;
         }
 
-        const username = `${flow.id}_${node.id}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const username = `flow-${flow.id}-${node.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
         const password = uuid();
 
         this._logger.trace({ username, password }, 'About to create RabbitMQ user');
@@ -118,15 +118,18 @@ class RabbitMqQueuesManager extends QueuesManager {
     }
 
     async _deleteQueuesForFlow(flow) {
-        const flowId = flow.id;
+        const selector = `flow-${flow.id}`;
         //@todo: Needs optimisation, don't get all queues on every call
         const queuesStructure = await this._getQueuesStructure();
         // delete all queues
-        if (queuesStructure[flowId]) {
-            for (let queue of queuesStructure[flowId].queues) {
+
+        if (queuesStructure[selector]) {
+
+            for (let queue of queuesStructure[selector].queues) {
                 await this._queueCreator.deleteQueue(queue);
             }
-            for (let exchange of queuesStructure[flowId].exchanges) {
+            for (let exchange of queuesStructure[selector].exchanges) {
+
                 await this._queueCreator.deleteExchange(exchange);
             }
         }
