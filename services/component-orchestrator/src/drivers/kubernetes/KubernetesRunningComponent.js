@@ -1,7 +1,7 @@
 const _ = require('lodash');
-const { RunningFlowNode } = require('@openintegrationhub/component-orchestrator');
+const { RunningComponent } = require('@openintegrationhub/component-orchestrator');
 
-class KubernetesRunningFlowNode extends RunningFlowNode {
+class KubernetesRunningComponent extends RunningComponent {
     constructor(app) {
         super();
         this._app = app;
@@ -27,12 +27,20 @@ class KubernetesRunningFlowNode extends RunningFlowNode {
         return this.getMetadataValue('name');
     }
 
+    getType() {
+        return this.getAnnotationsValue('type')
+    }
+
     getFlowId() {
         return this.getAnnotationsValue('flowId');
     }
 
     getNodeId() {
         return this.getAnnotationsValue('nodeId');
+    }
+
+    getComponentId() {
+        return this.getAnnotationsValue('componentId');
     }
 
     getAnnotationsValue(key) {
@@ -64,4 +72,4 @@ class KubernetesRunningFlowNode extends RunningFlowNode {
     }
 }
 
-module.exports = KubernetesRunningFlowNode;
+module.exports = KubernetesRunningComponent;
