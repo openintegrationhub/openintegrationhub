@@ -90,8 +90,14 @@ describe('RabbitMqQueuesManager', () => {
 
     describe('#getSettingsForNodeExecution', () => {
         it('should return settings required for flow node execution', async () => {
+
+            const component1 = { id: 'foo', isGlobal: false }
             const node1 = { id: 'step_1' };
             const flow = { id: 'flow1', nodes: [node1] };
+
+            const componentsMap = new Map()
+
+            componentsMap.set('step_1', component1)
 
             queueCreator.makeQueuesForTheFlow.resolves({
                 step_1: {
@@ -104,7 +110,9 @@ describe('RabbitMqQueuesManager', () => {
                 password: 'cobain'
             });
 
-            const settings = await im.getSettingsForNodeExecution(flow, node1);
+            const flowSettings = await im.prepareQueues(flow, componentsMap)
+
+            const settings = await im.getSettingsForNodeExecution(flow, node1, flowSettings);
             expect(settings).to.deep.equal({
                 AMQP_URI: 'amqp://kurt:cobain@localhost',
                 SOME: 'stuff'
@@ -131,7 +139,7 @@ describe('RabbitMqQueuesManager', () => {
             const arg = RabbitMqManagementService.prototype.createFlowUser.firstCall.args[0];
             expect(arg).to.be.a('object');
             expect(arg.flow).to.equal(flow);
-            expect(arg.username).to.equal('flow1step1');
+            expect(arg.username).to.equal('flow-flow1-step1');
             expect(arg.password).to.be.a('string');
             expect(arg.password.length).to.equal(36);
             expect(result).to.deep.equal({ username: arg.username, password: arg.password });

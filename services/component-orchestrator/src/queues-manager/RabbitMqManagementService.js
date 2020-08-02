@@ -63,8 +63,8 @@ class RabbitMqManagementService {
 
         await this._client.putUser(username, userBody);
 
-        const readRegex = `^${flow.id}:`;
-        const writeRegex = `^(${backchannel}|${flow.id})$`;
+        const readRegex = `^flow-${flow.id}:`;
+        const writeRegex = `^(${backchannel}|flow-${flow.id})$`;
         const permissionsBody = {
             // https://www.rabbitmq.com/access-control.html
             // The regular expression '^$', i.e. matching nothing but the empty string,

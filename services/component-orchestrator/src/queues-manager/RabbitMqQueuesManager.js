@@ -47,9 +47,12 @@ class RabbitMqQueuesManager extends QueuesManager {
         await this._deleteRabbitMqCredentialsForFlow(flow);
     }
 
-    async getSettingsForNodeExecution(flow, node) {
+    async prepareQueues(flow, componentsMap) {
+        return await this._queueCreator.makeQueuesForTheFlow(flow, componentsMap);
+    }
+
+    async getSettingsForNodeExecution(flow, node, flowSettings) {
         //@todo: don't ensure queues every time
-        const flowSettings = await this._queueCreator.makeQueuesForTheFlow(flow);
         const rabbitCredentials = await this._ensureRabbitMqCredentialsForFlowNode(flow, node);
         const AMQP_URI = this._prepareAmqpUri(rabbitCredentials);
 
