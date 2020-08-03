@@ -23,18 +23,18 @@ class KubernetesDriver extends BaseDriver {
     }
 
     async createApp({ flow, node, envVars, component, options }) {
-        this._logger.info({ flow: flow.id }, 'Going to apply local deployment to k8s');
 
         if (component.isGlobal) {
             this._logger.info({ component: component.id }, 'Going to apply global deployment to k8s');
             try {
-                const env = this._prepareGlobalEnvVars(component, 'Started by Me', envVars);
+                const env = this._prepareGlobalEnvVars(component, envVars);
                 const secret = await this._ensureSecret(`${GLOBAL_PREFIX}${component.id}`, env);
                 await this._createRunningComponent({ secret, component, options });
             } catch (e) {
                 this._logger.error(e, 'Failed to apply global deployment');
             }
         } else {
+            this._logger.info({ flow: flow.id }, 'Going to apply local deployment to k8s');
             try {
                 const env = this._prepareLocalEnvVars(flow, node, envVars);
                 const secret = await this._ensureSecret(`${LOCAL_PREFIX}${flow.id}${node.id}`, env);
@@ -261,6 +261,10 @@ class KubernetesDriver extends BaseDriver {
 
     _prepareLocalEnvVars(flow, node, vars) {
         let envVars = this._addEnvVars(vars);
+
+        envVars.API_USERNAME = 'iam_token';
+        envVars.API_KEY = vars.IAM_TOKEN;
+
         envVars.STEP_ID = node.id;
         envVars.FLOW_ID = flow.id;
         envVars.USER_ID = flow.startedBy;
@@ -276,9 +280,9 @@ class KubernetesDriver extends BaseDriver {
         return Object.assign(envVars, node.env);
     }
 
-    _prepareGlobalEnvVars(component, startedBy, vars) {
+    _prepareGlobalEnvVars(component, vars) {
         let envVars = this._addEnvVars(vars);
-        envVars.USER_ID = startedBy;
+        envVars.USER_ID = component.startedBy;
         envVars.COMP_ID = component.id;
         envVars.FUNCTION = component.function;
 
@@ -302,10 +306,9 @@ class KubernetesDriver extends BaseDriver {
         envVars.EXEC_ID = uuid().replace(/-/g, '');
 
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
-        envVars.API_USERNAME = 'iam_token';
-        envVars.API_KEY = envVars.IAM_TOKEN;
-        envVars.CONTAINER_ID = 'does not matter';
-        envVars.WORKSPACE_ID = 'does not matter';
+
+        // envVars.CONTAINER_ID = 'does not matter';
+        // envVars.WORKSPACE_ID = 'does not matter';
 
         return envVars
     }

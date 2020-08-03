@@ -79,6 +79,39 @@ class RabbitMqManagementService {
     }
 
     /**
+     * Create RabbitMQ user for a global component.
+     * @param {string} username
+     * @param {string} password
+     * @param {Component} component - Global component instance
+     * @returns {Promise<void>}
+     */
+    async createGlobalComponentUser({ username, password, component, backchannel }) {
+        const userBody = {
+            //@todo it would be great to pass a password_hash instead of a password
+            // http://www.rabbitmq.com/passwords.html#computing-password-hash
+            password,
+            tags: 'component-user'
+        };
+
+        await this._client.putUser(username, userBody);
+
+        const readRegex = `^component-${component.id}:`;
+        const writeRegex = `^(${backchannel}|component-${component.id})$`;
+        const permissionsBody = {
+            // https://www.rabbitmq.com/access-control.html
+            // The regular expression '^$', i.e. matching nothing but the empty string,
+            // covers all resources and effectively stops the user from performing any operation.
+            // The empty string, '' is a synonym for '^$' and restricts permissions in the exact same way.
+            configure: '',
+            write: writeRegex,
+            read: readRegex
+        };
+
+        await this._client.setUserPermissions(username, this._vhost, permissionsBody);
+    }
+
+
+    /**
      * Delete RabbitMQ user.
      * @param {Object} credentials
      * @param {string} credentials.username
