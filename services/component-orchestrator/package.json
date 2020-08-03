@@ -47,6 +47,6 @@
     "supertest": "4.0.2"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   }
 }
