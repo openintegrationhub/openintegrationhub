@@ -2,11 +2,8 @@ const { SchedulePublisher } = require('@openintegrationhub/scheduler');
 const { Event } = require('@openintegrationhub/event-bus')
 
 class OIH_SchedulePublisher extends SchedulePublisher {
-    constructor({ logger, queueCreator, channel, eventBus }) {
+    constructor({ eventBus }) {
         super();
-        this._logger = logger;
-        this._queueCreator = queueCreator;
-        this._channel = channel;
         this._eventBus = eventBus
     }
     async scheduleFlow(flow) {
