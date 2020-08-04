@@ -497,6 +497,27 @@ EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
 
+function createDevSimpleWebhookFlow {
+    read -r -d '' JSON << EOM || true
+    {
+        "name":"Simplest flow (single component with webhook)",
+        "description:": "just one component",
+        "graph":{
+            "nodes":[
+                {
+                    "id": "step_1",
+                    "componentId": "$development_component_id",
+                    "function": "testTrigger"
+                }
+            ],
+            "edges":[
+            ]
+        }
+    }
+EOM
+    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+}
+
 function createDevConsecutiveFlow {
     read -r -d '' JSON << EOM || true
     {
@@ -830,6 +851,7 @@ waitForServiceStatus http://flow-repository.localoih.com/flows 401
 createFlow
 
 createDevSimpleFlow
+createDevSimpleWebhookFlow
 createDevConsecutiveFlow
 createDevConcurrentFlow
 createDevGlobalFlow
