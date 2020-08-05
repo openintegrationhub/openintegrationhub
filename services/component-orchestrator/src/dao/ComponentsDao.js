@@ -7,13 +7,14 @@ const { promisify } = require('util');
 const getAsync = promisify(request.get);
 
 class OIHComponentsDao extends ComponentsDao {
-    constructor({config, logger}) {
+    constructor({ config, logger }) {
         super();
         this._config = config;
         this._logger = logger;
     }
 
     async findById(compId) {
+        console.log(compId)
         const url = this._getComponentRepoUrl(`/components/${compId}`);
         const opts = {
             url,
@@ -22,8 +23,7 @@ class OIHComponentsDao extends ComponentsDao {
                 authorization: `Bearer ${this._config.get('IAM_TOKEN')}`
             }
         };
-
-        this._logger.trace({compId}, 'Fetching component info');
+        this._logger.trace({ compId }, 'Fetching component info');
         const { body, statusCode } = await getAsync(opts);
 
         if (statusCode === 200) {
