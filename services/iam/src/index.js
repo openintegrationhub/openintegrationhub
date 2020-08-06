@@ -13,9 +13,15 @@ const log = Logger.getLogger(`${conf.general.loggingNameSpace}/init`, {
 });
 
 function exitHandler(options, err) {
-    if (options.cleanup) { log.info('Clean shutdown'); }
-    if (err) { log.error('error', err.message); }
-    if (options.exit) { process.exit(); }
+    if (options.cleanup) {
+        log.info('Clean shutdown');
+    }
+    if (err) {
+        log.error('error', err.message);
+    }
+    if (options.exit) {
+        process.exit();
+    }
 }
 
 // do something when app is closing
@@ -30,7 +36,6 @@ process.on('SIGINT', exitHandler.bind(null, { exit: true }));
         const eventBus = new EventBus({ serviceName: conf.general.loggingNameSpace, rabbitmqUri: conf.general.rabbitmqUrl });
 
         await eventBus.connect();
-
         // main task
         const mainApp = new App({ eventBus });
 
@@ -45,10 +50,8 @@ process.on('SIGINT', exitHandler.bind(null, { exit: true }));
 
         log.info(`${pjson.name} ${pjson.version} started`);
         log.info(`Listening on ${mainApp.app.get('port')}`);
-
     } catch (err) {
         log.error(err);
         process.exit(1);
     }
 })();
-

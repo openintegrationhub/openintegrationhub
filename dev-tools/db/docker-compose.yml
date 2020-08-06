@@ -1,0 +1,65 @@
+version: "3.7"
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - ./data/mongo
+    environment:
+      - MONGO_LOG_DIR=/dev/null
+    networks:
+      - oih-dev
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: 'test $$(mongo --quiet -eval "rs.initiate({ _id: \"rs0\", version: 1, members: [{ _id: 0, host: \"127.0.0.1:27017\" }] }).ok || rs.status().ok") -eq 1'
+      interval: 5s
+      start_period: 20s
+    command: --bind_ip_all --replSet "rs0"
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    command: redis-server --requirepass sOmE_sEcUrE_pAsS
+    networks:
+      - oih-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/var/lib/redis
+      # - ./redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    volumes:
+      # - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./data/rabbitmq/:/var/lib/rabbitmq/
+      # - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+    environment:
+      RABBITMQ_ERLANG_COOKIE: wantsomecookie?
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - oih-dev
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "5672"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+networks:
+  oih-dev:
+    driver: bridge
+    name: oih-dev

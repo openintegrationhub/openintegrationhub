@@ -1,0 +1,40 @@
+version: "3"
+services:
+  iam:
+    image: "node:${NODE_VERSION}"
+    environment:
+      NODE_ENV: "development"
+      LOG_LEVEL: error
+      # NODE_TLS_REJECT_UNAUTHORIZED: 0
+      RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
+      IAM_MONGODB_CONNECTION: "mongodb://mongodb/iam" #change if not useing MACOS
+      IAM_AUTH_TYPE: "basic"
+      IAM_USE_SSL: "true"
+      IAM_DEBUG: "true"
+      IAM_BASEURL: "http://iam.oih.dev:3099"
+      IAM_ORIGINWHITELIST: "http://web-ui.iam.oih.dev:3000"
+      IAM_JWT_SECRET: “secret”
+      IAM_SESSION_COOKIE_SECRET: "secret"
+      IAM_JWT_COOKIENAME: "oih_cookie"
+      IAM_JWT_AUDIENCE: "oih-iam"
+      IAM_ACC_ADMIN_USERNAME: "admin@oih.dev"
+      IAM_ACC_ADMIN_PASSWORD: "admin"
+      # IAM_SERVICE_CLIENT_ID: "8ce00058-5f75-435f-9026-ad952480e15a"
+      # IAM_SERVICE_CLIENT_SECRET: "secret"
+      PORT: "3099"
+    ports:
+      - "3099:3099"
+    volumes:
+      - ${REPOSITORY_ROOT}:/usr/src/app
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:3099/healthcheck"]
+    #   interval: 30s
+    #   start_period: 40s
+    entrypoint: sh -c 'cd /usr/src/app/services/iam && yarn watch'
+    networks:
+      - oih-dev
+
+networks:
+  oih-dev:
+    external:
+      name: oih-dev
