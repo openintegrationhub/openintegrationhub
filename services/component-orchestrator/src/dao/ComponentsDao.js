@@ -14,7 +14,6 @@ class OIHComponentsDao extends ComponentsDao {
     }
 
     async findById(compId) {
-        console.log(compId)
         const url = this._getComponentRepoUrl(`/components/${compId}`);
         const opts = {
             url,

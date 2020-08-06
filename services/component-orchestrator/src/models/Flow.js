@@ -53,8 +53,8 @@ class Flow {
             .map(edge => edge.target)
     }
 
-    getFunctionNameByStep(steppId) {
-        return this.graph.nodes.find(node => node.id === steppId).function
+    getComponentPropertyByStep(steppId, propertyKey) {
+        return this.graph.nodes.find(node => node.id === steppId)[propertyKey]
     }
 
     getEdges() {

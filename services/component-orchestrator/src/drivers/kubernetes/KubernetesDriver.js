@@ -23,7 +23,6 @@ class KubernetesDriver extends BaseDriver {
     }
 
     async createApp({ flow, node, envVars, component, options }) {
-
         if (component.isGlobal) {
             this._logger.info({ component: component.id }, 'Going to apply global deployment to k8s');
             try {
@@ -37,6 +36,7 @@ class KubernetesDriver extends BaseDriver {
             this._logger.info({ flow: flow.id }, 'Going to apply local deployment to k8s');
             try {
                 const env = this._prepareLocalEnvVars(flow, node, envVars);
+                console.log(env)
                 const secret = await this._ensureSecret(`${LOCAL_PREFIX}${flow.id}${node.id}`, env);
                 await this._createRunningComponent({ flow, node, secret, component, options });
             } catch (e) {
