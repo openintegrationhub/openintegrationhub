@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Logger = require('@basaas/node-logger');
 const { EventBus } = require('@openintegrationhub/event-bus');
 const path = require('path');

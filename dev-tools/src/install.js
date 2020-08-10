@@ -6,6 +6,7 @@ const { checkTools, waitForMongo } = require("./helper")
 checkTools(["docker", "docker-compose", "mongo"])
 
 cp.execSync(`cd ${path.resolve(__dirname, "../db")} && docker-compose up -d`)
+
 waitForMongo()
 
 cp.execSync(

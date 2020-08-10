@@ -1,10 +1,12 @@
-version: "3"
+version: "3.8"
 services:
   iam:
-    image: "node:${NODE_VERSION}"
+    image: node:${NODE_VERSION}
+    container_name: iam
+    working_dir: /usr/src/app/services/iam
     environment:
       NODE_ENV: "development"
-      LOG_LEVEL: error
+      LOG_LEVEL: info
       # NODE_TLS_REJECT_UNAUTHORIZED: 0
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
       IAM_MONGODB_CONNECTION: "mongodb://mongodb/iam" #change if not useing MACOS
@@ -25,12 +27,14 @@ services:
     ports:
       - "3099:3099"
     volumes:
-      - ${REPOSITORY_ROOT}:/usr/src/app
+      - type: bind
+        source: ${REPOSITORY_ROOT}
+        target: /usr/src/app
     # healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost:3099/healthcheck"]
     #   interval: 30s
     #   start_period: 40s
-    entrypoint: sh -c 'cd /usr/src/app/services/iam && yarn watch'
+    command: yarn watch-container
     networks:
       - oih-dev
 
