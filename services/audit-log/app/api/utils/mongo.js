@@ -16,7 +16,7 @@ const getLogs = async ( // eslint-disable-line
   filters,
   sortField,
   sortOrder,
-) => new Promise(async (resolve) => {
+) => new Promise(async (resolve) => { // eslint-disable-line no-async-promise-executor
   const qry = { $and: [] };
 
   // If the user is not an admin, restrict viewing only to logs of the same user/tenant
@@ -53,7 +53,6 @@ const getLogs = async ( // eslint-disable-line
     delete qry.$and;
   }
 
-
   // count results
   const count = await Log.find(qry).estimatedDocumentCount();
   const doc = await Log.find(qry).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
@@ -71,9 +70,8 @@ const getLogs = async ( // eslint-disable-line
   //   });
 });
 
-
 // Should only be available to internal methods or OIH-Admin
-const getAnyLogById = logId => new Promise((resolve) => {
+const getAnyLogById = (logId) => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(logId);
   Log.find({ '_id': findId }).lean()
     .then((doc) => {
@@ -85,7 +83,7 @@ const getAnyLogById = logId => new Promise((resolve) => {
 });
 
 // Saves an event
-const addEvent = data => new Promise((resolve) => {
+const addEvent = (data) => new Promise((resolve) => {
   const newEvent = new Log(data);
   newEvent.save()
     .then((doc) => {
@@ -97,7 +95,7 @@ const addEvent = data => new Promise((resolve) => {
 });
 
 // Gets all logs pertaining to a particular user
-const getByUser = id => new Promise((resolve) => {
+const getByUser = (id) => new Promise((resolve) => {
   Log.find(
     { $or: [{ 'payload.id': id }, { 'payload.user': id }] },
   )
@@ -121,7 +119,6 @@ const updatePayload = (id, payload) => new Promise((resolve) => {
       log.error(err);
     });
 });
-
 
 module.exports = {
   addEvent,

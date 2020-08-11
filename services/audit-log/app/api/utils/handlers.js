@@ -5,10 +5,9 @@
 const config = require('../../config/index');
 const log = require('../../config/logger');
 
-const storage = require('./' + config.storage); // eslint-disable-line
+const storage = require('./' + config.storage); //eslint-disable-line
 
-
-const saveLog = async function (event) {
+const saveLog = async function (event) { // eslint-disable-line func-names
   try {
     await storage.addEvent(event);
   } catch (e) {
@@ -16,7 +15,7 @@ const saveLog = async function (event) {
   }
 };
 
-const gdprAnonymise = async function (id) {
+const gdprAnonymise = async function (id) { // eslint-disable-line func-names
   try {
     const entries = await storage.getByUser(id);
     const promises = [];
@@ -39,6 +38,5 @@ const gdprAnonymise = async function (id) {
     log.error(`Anonymisation failed: ${e}`);
   }
 };
-
 
 module.exports = { saveLog, gdprAnonymise };

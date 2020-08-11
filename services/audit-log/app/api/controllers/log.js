@@ -1,9 +1,10 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+
 /* eslint no-underscore-dangle: "off" */
 /* eslint consistent-return: "off" */
 /* eslint prefer-destructuring: "off" */
 
-const express = require('express');
-const bodyParser = require('body-parser');
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 
@@ -36,7 +37,6 @@ router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
     pageNumber = parseInt(req.query.page.number, 10);
   }
 
-
   const response = await storage.getLogs(req.user,
     pageSize,
     pageNumber,
@@ -53,6 +53,5 @@ router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
     res.json(response);
   }
 });
-
 
 module.exports = router;

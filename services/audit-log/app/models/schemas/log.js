@@ -1,9 +1,6 @@
-
-
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
-
 
 // Define schema
 const log = new Schema({
