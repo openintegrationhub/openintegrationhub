@@ -512,17 +512,17 @@ function createDevWebhookFlow {
                 {
                     "id": "step_2",
                     "componentId": "$development_global_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_3",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_4",
                     "componentId": "$development_global_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 }
             ],
             "edges":[
