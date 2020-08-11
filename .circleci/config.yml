@@ -6,6 +6,9 @@ aliases:
   - &node_mongo_env
     - image: circleci/node:12-stretch
     - image: circleci/mongo:4.4
+  - &node_amqp_env
+    - image: circleci/node:12-stretch
+    - image: rabbitmq:3.8.6-alpine
   - &run_npm_install
     name: Installing Dependencies
     command: yarn
