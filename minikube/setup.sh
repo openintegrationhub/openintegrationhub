@@ -559,12 +559,12 @@ function createDevConsecutiveFlow {
                 {
                     "id": "step_2",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_3",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 }
             ],
             "edges": [
@@ -598,12 +598,12 @@ function createDevConcurrentFlow {
                 {
                     "id": "step_2",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_3",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 }
             ],
             "edges": [
@@ -637,47 +637,47 @@ function createDevGlobalFlow {
                 {
                     "id": "step_2",
                     "componentId": "$development_global_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_3",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_4",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_5",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_6",
-                    "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction"
                 },
                 {
                     "id": "step_7",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_8",
-                    "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction"
                 },
                 {
                     "id": "step_9",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_10",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 }
             ],
             "edges": [
@@ -718,8 +718,7 @@ function createDevGlobalFlow {
                     "target": "step_10"
                 }
             ]
-        },
-        "cron": "*/1 * * * *"
+        }
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
