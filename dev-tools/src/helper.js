@@ -1,4 +1,6 @@
 const { execSync } = require("child_process")
+const fetch = require("node-fetch")
+const { services } = require("./config")
 
 module.exports = {
   checkTools(tools = []) {
@@ -11,16 +13,26 @@ module.exports = {
     }
   },
   waitForMongo() {
+    console.log("Waiting for MongoDB")
     while (true) {
       try {
         execSync('mongo --eval "db.getCollectionNames()"')
       } catch (err) {
-        console.log("Waiting for MongoDB")
         continue
       }
       break
     }
   },
-  async waitForRedis() {},
-  async waitForRabbitMq() {},
+  async waitForIAM() {
+    console.log("Waiting for IAM")
+    while (true) {
+      try {
+        const response = await fetch(`http://localhost:${services.iam.port}`)
+        if (response.status !== 200) continue
+      } catch (err) {
+        continue
+      }
+      break
+    }
+  },
 }
