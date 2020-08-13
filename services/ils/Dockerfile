@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:12-alpine
 LABEL NAME="integration-layer-service"
 LABEL MAINTAINER Shterion Yanev "syanev@wice.de"
 LABEL SUMMARY="This image is used to start Integration Layer Service for OIH"

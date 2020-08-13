@@ -1,4 +1,4 @@
-FROM node:8.12-alpine AS base
+FROM node:12-alpine AS base
 LABEL NAME="oih-audit-log"
 LABEL MAINTAINER Sven Höffler "shoeffler@wice.de"
 
