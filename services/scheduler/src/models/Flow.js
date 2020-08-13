@@ -44,7 +44,7 @@ class Flow {
         this.dueExecution = interval.next();
     }
 
-    static findForScheduling({limit = 20} = {}) {
+    static findForScheduling({ limit = 20 } = {}) {
         const currentDateTime = new Date();
         const query = {
             dueExecution: {

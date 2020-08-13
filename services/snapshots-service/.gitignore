@@ -1,3 +1,4 @@
 /dist
 /tmp
 !/package-lock.json
+.env

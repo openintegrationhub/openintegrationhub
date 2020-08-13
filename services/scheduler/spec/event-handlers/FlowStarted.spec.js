@@ -21,11 +21,11 @@ describe('FlowStarted event handler', () => {
     beforeEach(async () => {
         await Flow.deleteMany();
         const logger = {
-            info: () => {},
-            trace: () => {},
+            info: () => { },
+            trace: () => { },
             error: err => console.error(err)
         };
-        flowStarted = FlowStarted({logger});
+        flowStarted = FlowStarted({ logger });
     });
 
     afterEach(async () => {

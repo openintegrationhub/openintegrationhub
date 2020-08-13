@@ -12,6 +12,7 @@ export const UPDATE_FLOW_ERROR = 'UPDATE_FLOW_ERROR';
 export const CREATE_FLOW = 'CREATE_FLOW';
 export const DELETE_FLOW = 'DELETE_FLOW';
 export const FLOW_ADD_STATE = 'FLOW_ADD_STATE';
+export const EXECUTE_FLOW = 'EXECUTE_FLOW';
 
 
 export const getFlows = () => async (dispatch) => {
@@ -137,6 +138,24 @@ export const deleteFlow = flowId => async (dispatch) => {
             type: DELETE_FLOW,
         });
         dispatch(getFlows());
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const executeFlow = (flowId, data) => async (dispatch) => {
+    try {
+        await axios({
+            method: 'post',
+            url: `${conf.endpoints.webhooks}/hook/${flowId}`,
+            withCredentials: true,
+            json: true,
+            data,
+        });
+
+        dispatch({
+            type: EXECUTE_FLOW,
+        });
     } catch (err) {
         console.log(err);
     }

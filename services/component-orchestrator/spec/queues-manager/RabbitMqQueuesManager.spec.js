@@ -1,4 +1,4 @@
-const logger = require('bunyan').createLogger({name: 'test'});
+const logger = require('bunyan').createLogger({ name: 'test' });
 const sinon = require('sinon');
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -14,7 +14,6 @@ describe('RabbitMqQueuesManager', () => {
     let driver;
     let queueCreator;
     let amqpChannel;
-    let amqpConnection;
 
     function createConfig(conf = {}) {
         return {
@@ -29,7 +28,7 @@ describe('RabbitMqQueuesManager', () => {
         });
 
         queueCreator = {
-            makeQueuesForTheFlow: () => {}
+            makeQueuesForTheFlow: () => { }
         };
         sinon.stub(queueCreator, 'makeQueuesForTheFlow').resolves();
 
@@ -40,29 +39,25 @@ describe('RabbitMqQueuesManager', () => {
         sinon.stub(RabbitMqManagementService.prototype, 'getBindings').resolves([]);
 
         amqpChannel = {
-            deleteQueue: () => {},
-            deleteExchange: () => {}
+            deleteQueue: () => { },
+            deleteExchange: () => { }
         };
         sinon.stub(amqpChannel, 'deleteQueue').resolves();
         sinon.stub(amqpChannel, 'deleteExchange').resolves();
 
-        amqpConnection = {
-            createChannel: () => Promise.resolve(amqpChannel)
-        };
-
         flowsDao = {
-            findAll: () => {},
-            ensureFinalizer: () => {},
-            removeFinalizer: () => {}
+            findAll: () => { },
+            ensureFinalizer: () => { },
+            removeFinalizer: () => { }
         };
         sinon.stub(flowsDao, 'findAll').resolves();
         sinon.stub(flowsDao, 'ensureFinalizer').resolves();
         sinon.stub(flowsDao, 'removeFinalizer').resolves();
 
         driver = {
-            getAppList: () => {},
-            createApp: () => {},
-            destroyApp: () => {}
+            getAppList: () => { },
+            createApp: () => { },
+            destroyApp: () => { }
         };
         sinon.stub(driver, 'getAppList').resolves();
         sinon.stub(driver, 'createApp').resolves();
@@ -71,7 +66,6 @@ describe('RabbitMqQueuesManager', () => {
         im = new RabbitMqQueuesManager({
             config,
             logger,
-            amqpConnection,
             queueCreator,
             driver
         });
@@ -81,27 +75,9 @@ describe('RabbitMqQueuesManager', () => {
         sinon.restore();
     });
 
-    describe('#createForFlow', () => {
-        it('should create needed infrastructure', async () => {
-            const flow = {id: 'flow1'};
-            await im.createForFlow(flow);
-            expect(queueCreator.makeQueuesForTheFlow).to.have.been.calledOnceWithExactly(flow);
-        });
-    });
-
-    describe('#updateForFlow', () => {
-        it('should re-create needed infrastructure', async () => {
-            const flow = {id: 'flow1'};
-            sinon.stub(im, '_deleteQueuesForFlow').resolves();
-            await im.updateForFlow(flow, {});
-            expect(im._deleteQueuesForFlow).to.have.been.calledOnceWithExactly(flow);
-            expect(queueCreator.makeQueuesForTheFlow).to.have.been.calledOnceWithExactly(flow);
-        });
-    });
-
     describe('#deleteForFlow', () => {
         it('should delete infrastructure for the given flow', async () => {
-            const flow = {id: 'flow1'};
+            const flow = { id: 'flow1' };
             sinon.stub(im, '_deleteQueuesForFlow').resolves();
             sinon.stub(im, '_deleteRabbitMqCredentialsForFlow').resolves();
 
@@ -114,8 +90,14 @@ describe('RabbitMqQueuesManager', () => {
 
     describe('#getSettingsForNodeExecution', () => {
         it('should return settings required for flow node execution', async () => {
-            const node1 = {id: 'step_1'};
-            const flow = {id: 'flow1', nodes: [node1]};
+
+            const component1 = { id: 'foo', isGlobal: false }
+            const node1 = { id: 'step_1' };
+            const flow = { id: 'flow1', nodes: [node1] };
+
+            const componentsMap = new Map()
+
+            componentsMap.set('step_1', component1)
 
             queueCreator.makeQueuesForTheFlow.resolves({
                 step_1: {
@@ -128,7 +110,9 @@ describe('RabbitMqQueuesManager', () => {
                 password: 'cobain'
             });
 
-            const settings = await im.getSettingsForNodeExecution(flow, node1);
+            const flowSettings = await im.prepareQueues(flow, componentsMap)
+
+            const settings = await im.getSettingsForNodeExecution(flow, node1, flowSettings);
             expect(settings).to.deep.equal({
                 AMQP_URI: 'amqp://kurt:cobain@localhost',
                 SOME: 'stuff'
@@ -136,34 +120,16 @@ describe('RabbitMqQueuesManager', () => {
         });
     });
 
-    describe('#_deleteQueuesForFlow', () => {
-        it('should delete queues and exchanges', async () => {
-            const flow = {id: 'flow1'};
-            const queuesStructure = {
-                flow1: {
-                    queues: ['flow1:step1'],
-                    exchanges: ['flow1']
-                }
-            };
-            sinon.stub(im, '_getQueuesStructure').resolves(queuesStructure);
-
-            await im._deleteQueuesForFlow(flow);
-
-            expect(im._getQueuesStructure).to.have.been.calledOnce;
-            //@todo: more expectations
-        });
-    });
-
     describe('#_prepareAmqpUri', () => {
         it('should return amqp connection string', () => {
-            const uri = im._prepareAmqpUri({username: 'homer', password: 'simpson'});
+            const uri = im._prepareAmqpUri({ username: 'homer', password: 'simpson' });
             expect(uri).to.equal('amqp://homer:simpson@localhost');
         });
     });
 
     describe('#_ensureRabbitMqCredentialsForFlowNode', () => {
         it('should create and return credentials', async () => {
-            const node1 = {id: 'step_1'};
+            const node1 = { id: 'step_1' };
             const flow = {
                 id: 'flow1',
                 nodes: [node1]
@@ -173,42 +139,42 @@ describe('RabbitMqQueuesManager', () => {
             const arg = RabbitMqManagementService.prototype.createFlowUser.firstCall.args[0];
             expect(arg).to.be.a('object');
             expect(arg.flow).to.equal(flow);
-            expect(arg.username).to.equal('flow1step1');
+            expect(arg.username).to.equal('flow-flow1-step1');
             expect(arg.password).to.be.a('string');
             expect(arg.password.length).to.equal(36);
-            expect(result).to.deep.equal({username: arg.username, password: arg.password});
+            expect(result).to.deep.equal({ username: arg.username, password: arg.password });
         });
 
         it('should not create new credentials if there are already in the store', async () => {
-            const node1 = {id: 'step_1'};
+            const node1 = { id: 'step_1' };
             const flow = {
                 id: 'flow1',
                 nodes: [node1]
             };
-            await im._saveRabbitMqCredential(flow, node1, {username: 'bob'});
+            await im._saveRabbitMqCredential(flow, node1, { username: 'bob' });
             const result = await im._ensureRabbitMqCredentialsForFlowNode(flow, node1);
-            expect(result).to.deep.equal({username: 'bob'});
+            expect(result).to.deep.equal({ username: 'bob' });
             expect(RabbitMqManagementService.prototype.createFlowUser).not.to.have.been.called;
         });
     });
 
     describe('#_deleteRabbitMqCredentialsForFlow', () => {
         it('should call _deleteAmqpCredentials', async () => {
-            const node1 = {id: 'step_1'};
-            const node2 = {id: 'step_2'};
+            const node1 = { id: 'step_1' };
+            const node2 = { id: 'step_2' };
             const flow = {
                 id: 'test',
                 nodes: [node1, node2]
             };
 
-            im._saveRabbitMqCredential(flow, node1, {username: 'cred1'});
-            im._saveRabbitMqCredential(flow, node2, {username: 'cred2'});
+            im._saveRabbitMqCredential(flow, node1, { username: 'cred1' });
+            im._saveRabbitMqCredential(flow, node2, { username: 'cred2' });
 
             await im._deleteRabbitMqCredentialsForFlow(flow);
 
             expect(RabbitMqManagementService.prototype.deleteUser).to.have.been.calledTwice;
-            expect(RabbitMqManagementService.prototype.deleteUser.firstCall.args[0]).to.deep.equal({username: 'cred1'});
-            expect(RabbitMqManagementService.prototype.deleteUser.secondCall.args[0]).to.deep.equal({username: 'cred2'});
+            expect(RabbitMqManagementService.prototype.deleteUser.firstCall.args[0]).to.deep.equal({ username: 'cred1' });
+            expect(RabbitMqManagementService.prototype.deleteUser.secondCall.args[0]).to.deep.equal({ username: 'cred2' });
 
             //@todo: check that it has been removed from the store
         });
@@ -216,9 +182,9 @@ describe('RabbitMqQueuesManager', () => {
 
     describe('#_getQueuesStructure', () => {
         it('should return queues structure', async () => {
-            const queues = [{name: 'flow1:step1'}];
-            const exchanges = [{name: 'flow1'}];
-            const bindings = [{destination: 'flow1:step2'}];
+            const queues = [{ name: 'flow1:step1' }];
+            const exchanges = [{ name: 'flow1' }];
+            const bindings = [{ destination: 'flow1:step2' }];
 
             RabbitMqManagementService.prototype.getQueues.resolves(queues);
             RabbitMqManagementService.prototype.getExchanges.resolves(exchanges);

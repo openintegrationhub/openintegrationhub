@@ -10,9 +10,9 @@ env:
   node: true
   jasmine: true
 extends:
-- airbnb-base
-- plugin:react/recommended
-- plugin:jsx-a11y/recommended
+  - airbnb-base
+  - plugin:react/recommended
+  - plugin:jsx-a11y/recommended
 rules:
   max-len: 0
   no-underscore-dangle: 0

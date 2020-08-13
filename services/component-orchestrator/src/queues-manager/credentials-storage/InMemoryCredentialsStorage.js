@@ -22,6 +22,20 @@ class InMemoryCredentialsStorage extends CredentialsStorage {
         }
     }
 
+    async getForGlobalComponent(componentId) {
+        return this._store[componentId];
+    }
+
+    async setForGlobalComponent(componentId, credential) {
+        this._store[componentId] = credential;
+    }
+
+    async removeForGlobalComponent(componentId) {
+        if (this._store[componentId]) {
+            delete this._store[componentId];
+        }
+    }
+
     async getAllForFlow(flowId) {
         const credentials = this._store[flowId] || {};
         const result = [];

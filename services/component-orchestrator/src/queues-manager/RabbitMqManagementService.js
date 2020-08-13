@@ -2,9 +2,9 @@ const url = require('url');
 const RabbitmqManagement = require('rabbitmq-stats');
 
 class RabbitMqManagementService {
-    constructor({config, logger}) {
+    constructor({ config, logger }) {
         this._config = config;
-        this._logger = logger.child({service: 'RabbitmqManagement'});
+        this._logger = logger.child({ service: 'RabbitmqManagement' });
         this._client = this._createClient();
     }
 
@@ -53,7 +53,7 @@ class RabbitMqManagementService {
      * @param {Flow} flow - Flow instance
      * @returns {Promise<void>}
      */
-    async createFlowUser({ username, password, flow }) {
+    async createFlowUser({ username, password, flow, backchannel }) {
         const userBody = {
             //@todo it would be great to pass a password_hash instead of a password
             // http://www.rabbitmq.com/passwords.html#computing-password-hash
@@ -63,8 +63,8 @@ class RabbitMqManagementService {
 
         await this._client.putUser(username, userBody);
 
-        const readRegex = `^${flow.id}:`;
-        const writeRegex = `^${flow.id}$`;
+        const readRegex = `^flow-${flow.id}:`;
+        const writeRegex = `^(${backchannel}|flow-${flow.id})$`;
         const permissionsBody = {
             // https://www.rabbitmq.com/access-control.html
             // The regular expression '^$', i.e. matching nothing but the empty string,
@@ -77,6 +77,39 @@ class RabbitMqManagementService {
 
         await this._client.setUserPermissions(username, this._vhost, permissionsBody);
     }
+
+    /**
+     * Create RabbitMQ user for a global component.
+     * @param {string} username
+     * @param {string} password
+     * @param {Component} component - Global component instance
+     * @returns {Promise<void>}
+     */
+    async createGlobalComponentUser({ username, password, component, backchannel }) {
+        const userBody = {
+            //@todo it would be great to pass a password_hash instead of a password
+            // http://www.rabbitmq.com/passwords.html#computing-password-hash
+            password,
+            tags: 'component-user'
+        };
+
+        await this._client.putUser(username, userBody);
+
+        const readRegex = `^component-${component.id}:`;
+        const writeRegex = `^(${backchannel}|component-${component.id})$`;
+        const permissionsBody = {
+            // https://www.rabbitmq.com/access-control.html
+            // The regular expression '^$', i.e. matching nothing but the empty string,
+            // covers all resources and effectively stops the user from performing any operation.
+            // The empty string, '' is a synonym for '^$' and restricts permissions in the exact same way.
+            configure: '',
+            write: writeRegex,
+            read: readRegex
+        };
+
+        await this._client.setUserPermissions(username, this._vhost, permissionsBody);
+    }
+
 
     /**
      * Delete RabbitMQ user.

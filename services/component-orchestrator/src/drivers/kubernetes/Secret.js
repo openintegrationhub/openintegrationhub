@@ -4,9 +4,9 @@ const toBase64 = str => Buffer.from(str).toString('base64');
 const fromBase64 = str => Buffer.from(str, 'base64').toString();
 
 /**
- * Represents a Flow's K8s Secret
+ * Represents a K8s Secret
  */
-class FlowSecret {
+class Secret {
     constructor({ metadata = {}, data = {} } = {}) {
         Object.assign(this, {
             metadata,
@@ -48,9 +48,9 @@ class FlowSecret {
     }
 
     /**
-     * Create a FlowSecret from a K8s descriptor.
+     * Create a Secret from a K8s descriptor.
      * @param {Object} descriptor
-     * @returns {FlowSecret}
+     * @returns {Secret}
      */
     static fromDescriptor(descriptor = {}) {
         return new this({
@@ -64,4 +64,4 @@ class FlowSecret {
     }
 }
 
-module.exports = FlowSecret;
+module.exports = Secret;

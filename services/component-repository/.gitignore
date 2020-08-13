@@ -24,3 +24,5 @@ mockgoose*
 .env
 .gccreds
 .nodemon-env
+
+.nyc_output

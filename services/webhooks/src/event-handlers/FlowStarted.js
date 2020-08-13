@@ -1,6 +1,6 @@
 const Flow = require('../models/Flow');
 
-module.exports = ({logger}) => async (event) => {
+module.exports = ({ logger }) => async (event) => {
     try {
         const { payload } = event;
         const { id } = payload;

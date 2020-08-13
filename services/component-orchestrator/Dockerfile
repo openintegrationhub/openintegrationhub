@@ -1,4 +1,4 @@
-FROM node:10-alpine AS base
+FROM node:12-alpine AS base
 WORKDIR /usr/lib/component-orchestrator
 
 RUN apk update && apk add --no-cache bash

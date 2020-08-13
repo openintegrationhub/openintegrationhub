@@ -1,10 +1,10 @@
 {
   "name": "@openintegrationhub/component-repository",
   "description": "Component repository",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "Open Integration Hub",
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "scripts": {
     "lint": "eslint index.js src spec",
