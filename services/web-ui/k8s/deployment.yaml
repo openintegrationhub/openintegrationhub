@@ -17,21 +17,23 @@ spec:
           image: openintegrationhub/web-ui:latest
           env:
             - name: PORT
-              value: '3000'
+              value: "3000"
             - name: ENDPOINT_SECRETS
-              value: 'https://skm.openintegrationhub.com/api/v1'
+              value: "https://skm.openintegrationhub.com/api/v1"
             - name: ENDPOINT_IAM
-              value: 'https://iam.openintegrationhub.com'
+              value: "https://iam.openintegrationhub.com"
             - name: ENDPOINT_FLOW
-              value: 'https://flow-repository.openintegrationhub.com'
+              value: "https://flow-repository.openintegrationhub.com"
             - name: ENDPOINT_DISPATCHER
-              value: 'https://dispatcher-service.openintegrationhub.com'
+              value: "https://dispatcher-service.openintegrationhub.com"
             - name: ENDPOINT_METADATA
-              value: 'https://metadata.openintegrationhub.com/api/v1'
+              value: "https://metadata.openintegrationhub.com/api/v1"
             - name: ENDPOINT_APP_DIRECTORY
-              value: 'https://app-directory.openintegrationhub.com/api/v1'
+              value: "https://app-directory.openintegrationhub.com/api/v1"
             - name: ENDPOINT_COMPONENT
-              value: 'https://component-repository.openintegrationhub.com'
+              value: "https://component-repository.openintegrationhub.com"
+            - name: ENDPOINT_WEBHOOKS
+              value: "https://webhooks.openintegrationhub.com"
           ports:
             - containerPort: 3000
           livenessProbe:
@@ -48,5 +50,5 @@ spec:
             timeoutSeconds: 1
           resources:
             limits:
-              cpu: '0.1'
+              cpu: "0.1"
               memory: 500Mi
