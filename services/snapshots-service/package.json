@@ -12,6 +12,7 @@
     "scripts": {
         "start": "node dist/app.js",
         "start:dev": "NODE_ENV=development ts-node-dev -r dotenv/config ./src/app.ts | bunyan",
+        "watch-container": "ts-node-dev ./src/app.ts | bunyan",
         "test": "NODE_ENV=test mocha --exit --require ts-node/register src/**/*.spec.ts",
         "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts ./src",
         "pretest": "npm run eslint",

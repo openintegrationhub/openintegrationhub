@@ -8,6 +8,7 @@
   "scripts": {
     "start": "node index.js",
     "watch": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
+    "watch-container": "nodemon -L --watch ./ --watch ../../lib/secret-service",
     "test": "echo \"noop\"",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/secret-service:${VERSION} -f Dockerfile ."

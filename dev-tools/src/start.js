@@ -1,15 +1,46 @@
-const cp = require("child_process")
-const path = require("path")
-const { devToolsRoot, env } = require("./config")
-const { checkTools, waitForMongo } = require("./helper")
+const { execSync } = require("child_process")
+const { devToolsRoot, env, dbRoot, services } = require("./config")
+const {
+  waitForIAM,
+  waitForMongo,
+  getAccountToken,
+  checkTools,
+} = require("./helper")
 
-checkTools(["docker-compose"])
+checkTools(["docker", "docker-compose", "minikube", "mongo", "minikube"])
 
-cp.execSync(`cd ${path.resolve(__dirname, "../db")} && docker-compose up -d`)
+async function run() {
+  execSync(`cd ${dbRoot} && docker-compose up -d`)
 
-waitForMongo()
+  waitForMongo()
 
-cp.execSync(`cd ${devToolsRoot} && docker-compose up -V`, {
-  env,
-  stdio: "inherit",
-})
+  // start iam
+  execSync(`cd ${devToolsRoot} && docker-compose up -d iam`, {
+    env,
+    stdio: "inherit",
+  })
+
+  await waitForIAM()
+
+  // gererate service account token (IAM_TOKEN)
+  const serviceAccountToken = await getAccountToken(
+    services.iam.serviceUserName,
+    services.iam.servicePassword
+  )
+
+  execSync(`cd ${devToolsRoot} && docker-compose up -V`, {
+    env: {
+      ...env,
+      DEV_IAM_TOKEN: serviceAccountToken,
+    },
+    stdio: "inherit",
+  })
+}
+
+; (async () => {
+  try {
+    await run()
+  } catch (err) {
+    console.log(err)
+  }
+})()

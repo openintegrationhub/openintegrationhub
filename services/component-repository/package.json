@@ -16,6 +16,7 @@
     "start:dev": "LOG_LEVEL=trace NODE_ENV=development npm start | bunyan",
     "start:nodemon": "NODE_ENV=development nodemon -r dotenv/config index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/component-repository/src | bunyan",
     "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
+    "watch-container": "nodemon -L --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/component-repository/src | bunyan",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/component-repository:${VERSION} -f Dockerfile ../../"
   },

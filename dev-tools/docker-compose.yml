@@ -5,33 +5,151 @@ services:
     container_name: iam
     working_dir: /usr/src/app/services/iam
     environment:
-      NODE_ENV: "development"
+      NODE_ENV: development
       LOG_LEVEL: info
-      # NODE_TLS_REJECT_UNAUTHORIZED: 0
-      RABBITMQ_URI: "amqp://guest:guest@rabbitmq"
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
       IAM_MONGODB_CONNECTION: mongodb://mongodb/${DB_IAM}
-      IAM_AUTH_TYPE: "basic"
+      IAM_AUTH_TYPE: basic
       IAM_DEBUG: "true"
-      IAM_BASEURL: "http://iam.oih.dev:3099"
-      IAM_ORIGINWHITELIST: "http://web-ui.iam.oih.dev:3000"
-      IAM_JWT_SECRET: “secret”
-      IAM_SESSION_COOKIE_SECRET: "secret"
-      IAM_JWT_COOKIENAME: "oih_cookie"
-      IAM_JWT_AUDIENCE: "oih-iam"
+      IAM_BASEURL: http://iam:${DEV_IAM_PORT}
+      IAM_ORIGINWHITELIST: ${ORIGIN_WHITELIST}
+      IAM_JWT_SECRET: secret
+      IAM_SESSION_COOKIE_SECRET: secret
+      IAM_JWT_COOKIENAME: oih_cookie
+      IAM_JWT_AUDIENCE: oih-iam
       IAM_ACC_ADMIN_USERNAME: ${DEV_IAM_ADMIN_USERNAME}
       IAM_ACC_ADMIN_PASSWORD: ${DEV_IAM_ADMIN_PASSWORD}
       IAM_ACC_SERVICEACCOUNT_PASSWORD: "secret"
-
-      # IAM_SERVICE_CLIENT_ID: "8ce00058-5f75-435f-9026-ad952480e15a"
-      # IAM_SERVICE_CLIENT_SECRET: "secret"
-      PORT: "3099"
+      PORT: ${DEV_IAM_PORT}
     ports:
-      - ${HOST_IAM_PORT}:3099
+      - ${DEV_IAM_EXTERNAL_PORT}:${DEV_IAM_PORT}
     volumes:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
     command: yarn watch-container
+    networks:
+      - oih-dev
+
+  secret-service:
+    image: node:${NODE_VERSION}
+    container_name: secret-service
+    working_dir: /usr/src/app/services/secret-service
+    environment:
+      NODE_ENV: development
+      LOGGING_LEVEL: info
+      MONGODB_CONNECTION: mongodb://mongodb/${DB_SECRET_SERVICE}
+      TTL_AUTHFLOW: 2m
+      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      API_BASE: /api/v1
+      DEBUG_MODE: "true"
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      ORIGINWHITELIST: ${ORIGIN_WHITELIST}
+      PORT: ${DEV_SECRET_SERVICE_PORT}
+    ports:
+      - ${DEV_SECRET_SERVICE_EXTERNAL_PORT}:${DEV_SECRET_SERVICE_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn watch-container
+    networks:
+      - oih-dev
+
+  component-repository:
+    image: node:${NODE_VERSION}
+    container_name: component-repository
+    working_dir: /usr/src/app/services/component-repository
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: info
+      MONGODB_URI: mongodb://mongodb/${DB_COMPONENT_REPOSITORY}
+      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      PORT: ${DEV_COMPONENT_REPOSITORY_PORT}
+    ports:
+      - ${DEV_COMPONENT_REPOSITORY_EXTERNAL_PORT}:${DEV_COMPONENT_REPOSITORY_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn watch-container
+    networks:
+      - oih-dev
+
+  snapshots-service:
+    image: node:${NODE_VERSION}
+    container_name: snapshots-service
+    working_dir: /usr/src/app/services/snapshots-service
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: info
+      MONGODB_URI: mongodb://mongodb/${DB_SNAPSHOTS_SERVICE}
+      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      PORT: ${DEV_SNAPSHOTS_SERVICE_PORT}
+    ports:
+      - ${DEV_SNAPSHOTS_SERVICE_EXTERNAL_PORT}:${DEV_SNAPSHOTS_SERVICE_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn watch-container
+    networks:
+      - oih-dev
+
+  component-orchestrator:
+    image: node:${NODE_VERSION}
+    container_name: component-orchestrator
+    working_dir: /usr/src/app/services/component-orchestrator
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: info
+      MONGODB_URI: mongodb://mongodb/${DB_COMPONENT_ORCHESTRATOR}
+      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      COMPONENT_REPOSITORY_BASE_URL:
+      SECRETS_SERVICE_BASE_URL:
+      SNAPSHOTS_SERVICE_BASE_URL:
+      SELF_URL: http://${IP_FROM_MINIKUBE_TO_HOST}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
+      SELF_API_URI: http://${IP_FROM_MINIKUBE_TO_HOST}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_MANAGEMENT_URI: http://guest:guest@rabbitmq:15672
+      RABBITMQ_URI_FLOWS: amqp://${IP_FROM_MINIKUBE_TO_HOST}
+      DEFAULT_CPU_LIMIT: 100m
+      DEFAULT_MEM_LIMIT: 256Mi
+      DEFAULT_CPU_REQUEST: 100m
+      DEFAULT_MEM_REQUEST: 64Mi
+      NAMESPACE: flows
+      TICK_INTERVAL: 10000
+      KUBERNETES_IMAGE_PULL_POLICY: Never
+      RUNNING_ON_HOST: "true"
+      LISTEN_PORT: ${DEV_COMPONENT_ORCHESTRATOR_PORT}
+    ports:
+      - ${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}:${DEV_COMPONENT_ORCHESTRATOR_PORT}
+      - 0.0.0.0:8080:8080
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: lsmod | grep iptable && yarn watch-container
     networks:
       - oih-dev
 

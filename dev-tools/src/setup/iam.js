@@ -3,7 +3,7 @@ const fetch = require("node-fetch")
 const { dbRoot, devToolsRoot, env, services, tenants } = require("../config")
 const { checkTools, waitForMongo, waitForIAM } = require("../helper")
 
-const iamBase = `http://localhost:${services.iam.port}`
+const iamBase = `http://localhost:${services.iam.externalPort}`
 
 async function run() {
   checkTools(["docker-compose", "mongo"])
