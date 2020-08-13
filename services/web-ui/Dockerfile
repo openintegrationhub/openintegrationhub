@@ -1,4 +1,4 @@
-FROM node:8.16.0-alpine
+FROM node:12-alpine
 LABEL NAME="oih-web-ui"
 ARG local
 
