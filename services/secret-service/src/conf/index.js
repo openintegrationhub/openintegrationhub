@@ -1,4 +1,4 @@
-const { optional } = require('./check-env');
+const { optional, getPassword } = require('./check-env');
 const { version, name } = require('../../package.json');
 
 module.exports = {
@@ -20,7 +20,11 @@ module.exports = {
     },
     logging: {
         namespace: optional('LOGGING_NAMESPACE', name),
-        level: optional('LOGGING_LEVEL', 'error'),
+        level: optional('LOGGING_LEVEL', 'warn'),
+    },
+    log: {
+        namespace: optional('LOG_NAMESPACE', name),
+        level: optional('LOG_LEVEL', 'warn'),
     },
     mongoDbConnection: optional('MONGODB_CONNECTION', `mongodb://localhost:27017/${name}`),
     debugMode: optional('DEBUG_MODE', 'false') === 'true',
@@ -28,6 +32,7 @@ module.exports = {
         authFlow: optional('TTL_AUTHFLOW', '10m'),
     },
     crypto: {
+        key: getPassword('CRYPTO_KEY'),
         isDisabled: optional('CRYPTO_DISABLED', 'false') === 'true',
         alg: {
             hash: optional('CRYPTO_ALG_HASH', 'sha256'),
