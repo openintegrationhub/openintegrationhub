@@ -301,13 +301,13 @@ class KubernetesDriver extends BaseDriver {
         if (this._config.get('RUNNING_ON_HOST') === 'true') {
             envVars.SNAPSHOTS_SERVICE_BASE_URL = 'http://snapshots-service.oih-dev-ns.svc.cluster.local:1234';
         }
-        //envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
+        // envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
         envVars.EXEC_ID = uuid().replace(/-/g, '');
 
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
 
-        //envVars.CONTAINER_ID = 'does not matter';
-        //envVars.WORKSPACE_ID = 'does not matter';
+        // envVars.CONTAINER_ID = 'does not matter';
+        // envVars.WORKSPACE_ID = 'does not matter';
 
         return envVars
     }
