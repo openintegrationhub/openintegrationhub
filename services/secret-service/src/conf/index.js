@@ -1,30 +1,37 @@
 const { optional, getPassword } = require('./check-env');
 const { version, name } = require('../../package.json');
 
+const originwhitelist = optional('ORIGINWHITELIST') ? optional('ORIGINWHITELIST').split(',') : [];
+
 module.exports = {
+    name,
     port: optional('PORT', 9001),
     wellKnown: {
         version,
     },
+    redirectUri: optional('REDIRECT_URI', 'https://localhost/hook'),
     apiBase: optional('API_BASE', '/api/v1'),
-    userAuthType: optional('AUTH_TYPE', 'oidc'),
+    userAuthType: optional('AUTH_TYPE', 'basic'),
     iam: {
         apiBase: optional('IAM_API_BASE', 'http://iam.openintegrationhub.com/api/v1'),
         introspectType: optional('INTROSPECT_TYPE', 'basic'),
-        introspectEndpoint: optional('INTROSPECT_ENDPOINT_OIDC', 'https://iam.openintegrationhub.com/op/userinfo'),
+        introspectEndpoint: optional('INTROSPECT_ENDPOINT_OIDC', 'http://iam.openintegrationhub.com/op/userinfo'),
         introspectEndpointBasic: optional('INTROSPECT_ENDPOINT_BASIC', 'http://iam.openintegrationhub.com/api/v1/tokens/introspect'),
         tokenEndpoint: optional('IAM_TOKEN_API', 'http://iam.openintegrationhub.com/api/v1/tokens/ephemeral'),
         token: optional('IAM_TOKEN', 'token'),
         oidcServiceClientId: optional('IAM_OIDC_SERVICE_CLIENT_ID', 'id'),
         oidcServiceClientSecret: optional('IAM_OIDC_SERVICE_CLIENT_SECRET', 'secret'),
     },
-    logging: {
-        namespace: optional('LOGGING_NAMESPACE', name),
-        level: optional('LOGGING_LEVEL', 'warn'),
-    },
+    originWhitelist: originwhitelist.concat(optional('NODE_ENV') !== 'production' ? [
+        // development only
+        '127.0.0.1',
+        'localhost',
+    ] : [
+
+    ]),
     log: {
         namespace: optional('LOG_NAMESPACE', name),
-        level: optional('LOG_LEVEL', 'warn'),
+        level: optional('LOG_LEVEL', 'trace'),
     },
     mongoDbConnection: optional('MONGODB_CONNECTION', `mongodb://localhost:27017/${name}`),
     debugMode: optional('DEBUG_MODE', 'false') === 'true',
@@ -42,7 +49,7 @@ module.exports = {
     },
     // token refreshing
     refreshTimeout: parseInt(optional('REFRESH_TIMEOUT', 1000 * 10), 10), /* assume refresh token timeout after 10 seconds */
-    expirationOffset: parseInt(optional('EXPIRATION_OFFSET', 1000 * 60 * 5), 10), /* refresh 5 minutes before expiration of access_token */
+    expirationOffset: parseInt(optional('EXPIRATION_OFFSET', 1000 * 60 * 15), 10), /* refresh 15 minutes before expiration of access_token */
     pagination: {
         defaultPage: parseInt(optional('PAGINATION_DEFAULT_PAGE', 1), 10), // default page is 1
         pageSize: parseInt(optional('PAGINATION_PAGE_SIZE', 30), 10), // show 10 items per page

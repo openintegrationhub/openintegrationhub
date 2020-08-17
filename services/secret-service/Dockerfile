@@ -7,7 +7,6 @@ RUN apk update && apk add --no-cache bash
 
 COPY package.json yarn.lock ./
 COPY lib/secret-service lib/secret-service
-COPY lib/iam-utils lib/iam-utils
 COPY services/secret-service/package.json services/secret-service/index.js ./services/secret-service/
 COPY services/secret-service/src ./services/secret-service/src
 
