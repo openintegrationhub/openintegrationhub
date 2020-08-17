@@ -11,11 +11,11 @@ describe('RabbitMqManagementService', () => {
         const logger = {
             child() {
                 return {
-                    info: () => {},
-                    debug: () => {},
-                    trace: () => {},
-                    warn: () => {},
-                    error: () => {}
+                    info: () => { },
+                    debug: () => { },
+                    trace: () => { },
+                    warn: () => { },
+                    error: () => { }
                 };
             }
         };
@@ -26,7 +26,7 @@ describe('RabbitMqManagementService', () => {
                 return this[key];
             }
         };
-        service = new RabbitMqManagementService({logger, config});
+        service = new RabbitMqManagementService({ logger, config });
     });
 
     afterEach(() => {
@@ -35,27 +35,27 @@ describe('RabbitMqManagementService', () => {
 
     describe('#getQueues', () => {
         it('should call getVhostQueues', async () => {
-            sinon.stub(service._client, 'getVhostQueues').resolves([{some: 'data'}]);
+            sinon.stub(service._client, 'getVhostQueues').resolves([{ some: 'data' }]);
             const result = await service.getQueues();
-            expect(result).to.deep.equal([{some: 'data'}]);
+            expect(result).to.deep.equal([{ some: 'data' }]);
             expect(service._client.getVhostQueues).to.have.been.calledOnceWith('/');
         });
     });
 
     describe('#getExchanges', () => {
         it('should call getVhostExchanges', async () => {
-            sinon.stub(service._client, 'getVhostExchanges').resolves([{some: 'data'}]);
+            sinon.stub(service._client, 'getVhostExchanges').resolves([{ some: 'data' }]);
             const result = await service.getExchanges();
-            expect(result).to.deep.equal([{some: 'data'}]);
+            expect(result).to.deep.equal([{ some: 'data' }]);
             expect(service._client.getVhostExchanges).to.have.been.calledOnceWith('/');
         });
     });
 
     describe('#getBindings', () => {
         it('should call getVhostExchanges', async () => {
-            sinon.stub(service._client, 'getVhostBindings').resolves([{some: 'data'}]);
+            sinon.stub(service._client, 'getVhostBindings').resolves([{ some: 'data' }]);
             const result = await service.getBindings();
-            expect(result).to.deep.equal([{some: 'data'}]);
+            expect(result).to.deep.equal([{ some: 'data' }]);
             expect(service._client.getVhostBindings).to.have.been.calledOnceWith('/');
         });
     });
@@ -69,7 +69,8 @@ describe('RabbitMqManagementService', () => {
                 password: 'pass1',
                 flow: {
                     id: 'flow1'
-                }
+                },
+                backchannel: 'fooo'
             };
             await service.createFlowUser(params);
             expect(service._client.putUser).to.have.been.calledOnceWith(params.username, {
@@ -78,8 +79,8 @@ describe('RabbitMqManagementService', () => {
             });
             expect(service._client.setUserPermissions).to.have.been.calledOnceWith(params.username, '/', {
                 configure: '',
-                read: `^${params.flow.id}:`,
-                write: `^${params.flow.id}$`
+                read: `^flow-${params.flow.id}:`,
+                write: `^(${params.backchannel}|flow-${params.flow.id})$`
             });
         });
     });
@@ -87,7 +88,7 @@ describe('RabbitMqManagementService', () => {
     describe('#deleteUser', () => {
         it('should call deleteUser', async () => {
             sinon.stub(service._client, 'deleteUser').resolves();
-            await service.deleteUser({username: 'test-user'});
+            await service.deleteUser({ username: 'test-user' });
             expect(service._client.deleteUser).to.have.been.calledOnceWith('test-user');
         });
 
@@ -95,7 +96,7 @@ describe('RabbitMqManagementService', () => {
             const err = new Error('Not found');
             err.statusCode = 404;
             sinon.stub(service._client, 'deleteUser').rejects(err);
-            await service.deleteUser({username: 'test-user'});
+            await service.deleteUser({ username: 'test-user' });
             expect(service._client.deleteUser).to.have.been.calledOnceWith('test-user');
         });
 
@@ -104,7 +105,7 @@ describe('RabbitMqManagementService', () => {
             err.statusCode = 500;
             sinon.stub(service._client, 'deleteUser').rejects(err);
             try {
-                await service.deleteUser({username: 'test-user'});
+                await service.deleteUser({ username: 'test-user' });
                 throw new Error('Should not reach this line');
             } catch (e) {
                 expect(e.statusCode).to.equal(500);

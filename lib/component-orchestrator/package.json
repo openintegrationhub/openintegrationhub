@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/component-orchestrator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Orchestrates cluster resources",
   "main": "src/index.js",
   "scripts": {
@@ -13,6 +13,7 @@
   "license": "APL-2.0",
   "dependencies": {
     "@openintegrationhub/event-bus": "*",
+    "jsonwebtoken": "8.5.1",
     "lodash": "4.17.11",
     "uuid": "3.3.2"
   },
@@ -27,6 +28,6 @@
     "sinon-chai": "3.3.0"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   }
 }

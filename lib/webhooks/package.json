@@ -1,10 +1,10 @@
 {
   "name": "@openintegrationhub/webhooks",
   "description": "webhooks",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Open Integration Hub",
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "scripts": {
     "prepublishOnly": "npm test",
@@ -14,6 +14,7 @@
   "dependencies": {
     "body-parser": "1.15.2",
     "bunyan": "1.8.12",
+    "cors": "^2.8.5",
     "elasticio-node": "0.0.7",
     "express": "4.16.2",
     "express-async-handler": "1.1.4",

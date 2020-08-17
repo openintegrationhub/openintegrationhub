@@ -1,4 +1,4 @@
-FROM node:8.16.1-alpine
+FROM node:12-alpine
 LABEL NAME="meta-data-repository"
 ARG local
 

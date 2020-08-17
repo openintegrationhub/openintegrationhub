@@ -1,11 +1,11 @@
-const FlowSecret = require('../../../src/drivers/kubernetes/FlowSecret');
+const Secret = require('../../../src/drivers/kubernetes/Secret');
 const { expect } = require('chai');
 
 describe('FlowSecret', () => {
     let secret;
 
     beforeEach(() => {
-        secret = new FlowSecret({
+        secret = new Secret({
             metadata: {
                 name: 'my-secret'
             },
@@ -57,7 +57,7 @@ describe('FlowSecret', () => {
 
     describe('#fromDescriptor', () => {
         it('should return K8s descriptor', () => {
-            const secret = FlowSecret.fromDescriptor({
+            const secret = Secret.fromDescriptor({
                 'apiVersion': 'v1',
                 'data': {
                     'username': 'c2VjcmV0LXBhc3N3b3Jk'

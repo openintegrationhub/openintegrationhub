@@ -9,12 +9,15 @@ const schema = new Schema({
     nodeId: {
         type: String
     },
+    componentId: {
+        type: String
+    },
     credential: {
         username: String,
         password: String
     }
 });
-schema.index({flowId: 1, nodeId: 1}, {unique: true});
+schema.index({ flowId: 1, nodeId: 1 }, { unique: true });
 
 const RabbitMqCredential = mongoose.model('RabbitMqCredential', schema);
 
@@ -46,8 +49,32 @@ class MongoDbCredentialsStorage extends CredentialsStorage {
         await RabbitMqCredential.deleteMany(query);
     }
 
+    async getForGlobalComponent(componentId) {
+        const query = {
+            componentId
+        };
+        const found = await RabbitMqCredential.findOne(query);
+        return found ? found.credential.toObject() : null;
+    }
+
+    async setForGlobalComponent(componentId, credential) {
+        const query = {
+            componentId
+        };
+        const cred = await RabbitMqCredential.findOne(query) || new RabbitMqCredential(query);
+        cred.credential = credential;
+        await cred.save();
+    }
+
+    async removeForGlobalComponent(componentId) {
+        const query = {
+            componentId
+        };
+        await RabbitMqCredential.deleteMany(query);
+    }
+
     async getAllForFlow(flowId) {
-        return (await RabbitMqCredential.find({flowId}) || []).map(({nodeId, credential}) => ({
+        return (await RabbitMqCredential.find({ flowId }) || []).map(({ nodeId, credential }) => ({
             nodeId,
             credential: credential.toObject()
         }));

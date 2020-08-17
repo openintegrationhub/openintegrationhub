@@ -12,14 +12,17 @@ class HttpApi {
      * @param opts.secretsDao - Secrets Data Access Object
      * @param opts.snapshotsDao - Snapshots Data Access Object
      */
-    constructor({ config, logger, flowsDao, secretsDao, snapshotsDao }) {
+    constructor({ config, logger, flowsDao, secretsDao, snapshotsDao, componentOrchestrator }) {
         this._config = config;
-        this._logger = logger.child({service: 'HttpApi'});
+        this._logger = logger.child({ service: 'HttpApi' });
+        this._componentOrchestrator = componentOrchestrator
         this._flowsDao = flowsDao;
         this._secretsDao = secretsDao;
         this._snapshotsDao = snapshotsDao;
         this._app = express();
         this._app.get('/v1/tasks/:flowId/steps/:stepId', this._setIamToken.bind(this), this._getStepInfo.bind(this));
+        this._app.get('/v1/components/:componentId/start', this._setIamToken.bind(this), this._getStepInfo.bind(this));
+        this._app.get('/v1/components/:componentId/stop', this._setIamToken.bind(this), this._getStepInfo.bind(this));
         this._app.get('/healthcheck', this._healthcheck.bind(this));
         this._app.use(this._errorHandler.bind(this));
     }
@@ -33,7 +36,7 @@ class HttpApi {
      * @param listenPort
      */
     listen(listenPort) {
-        this._logger.info({port: listenPort}, 'Going to listen for http');
+        this._logger.info({ port: listenPort }, 'Going to listen for http');
         this._app.listen(listenPort);
     }
 
@@ -45,7 +48,7 @@ class HttpApi {
     }
 
     _setIamToken(req, res, next) {
-        // Sailor passes an IAM token as a password part of the Basic auth header
+        // Ferryman passes an IAM token as a password part of the Basic auth header
         const user = auth(req);
         if (!user) {
             return next(new Error('Failed to parse basic auth'));
@@ -63,7 +66,7 @@ class HttpApi {
      */
     async _getStepInfo(req, res, next) {
         const { flowId, stepId } = req.params;
-        const logger = this._logger.child({flowId, stepId});
+        const logger = this._logger.child({ flowId, stepId });
 
         try {
             const flow = await this._flowsDao.findById(flowId);
@@ -77,7 +80,7 @@ class HttpApi {
 
             const nodeConfig = node.fields || {};
             if (node.credentials_id) {
-                logger.trace({secretId: node.credentials_id}, 'About to get secret by ID');
+                logger.trace({ secretId: node.credentials_id }, 'About to get secret by ID');
                 const secret = await this._secretsDao.findById(node.credentials_id, {
                     auth: {
                         token: req.iamToken
@@ -87,10 +90,11 @@ class HttpApi {
                     throw new errors.ResourceNotFoundError(`Secret ${node.credentials_id} is not found`);
                 }
                 Object.assign(nodeConfig, secret.value);
-                logger.trace({nodeConfig}, 'Got secret. Injected into the node config.');
+                logger.trace({ nodeConfig }, 'Got secret. Injected into the node config.');
             }
 
             let snapshot = {};
+
             try {
                 snapshot = await this._snapshotsDao.findOne({
                     flowId,

@@ -1,5 +1,5 @@
 import {
-    GET_COMPONENTS, UPDATE_COMPONENT, UPDATE_COMPONENT_ERROR, GET_COMPONENTS_PAGE,
+    GET_COMPONENTS, UPDATE_COMPONENT, UPDATE_COMPONENT_ERROR, GET_COMPONENTS_PAGE, START_COMPONENT, STOP_COMPONENT,
 } from '../action/components';
 
 const initialState = {
@@ -27,6 +27,16 @@ export default (state = initialState, action) => {
                 ...action.components,
             ],
             meta: { ...action.meta },
+        };
+    case START_COMPONENT:
+        return {
+            ...state,
+            error: null,
+        };
+    case STOP_COMPONENT:
+        return {
+            ...state,
+            error: null,
         };
     case UPDATE_COMPONENT:
         return {

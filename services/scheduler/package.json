@@ -2,10 +2,10 @@
   "name": "scheduler",
   "description": "Scheduler",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.1.1",
   "author": "Open Integration Hub",
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "scripts": {
     "lint": "eslint index.js src spec",
@@ -13,6 +13,8 @@
     "test": "mocha spec --recursive",
     "start": "node index.js",
     "start:dev": "LOG_LEVEL=trace NODE_ENV=development npm start | bunyan",
+    "start:nodemon": "NODE_ENV=development nodemon -r dotenv/config index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/scheduler/src | bunyan",
+    "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/scheduler:${VERSION} -f Dockerfile ../../"
   },
@@ -32,6 +34,7 @@
     "eslint-plugin-mocha": "4.12.1",
     "eslint-plugin-node": "6.0.1",
     "mocha": "^6.0.0",
+    "nodemon": "^2.0.4",
     "sinon": "^7.2.4",
     "sinon-chai": "^3.3.0"
   },

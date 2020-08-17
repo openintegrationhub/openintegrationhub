@@ -47,6 +47,16 @@ class Flow {
         return this.graph.nodes || [];
     }
 
+    getNextSteps(steppId) {
+        return this.graph.edges
+            .filter(edge => edge.source === steppId)
+            .map(edge => edge.target)
+    }
+
+    getComponentPropertyByStep(steppId, propertyKey) {
+        return this.graph.nodes.find(node => node.id === steppId)[propertyKey]
+    }
+
     getEdges() {
         return this.graph.edges || [];
     }

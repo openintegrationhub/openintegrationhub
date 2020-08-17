@@ -14,6 +14,7 @@ module.exports = {
         appDirectory: optional('ENDPOINT_APP_DIRECTORY', 'https://app-directory.openintegrationhub.com/api/v1'),
         dispatcher: optional('ENDPOINT_DISPATCHER', 'https://dispatcher-service.openintegrationhub.com'),
         secrets: optional('ENDPOINT_SECRETS', 'https://skm.openintegrationhub.com/api/v1'),
+        webhooks: optional('ENDPOINT_WEBHOOKS', 'https://webhooks.openintegrationhub.com'),
     },
     misc: {
         reports: {

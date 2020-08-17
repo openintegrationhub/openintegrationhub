@@ -1,6 +1,6 @@
 {
   "name": "webhooks",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Standalone version of elastic.io platform",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,8 @@
     "test": "mocha spec --recursive",
     "start": "node index.js",
     "start:dev": "LOG_LEVEL=trace NODE_ENV=development npm start | bunyan",
+    "start:nodemon": "NODE_ENV=development nodemon -r dotenv/config index.js --watch src/ --watch ../../lib/webhooks/src | bunyan",
+    "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/webhooks:${VERSION} -f Dockerfile ../../"
   },
@@ -18,20 +20,22 @@
     "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/webhooks": "*",
     "backend-commons-lib": "*",
-    "body-parser": "1.18.3",
-    "express": "4.16.3",
-    "mongoose": "5.4.11"
+    "body-parser": "1.19.0",
+    "express": "4.17.1",
+    "mongoose": "5.9.27"
   },
   "devDependencies": {
     "chai": "4.2.0",
-    "eslint": "4.5.0",
-    "eslint-plugin-mocha": "4.12.1",
-    "eslint-plugin-node": "6.0.1",
-    "mocha": "6.0.0",
-    "sinon": "7.2.4",
-    "sinon-chai": "3.3.0"
+    "dotenv": "8.2.0",
+    "eslint": "7.6.0",
+    "eslint-plugin-mocha": "7.0.1",
+    "eslint-plugin-node": "11.1.0",
+    "mocha": "8.1.0",
+    "nodemon": "2.0.4",
+    "sinon": "9.0.2",
+    "sinon-chai": "3.5.0"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   }
 }

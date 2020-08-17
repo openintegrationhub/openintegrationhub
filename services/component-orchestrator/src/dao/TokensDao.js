@@ -15,17 +15,21 @@ const schema = new Schema({
         type: String
     }
 });
-schema.index({flowId: 1, userId: 1}, {unique: true});
+schema.index({ flowId: 1, userId: 1 }, { unique: true });
 
 const IamToken = mongoose.model('IamToken', schema);
 
 module.exports = class TokensDao {
-    constructor({iamClient}) {
+    constructor({ iamClient }) {
         this._iamClient = iamClient;
     }
 
-    async getTokenForFlowAndUser({userId, flowId}) {
-        const [oldToken] = await IamToken.find({flowId, userId});
+    async getTokenByFlowId({ flowId }) {
+        return IamToken.findOne({ flowId });
+    }
+
+    async getTokenForFlowAndUser({ userId, flowId }) {
+        const [oldToken] = await IamToken.find({ flowId, userId });
         if (oldToken) {
             return oldToken.token;
         }
@@ -33,7 +37,8 @@ module.exports = class TokensDao {
         const { id: tokenId, token } = await this._iamClient.createToken({
             accountId: userId,
             expiresIn: -1,
-            description: `Created by Component Orchestrator for flow ${flowId}`
+            description: `Created by Component Orchestrator for flow ${flowId}`,
+            forceNew: true
         });
 
         await IamToken.create({
@@ -46,7 +51,7 @@ module.exports = class TokensDao {
         return token;
     }
 
-    async deleteTokenForFlowAndUser({flowId, userId}) {
+    async deleteTokenForFlowAndUser({ flowId, userId }) {
         const tokens = await IamToken.find({
             flowId,
             userId

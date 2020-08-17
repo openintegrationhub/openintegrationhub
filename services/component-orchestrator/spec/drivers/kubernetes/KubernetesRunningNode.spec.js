@@ -2,14 +2,14 @@ const chai = require('chai');
 chai.use(require('sinon-chai'));
 const { expect } = chai;
 
-const KubernetesRunningNode = require('../../../src/drivers/kubernetes/KubernetesRunningFlowNode');
+const KubernetesRunningComponent = require('../../../src/drivers/kubernetes/KubernetesRunningComponent');
 
 describe('KubernetesRunningNode', () => {
     describe('getters', () => {
         let rn;
 
         beforeEach(() => {
-            rn = new KubernetesRunningNode({
+            rn = new KubernetesRunningComponent({
                 apiVersion: 'batch/v1',
                 kind: 'Job',
                 metadata: {
@@ -47,7 +47,7 @@ describe('KubernetesRunningNode', () => {
                                     }
                                 }],
                                 env: [
-                                    {name: 'MY_ENV', value: 'my-secret-value'}
+                                    { name: 'MY_ENV', value: 'my-secret-value' }
                                 ],
                                 resources: {}
                             }]

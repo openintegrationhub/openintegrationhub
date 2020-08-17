@@ -1,17 +1,17 @@
 {
     "name": "snapshots-service",
-    "version": "0.0.2",
+    "version": "0.1.1",
     "description": "Service for managing flow snapshots",
     "main": "dist/index.js",
     "directories": {
         "doc": "docs"
     },
     "engines": {
-        "node": ">= 8"
+        "node": ">= 12"
     },
     "scripts": {
         "start": "node dist/app.js",
-        "start:dev": "NODE_ENV=development ts-node-dev ./src/app.ts | bunyan",
+        "start:dev": "NODE_ENV=development ts-node-dev -r dotenv/config ./src/app.ts | bunyan",
         "test": "NODE_ENV=test mocha --exit --require ts-node/register src/**/*.spec.ts",
         "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts ./src",
         "pretest": "npm run eslint",
@@ -33,6 +33,7 @@
         "@typescript-eslint/eslint-plugin": "1.9.0",
         "@typescript-eslint/parser": "1.9.0",
         "chai": "4.2.0",
+        "dotenv": "8.2.0",
         "eslint": "5.16.0",
         "mocha": "6.1.4",
         "nock": "10.0.6",

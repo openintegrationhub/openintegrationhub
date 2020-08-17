@@ -2,13 +2,13 @@ version: 2.1
 
 aliases:
   - &node_env
-    - image: circleci/node:12.11-stretch
+    - image: circleci/node:12-stretch
   - &node_mongo_env
-    - image: circleci/node:10-stretch
-    - image: circleci/mongo:3.6
+    - image: circleci/node:12-stretch
+    - image: circleci/mongo:4.4
   - &node_amqp_env
-    - image: circleci/node:10-stretch
-    - image: rabbitmq:3.8.5-alpine
+    - image: circleci/node:12-stretch
+    - image: rabbitmq:3.8.6-alpine
   - &run_npm_install
     name: Installing Dependencies
     command: yarn --ignore-engines
@@ -16,31 +16,31 @@ aliases:
     branches:
       only: master
   - &yarn_test_steps
-      - restore_cache:
-          keys:
-            - yarn-deps-{{ .Branch }}-{{ .Revision }}
-      - run: yarn test
+    - restore_cache:
+        keys:
+          - yarn-deps-{{ .Branch }}-{{ .Revision }}
+    - run: yarn test
   - &build_steps
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - yarn-deps-{{ .Branch }}-{{ .Revision }}
-      - run: |
-          git diff --no-commit-id --name-only -r `git log -n 2 --oneline --pretty=format:"%h" --first-parent master | tail -n1` > gitchanges.txt
-          cd ./scripts # needed for compatible with travis implementation
-          node getChanges.js
-          node build.js
-      - save_cache:
-          key: build-deps-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - ~/oih
+    - setup_remote_docker
+    - restore_cache:
+        keys:
+          - yarn-deps-{{ .Branch }}-{{ .Revision }}
+    - run: |
+        git diff --no-commit-id --name-only -r `git log -n 2 --oneline --pretty=format:"%h" --first-parent master | tail -n1` > gitchanges.txt
+        cd ./scripts # needed for compatible with travis implementation
+        node getChanges.js
+        node build.js
+    - save_cache:
+        key: build-deps-{{ .Branch }}-{{ .Revision }}
+        paths:
+          - ~/oih
   - &deploy_steps
-      - restore_cache:
-          keys:
-            - build-deps-{{ .Branch }}-{{ .Revision }}
-      - run: |
-          cd ./scripts  # needed for compatible with travis implementation
-          node deploy.js
+    - restore_cache:
+        keys:
+          - build-deps-{{ .Branch }}-{{ .Revision }}
+    - run: |
+        cd ./scripts  # needed for compatible with travis implementation
+        node deploy.js
 jobs:
   deps:
     docker: *node_env

@@ -72,7 +72,18 @@ module.exports = function (app) {
 
     app.use(proxy('/secrets-api', {
         pathRewrite: { '^/secrets-api': '/' },
-        target: 'http://127.0.0.1:9001/api/v1',
+        target: conf.endpoints.secrets,
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
+
+    app.use(proxy('/webhooks', {
+        pathRewrite: { '^/webhooks': '/' },
+        target: conf.endpoints.webhooks,
         changeOrigin: true,
         onProxyReq(proxyReq) {
             // add custom header to request
