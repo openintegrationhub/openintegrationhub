@@ -1,5 +1,5 @@
 const { BaseDriver } = require('@openintegrationhub/component-orchestrator');
-const uuid = require('uuid/v4');
+const { v4 } = require('uuid');
 const _ = require('lodash');
 const KubernetesRunningComponent = require('./KubernetesRunningComponent');
 const Secret = require('./Secret');
@@ -302,7 +302,7 @@ class KubernetesDriver extends BaseDriver {
             envVars.SNAPSHOTS_SERVICE_BASE_URL = 'http://snapshots-service.oih-dev-ns.svc.cluster.local:1234';
         }
         // envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
-        envVars.EXEC_ID = uuid().replace(/-/g, '');
+        envVars.EXEC_ID = v4().replace(/-/g, '');
 
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
 

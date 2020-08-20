@@ -873,6 +873,7 @@ createTimerComponent
 createNodeComponent
 createDevComponent
 createDevGlobalComponent
+createDevGlobalComponent
 
 # create for tenant_2_user_id
 createDevPrivateComponent
