@@ -10,7 +10,7 @@ Visit the official [Open Integration Hub homepage](https://www.openintegrationhu
 
 # Component Orchestrator
 
-Orchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Docker containers for each flow node on flow creation and cleans up on flow deletion.
+Orchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Docker containers for each flow node on flow creation and cleans up deployments and secrets on flow deletion.
 
 ## How it works
 
