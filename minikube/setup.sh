@@ -785,7 +785,12 @@ checkTools
 
 clearMinikube
 
-minikube start --memory $MK_MEMORY --cpus $MK_CPUS
+if [ "$os" == "Darwin" ]; then
+    minikube start --vm=true --driver=hyperkit --memory $MK_MEMORY --cpus $MK_CPUS
+else
+    minikube start --memory $MK_MEMORY --cpus $MK_CPUS
+fi
+
 minikube addons enable ingress
 minikube addons enable dashboard
 minikube addons enable metrics-server
@@ -867,6 +872,7 @@ waitForServiceStatus http://component-repository.localoih.com/components 401
 createTimerComponent
 createNodeComponent
 createDevComponent
+createDevGlobalComponent
 createDevGlobalComponent
 
 # create for tenant_2_user_id

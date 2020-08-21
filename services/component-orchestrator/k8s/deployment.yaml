@@ -18,17 +18,17 @@ spec:
     spec:
       containers:
         - name: component-orchestrator
-          image: 'openintegrationhub/component-orchestrator:latest'
+          image: "openintegrationhub/component-orchestrator:latest"
           env:
             - name: COMPONENT_REPOSITORY_BASE_URL
-              value: 'http://component-repository-service.oih-dev-ns.svc.cluster.local:1234'
+              value: "http://component-repository-service.oih-dev-ns.svc.cluster.local:1234"
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: component-orchestrator
                   key: IAM_TOKEN
             - name: LISTEN_PORT
-              value: '1234'
+              value: "1234"
             - name: LOG_LEVEL
               value: trace
             - name: MONGODB_URI
@@ -46,7 +46,9 @@ spec:
               value: >-
                 http://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:15672/
             - name: SELF_URL
-              value: 'http://api-service.oih-dev-ns.svc.cluster.local'
+              value: "http://api-service.oih-dev-ns.svc.cluster.local"
+            - name: RUNNING_ON_HOST
+              value: "true"
           resources:
             limits:
               cpu: 0.1

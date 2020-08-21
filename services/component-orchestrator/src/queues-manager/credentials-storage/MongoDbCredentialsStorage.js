@@ -17,9 +17,11 @@ const schema = new Schema({
         password: String
     }
 });
-schema.index({ flowId: 1, nodeId: 1 }, { unique: true });
+schema.index({ flowId: 1, nodeId: 1 }, { unique: true, partialFilterExpression: { flowId: { $exists: true } , nodeId: { $exists: true }  }});
+schema.index({ componentId: 1 }, { unique: true, partialFilterExpression: { componentId: { $exists: true }  } });
 
 const RabbitMqCredential = mongoose.model('RabbitMqCredential', schema);
+RabbitMqCredential.createIndexes();
 
 class MongoDbCredentialsStorage extends CredentialsStorage {
     async get(flowId, nodeId) {
