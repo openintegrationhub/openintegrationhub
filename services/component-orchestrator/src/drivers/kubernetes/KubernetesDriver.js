@@ -241,10 +241,10 @@ class KubernetesDriver extends BaseDriver {
         const rc = 'resources.requests.cpu';
         const rm = 'resources.requests.memory';
 
-        const cpuLimit = component.isGlobal && _.get(component, lc) || _.get(node, lc) || _.get(flow, lc) || this._config.get('DEFAULT_CPU_LIMIT');
-        const memLimit = component.isGlobal && _.get(component, lm) || _.get(node, lm) || _.get(flow, lm) || this._config.get('DEFAULT_MEM_LIMIT');
-        const cpuRequest = component.isGlobal && _.get(component, rc) || _.get(node, rc) || _.get(flow, rc) || this._config.get('DEFAULT_CPU_REQUEST');
-        const memRequest = component.isGlobal && _.get(component, rm) || _.get(node, rm) || _.get(flow, rm) || this._config.get('DEFAULT_MEM_REQUEST');
+        const cpuLimit = _.get(component, lc) || _.get(node, lc) || _.get(flow, lc) || this._config.get('DEFAULT_CPU_LIMIT');
+        const memLimit = _.get(component, lm) || _.get(node, lm) || _.get(flow, lm) || this._config.get('DEFAULT_MEM_LIMIT');
+        const cpuRequest = _.get(component, rc) || _.get(node, rc) || _.get(flow, rc) || this._config.get('DEFAULT_CPU_REQUEST');
+        const memRequest = _.get(component, rm) || _.get(node, rm) || _.get(flow, rm) || this._config.get('DEFAULT_MEM_REQUEST');
 
         return {
             limits: {
