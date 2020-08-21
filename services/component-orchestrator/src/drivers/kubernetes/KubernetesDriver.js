@@ -305,6 +305,7 @@ class KubernetesDriver extends BaseDriver {
         envVars.EXEC_ID = uuid().replace(/-/g, '');
 
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
+        envVars.ATTACHMENT_STORAGE_SERVICE_BASE_URL = this._config.get('ATTACHMENT_STORAGE_SERVICE_BASE_URL').replace(/\/$/, '');
 
         // envVars.CONTAINER_ID = 'does not matter';
         // envVars.WORKSPACE_ID = 'does not matter';
