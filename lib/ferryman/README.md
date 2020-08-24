@@ -61,3 +61,7 @@ Call this function whenever you need to return data to the Open Integration Hub,
     - For a `data` emit, format the message in the same way you receive it in your process action. This means all content should be inside a `body` key
     - For a `snapshot` emit, you can pass on an arbitrary object containing whichever keys you require.
     - For an `error` emit, simply pass on the error object
+
+### Further Information
+
+For additional information concerning the development of connectors, please refer to the [Connector Guide](https://openintegrationhub.github.io//docs/Connectors/ConnectorBasics.html)
