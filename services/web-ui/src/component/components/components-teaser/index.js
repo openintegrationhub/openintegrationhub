@@ -19,6 +19,8 @@ import {
 } from '@material-ui/icons';
 
 
+import GlobalIcon from '@material-ui/icons/Language';
+
 // Componente
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
@@ -37,6 +39,12 @@ const useStyles = {
         backgroundColor: 'white',
         margin: 'auto',
         outline: 'none',
+    },
+    globalFlag: {
+      position: 'absolute',
+      top: 22,
+      marginLeft: 20,
+      color: 'rgba(0, 0, 0, 0.54)',
     },
 };
 
@@ -135,6 +143,7 @@ class ComponentTeaser extends React.PureComponent {
         const {
             classes,
         } = this.props;
+
         return (
             <Grid item xs={12}>
                 <ExpansionPanel>
@@ -157,6 +166,7 @@ class ComponentTeaser extends React.PureComponent {
                             }
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid>
+                            <Grid item xs={3}><InputLabel>Type:</InputLabel><Typography >{this.props.data.isGlobal? 'global' : 'local'}{this.props.data.isGlobal ? <GlobalIcon className={classes.globalFlag} /> : ''}</Typography></Grid>
                         </Grid>
 
                     </ExpansionPanelSummary>
