@@ -46,6 +46,14 @@ const useStyles = {
       marginLeft: 20,
       color: 'rgba(0, 0, 0, 0.54)',
     },
+    activeFlag: {
+      height: 18,
+      width: 18,
+      backgroundColor: '#66bb6a',
+      borderRadius: 10,
+      marginTop: 12,
+      float: 'right',
+    },
 };
 
 class ComponentTeaser extends React.PureComponent {
@@ -144,6 +152,7 @@ class ComponentTeaser extends React.PureComponent {
             classes,
         } = this.props;
 
+        console.log(this.props.data);
         return (
             <Grid item xs={12}>
                 <ExpansionPanel>
@@ -167,6 +176,7 @@ class ComponentTeaser extends React.PureComponent {
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Type:</InputLabel><Typography >{this.props.data.isGlobal? 'global' : 'local'}{this.props.data.isGlobal ? <GlobalIcon className={classes.globalFlag} /> : ''}</Typography></Grid>
+                            <Grid item xs={2}>{('active' in this.props.data && this.props.data.active)? <div className={classes.activeFlag}></div> : ''}</Grid>
                         </Grid>
 
                     </ExpansionPanelSummary>
