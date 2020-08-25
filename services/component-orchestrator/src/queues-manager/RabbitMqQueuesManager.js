@@ -1,4 +1,4 @@
-const uuid = require('uuid/v4');
+const {v4} = require('uuid');
 const { URL } = require('url');
 
 const { QueuesManager } = require('@openintegrationhub/component-orchestrator');
@@ -101,7 +101,7 @@ class RabbitMqQueuesManager extends QueuesManager {
         }
 
         const username = `flow-${flow.id}-${node.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
-        const password = uuid();
+        const password = v4();
 
         this._logger.trace({ username, password }, 'About to create RabbitMQ user');
         // @todo: create node user
@@ -127,7 +127,7 @@ class RabbitMqQueuesManager extends QueuesManager {
         }
 
         const username = `component-${component.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
-        const password = uuid();
+        const password = v4();
 
         this._logger.trace({ username, password }, 'About to create RabbitMQ user');
         // @todo: create node user
