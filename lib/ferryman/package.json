@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/ferryman",
-  "description": "Fork of the elasticio sailor for the Open Integration Hub",
-  "version": "1.0.0",
+  "description": "Wrapper utility for Open Integration Hub connectors",
+  "version": "1.0.3",
   "main": "run.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint lib mocha_spec lib run.js runService.js --fix",
@@ -45,6 +45,6 @@
     "sinon": "7.4.2",
     "sinon-chai": "3.5.0"
   },
-  "repository": "openintegrationhub/ferryman",
+  "repository": "openintegrationhub/openintegrationhub",
   "license": "Apache-2.0"
 }
