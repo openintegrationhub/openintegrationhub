@@ -11,9 +11,15 @@ class OIHComponentsDao extends ComponentsDao {
         super();
         this._config = config;
         this._logger = logger;
+        this._componentCache = {};
     }
 
     async findById(compId) {
+        if (this._componentCache[compId] && new Date().getTime() < this._componentCache[compId].expires) {
+            this._logger.trace({ compId }, 'Returning cached component');
+            return this._componentCache[compId].component;
+        }
+
         const url = this._getComponentRepoUrl(`/components/${compId}`);
         const opts = {
             url,
@@ -26,7 +32,13 @@ class OIHComponentsDao extends ComponentsDao {
         const { body, statusCode } = await getAsync(opts);
 
         if (statusCode === 200) {
-            return _.get(body, 'data');
+            let component = _.get(body, 'data')
+            this._componentCache[compId] = {
+                expires: new Date().getTime() + 5*60000, // 5 minutes
+                component: component
+            };
+
+            return component;
         }
 
         if (statusCode === 404) {
