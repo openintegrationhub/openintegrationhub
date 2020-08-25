@@ -931,17 +931,16 @@ createDevConcurrentFlow
 createDevGlobalFlow
 
 ###
-### 12. Remove temporary deployments
-###
-
-removeTemporaryServices
-
-###
-### 13. Point to web ui if ready
+### 12. Point to web ui if ready
 ###
 
 waitForServiceStatus http://web-ui.localoih.com 200
-echo "Setup done. Visit -> http://web-ui.localoih.com"
+
+###
+### 13. Remove temporary deployments
+###
+
+removeTemporaryServices
 
 ###
 ### 14. Write .env file
