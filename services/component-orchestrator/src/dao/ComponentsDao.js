@@ -24,7 +24,7 @@ class OIHComponentsDao extends ComponentsDao {
         const cachedComponent = this._cache.get(compId)
 
         if (cachedComponent) {
-            this._logger.info({ compId }, 'Returning cached component');
+            this._logger.trace({ compId }, 'Returning cached component');
             return cachedComponent;
         }
 
@@ -38,7 +38,7 @@ class OIHComponentsDao extends ComponentsDao {
             }
         };
 
-        this._logger.info({ compId }, 'Fetching component info');
+        this._logger.trace({ compId }, 'Fetching component info');
         const { body, statusCode } = await getAsync(opts);
 
         if (statusCode === 200) {
