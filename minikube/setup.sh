@@ -75,6 +75,8 @@ service_account_id=""
 service_account_token=""
 service_account_token_encoded=""
 
+custom_secret_id=""
+
 timer_component_id=""
 node_component_id=""
 
@@ -344,6 +346,23 @@ function removeTemporaryServices {
     done
 }
 
+function createCustomSecret {
+    read -r -d '' JSON << EOM || true
+    {
+        "data": {
+            "name": "custom_secret",
+            "type": "MIXED",
+            "value": {
+                "payload": "secret"
+            }
+        }
+    }
+EOM
+    postJSON http://skm.localoih.com/api/v1/secrets "$JSON" "$admin_token"
+    custom_secret_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['_id'])")
+    echo "$custom_secret_id"
+}
+
 function createTimerComponent {
     read -r -d '' JSON << EOM || true
     {
@@ -507,22 +526,38 @@ function createDevWebhookFlow {
                 {
                     "id": "step_1",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testTrigger",
+                    "credentials_id": "$custom_secret_id",
+                    "fields":{
+                        "code":"async function run() { console.log('running async function1');}"
+                    }
                 },
                 {
                     "id": "step_2",
                     "componentId": "$development_global_component_id",
-                    "function": "testAction"
+                    "function": "testAction",
+                    "credentials_id": "$custom_secret_id",
+                    "fields":{
+                        "code":"async function run() { console.log('running async function2');}"
+                    }
                 },
                 {
                     "id": "step_3",
-                    "componentId": "$development_component_id",
-                    "function": "testAction"
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction",
+                    "credentials_id": "$custom_secret_id",
+                    "fields":{
+                        "code":"async function run() { console.log('running async function3');}"
+                    }
                 },
                 {
                     "id": "step_4",
                     "componentId": "$development_global_component_id",
-                    "function": "testAction"
+                    "function": "testAction",
+                    "credentials_id": "$custom_secret_id",
+                    "fields":{
+                        "code":"async function run() { console.log('running async function4');}"
+                    }
                 }
             ],
             "edges":[
@@ -531,7 +566,7 @@ function createDevWebhookFlow {
                     "target": "step_2"
                 },
                 {
-                    "source": "step_2",
+                    "source": "step_1",
                     "target": "step_3"
                 },
                 {
@@ -865,7 +900,14 @@ deployServices
 # kubectl apply -Rf ./4-Services
 
 ###
-### 10. add example components and flow
+### 10. create custom secret
+###
+
+waitForServiceStatus http://skm.localoih.com/api/v1/secrets 401
+createCustomSecret
+
+###
+### 11. add example components and flow
 ###
 
 waitForServiceStatus http://component-repository.localoih.com/components 401
@@ -889,38 +931,38 @@ createDevConcurrentFlow
 createDevGlobalFlow
 
 ###
-### 11. Remove temporary deployments
+### 12. Remove temporary deployments
 ###
 
 removeTemporaryServices
 
 ###
-### 12. Point to web ui if ready
+### 13. Point to web ui if ready
 ###
 
 waitForServiceStatus http://web-ui.localoih.com 200
 echo "Setup done. Visit -> http://web-ui.localoih.com"
 
 ###
-### 13. Write .env file
+### 14. Write .env file
 ###
 
 writeDotEnvFile
 
 ###
-### 14. Print pod status
+### 15. Print pod status
 ###
 
 kubectl -n oih-dev-ns get pods
 
 ###
-### 15. Proxy db and queue connections
+### 16. Proxy db and queue connections
 ###
 
 startProxy
 
 ###
-### 16. Open dashboard
+### 17. Open dashboard
 ###
 
 # end sudo session
