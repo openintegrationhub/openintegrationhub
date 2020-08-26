@@ -4,6 +4,8 @@ set -e
 
 # constants
 
+DEV_CONTAINER_IMAGE="openintegrationhub/dev-connector:latest"
+
 TENANT_1_NAME="Tenant 1"
 TENANT_1_ADMIN="ta1@example.com"
 TENANT_1_ADMIN_PASSWORD="1234"
@@ -77,10 +79,8 @@ service_account_token_encoded=""
 
 custom_secret_id=""
 
-timer_component_id=""
-node_component_id=""
-
 development_component_id=""
+development_private_component_id=""
 development_global_component_id=""
 
 result=""
@@ -363,53 +363,17 @@ EOM
     echo "$custom_secret_id"
 }
 
-function createTimerComponent {
-    read -r -d '' JSON << EOM || true
-    {
-        "data": {
-            "distribution":{
-                "type":"docker",
-                "image":"elasticio/timer:ca9a6fea391ffa8f7c8593bd2a04143212ab63f6"
-            },
-            "access":"public",
-            "name":"Timer",
-            "description":"Timer component that periodically triggers flows on a given interval"
-        }
-    }
-EOM
-    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
-    timer_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
-}
-
-function createNodeComponent {
-    read -r -d '' JSON << EOM || true
-    {
-        "data": {
-            "distribution": {
-                "type": "docker",
-                "image": "elasticio/code-component:7bc2535df2f8a35c3653455e5becc701b010d681"
-            },
-            "access": "public",
-            "name": "Node.js code",
-            "description": "Node.js code component that executes the provided code"
-        }
-    }
-EOM
-    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
-    node_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
-}
-
 function createDevComponent {
     read -r -d '' JSON << EOM || true
     {
         "data": {
             "distribution": {
                 "type": "docker",
-                "image": "oih/connector:latest"
+                "image": "$DEV_CONTAINER_IMAGE"
             },
             "access": "public",
             "name": "Development Component",
-            "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'"
+            "description": "A component just for testing"
         }
     }
 EOM
@@ -423,11 +387,11 @@ function createDevPrivateComponent {
         "data": {
             "distribution": {
                 "type": "docker",
-                "image": "oih/connector:latest"
+                "image": "$DEV_CONTAINER_IMAGE"
             },
             "access": "private",
             "name": "Development Component (Private)",
-            "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'",
+            "description": "A component just for testing",
             "owners": [
                 {
                     "id": "$tenant_2_user_id",
@@ -438,7 +402,7 @@ function createDevPrivateComponent {
     }
 EOM
     postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
-    development_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+    development_private_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
 function createDevGlobalComponent {
@@ -447,51 +411,17 @@ function createDevGlobalComponent {
         "data": {
             "distribution": {
                 "type": "docker",
-                "image": "oih/connector:latest"
+                "image": "$DEV_CONTAINER_IMAGE"
             },
             "access": "public",
             "isGlobal": true,
             "name": "Global Development Component",
-            "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'"
+            "description": "A component just for testing"
         }
     }
 EOM
     postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
     development_global_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
-}
-
-function createFlow {
-    read -r -d '' JSON << EOM || true
-    {
-        "name":"Timer To Code Component Example",
-        "description:": "This flow periodically triggers the flow and sends request to webhook.site",
-        "graph":{
-            "nodes":[
-                {
-                "id":"step_1",
-                "componentId":"$timer_component_id",
-                "function":"timer"
-                },
-                {
-                "id":"step_2",
-                "componentId":"$node_component_id",
-                "function":"execute",
-                "fields":{
-                    "code":"function* run() {console.log('Calling external URL');yield request.post({uri: 'ADD WEBHOOK URL HERE', body: msg, json: true});}"
-                }
-                }
-            ],
-            "edges":[
-                {
-                "source":"step_1",
-                "target":"step_2"
-                }
-            ]
-        },
-        "cron":"*/1 * * * *"
-    }
-EOM
-    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
 
 function createDevSimpleFlow {
@@ -525,7 +455,7 @@ function createDevWebhookFlow {
             "nodes":[
                 {
                     "id": "step_1",
-                    "componentId": "$development_global_component_id",
+                    "componentId": "$development_component_id",
                     "function": "testTrigger",
                     "credentials_id": "$custom_secret_id",
                     "fields":{
@@ -543,7 +473,7 @@ function createDevWebhookFlow {
                 },
                 {
                     "id": "step_3",
-                    "componentId": "$development_global_component_id",
+                    "componentId": "$development_component_id",
                     "function": "testAction",
                     "credentials_id": "$custom_secret_id",
                     "fields":{
@@ -614,6 +544,44 @@ function createDevConsecutiveFlow {
             ]
         },
         "cron": "*/1 * * * *"
+    }
+EOM
+    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+}
+
+function createDevGlobalConsecutiveFlow {
+    read -r -d '' JSON << EOM || true
+    {
+        "name": "GlobalDevFlow (Consecutive)",
+        "graph": {
+            "nodes": [
+                {
+                    "id": "step_1",
+                    "componentId": "$development_global_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_2",
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction"
+                },
+                {
+                    "id": "step_3",
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction"
+                }
+            ],
+            "edges": [
+                {
+                    "source": "step_1",
+                    "target": "step_2"
+                },
+                {
+                    "source": "step_2",
+                    "target": "step_3"
+                }
+            ]
+        }
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
@@ -788,14 +756,20 @@ fi
 
 # check arguments
 
-while getopts "cs:p" option 
+while getopts "cs:i:p" option 
 do 
     case "${option}" 
     in 
+    # -c clear minikuke
     c)  clear_minikube="true"
         colorEcho 32 "- clear minikube";;
+    # -s [serviceName,..] remove service deployments after setup is done
     s)  IFS=', ' read -r -a skip_services <<< "${OPTARG}"
         colorEcho 32 "- skip deployments: ${skip_services[*]}";;
+    # -i imageName use custom image for development component
+    i)  IFS='' read -r DEV_CONTAINER_IMAGE <<< "${OPTARG}"
+        colorEcho 32 "- use custom image '$DEV_CONTAINER_IMAGE' for dev component";;
+    # -p proxy dbs and message queue
     p)  start_proxy="true"
         colorEcho 32 "- start proxy";;
     *) ;;
@@ -911,9 +885,10 @@ createCustomSecret
 ###
 
 waitForServiceStatus http://component-repository.localoih.com/components 401
-createTimerComponent
-createNodeComponent
+
 createDevComponent
+
+# create multiple global components
 createDevGlobalComponent
 createDevGlobalComponent
 
@@ -922,10 +897,9 @@ createDevPrivateComponent
 
 waitForServiceStatus http://flow-repository.localoih.com/flows 401
 
-createFlow
-
 createDevSimpleFlow
 createDevWebhookFlow
+createDevGlobalConsecutiveFlow
 createDevConsecutiveFlow
 createDevConcurrentFlow
 createDevGlobalFlow
