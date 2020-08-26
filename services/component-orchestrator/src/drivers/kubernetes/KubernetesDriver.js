@@ -1,5 +1,4 @@
 const { BaseDriver } = require('@openintegrationhub/component-orchestrator');
-const { v4 } = require('uuid');
 const _ = require('lodash');
 const KubernetesRunningComponent = require('./KubernetesRunningComponent');
 const Secret = require('./Secret');
@@ -26,7 +25,7 @@ class KubernetesDriver extends BaseDriver {
         if (component.isGlobal) {
             this._logger.info({ component: component.id }, 'Going to apply global deployment to k8s');
             try {
-                const env = this._prepareGlobalEnvVars(component, envVars);
+                const env = this._prepareEnvVars(envVars);
                 const secret = await this._ensureSecret(`${GLOBAL_PREFIX}${component.id}`, env);
                 await this._createRunningComponent({ secret, component, options });
             } catch (e) {
@@ -35,7 +34,7 @@ class KubernetesDriver extends BaseDriver {
         } else {
             this._logger.info({ flow: flow.id }, 'Going to apply local deployment to k8s');
             try {
-                const env = this._prepareLocalEnvVars(flow, node, envVars);
+                const env = this._prepareEnvVars(envVars);
                 const secret = await this._ensureSecret(`${LOCAL_PREFIX}${flow.id}${node.id}`, env);
                 await this._createRunningComponent({ flow, node, secret, component, options });
             } catch (e) {
@@ -258,57 +257,29 @@ class KubernetesDriver extends BaseDriver {
         };
     }
 
-    _prepareLocalEnvVars(flow, node, vars) {
-        let envVars = this._addEnvVars(vars);
-
-        envVars.API_USERNAME = 'iam_token';
-        envVars.API_KEY = vars.IAM_TOKEN;
-
-        envVars.STEP_ID = node.id;
-        envVars.FLOW_ID = flow.id;
-        envVars.USER_ID = flow.startedBy;
-        envVars.COMP_ID = node.componentId;
-        envVars.FUNCTION = node.function;
-
-        envVars = Object.entries(envVars).reduce((env, [k, v]) => {
-            env[`${ENV_PREFIX}${k}`] = v;
-            return env;
-        }, {});
-
-        envVars.LOG_LEVEL = 'trace'
-        return Object.assign(envVars, node.env);
-    }
-
-    _prepareGlobalEnvVars(component, vars) {
-        let envVars = this._addEnvVars(vars);
-        envVars.USER_ID = component.startedBy;
-        envVars.COMP_ID = component.id;
-        envVars.FUNCTION = component.function;
-
-        envVars = Object.entries(envVars).reduce((env, [k, v]) => {
-            env[`${ENV_PREFIX}${k}`] = v;
-            return env;
-        }, {});
-
-        envVars.LOG_LEVEL = 'trace'
-        return Object.assign(envVars, component.env);
-    }
-
-    _addEnvVars(vars) {
+    _prepareEnvVars(vars) {
         let envVars = Object.assign({}, vars);
+
+        // Will be removed from ferryman so we set some dummy data
+        envVars.COMP_ID = 'remove me'
+        envVars.USER_ID = 'remove me'
+
+        envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
+        envVars.SECRET_SERVICE_BASE_URL = this._config.get('SECRET_SERVICE_BASE_URL').replace(/\/$/, '');
+        envVars.ATTACHMENT_STORAGE_SERVICE_BASE_URL = this._config.get('ATTACHMENT_STORAGE_SERVICE_BASE_URL').replace(/\/$/, '');
+        envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
 
         // if running from host use cluster internal references instead
         if (this._config.get('RUNNING_ON_HOST') === 'true') {
             envVars.SNAPSHOTS_SERVICE_BASE_URL = 'http://snapshots-service.oih-dev-ns.svc.cluster.local:1234';
         }
-        // envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
-        envVars.EXEC_ID = v4().replace(/-/g, '');
 
-        envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
-        envVars.ATTACHMENT_STORAGE_SERVICE_BASE_URL = this._config.get('ATTACHMENT_STORAGE_SERVICE_BASE_URL').replace(/\/$/, '');
+        envVars = Object.entries(envVars).reduce((env, [k, v]) => {
+            env[`${ENV_PREFIX}${k}`] = v;
+            return env;
+        }, {});
 
-        // envVars.CONTAINER_ID = 'does not matter';
-        // envVars.WORKSPACE_ID = 'does not matter';
+        envVars.LOG_LEVEL = 'trace'
 
         return envVars
     }
