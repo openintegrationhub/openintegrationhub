@@ -21,7 +21,7 @@ spec:
           image: "openintegrationhub/component-orchestrator:latest"
           env:
             - name: COMPONENT_REPOSITORY_BASE_URL
-              value: "http://component-repository-service.oih-dev-ns.svc.cluster.local:1234"
+              value: "http://component-repository.oih-dev-ns.svc.cluster.local:1234"
             - name: SNAPSHOTS_SERVICE_BASE_URL
               value: "http://snapshots-service.oih-dev-ns.svc.cluster.local:1234"
             - name: SECRET_SERVICE_URL
