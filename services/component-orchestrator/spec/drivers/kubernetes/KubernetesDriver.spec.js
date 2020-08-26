@@ -57,8 +57,7 @@ describe('KubernetesDriver', () => {
     describe('#createApp', () => {
         it('should deploy a new app into K8s', async () => {
             const secret = new Secret();
-            sinon.stub(driver, '_prepareLocalEnvVars').returns({ container: 'env-vars' });
-            sinon.stub(driver, '_prepareGlobalEnvVars').returns({ container: 'env-vars' });
+            sinon.stub(driver, '_prepareEnvVars').returns({ container: 'env-vars' });
             sinon.stub(driver, '_ensureSecret').resolves(secret);
             sinon.stub(driver, '_createRunningComponent').resolves();
 
@@ -71,7 +70,7 @@ describe('KubernetesDriver', () => {
             const envVars = { env: 'lololo' };
             await driver.createApp({ flow, node, component: localComponent, envVars });
 
-            expect(driver._prepareLocalEnvVars).to.have.been.calledWith(flow, node, envVars);
+            expect(driver._prepareEnvVars).to.have.been.calledWith(envVars);
             expect(driver._ensureSecret).to.have.been.calledWith(
                 `local-${flow.id}${node.id}`,
                 { container: 'env-vars' }
@@ -80,7 +79,7 @@ describe('KubernetesDriver', () => {
 
             await driver.createApp({ flow, node, component: globalComponent, envVars });
 
-            expect(driver._prepareGlobalEnvVars).to.have.been.calledWith(globalComponent, envVars);
+            expect(driver._prepareEnvVars).to.have.been.calledWith(envVars);
             expect(driver._ensureSecret).to.have.been.calledWith(
                 `global-${globalComponent.id}`,
                 { container: 'env-vars' }

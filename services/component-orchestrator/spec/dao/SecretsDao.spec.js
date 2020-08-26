@@ -17,22 +17,22 @@ describe('SecretsDao', () => {
             get(key) {
                 return this[key];
             },
-            SECRETS_SERVICE_BASE_URL: 'http://secret-service.com/api/v1'
+            SECRET_SERVICE_BASE_URL: 'http://secret-service.com/api/v1'
         };
         const logger = {
             child() {
                 return {
-                    info: () => {},
-                    debug: () => {},
-                    error: () => {},
-                    trace: () => {}
+                    info: () => { },
+                    debug: () => { },
+                    error: () => { },
+                    trace: () => { }
                 };
             }
 
         };
 
-        sd = new SecretsDao({config, logger});
-        secretService = nock(config.SECRETS_SERVICE_BASE_URL, {
+        sd = new SecretsDao({ config, logger });
+        secretService = nock(config.SECRET_SERVICE_BASE_URL, {
             reqheaders: {
                 authorization: `Bearer ${IAM_TOKEN}`,
             },
