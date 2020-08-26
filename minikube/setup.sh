@@ -525,7 +525,7 @@ function createDevWebhookFlow {
             "nodes":[
                 {
                     "id": "step_1",
-                    "componentId": "$development_component_id",
+                    "componentId": "$development_global_component_id",
                     "function": "testTrigger",
                     "credentials_id": "$custom_secret_id",
                     "fields":{

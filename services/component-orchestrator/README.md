@@ -71,7 +71,7 @@ kubectl apply -f ./k8s
 | RABBITMQ_URI | RabbitMQ connection URI for the Resource Coordinator application. |
 | RABBITMQ_MANAGEMENT_URI | URI of the http interface of the RabbitMQ management plugin. |
 | RABBITMQ_URI_FLOWS | RabbitMQ connection URI for node containers. |
-| SECRETS_SERVICE_BASE_URL | Base URL of the Secrets service. |
+| SECRET_SERVICE_BASE_URL | Base URL of the Secrets service. |
 | SELF_API_URI | URI to the current application. This API is called then from the inside of node containers. |
 | SNAPSHOTS_SERVICE_BASE_URL | Base URL of the Snapshots service. |
 | TICK_INTERVAL | Main loop interval. |
