@@ -35,7 +35,6 @@
     "eslint-config-airbnb-base": "14.2.0",
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-jest": "23.20.0",
-    "get-port": "5.1.1",
     "jest": "26.4.2",
     "mongodb": "3.6.0",
     "mongodb-memory-server": "6.6.6",
