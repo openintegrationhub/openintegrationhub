@@ -16513,17 +16513,6 @@ mongod@^2.0.0:
   dependencies:
     promise-queue "^2.2.3"
 
-mongodb-core@3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.2.2.tgz#d1c084b34c102a98b4734087800115e639d907c5"
-  integrity sha512-YRgC39MuzKL0uoGoRdTmV1e9m47NbMnYmuEx4IOkgWAGXPSEzRY7cwb3N0XMmrDMnD9vp7MysNyAriIIeGgIQg==
-  dependencies:
-    bson "^1.1.1"
-    require_optional "^1.0.1"
-    safe-buffer "^5.1.2"
-  optionalDependencies:
-    saslprep "^1.0.0"
-
 mongodb-core@3.2.7, mongodb-core@^3.1.2:
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.2.7.tgz#a8ef1fe764a192c979252dacbc600dc88d77e28f"
@@ -16729,14 +16718,6 @@ mongodb-topology-manager@2.x:
     mongodb-core "^3.1.2"
     rimraf "^2.6.2"
 
-mongodb@3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.2.2.tgz#49b592be3cd50097f78e0964488d18c2e189de20"
-  integrity sha512-xQ6apOOV+w7VFApdaJpWhYhzartpjIDFQjG0AwgJkLh7dBs7PTsq4A3Bia2QWpDohmAzTBIdQVLMqqLy0mwt3Q==
-  dependencies:
-    mongodb-core "3.2.2"
-    safe-buffer "^5.1.2"
-
 mongodb@3.2.7:
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.2.7.tgz#8ba149e4be708257cad0dea72aebb2bbb311a7ac"
@@ -16864,25 +16845,6 @@ mongoose@5.10.1:
     ms "2.1.2"
     regexp-clone "1.0.0"
     safe-buffer "5.2.1"
-    sift "7.0.1"
-    sliced "1.0.1"
-
-mongoose@5.5.1:
-  version "5.5.1"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.5.1.tgz#a256a08241a1412bb307b85e7ece25629d0b4bbe"
-  integrity sha512-sVDyzADl0RbNvoRWLL/zQDqoFGi1IaSo5+DpOwhvGgFs3pSsvmONPNW3JF1KvZerNkkkGFb8ZMuFBeKEiDqZLw==
-  dependencies:
-    async "2.6.1"
-    bson "~1.1.1"
-    kareem "2.3.0"
-    mongodb "3.2.2"
-    mongodb-core "3.2.2"
-    mongoose-legacy-pluralize "1.0.2"
-    mpath "0.5.1"
-    mquery "3.2.0"
-    ms "2.1.1"
-    regexp-clone "0.0.1"
-    safe-buffer "5.1.2"
     sift "7.0.1"
     sliced "1.0.1"
 
@@ -17031,11 +16993,6 @@ move-concurrently@^1.0.1:
     rimraf "^2.5.4"
     run-queue "^1.0.3"
 
-mpath@0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.5.1.tgz#17131501f1ff9e6e4fbc8ffa875aa7065b5775ab"
-  integrity sha512-H8OVQ+QEz82sch4wbODFOz+3YQ61FYz/z3eJ5pIdbMEaUzDqA268Wd+Vt4Paw9TJfvDgVKaayC0gBzMIw2jhsg==
-
 mpath@0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.6.0.tgz#aa922029fca4f0f641f360e74c5c1b6a4c47078e"
@@ -17045,17 +17002,6 @@ mpath@0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.7.0.tgz#20e8102e276b71709d6e07e9f8d4d0f641afbfb8"
   integrity sha512-Aiq04hILxhz1L+f7sjGyn7IxYzWm1zLNNXcfhDtx04kZ2Gk7uvFdgZ8ts1cWa/6d0TQmag2yR8zSGZUmp0tFNg==
-
-mquery@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/mquery/-/mquery-3.2.0.tgz#e276472abd5109686a15eb2a8e0761db813c81cc"
-  integrity sha512-qPJcdK/yqcbQiKoemAt62Y0BAc0fTEKo1IThodBD+O5meQRJT/2HSe5QpBNwaa4CjskoGrYWsEyjkqgiE0qjhg==
-  dependencies:
-    bluebird "3.5.1"
-    debug "3.1.0"
-    regexp-clone "0.0.1"
-    safe-buffer "5.1.2"
-    sliced "1.0.1"
 
 mquery@3.2.1:
   version "3.2.1"
@@ -20888,11 +20834,6 @@ regex-not@^1.0.0, regex-not@^1.0.2:
   dependencies:
     extend-shallow "^3.0.2"
     safe-regex "^1.1.0"
-
-regexp-clone@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/regexp-clone/-/regexp-clone-0.0.1.tgz#a7c2e09891fdbf38fbb10d376fb73003e68ac589"
-  integrity sha1-p8LgmJH9vzj7sQ03b7cwA+aKxYk=
 
 regexp-clone@1.0.0, regexp-clone@^1.0.0:
   version "1.0.0"
