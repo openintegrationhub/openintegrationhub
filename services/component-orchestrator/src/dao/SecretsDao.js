@@ -5,6 +5,8 @@ const _ = require('lodash');
 const { promisify } = require('util');
 const getAsync = promisify(request.get);
 
+// NOT USED ANYMORE
+
 module.exports = class OIHSecretsDao {
     constructor({ config, logger }) {
         this._config = config;
