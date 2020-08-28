@@ -109,8 +109,11 @@ services:
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
     command: yarn watch-container
+    network_mode: host
     networks:
       - oih-dev
+    extra_hosts:
+      - "kubernetes:172.17.0.2"
 
   component-orchestrator:
     image: node:${NODE_VERSION}
