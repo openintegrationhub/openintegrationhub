@@ -38,7 +38,10 @@ module.exports = class TokensDao {
             accountId: userId,
             expiresIn: -1,
             description: `Created by Component Orchestrator for flow ${flowId}`,
-            forceNew: true
+            forceNew: true,
+            customPermissions: [
+              "secrets.secret.readRaw"
+            ]
         });
 
         await IamToken.create({
