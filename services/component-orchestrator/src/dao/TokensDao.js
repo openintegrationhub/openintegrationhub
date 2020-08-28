@@ -40,7 +40,7 @@ module.exports = class TokensDao {
             description: `Created by Component Orchestrator for flow ${flowId}`,
             forceNew: true,
             customPermissions: [
-              "secrets.secret.readRaw"
+              'secrets.secret.readRaw'
             ]
         });
 
