@@ -109,7 +109,6 @@ services:
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
     command: yarn watch-container
-    network_mode: host
     networks:
       - oih-dev
     extra_hosts:
