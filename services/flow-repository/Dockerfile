@@ -1,4 +1,4 @@
-FROM node:8.12-alpine AS base
+FROM node:12-alpine AS base
 LABEL NAME="oih-flow-repository"
 LABEL MAINTAINER Hansjörg Schmidt "hschmidt@wice.de"
 

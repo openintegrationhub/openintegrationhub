@@ -1,0 +1,46 @@
+{
+  "title": "Client component",
+  "description": "Client component description",
+  "credentials": {
+  },
+  "triggers": {
+    "init_trigger": {
+      "main": "./triggers/init_trigger.js",
+      "title": "Get data"
+    },
+    "startup_with_empty_data": {
+      "main": "./triggers/startup_with_empty_data.js",
+      "title": "Startup hooks returns empty result."
+    },
+    "trigger_with_no_hooks": {
+      "main": "./triggers/trigger_with_no_hooks.js",
+      "title": "No hooks at all. The only process function."
+    },
+    "fails_to_init": {
+      "main": "./triggers/fails_to_init.js",
+      "title": "Fails to init"
+    },
+    "echo_incoming_data": {
+      "main": "./triggers/echo_incoming_data.js",
+      "title": "incoming message is being emitted as data"
+    },
+    "wait_2_seconds_and_echo_incoming_data": {
+      "main": "./triggers/wait_2_seconds_and_echo_incoming_data.js",
+      "title": "incoming message is being emitted as data after 2 seconds"
+    },
+    "emit_data": {
+      "main": "./triggers/emit_data.js",
+      "title": "emits data"
+    },
+    "async_trigger": {
+      "main": "./triggers/async.js",
+      "title": "async trigger"
+    }
+  },
+  "actions": {
+    "http_reply_action": {
+      "main": "./actions/http_reply_action.js",
+      "title": "Http Reply Action"
+    }
+  }
+}

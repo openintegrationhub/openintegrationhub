@@ -5,14 +5,16 @@ const _ = require('lodash');
 const { promisify } = require('util');
 const getAsync = promisify(request.get);
 
+// NOT USED ANYMORE
+
 module.exports = class OIHSecretsDao {
-    constructor({config, logger}) {
+    constructor({ config, logger }) {
         this._config = config;
         this._logger = logger;
     }
 
-    async findById(secretId, {auth}) {
-        const logger = this._logger.child({secretId});
+    async findById(secretId, { auth }) {
+        const logger = this._logger.child({ secretId });
         const url = this._getSecretsServiceUrl(`/secrets/${secretId}`);
         const opts = {
             url,
@@ -23,7 +25,7 @@ module.exports = class OIHSecretsDao {
             }
         };
 
-        logger.trace({opts}, 'Fetching the secret');
+        logger.trace({ opts }, 'Fetching the secret');
         const { body, statusCode } = await getAsync(opts);
 
         if (statusCode === 200) {
@@ -34,12 +36,12 @@ module.exports = class OIHSecretsDao {
             return null;
         }
 
-        logger.trace({statusCode, body}, 'Failed to get the secret');
+        logger.trace({ statusCode, body }, 'Failed to get the secret');
         throw new Error(`Failed to fetch the secret ${secretId}`);
     }
 
     _getSecretsServiceUrl(p) {
-        const url = new URL(this._config.get('SECRETS_SERVICE_BASE_URL'));
+        const url = new URL(this._config.get('SECRET_SERVICE_BASE_URL'));
         url.pathname = path.join(url.pathname, p);
         return url.toString();
     }

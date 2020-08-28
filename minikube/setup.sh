@@ -4,6 +4,8 @@ set -e
 
 # constants
 
+DEV_CONTAINER_IMAGE="openintegrationhub/dev-connector:latest"
+
 TENANT_1_NAME="Tenant 1"
 TENANT_1_ADMIN="ta1@example.com"
 TENANT_1_ADMIN_PASSWORD="1234"
@@ -75,10 +77,10 @@ service_account_id=""
 service_account_token=""
 service_account_token_encoded=""
 
-timer_component_id=""
-node_component_id=""
+custom_secret_id=""
 
 development_component_id=""
+development_private_component_id=""
 development_global_component_id=""
 
 result=""
@@ -344,40 +346,21 @@ function removeTemporaryServices {
     done
 }
 
-function createTimerComponent {
+function createCustomSecret {
     read -r -d '' JSON << EOM || true
     {
         "data": {
-            "distribution":{
-                "type":"docker",
-                "image":"elasticio/timer:ca9a6fea391ffa8f7c8593bd2a04143212ab63f6"
-            },
-            "access":"public",
-            "name":"Timer",
-            "description":"Timer component that periodically triggers flows on a given interval"
+            "name": "custom_secret",
+            "type": "MIXED",
+            "value": {
+                "payload": "secret"
+            }
         }
     }
 EOM
-    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
-    timer_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
-}
-
-function createNodeComponent {
-    read -r -d '' JSON << EOM || true
-    {
-        "data": {
-            "distribution": {
-                "type": "docker",
-                "image": "elasticio/code-component:7bc2535df2f8a35c3653455e5becc701b010d681"
-            },
-            "access": "public",
-            "name": "Node.js code",
-            "description": "Node.js code component that executes the provided code"
-        }
-    }
-EOM
-    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
-    node_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+    postJSON http://skm.localoih.com/api/v1/secrets "$JSON" "$admin_token"
+    custom_secret_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['_id'])")
+    echo "$custom_secret_id"
 }
 
 function createDevComponent {
@@ -386,11 +369,11 @@ function createDevComponent {
         "data": {
             "distribution": {
                 "type": "docker",
-                "image": "oih/connector:latest"
+                "image": "$DEV_CONTAINER_IMAGE"
             },
             "access": "public",
             "name": "Development Component",
-            "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'"
+            "description": "A component just for testing"
         }
     }
 EOM
@@ -404,11 +387,11 @@ function createDevPrivateComponent {
         "data": {
             "distribution": {
                 "type": "docker",
-                "image": "oih/connector:latest"
+                "image": "$DEV_CONTAINER_IMAGE"
             },
             "access": "private",
             "name": "Development Component (Private)",
-            "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'",
+            "description": "A component just for testing",
             "owners": [
                 {
                     "id": "$tenant_2_user_id",
@@ -419,7 +402,7 @@ function createDevPrivateComponent {
     }
 EOM
     postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
-    development_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+    development_private_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
 function createDevGlobalComponent {
@@ -428,51 +411,17 @@ function createDevGlobalComponent {
         "data": {
             "distribution": {
                 "type": "docker",
-                "image": "oih/connector:latest"
+                "image": "$DEV_CONTAINER_IMAGE"
             },
             "access": "public",
             "isGlobal": true,
             "name": "Global Development Component",
-            "description": "Expects image 'oih/connector:latest' in docker minikube environment and local Component Orchestrator running with 'KUBERNETES_IMAGE_PULL_POLICY=Never'"
+            "description": "A component just for testing"
         }
     }
 EOM
     postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
     development_global_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
-}
-
-function createFlow {
-    read -r -d '' JSON << EOM || true
-    {
-        "name":"Timer To Code Component Example",
-        "description:": "This flow periodically triggers the flow and sends request to webhook.site",
-        "graph":{
-            "nodes":[
-                {
-                "id":"step_1",
-                "componentId":"$timer_component_id",
-                "function":"timer"
-                },
-                {
-                "id":"step_2",
-                "componentId":"$node_component_id",
-                "function":"execute",
-                "fields":{
-                    "code":"function* run() {console.log('Calling external URL');yield request.post({uri: 'ADD WEBHOOK URL HERE', body: msg, json: true});}"
-                }
-                }
-            ],
-            "edges":[
-                {
-                "source":"step_1",
-                "target":"step_2"
-                }
-            ]
-        },
-        "cron":"*/1 * * * *"
-    }
-EOM
-    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
 
 function createDevSimpleFlow {
@@ -497,20 +446,63 @@ EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
 
-function createDevSimpleWebhookFlow {
+function createDevWebhookFlow {
     read -r -d '' JSON << EOM || true
     {
-        "name":"Simplest flow (single component with webhook)",
+        "name":"Simple flow with local and global components (webhook)",
         "description:": "just one component",
         "graph":{
             "nodes":[
                 {
                     "id": "step_1",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testTrigger",
+                    "credentials_id": "$custom_secret_id",
+                    "fields":{
+                        "code":"async function run() { console.log('running async function1');}"
+                    }
+                },
+                {
+                    "id": "step_2",
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction",
+                    "credentials_id": "$custom_secret_id",
+                    "fields":{
+                        "code":"async function run() { console.log('running async function2');}"
+                    }
+                },
+                {
+                    "id": "step_3",
+                    "componentId": "$development_component_id",
+                    "function": "testAction",
+                    "credentials_id": "$custom_secret_id",
+                    "fields":{
+                        "code":"async function run() { console.log('running async function3');}"
+                    }
+                },
+                {
+                    "id": "step_4",
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction",
+                    "credentials_id": "$custom_secret_id",
+                    "fields":{
+                        "code":"async function run() { console.log('running async function4');}"
+                    }
                 }
             ],
             "edges":[
+                {
+                    "source": "step_1",
+                    "target": "step_2"
+                },
+                {
+                    "source": "step_1",
+                    "target": "step_3"
+                },
+                {
+                    "source": "step_3",
+                    "target": "step_4"
+                }
             ]
         }
     }
@@ -532,12 +524,12 @@ function createDevConsecutiveFlow {
                 {
                     "id": "step_2",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_3",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 }
             ],
             "edges": [
@@ -557,6 +549,44 @@ EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
 }
 
+function createDevGlobalConsecutiveFlow {
+    read -r -d '' JSON << EOM || true
+    {
+        "name": "GlobalDevFlow (Consecutive)",
+        "graph": {
+            "nodes": [
+                {
+                    "id": "step_1",
+                    "componentId": "$development_global_component_id",
+                    "function": "testTrigger"
+                },
+                {
+                    "id": "step_2",
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction"
+                },
+                {
+                    "id": "step_3",
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction"
+                }
+            ],
+            "edges": [
+                {
+                    "source": "step_1",
+                    "target": "step_2"
+                },
+                {
+                    "source": "step_2",
+                    "target": "step_3"
+                }
+            ]
+        }
+    }
+EOM
+    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+}
+
 function createDevConcurrentFlow {
     read -r -d '' JSON << EOM || true
     {
@@ -571,12 +601,12 @@ function createDevConcurrentFlow {
                 {
                     "id": "step_2",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_3",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 }
             ],
             "edges": [
@@ -610,47 +640,47 @@ function createDevGlobalFlow {
                 {
                     "id": "step_2",
                     "componentId": "$development_global_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_3",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_4",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_5",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_6",
-                    "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction"
                 },
                 {
                     "id": "step_7",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_8",
-                    "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "componentId": "$development_global_component_id",
+                    "function": "testAction"
                 },
                 {
                     "id": "step_9",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 },
                 {
                     "id": "step_10",
                     "componentId": "$development_component_id",
-                    "function": "testTrigger"
+                    "function": "testAction"
                 }
             ],
             "edges": [
@@ -691,8 +721,7 @@ function createDevGlobalFlow {
                     "target": "step_10"
                 }
             ]
-        },
-        "cron": "*/1 * * * *"
+        }
     }
 EOM
     postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
@@ -727,14 +756,20 @@ fi
 
 # check arguments
 
-while getopts "cs:p" option 
+while getopts "cs:i:p" option 
 do 
     case "${option}" 
     in 
+    # -c clear minikuke
     c)  clear_minikube="true"
         colorEcho 32 "- clear minikube";;
+    # -s [serviceName,..] remove service deployments after setup is done
     s)  IFS=', ' read -r -a skip_services <<< "${OPTARG}"
         colorEcho 32 "- skip deployments: ${skip_services[*]}";;
+    # -i imageName use custom image for development component
+    i)  IFS='' read -r DEV_CONTAINER_IMAGE <<< "${OPTARG}"
+        colorEcho 32 "- use custom image '$DEV_CONTAINER_IMAGE' for dev component";;
+    # -p proxy dbs and message queue
     p)  start_proxy="true"
         colorEcho 32 "- start proxy";;
     *) ;;
@@ -759,7 +794,12 @@ checkTools
 
 clearMinikube
 
-minikube start --memory $MK_MEMORY --cpus $MK_CPUS
+if [ "$os" == "Darwin" ]; then
+    minikube start --vm=true --driver=hyperkit --memory $MK_MEMORY --cpus $MK_CPUS
+else
+    minikube start --memory $MK_MEMORY --cpus $MK_CPUS
+fi
+
 minikube addons enable ingress
 minikube addons enable dashboard
 minikube addons enable metrics-server
@@ -834,13 +874,22 @@ deployServices
 # kubectl apply -Rf ./4-Services
 
 ###
-### 10. add example components and flow
+### 10. create custom secret
+###
+
+waitForServiceStatus http://skm.localoih.com/api/v1/secrets 401
+createCustomSecret
+
+###
+### 11. add example components and flow
 ###
 
 waitForServiceStatus http://component-repository.localoih.com/components 401
-createTimerComponent
-createNodeComponent
+
 createDevComponent
+
+# create multiple global components
+createDevGlobalComponent
 createDevGlobalComponent
 
 # create for tenant_2_user_id
@@ -848,47 +897,45 @@ createDevPrivateComponent
 
 waitForServiceStatus http://flow-repository.localoih.com/flows 401
 
-createFlow
-
 createDevSimpleFlow
-createDevSimpleWebhookFlow
+createDevWebhookFlow
+createDevGlobalConsecutiveFlow
 createDevConsecutiveFlow
 createDevConcurrentFlow
 createDevGlobalFlow
-
-###
-### 11. Remove temporary deployments
-###
-
-removeTemporaryServices
 
 ###
 ### 12. Point to web ui if ready
 ###
 
 waitForServiceStatus http://web-ui.localoih.com 200
-echo "Setup done. Visit -> http://web-ui.localoih.com"
 
 ###
-### 13. Write .env file
+### 13. Remove temporary deployments
+###
+
+removeTemporaryServices
+
+###
+### 14. Write .env file
 ###
 
 writeDotEnvFile
 
 ###
-### 14. Print pod status
+### 15. Print pod status
 ###
 
 kubectl -n oih-dev-ns get pods
 
 ###
-### 15. Proxy db and queue connections
+### 16. Proxy db and queue connections
 ###
 
 startProxy
 
 ###
-### 16. Open dashboard
+### 17. Open dashboard
 ###
 
 # end sudo session

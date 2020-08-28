@@ -43,5 +43,4 @@ router.get('/', jsonParser, async (req, res) => {
   return res.status(500).send(response);
 });
 
-
 module.exports = router;

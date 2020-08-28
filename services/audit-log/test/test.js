@@ -101,7 +101,6 @@ describe('Login Security', () => {
   });
 });
 
-
 describe('Log Operations', () => {
   test('should manually post a log', async () => {
     const res = await request
@@ -149,7 +148,6 @@ describe('Log Operations', () => {
     expect(j.data[0]).toHaveProperty('_id');
     expect(j.data[0].payload.tenant).toEqual('TestTenant');
   });
-
 
   test('should get all logs, filtered by service', async () => {
     const res = await request

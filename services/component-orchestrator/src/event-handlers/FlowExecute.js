@@ -1,7 +1,8 @@
 module.exports = ({ logger, componentOrchestrator }) => async (event) => {
   try {
-    const { payload } = event;
-    await componentOrchestrator.executeFlow(payload.flow)
+    const { payload, headers } = event;
+
+    await componentOrchestrator.executeFlow(payload, headers);
 
     await event.ack();
   } catch (err) {

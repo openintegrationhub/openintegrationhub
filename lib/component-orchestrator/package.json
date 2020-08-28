@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/component-orchestrator",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Orchestrates cluster resources",
   "main": "src/index.js",
   "scripts": {
@@ -14,18 +14,18 @@
   "dependencies": {
     "@openintegrationhub/event-bus": "*",
     "jsonwebtoken": "8.5.1",
-    "lodash": "4.17.11",
-    "uuid": "3.3.2"
+    "lodash": "4.17.20",
+    "uuid": "8.3.0"
   },
   "devDependencies": {
-    "bunyan": "1.8.12",
+    "bunyan": "1.8.14",
     "chai": "4.2.0",
-    "eslint": "4.5.0",
-    "eslint-plugin-mocha": "4.12.1",
-    "eslint-plugin-node": "6.0.1",
+    "eslint": "6.8.0",
+    "eslint-plugin-mocha": "8.0.0",
+    "eslint-plugin-node": "11.1.0",
     "mocha": "5.2.0",
-    "sinon": "7.2.2",
-    "sinon-chai": "3.3.0"
+    "sinon": "9.0.3",
+    "sinon-chai": "3.5.0"
   },
   "engines": {
     "node": ">=12"

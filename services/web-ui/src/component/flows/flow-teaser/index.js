@@ -15,7 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Modal from '@material-ui/core/Modal';
 import {
-    Delete, Edit, PlayArrow, Stop,
+    Delete, Edit, PlayArrow, Stop, Send,
 } from '@material-ui/icons';
 
 
@@ -27,7 +27,7 @@ import FlowGraph from '../flow-graph';
 
 // Actions
 import {
-    deleteFlow, updateFlow, startFlow, stopFlow,
+    deleteFlow, updateFlow, startFlow, stopFlow, executeFlow,
 } from '../../../action/flows';
 
 const useStyles = {
@@ -83,6 +83,14 @@ class FlowTeaser extends React.PureComponent {
         });
     }
 
+    executeFlow = (e) => {
+        e.stopPropagation();
+        this.props.executeFlow(this.props.data.id, {
+            foo: 'bar',
+        });
+    }
+
+
     editorChange(e) {
         if (!e.error) {
             this.setState({
@@ -124,8 +132,8 @@ class FlowTeaser extends React.PureComponent {
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid>
                             {this.props.data.status
-                                && <Grid item xs={3}><InputLabel>Status:</InputLabel><Typography >{this.getStatus(classes)} {this.props.data.status}</Typography></Grid>}
-                            <Grid item xs={3}>
+                                && <Grid item xs={2}><InputLabel>Status:</InputLabel><Typography >{this.getStatus(classes)} {this.props.data.status}</Typography></Grid>}
+                            <Grid item xs={4}>
                                 <Button aria-label="next" onClick={this.editOpen}>
                                     <Edit />
                                 </Button>
@@ -138,6 +146,10 @@ class FlowTeaser extends React.PureComponent {
                                 <Button aria-label="next" onClick={this.stopFlow}>
                                     <Stop />
                                 </Button>
+                                {this.props.data.status === 'active' && !this.props.data.cron
+                                    && <Button aria-label="next" onClick={this.executeFlow}>
+                                        <Send />
+                                    </Button>}
                             </Grid>
                         </Grid>
 
@@ -215,6 +227,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     updateFlow,
     startFlow,
     stopFlow,
+    executeFlow,
 }, dispatch);
 
 export default flow(

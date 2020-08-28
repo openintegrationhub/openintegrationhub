@@ -80,6 +80,17 @@ module.exports = function (app) {
             // or log the req
         },
     }));
+
+    app.use(proxy('/webhooks', {
+        pathRewrite: { '^/webhooks': '/' },
+        target: conf.endpoints.webhooks,
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
     // proxy server config
     app.use('/config', (req, res) => {
         res.send(conf);

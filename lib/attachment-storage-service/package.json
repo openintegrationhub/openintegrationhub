@@ -1,6 +1,6 @@
 {
     "name": "@openintegrationhub/attachment-storage-service",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Service for storing binary data",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -8,7 +8,7 @@
         "doc": "docs"
     },
     "engines": {
-        "node": ">= 8"
+        "node": ">= 12"
     },
     "scripts": {
         "test": "exit 0",

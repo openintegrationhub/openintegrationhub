@@ -22,7 +22,6 @@ const log = require('../../config/logger'); // eslint-disable-line
 // ajv.addSchema(payloadSchema);
 // const validator = ajv.compile(schema);
 
-
 // Gets all logs
 router.post('/', jsonParser, can(config.logPushPermission), async (req, res) => {
   const message = req.body;
@@ -48,6 +47,5 @@ router.post('/', jsonParser, can(config.logPushPermission), async (req, res) => 
     return res.status(500).send({ errors: [{ message: error, code: 500 }] });
   }
 });
-
 
 module.exports = router;

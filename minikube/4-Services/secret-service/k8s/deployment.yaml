@@ -20,7 +20,12 @@ spec:
           image: openintegrationhub/secret-service:latest
           env:
             - name: CRYPTO_DISABLED
-              value: "true"
+              value: "false"
+            - name: CRYPTO_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: cryptoKey
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:

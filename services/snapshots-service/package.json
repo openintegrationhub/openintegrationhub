@@ -1,13 +1,13 @@
 {
     "name": "snapshots-service",
-    "version": "0.0.2",
+    "version": "0.1.1",
     "description": "Service for managing flow snapshots",
     "main": "dist/index.js",
     "directories": {
         "doc": "docs"
     },
     "engines": {
-        "node": ">= 8"
+        "node": ">= 12"
     },
     "scripts": {
         "start": "node dist/app.js",

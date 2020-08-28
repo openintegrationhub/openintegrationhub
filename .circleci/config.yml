@@ -6,9 +6,12 @@ aliases:
   - &node_mongo_env
     - image: circleci/node:12-stretch
     - image: circleci/mongo:4.4
+  - &node_amqp_env
+    - image: circleci/node:12-stretch
+    - image: rabbitmq:3.8.6-alpine
   - &run_npm_install
     name: Installing Dependencies
-    command: yarn
+    command: yarn --ignore-engines
   - &only_master_filter
     branches:
       only: master
@@ -118,6 +121,10 @@ jobs:
     docker: *node_mongo_env
     working_directory: ~/oih/lib/component-repository
     steps: *yarn_test_steps
+  lib-ferryman-test:
+    docker: *node_amqp_env
+    working_directory: ~/oih/lib/ferryman
+    steps: *yarn_test_steps
   flow-repository-test:
     docker: *node_env
     working_directory: ~/oih/services/flow-repository
@@ -181,6 +188,9 @@ workflows:
       - lib-backend-commons-lib-test:
           requires:
             - deps
+      - lib-ferryman-test:
+          requires:
+            - deps
       - lib-component-orchestrator-test:
           requires:
             - lib-backend-commons-lib-test
@@ -213,6 +223,7 @@ workflows:
             - flow-repository-test
             - audit-log-test
             - lib-component-repository-test
+            - lib-ferryman-test
             - data-hub-test
             - ils-test
             - dispatcher-service-test
