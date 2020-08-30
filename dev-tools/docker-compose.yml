@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   iam:
-    image: node:${NODE_VERSION}
+    image: ${NODE_IMAGE}
     container_name: iam
     working_dir: /usr/src/app/services/iam
     environment:
@@ -32,7 +32,7 @@ services:
       - oih-dev
 
   secret-service:
-    image: node:${NODE_VERSION}
+    image: ${NODE_IMAGE}
     container_name: secret-service
     working_dir: /usr/src/app/services/secret-service
     environment:
@@ -61,7 +61,7 @@ services:
       - oih-dev
 
   component-repository:
-    image: node:${NODE_VERSION}
+    image: ${NODE_IMAGE}
     container_name: component-repository
     working_dir: /usr/src/app/services/component-repository
     environment:
@@ -87,7 +87,7 @@ services:
       - oih-dev
 
   snapshots-service:
-    image: node:${NODE_VERSION}
+    image: ${NODE_IMAGE}
     container_name: snapshots-service
     working_dir: /usr/src/app/services/snapshots-service
     environment:
@@ -112,10 +112,10 @@ services:
     networks:
       - oih-dev
     extra_hosts:
-      - "kubernetes:172.17.0.2"
+      - "kubernetes:192.168.1.158"
 
   component-orchestrator:
-    image: node:${NODE_VERSION}
+    image: ${NODE_IMAGE}
     container_name: component-orchestrator
     working_dir: /usr/src/app/services/component-orchestrator
     environment:
@@ -146,12 +146,14 @@ services:
       LISTEN_PORT: ${DEV_COMPONENT_ORCHESTRATOR_PORT}
     ports:
       - ${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}:${DEV_COMPONENT_ORCHESTRATOR_PORT}
-      - 0.0.0.0:8080:8080
     volumes:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: lsmod | grep iptable && yarn watch-container
+    entrypoint:
+      - /bin/sh
+      - -c
+      - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" | tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator && yarn watch-container
     networks:
       - oih-dev
 

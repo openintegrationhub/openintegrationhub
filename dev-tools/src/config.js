@@ -1,30 +1,18 @@
 const path = require("path")
+const { homedir } = require("os")
+
+const nodeImage = "node:12-stretch"
+
+const clusterName = "minikube"
+
+const kubernetesHost = "https://host.docker.internal:9090"
+
+const originWhitelist = "http://web-ui.iam.oih.dev:3000"
 
 const repositoryRoot = path.resolve(__dirname, "../../")
 const devToolsRoot = path.resolve(__dirname, "../")
 const dbRoot = path.resolve(__dirname, "../db")
-
-const originWhitelist = "http://web-ui.iam.oih.dev:3000"
-
-const nodeVersion = "12"
-
-const tenants = [
-  {
-    name: "tenant1",
-    confirmed: true,
-    status: "ACTIVE",
-    users: [
-      {
-        status: "ACTIVE",
-        confirmed: true,
-        role: "TENANT_ADMIN",
-        permissions: ["all"],
-        username: "t1_admin@local.dev",
-        password: "password",
-      },
-    ],
-  },
-]
+const kubeConfigPath = path.resolve(homedir(), ".kube/config")
 
 // services
 const services = {
@@ -66,7 +54,7 @@ module.exports = {
   env: {
     // general
     ORIGIN_WHITELIST: originWhitelist,
-    NODE_VERSION: nodeVersion,
+    NODE_IMAGE: nodeImage,
     HOST_REPOSITORY_ROOT: repositoryRoot,
     IP_FROM_MINIKUBE_TO_HOST: "172.17.0.1",
     // IAM
@@ -95,10 +83,12 @@ module.exports = {
     DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT:
       services.componentOrchestrator.externalPort,
   },
-  tenants,
+  clusterName,
+  kubernetesHost,
+  kubeConfigPath,
   repositoryRoot,
   devToolsRoot,
   dbRoot,
-  nodeVersion,
+  nodeImage,
   services,
 }

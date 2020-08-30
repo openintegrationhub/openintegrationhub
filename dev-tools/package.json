@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "node-fetch": "2.6.0"
+    "node-fetch": "2.6.0",
+    "yaml": "1.10.0"
   },
   "devDependencies": {
     "eslint": "7.6.0",

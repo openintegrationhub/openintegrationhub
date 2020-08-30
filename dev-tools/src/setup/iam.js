@@ -1,7 +1,8 @@
 const { execSync } = require("child_process")
 const fetch = require("node-fetch")
-const { dbRoot, devToolsRoot, env, services, tenants } = require("../config")
+const { dbRoot, devToolsRoot, env, services } = require("../config")
 const { checkTools, waitForMongo, waitForIAM } = require("../helper")
+const tenants = require("../data/tenants")
 
 const iamBase = `http://localhost:${services.iam.externalPort}`
 

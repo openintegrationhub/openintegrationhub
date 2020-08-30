@@ -1,13 +1,46 @@
-const { execSync } = require("child_process")
+const { execSync, spawn } = require("child_process")
 const { devToolsRoot, env, dbRoot, services } = require("./config")
 const {
   waitForIAM,
   waitForMongo,
   getAccountToken,
   checkTools,
+  getMinikubeClusterIp,
 } = require("./helper")
 
-checkTools(["docker", "docker-compose", "minikube", "mongo", "minikube"])
+checkTools([
+  "docker",
+  "docker-compose",
+  "minikube",
+  "mongo",
+  "minikube",
+  "simpleproxy",
+])
+
+let proxy = null
+
+process.stdin.resume() // so the program will not close instantly
+
+function exitHandler(exitCode) {
+  if (proxy) {
+    console.log("kill proxy")
+    proxy.kill("SIGTERM")
+  }
+  process.exit()
+}
+
+// do something when app is closing
+process.on("exit", exitHandler.bind(null))
+
+// catches ctrl+c event
+process.on("SIGINT", exitHandler.bind(null))
+
+// catches "kill pid" (for example: nodemon restart)
+process.on("SIGUSR1", exitHandler.bind(null))
+process.on("SIGUSR2", exitHandler.bind(null))
+
+// catches uncaught exceptions
+process.on("uncaughtException", exitHandler.bind(null))
 
 async function run() {
   execSync(`cd ${dbRoot} && docker-compose up -d`)
@@ -27,6 +60,16 @@ async function run() {
     services.iam.serviceUserName,
     services.iam.servicePassword
   )
+
+  console.log(getMinikubeClusterIp())
+  // start proxy to kubernetes cluster
+
+  proxy = spawn("simpleproxy", [
+    "-L",
+    "9090",
+    "-R",
+    getMinikubeClusterIp().replace("https://", ""),
+  ])
 
   execSync(`cd ${devToolsRoot} && docker-compose up -V`, {
     env: {

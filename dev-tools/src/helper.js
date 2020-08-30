@@ -1,10 +1,30 @@
 const { execSync } = require("child_process")
 const fetch = require("node-fetch")
-const { services } = require("./config")
+const fs = require("fs")
+const YAML = require("yaml")
+const { services, kubeConfigPath, clusterName } = require("./config")
 
 const iamBase = `http://localhost:${services.iam.externalPort}`
 
 module.exports = {
+  readKubeConfig() {
+    const file = fs.readFileSync(kubeConfigPath, "utf8")
+
+    if (!file) {
+      throw new Error(`Kubernetes config not found in ${kubeConfigPath}`)
+    }
+
+    return YAML.parse(file)
+  },
+
+  getMinikubeClusterIp() {
+    const config = module.exports.readKubeConfig()
+    const minikubeConfig = config.clusters.filter(
+      (item) => item.name === clusterName
+    )[0]
+
+    return minikubeConfig.cluster.server
+  },
   async getAccountToken(username, password) {
     const response = await fetch(`${iamBase}/login`, {
       method: "POST",
