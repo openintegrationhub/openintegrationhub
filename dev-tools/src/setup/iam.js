@@ -10,7 +10,10 @@ async function run() {
   checkTools(["docker-compose", "mongo"])
 
   execSync(`cd ${devToolsRoot} && docker-compose down`, {
-    env,
+    env: {
+      ...process.env,
+      ...env,
+    },
     stdio: "inherit",
   })
 
@@ -25,7 +28,10 @@ async function run() {
   })
 
   execSync(`cd ${devToolsRoot} && docker-compose up -d iam`, {
-    env,
+    env: {
+      ...process.env,
+      ...env,
+    },
     stdio: "inherit",
   })
 
@@ -115,7 +121,7 @@ async function run() {
   }
 }
 
-; (async () => {
+;(async () => {
   try {
     await run()
   } catch (err) {

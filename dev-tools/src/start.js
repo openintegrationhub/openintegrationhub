@@ -21,7 +21,7 @@ let proxy = null
 
 process.stdin.resume() // so the program will not close instantly
 
-function exitHandler(exitCode) {
+function exitHandler() {
   if (proxy) {
     console.log("kill proxy")
     proxy.kill("SIGTERM")
@@ -43,13 +43,23 @@ process.on("SIGUSR2", exitHandler.bind(null))
 process.on("uncaughtException", exitHandler.bind(null))
 
 async function run() {
-  execSync(`cd ${dbRoot} && docker-compose up -d`)
+  console.log(env)
+  execSync(`cd ${dbRoot} && docker-compose up -d`, {
+    env: {
+      ...process.env,
+      ...env,
+    },
+    stdio: "inherit",
+  })
 
   waitForMongo()
 
   // start iam
   execSync(`cd ${devToolsRoot} && docker-compose up -d iam`, {
-    env,
+    env: {
+      ...process.env,
+      ...env,
+    },
     stdio: "inherit",
   })
 
@@ -73,6 +83,7 @@ async function run() {
 
   execSync(`cd ${devToolsRoot} && docker-compose up -V`, {
     env: {
+      ...process.env,
       ...env,
       DEV_IAM_TOKEN: serviceAccountToken,
     },
@@ -80,7 +91,7 @@ async function run() {
   })
 }
 
-; (async () => {
+;(async () => {
   try {
     await run()
   } catch (err) {

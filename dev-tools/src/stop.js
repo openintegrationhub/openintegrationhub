@@ -6,7 +6,10 @@ const { checkTools } = require("./helper")
 checkTools(["docker-compose"])
 
 cp.execSync(`cd ${devToolsRoot} && docker-compose down`, {
-  env,
+  env: {
+    ...process.env,
+    ...env,
+  },
   stdio: "inherit",
 })
 

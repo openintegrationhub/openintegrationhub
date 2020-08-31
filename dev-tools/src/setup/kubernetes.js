@@ -43,7 +43,7 @@ fs.copyFileSync(
 )
 
 cluster.cluster.server = kubernetesHost
-// cluster.cluster["insecure-skip-tls-verify"] = true
+cluster.cluster["insecure-skip-tls-verify"] = true
 cluster.cluster["certificate-authority"] = "ca.crt"
 
 user.user["client-certificate"] = "client.crt"
