@@ -8,7 +8,7 @@ services:
       NODE_ENV: development
       LOG_LEVEL: info
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
-      IAM_MONGODB_CONNECTION: mongodb://mongodb/${DB_IAM}
+      IAM_MONGODB_CONNECTION: mongodb://mongodb/${DEV_IAM_DB}
       IAM_AUTH_TYPE: basic
       IAM_DEBUG: "true"
       IAM_BASEURL: http://iam:${DEV_IAM_PORT}
@@ -27,7 +27,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn watch-container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -38,7 +38,7 @@ services:
     environment:
       NODE_ENV: development
       LOGGING_LEVEL: info
-      MONGODB_CONNECTION: mongodb://mongodb/${DB_SECRET_SERVICE}
+      MONGODB_CONNECTION: mongodb://mongodb/${DEV_SECRET_SERVICE_DB}
       TTL_AUTHFLOW: 2m
       IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
@@ -56,7 +56,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn watch-container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -67,7 +67,7 @@ services:
     environment:
       NODE_ENV: development
       LOG_LEVEL: info
-      MONGODB_URI: mongodb://mongodb/${DB_COMPONENT_REPOSITORY}
+      MONGODB_URI: mongodb://mongodb/${DEV_COMPONENT_REPOSITORY_DB}
       IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
@@ -82,7 +82,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn watch-container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -93,7 +93,7 @@ services:
     environment:
       NODE_ENV: development
       LOG_LEVEL: info
-      MONGODB_URI: mongodb://mongodb/${DB_SNAPSHOTS_SERVICE}
+      MONGODB_URI: mongodb://mongodb/${DEV_SNAPSHOTS_SERVICE_DB}
       IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
@@ -108,11 +108,9 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn watch-container
+    command: yarn start:compose
     networks:
       - oih-dev
-    extra_hosts:
-      - "kubernetes:192.168.1.158"
 
   component-orchestrator:
     image: ${NODE_IMAGE}
@@ -121,7 +119,7 @@ services:
     environment:
       NODE_ENV: development
       LOG_LEVEL: info
-      MONGODB_URI: mongodb://mongodb/${DB_COMPONENT_ORCHESTRATOR}
+      MONGODB_URI: mongodb://mongodb/${DEV_COMPONENT_ORCHESTRATOR_DB}
       IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
@@ -153,7 +151,102 @@ services:
     entrypoint:
       - /bin/sh
       - -c
-      - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" | tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator && yarn watch-container
+      - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" | tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator && yarn start:compose
+    networks:
+      - oih-dev
+
+  app-directory:
+    image: ${NODE_IMAGE}
+    container_name: app-directory
+    working_dir: /usr/src/app/services/app-directory
+    environment:
+      NODE_ENV: development
+      LOGGING_LEVEL: info
+      DEBUG_MODE: "true"
+      MONGODB_CONNECTION: mongodb://mongodb/${DEV_APP_DIRECTORY_DB}
+      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      API_BASE: /api/v1
+      PORT: ${DEV_APP_DIRECTORY_PORT}
+    ports:
+      - ${DEV_APP_DIRECTORY_EXTERNAL_PORT}:${DEV_APP_DIRECTORY_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
+
+  attachment-storage-service:
+    image: ${NODE_IMAGE}
+    container_name: attachment-storage-service
+    working_dir: /usr/src/app/services/attachment-storage-service
+    environment:
+      NODE_ENV: development
+      REDIS_CONFIG: '{"host": "redis", "keyPrefix": "attachments:", "sentinels": null}'
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      PORT: ${DEV_ATTACHMENT_STORAGE_SERVICE_PORT}
+    ports:
+      - ${DEV_ATTACHMENT_STORAGE_SERVICE_EXTERNAL_PORT}:${DEV_ATTACHMENT_STORAGE_SERVICE_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
+
+  audit-log:
+    image: ${NODE_IMAGE}
+    container_name: audit-log
+    working_dir: /usr/src/app/services/audit-log
+    environment:
+      NODE_ENV: development
+      MONGODB_URL: mongodb://mongodb/${DEV_AUDIT_LOG_DB}
+      QUEUE_URL: amqp://guest:guest@rabbitmq
+      EXCHANGE_NAME: audit-logs
+      EXCHANGE_TOPIC: logs
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      PORT: ${DEV_AUDIT_LOG_PORT}
+    ports:
+      - ${DEV_AUDIT_LOG_EXTERNAL_PORT}:${DEV_AUDIT_LOG_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
+
+  data-hub:
+    image: ${NODE_IMAGE}
+    container_name: data-hub
+    working_dir: /usr/src/app/services/data-hub
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongodb/${DEV_DATA_HUB_DB}
+      LOG_LEVEL: trace
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      PORT: ${DEV_DATA_HUB_PORT}
+    ports:
+      - ${DEV_DATA_HUB_EXTERNAL_PORT}:${DEV_DATA_HUB_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
     networks:
       - oih-dev
 
