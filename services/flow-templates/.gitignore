@@ -1,0 +1,9 @@
+/logs/
+.nyc_output
+node_modules
+coverage/
+error.log
+app/error.log
+.DS_Store
+/test/utils/globalConfig.json
+/.env
