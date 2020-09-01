@@ -2,7 +2,7 @@ version: "3.8"
 services:
   iam:
     image: ${NODE_IMAGE}
-    container_name: iam
+    container_name: ${DEV_IAM_CONTAINER}
     working_dir: /usr/src/app/services/iam
     environment:
       NODE_ENV: development
@@ -33,7 +33,7 @@ services:
 
   secret-service:
     image: ${NODE_IMAGE}
-    container_name: secret-service
+    container_name: ${DEV_SECRET_SERVICE_CONTAINER}
     working_dir: /usr/src/app/services/secret-service
     environment:
       NODE_ENV: development
@@ -62,7 +62,7 @@ services:
 
   component-repository:
     image: ${NODE_IMAGE}
-    container_name: component-repository
+    container_name: ${DEV_COMPONENT_REPOSITORY_CONTAINER}
     working_dir: /usr/src/app/services/component-repository
     environment:
       NODE_ENV: development
@@ -88,7 +88,7 @@ services:
 
   snapshots-service:
     image: ${NODE_IMAGE}
-    container_name: snapshots-service
+    container_name: ${DEV_SNAPSHOTS_SERVICE_CONTAINER}
     working_dir: /usr/src/app/services/snapshots-service
     environment:
       NODE_ENV: development
@@ -114,7 +114,7 @@ services:
 
   component-orchestrator:
     image: ${NODE_IMAGE}
-    container_name: component-orchestrator
+    container_name: ${DEV_COMPONENT_ORCHESTRATOR_CONTAINER}
     working_dir: /usr/src/app/services/component-orchestrator
     environment:
       NODE_ENV: development
@@ -157,7 +157,7 @@ services:
 
   app-directory:
     image: ${NODE_IMAGE}
-    container_name: app-directory
+    container_name: ${DEV_APP_DIRECTORY_CONTAINER}
     working_dir: /usr/src/app/services/app-directory
     environment:
       NODE_ENV: development
@@ -185,7 +185,7 @@ services:
 
   attachment-storage-service:
     image: ${NODE_IMAGE}
-    container_name: attachment-storage-service
+    container_name: ${DEV_ATTACHMENT_STORAGE_SERVICE_CONTAINER}
     working_dir: /usr/src/app/services/attachment-storage-service
     environment:
       NODE_ENV: development
@@ -204,7 +204,7 @@ services:
 
   audit-log:
     image: ${NODE_IMAGE}
-    container_name: audit-log
+    container_name: ${DEV_AUDIT_LOG_CONTAINER}
     working_dir: /usr/src/app/services/audit-log
     environment:
       NODE_ENV: development
@@ -229,7 +229,7 @@ services:
 
   data-hub:
     image: ${NODE_IMAGE}
-    container_name: data-hub
+    container_name: ${DEV_DATA_HUB_CONTAINER}
     working_dir: /usr/src/app/services/data-hub
     environment:
       NODE_ENV: development
@@ -250,6 +250,179 @@ services:
     networks:
       - oih-dev
 
+  dispatcher-service:
+    image: ${NODE_IMAGE}
+    container_name: ${DEV_DISPATCHER_SERVICE_CONTAINER}
+    working_dir: /usr/src/app/services/dispatcher-service
+    environment:
+      NODE_ENV: development
+      MONGODB_URL: mongodb://mongodb/${DEV_DISPATCHER_SERVICE_DB}
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      FLOW_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      QUEUE_URL: amqp://guest:guest@rabbitmq
+      FLOWREPO_URL: http://localhost:${DEV_FLOW_REPOSITORY_EXTERNAL_PORT}
+      SDF_ID: ReplaceMe
+      PORT: ${DEV_DISPATCHER_SERVICE_PORT}
+    ports:
+      - ${DEV_DISPATCHER_SERVICE_EXTERNAL_PORT}:${DEV_DISPATCHER_SERVICE_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
+
+  flow-repository:
+    image: ${NODE_IMAGE}
+    container_name: ${DEV_FLOW_REPOSITORY_CONTAINER}
+    working_dir: /usr/src/app/services/flow-repository
+    environment:
+      NODE_ENV: development
+      MONGODB_URL: mongodb://mongodb/${DEV_FLOW_REPOSITORY_DB}
+      LOG_LEVEL: trace
+      QUEUE_URL: amqp://guest:guest@rabbitmq
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      PORT: ${DEV_FLOW_REPOSITORY_PORT}
+      ORIGINWHITELIST: ${ORIGIN_WHITELIST}
+    ports:
+      - ${DEV_FLOW_REPOSITORY_EXTERNAL_PORT}:${DEV_FLOW_REPOSITORY_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
+
+  ils:
+    image: ${NODE_IMAGE}
+    container_name: ${DEV_ILS_CONTAINER}
+    working_dir: /usr/src/app/services/ils
+    environment:
+      NODE_ENV: development
+      MONGODB_URL: mongodb://mongodb/${DEV_ILS_DB}
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      PORT: ${DEV_ILS_PORT}
+    ports:
+      - ${DEV_ILS_EXTERNAL_PORT}:${DEV_ILS_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
+
+  meta-data-repository:
+    image: ${NODE_IMAGE}
+    container_name: ${DEV_META_DATA_REPOSITORY_CONTAINER}
+    working_dir: /usr/src/app/services/meta-data-repository
+    environment:
+      NODE_ENV: development
+      LOGGING_LEVEL: info
+      DEBUG_MODE: "true"
+      API_BASE: /api/v1
+      MONGODB_CONNECTION: mongodb://mongodb/${DEV_META_DATA_REPOSITORY_DB}
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      ORIGINWHITELIST: ${ORIGIN_WHITELIST}
+      PORT: ${DEV_META_DATA_REPOSITORY_PORT}
+    ports:
+      - ${DEV_META_DATA_REPOSITORY_EXTERNAL_PORT}:${DEV_META_DATA_REPOSITORY_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
+
+  scheduler:
+    image: ${NODE_IMAGE}
+    container_name: ${DEV_SCHEDULER_CONTAINER}
+    working_dir: /usr/src/app/services/scheduler
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongodb/${DEV_SCHEDULER_DB}
+      LOG_LEVEL: trace
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      PORT: ${DEV_SCHEDULER_PORT}
+    ports:
+      - ${DEV_SCHEDULER_EXTERNAL_PORT}:${DEV_SCHEDULER_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
+
+  webhooks:
+    image: ${NODE_IMAGE}
+    container_name: ${DEV_WEBHOOKS_CONTAINER}
+    working_dir: /usr/src/app/services/webhooks
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongodb/${DEV_WEBHOOKS_DB}
+      LOG_LEVEL: trace
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
+      PORT: ${DEV_WEBHOOKS_PORT}
+    ports:
+      - ${DEV_WEBHOOKS_EXTERNAL_PORT}:${DEV_WEBHOOKS_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
+
+  web-ui:
+    image: ${NODE_IMAGE}
+    container_name: ${DEV_WEB_UI_CONTAINER}
+    working_dir: /usr/src/app/services/web-ui
+    environment:
+      NODE_ENV: development
+      ENDPOINT_IAM: http://localhost:${DEV_IAM_EXTERNAL_PORT}
+      ENDPOINT_FLOW: http://localhost:${DEV_FLOW_REPOSITORY_EXTERNAL_PORT}
+      ENDPOINT_COMPONENT: http://localhost:${DEV_COMPONENT_REPOSITORY_EXTERNAL_PORT}
+      ENDPOINT_SECRETS: http://localhost:${DEV_SECRET_SERVICE_EXTERNAL_PORT}/api/v1
+      ENDPOINT_DISPATCHER: http://localhost:${DEV_DISPATCHER_SERVICE_EXTERNAL_PORT}
+      ENDPOINT_METADATA: http://localhost:${DEV_META_DATA_REPOSITORY_EXTERNAL_PORT}/api/v1
+      ENDPOINT_APP_DIRECTORY: http://localhost:${DEV_APP_DIRECTORY_EXTERNAL_PORT}/api/v1
+      ENDPOINT_WEBHOOKS: http://localhost:${DEV_WEBHOOKS_EXTERNAL_PORT}
+      PORT: ${DEV_WEB_UI_PORT}
+    ports:
+      - ${DEV_WEB_UI_EXTERNAL_PORT}:${DEV_WEB_UI_PORT}
+    volumes:
+      - type: bind
+        source: ${HOST_REPOSITORY_ROOT}
+        target: /usr/src/app
+    command: yarn start:compose
+    networks:
+      - oih-dev
 networks:
   oih-dev:
     external:

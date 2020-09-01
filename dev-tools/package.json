@@ -5,7 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "node-fetch": "2.6.0",
-    "yaml": "1.10.0"
+    "yaml": "1.10.0",
+    "lodash": "4.17.20"
   },
   "devDependencies": {
     "eslint": "7.6.0",

@@ -1,20 +1,23 @@
 const { execSync } = require("child_process")
-
+const path = require("path")
 const { checkTools } = require("../helper")
 
-checkTools(["minikube"])
+checkTools(["minikube", "kubectl"])
 
 async function run() {
   execSync(`minikube start`, {
     stdio: "inherit",
   })
-  execSync(`minikube addons enable ingress`, {
+
+  execSync(`kubectl -n flows delete pods,services,deployments --all`, {
     stdio: "inherit",
   })
-  execSync(`minikube addons enable dashboard`, {
+
+  execSync(`kubectl delete ns flows || true`, {
     stdio: "inherit",
   })
-  execSync(`minikube addons enable metrics-server`, {
+
+  execSync(`kubectl apply -f ${path.resolve(__dirname, "namespace.yml")}`, {
     stdio: "inherit",
   })
 }

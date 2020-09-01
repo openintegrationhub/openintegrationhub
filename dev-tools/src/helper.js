@@ -2,11 +2,87 @@ const { execSync } = require("child_process")
 const fetch = require("node-fetch")
 const fs = require("fs")
 const YAML = require("yaml")
-const { services, kubeConfigPath, clusterName } = require("./config")
+
+const serviceAccounts = require("./data/service-accounts")
+
+const {
+  services,
+  kubeConfigPath,
+  clusterName,
+  env,
+  dbRoot,
+  devToolsRoot,
+} = require("./config")
 
 const iamBase = `http://localhost:${services.iam.externalPort}`
 
 module.exports = {
+  async login({ username, password }) {
+    const response = await fetch(`${iamBase}/login`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        password,
+      }),
+    })
+
+    if (response.status !== 200) {
+      throw new Error("Account missing")
+    }
+
+    return response.json()
+  },
+  async setupMinimal(services_) {
+    execSync(`cd ${dbRoot} && docker-compose up -d`, {
+      env: {
+        ...process.env,
+        ...env,
+      },
+      stdio: "inherit",
+    })
+
+    module.exports.waitForMongo()
+
+    // start iam
+    execSync(`cd ${devToolsRoot} && docker-compose up -d iam`, {
+      env: {
+        ...process.env,
+        ...env,
+      },
+      stdio: "inherit",
+    })
+
+    await module.exports.waitForStatus({ url: iamBase, status: 200 })
+
+    const { username, password } = serviceAccounts.find(
+      (account) => account.firstname === "default"
+    )
+
+    const { token } = await module.exports.login({ username, password })
+
+    for (const service of services_) {
+      // start service
+      execSync(`mongo ${service.db} --eval "db.dropDatabase()"`, {
+        stdio: "inherit",
+      })
+
+      execSync(
+        `cd ${devToolsRoot} && docker-compose up -d ${service.container}`,
+        {
+          env: {
+            ...process.env,
+            ...env,
+            DEV_IAM_TOKEN: token,
+          },
+          stdio: "inherit",
+        }
+      )
+    }
+  },
   readKubeConfig() {
     const file = fs.readFileSync(kubeConfigPath, "utf8")
 
@@ -25,27 +101,6 @@ module.exports = {
 
     return minikubeConfig.cluster.server
   },
-  async getAccountToken(username, password) {
-    const response = await fetch(`${iamBase}/login`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        password,
-      }),
-    })
-
-    if (response.status !== 200) {
-      throw new Error("Account missing")
-    }
-
-    const { token } = await response.json()
-    return token
-  },
-
   checkTools(tools = []) {
     for (const tool of tools) {
       try {
@@ -66,12 +121,12 @@ module.exports = {
       break
     }
   },
-  async waitForIAM() {
-    console.log("Waiting for IAM")
+  async waitForStatus({ url, status }) {
+    console.log(`Waiting for ${status} on ${url}`)
     while (true) {
       try {
-        const response = await fetch(iamBase)
-        if (response.status !== 200) continue
+        const response = await fetch(url)
+        if (response.status !== status) continue
       } catch (err) {
         continue
       }

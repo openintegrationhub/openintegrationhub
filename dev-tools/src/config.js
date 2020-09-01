@@ -7,8 +7,6 @@ const clusterName = "minikube"
 
 const kubernetesHost = "https://host.docker.internal:9090"
 
-const originWhitelist = "http://web-ui.iam.oih.dev:3000,0.0.0.0:3001"
-
 const repositoryRoot = path.resolve(__dirname, "../../")
 const devToolsRoot = path.resolve(__dirname, "../")
 const dbRoot = path.resolve(__dirname, "../db")
@@ -18,68 +16,135 @@ const localPort = 3099
 
 // services
 const services = {
+  webUi: {
+    port: localPort,
+    externalPort: 3000,
+    container: "web-ui",
+  },
+
   iam: {
     port: localPort,
     externalPort: 3001,
-    dbName: "iam",
-    adminUserName: "admin@local.dev",
-    adminPassword: "password",
-    serviceUserName: "service@local.dev",
-    servicePassword: "password",
+    container: "iam",
+    db: "iam",
+    adminUsername: "admin@openintegrationhub.com",
+    adminPassword: "somestring",
   },
   secretService: {
     port: localPort,
     externalPort: 3002,
-    dbName: "secretService",
+    container: "secret-service",
+    db: "secretService",
   },
 
   componentRepository: {
     port: localPort,
     externalPort: 3003,
-    dbName: "componentRepository",
+    container: "component-repository",
+    db: "componentRepository",
   },
 
   snapshotsService: {
     port: localPort,
     externalPort: 3004,
-    dbName: "snapshotService",
+    container: "snapshots-service",
+    db: "snapshotService",
   },
 
   componentOrchestrator: {
     port: localPort,
     externalPort: 3005,
-    dbName: "componentOrchestrator",
+    container: "component-orchestrator",
+    db: "componentOrchestrator",
   },
 
   appDirectory: {
     port: localPort,
     externalPort: 3006,
-    dbName: "appDirectory",
+    container: "app-directory",
+    db: "appDirectory",
   },
 
   attachmentStorageService: {
     port: localPort,
     externalPort: 3007,
-    dbName: "attachmentStorageService",
+    container: "attachment-storage",
+    db: "attachmentStorageService",
   },
 
   auditLog: {
     port: localPort,
     externalPort: 3008,
-    dbName: "auditLog",
+    container: "audit-log",
+    db: "auditLog",
   },
 
   dataHub: {
     port: localPort,
     externalPort: 3009,
-    dbName: "dataHub",
+    container: "data-hub",
+    db: "dataHub",
   },
 
   dispatcherService: {
     port: localPort,
     externalPort: 3010,
-    dbName: "dispatcherService",
+    container: "dispatcher-service",
+    db: "dispatcherService",
   },
+
+  flowRepository: {
+    port: localPort,
+    externalPort: 3011,
+    container: "flow-repository",
+    db: "flowRepository",
+  },
+
+  ils: {
+    port: localPort,
+    externalPort: 3012,
+    container: "ils",
+    db: "ils",
+  },
+
+  metaDataRepository: {
+    port: localPort,
+    externalPort: 3013,
+    container: "meta-data-repository",
+    db: "metaDataRepository",
+  },
+
+  scheduler: {
+    port: localPort,
+    externalPort: 3014,
+    container: "scheduler",
+    db: "scheduler",
+  },
+
+  webhooks: {
+    port: localPort,
+    externalPort: 3015,
+    container: "webhooks",
+    db: "webhooks",
+  },
+}
+
+const originWhitelist = `http://localhost:3000,0.0.0.0:3001,iam:${localPort}`
+
+function generateEnvs(collection) {
+  const envs = {}
+  function convert(str) {
+    return str.replace(/[A-Z]/g, (letter) => `_${letter}`).toUpperCase()
+  }
+  Object.entries(collection).forEach((service) => {
+    const base = `DEV_${convert(service[0])}`
+    Object.entries(service[1]).forEach((entry) => {
+      const [key, value] = entry
+      envs[`${base}_${convert(key)}`] = value
+    })
+  })
+
+  return envs
 }
 
 module.exports = {
@@ -88,53 +153,9 @@ module.exports = {
     ORIGIN_WHITELIST: originWhitelist,
     NODE_IMAGE: nodeImage,
     HOST_REPOSITORY_ROOT: repositoryRoot,
-    IP_FROM_MINIKUBE_TO_HOST: "172.17.0.1",
-    // IAM
-    DEV_IAM_DB: services.iam.dbName,
-    DEV_IAM_PORT: services.iam.port,
-    DEV_IAM_EXTERNAL_PORT: services.iam.externalPort,
-    DEV_IAM_ADMIN_USERNAME: services.iam.adminUserName,
-    DEV_IAM_ADMIN_PASSWORD: services.iam.adminPassword,
-    DEV_IAM_TOKEN: "will be replaced",
-    // Secret Service
-    DEV_SECRET_SERVICE_DB: services.secretService.dbName,
-    DEV_SECRET_SERVICE_PORT: services.secretService.port,
-    DEV_SECRET_SERVICE_EXTERNAL_PORT: services.secretService.externalPort,
-    // Component Repository
-    DEV_COMPONENT_REPOSITORY_DB: services.componentRepository.dbName,
-    DEV_COMPONENT_REPOSITORY_PORT: services.componentRepository.port,
-    DEV_COMPONENT_REPOSITORY_EXTERNAL_PORT:
-      services.componentRepository.externalPort,
-    // Snapshot Service
-    DEV_SNAPSHOTS_SERVICE_DB: services.snapshotsService.dbName,
-    DEV_SNAPSHOTS_SERVICE_PORT: services.snapshotsService.port,
-    DEV_SNAPSHOTS_SERVICE_EXTERNAL_PORT: services.snapshotsService.externalPort,
-    // Component Orchestrator
-    DEV_COMPONENT_ORCHESTRATOR_DB: services.componentOrchestrator.dbName,
-    DEV_COMPONENT_ORCHESTRATOR_PORT: services.componentOrchestrator.port,
-    DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT:
-      services.componentOrchestrator.externalPort,
-    // App Directory
-    DEV_APP_DIRECTORY_DB: services.appDirectory.dbName,
-    DEV_APP_DIRECTORY_PORT: services.appDirectory.port,
-    DEV_APP_DIRECTORY_EXTERNAL_PORT: services.appDirectory.externalPort,
-    // Attachment Storage Service
-    DEV_ATTACHMENT_STORAGE_SERVICE_DB: services.attachmentStorageService.dbName,
-    DEV_ATTACHMENT_STORAGE_SERVICE_PORT: services.attachmentStorageService.port,
-    DEV_ATTACHMENT_STORAGE_SERVICE_EXTERNAL_PORT:
-      services.attachmentStorageService.externalPort,
-    // Audit Log
-    DEV_AUDIT_LOG_DB: services.auditLog.dbName,
-    DEV_AUDIT_LOG_PORT: services.auditLog.port,
-    DEV_AUDIT_LOG_EXTERNAL_PORT: services.auditLog.externalPort,
-    // data Hub
-    DEV_DATA_HUB_DB: services.dataHub.dbName,
-    DEV_DATA_HUB_PORT: services.dataHub.port,
-    DEV_DATA_HUB_EXTERNAL_PORT: services.dataHub.externalPort,
-    // Dispatcher Service
-    DEV_DISPATCHER_SERVICE_DB: services.dataHub.dbName,
-    DEV_DISPATCHER_SERVICE_PORT: services.dataHub.port,
-    DEV_DISPATCHER_SERVICE_EXTERNAL_PORT: services.dataHub.externalPort,
+    IP_FROM_MINIKUBE_TO_HOST: "",
+    DEV_IAM_TOKEN: "",
+    ...generateEnvs(services),
   },
   clusterName,
   kubernetesHost,

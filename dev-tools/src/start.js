@@ -1,9 +1,10 @@
 const { execSync, spawn } = require("child_process")
 const { devToolsRoot, env, dbRoot, services } = require("./config")
+const serviceAccounts = require("./data/service-accounts")
 const {
-  waitForIAM,
+  waitForStatus,
   waitForMongo,
-  getAccountToken,
+  login,
   checkTools,
   getMinikubeClusterIp,
 } = require("./helper")
@@ -43,7 +44,22 @@ process.on("SIGUSR2", exitHandler.bind(null))
 process.on("uncaughtException", exitHandler.bind(null))
 
 async function run() {
-  console.log(env)
+  execSync(`minikube start`, {
+    stdio: "inherit",
+  })
+
+  execSync(`minikube addons enable ingress`, {
+    stdio: "inherit",
+  })
+
+  execSync(`minikube addons enable dashboard`, {
+    stdio: "inherit",
+  })
+
+  execSync(`minikube addons enable metrics-server`, {
+    stdio: "inherit",
+  })
+
   execSync(`cd ${dbRoot} && docker-compose up -d`, {
     env: {
       ...process.env,
@@ -63,15 +79,18 @@ async function run() {
     stdio: "inherit",
   })
 
-  await waitForIAM()
+  const iamBase = `http://localhost:${services.iam.externalPort}`
 
-  // gererate service account token (IAM_TOKEN)
-  const serviceAccountToken = await getAccountToken(
-    services.iam.serviceUserName,
-    services.iam.servicePassword
+  await waitForStatus({ url: iamBase, status: 200 })
+
+  // obtain service account token from default service account (IAM_TOKEN)
+
+  const { username, password } = serviceAccounts.find(
+    (account) => account.firstname === "default"
   )
 
-  console.log(getMinikubeClusterIp())
+  const { token } = await login({ username, password })
+
   // start proxy to kubernetes cluster
 
   proxy = spawn("simpleproxy", [
@@ -81,17 +100,17 @@ async function run() {
     getMinikubeClusterIp().replace("https://", ""),
   ])
 
-  execSync(`cd ${devToolsRoot} && docker-compose up -V`, {
+  execSync(`cd ${devToolsRoot} && docker-compose up -V --remove-orphans`, {
     env: {
       ...process.env,
       ...env,
-      DEV_IAM_TOKEN: serviceAccountToken,
+      DEV_IAM_TOKEN: token,
     },
     stdio: "inherit",
   })
 }
 
-;(async () => {
+; (async () => {
   try {
     await run()
   } catch (err) {

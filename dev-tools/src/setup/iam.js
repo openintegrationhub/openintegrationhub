@@ -1,10 +1,13 @@
 const { execSync } = require("child_process")
 const fetch = require("node-fetch")
 const { dbRoot, devToolsRoot, env, services } = require("../config")
-const { checkTools, waitForMongo, waitForIAM } = require("../helper")
+const { checkTools, waitForMongo, waitForStatus, login } = require("../helper")
+const serviceAccounts = require("../data/service-accounts")
 const tenants = require("../data/tenants")
 
 const iamBase = `http://localhost:${services.iam.externalPort}`
+
+let response = null
 
 async function run() {
   checkTools(["docker-compose", "mongo"])
@@ -23,7 +26,7 @@ async function run() {
 
   waitForMongo()
 
-  execSync(`mongo ${services.iam.dbName} --eval "db.dropDatabase()"`, {
+  execSync(`mongo ${services.iam.db} --eval "db.dropDatabase()"`, {
     stdio: "inherit",
   })
 
@@ -35,50 +38,28 @@ async function run() {
     stdio: "inherit",
   })
 
-  await waitForIAM()
+  await waitForStatus({ url: iamBase, status: 200 })
 
-  // login with admin account
-  let response = await fetch(`${iamBase}/login`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: services.iam.adminUserName,
-      password: services.iam.adminPassword,
-    }),
+  const { token } = await login({
+    username: services.iam.adminUsername,
+    password: services.iam.adminPassword,
   })
 
-  if (response.status !== 200) {
-    throw new Error("Account missing")
+  for (const serviceAccount of serviceAccounts) {
+    response = await fetch(`${iamBase}/api/v1/users`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(serviceAccount),
+    })
+
+    if (response.status !== 200) {
+      throw new Error(response.status)
+    }
   }
-
-  const { token } = await response.json()
-
-  // create service account
-  response = await fetch(`${iamBase}/api/v1/users`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      username: services.iam.serviceUserName,
-      password: services.iam.servicePassword,
-      firstname: "a",
-      lastname: "b",
-      role: "SERVICE_ACCOUNT",
-      status: "ACTIVE",
-      permissions: ["all"],
-    }),
-  })
-
-  if (response.status !== 200) {
-    throw new Error(response.status)
-  }
-
   // add tenants and users
   for (const tenant of tenants) {
     const users = [...tenant.users]
@@ -121,7 +102,7 @@ async function run() {
   }
 }
 
-;(async () => {
+; (async () => {
   try {
     await run()
   } catch (err) {

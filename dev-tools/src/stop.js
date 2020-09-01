@@ -3,7 +3,7 @@ const path = require("path")
 const { devToolsRoot, env } = require("./config")
 const { checkTools } = require("./helper")
 
-checkTools(["docker-compose"])
+checkTools(["docker-compose", "minikube"])
 
 cp.execSync(`cd ${devToolsRoot} && docker-compose down`, {
   env: {
@@ -14,5 +14,9 @@ cp.execSync(`cd ${devToolsRoot} && docker-compose down`, {
 })
 
 cp.execSync(`cd ${path.resolve(__dirname, "../db")} && docker-compose down`, {
+  stdio: "inherit",
+})
+
+cp.execSync(`minikube stop`, {
   stdio: "inherit",
 })
