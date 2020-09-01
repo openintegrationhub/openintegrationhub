@@ -64,7 +64,8 @@ class RabbitMqManagementService {
         await this._client.putUser(username, userBody);
 
         const readRegex = `^flow-${flow.id}:`;
-        const writeRegex = `^(${backchannel}|flow-${flow.id})$`;
+        const writeRegex = `^(${backchannel}|flow-${flow.id}|component-events-collector)$`;
+        // component-events-collector refers to the exchange used for snapshots. May want to make this configurable
         const permissionsBody = {
             // https://www.rabbitmq.com/access-control.html
             // The regular expression '^$', i.e. matching nothing but the empty string,
@@ -96,7 +97,8 @@ class RabbitMqManagementService {
         await this._client.putUser(username, userBody);
 
         const readRegex = `^component-${component.id}:`;
-        const writeRegex = `^(${backchannel}|component-${component.id})$`;
+        const writeRegex = `^(${backchannel}|component-${component.id}|component-events-collector)$`;
+        // component-events-collector refers to the exchange used for snapshots. May want to make this configurable
         const permissionsBody = {
             // https://www.rabbitmq.com/access-control.html
             // The regular expression '^$', i.e. matching nothing but the empty string,
