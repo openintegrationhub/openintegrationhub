@@ -1,10 +1,10 @@
 {
   "name": "@openintegrationhub/ferryman",
   "description": "Wrapper utility for Open Integration Hub connectors",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "run.js",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint lib mocha_spec lib run.js runService.js --fix",
+    "lint": "./node_modules/.bin/eslint lib mocha_spec lib runGlobal.js runService.js --fix",
     "pretest": "npm run lint",
     "test": "npm run test:jasmine && npm run test:mocha",
     "test:jasmine": "NODE_ENV=test jasmine-node spec",
@@ -18,7 +18,6 @@
     "bunyan": "1.8.10",
     "co": "4.6.0",
     "debug": "3.1.0",
-    "elasticio-rest-node": "1.2.5",
     "event-to-promise": "0.8.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "4.17.15",
