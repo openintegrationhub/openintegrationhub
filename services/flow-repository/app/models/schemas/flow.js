@@ -1,5 +1,3 @@
-
-
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
@@ -66,7 +64,6 @@ const flow = new Schema({
   owners: { type: [owner] },
   status: { type: String, default: 'inactive' },
   cron: { type: String, maxlength: 20 },
-},
-{ collection: 'flows', timestamps: true });
+}, { collection: 'flows', timestamps: true });
 
 module.exports.flow = flow;

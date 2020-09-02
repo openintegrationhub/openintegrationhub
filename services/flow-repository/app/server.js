@@ -15,7 +15,6 @@ const startstop = require('./api/controllers/startstop');
 const healthcheck = require('./api/controllers/healthcheck');
 const swaggerDocument = require('./api/swagger/swagger.json');
 
-
 const log = require('./config/logger');
 
 class Server {
@@ -92,7 +91,7 @@ class Server {
     });
 
     // Error handling
-      this.app.use(function (err, req, res, next) { // eslint-disable-line
+    this.app.use(function (err, req, res, next) { // eslint-disable-line
       return res.status(err.status || 500).send({ errors: [{ message: err.message, code: err.status }] });
     });
 
@@ -125,22 +124,22 @@ class Server {
     log.info('adding swagger api');
     // Configure the Swagger-API
     /*eslint-disable */
-        var config = {
-          appRoot: __dirname, // required config
+    var config = {
+      appRoot: __dirname, // required config
 
-          // This is just here to stop Swagger from complaining, without actual functionality
+      // This is just here to stop Swagger from complaining, without actual functionality
 
-          swaggerSecurityHandlers: {
-            Bearer: function (req, authOrSecDef, scopesOrApiKey, cb) {
-              if (true) {
-                cb();
-              } else {
-                cb(new Error('access denied!'));
-              }
-            }
+      swaggerSecurityHandlers: {
+        Bearer: function (req, authOrSecDef, scopesOrApiKey, cb) {
+          if (true) {
+            cb();
+          } else {
+            cb(new Error('access denied!'));
           }
-        };
-        /* eslint-enable */
+        }
+      }
+    };
+    /* eslint-enable */
 
     this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
   }

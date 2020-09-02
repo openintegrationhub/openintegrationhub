@@ -3,7 +3,6 @@ const bformat = require('bunyan-format');
 
 const formatOut = bformat({ outputMode: 'long' /* , levelInString: true */ });
 
-
 const log = bunyan.createLogger({
   name: 'app',
   streams: [
@@ -28,21 +27,21 @@ const log = bunyan.createLogger({
 const fs = require('fs');
 
 /*eslint-disable */
-function exitHandler(options, exitCode){
+function exitHandler(options, exitCode) {
   console.log(options);
   console.log(exitCode);
-    if(options=='fatal') log.fatal(exitCode);
+  if (options == 'fatal') log.fatal(exitCode);
 
-    for (var s in log.streams) {
-      if(log.streams[s] && log.streams[s].stream) {
-        try{
-          log.streams[s].stream.end();
-        }catch(e){
-          console.log(e);
-        }
+  for (var s in log.streams) {
+    if (log.streams[s] && log.streams[s].stream) {
+      try {
+        log.streams[s].stream.end();
+      } catch (e) {
+        console.log(e);
       }
     }
-    fs.appendFileSync('error.log', '{status: "Process got terminated! Logging data might be incomplete",time: "'+Date.now()+'"}"\n');
+  }
+  fs.appendFileSync('error.log', '{status: "Process got terminated! Logging data might be incomplete",time: "' + Date.now() + '"}"\n');
 }
 /* eslint-enable */
 

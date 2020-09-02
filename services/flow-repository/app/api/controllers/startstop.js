@@ -19,7 +19,6 @@ const router = express.Router();
 
 const log = require('../../config/logger'); // eslint-disable-line
 
-
 // Start a flow
 router.post('/:id/start', jsonParser, can(config.flowControlPermission), async (req, res) => {
   const flowId = req.params.id;
@@ -71,7 +70,6 @@ router.post('/:id/stop', jsonParser, can(config.flowControlPermission), async (r
 
   const flow = await storage.stoppingFlow(req.user, flowId);
 
-
   const ev = {
     headers: {
       name: 'flow.stopping',
@@ -82,6 +80,5 @@ router.post('/:id/stop', jsonParser, can(config.flowControlPermission), async (r
   await publishQueue(ev);
   return res.status(200).send({ data: { id: flow.id, status: flow.status }, meta: {} });
 });
-
 
 module.exports = router;

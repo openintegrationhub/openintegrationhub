@@ -52,7 +52,6 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
     pageNumber = parseInt(req.query.page.number, 10);
   }
 
-
   // filter[status] 1 0
   if (req.query.filter && req.query.filter.status !== undefined) {
     if (req.query.filter.status === '1') {
@@ -113,7 +112,6 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
     return res.status(404).send({ errors: [{ message: 'No flows found', code: 404 }] });
   }
 
-
   response.meta.page = pageNumber;
   response.meta.perPage = pageSize;
   response.meta.totalPages = Math.ceil(response.meta.total / pageSize);
@@ -128,7 +126,7 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
   if (!newFlow.owners) {
     newFlow.owners = [];
   }
-  if (newFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+  if (newFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     newFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 
@@ -189,7 +187,7 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
   if (!updateFlow.owners) {
     updateFlow.owners = [];
   }
-  if (updateFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+  if (updateFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     updateFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 
@@ -242,7 +240,6 @@ router.get('/:id', jsonParser, can(config.flowReadPermission), async (req, res) 
     res.status(200).send(response);
   }
 });
-
 
 // Deletes a flow
 router.delete('/:id', can(config.flowWritePermission), jsonParser, async (req, res) => {

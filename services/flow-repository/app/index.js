@@ -27,5 +27,4 @@ const mainServer = new Server();
   }
 })();
 
-
 module.exports = mainServer;
