@@ -269,10 +269,10 @@ class KubernetesDriver extends BaseDriver {
         envVars.ATTACHMENT_STORAGE_SERVICE_BASE_URL = this._config.get('ATTACHMENT_STORAGE_SERVICE_BASE_URL').replace(/\/$/, '');
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
 
-        // if running from host use cluster internal references instead
-        if (this._config.get('RUNNING_ON_HOST') === 'true') {
-            envVars.SNAPSHOTS_SERVICE_BASE_URL = 'http://snapshots-service.oih-dev-ns.svc.cluster.local:1234';
-        }
+        // // if running from host use cluster internal references instead
+        // if (this._config.get('RUNNING_ON_HOST') === 'true') {
+        //     envVars.SNAPSHOTS_SERVICE_BASE_URL = 'http://snapshots-service.oih-dev-ns.svc.cluster.local:1234';
+        // }
 
         envVars = Object.entries(envVars).reduce((env, [k, v]) => {
             env[`${ENV_PREFIX}${k}`] = v;

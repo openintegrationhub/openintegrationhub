@@ -54,7 +54,7 @@ async function getTargets(sourceFlow, operation) {
   // Find source, get its schema, then discard it for further processing
   for (let i = 0; i < applications.length; i += 1) {
     const app = applications[i];
-    const found = app.outbound.flows.find(flow => flow.flowId === sourceFlow);
+    const found = app.outbound.flows.find((flow) => flow.flowId === sourceFlow);
     if (found) {
       schemaUri = found.schemaUri;  //eslint-disable-line
       applications.splice(i, 1);
@@ -82,12 +82,10 @@ async function createDispatches(targets, payload) {
   const newPayload = payload;
   let refs;
 
-
   if (newPayload.meta.refs) {
     refs = payload.meta.refs;  // eslint-disable-line
     delete newPayload.meta.refs;
   }
-
 
   for (let i = 0; i < targets.length; i += 1) {
     const targetPayload = lodash.cloneDeep(newPayload);
@@ -96,10 +94,10 @@ async function createDispatches(targets, payload) {
     targetPayload.meta.applicationUid = targets[i].applicationUid;
 
     if (refs) {
-      const currentRef = refs.find(element => element.applicationUid === targets[i].applicationUid);
+      const ref = refs.find((element) => element.applicationUid === targets[i].applicationUid);
 
-      if (currentRef) {
-        targetPayload.meta.recordUid = currentRef.recordUid;
+      if (ref) {
+        targetPayload.meta.recordUid = ref.recordUid;
       }
     }
 
@@ -113,6 +111,5 @@ async function createDispatches(targets, payload) {
   }
   return evs;
 }
-
 
 module.exports = { createDispatches, getTargets, checkFlows };

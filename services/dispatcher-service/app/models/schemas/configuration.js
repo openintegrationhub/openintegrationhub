@@ -1,5 +1,3 @@
-
-
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
@@ -54,8 +52,6 @@ const configuration = new Schema({
   name: String,
   dataModel: String,
   applications: [appSchema],
-},
-{ collection: 'configurations', timestamps: true });
-
+}, { collection: 'configurations', timestamps: true });
 
 module.exports.configuration = configuration;

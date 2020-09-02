@@ -40,6 +40,7 @@ afterAll(async () => {
 describe('Documentation', () => {
   test('should display the swagger-generated HTML page', async () => {
     const res = await request.get('/api-docs/');
+    expect(true).toBe(true);
     expect(res.text).not.toHaveLength(0);
     expect(res.text).toMatch(/HTML for static distribution bundle build/);
   });
@@ -129,7 +130,6 @@ describe('API', () => {
       },
     },
   ];
-
 
   test('should post a new configuration', async () => {
     for (let i = 0; i < 7; i += 1) {
@@ -367,7 +367,6 @@ describe('API', () => {
     nock('http://localhost:3001/flows/PatchFlow')
       .delete('')
       .reply(200);
-
 
     const res = await request
       .delete(`/dispatches/${configId}`)

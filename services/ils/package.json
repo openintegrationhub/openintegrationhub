@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node app/index.js",
     "start-dev": "nodemon app/index.js",
+    "start:compose": "nodemon app/index.js",
     "pretest": "eslint app test --ext .js --ext .json",
     "test": "jest --runInBand",
     "test-watch": "nodemon --exec \"npm test\"",

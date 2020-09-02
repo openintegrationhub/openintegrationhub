@@ -9,6 +9,7 @@
     "start": "node index.js",
     "start:nodemon": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
     "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
+    "start:compose": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
     "test": "echo \"noop\"",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/secret-service:${VERSION} -f Dockerfile ."

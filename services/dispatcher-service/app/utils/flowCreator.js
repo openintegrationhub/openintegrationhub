@@ -18,7 +18,6 @@ const {
   deleteOperation,
 } = require('../config');
 
-
 function makeFlow(app, flow) {
   const newFlow = {
     description: 'This flow was automatically generated',
@@ -253,19 +252,17 @@ function getFlowIds(applications) {
   }
 }
 
-
 async function deleteFlows(applications, token) {
   const flowIds = getFlowIds(applications);
   await deleteFlowsById(flowIds, token);
 }
-
 
 async function updateConfigFlows(original, incoming, token) {
   const newConfig = lodash.cloneDeep(incoming);
   const oldFlowIds = getFlowIds(original.applications);
   const newFlowIds = getFlowIds(incoming.applications);
 
-  const deletedFlows = oldFlowIds.filter(uid => !newFlowIds.includes(uid));
+  const deletedFlows = oldFlowIds.filter((uid) => !newFlowIds.includes(uid));
 
   newConfig.applications = await createFlows(newConfig.applications, token);
   await deleteFlowsById(deletedFlows);

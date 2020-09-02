@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app/index.js",
+    "start:compose": "nodemon app/index.js",
     "pretest": "eslint app test --ext .js --ext .json",
     "test": "jest --runInBand",
     "lint_fix": "eslint app test --fix",
@@ -39,6 +40,7 @@
     "jest-environment-node": "^24.7.1",
     "mongodb-memory-server": "^6.6.1",
     "nock": "11.3.3",
+    "nodemon": "2.0.4",
     "supertest": "^3.1.0"
   },
   "author": "Wice GmbH",

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app/index.js",
+    "start:compose": "nodemon  app/index.js --watch ./app",
     "pretest": "eslint app test --ext .js --ext .json",
     "test": "jest --runInBand",
     "lint_fix": "eslint app test --fix",
@@ -42,6 +43,7 @@
     "mongod": "^2.0.0",
     "mongodb": "^3.5.9",
     "mongodb-memory-server": "^6.6.1",
+    "nodemon": "2.0.4",
     "path": "^0.12.7",
     "supertest": "^4.0.2"
   },

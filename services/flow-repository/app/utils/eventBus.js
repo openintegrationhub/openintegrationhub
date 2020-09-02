@@ -10,7 +10,6 @@ const storage = require(`../api/controllers/${config.storage}`); // eslint-disab
 
 let eventBus;
 
-
 async function connectQueue() {
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'flow-repository' });
@@ -48,7 +47,6 @@ async function connectQueue() {
     }
   });
 
-
   await eventBus.connect();
 }
 
@@ -62,7 +60,6 @@ async function publishQueue(ev) {
   }
 }
 
-
 async function disconnectQueue() {
   await eventBus.disconnect();
 }
@@ -70,7 +67,6 @@ async function disconnectQueue() {
 async function reportHealth() {
   return (eventBus._connected); // eslint-disable-line
 }
-
 
 module.exports = {
   connectQueue, publishQueue, disconnectQueue, reportHealth,

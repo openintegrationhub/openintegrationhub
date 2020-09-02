@@ -7,7 +7,6 @@ const auditLog = Logger.getAuditLogger('key');
 const Key = require('./../models/key');
 
 const KeyDAO = {
-
     async findByTenant(tenant) {
         const key = await Key.findOne({ tenant }).lean();
         return (key && key.value) || null;
@@ -25,7 +24,6 @@ const KeyDAO = {
         log.debug('deleted.key for tenant ', { tenant });
         auditLog.info('deleted.key for tenant ', { data: { tenant } });
     },
-
 };
 
 module.exports = KeyDAO;

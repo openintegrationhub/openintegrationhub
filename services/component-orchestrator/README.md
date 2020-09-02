@@ -12,10 +12,25 @@ Visit the official [Open Integration Hub homepage](https://www.openintegrationhu
 
 Orchestrates the flow's lifecycle. It creates queues in RabbitMQ and deploys Docker containers for each flow node on flow creation and cleans up deployments and secrets on flow deletion.
 
+## Local Components vs global components
+
+In addition to ***local components***, that will be distinctly deployed for each step in a flow now we have a second type: A component, that holds the property
+```json
+{ "isGlobal": true }
+```
+is considered as ***global component***. This leads to different characteristics. A global component
+
+- needs to be started / stopped manually
+- will be deployed just once
+- could be connected to any flow
+
+Compared to the "old fashioned way" of spawning ***local components*** one could share resources inside a cluster more efficiently or reduce costs of maintenance.
+
 ## How it works
 
 The application works in a loop. During each loop iteration it makes sure, that all nodes for each flow have been deployed and asserts RabbitMQ queues and RabbitMQ user for each node.
-If a flow has been deleted, the application removes the corresponding containers and RabbitMQ queues and RabbitMQ user.
+
+If a flow has been deleted, the application removes the corresponding containers and RabbitMQ queues and RabbitMQ user. ***Global components*** will not be affected.
 
 ### Handling flow updates
 
@@ -40,19 +55,17 @@ This service requires a service account with the following permissions:
 ```docker
 docker build -t openintegrationhub/component-orchestrator:latest -f Dockerfile ../../
 ```
-
 or
-
-```npm
-VERSION=latest npm run build:docker
+```yarn
+VERSION=latest yarn build:docker
 ```
-
 ## How to deploy
 
 Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 
 ``` console
 cd platform
+
 kubectl apply -f ./k8s
 ```
 
@@ -73,6 +86,7 @@ kubectl apply -f ./k8s
 | RABBITMQ_URI_FLOWS | RabbitMQ connection URI for node containers. |
 | SECRET_SERVICE_BASE_URL | Base URL of the Secrets service. |
 | SELF_API_URI | URI to the current application. This API is called then from the inside of node containers. |
+| ATTACHMENT_STORAGE_SERVICE_BASE_URL | Base URL of the Attachment Storage. |
 | SNAPSHOTS_SERVICE_BASE_URL | Base URL of the Snapshots service. |
 | TICK_INTERVAL | Main loop interval. |
 
@@ -85,3 +99,4 @@ kubectl apply -f ./k8s
 | DEFAULT_CPU_REQUEST | Default cpu request for a flow's node container. |
 | DEFAULT_MEM_REQUEST | Default memory request for a flow's node container. |
 | NAMESPACE | Kubernetes namespace, where flow's nodes will be deployed. |
+| KUBERNETES_IMAGE_PULL_POLICY | Kubernetes pull policy for all deployment images. |
