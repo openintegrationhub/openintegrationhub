@@ -1,6 +1,7 @@
 module.exports = {
   rules: {
     'no-console': 'off',
+    "no-async-promise-executor": 0
   },
   env: {
     es6: true,

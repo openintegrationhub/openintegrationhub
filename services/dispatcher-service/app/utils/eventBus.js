@@ -20,7 +20,6 @@ async function publishQueue(ev) {
   }
 }
 
-
 async function connectQueue() {
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'dispatcher-service' });
@@ -115,7 +114,6 @@ async function connectQueue() {
     return event.ack();
   });
 
-
   await eventBus.connect();
 }
 
@@ -158,7 +156,7 @@ async function createDummyQueues(keys) {
           serviceName: 'sdf-adapter',
         });
 
-        await dummyEventBus.subscribe(keys[i], async () => {});
+        await dummyEventBus.subscribe(keys[i], async () => { });
         await dummyEventBus.connect();
         dummyQueues.push(dummyEventBus);
       } catch (e) {
@@ -168,7 +166,6 @@ async function createDummyQueues(keys) {
     setTimeout(async () => { await disconnectDummies(dummyQueues); }, 50);
   }
 }
-
 
 module.exports = {
   connectQueue, disconnectQueue, reportHealth, createDummyQueues, disconnectDummies,

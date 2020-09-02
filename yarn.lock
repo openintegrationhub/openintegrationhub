@@ -8071,16 +8071,6 @@ elasticio-node@0.0.7:
     stream-counter "1.0.0"
     underscore "1.5.1"
 
-elasticio-rest-node@1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/elasticio-rest-node/-/elasticio-rest-node-1.2.5.tgz#64446ee312bf66435b231450bbab4ee2ce4f5b01"
-  integrity sha512-aLrUBMMgjEzsz0pzxxDYAx3mjtL2gC8Hybsn91lKh2fOQrXe/3+uw88jumZR/QZnsJS/pjAIxrom9Ks26Dms+A==
-  dependencies:
-    lodash "4.17.15"
-    q "1.5.1"
-    request "2.88.2"
-    requestretry "4.1.0"
-
 electron-to-chromium@^1.3.191, electron-to-chromium@^1.3.247:
   version "1.3.260"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.260.tgz#ffd686b4810bab0e1a428e7af5f08c21fe7c1fa2"
@@ -20064,7 +20054,7 @@ q@1.4.1:
   resolved "https://registry.yarnpkg.com/q/-/q-1.4.1.tgz#55705bcd93c5f3673530c2c2cbc0c2b3addc286e"
   integrity sha1-VXBbzZPF82c1MMLCy8DCs63cKG4=
 
-q@1.5.1, q@^1.1.2, q@^1.4.1, q@^1.5.1:
+q@^1.1.2, q@^1.4.1, q@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
   integrity sha1-fjL3W0E4EpHQRhHxvxQQmsAGUdc=
@@ -21214,15 +21204,6 @@ requestretry@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/requestretry/-/requestretry-3.1.0.tgz#c8e1976bb946f14889d3604bbad56a01d191c10d"
   integrity sha512-DkvCPK6qvwxIuVA5TRCvi626WHC2rWjF/n7SCQvVHAr2JX9i1/cmIpSEZlmHAo+c1bj9rjaKoZ9IsKwCpTkoXA==
-  dependencies:
-    extend "^3.0.2"
-    lodash "^4.17.10"
-    when "^3.7.7"
-
-requestretry@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/requestretry/-/requestretry-4.1.0.tgz#7e8a2247c7d58726d3efb5d25bb1915bca8f0be3"
-  integrity sha512-q3IT2vz5vkcMT6xgwB/BWzsmnu7N/27l9fW86U48gt9Mwrce5rSEyFvpAW7Il1/B78/NBUlYBvcCY1RzWUWy7w==
   dependencies:
     extend "^3.0.2"
     lodash "^4.17.10"
