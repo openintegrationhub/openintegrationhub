@@ -27,7 +27,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -56,7 +56,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -82,7 +82,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -108,7 +108,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -139,7 +139,7 @@ services:
       DEFAULT_MEM_REQUEST: 64Mi
       NAMESPACE: flows
       TICK_INTERVAL: 10000
-      RUNNING_ON_HOST: "true"
+      KUBE_CONFIG: ../../dev-tools/docker-compose/src/setup/.kube/config
       LISTEN_PORT: ${DEV_COMPONENT_ORCHESTRATOR_PORT}
     ports:
       - ${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}:${DEV_COMPONENT_ORCHESTRATOR_PORT}
@@ -150,7 +150,7 @@ services:
     entrypoint:
       - /bin/sh
       - -c
-      - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" | tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator && yarn start:compose
+      - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" | tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator && yarn start:container
     networks:
       - oih-dev
 
@@ -178,7 +178,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -197,7 +197,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -222,7 +222,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -245,7 +245,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -271,7 +271,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -296,7 +296,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -318,7 +318,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -345,7 +345,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -369,7 +369,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -394,7 +394,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 
@@ -419,7 +419,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:compose
+    command: yarn start:container
     networks:
       - oih-dev
 networks:
