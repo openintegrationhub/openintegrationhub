@@ -7,7 +7,7 @@ const clusterName = 'minikube'
 
 const kubernetesHost = 'https://host.docker.internal:9090'
 
-const repositoryRoot = path.resolve(__dirname, '../../')
+const repositoryRoot = path.resolve(__dirname, '../../../')
 const devToolsRoot = path.resolve(__dirname, '../')
 const dbRoot = path.resolve(__dirname, '../db')
 const kubeConfigPath = path.resolve(homedir(), '.kube/config')
