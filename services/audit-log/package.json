@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app/index.js",
-    "start:compose": "nodemon  app/index.js --watch ./app",
+    "start:container": "nodemon  app/index.js --watch ./app",
     "pretest": "eslint app test --ext .js --ext .json",
     "test": "jest --runInBand",
     "lint_fix": "eslint app test --fix",

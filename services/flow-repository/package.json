@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app/index.js",
     "start:nodemon": "NODE_ENV=development nodemon -r dotenv/config app/index.js --watch app/ | bunyan",
-    "start:compose": "nodemon -r dotenv/config app/index.js --watch app/ | bunyan",
+    "start:container": "nodemon -r dotenv/config app/index.js --watch app/ | bunyan",
     "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
     "pretest": "eslint app test --ext .js --ext .json",
     "test": "jest --runInBand",
