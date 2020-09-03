@@ -27,7 +27,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -56,7 +56,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -82,7 +82,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -108,7 +108,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -128,18 +128,17 @@ services:
       COMPONENT_REPOSITORY_BASE_URL:
       SECRETS_SERVICE_BASE_URL:
       SNAPSHOTS_SERVICE_BASE_URL:
-      SELF_URL: http://${IP_FROM_MINIKUBE_TO_HOST}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
-      SELF_API_URI: http://${IP_FROM_MINIKUBE_TO_HOST}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
+      SELF_URL: http://${MINIKUBE_HOST_IP}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
+      SELF_API_URI: http://${MINIKUBE_HOST_IP}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       RABBITMQ_MANAGEMENT_URI: http://guest:guest@rabbitmq:15672
-      RABBITMQ_URI_FLOWS: amqp://${IP_FROM_MINIKUBE_TO_HOST}
+      RABBITMQ_URI_FLOWS: amqp://${MINIKUBE_HOST_IP}:5672
       DEFAULT_CPU_LIMIT: 100m
       DEFAULT_MEM_LIMIT: 256Mi
       DEFAULT_CPU_REQUEST: 100m
       DEFAULT_MEM_REQUEST: 64Mi
       NAMESPACE: flows
       TICK_INTERVAL: 10000
-      KUBERNETES_IMAGE_PULL_POLICY: Always
       RUNNING_ON_HOST: "true"
       LISTEN_PORT: ${DEV_COMPONENT_ORCHESTRATOR_PORT}
     ports:
@@ -151,7 +150,7 @@ services:
     entrypoint:
       - /bin/sh
       - -c
-      - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" | tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator && yarn start:container
+      - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" | tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator && yarn start:compose
     networks:
       - oih-dev
 
@@ -179,7 +178,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -198,7 +197,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -223,7 +222,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -246,7 +245,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -272,7 +271,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -297,7 +296,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -319,7 +318,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -346,7 +345,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -370,7 +369,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -395,7 +394,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 
@@ -420,7 +419,7 @@ services:
       - type: bind
         source: ${HOST_REPOSITORY_ROOT}
         target: /usr/src/app
-    command: yarn start:container
+    command: yarn start:compose
     networks:
       - oih-dev
 networks:
