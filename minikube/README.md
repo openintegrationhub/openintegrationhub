@@ -9,7 +9,7 @@ Visit the official [Open Integration Hub homepage](https://www.openintegrationhu
 
 # Local Installation Guide
 
-![linux](https://img.shields.io/badge/Linux-red.svg) ![Windows](https://img.shields.io/badge/Windows-blue.svg)
+![linux](https://img.shields.io/badge/Linux-red.svg) ![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg)
 
 In addition to setting up the Open Integration Hub on a cloud infrastructure such as GCP it is also possible to setup a local version of the framework. Make sure to perform the following to set up a local version of the OIH within your own minikube:
 
@@ -77,10 +77,22 @@ For further information about how to set up minikube, see here:
 - [Install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 - [Installing Kubernetes with Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/)
 
-![Windows](https://img.shields.io/badge/Windows-blue.svg)
+<div style="border-width:1px;border-style:solid;">
 
-|If you're using Docker for Windows it overwrites the acutal kubectl version. In order to fix this download the `kubectl.exe` from [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows). Navigate to the docker directory (e.g. Program Files\Docker\Docker\resources\bin) andreplace the kubectl.exe in this folder with the one you just downloaded.|
-|---|
+![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg)
+
+If you're using Docker for Desktop it overwrites the acutal kubectl version. THis version is generally not compatible with minikube. There are two options to correct this:
+- Download the `kubectl.exe` from [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows). Navigate to the docker directory (e.g. Program Files\Docker\Docker\resources\bin) andreplace the kubectl.exe in this folder with the one you just downloaded.
+- Use the "Edge" version of Docker Desktop. This can be done by installing the edge version of the application from the [Docker Desktop site](https://docs.docker.com/desktop/). If you already have Docker Desktop installed, you can switch to the Edge version from the Docker menu. Select **Preferences > Command Line** and then activate the **Enable experimental features** toggle. After selecting **Apply & Restart**, Docker will update versions. More information can be found [here](https://docs.docker.com/docker-for-mac/install/#switch-between-stable-and-edge-versions).
+</div>
+<p>
+<div style="border-width:1px;border-style:solid;">
+
+![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg)
+
+The OIH Framework requires the *ingress* addon for kubernetes. This is not supported via Docker Bridge for Mac and Windows. Therefore, on these Operating Systems, minikube must be started with the flag `--vm=true`. This is handled in the setup script. More information can be found on the [minikube Github page](https://github.com/kubernetes/minikube/issues/7332).
+</div>
+<p>
 
 ## Basic Open Integration Hub Infrastructure Setup
 

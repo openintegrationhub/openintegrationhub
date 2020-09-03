@@ -842,7 +842,7 @@ describe('Flow Operations', () => {
 
     const flow = await Flow.findOne({ _id: flowId1 }).lean();
     expect(flow.owners).toHaveLength(1);
-    expect(flow.owners.find((owner) => (owner.id === 'dude'))).toEqual(undefined);
+    expect(flow.owners.find(owner => (owner.id === 'dude'))).toEqual(undefined);
   });
 
   test('should refuse to stop an inactive flow', async () => {

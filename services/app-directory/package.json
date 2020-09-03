@@ -11,7 +11,7 @@
     "test": "jest --silent=false --runInBand --forceExit",
     "lint": "eslint --fix src/",
     "watch": "nodemon src/index.js",
-    "start:compose": "nodemon src/index.js --watch src/",
+    "start:container": "nodemon src/index.js --watch src/",
     "build:docker": "docker build -t openintegrationhub/app-directory:${VERSION} -f Dockerfile .",
     "coverage": "yarn test --coverage"
   },

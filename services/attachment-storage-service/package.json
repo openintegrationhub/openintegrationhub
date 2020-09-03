@@ -12,7 +12,7 @@
   "scripts": {
     "start": "node ./dist/app.js",
     "start:dev": "NODE_ENV=development ts-node-dev ./src/app.ts | bunyan",
-    "start:compose": "ts-node-dev ./src/app.ts --watch ../../lib/attachment-storage-service | bunyan",
+    "start:container": "ts-node-dev ./src/app.ts --watch ../../lib/attachment-storage-service | bunyan",
     "test": "NODE_ENV=test node --max-old-space-size=3071 node_modules/.bin/_mocha --exit --require ts-node/register --require mocha-steps 'spec/**/*.spec.ts'",
     "test:watch": "npm run test -- --watch-extensions 'ts,js,json' -w || reset",
     "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts .",
