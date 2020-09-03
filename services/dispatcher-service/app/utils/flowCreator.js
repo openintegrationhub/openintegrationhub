@@ -262,7 +262,7 @@ async function updateConfigFlows(original, incoming, token) {
   const oldFlowIds = getFlowIds(original.applications);
   const newFlowIds = getFlowIds(incoming.applications);
 
-  const deletedFlows = oldFlowIds.filter((uid) => !newFlowIds.includes(uid));
+  const deletedFlows = oldFlowIds.filter(uid => !newFlowIds.includes(uid));
 
   newConfig.applications = await createFlows(newConfig.applications, token);
   await deleteFlowsById(deletedFlows);
