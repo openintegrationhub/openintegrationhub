@@ -7,6 +7,7 @@ const {
   login,
   checkTools,
   getMinikubeClusterIp,
+  getMinikubeInternalIp,
 } = require('./helper')
 
 checkTools([
@@ -93,8 +94,8 @@ async function run() {
 
   // start proxy to kubernetes cluster
 
-  const clusterIpPort = getMinikubeClusterIp().replace('https://', '')
-  const minikubeHostIp = clusterIpPort.replace(/[0-9]+:[0-9]+$/, '1')
+  const clusterIpPort = getMinikubeClusterIp()
+  const minikubeHostIp = getMinikubeInternalIp()
 
   proxy = spawn('simpleproxy', ['-L', '9090', '-R', clusterIpPort])
 
@@ -109,7 +110,7 @@ async function run() {
   })
 }
 
-;(async () => {
+; (async () => {
   try {
     await run()
   } catch (err) {

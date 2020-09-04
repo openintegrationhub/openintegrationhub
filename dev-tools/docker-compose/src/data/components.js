@@ -2,7 +2,7 @@ module.exports = [
   {
     distribution: {
       type: 'docker',
-      image: 'oih/connector:latest',
+      image: 'openintegrationhub/dev-connector:latest',
     },
     isGlobal: true,
     access: 'public',
@@ -10,7 +10,6 @@ module.exports = [
     description: 'A component just for testing',
     descriptor: {
       replicas: 1,
-      imagePullPolicy: 'Never',
     },
     owners: [
       {

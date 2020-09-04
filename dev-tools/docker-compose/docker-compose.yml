@@ -11,7 +11,7 @@ services:
       IAM_MONGODB_CONNECTION: mongodb://mongodb/${DEV_IAM_DB}
       IAM_AUTH_TYPE: basic
       IAM_DEBUG: "true"
-      IAM_BASEURL: http://iam:${DEV_IAM_PORT}
+      IAM_BASEURL: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}
       IAM_ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       IAM_JWT_SECRET: secret
       IAM_SESSION_COOKIE_SECRET: secret
@@ -40,11 +40,11 @@ services:
       LOGGING_LEVEL: info
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_SECRET_SERVICE_DB}
       TTL_AUTHFLOW: 2m
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_API_BASE: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       API_BASE: /api/v1
       DEBUG_MODE: "true"
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
@@ -68,11 +68,11 @@ services:
       NODE_ENV: development
       LOG_LEVEL: info
       MONGODB_URI: mongodb://mongodb/${DEV_COMPONENT_REPOSITORY_DB}
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_API_BASE: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       PORT: ${DEV_COMPONENT_REPOSITORY_PORT}
@@ -94,11 +94,11 @@ services:
       NODE_ENV: development
       LOG_LEVEL: info
       MONGODB_URI: mongodb://mongodb/${DEV_SNAPSHOTS_SERVICE_DB}
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_API_BASE: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       PORT: ${DEV_SNAPSHOTS_SERVICE_PORT}
@@ -120,19 +120,23 @@ services:
       NODE_ENV: development
       LOG_LEVEL: info
       MONGODB_URI: mongodb://mongodb/${DEV_COMPONENT_ORCHESTRATOR_DB}
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_BASE_URL: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
-      COMPONENT_REPOSITORY_BASE_URL:
-      SECRETS_SERVICE_BASE_URL:
-      SNAPSHOTS_SERVICE_BASE_URL:
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
+      COMPONENT_REPOSITORY_BASE_URL: http://${DEV_COMPONENT_REPOSITORY_CONTAINER}:${DEV_COMPONENT_REPOSITORY_PORT}
+
+      ### kuberneted pod -> minikube host
+      SECRETS_SERVICE_BASE_URL: http://${MINIKUBE_HOST_IP}:${DEV_SECRET_SERVICE_EXTERNAL_PORT}/api/v1
+      SNAPSHOTS_SERVICE_BASE_URL: http://${MINIKUBE_HOST_IP}:${DEV_SNAPSHOTS_SERVICE_EXTERNAL_PORT}
       SELF_URL: http://${MINIKUBE_HOST_IP}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
       SELF_API_URI: http://${MINIKUBE_HOST_IP}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
+      RABBITMQ_URI_FLOWS: amqp://${MINIKUBE_HOST_IP}:5672
+      ###
+
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       RABBITMQ_MANAGEMENT_URI: http://guest:guest@rabbitmq:15672
-      RABBITMQ_URI_FLOWS: amqp://${MINIKUBE_HOST_IP}:5672
       DEFAULT_CPU_LIMIT: 100m
       DEFAULT_MEM_LIMIT: 256Mi
       DEFAULT_CPU_REQUEST: 100m
@@ -163,11 +167,11 @@ services:
       LOGGING_LEVEL: info
       DEBUG_MODE: "true"
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_APP_DIRECTORY_DB}
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_API_BASE: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       API_BASE: /api/v1
@@ -213,8 +217,8 @@ services:
       EXCHANGE_TOPIC: logs
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_AUDIT_LOG_PORT}
     ports:
       - ${DEV_AUDIT_LOG_EXTERNAL_PORT}:${DEV_AUDIT_LOG_PORT}
@@ -236,8 +240,8 @@ services:
       LOG_LEVEL: trace
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_DATA_HUB_PORT}
     ports:
       - ${DEV_DATA_HUB_EXTERNAL_PORT}:${DEV_DATA_HUB_PORT}
@@ -259,8 +263,8 @@ services:
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       FLOW_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       QUEUE_URL: amqp://guest:guest@rabbitmq
       FLOWREPO_URL: http://localhost:${DEV_FLOW_REPOSITORY_EXTERNAL_PORT}
       SDF_ID: ReplaceMe
@@ -286,8 +290,8 @@ services:
       QUEUE_URL: amqp://guest:guest@rabbitmq
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_FLOW_REPOSITORY_PORT}
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
     ports:
@@ -309,8 +313,8 @@ services:
       MONGODB_URL: mongodb://mongodb/${DEV_ILS_DB}
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_ILS_PORT}
     ports:
       - ${DEV_ILS_EXTERNAL_PORT}:${DEV_ILS_PORT}
@@ -334,8 +338,8 @@ services:
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_META_DATA_REPOSITORY_DB}
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       PORT: ${DEV_META_DATA_REPOSITORY_PORT}
@@ -360,8 +364,8 @@ services:
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_SCHEDULER_PORT}
     ports:
       - ${DEV_SCHEDULER_EXTERNAL_PORT}:${DEV_SCHEDULER_PORT}
@@ -384,10 +388,10 @@ services:
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_CONTAINER}:${DEV_IAM_PORT}/op/userinfo
       CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
-      PORT: ${DEV_WEBHOOKS_PORT}
+      LISTEN_PORT: ${DEV_WEBHOOKS_PORT}
     ports:
       - ${DEV_WEBHOOKS_EXTERNAL_PORT}:${DEV_WEBHOOKS_PORT}
     volumes:

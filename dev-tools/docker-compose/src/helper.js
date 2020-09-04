@@ -99,7 +99,11 @@ module.exports = {
       (item) => item.name === clusterName
     )[0]
 
-    return minikubeConfig.cluster.server
+    return minikubeConfig.cluster.server.replace('https://', '')
+  },
+
+  getMinikubeInternalIp() {
+    return module.exports.getMinikubeClusterIp().replace(/[0-9]+:[0-9]+$/, '1')
   },
 
   checkTools(tools = []) {

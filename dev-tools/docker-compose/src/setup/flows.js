@@ -16,7 +16,13 @@ const componentsCache = {}
 async function run() {
   checkTools(['docker-compose', 'mongo'])
 
-  await setupMinimal([services.componentRepository, services.flowRepository])
+  await setupMinimal([
+    services.componentRepository,
+    services.flowRepository,
+    services.scheduler,
+    services.webhooks,
+    services.componentOrchestrator,
+  ])
 
   await waitForStatus({
     url: `${componentRepositoryBase}/components`,
@@ -104,7 +110,7 @@ async function run() {
   }
 }
 
-;(async () => {
+; (async () => {
   try {
     await run()
   } catch (err) {
