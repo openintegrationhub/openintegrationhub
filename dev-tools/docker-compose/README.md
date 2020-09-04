@@ -42,26 +42,39 @@ node packages/install
 
 ## 2. Start development
 
-Setup initial state
+Start with initial state
 
 ```bash
-node setup/minikube && node setup/kubernetes && node setup/iam && node setup/flows
+node setup/minikube && node setup/kubernetes && node setup/iam && node setup/flows && node start
 ```
 
-Start services
-
-```bash
-node start
-```
-
-Now if everything is started up successfully you can visit the frontend with
+If everything started up successfully you can visit the frontend with
 
 http://localhost:3000/
 
-and log in as user
-<mark>admin@openintegrationhub.com</mark> with password <mark>somestring</mark>
+and log in as default admin user
+"admin@openintegrationhub.com"/"somestring"
+## 3. Monitoring
 
-## 3. Testing
+In addition to the frontend, there are other monitoring tools available.
+
+### Minikube dashboard
+
+Run
+
+```bash
+minikube dashboard
+```
+
+to open Minikube Kubernetes Dashboard. Here you will find all details about deployments within the "flows" namespace.
+
+
+### RabbitMQ Web Interface
+
+Just navigate to http://localhost:15672/ and log in with "guest"/"guest" to get details about the underlying message queue.
+
+
+## 4. Testing
 
 Run tests for all libs/services
 
@@ -79,8 +92,7 @@ node test services/component-orchestrator
 node test lib/iam-utils
 ```
 
-
-## 3. Stop development
+## 5. Stop development
 
 Hit **ctrl+c** to exit process and run
 
