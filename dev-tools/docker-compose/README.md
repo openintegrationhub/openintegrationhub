@@ -35,12 +35,21 @@ Install the required packages. (Keep in mind, that those packages will be instal
 node packages/install
 ```
 
+<mark>Make sure, your firewall allows tcp traffic for </mark>
+- 3000+ (services port range)
+- 5672 (rabbitMQ)
+- 9090 (proxy to kubernetes cluster)
+
+```bash
+node packages/install
+```
+
 ## 2. Start development
 
 Setup initial state
 
 ```bash
-node setup/minikube && node setup/kubernetes && node setup/iam && node setup/component-repository
+node setup/minikube && node setup/kubernetes && node setup/iam && node setup/flows
 ```
 
 Start services
