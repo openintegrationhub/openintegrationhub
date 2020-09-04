@@ -23,7 +23,7 @@ Clone main repository
 git clone https://github.com/openintegrationhub/openintegrationhub.git
 ```
 
-Move to **dev-tools** src folder
+ **The following commands should all be run from ***src/*** directory**
 
 ```bash
 cd dev-tools/docker-compose/src
@@ -64,6 +64,25 @@ http://localhost:3000/
 
 and log in as user
 <mark>admin@openintegrationhub.com</mark> with password <mark>somestring</mark>
+
+## 3. Testing
+
+Run tests for all libs/services
+
+```bash
+node test
+```
+
+Run tests for specific libs/services
+
+```bash
+node test services/component-orchestrator
+```
+
+```bash
+node test lib/iam-utils
+```
+
 
 ## 3. Stop development
 
