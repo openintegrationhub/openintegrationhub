@@ -9,7 +9,8 @@ const sinon = require('sinon');
 
 describe('FlowStarted event handler', () => {
     before(async () => {
-        await mongoose.connect('mongodb://localhost/test');
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri, { useNewUrlParser: true });
     });
 
     after(async () => {
@@ -21,11 +22,11 @@ describe('FlowStarted event handler', () => {
     beforeEach(async () => {
         await Flow.deleteMany();
         const logger = {
-            info: () => {},
-            trace: () => {},
+            info: () => { },
+            trace: () => { },
             error: err => console.error(err)
         };
-        flowStarted = FlowStarted({logger});
+        flowStarted = FlowStarted({ logger });
     });
 
     afterEach(async () => {

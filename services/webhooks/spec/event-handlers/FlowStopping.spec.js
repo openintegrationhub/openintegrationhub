@@ -9,7 +9,8 @@ const sinon = require('sinon');
 
 describe('FlowStopping event handler', () => {
     before(async () => {
-        await mongoose.connect('mongodb://localhost/test');
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri, { useNewUrlParser: true });
     });
 
     after(async () => {
@@ -21,11 +22,11 @@ describe('FlowStopping event handler', () => {
     beforeEach(async () => {
         await Flow.deleteMany();
         const logger = {
-            info: () => {},
-            trace: () => {},
+            info: () => { },
+            trace: () => { },
             error: err => console.error(err)
         };
-        flowStopping = FlowStopping({logger});
+        flowStopping = FlowStopping({ logger });
     });
 
     afterEach(async () => {
@@ -35,9 +36,9 @@ describe('FlowStopping event handler', () => {
 
     describe('should delete local record', () => {
         [
-            {name: 'if a flow doesnt exist', flow: new Flow()},
-            {name: 'if a flow exists', flow: Flow.create({})}
-        ].forEach(({name, flow}) => {
+            { name: 'if a flow doesnt exist', flow: new Flow() },
+            { name: 'if a flow exists', flow: Flow.create({}) }
+        ].forEach(({ name, flow }) => {
             it(name, async () => {
                 flow = await flow;
                 const event = new Event({
