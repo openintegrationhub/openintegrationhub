@@ -1,9 +1,9 @@
-const { execSync } = require("child_process")
-const fetch = require("node-fetch")
-const fs = require("fs")
-const YAML = require("yaml")
+const { execSync } = require('child_process')
+const fetch = require('node-fetch')
+const fs = require('fs')
+const YAML = require('yaml')
 
-const serviceAccounts = require("./data/service-accounts")
+const serviceAccounts = require('./data/service-accounts')
 
 const {
   services,
@@ -12,17 +12,17 @@ const {
   env,
   dbRoot,
   devToolsRoot,
-} = require("./config")
+} = require('./config')
 
 const iamBase = `http://localhost:${services.iam.externalPort}`
 
 module.exports = {
   async login({ username, password }) {
     const response = await fetch(`${iamBase}/login`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         username,
@@ -31,7 +31,7 @@ module.exports = {
     })
 
     if (response.status !== 200) {
-      throw new Error("Account missing")
+      throw new Error('Account missing')
     }
 
     return response.json()
@@ -42,7 +42,7 @@ module.exports = {
         ...process.env,
         ...env,
       },
-      stdio: "inherit",
+      stdio: 'inherit',
     })
 
     module.exports.waitForMongo()
@@ -53,13 +53,13 @@ module.exports = {
         ...process.env,
         ...env,
       },
-      stdio: "inherit",
+      stdio: 'inherit',
     })
 
     await module.exports.waitForStatus({ url: iamBase, status: 200 })
 
     const { username, password } = serviceAccounts.find(
-      (account) => account.firstname === "default"
+      (account) => account.firstname === 'default'
     )
 
     const { token } = await module.exports.login({ username, password })
@@ -67,24 +67,21 @@ module.exports = {
     for (const service of services_) {
       // start service
       execSync(`mongo ${service.db} --eval "db.dropDatabase()"`, {
-        stdio: "inherit",
+        stdio: 'inherit',
       })
 
-      execSync(
-        `cd ${devToolsRoot} && docker-compose up -d ${service.container}`,
-        {
-          env: {
-            ...process.env,
-            ...env,
-            DEV_IAM_TOKEN: token,
-          },
-          stdio: "inherit",
-        }
-      )
+      execSync(`cd ${devToolsRoot} && docker-compose up -d ${service.folder}`, {
+        env: {
+          ...process.env,
+          ...env,
+          DEV_IAM_TOKEN: token,
+        },
+        stdio: 'inherit',
+      })
     }
   },
   readKubeConfig() {
-    const file = fs.readFileSync(kubeConfigPath, "utf8")
+    const file = fs.readFileSync(kubeConfigPath, 'utf8')
 
     if (!file) {
       throw new Error(`Kubernetes config not found in ${kubeConfigPath}`)
@@ -99,8 +96,13 @@ module.exports = {
       (item) => item.name === clusterName
     )[0]
 
-    return minikubeConfig.cluster.server
+    return minikubeConfig.cluster.server.replace('https://', '')
   },
+
+  getMinikubeInternalIp() {
+    return module.exports.getMinikubeClusterIp().replace(/[0-9]+:[0-9]+$/, '1')
+  },
+
   checkTools(tools = []) {
     for (const tool of tools) {
       try {
@@ -111,7 +113,7 @@ module.exports = {
     }
   },
   waitForMongo() {
-    console.log("Waiting for MongoDB")
+    console.log('Waiting for MongoDB')
     while (true) {
       try {
         execSync('mongo --eval "db.getCollectionNames()"')

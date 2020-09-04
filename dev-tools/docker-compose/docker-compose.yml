@@ -2,7 +2,7 @@ version: "3.8"
 services:
   iam:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_IAM_CONTAINER}
+    container_name: ${DEV_IAM_FOLDER}
     working_dir: /usr/src/app/services/iam
     environment:
       NODE_ENV: development
@@ -11,7 +11,7 @@ services:
       IAM_MONGODB_CONNECTION: mongodb://mongodb/${DEV_IAM_DB}
       IAM_AUTH_TYPE: basic
       IAM_DEBUG: "true"
-      IAM_BASEURL: http://iam:${DEV_IAM_PORT}
+      IAM_BASEURL: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}
       IAM_ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       IAM_JWT_SECRET: secret
       IAM_SESSION_COOKIE_SECRET: secret
@@ -33,18 +33,18 @@ services:
 
   secret-service:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_SECRET_SERVICE_CONTAINER}
+    container_name: ${DEV_SECRET_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/secret-service
     environment:
       NODE_ENV: development
       LOGGING_LEVEL: info
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_SECRET_SERVICE_DB}
       TTL_AUTHFLOW: 2m
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       API_BASE: /api/v1
       DEBUG_MODE: "true"
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
@@ -62,17 +62,17 @@ services:
 
   component-repository:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_COMPONENT_REPOSITORY_CONTAINER}
+    container_name: ${DEV_COMPONENT_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/component-repository
     environment:
       NODE_ENV: development
       LOG_LEVEL: info
       MONGODB_URI: mongodb://mongodb/${DEV_COMPONENT_REPOSITORY_DB}
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       PORT: ${DEV_COMPONENT_REPOSITORY_PORT}
@@ -88,17 +88,17 @@ services:
 
   snapshots-service:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_SNAPSHOTS_SERVICE_CONTAINER}
+    container_name: ${DEV_SNAPSHOTS_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/snapshots-service
     environment:
       NODE_ENV: development
       LOG_LEVEL: info
       MONGODB_URI: mongodb://mongodb/${DEV_SNAPSHOTS_SERVICE_DB}
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       PORT: ${DEV_SNAPSHOTS_SERVICE_PORT}
@@ -114,33 +114,36 @@ services:
 
   component-orchestrator:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_COMPONENT_ORCHESTRATOR_CONTAINER}
+    container_name: ${DEV_COMPONENT_ORCHESTRATOR_FOLDER}
     working_dir: /usr/src/app/services/component-orchestrator
     environment:
       NODE_ENV: development
       LOG_LEVEL: info
       MONGODB_URI: mongodb://mongodb/${DEV_COMPONENT_ORCHESTRATOR_DB}
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_BASE_URL: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
-      COMPONENT_REPOSITORY_BASE_URL:
-      SECRETS_SERVICE_BASE_URL:
-      SNAPSHOTS_SERVICE_BASE_URL:
-      SELF_URL: http://${IP_FROM_MINIKUBE_TO_HOST}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
-      SELF_API_URI: http://${IP_FROM_MINIKUBE_TO_HOST}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
+      COMPONENT_REPOSITORY_BASE_URL: http://${DEV_COMPONENT_REPOSITORY_FOLDER}:${DEV_COMPONENT_REPOSITORY_PORT}
+
+      ### kuberneted pod -> minikube host
+      SECRETS_SERVICE_BASE_URL: http://${MINIKUBE_HOST_IP}:${DEV_SECRET_SERVICE_EXTERNAL_PORT}/api/v1
+      SNAPSHOTS_SERVICE_BASE_URL: http://${MINIKUBE_HOST_IP}:${DEV_SNAPSHOTS_SERVICE_EXTERNAL_PORT}
+      SELF_URL: http://${MINIKUBE_HOST_IP}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
+      SELF_API_URI: http://${MINIKUBE_HOST_IP}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
+      RABBITMQ_URI_FLOWS: amqp://${MINIKUBE_HOST_IP}:5672
+      ###
+
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       RABBITMQ_MANAGEMENT_URI: http://guest:guest@rabbitmq:15672
-      RABBITMQ_URI_FLOWS: amqp://${IP_FROM_MINIKUBE_TO_HOST}
       DEFAULT_CPU_LIMIT: 100m
       DEFAULT_MEM_LIMIT: 256Mi
       DEFAULT_CPU_REQUEST: 100m
       DEFAULT_MEM_REQUEST: 64Mi
       NAMESPACE: flows
       TICK_INTERVAL: 10000
-      KUBERNETES_IMAGE_PULL_POLICY: Always
-      RUNNING_ON_HOST: "true"
+      KUBE_CONFIG: ../../dev-tools/docker-compose/src/setup/.kube/config
       LISTEN_PORT: ${DEV_COMPONENT_ORCHESTRATOR_PORT}
     ports:
       - ${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}:${DEV_COMPONENT_ORCHESTRATOR_PORT}
@@ -157,18 +160,18 @@ services:
 
   app-directory:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_APP_DIRECTORY_CONTAINER}
+    container_name: ${DEV_APP_DIRECTORY_FOLDER}
     working_dir: /usr/src/app/services/app-directory
     environment:
       NODE_ENV: development
       LOGGING_LEVEL: info
       DEBUG_MODE: "true"
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_APP_DIRECTORY_DB}
-      IAM_API_BASE: http://iam:${DEV_IAM_PORT}/api/v1
+      IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       API_BASE: /api/v1
@@ -185,7 +188,7 @@ services:
 
   attachment-storage-service:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_ATTACHMENT_STORAGE_SERVICE_CONTAINER}
+    container_name: ${DEV_ATTACHMENT_STORAGE_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/attachment-storage-service
     environment:
       NODE_ENV: development
@@ -204,7 +207,7 @@ services:
 
   audit-log:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_AUDIT_LOG_CONTAINER}
+    container_name: ${DEV_AUDIT_LOG_FOLDER}
     working_dir: /usr/src/app/services/audit-log
     environment:
       NODE_ENV: development
@@ -214,8 +217,8 @@ services:
       EXCHANGE_TOPIC: logs
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_AUDIT_LOG_PORT}
     ports:
       - ${DEV_AUDIT_LOG_EXTERNAL_PORT}:${DEV_AUDIT_LOG_PORT}
@@ -229,7 +232,7 @@ services:
 
   data-hub:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_DATA_HUB_CONTAINER}
+    container_name: ${DEV_DATA_HUB_FOLDER}
     working_dir: /usr/src/app/services/data-hub
     environment:
       NODE_ENV: development
@@ -237,8 +240,8 @@ services:
       LOG_LEVEL: trace
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_DATA_HUB_PORT}
     ports:
       - ${DEV_DATA_HUB_EXTERNAL_PORT}:${DEV_DATA_HUB_PORT}
@@ -252,7 +255,7 @@ services:
 
   dispatcher-service:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_DISPATCHER_SERVICE_CONTAINER}
+    container_name: ${DEV_DISPATCHER_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/dispatcher-service
     environment:
       NODE_ENV: development
@@ -260,8 +263,8 @@ services:
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       FLOW_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       QUEUE_URL: amqp://guest:guest@rabbitmq
       FLOWREPO_URL: http://localhost:${DEV_FLOW_REPOSITORY_EXTERNAL_PORT}
       SDF_ID: ReplaceMe
@@ -278,7 +281,7 @@ services:
 
   flow-repository:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_FLOW_REPOSITORY_CONTAINER}
+    container_name: ${DEV_FLOW_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/flow-repository
     environment:
       NODE_ENV: development
@@ -287,8 +290,8 @@ services:
       QUEUE_URL: amqp://guest:guest@rabbitmq
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_FLOW_REPOSITORY_PORT}
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
     ports:
@@ -303,15 +306,15 @@ services:
 
   ils:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_ILS_CONTAINER}
+    container_name: ${DEV_ILS_FOLDER}
     working_dir: /usr/src/app/services/ils
     environment:
       NODE_ENV: development
       MONGODB_URL: mongodb://mongodb/${DEV_ILS_DB}
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_ILS_PORT}
     ports:
       - ${DEV_ILS_EXTERNAL_PORT}:${DEV_ILS_PORT}
@@ -325,7 +328,7 @@ services:
 
   meta-data-repository:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_META_DATA_REPOSITORY_CONTAINER}
+    container_name: ${DEV_META_DATA_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/meta-data-repository
     environment:
       NODE_ENV: development
@@ -335,8 +338,8 @@ services:
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_META_DATA_REPOSITORY_DB}
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       PORT: ${DEV_META_DATA_REPOSITORY_PORT}
@@ -352,7 +355,7 @@ services:
 
   scheduler:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_SCHEDULER_CONTAINER}
+    container_name: ${DEV_SCHEDULER_FOLDER}
     working_dir: /usr/src/app/services/scheduler
     environment:
       NODE_ENV: development
@@ -361,8 +364,8 @@ services:
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_SCHEDULER_PORT}
     ports:
       - ${DEV_SCHEDULER_EXTERNAL_PORT}:${DEV_SCHEDULER_PORT}
@@ -376,7 +379,7 @@ services:
 
   webhooks:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_WEBHOOKS_CONTAINER}
+    container_name: ${DEV_WEBHOOKS_FOLDER}
     working_dir: /usr/src/app/services/webhooks
     environment:
       NODE_ENV: development
@@ -385,10 +388,10 @@ services:
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
-      INTROSPECT_ENDPOINT_BASIC: http://iam:${DEV_IAM_PORT}/api/v1/tokens/introspect
-      INTROSPECT_ENDPOINT_OIDC: http://iam:${DEV_IAM_PORT}/op/userinfo
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
-      PORT: ${DEV_WEBHOOKS_PORT}
+      LISTEN_PORT: ${DEV_WEBHOOKS_PORT}
     ports:
       - ${DEV_WEBHOOKS_EXTERNAL_PORT}:${DEV_WEBHOOKS_PORT}
     volumes:
@@ -401,7 +404,7 @@ services:
 
   web-ui:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_WEB_UI_CONTAINER}
+    container_name: ${DEV_WEB_UI_FOLDER}
     working_dir: /usr/src/app/services/web-ui
     environment:
       NODE_ENV: development

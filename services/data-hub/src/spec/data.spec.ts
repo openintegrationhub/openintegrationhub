@@ -6,7 +6,7 @@ import { expect } from 'chai';
 import DataObject from '../models/data-object';
 import nock from 'nock';
 
-function nockIamIntrospection({status = 200, body = {sub: 'user-id', role: 'ADMIN'}} = {}) {
+function nockIamIntrospection({ status = 200, body = { sub: 'user-id', role: 'ADMIN' } } = {}) {
     return nock('http://iam.openintegrationhub.com')
         .post('/api/v1/tokens/introspect')
         .reply(status, body);
@@ -15,9 +15,10 @@ function nockIamIntrospection({status = 200, body = {sub: 'user-id', role: 'ADMI
 describe('Data Route', () => {
     before(async function () {
         const config = {};
-        const logger = createLogger({name: 'test', level: 'fatal'});
-        await mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true});
-        this.server = new Server({config, logger});
+        const logger = createLogger({ name: 'test', level: 'fatal' });
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri, { useNewUrlParser: true });
+        this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
         this.auth = 'Bearer blablabla';
     });
@@ -64,7 +65,7 @@ describe('Data Route', () => {
             expect(body.data.id).to.be.a('string');
             delete body.data.id;
             expect(body.data).to.deep.equal(Object.assign(record, {
-                owners: [{id: 'user-id', type: 'user'}]
+                owners: [{ id: 'user-id', type: 'user' }]
             }));
             expect(statusCode).to.equal(201);
         });
@@ -188,7 +189,7 @@ describe('Data Route', () => {
             expect(res.body.data.id).to.be.a('string');
             delete res.body.data.id;
             expect(res.body.data).to.deep.equal(Object.assign(patchRecord, {
-                owners: [{id: 'user-id', type: 'user'}]
+                owners: [{ id: 'user-id', type: 'user' }]
             }));
             expect(statusCode).to.equal(201);
         });
@@ -257,7 +258,7 @@ describe('Data Route', () => {
                             "some": "data"
                         },
                         "refs": [],
-                        "owners": [{"id": "user-id", "type": "user"}]
+                        "owners": [{ "id": "user-id", "type": "user" }]
                     },
                     {
                         "id": id2,
@@ -267,7 +268,7 @@ describe('Data Route', () => {
                             "some": "data"
                         },
                         "refs": [],
-                        "owners": [{"id": "user-id", "type": "user"}]
+                        "owners": [{ "id": "user-id", "type": "user" }]
                     }
                 ],
                 meta: {
@@ -322,7 +323,7 @@ describe('Data Route', () => {
                             "some": "data"
                         },
                         "refs": [],
-                        "owners": [{"id": "user-id", "type": "user"}]
+                        "owners": [{ "id": "user-id", "type": "user" }]
                     }
                 ],
                 meta: {

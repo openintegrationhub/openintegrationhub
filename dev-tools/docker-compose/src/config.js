@@ -1,135 +1,173 @@
-const path = require("path")
-const { homedir } = require("os")
+const path = require('path')
+const { homedir } = require('os')
 
-const nodeImage = "node:12-stretch"
+const nodeImage = 'node:12-stretch'
 
-const clusterName = "minikube"
+const clusterName = 'minikube'
 
-const kubernetesHost = "https://host.docker.internal:9090"
+const kubernetesHost = 'https://host.docker.internal:9090'
 
-const repositoryRoot = path.resolve(__dirname, "../../../")
-const devToolsRoot = path.resolve(__dirname, "../")
-const dbRoot = path.resolve(__dirname, "../db")
-const kubeConfigPath = path.resolve(homedir(), ".kube/config")
+const repositoryRoot = path.resolve(__dirname, '../../../')
+const devToolsRoot = path.resolve(__dirname, '../')
+const dbRoot = path.resolve(__dirname, '../db')
+const kubeConfigPath = path.resolve(homedir(), '.kube/config')
 
+// service port in containers
 const localPort = 3099
+
+// CORS whitelist
+const originWhitelist = `http://localhost:3000,0.0.0.0:3001,iam:${localPort}`
+
+const libs = {
+  attachmentStorageService: {
+    folder: 'attachment-storage-service',
+  },
+  backendCommonsLib: {
+    folder: 'backend-commons-lib',
+  },
+  cfm: {
+    folder: 'cfm',
+  },
+  componentOrchestrator: {
+    folder: 'component-orchestrator',
+  },
+  componentRepository: {
+    folder: 'component-repository',
+  },
+  eventBus: {
+    folder: 'event-bus',
+  },
+  ferryman: {
+    folder: 'ferryman',
+  },
+  iamUtils: {
+    folder: 'iam-utils',
+  },
+  scheduler: {
+    folder: 'scheduler',
+  },
+  secretService: {
+    folder: 'secret-service',
+  },
+  webhooks: {
+    folder: 'webhooks',
+  },
+}
 
 // services
 const services = {
   webUi: {
     port: localPort,
     externalPort: 3000,
-    container: "web-ui",
+    folder: 'web-ui',
   },
 
   iam: {
     port: localPort,
     externalPort: 3001,
-    container: "iam",
-    db: "iam",
-    adminUsername: "admin@openintegrationhub.com",
-    adminPassword: "somestring",
+    folder: 'iam',
+    db: 'iam',
+    adminUsername: 'admin@openintegrationhub.com',
+    adminPassword: 'somestring',
   },
   secretService: {
     port: localPort,
     externalPort: 3002,
-    container: "secret-service",
-    db: "secretService",
+    folder: 'secret-service',
+    db: 'secretService',
   },
 
   componentRepository: {
     port: localPort,
     externalPort: 3003,
-    container: "component-repository",
-    db: "componentRepository",
+    folder: 'component-repository',
+    db: 'componentRepository',
   },
 
   snapshotsService: {
     port: localPort,
     externalPort: 3004,
-    container: "snapshots-service",
-    db: "snapshotService",
+    folder: 'snapshots-service',
+    db: 'snapshotsService',
   },
 
   componentOrchestrator: {
     port: localPort,
     externalPort: 3005,
-    container: "component-orchestrator",
-    db: "componentOrchestrator",
+    folder: 'component-orchestrator',
+    db: 'componentOrchestrator',
   },
 
   appDirectory: {
     port: localPort,
     externalPort: 3006,
-    container: "app-directory",
-    db: "appDirectory",
+    folder: 'app-directory',
+    db: 'appDirectory',
   },
 
   attachmentStorageService: {
     port: localPort,
     externalPort: 3007,
-    container: "attachment-storage",
-    db: "attachmentStorageService",
+    folder: 'attachment-storage-service',
+    db: 'attachmentStorageService',
   },
 
   auditLog: {
     port: localPort,
     externalPort: 3008,
-    container: "audit-log",
-    db: "auditLog",
+    folder: 'audit-log',
+    db: 'auditLog',
   },
 
   dataHub: {
     port: localPort,
     externalPort: 3009,
-    container: "data-hub",
-    db: "dataHub",
+    folder: 'data-hub',
+    db: 'dataHub',
   },
 
   dispatcherService: {
     port: localPort,
     externalPort: 3010,
-    container: "dispatcher-service",
-    db: "dispatcherService",
+    folder: 'dispatcher-service',
+    db: 'dispatcherService',
   },
 
   flowRepository: {
     port: localPort,
     externalPort: 3011,
-    container: "flow-repository",
-    db: "flowRepository",
+    folder: 'flow-repository',
+    db: 'flowRepository',
   },
 
   ils: {
     port: localPort,
     externalPort: 3012,
-    container: "ils",
-    db: "ils",
+    folder: 'ils',
+    db: 'ils',
   },
 
   metaDataRepository: {
     port: localPort,
     externalPort: 3013,
-    container: "meta-data-repository",
-    db: "metaDataRepository",
+    folder: 'meta-data-repository',
+    db: 'metaDataRepository',
   },
 
   scheduler: {
     port: localPort,
     externalPort: 3014,
-    container: "scheduler",
-    db: "scheduler",
+    folder: 'scheduler',
+    db: 'scheduler',
   },
 
   webhooks: {
     port: localPort,
     externalPort: 3015,
-    container: "webhooks",
-    db: "webhooks",
+    folder: 'webhooks',
+    db: 'webhooks',
   },
 }
-
-const originWhitelist = `http://localhost:3000,0.0.0.0:3001,iam:${localPort}`
 
 function generateEnvs(collection) {
   const envs = {}
@@ -153,8 +191,8 @@ module.exports = {
     ORIGIN_WHITELIST: originWhitelist,
     NODE_IMAGE: nodeImage,
     HOST_REPOSITORY_ROOT: repositoryRoot,
-    IP_FROM_MINIKUBE_TO_HOST: "",
-    DEV_IAM_TOKEN: "",
+    MINIKUBE_HOST_IP: '',
+    DEV_IAM_TOKEN: '',
     ...generateEnvs(services),
   },
   clusterName,
@@ -164,5 +202,6 @@ module.exports = {
   devToolsRoot,
   dbRoot,
   nodeImage,
+  libs,
   services,
 }

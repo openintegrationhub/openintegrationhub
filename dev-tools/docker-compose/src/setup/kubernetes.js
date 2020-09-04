@@ -1,12 +1,12 @@
-const YAML = require("yaml")
-const fs = require("fs")
-const path = require("path")
+const YAML = require('yaml')
+const fs = require('fs')
+const path = require('path')
 
-const { kubernetesHost, clusterName } = require("../config")
-const { readKubeConfig } = require("../helper")
+const { kubernetesHost, clusterName } = require('../config')
+const { readKubeConfig } = require('../helper')
 
-const tempKubeFolder = path.resolve(__dirname, ".kube/")
-const newConfigPath = path.resolve(tempKubeFolder, "config")
+const tempKubeFolder = path.resolve(__dirname, '.kube/')
+const newConfigPath = path.resolve(tempKubeFolder, 'config')
 
 const kubeConfig = readKubeConfig()
 // strip minikube setup from users config
@@ -28,26 +28,26 @@ if (!fs.existsSync(tempKubeFolder)) {
 // copy certificates
 
 fs.copyFileSync(
-  cluster.cluster["certificate-authority"],
-  path.resolve(tempKubeFolder, "ca.crt")
+  cluster.cluster['certificate-authority'],
+  path.resolve(tempKubeFolder, 'ca.crt')
 )
 
 fs.copyFileSync(
-  user.user["client-certificate"],
-  path.resolve(tempKubeFolder, "client.crt")
+  user.user['client-certificate'],
+  path.resolve(tempKubeFolder, 'client.crt')
 )
 
 fs.copyFileSync(
-  user.user["client-key"],
-  path.resolve(tempKubeFolder, "client.key")
+  user.user['client-key'],
+  path.resolve(tempKubeFolder, 'client.key')
 )
 
 cluster.cluster.server = kubernetesHost
-cluster.cluster["insecure-skip-tls-verify"] = true
-cluster.cluster["certificate-authority"] = "ca.crt"
+cluster.cluster['insecure-skip-tls-verify'] = true
+cluster.cluster['certificate-authority'] = 'ca.crt'
 
-user.user["client-certificate"] = "client.crt"
-user.user["client-key"] = "client.key"
+user.user['client-certificate'] = 'client.crt'
+user.user['client-key'] = 'client.key'
 
 // set new kubernetes host
 

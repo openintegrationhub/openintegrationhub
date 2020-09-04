@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 
 describe('Flow model', () => {
     before(async () => {
-        await mongoose.connect('mongodb://localhost/test');
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri, { useNewUrlParser: true });
     });
 
     after(async () => {
@@ -49,19 +50,19 @@ describe('Flow model', () => {
             const flow = new Flow({
                 graph: {
                     nodes: [
-                        {id: 'step_1'}
+                        { id: 'step_1' }
                     ]
                 }
             });
 
-            expect(flow.getNodeById('step_1')).to.deep.equal({id: 'step_1'});
+            expect(flow.getNodeById('step_1')).to.deep.equal({ id: 'step_1' });
         });
 
         it('should return undefined', () => {
             const flow = new Flow({
                 graph: {
                     nodes: [
-                        {id: 'step_1'}
+                        { id: 'step_1' }
                     ]
                 }
             });
@@ -75,30 +76,30 @@ describe('Flow model', () => {
             const flow = new Flow({
                 graph: {
                     nodes: [
-                        {id: 'step_1'},
-                        {id: 'step_2'},
-                        {id: 'step_3'}
+                        { id: 'step_1' },
+                        { id: 'step_2' },
+                        { id: 'step_3' }
                     ],
                     edges: [
-                        {source: 'step_1', target: 'step_2'},
-                        {source: 'step_2', target: 'step_3'}
+                        { source: 'step_1', target: 'step_2' },
+                        { source: 'step_2', target: 'step_3' }
                     ]
                 }
             });
 
-            expect(flow.getFirstNode()).to.deep.equal({id: 'step_1'});
+            expect(flow.getFirstNode()).to.deep.equal({ id: 'step_1' });
         });
 
         it('should return first node if there is only one node', () => {
             const flow = new Flow({
                 graph: {
                     nodes: [
-                        {id: 'step_1'}
+                        { id: 'step_1' }
                     ]
                 }
             });
 
-            expect(flow.getFirstNode()).to.deep.equal({id: 'step_1'});
+            expect(flow.getFirstNode()).to.deep.equal({ id: 'step_1' });
         });
 
         it('should return null if there are no nodes', () => {
@@ -115,8 +116,8 @@ describe('Flow model', () => {
             const flow = new Flow({
                 graph: {
                     nodes: [
-                        {id: 'step_1'},
-                        {id: 'step_2'}
+                        { id: 'step_1' },
+                        { id: 'step_2' }
                     ],
                     edges: []
                 }
@@ -129,12 +130,12 @@ describe('Flow model', () => {
             const flow = new Flow({
                 graph: {
                     nodes: [
-                        {id: 'step_1'},
-                        {id: 'step_2'}
+                        { id: 'step_1' },
+                        { id: 'step_2' }
                     ],
                     edges: [
-                        {source: 'step_1', target: 'step_2'},
-                        {source: 'step_2', target: 'step_1'}
+                        { source: 'step_1', target: 'step_2' },
+                        { source: 'step_2', target: 'step_1' }
                     ]
                 }
             });

@@ -23,7 +23,7 @@ Clone main repository
 git clone https://github.com/openintegrationhub/openintegrationhub.git
 ```
 
-Move to **dev-tools** src folder
+**The following commands should all be run from ***src/*** directory**
 
 ```bash
 cd dev-tools/docker-compose/src
@@ -35,28 +35,64 @@ Install the required packages. (Keep in mind, that those packages will be instal
 node packages/install
 ```
 
+**Make sure, your firewall allows tcp traffic from docker networks to host for following ports**
+- 3000+ (services port range)
+- 5672 (rabbitMQ)
+- 9090 (proxy to kubernetes cluster)
+
 ## 2. Start development
 
-Setup initial state
+Start with initial state
 
 ```bash
-node setup/minikube && node setup/kubernetes && node setup/iam && node setup/component-repository
+node setup/minikube && node setup/kubernetes && node setup/iam && node setup/flows && node start
 ```
 
-Start services
-
-```bash
-node start
-```
-
-Now if everything is started up successfully you can visit the frontend with
+If everything started up successfully you can visit the frontend with
 
 http://localhost:3000/
 
-and log in as user
-<mark>admin@openintegrationhub.com</mark> with password <mark>somestring</mark>
+and log in as default admin user
+"admin@openintegrationhub.com"/"somestring"
+## 3. Monitoring
 
-## 3. Stop development
+In addition to the frontend, there are other monitoring tools available.
+
+### Minikube dashboard
+
+Run
+
+```bash
+minikube dashboard
+```
+
+to open Minikube Kubernetes Dashboard. Here you will find all details about deployments within the "flows" namespace.
+
+
+### RabbitMQ Web Interface
+
+Just navigate to http://localhost:15672/ and log in with "guest"/"guest" to get details about the underlying message queue.
+
+
+## 4. Testing
+
+Run tests for all libs/services
+
+```bash
+node test
+```
+
+Run tests for specific libs/services
+
+```bash
+node test services/component-orchestrator
+```
+
+```bash
+node test lib/iam-utils
+```
+
+## 5. Stop development
 
 Hit **ctrl+c** to exit process and run
 

@@ -22,7 +22,8 @@ class ComponentOrchestratorApp extends App {
         const amqp = container.resolve('amqp');
         const k8s = container.resolve('k8s');
         await amqp.start();
-        await k8s.start();
+
+        await k8s.start(config.get('KUBE_CONFIG'));
 
         const channel = await amqp.getConnection().createChannel();
 

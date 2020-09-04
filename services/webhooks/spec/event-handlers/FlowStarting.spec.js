@@ -9,7 +9,8 @@ const sinon = require('sinon');
 
 describe('FlowStarting event handler', () => {
     before(async () => {
-        await mongoose.connect('mongodb://localhost/test');
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri, { useNewUrlParser: true });
     });
 
     after(async () => {
@@ -21,11 +22,11 @@ describe('FlowStarting event handler', () => {
     beforeEach(async () => {
         await Flow.deleteMany();
         const logger = {
-            info: () => {},
-            trace: () => {},
+            info: () => { },
+            trace: () => { },
             error: err => console.error(err)
         };
-        flowStarting = FlowStarting({logger});
+        flowStarting = FlowStarting({ logger });
     });
 
     afterEach(async () => {
@@ -81,9 +82,9 @@ describe('FlowStarting event handler', () => {
 
     describe('flow without cron', () => {
         [
-            {name: 'if a flow doesnt exist', flow: new Flow()},
-            {name: 'if a flow exists', flow: Flow.create({})}
-        ].forEach(({name, flow}) => {
+            { name: 'if a flow doesnt exist', flow: new Flow() },
+            { name: 'if a flow exists', flow: Flow.create({}) }
+        ].forEach(({ name, flow }) => {
             it(name, async () => {
                 flow = await flow;
 
@@ -92,7 +93,7 @@ describe('FlowStarting event handler', () => {
                     payload: {
                         id: flow.id,
                         graph: {
-                            nodes: {id: 'step_1'}
+                            nodes: { id: 'step_1' }
                         }
                     }
                 });
@@ -108,7 +109,7 @@ describe('FlowStarting event handler', () => {
                 const foundFlow = await Flow.findById(flow.id);
                 expect(foundFlow).not.to.be.null;
                 expect(foundFlow.graph).to.deep.equal({
-                    nodes: {id: 'step_1'}
+                    nodes: { id: 'step_1' }
                 });
                 expect(foundFlow.status).to.equal('starting');
             });
