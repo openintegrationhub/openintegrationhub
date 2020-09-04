@@ -9,7 +9,8 @@ const sinon = require('sinon');
 
 describe('FlowStarted event handler', () => {
     before(async () => {
-        await mongoose.connect('mongodb://localhost/test');
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri, { useNewUrlParser: true });
     });
 
     after(async () => {
