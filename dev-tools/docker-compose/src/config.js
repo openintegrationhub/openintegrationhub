@@ -108,7 +108,7 @@ const services = {
   attachmentStorageService: {
     port: localPort,
     externalPort: 3007,
-    folder: 'attachment-storage',
+    folder: 'attachment-storage-service',
     db: 'attachmentStorageService',
   },
 

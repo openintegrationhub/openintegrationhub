@@ -1,11 +1,36 @@
-const cp = require('child_process')
-const path = require('path')
-const { devToolsRoot, env } = require('./config')
-const { checkTools } = require('./helper')
+const { execSync } = require('child_process')
 
-checkTools(['docker-compose', 'minikube'])
+const {
+  repositoryRoot,
+  dbRoot,
+  nodeImage,
+  libs,
+  services,
+  env,
+} = require('./config')
 
-cp.execSync(`cd ${devToolsRoot} && docker-compose down`, {
+const testEnvs = Object.entries({
+  // following envs will be applied to every "yarn test" command
+  MONGODB_URI: 'mongodb://mongodb/testing',
+  CI: 'true',
+  REDIS_CONFIG: `"${JSON.stringify({
+    host: 'redis',
+    keyPrefix: 'maester_test:',
+    sentinels: null,
+  }).replace(/"/g, '\\"')}"`,
+  /// ////
+}).reduce((a, b) => {
+  if (Array.isArray(a)) return `${a[0]}=${a[1]}  ${b[0]}=${b[1]}`
+  return `${a} ${b[0]}=${b[1]}`
+})
+
+const testCommand = (path, args) =>
+  `docker run --net=oih-dev --rm -it -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${path}; ${testEnvs} yarn test ${
+  args || '' // eslint-disable-line prettier/prettier
+  }'`
+
+// ensure dbs
+execSync(`cd ${dbRoot} && docker-compose up -d`, {
   env: {
     ...process.env,
     ...env,
@@ -13,10 +38,30 @@ cp.execSync(`cd ${devToolsRoot} && docker-compose down`, {
   stdio: 'inherit',
 })
 
-cp.execSync(`cd ${path.resolve(__dirname, '../db')} && docker-compose down`, {
-  stdio: 'inherit',
+if (process.argv[2]) {
+  const [, , selected, tArgs] = process.argv
+
+  console.log(`Testing ${selected}`)
+  execSync(testCommand(selected, tArgs), {
+    stdio: 'inherit',
+  })
+  process.exit(0)
+}
+
+// test libs
+Object.entries(libs).forEach((entry) => {
+  const [key, lib] = entry
+  console.log(`Testing lib ${key}`)
+  execSync(testCommand(`lib/${lib.folder}`), {
+    stdio: 'inherit',
+  })
 })
 
-cp.execSync(`minikube stop`, {
-  stdio: 'inherit',
+// test services
+Object.entries(services).forEach((entry) => {
+  const [key, service] = entry
+  console.log(`Testing service ${key}`)
+  execSync(testCommand(`services/${service.folder}`), {
+    stdio: 'inherit',
+  })
 })
