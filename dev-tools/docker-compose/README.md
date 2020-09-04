@@ -23,7 +23,7 @@ Clone main repository
 git clone https://github.com/openintegrationhub/openintegrationhub.git
 ```
 
- **The following commands should all be run from ***src/*** directory**
+**The following commands should all be run from ***src/*** directory**
 
 ```bash
 cd dev-tools/docker-compose/src
@@ -35,14 +35,10 @@ Install the required packages. (Keep in mind, that those packages will be instal
 node packages/install
 ```
 
-<mark>Make sure, your firewall allows tcp traffic for </mark>
+**Make sure, your firewall allows tcp traffic from docker networks to host for following ports**
 - 3000+ (services port range)
 - 5672 (rabbitMQ)
 - 9090 (proxy to kubernetes cluster)
-
-```bash
-node packages/install
-```
 
 ## 2. Start development
 
