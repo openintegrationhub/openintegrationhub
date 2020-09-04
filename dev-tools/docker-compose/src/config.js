@@ -12,20 +12,60 @@ const devToolsRoot = path.resolve(__dirname, '../')
 const dbRoot = path.resolve(__dirname, '../db')
 const kubeConfigPath = path.resolve(homedir(), '.kube/config')
 
+// service port in containers
 const localPort = 3099
+
+// CORS whitelist
+const originWhitelist = `http://localhost:3000,0.0.0.0:3001,iam:${localPort}`
+
+const libs = {
+  attachmentStorageService: {
+    folder: 'attachment-storage-service',
+  },
+  backendCommonsLib: {
+    folder: 'backend-commons-lib',
+  },
+  cfm: {
+    folder: 'cfm',
+  },
+  componentOrchestrator: {
+    folder: 'component-orchestrator',
+  },
+  componentRepository: {
+    folder: 'component-repository',
+  },
+  eventBus: {
+    folder: 'event-bus',
+  },
+  ferryman: {
+    folder: 'ferryman',
+  },
+  iamUtils: {
+    folder: 'iam-utils',
+  },
+  scheduler: {
+    folder: 'scheduler',
+  },
+  secretService: {
+    folder: 'secret-service',
+  },
+  webhooks: {
+    folder: 'webhooks',
+  },
+}
 
 // services
 const services = {
   webUi: {
     port: localPort,
     externalPort: 3000,
-    container: 'web-ui',
+    folder: 'web-ui',
   },
 
   iam: {
     port: localPort,
     externalPort: 3001,
-    container: 'iam',
+    folder: 'iam',
     db: 'iam',
     adminUsername: 'admin@openintegrationhub.com',
     adminPassword: 'somestring',
@@ -33,103 +73,101 @@ const services = {
   secretService: {
     port: localPort,
     externalPort: 3002,
-    container: 'secret-service',
+    folder: 'secret-service',
     db: 'secretService',
   },
 
   componentRepository: {
     port: localPort,
     externalPort: 3003,
-    container: 'component-repository',
+    folder: 'component-repository',
     db: 'componentRepository',
   },
 
   snapshotsService: {
     port: localPort,
     externalPort: 3004,
-    container: 'snapshots-service',
+    folder: 'snapshots-service',
     db: 'snapshotsService',
   },
 
   componentOrchestrator: {
     port: localPort,
     externalPort: 3005,
-    container: 'component-orchestrator',
+    folder: 'component-orchestrator',
     db: 'componentOrchestrator',
   },
 
   appDirectory: {
     port: localPort,
     externalPort: 3006,
-    container: 'app-directory',
+    folder: 'app-directory',
     db: 'appDirectory',
   },
 
   attachmentStorageService: {
     port: localPort,
     externalPort: 3007,
-    container: 'attachment-storage',
+    folder: 'attachment-storage',
     db: 'attachmentStorageService',
   },
 
   auditLog: {
     port: localPort,
     externalPort: 3008,
-    container: 'audit-log',
+    folder: 'audit-log',
     db: 'auditLog',
   },
 
   dataHub: {
     port: localPort,
     externalPort: 3009,
-    container: 'data-hub',
+    folder: 'data-hub',
     db: 'dataHub',
   },
 
   dispatcherService: {
     port: localPort,
     externalPort: 3010,
-    container: 'dispatcher-service',
+    folder: 'dispatcher-service',
     db: 'dispatcherService',
   },
 
   flowRepository: {
     port: localPort,
     externalPort: 3011,
-    container: 'flow-repository',
+    folder: 'flow-repository',
     db: 'flowRepository',
   },
 
   ils: {
     port: localPort,
     externalPort: 3012,
-    container: 'ils',
+    folder: 'ils',
     db: 'ils',
   },
 
   metaDataRepository: {
     port: localPort,
     externalPort: 3013,
-    container: 'meta-data-repository',
+    folder: 'meta-data-repository',
     db: 'metaDataRepository',
   },
 
   scheduler: {
     port: localPort,
     externalPort: 3014,
-    container: 'scheduler',
+    folder: 'scheduler',
     db: 'scheduler',
   },
 
   webhooks: {
     port: localPort,
     externalPort: 3015,
-    container: 'webhooks',
+    folder: 'webhooks',
     db: 'webhooks',
   },
 }
-
-const originWhitelist = `http://localhost:3000,0.0.0.0:3001,iam:${localPort}`
 
 function generateEnvs(collection) {
   const envs = {}
@@ -164,5 +202,6 @@ module.exports = {
   devToolsRoot,
   dbRoot,
   nodeImage,
+  libs,
   services,
 }

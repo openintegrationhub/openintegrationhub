@@ -70,17 +70,14 @@ module.exports = {
         stdio: 'inherit',
       })
 
-      execSync(
-        `cd ${devToolsRoot} && docker-compose up -d ${service.container}`,
-        {
-          env: {
-            ...process.env,
-            ...env,
-            DEV_IAM_TOKEN: token,
-          },
-          stdio: 'inherit',
-        }
-      )
+      execSync(`cd ${devToolsRoot} && docker-compose up -d ${service.folder}`, {
+        env: {
+          ...process.env,
+          ...env,
+          DEV_IAM_TOKEN: token,
+        },
+        stdio: 'inherit',
+      })
     }
   },
   readKubeConfig() {
