@@ -3,8 +3,13 @@ kind: Deployment
 metadata:
   name: app-directory
   namespace: oih-dev-ns
+  labels:
+    app: app-directory
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: app-directory
   template:
     metadata:
       labels:

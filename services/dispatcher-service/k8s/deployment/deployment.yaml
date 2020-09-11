@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: dispatcher-service
   namespace: oih-dev-ns
+  labels:
+    app: dispatcher-service
 spec:
   replicas: 1
   selector:
