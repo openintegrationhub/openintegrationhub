@@ -7,7 +7,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ils  
+      app: ils
   template:
     metadata:
       labels:
