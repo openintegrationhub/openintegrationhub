@@ -6,3 +6,5 @@ node_modules
 scripts/toBuild.json
 gitchanges.txt
 lerna-debug.log
+# DevShell "projects" this file based on pre-commit configuration
+.pre-commit-config.yaml
