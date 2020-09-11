@@ -20,7 +20,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: iam
-                  key: mongourl
+                  key: mongoUrl
             - name: IAM_AUTH_TYPE
               value: basic
             - name: IAM_PORT
@@ -37,12 +37,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: iam
-                  key: jwtsecret
+                  key: jwtSecret
             - name: IAM_SESSION_COOKIE_SECRET
               valueFrom:
                 secretKeyRef:
                   name: iam
-                  key: cookiesecret
+                  key: cookieSecret
             - name: IAM_JWT_AUDIENCE
               value: openintegrationhub.com
             - name: IAM_JWT_COOKIENAME
@@ -53,21 +53,21 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: iam
-                  key: admin_password
+                  key: adminPassword
             - name: IAM_ACC_SERVICE_ACCOUNT_USERNAME
               value: service-oih-iam@openintegrationhub.com
             - name: IAM_ACC_SERVICE_ACCOUNT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: iam
-                  key: serviceacc_password
+                  key: serviceAccountPassword
             - name: IAM_SERVICE_CLIENT_ID
               value: 8ce00058-5f75-435f-9026-ad952480e15a
             - name: IAM_SERVICE_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: iam
-                  key: oidc_client_secret
+                  key: oidcClientSecret
           ports:
             - containerPort: 3099
           livenessProbe:

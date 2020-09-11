@@ -20,12 +20,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: meta-data-repository
-              key: iamtoken
+              key: iamToken
         - name: MONGODB_CONNECTION
           valueFrom:
             secretKeyRef:
               name: meta-data-repository
-              key: mongourl
+              key: mongoUrl
         - name: INTROSPECT_TYPE
           value: "basic"
         - name: ORIGINWHITELIST

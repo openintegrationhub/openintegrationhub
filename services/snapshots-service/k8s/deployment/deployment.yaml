@@ -24,17 +24,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: snapshots-service
-                  key: MONGODB_URI
+                  key: mongoUrl
             - name: RABBITMQ_URI
               valueFrom:
                 secretKeyRef:
                   name: snapshots-service
-                  key: RABBITMQ_URI
+                  key: rabbitMqUrl
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: snapshots-service
-                  key: IAM_TOKEN
+                  key: iamToken
             - name: PORT
               value: '1234'
             - name: LOG_LEVEL

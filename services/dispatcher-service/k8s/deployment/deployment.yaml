@@ -24,12 +24,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dispatcher-service
-                  key: 'mongourl'
+                  key: mongoUrl
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: dispatcher-service
-                  key: 'iamtoken'
+                  key: iamToken
             - name: "INTROSPECT_TYPE"
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"
@@ -42,7 +42,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: dispatcher-service
-                  key: 'flowtoken'
+                  key: flowToken
             - name: "SDF_ID"
               value: "5d2484d2a422ca001bda5690"
           resources:

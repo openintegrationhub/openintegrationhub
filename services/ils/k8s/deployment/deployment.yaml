@@ -24,12 +24,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: ils
-                  key: 'mongourl'
+                  key: mongoUrl
             - name: SCHEMA_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: ils
-                  key: 'iamtoken'
+                  key: iamToken
           resources:
             limits:
               cpu: '0.1'

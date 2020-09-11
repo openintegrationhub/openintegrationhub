@@ -24,12 +24,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: audit-log
-                  key: 'mongourl'
+                  key: mongoUrl
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: audit-log
-                  key: 'iamtoken'
+                  key: iamToken
             - name: "INTROSPECT_TYPE"
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"

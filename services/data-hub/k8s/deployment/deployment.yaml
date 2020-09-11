@@ -24,19 +24,19 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: data-hub
-                  key: MONGODB_URI
+                  key: mongoUrl
             - name: RABBITMQ_URI
                 valueFrom:
                   secretKeyRef:
                     name: data-hub
-                    key: RABBITMQ_URI
+                    key: rabbitMqUrl
             - name: PORT
               value: '1234'
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: data-hub
-                  key: IAM_TOKEN
+                  key: iamToken
             - name: LOG_LEVEL
               value: trace
           resources:

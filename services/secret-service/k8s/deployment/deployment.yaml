@@ -22,12 +22,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: secret-service
-                  key: iamtoken
+                  key: iamToken
             - name: MONGODB_CONNECTION
               valueFrom:
                 secretKeyRef:
                   name: secret-service
-                  key: mongourl
+                  key: mongoUrl
             - name: CRYPTO_KEY
               valueFrom:
                 secretKeyRef:
@@ -39,7 +39,7 @@ spec:
             #   valueFrom:
             #     secretKeyRef:
             #       name: secret-service
-            #       key: 'client-secret'
+            #       key: clientSecret
             - name: "INTROSPECT_TYPE"
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"

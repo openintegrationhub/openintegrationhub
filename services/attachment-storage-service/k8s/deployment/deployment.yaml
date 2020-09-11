@@ -24,14 +24,14 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: attachment-storage-service
-                  key: REDIS_CONFIG
+                  key: redisConfig
             - name: PORT
               value: '3002'
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: attachment-storage-service
-                  key: IAM_TOKEN
+                  key: iamToken
             - name: LOG_LEVEL
               value: trace
           resources:

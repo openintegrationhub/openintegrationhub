@@ -24,17 +24,17 @@ spec:
           valueFrom:
             secretKeyRef:
               name: reports-analytics
-              key: grafanatoken
+              key: grafanaToken
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
               name: reports-analytics
-              key: iamtoken
+              key: iamToken
         - name: MONGODB_CONNECTION
           valueFrom:
             secretKeyRef:
               name: reports-analytics
-              key: mongourl
+              key: mongoUrl
         - name: INFLUXDB_DATABASE
           value: "statistics"
         - name: INFLUX_HOST

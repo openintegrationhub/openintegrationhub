@@ -20,12 +20,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: app-directory
-                  key: iamtoken
+                  key: iamToken
             - name: MONGODB_CONNECTION
               valueFrom:
                 secretKeyRef:
                   name: app-directory
-                  key: mongourl
+                  key: mongoUrl
             - name: "INTROSPECT_TYPE"
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"
