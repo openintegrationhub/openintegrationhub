@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./../../services/app-directory/k8s/config
+  - ./../../services/attachment-storage-service/k8s/config
+  - ./../../services/audit-log/k8s/config
+  - ./../../services/component-orchestrator/k8s/config
+  - ./../../services/component-repository/k8s/config
+  - ./../../services/data-hub/k8s/config
+  - ./../../services/dispatcher-service/k8s/config
+  - ./../../services/flow-repository/k8s/config
+  - ./../../services/ils/k8s/config
+  - ./../../services/logging-service/k8s/config
+  - ./../../services/meta-data-repository/k8s/config
+  - ./../../services/reports-analytics/k8s/config
+  - ./../../services/scheduler/k8s/config
+  - ./../../services/secret-service/k8s/config
+  - ./../../services/snapshots-service/k8s/config
+  - ./../../services/web-ui/k8s/config
+  - ./../../services/webhooks/k8s/config
