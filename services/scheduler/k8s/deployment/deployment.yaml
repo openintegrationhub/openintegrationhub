@@ -13,7 +13,6 @@ spec:
   minReadySeconds: 10
   template:
     metadata:
-      name: scheduler
       labels:
         app: scheduler
     spec:

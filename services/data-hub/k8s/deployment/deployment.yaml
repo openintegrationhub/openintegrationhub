@@ -13,7 +13,6 @@ spec:
   minReadySeconds: 10
   template:
     metadata:
-      name: data-hub
       labels:
         app: data-hub
     spec:

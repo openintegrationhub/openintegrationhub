@@ -13,7 +13,6 @@ spec:
   minReadySeconds: 10
   template:
     metadata:
-      name: snapshots-service
       labels:
         app: snapshots-service
     spec:

@@ -13,7 +13,6 @@ spec:
   minReadySeconds: 10
   template:
     metadata:
-      name: webhooks
       labels:
         app: webhooks
     spec:

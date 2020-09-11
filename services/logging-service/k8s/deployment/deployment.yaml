@@ -13,7 +13,6 @@ spec:
   minReadySeconds: 10
   template:
     metadata:
-      name: logging-service
       labels:
         app: logging-service
     spec:

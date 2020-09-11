@@ -13,7 +13,6 @@ spec:
   minReadySeconds: 10
   template:
     metadata:
-      name: component-orchestrator
       labels:
         app: component-orchestrator
     spec:

@@ -13,7 +13,6 @@ spec:
   minReadySeconds: 10
   template:
     metadata:
-      name: component-repository
       labels:
         app: component-repository
     spec:
