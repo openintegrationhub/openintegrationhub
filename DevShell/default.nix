@@ -24,18 +24,6 @@ let
     skaffold-nix-builder
   ] ++ repoSpecificTools;
 
-  nixTooling = with pkgs; [
-    nix # nix package manager -- tagged version
-    nixops # gitops for nix (stateful)
-    nix-diff # explains why two Nix derivations differ
-    nix-tree # interactively browse a Nix store paths dependencies
-    nix-prefetch # determine the hash of a fixed-output derivation (TOFU)
-    nix-serve # utility for sharing a Nix store as a binary cache
-    nix-simple-deploy # deploy & switch NixOS system config (or path) to remote machine
-    nix-top # help users figure out what's building
-    nixos-container # run nixos in a systemd nspawn container (don't confuse with OCI compliant containers)
-  ];
-
   gitAndRepoTooling = with pkgs; [
     fd
     git
@@ -64,13 +52,12 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     cfssl
     drone-cli
-  ] ++ nixTooling ++ gitAndRepoTooling ++ containerTooling ++ customTools;
+  ] ++ gitAndRepoTooling ++ containerTooling ++ customTools;
   shellHook = ''
     ${ pre-commit.shellHook }
     export NIX_PATH="nixpkgs=${pkgs.path}:."
     export NIXPKGS=${pkgs.path}
     export SSL_CERT_FILE=/etc/ssl/certs/ca-bundle.crt
-    export NIXOPS_ENV=y
     export KUBECTL_EXTERNAL_DIFF=delta
     git config git-town.code-hosting-driver gitea
     git config git-town.code-hosting-origin-hostname git.p1.rocks
