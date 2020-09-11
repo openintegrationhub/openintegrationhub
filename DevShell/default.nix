@@ -59,8 +59,5 @@ pkgs.mkShell {
     export NIXPKGS=${pkgs.path}
     export SSL_CERT_FILE=/etc/ssl/certs/ca-bundle.crt
     export KUBECTL_EXTERNAL_DIFF=delta
-    git config git-town.code-hosting-driver gitea
-    git config git-town.code-hosting-origin-hostname git.p1.rocks
-    git config git-town.main-branch-name master
   '';
 }
