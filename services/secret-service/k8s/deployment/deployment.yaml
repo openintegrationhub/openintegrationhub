@@ -34,12 +34,15 @@ spec:
                   name: secret-service
                   key: crypto_key
             # - name: IAM_OIDC_SERVICE_CLIENT_ID
-            #   value: 8ce00058-5f75-435f-9026-ad952480e15a
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: secret-service
+            #       key: oicdClientId
             # - name: IAM_OIDC_SERVICE_CLIENT_SECRET
             #   valueFrom:
             #     secretKeyRef:
             #       name: secret-service
-            #       key: clientSecret
+            #       key: oicdClientSecret
             - name: "INTROSPECT_TYPE"
               value: "basic"
             - name: "INTROSPECT_ENDPOINT_BASIC"

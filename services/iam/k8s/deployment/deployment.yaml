@@ -62,7 +62,10 @@ spec:
                   name: iam
                   key: serviceAccountPassword
             - name: IAM_SERVICE_CLIENT_ID
-              value: 8ce00058-5f75-435f-9026-ad952480e15a
+              valueFrom:
+                secretKeyRef:
+                  name: iam
+                  key: oicdClientId
             - name: IAM_SERVICE_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
