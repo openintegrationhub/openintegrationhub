@@ -11,7 +11,6 @@ spec:
     matchLabels:
       app: app-directory
   minReadySeconds: 10
-  revisionHistoryLimit: 2
   template:
     metadata:
       labels:

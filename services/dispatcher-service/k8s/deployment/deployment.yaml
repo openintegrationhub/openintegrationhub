@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       app: dispatcher-service
+  minReadySeconds: 10
   template:
     metadata:
       labels:

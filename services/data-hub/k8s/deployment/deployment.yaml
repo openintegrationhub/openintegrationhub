@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       app: data-hub
+  minReadySeconds: 10
   template:
     metadata:
       name: data-hub

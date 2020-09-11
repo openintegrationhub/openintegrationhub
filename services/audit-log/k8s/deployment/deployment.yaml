@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       app: audit-log
+  minReadySeconds: 10
   template:
     metadata:
       labels:

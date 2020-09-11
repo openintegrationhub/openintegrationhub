@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       app: scheduler
+  minReadySeconds: 10
   template:
     metadata:
       name: scheduler

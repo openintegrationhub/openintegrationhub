@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       app: ils
+  minReadySeconds: 10
   template:
     metadata:
       labels:

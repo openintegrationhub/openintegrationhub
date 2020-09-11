@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       app: component-orchestrator
+  minReadySeconds: 10
   template:
     metadata:
       name: component-orchestrator
