@@ -19,6 +19,7 @@ spec:
       containers:
         - name: app-directory
           image: "openintegrationhub/app-directory:latest"
+          imagePullPolicy: Always
           env:
             - name: IAM_TOKEN
               valueFrom:

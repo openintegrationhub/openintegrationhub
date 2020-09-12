@@ -19,6 +19,7 @@ spec:
       containers:
       - name: reports-analytics
         image: "openintegrationhub/reports-analytics:latest"
+        imagePullPolicy: Always
         env:
         - name: LOG_LEVEL
           value: "error"

@@ -19,6 +19,7 @@ spec:
       containers:
         - name: webhooks
           image: "openintegrationhub/webhooks:latest"
+          imagePullPolicy: IfNotPresent
           env:
             - name: MONGODB_URI
               valueFrom:
@@ -40,7 +41,6 @@ spec:
               memory: 512Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
               path: /healthcheck

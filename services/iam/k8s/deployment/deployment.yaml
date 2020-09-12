@@ -19,6 +19,7 @@ spec:
       containers:
         - name: iam
           image: "openintegrationhub/iam:latest"
+          imagePullPolicy: Always
           env:
             - name: IAM_MONGODB_CONNECTION
               valueFrom:

@@ -19,6 +19,7 @@ spec:
       containers:
         - name: web-ui
           image: "openintegrationhub/web-ui:latest"
+          imagePullPolicy: Always
           env:
             - name: PORT
               value: "3000"

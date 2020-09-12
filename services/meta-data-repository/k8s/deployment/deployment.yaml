@@ -19,6 +19,7 @@ spec:
       containers:
       - name: meta-data-repository
         image: "openintegrationhub/meta-data-repository:latest"
+        imagePullPolicy: Always
         env:
         - name: IAM_TOKEN
           valueFrom:

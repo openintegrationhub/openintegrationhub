@@ -19,6 +19,7 @@ spec:
       containers:
         - name: component-orchestrator
           image: "openintegrationhub/component-orchestrator:latest"
+          imagePullPolicy: IfNotPresent
           env:
             - name: COMPONENT_REPOSITORY_BASE_URL
               value: "http://component-repository-service.oih-dev-ns.svc.cluster.local:1234"
@@ -59,7 +60,6 @@ spec:
               memory: 512Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
           livenessProbe:
