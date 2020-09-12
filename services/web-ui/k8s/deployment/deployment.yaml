@@ -23,22 +23,22 @@ spec:
           env:
             - name: PORT
               value: "3000"
-            - name: ENDPOINT_SECRETS
-              value: "https://skm.openintegrationhub.com/api/v1"
             - name: ENDPOINT_IAM
-              value: "https://iam.openintegrationhub.com"
+              value: "http://iam.localoih.com"
             - name: ENDPOINT_FLOW
-              value: "https://flow-repository.openintegrationhub.com"
-            - name: ENDPOINT_DISPATCHER
-              value: "https://dispatcher-service.openintegrationhub.com"
-            - name: ENDPOINT_METADATA
-              value: "https://metadata.openintegrationhub.com/api/v1"
-            - name: ENDPOINT_APP_DIRECTORY
-              value: "https://app-directory.openintegrationhub.com/api/v1"
+              value: "http://flow-repository.localoih.com"
             - name: ENDPOINT_COMPONENT
-              value: "https://component-repository.openintegrationhub.com"
+              value: "http://component-repository.localoih.com"
+            - name: ENDPOINT_SECRETS
+              value: "http://skm.localoih.com/api/v1"
+            - name: ENDPOINT_DISPATCHER
+              value: "http://dispatcher-service.localoih.com"
+            - name: ENDPOINT_METADATA
+              value: "http://metadata.localoih.com/api/v1"
+            - name: ENDPOINT_APP_DIRECTORY
+              value: "http://app-directory.localoih.com/api/v1"
             - name: ENDPOINT_WEBHOOKS
-              value: "https://webhooks.openintegrationhub.com"
+              value: "http://webhooks.localoih.com"
           ports:
             - containerPort: 3000
           livenessProbe:

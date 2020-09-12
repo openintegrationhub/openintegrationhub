@@ -29,6 +29,8 @@ spec:
               value: "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1"
             - name: ATTACHMENT_STORAGE_SERVICE_BASE_URL
               value: "http://attachment-storage-service.oih-dev-ns.svc.cluster.local:3002"
+            - name: "INTROSPECT_ENDPOINT_BASIC"
+              value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
