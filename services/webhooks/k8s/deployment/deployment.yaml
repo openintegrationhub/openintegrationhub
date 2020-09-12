@@ -17,7 +17,6 @@ spec:
         app: webhooks
     spec:
       restartPolicy: Always
-      terminationGracePeriodSeconds: 30
       serviceAccountName: component-orchestrator-account
       containers:
       - name: webhooks

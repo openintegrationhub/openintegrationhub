@@ -17,7 +17,6 @@ spec:
         app: snapshots-service
     spec:
       restartPolicy: Always
-      terminationGracePeriodSeconds: 30
       containers:
       - name: snapshots-service
         image: "openintegrationhub/snapshots-service:latest"

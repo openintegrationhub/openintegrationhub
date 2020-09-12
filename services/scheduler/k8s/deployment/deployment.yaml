@@ -17,7 +17,6 @@ spec:
         app: scheduler
     spec:
       restartPolicy: Always
-      terminationGracePeriodSeconds: 30
       containers:
       - name: scheduler
         image: "openintegrationhub/scheduler:latest"

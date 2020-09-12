@@ -17,7 +17,6 @@ spec:
         app: logging-service
     spec:
       restartPolicy: Always
-      terminationGracePeriodSeconds: 30
       containers:
       - name: logging-service
         image: "openintegrationhub/logging-service:latest"
