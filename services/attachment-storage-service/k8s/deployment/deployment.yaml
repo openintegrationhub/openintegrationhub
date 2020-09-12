@@ -47,8 +47,6 @@ spec:
           httpGet:
             port: 3002
             path: /healthcheck
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false
