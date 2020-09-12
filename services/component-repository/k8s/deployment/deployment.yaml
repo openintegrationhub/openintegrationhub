@@ -20,8 +20,6 @@ spec:
         - name: component-repository
           image: "openintegrationhub/component-repository:latest"
           imagePullPolicy: IfNotPresent
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
           livenessProbe:
             httpGet:
               path: /healthcheck

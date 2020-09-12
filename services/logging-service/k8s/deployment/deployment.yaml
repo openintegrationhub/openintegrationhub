@@ -27,8 +27,6 @@ spec:
           volumeMounts:
             - name: credentials
               mountPath: "/usr/lib/app/credentials"
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
           livenessProbe:
             httpGet:
               path: /healthcheck
