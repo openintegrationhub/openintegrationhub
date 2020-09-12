@@ -4,5 +4,5 @@ metadata:
   name: attachment-storage-service
   namespace: oih-dev-ns
 data:
-  PORT: "3002"
   LOG_LEVEL: trace
+  PORT: "3002"

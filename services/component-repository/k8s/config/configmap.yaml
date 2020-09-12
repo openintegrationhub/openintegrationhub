@@ -4,8 +4,8 @@ metadata:
   name: component-repository
   namespace: oih-dev-ns
 data:
-  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local"
-  PORT: "1234"
-  LOG_LEVEL: trace
-  INTROSPECT_ENDPOINT_BASIC: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
   CORS_ORIGIN_WHITELIST: "localoih.com,http://web-ui.localoih.com,http://localhost:3000"
+  INTROSPECT_ENDPOINT_BASIC: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+  LOG_LEVEL: trace
+  PORT: "1234"
+  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local"

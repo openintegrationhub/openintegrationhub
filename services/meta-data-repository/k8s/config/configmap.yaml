@@ -4,11 +4,11 @@ metadata:
   name: meta-data-repository
   namespace: oih-dev-ns
 data:
-  INTROSPECT_TYPE: "basic"
-  RABBITMQ_URI: amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672
+  API_BASE: "/api/v1"
+  DEBUG_MODE: "false"
   INTROSPECT_ENDPOINT_BASIC: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+  INTROSPECT_TYPE: "basic"
+  LOGGING_LEVEL: "error"
   ORIGINWHITELIST: "localoih.com,http://web-ui.localoih.com,http://localhost:3000"
   PORT: "3000"
-  API_BASE: "/api/v1"
-  LOGGING_LEVEL: "error"
-  DEBUG_MODE: "false"
+  RABBITMQ_URI: amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672

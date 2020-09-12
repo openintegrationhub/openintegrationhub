@@ -4,13 +4,13 @@ metadata:
   name: secret-service
   namespace: oih-dev-ns
 data:
-  CRYPTO_DISABLED: "false"
-  INTROSPECT_TYPE: "basic"
-  INTROSPECT_ENDPOINT_BASIC: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
-  PORT: "3000"
   API_BASE: "/api/v1"
-  LOG_LEVEL: "error"
-  TTL_AUTHFLOW: "2m"
+  CRYPTO_DISABLED: "false"
   DEBUG_MODE: "false"
-  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+  INTROSPECT_ENDPOINT_BASIC: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+  INTROSPECT_TYPE: "basic"
+  LOG_LEVEL: "error"
   ORIGINWHITELIST: "localoih.com,http://web-ui.localoih.com,http://localhost:3000"
+  PORT: "3000"
+  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+  TTL_AUTHFLOW: "2m"

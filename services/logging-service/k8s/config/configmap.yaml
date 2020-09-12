@@ -5,5 +5,5 @@ metadata:
   namespace: oih-dev-ns
 data:
   GOOGLE_APPLICATION_CREDENTIALS: "/usr/lib/app/credentials/credentials.json"
-  PORT: "1234"
   LOG_LEVEL: trace
+  PORT: "1234"
