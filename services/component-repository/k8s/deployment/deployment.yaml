@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: component-repository
-          image: 'openintegrationhub/component-repository:latest'
+          image: "openintegrationhub/component-repository:latest"
           env:
             - name: MONGODB_URI
               valueFrom:

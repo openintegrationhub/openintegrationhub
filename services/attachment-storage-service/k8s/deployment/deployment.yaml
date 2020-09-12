@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: attachment-storage-service
-          image: 'openintegrationhub/attachment-storage-service:latest'
+          image: "openintegrationhub/attachment-storage-service:latest"
           env:
             - name: REDIS_CONFIG
               valueFrom:

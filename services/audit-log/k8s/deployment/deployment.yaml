@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: audit-log
-          image: openintegrationhub/audit-log:latest
+          image: "openintegrationhub/audit-log:latest"
           imagePullPolicy: Always
           ports:
             - containerPort: 3007

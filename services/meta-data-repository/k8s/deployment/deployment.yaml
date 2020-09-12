@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: meta-data-repository
-        image: openintegrationhub/meta-data-repository:latest
+        image: "openintegrationhub/meta-data-repository:latest"
         env:
         - name: IAM_TOKEN
           valueFrom:

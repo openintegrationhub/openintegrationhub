@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: secret-service
-          image: openintegrationhub/secret-service:latest
+          image: "openintegrationhub/secret-service:latest"
           env:
             - name: ORIGINWHITELIST
               value: openintegrationhub.com

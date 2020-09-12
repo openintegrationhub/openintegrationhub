@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: web-ui
-          image: openintegrationhub/web-ui:latest
+          image: "openintegrationhub/web-ui:latest"
           env:
             - name: PORT
               value: "3000"

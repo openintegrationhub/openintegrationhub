@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: snapshots-service
-          image: 'openintegrationhub/snapshots-service:latest'
+          image: "openintegrationhub/snapshots-service:latest"
           env:
             - name: MONGODB_URI
               valueFrom:

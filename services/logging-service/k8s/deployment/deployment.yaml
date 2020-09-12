@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: logging-service
-          image: 'openintegrationhub/logging-service:latest'
+          image: "openintegrationhub/logging-service:latest"
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: '/usr/lib/app/credentials/credentials.json'

@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: reports-analytics
-        image: openintegrationhub/reports-analytics:latest
+        image: "openintegrationhub/reports-analytics:latest"
         env:
         - name: LOG_LEVEL
           value: "error"

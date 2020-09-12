@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: scheduler
-          image: 'openintegrationhub/scheduler:latest'
+          image: "openintegrationhub/scheduler:latest"
           env:
             - name: MONGODB_URI
               valueFrom:

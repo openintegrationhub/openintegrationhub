@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: data-hub
-          image: 'openintegrationhub/data-hub:latest'
+          image: "openintegrationhub/data-hub:latest"
           env:
             - name: MONGODB_URI
               valueFrom:
