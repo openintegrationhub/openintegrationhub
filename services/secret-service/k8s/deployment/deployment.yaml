@@ -53,7 +53,7 @@ spec:
             - name: "INTROSPECT_ENDPOINT_BASIC"
               value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
             - name: PORT
-              value: '3000'
+              value: "3000"
             - name: API_BASE
               value: "/api/v1"
             - name: LOG_LEVEL
@@ -80,5 +80,5 @@ spec:
             timeoutSeconds: 1
           resources:
             limits:
-              cpu: '0.1'
+              cpu: "0.1"
               memory: 1000Mi
