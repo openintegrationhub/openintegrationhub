@@ -38,7 +38,7 @@ spec:
             - name: ORIGIN_WHITELIST
               value: localoih.com,http://web-ui.localoih.com,https://web-ui.localoih.com
             - name: PORT
-              value: '3000'
+              value: "3000"
             - name: API_BASE
               value: "/api/v1"
             - name: LOGGING_LEVEL

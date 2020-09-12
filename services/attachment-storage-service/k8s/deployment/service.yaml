@@ -7,7 +7,7 @@ metadata:
   namespace: oih-dev-ns
 spec:
   ports:
-    - name: '3002'
+    - name: "3002"
       port: 3002
       protocol: TCP
       targetPort: 3002

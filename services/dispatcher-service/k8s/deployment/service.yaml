@@ -8,7 +8,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-      app: dispatcher-service
+    app: dispatcher-service
   ports:
     - port: 3013
       targetPort: 3013

@@ -8,7 +8,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-      app: secret-service
+    app: secret-service
   ports:
     - port: 3000
       targetPort: 3000

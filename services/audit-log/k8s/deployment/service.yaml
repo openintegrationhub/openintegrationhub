@@ -8,7 +8,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-      app: audit-log
+    app: audit-log
   ports:
     - port: 3007
       targetPort: 3007

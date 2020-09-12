@@ -8,7 +8,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-      app: flow-repository
+    app: flow-repository
   ports:
     - port: 3001
       targetPort: 3001

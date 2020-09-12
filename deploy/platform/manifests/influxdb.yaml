@@ -16,45 +16,45 @@ spec:
         app: influxdb
     spec:
       containers:
-      - name: influx-db
-        image: influxdb:latest
-        env:
-        - name: INFLUXDB_LOGGING_LEVEL
-          value: "error"
-        - name: INFLUXDB_REPORTING_DISABLED
-          value: "true"
-        - name: INFLUXDB_DATA_QUERY_LOG_ENABLED
-          value: "false"
-        - name: INFLUXDB_DATA_TRACE_LOGGING_ENABLED
-          value: "false"
-        - name: INFLUXDB_HTTP_LOG_ENABLED
-          value: "false"
-        - name: INFLUXDB_CONTINUOUS_QUERIES_LOG_ENABLED
-          value: "false"
-        - name: INFLUXDB_DATA_ENGINE
-          value: "tsm1"
-        volumeMounts:
-        - mountPath: /var/lib/influxdb
-          name: influx-pdisk
-        ports:
-        - containerPort: 8086
-        livenessProbe:
-          httpGet:
-            path: /ping
-            port: 8086
-          initialDelaySeconds: 120
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            path: /ping
-            port: 8086
-          initialDelaySeconds: 10
-          timeoutSeconds: 1
+        - name: influx-db
+          image: influxdb:latest
+          env:
+            - name: INFLUXDB_LOGGING_LEVEL
+              value: "error"
+            - name: INFLUXDB_REPORTING_DISABLED
+              value: "true"
+            - name: INFLUXDB_DATA_QUERY_LOG_ENABLED
+              value: "false"
+            - name: INFLUXDB_DATA_TRACE_LOGGING_ENABLED
+              value: "false"
+            - name: INFLUXDB_HTTP_LOG_ENABLED
+              value: "false"
+            - name: INFLUXDB_CONTINUOUS_QUERIES_LOG_ENABLED
+              value: "false"
+            - name: INFLUXDB_DATA_ENGINE
+              value: "tsm1"
+          volumeMounts:
+            - mountPath: /var/lib/influxdb
+              name: influx-pdisk
+          ports:
+            - containerPort: 8086
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8086
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8086
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
       volumes:
-      - name: influx-pdisk
-        gcePersistentDisk:
-          pdName: timeseries-influx
-          fsType: ext4
+        - name: influx-pdisk
+          gcePersistentDisk:
+            pdName: timeseries-influx
+            fsType: ext4
 ---
 apiVersion: v1
 kind: Service

@@ -8,7 +8,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-      app: ils
+    app: ils
   ports:
     - port: 3003
       targetPort: 3003

@@ -37,7 +37,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: secret-service
-                  key: crypto_key
+                  key: cryptoKey
             # - name: IAM_OIDC_SERVICE_CLIENT_ID
             #   valueFrom:
             #     secretKeyRef:

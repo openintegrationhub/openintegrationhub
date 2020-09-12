@@ -50,7 +50,7 @@ spec:
               value: "5d2484d2a422ca001bda5690"
           resources:
             limits:
-              cpu: '0.1'
+              cpu: "0.1"
               memory: 1000Mi
           livenessProbe:
             httpGet:

@@ -8,93 +8,93 @@ metadata:
     kubernetes.io/ingress.class: "gce"
 spec:
   rules:
-  - host: iam.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: iam
-          servicePort: 3099
-  - host: skm.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: secret-service
-          servicePort: 3000
-  - host: flow-repository.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: flow-repository
-          servicePort: 3001
-  - host: auditlog.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: audit-log
-          servicePort: 3007
-  - host: metadata.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: meta-data-repository
-          servicePort: 3000
-  - host: component-repository.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: component-repository-service
-          servicePort: 1234
-  - host: webhooks.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: webhooks-service
-          servicePort: 1234
-  - host: web-ui.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: web-ui
-          servicePort: 3000
-  - host: attachment-storage-service.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: attachment-storage-service
-          servicePort: 3002
-  - host: data-hub.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: data-hub-service
-          servicePort: 1234
-  - host: ils.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: ils
-          servicePort: 3003
-  - host: dispatcher-service.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: dispatcher-service
-          servicePort: 3013
-  - host: app-directory.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: app-directory
-          servicePort: 3000
-  - host: grafana.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: grafana
-          servicePort: 80
-  - host: reports-analytics.openintegrationhub.com
-    http:
-      paths:
-      - backend:
-          serviceName: reports-analytics
-          servicePort: 3000
+    - host: iam.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: iam
+              servicePort: 3099
+    - host: skm.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: secret-service
+              servicePort: 3000
+    - host: flow-repository.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: flow-repository
+              servicePort: 3001
+    - host: auditlog.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: audit-log
+              servicePort: 3007
+    - host: metadata.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: meta-data-repository
+              servicePort: 3000
+    - host: component-repository.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: component-repository-service
+              servicePort: 1234
+    - host: webhooks.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: webhooks-service
+              servicePort: 1234
+    - host: web-ui.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: web-ui
+              servicePort: 3000
+    - host: attachment-storage-service.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: attachment-storage-service
+              servicePort: 3002
+    - host: data-hub.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: data-hub-service
+              servicePort: 1234
+    - host: ils.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: ils
+              servicePort: 3003
+    - host: dispatcher-service.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: dispatcher-service
+              servicePort: 3013
+    - host: app-directory.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: app-directory
+              servicePort: 3000
+    - host: grafana.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: grafana
+              servicePort: 80
+    - host: reports-analytics.openintegrationhub.com
+      http:
+        paths:
+          - backend:
+              serviceName: reports-analytics
+              servicePort: 3000

@@ -35,7 +35,7 @@ spec:
                   key: iamToken
           resources:
             limits:
-              cpu: '0.1'
+              cpu: "0.1"
               memory: 200Mi
           livenessProbe:
             httpGet:

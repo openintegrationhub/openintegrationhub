@@ -8,7 +8,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-      app: web-ui
+    app: web-ui
   ports:
     - port: 3000
       targetPort: 3000

@@ -22,14 +22,14 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: '/usr/lib/app/credentials/credentials.json'
+              value: "/usr/lib/app/credentials/credentials.json"
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: logging-service
                   key: iamToken
             - name: PORT
-              value: '1234'
+              value: "1234"
             - name: LOG_LEVEL
               value: trace
           resources:
@@ -38,7 +38,7 @@ spec:
               memory: 512Mi
           volumeMounts:
             - name: credentials
-              mountPath: '/usr/lib/app/credentials'
+              mountPath: "/usr/lib/app/credentials"
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           livenessProbe:

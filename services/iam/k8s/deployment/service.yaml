@@ -8,7 +8,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-      app: iam
+    app: iam
   ports:
     - port: 3099
       targetPort: 3099
