@@ -50,8 +50,6 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         imagePullPolicy: IfNotPresent
-        securityContext:
-          privileged: false
   strategy:
     type: RollingUpdate
     rollingUpdate:
