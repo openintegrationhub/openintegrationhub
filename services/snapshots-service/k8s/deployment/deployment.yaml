@@ -20,23 +20,20 @@ spec:
         - name: snapshots-service
           image: "openintegrationhub/snapshots-service:latest"
           imagePullPolicy: IfNotPresent
-          resources:
-            limits:
-              cpu: 0.1
-              memory: 512Mi
-          livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
-          readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
           envFrom:
-            [
-              { configMapRef: { name: snapshots-service } },
-              { secretRef: { name: snapshots-service } },
-            ]
+            - configMapRef: { name: snapshots-service }
+            - secretRef: { name: snapshots-service }
+          #
+          resources:
+            limits: { cpu: "0.1", memory: 512Mi }
+          livenessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
+          readinessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
   strategy:
     type: RollingUpdate
     rollingUpdate:

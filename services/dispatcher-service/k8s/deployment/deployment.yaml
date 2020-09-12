@@ -20,25 +20,17 @@ spec:
         - name: dispatcher-service
           image: "openintegrationhub/dispatcher-service:latest"
           imagePullPolicy: Always
-          ports: [{containerPort: 3013}]
+          envFrom:
+            - configMapRef: { name: dispatcher-service }
+            - secretRef: { name: dispatcher-service }
+          ports: [{ containerPort: 3013 }]
           resources:
-            limits:
-              cpu: "0.1"
-              memory: 1000Mi
+            limits: { cpu: "0.1", memory: 1024Mi }
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3013
+            httpGet: { path: "/healthcheck", port: 3013 }
             initialDelaySeconds: 120
             timeoutSeconds: 1
           readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3013
+            httpGet: { path: "/healthcheck", port: 3013 }
             initialDelaySeconds: 10
             timeoutSeconds: 1
-          envFrom:
-            [
-              { configMapRef: { name: dispatcher-service } },
-              { secretRef: { name: dispatcher-service } },
-            ]

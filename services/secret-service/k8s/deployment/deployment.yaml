@@ -20,25 +20,17 @@ spec:
         - name: secret-service
           image: "openintegrationhub/secret-service:latest"
           imagePullPolicy: Always
-          ports: [{containerPort: 3000}]
+          envFrom:
+            - configMapRef: { name: secret-service }
+            - secretRef: { name: secret-service }
+          ports: [{ containerPort: 3000 }]
+          resources:
+            limits: { cpu: "0.1", memory: 1024Mi }
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3000
+            httpGet: { path: "/healthcheck", port: 3000 }
             initialDelaySeconds: 120
             timeoutSeconds: 1
           readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3000
+            httpGet: { path: "/healthcheck", port: 3000 }
             initialDelaySeconds: 10
             timeoutSeconds: 1
-          resources:
-            limits:
-              cpu: "0.1"
-              memory: 1000Mi
-          envFrom:
-            [
-              { configMapRef: { name: secret-service } },
-              { secretRef: { name: secret-service } },
-            ]

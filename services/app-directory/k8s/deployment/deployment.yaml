@@ -20,21 +20,17 @@ spec:
         - name: app-directory
           image: "openintegrationhub/app-directory:latest"
           imagePullPolicy: Always
-          ports: [{containerPort: 3000}]
+          envFrom:
+            - configMapRef: { name: app-directory }
+            - secretRef: { name: app-directory }
+          ports: [{ containerPort: 3000 }]
+          #
+          # #
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3000
+            httpGet: { path: "/healthcheck", port: 3000 }
             initialDelaySeconds: 120
             timeoutSeconds: 1
           readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3000
+            httpGet: { path: "/healthcheck", port: 3000 }
             initialDelaySeconds: 10
             timeoutSeconds: 1
-          envFrom:
-            [
-              { configMapRef: { name: app-directory } },
-              { secretRef: { name: app-directory } },
-            ]

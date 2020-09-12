@@ -20,25 +20,17 @@ spec:
         - name: flow-repository
           image: "openintegrationhub/flow-repository:latest"
           imagePullPolicy: Always
-          ports: [{containerPort: 3001}]
+          envFrom:
+            - configMapRef: { name: flow-repository }
+            - secretRef: { name: flow-repository }
+          ports: [{ containerPort: 3001 }]
           resources:
-            limits:
-              cpu: "0.1"
-              memory: 1000Mi
+            limits: { cpu: "0.1", memory: 1024Mi }
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3001
+            httpGet: { path: "/healthcheck", port: 3001 }
             initialDelaySeconds: 120
             timeoutSeconds: 1
           readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3001
+            httpGet: { path: "/healthcheck", port: 3001 }
             initialDelaySeconds: 10
             timeoutSeconds: 1
-          envFrom:
-            [
-              { configMapRef: { name: flow-repository } },
-              { secretRef: { name: flow-repository } },
-            ]

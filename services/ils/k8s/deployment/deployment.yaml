@@ -20,22 +20,17 @@ spec:
         - name: ils
           image: "openintegrationhub/ils:latest"
           imagePullPolicy: Always
-          ports: [{containerPort: 3003}]
+          envFrom:
+            #
+            - secretRef: { name: ils }
+          ports: [{ containerPort: 3003 }]
           resources:
-            limits:
-              cpu: "0.1"
-              memory: 200Mi
+            limits: { cpu: "0.1", memory: 256Mi }
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3003
+            httpGet: { path: "/healthcheck", port: 3003 }
             initialDelaySeconds: 120
             timeoutSeconds: 1
           readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3003
+            httpGet: { path: "/healthcheck", port: 3003 }
             initialDelaySeconds: 10
             timeoutSeconds: 1
-          envFrom:
-            [{ configMapRef: { name: ils } }, { secretRef: { name: ils } }]

@@ -20,21 +20,17 @@ spec:
         - name: reports-analytics
           image: "openintegrationhub/reports-analytics:latest"
           imagePullPolicy: Always
-          ports: [{containerPort: 3000}]
+          envFrom:
+            - configMapRef: { name: reports-analytics }
+            - secretRef: { name: reports-analytics }
+          ports: [{ containerPort: 3000 }]
+          #
+          # #
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3000
+            httpGet: { path: "/healthcheck", port: 3000 }
             initialDelaySeconds: 120
             timeoutSeconds: 1
           readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3000
+            httpGet: { path: "/healthcheck", port: 3000 }
             initialDelaySeconds: 10
             timeoutSeconds: 1
-          envFrom:
-            [
-              { configMapRef: { name: reports-analytics } },
-              { secretRef: { name: reports-analytics } },
-            ]

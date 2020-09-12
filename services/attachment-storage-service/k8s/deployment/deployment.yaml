@@ -20,19 +20,20 @@ spec:
         - name: attachment-storage-service
           image: "openintegrationhub/attachment-storage-service:latest"
           imagePullPolicy: IfNotPresent
-          livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3002
-          readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3002
           envFrom:
-            [
-              { configMapRef: { name: attachment-storage-service } },
-              { secretRef: { name: attachment-storage-service } },
-            ]
+            - configMapRef: { name: attachment-storage-service }
+            - secretRef: { name: attachment-storage-service }
+          #
+          #
+          # #
+          livenessProbe:
+            httpGet: { path: "/healthcheck", port: 3002 }
+            #
+            #
+          readinessProbe:
+            httpGet: { path: "/healthcheck", port: 3002 }
+            #
+            #
   strategy:
     type: RollingUpdate
     rollingUpdate:

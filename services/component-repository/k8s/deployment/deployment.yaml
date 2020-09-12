@@ -20,19 +20,20 @@ spec:
         - name: component-repository
           image: "openintegrationhub/component-repository:latest"
           imagePullPolicy: IfNotPresent
-          livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
-          readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
           envFrom:
-            [
-              { configMapRef: { name: component-repository } },
-              { secretRef: { name: component-repository } },
-            ]
+            - configMapRef: { name: component-repository }
+            - secretRef: { name: component-repository }
+          #
+          #
+          # #
+          livenessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
+          readinessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
   strategy:
     type: RollingUpdate
     rollingUpdate:

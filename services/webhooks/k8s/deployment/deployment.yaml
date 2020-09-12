@@ -20,19 +20,20 @@ spec:
         - name: webhooks
           image: "openintegrationhub/webhooks:latest"
           imagePullPolicy: IfNotPresent
-          livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
-          readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
           envFrom:
-            [
-              { configMapRef: { name: webhooks } },
-              { secretRef: { name: webhooks } },
-            ]
+            - configMapRef: { name: webhooks }
+            - secretRef: { name: webhooks }
+          #
+          #
+          # #
+          livenessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
+          readinessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
       serviceAccountName: component-orchestrator-account
   strategy:
     type: RollingUpdate

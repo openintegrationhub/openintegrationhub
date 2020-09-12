@@ -20,19 +20,20 @@ spec:
         - name: data-hub
           image: "openintegrationhub/data-hub:latest"
           imagePullPolicy: IfNotPresent
-          livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
-          readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
           envFrom:
-            [
-              { configMapRef: { name: data-hub } },
-              { secretRef: { name: data-hub } },
-            ]
+            - configMapRef: { name: data-hub }
+            - secretRef: { name: data-hub }
+          #
+          #
+          # #
+          livenessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
+          readinessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
   strategy:
     type: RollingUpdate
     rollingUpdate:

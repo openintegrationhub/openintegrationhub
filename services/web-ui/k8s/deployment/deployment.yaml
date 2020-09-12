@@ -20,21 +20,17 @@ spec:
         - name: web-ui
           image: "openintegrationhub/web-ui:latest"
           imagePullPolicy: Always
-          ports: [{containerPort: 3000}]
+          envFrom:
+            - configMapRef: { name: web-ui }
+            #
+          ports: [{ containerPort: 3000 }]
+          resources:
+            limits: { cpu: "0.1", memory: 512Mi }
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3000
+            httpGet: { path: "/healthcheck", port: 3000 }
             initialDelaySeconds: 120
             timeoutSeconds: 1
           readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3000
+            httpGet: { path: "/healthcheck", port: 3000 }
             initialDelaySeconds: 10
             timeoutSeconds: 1
-          resources:
-            limits:
-              cpu: "0.1"
-              memory: 500Mi
-          envFrom: [{ configMapRef: { name: web-ui } }]

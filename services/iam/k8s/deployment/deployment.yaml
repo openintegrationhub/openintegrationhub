@@ -20,25 +20,24 @@ spec:
         - name: iam
           image: "openintegrationhub/iam:latest"
           imagePullPolicy: Always
-          ports: [{containerPort: 3099}]
+          envFrom:
+            - configMapRef: { name: iam }
+            - secretRef: { name: iam }
+          ports: [{ containerPort: 3099 }]
+          #
+          # #
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3099
+            httpGet: { path: "/healthcheck", port: 3099 }
             initialDelaySeconds: 120
             timeoutSeconds: 1
           readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 3099
+            httpGet: { path: "/healthcheck", port: 3099 }
             initialDelaySeconds: 10
             timeoutSeconds: 1
           volumeMounts:
             - name: oidc-certs
               mountPath: /usr/src/app/keystore
               readOnly: true
-          envFrom:
-            [{ configMapRef: { name: iam } }, { secretRef: { name: iam } }]
       volumes:
         - name: oidc-certs
           secret:

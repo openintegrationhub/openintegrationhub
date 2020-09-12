@@ -20,26 +20,23 @@ spec:
         - name: logging-service
           image: "openintegrationhub/logging-service:latest"
           imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: { name: logging-service }
+            - secretRef: { name: logging-service }
+          #
           resources:
-            limits:
-              cpu: 0.1
-              memory: 512Mi
+            limits: { cpu: "0.1", memory: 512Mi }
+          livenessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
+          readinessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
           volumeMounts:
             - name: credentials
               mountPath: "/usr/lib/app/credentials"
-          livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
-          readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
-          envFrom:
-            [
-              { configMapRef: { name: logging-service } },
-              { secretRef: { name: logging-service } },
-            ]
       volumes:
         - name: credentials
           secret:

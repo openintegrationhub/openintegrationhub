@@ -20,19 +20,20 @@ spec:
         - name: component-orchestrator
           image: "openintegrationhub/component-orchestrator:latest"
           imagePullPolicy: IfNotPresent
-          livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
-          readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: 1234
           envFrom:
-            [
-              { configMapRef: { name: component-orchestrator } },
-              { secretRef: { name: component-orchestrator } },
-            ]
+            - configMapRef: { name: component-orchestrator }
+            - secretRef: { name: component-orchestrator }
+          #
+          #
+          # #
+          livenessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
+          readinessProbe:
+            httpGet: { path: "/healthcheck", port: 1234 }
+            #
+            #
       serviceAccountName: component-orchestrator-account
   strategy:
     type: RollingUpdate
