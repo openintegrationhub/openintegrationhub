@@ -30,8 +30,6 @@ spec:
             httpGet:
               path: /healthcheck
               port: 1234
-          securityContext:
-            privileged: false
           envFrom:
             [
               { configMapRef: { name: component-repository } },

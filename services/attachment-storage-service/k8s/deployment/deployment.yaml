@@ -30,8 +30,6 @@ spec:
             httpGet:
               path: /healthcheck
               port: 3002
-          securityContext:
-            privileged: false
           envFrom:
             [
               { configMapRef: { name: attachment-storage-service } },
