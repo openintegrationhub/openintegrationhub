@@ -16,7 +16,6 @@ spec:
       labels:
         app: data-hub
     spec:
-      restartPolicy: Always
       terminationGracePeriodSeconds: 30
       containers:
       - name: data-hub

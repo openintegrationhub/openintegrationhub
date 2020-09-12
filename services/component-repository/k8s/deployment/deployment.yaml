@@ -16,7 +16,6 @@ spec:
       labels:
         app: component-repository
     spec:
-      restartPolicy: Always
       terminationGracePeriodSeconds: 30
       containers:
       - name: component-repository

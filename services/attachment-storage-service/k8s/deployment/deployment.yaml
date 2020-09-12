@@ -16,7 +16,6 @@ spec:
       labels:
         app: attachment-storage-service
     spec:
-      restartPolicy: Always
       terminationGracePeriodSeconds: 30
       containers:
       - name: attachment-storage-service

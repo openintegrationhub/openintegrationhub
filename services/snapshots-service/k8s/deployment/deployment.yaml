@@ -16,7 +16,6 @@ spec:
       labels:
         app: snapshots-service
     spec:
-      restartPolicy: Always
       terminationGracePeriodSeconds: 30
       containers:
       - name: snapshots-service
