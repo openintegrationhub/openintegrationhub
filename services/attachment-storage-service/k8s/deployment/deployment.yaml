@@ -20,21 +20,6 @@ spec:
         - name: attachment-storage-service
           image: "openintegrationhub/attachment-storage-service:latest"
           imagePullPolicy: IfNotPresent
-          env:
-            - name: REDIS_CONFIG
-              valueFrom:
-                secretKeyRef:
-                  name: attachment-storage-service
-                  key: redisConfig
-            - name: PORT
-              value: "3002"
-            - name: IAM_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: attachment-storage-service
-                  key: iamToken
-            - name: LOG_LEVEL
-              value: trace
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           livenessProbe:
@@ -47,6 +32,11 @@ spec:
               port: 3002
           securityContext:
             privileged: false
+          envFrom:
+            [
+              { configMapRef: { name: attachment-storage-service } },
+              { secretRef: { name: attachment-storage-service } },
+            ]
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:

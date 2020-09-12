@@ -20,25 +20,6 @@ spec:
         - name: web-ui
           image: "openintegrationhub/web-ui:latest"
           imagePullPolicy: Always
-          env:
-            - name: PORT
-              value: "3000"
-            - name: ENDPOINT_IAM
-              value: "http://iam.localoih.com"
-            - name: ENDPOINT_FLOW
-              value: "http://flow-repository.localoih.com"
-            - name: ENDPOINT_COMPONENT
-              value: "http://component-repository.localoih.com"
-            - name: ENDPOINT_SECRETS
-              value: "http://skm.localoih.com/api/v1"
-            - name: ENDPOINT_DISPATCHER
-              value: "http://dispatcher-service.localoih.com"
-            - name: ENDPOINT_METADATA
-              value: "http://metadata.localoih.com/api/v1"
-            - name: ENDPOINT_APP_DIRECTORY
-              value: "http://app-directory.localoih.com/api/v1"
-            - name: ENDPOINT_WEBHOOKS
-              value: "http://webhooks.localoih.com"
           ports:
             - containerPort: 3000
           livenessProbe:
@@ -57,3 +38,4 @@ spec:
             limits:
               cpu: "0.1"
               memory: 500Mi
+          envFrom: [{ configMapRef: { name: web-ui } }]

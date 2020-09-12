@@ -22,17 +22,6 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3003
-          env:
-            - name: MONGODB_URL
-              valueFrom:
-                secretKeyRef:
-                  name: ils
-                  key: mongoUrl
-            - name: SCHEMA_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: ils
-                  key: iamToken
           resources:
             limits:
               cpu: "0.1"
@@ -49,3 +38,5 @@ spec:
               port: 3003
             initialDelaySeconds: 10
             timeoutSeconds: 1
+          envFrom:
+            [{ configMapRef: { name: ils } }, { secretRef: { name: ils } }]

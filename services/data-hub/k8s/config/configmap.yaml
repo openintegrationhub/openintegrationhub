@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-hub
+  namespace: oih-dev-ns
+data:
+  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local"
+  PORT: "1234"
+  LOG_LEVEL: trace

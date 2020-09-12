@@ -20,23 +20,6 @@ spec:
         - name: snapshots-service
           image: "openintegrationhub/snapshots-service:latest"
           imagePullPolicy: IfNotPresent
-          env:
-            - name: MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: snapshots-service
-                  key: mongoUrl
-            - name: RABBITMQ_URI
-              value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local"
-            - name: IAM_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: snapshots-service
-                  key: iamToken
-            - name: PORT
-              value: "1234"
-            - name: LOG_LEVEL
-              value: trace
           resources:
             limits:
               cpu: 0.1
@@ -53,6 +36,11 @@ spec:
               port: 1234
           securityContext:
             privileged: false
+          envFrom:
+            [
+              { configMapRef: { name: snapshots-service } },
+              { secretRef: { name: snapshots-service } },
+            ]
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:

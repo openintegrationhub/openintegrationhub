@@ -4,4 +4,12 @@ metadata:
   name: web-ui
   namespace: oih-dev-ns
 data:
-  dummy: "value"
+  PORT: "3000"
+  ENDPOINT_IAM: "http://iam.localoih.com"
+  ENDPOINT_FLOW: "http://flow-repository.localoih.com"
+  ENDPOINT_COMPONENT: "http://component-repository.localoih.com"
+  ENDPOINT_SECRETS: "http://skm.localoih.com/api/v1"
+  ENDPOINT_DISPATCHER: "http://dispatcher-service.localoih.com"
+  ENDPOINT_METADATA: "http://metadata.localoih.com/api/v1"
+  ENDPOINT_APP_DIRECTORY: "http://app-directory.localoih.com/api/v1"
+  ENDPOINT_WEBHOOKS: "http://webhooks.localoih.com"

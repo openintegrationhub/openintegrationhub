@@ -20,18 +20,6 @@ spec:
         - name: logging-service
           image: "openintegrationhub/logging-service:latest"
           imagePullPolicy: IfNotPresent
-          env:
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: "/usr/lib/app/credentials/credentials.json"
-            - name: IAM_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: logging-service
-                  key: iamToken
-            - name: PORT
-              value: "1234"
-            - name: LOG_LEVEL
-              value: trace
           resources:
             limits:
               cpu: 0.1
@@ -51,6 +39,11 @@ spec:
               port: 1234
           securityContext:
             privileged: false
+          envFrom:
+            [
+              { configMapRef: { name: logging-service } },
+              { secretRef: { name: logging-service } },
+            ]
       volumes:
         - name: credentials
           secret:
