@@ -20,8 +20,7 @@ spec:
         - name: ils
           image: "openintegrationhub/ils:latest"
           imagePullPolicy: Always
-          ports:
-            - containerPort: 3003
+          ports: [{containerPort: 3003}]
           resources:
             limits:
               cpu: "0.1"

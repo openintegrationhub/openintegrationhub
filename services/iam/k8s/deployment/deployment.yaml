@@ -20,8 +20,7 @@ spec:
         - name: iam
           image: "openintegrationhub/iam:latest"
           imagePullPolicy: Always
-          ports:
-            - containerPort: 3099
+          ports: [{containerPort: 3099}]
           livenessProbe:
             httpGet:
               path: /healthcheck

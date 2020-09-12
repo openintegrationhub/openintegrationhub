@@ -20,8 +20,7 @@ spec:
         - name: secret-service
           image: "openintegrationhub/secret-service:latest"
           imagePullPolicy: Always
-          ports:
-            - containerPort: 3000
+          ports: [{containerPort: 3000}]
           livenessProbe:
             httpGet:
               path: /healthcheck
