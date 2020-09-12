@@ -33,7 +33,6 @@ spec:
               { configMapRef: { name: attachment-storage-service } },
               { secretRef: { name: attachment-storage-service } },
             ]
-      restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:
     type: RollingUpdate

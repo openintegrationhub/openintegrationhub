@@ -47,7 +47,6 @@ spec:
             items:
               - key: GCLOUD_CREDENTIALS
                 path: credentials.json
-      restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:
     type: RollingUpdate

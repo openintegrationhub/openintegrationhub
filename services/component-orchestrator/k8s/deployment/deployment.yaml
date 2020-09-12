@@ -34,7 +34,6 @@ spec:
               { secretRef: { name: component-orchestrator } },
             ]
       serviceAccountName: component-orchestrator-account
-      restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:
     type: RollingUpdate

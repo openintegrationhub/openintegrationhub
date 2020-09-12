@@ -33,7 +33,6 @@ spec:
               { configMapRef: { name: scheduler } },
               { secretRef: { name: scheduler } },
             ]
-      restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:
     type: RollingUpdate

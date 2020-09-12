@@ -37,7 +37,6 @@ spec:
               { configMapRef: { name: snapshots-service } },
               { secretRef: { name: snapshots-service } },
             ]
-      restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:
     type: RollingUpdate
