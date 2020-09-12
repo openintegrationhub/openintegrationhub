@@ -34,7 +34,6 @@ spec:
               { secretRef: { name: webhooks } },
             ]
       serviceAccountName: component-orchestrator-account
-      terminationGracePeriodSeconds: 30
   strategy:
     type: RollingUpdate
     rollingUpdate:

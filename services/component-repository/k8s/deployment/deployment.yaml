@@ -33,7 +33,6 @@ spec:
               { configMapRef: { name: component-repository } },
               { secretRef: { name: component-repository } },
             ]
-      terminationGracePeriodSeconds: 30
   strategy:
     type: RollingUpdate
     rollingUpdate:

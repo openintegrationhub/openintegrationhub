@@ -33,7 +33,6 @@ spec:
               { configMapRef: { name: data-hub } },
               { secretRef: { name: data-hub } },
             ]
-      terminationGracePeriodSeconds: 30
   strategy:
     type: RollingUpdate
     rollingUpdate:
