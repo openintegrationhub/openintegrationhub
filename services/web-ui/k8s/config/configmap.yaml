@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-ui
+  namespace: oih-dev-ns
+data:
+  dummy: "value"
