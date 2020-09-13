@@ -4,3 +4,32 @@ resources:
   - ../../platform
   - ../../config
   - ../../services
+secretGenerator:
+  - { type: Opaque, behavior: merge, name: flow-repository,            envs: [ config/flow-repository.secret               ] }
+  - { type: Opaque, behavior: merge, name: audit-log,                  envs: [ config/audit-log.secret                     ] }
+  - { type: Opaque, behavior: merge, name: meta-data-repository,       envs: [ config/meta-data-repository.secret          ] }
+  - { type: Opaque, behavior: merge, name: attachment-storage-service, envs: [ config/attachment-storage-service.secret    ] }
+  - { type: Opaque, behavior: merge, name: logging-service,            envs: [ config/logging-service.secret               ] }
+  - { type: Opaque, behavior: merge, name: data-hub,                   envs: [ config/data-hub.secret                      ] }
+  - { type: Opaque, behavior: merge, name: ils,                        envs: [ config/ils.secret                           ] }
+  - { type: Opaque, behavior: merge, name: dispatcher-service,         envs: [ config/dispatcher-service.secret            ] }
+  - { type: Opaque, behavior: merge, name: component-repository,       envs: [ config/component-repository.secret          ] }
+  - { type: Opaque, behavior: merge, name: snapshots-service,          envs: [ config/snapshots-service.secret             ] }
+  - { type: Opaque, behavior: merge, name: secret-service,             envs: [ config/secret-service.secret                ] }
+  - { type: Opaque, behavior: merge, name: component-orchestrator,     envs: [ config/component-orchestrator.secret        ] }
+  - { type: Opaque, behavior: merge, name: reports-analytics,          envs: [ config/reports-analytics.secret             ] }
+configMapGenerator:
+  - {               behavior: merge, name: flow-repository,            envs: [ config/flow-repository.configmap            ] }
+  - {               behavior: merge, name: audit-log,                  envs: [ config/audit-log.configmap                  ] }
+  - {               behavior: merge, name: meta-data-repository,       envs: [ config/meta-data-repository.configmap       ] }
+  - {               behavior: merge, name: attachment-storage-service, envs: [ config/attachment-storage-service.configmap ] }
+  - {               behavior: merge, name: logging-service,            envs: [ config/logging-service.configmap            ] }
+  - {               behavior: merge, name: data-hub,                   envs: [ config/data-hub.configmap                   ] }
+  # - {               behavior: merge, name: ils,                        envs: [ config/ils.configmap                        ] }
+  - {               behavior: merge, name: dispatcher-service,         envs: [ config/dispatcher-service.configmap         ] }
+  - {               behavior: merge, name: component-repository,       envs: [ config/component-repository.configmap       ] }
+  - {               behavior: merge, name: snapshots-service,          envs: [ config/snapshots-service.configmap          ] }
+  - {               behavior: merge, name: secret-service,             envs: [ config/secret-service.configmap             ] }
+  - {               behavior: merge, name: component-orchestrator,     envs: [ config/component-orchestrator.configmap     ] }
+  - {               behavior: merge, name: reports-analytics,          envs: [ config/reports-analytics.configmap          ] }
+namespace: oih-staging-ns
