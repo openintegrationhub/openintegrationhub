@@ -25,3 +25,13 @@ generate-config ns="oih-dev-ns" overlay="overlays/dev":
 	  yq r -j "$secret" | jfq "$SecretJsonataExpr" >> "$file"
 	done
 
+# Find REPLACE ME strings in config
+find-replace-me overlay="overlays/dev":
+	@rg --sortr path 'REPLACE ME' {{overlay}}
+
+# Set all token values at once
+replace-me-with overlay="overlays/dev" replacement="yourtoken":
+	@rg -Nl 'IAM_TOKEN=REPLACE ME' {{overlay}} | xargs -n1 -I% sed -i 's/REPLACE ME/{{replacement}}/g' %
+	@rg -Nl 'FLOW_TOKEN=REPLACE ME' {{overlay}} | xargs -n1 -I% sed -i 's/REPLACE ME/{{replacement}}/g' %
+	# @rg -Nl 'GRAFANA_TOKEN=REPLACE ME' {{overlay}} | xargs -n1 -I% sed -i 's/REPLACE ME/{{replacement}}/g' %
+
