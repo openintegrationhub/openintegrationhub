@@ -35,3 +35,10 @@ replace-me-with overlay="overlays/dev" replacement="yourtoken":
 	@rg -Nl 'FLOW_TOKEN=REPLACE ME' {{overlay}} | xargs -n1 -I% sed -i 's/REPLACE ME/{{replacement}}/g' %
 	# @rg -Nl 'GRAFANA_TOKEN=REPLACE ME' {{overlay}} | xargs -n1 -I% sed -i 's/REPLACE ME/{{replacement}}/g' %
 
+# display current kube context
+kubecontext:
+	@echo $(tput bold)Current kubecontext is $(tput setaf 3)$(kubectl config current-context)$(tput sgr0)
+	
+# deploy overlay to current kubecontext
+deploy overlay="overlays/dev": kubecontext
+	kustomize build {{overlay}} | kubectl apply -f -
