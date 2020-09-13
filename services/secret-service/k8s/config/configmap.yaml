@@ -2,15 +2,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: secret-service
-  namespace: oih-dev-ns
+  namespace: default
 data:
   API_BASE: "/api/v1"
   CRYPTO_DISABLED: "false"
   DEBUG_MODE: "false"
-  INTROSPECT_ENDPOINT_BASIC: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+  INTROSPECT_ENDPOINT_BASIC: "http://iam.default.svc.cluster.local:3099/api/v1/tokens/introspect"
   INTROSPECT_TYPE: "basic"
   LOG_LEVEL: "error"
   ORIGINWHITELIST: "localoih.com,http://web-ui.localoih.com,http://localhost:3000"
   PORT: "3000"
-  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.default.svc.cluster.local:5672"
   TTL_AUTHFLOW: "2m"

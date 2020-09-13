@@ -4,7 +4,7 @@ metadata:
   labels:
     app: meta-data-repository
   name: meta-data-repository
-  namespace: oih-dev-ns
+  namespace: default
 spec:
   type: NodePort
   selector:

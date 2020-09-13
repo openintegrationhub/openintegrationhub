@@ -4,7 +4,7 @@ metadata:
   labels:
     app: reports-analytics
   name: reports-analytics
-  namespace: oih-dev-ns
+  namespace: default
 spec:
   type: NodePort
   selector:

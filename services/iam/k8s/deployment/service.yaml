@@ -4,7 +4,7 @@ metadata:
   labels:
     app: iam
   name: iam
-  namespace: oih-dev-ns
+  namespace: default
 spec:
   type: NodePort
   selector:

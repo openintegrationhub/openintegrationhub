@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: data-hub
-  namespace: oih-dev-ns
+  namespace: default
   labels:
     app: data-hub
 spec:

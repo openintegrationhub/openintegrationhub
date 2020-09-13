@@ -2,10 +2,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: reports-analytics
-  namespace: oih-dev-ns
+  namespace: default
 data:
   GRAFANA_URL: "https://grafana.openintegrationhub.com"
   INFLUXDB_DATABASE: "statistics"
-  INFLUX_HOST: "influxdb.oih-dev-ns.svc.cluster.local"
+  INFLUX_HOST: "influxdb.default.svc.cluster.local"
   LOG_LEVEL: "error"
-  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.default.svc.cluster.local:5672"

@@ -4,7 +4,7 @@ metadata:
   labels:
     app: data-hub-service
   name: data-hub-service
-  namespace: oih-dev-ns
+  namespace: default
 spec:
   ports:
     - name: "1234"

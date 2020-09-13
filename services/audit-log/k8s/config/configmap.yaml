@@ -2,10 +2,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: audit-log
-  namespace: oih-dev-ns
+  namespace: default
 data:
   EXCHANGE_NAME: "audit-logs"
   EXCHANGE_TOPIC: "logs"
-  INTROSPECT_ENDPOINT_BASIC: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+  INTROSPECT_ENDPOINT_BASIC: "http://iam.default.svc.cluster.local:3099/api/v1/tokens/introspect"
   INTROSPECT_TYPE: "basic"
-  QUEUE_URL: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+  QUEUE_URL: "amqp://guest:guest@rabbitmq-service.default.svc.cluster.local:5672"

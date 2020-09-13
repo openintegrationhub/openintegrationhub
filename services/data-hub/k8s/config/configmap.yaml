@@ -2,8 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: data-hub
-  namespace: oih-dev-ns
+  namespace: default
 data:
   LOG_LEVEL: trace
   PORT: "1234"
-  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local"
+  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.default.svc.cluster.local"

@@ -4,7 +4,7 @@ metadata:
   labels:
     app: webhooks-service
   name: webhooks-service
-  namespace: oih-dev-ns
+  namespace: default
 spec:
   ports:
     - name: "1234"

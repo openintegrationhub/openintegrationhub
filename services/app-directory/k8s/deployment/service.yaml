@@ -4,7 +4,7 @@ metadata:
   labels:
     app: app-directory
   name: app-directory
-  namespace: oih-dev-ns
+  namespace: default
 spec:
   type: NodePort
   selector:

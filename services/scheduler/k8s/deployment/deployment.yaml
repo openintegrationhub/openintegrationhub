@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: scheduler
-  namespace: oih-dev-ns
+  namespace: default
   labels:
     app: scheduler
 spec:

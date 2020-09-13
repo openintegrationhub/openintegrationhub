@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: attachment-storage-service
-  namespace: oih-dev-ns
+  namespace: default
 data:
   LOG_LEVEL: trace
   PORT: "3002"

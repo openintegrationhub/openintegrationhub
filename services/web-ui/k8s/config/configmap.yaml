@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: web-ui
-  namespace: oih-dev-ns
+  namespace: default
 data:
   ENDPOINT_APP_DIRECTORY: "http://app-directory.localoih.com/api/v1"
   ENDPOINT_COMPONENT: "http://component-repository.localoih.com"

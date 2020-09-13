@@ -4,7 +4,7 @@ metadata:
   labels:
     app: attachment-storage-service
   name: attachment-storage-service
-  namespace: oih-dev-ns
+  namespace: default
 spec:
   ports:
     - name: "3002"
