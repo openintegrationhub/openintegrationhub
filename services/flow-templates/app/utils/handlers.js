@@ -72,7 +72,6 @@ async function gdprAnonymise(id) {
   return true;
 }
 
-
 module.exports = {
   flowStarted, flowStopped, gdprAnonymise, cleanupOrphans,
 };

@@ -52,7 +52,6 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
     pageNumber = parseInt(req.query.page.number, 10);
   }
 
-
   // filter[status] 1 0
   if (req.query.filter && req.query.filter.status !== undefined) {
     if (req.query.filter.status === '1') {
@@ -112,7 +111,6 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   if (response.data.length === 0 && !res.headersSent) {
     return res.status(404).send({ errors: [{ message: 'No flows found', code: 404 }] });
   }
-
 
   response.meta.page = pageNumber;
   response.meta.perPage = pageSize;
@@ -242,7 +240,6 @@ router.get('/:id', jsonParser, can(config.flowReadPermission), async (req, res) 
     res.status(200).send(response);
   }
 });
-
 
 // Deletes a flow
 router.delete('/:id', can(config.flowWritePermission), jsonParser, async (req, res) => {

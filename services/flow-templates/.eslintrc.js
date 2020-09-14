@@ -2,21 +2,22 @@ module.exports = {
   "rules": {
     "no-console": "off",
     "prefer-destructuring": "off",
-    },
+    "no-async-promise-executor": 0
+  },
   "env": {
-      es6: true,
-      node: true,
-      mocha: true,
-      "jest/globals": true
+    es6: true,
+    node: true,
+    mocha: true,
+    "jest/globals": true
   },
   "plugins": [
-      "json",
-      "mocha",
-      "jest"
+    "json",
+    "mocha",
+    "jest"
   ],
   "parserOptions": {
-      "ecmaVersion": 8,
-      "sourceType": "module"
+    "ecmaVersion": 8,
+    "sourceType": "module"
   },
   "extends": "airbnb-base"
 }

@@ -25,7 +25,6 @@ const mainServer = new Server();
 
 const log = require('../app/config/logger'); // eslint-disable-line
 
-
 const adminId = token.adminToken.value.sub;
 const guestId = token.guestToken.value.sub;
 
@@ -482,7 +481,6 @@ describe('Flow Validation', () => {
   });
 });
 
-
 describe('Flow Operations', () => {
   test('should add a flow', async () => {
     const res = await request
@@ -528,7 +526,6 @@ describe('Flow Operations', () => {
 
     flowId1 = j.data.id;
   });
-
 
   test('should get the new flow', async () => {
     const res = await request
@@ -717,7 +714,6 @@ describe('Flow Operations', () => {
     expect(j.data[0]).toHaveProperty('id');
   });
 
-
   test('should update flow', async () => {
     const res = await request
       .patch(`/flows/${flowId1}`)
@@ -806,7 +802,6 @@ describe('Flow Operations', () => {
       });
     expect(res.status).toEqual(409);
   });
-
 
   test('should stop a flow', async () => {
     const res = await request
