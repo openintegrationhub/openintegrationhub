@@ -21,11 +21,13 @@ class OIHComponentsDao extends ComponentsDao {
 
     async findById(compId) {
 
-        const cachedComponent = this._cache.get(compId)
+        if (this._config.get('CACHE_COMPONENT_IGNORE') !== 'true') {
+            const cachedComponent = this._cache.get(compId)
 
-        if (cachedComponent) {
-            this._logger.trace({ compId }, 'Returning cached component');
-            return cachedComponent;
+            if (cachedComponent) {
+                this._logger.trace({ compId }, 'Returning cached component');
+                return cachedComponent;
+            }
         }
 
         const url = this._getComponentRepoUrl(`/components/${compId}`);
