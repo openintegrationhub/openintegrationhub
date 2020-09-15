@@ -2,7 +2,7 @@ module.exports = [
   {
     distribution: {
       type: 'docker',
-      image: 'openintegrationhub/dev-connector:latest',
+      image: 'oih/connector:latest',
     },
     isGlobal: true,
     access: 'public',
@@ -10,6 +10,27 @@ module.exports = [
     description: 'A component just for testing',
     descriptor: {
       replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/connector:latest',
+    },
+    isGlobal: true,
+    access: 'public',
+    name: 'component2',
+    description: 'A component just for testing',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
     },
     owners: [
       {
@@ -23,9 +44,9 @@ module.exports = [
       type: 'docker',
       image: 'openintegrationhub/dev-connector:latest',
     },
-    isGlobal: true,
+    isGlobal: false,
     access: 'public',
-    name: 'component2',
+    name: 'component3',
     description: 'A component just for testing',
     descriptor: {
       replicas: 1,

@@ -145,6 +145,8 @@ services:
       TICK_INTERVAL: 10000
       KUBE_CONFIG: ../../dev-tools/docker-compose/src/setup/.kube/config
       LISTEN_PORT: ${DEV_COMPONENT_ORCHESTRATOR_PORT}
+
+      CACHE_COMPONENT_IGNORE: "false"
     ports:
       - ${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}:${DEV_COMPONENT_ORCHESTRATOR_PORT}
     volumes:

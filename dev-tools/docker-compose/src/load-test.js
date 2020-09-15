@@ -1,16 +1,13 @@
 const fetch = require('node-fetch')
 const { services } = require('./config')
 const serviceAccounts = require('./data/service-accounts')
-const { waitForStatus, login, checkTools } = require('./helper')
+const { login } = require('./helper')
 
-checkTools([
-  'docker',
-  'docker-compose',
-  'minikube',
-  'mongo',
-  'minikube',
-  'simpleproxy',
-])
+async function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
 
 process.stdin.resume() // so the program will not close instantly
 
@@ -32,10 +29,9 @@ process.on('SIGUSR2', exitHandler.bind(null))
 process.on('uncaughtException', exitHandler.bind(null))
 
 async function run() {
-  const iamBase = `http://localhost:${services.iam.externalPort}`
   const flowRepoBase = `http://localhost:${services.flowRepository.externalPort}`
+  const componentRepoBase = `http://localhost:${services.componentRepository.externalPort}`
   const webhooksBase = `http://localhost:${services.webhooks.externalPort}`
-  await waitForStatus({ url: iamBase, status: 200 })
 
   // obtain service account token from default service account (IAM_TOKEN)
 
@@ -45,7 +41,8 @@ async function run() {
 
   const { token } = await login({ username, password })
 
-  const response = await fetch(`${flowRepoBase}/flows`, {
+  const params = new URLSearchParams({ 'page[size]': 1000 })
+  const response = await fetch(`${flowRepoBase}/flows?${params}`, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -55,21 +52,20 @@ async function run() {
   })
 
   const flows = (await response.json()).data
-  //   console.log(flows)
-  //   for (const flow of flows) {
-  //     await fetch(`${flowRepoBase}/flows/${flow.id}/start`, {
-  //       method: 'POST',
-  //       headers: {
-  //         Accept: 'application/json',
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //   }
 
-  setInterval(() => {
-    flows.forEach((flow) => {
-      fetch(`${webhooksBase}/hook/${flow.id}`, {
+  console.log(
+    `active: ${flows.filter((flow) => flow.status === 'active').length}`
+  )
+  console.log(
+    `inactive: ${flows.filter((flow) => flow.status === 'inactive').length}`
+  )
+
+  const started = {}
+  let runTest = true
+
+  for (const flow of flows) {
+    if (flow.status === 'inactive' && !flow.cron) {
+      await fetch(`${flowRepoBase}/flows/${flow.id}/start`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -77,13 +73,80 @@ async function run() {
           Authorization: `Bearer ${token}`,
         },
       })
-    })
-  }, 5000)
+      runTest = false
+    }
+
+    for (const node of flow.graph.nodes) {
+      if (!started[node.componentId]) {
+        const resp = await fetch(
+          `${componentRepoBase}/components/${node.componentId}`,
+          {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        const component = (await resp.json()).data
+
+        if (component.isGlobal && !component.active) {
+          await fetch(
+            `${componentRepoBase}/components/global/${node.componentId}/start`,
+            {
+              method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          runTest = false
+        }
+        started[node.componentId] = true
+      }
+    }
+  }
+
+  let iterations = 0
+  let error = 0
+  let success = 0
+  const max = 10
+
+  if (runTest) {
+    while (iterations < max) {
+      for (const flow of flows) {
+        fetch(`${webhooksBase}/hook/${flow.id}`, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then(() => {
+            success++
+          })
+          .catch(() => {
+            error++
+          })
+          .finally(() => {
+            console.log(success, error)
+          })
+      }
+
+      iterations++
+    }
+  } else {
+    process.exit(0)
+  }
 
   // get flows
 }
 
-;(async () => {
+; (async () => {
   try {
     await run()
   } catch (err) {
