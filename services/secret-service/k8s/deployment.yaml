@@ -31,8 +31,8 @@ spec:
             - name: CRYPTO_KEY
               valueFrom:
                 secretKeyRef:
-                  name: crypto_key
-                  key: secret-service
+                  name: secret-service
+                  key: crypto_key
             # - name: IAM_OIDC_SERVICE_CLIENT_ID
             #   value: 8ce00058-5f75-435f-9026-ad952480e15a
             # - name: IAM_OIDC_SERVICE_CLIENT_SECRET
