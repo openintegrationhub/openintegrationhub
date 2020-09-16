@@ -42,7 +42,7 @@ spec:
               value: debug
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-           volumeMounts:
+          volumeMounts:
             - name: code
               mountPath: /usr/src/app
               subPath: services/scheduler
