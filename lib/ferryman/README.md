@@ -80,7 +80,9 @@ Then, inside your processAction, call the `transform` function once for each dat
 - cfg: Object. The `cfg` object that you received in your processAction function. This allows users of your component to configure its transformation. In particular, two attributes of cfg are checked:
     - skipTransformation: If set to `true`, the transformation will be skipped entirely, and the object will be returned unchanged
     - customMapping: Allows users to inject a custom jsonata mapping. If set, will use this custom mapping instead of any defaultMapping
-- defaultMapping: Function. If you provide any default transformations as part of your connectors, simply pass them here as a function. `transform` will then execute that function with `object` as the parameter
+- defaultMapping: Function. If you provide any default transformations as part of your connectors, simply pass the relevant one here as a function. `transform` will then execute that function with `object` as its parameter.
+
+`transform` will return an object transformed according to either the custom or default mapping passed to it. If neither a custom nor default mapping is provided, then it simply returns the original `object` unchanged.
 
 ### Further Information
 
