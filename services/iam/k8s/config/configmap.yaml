@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iam
+  namespace: oih-dev-ns
+data:
+  IAM_ACC_ADMIN_USERNAME: admin@openintegrationhub.com
+  IAM_ACC_SERVICE_ACCOUNT_USERNAME: service-oih-iam@openintegrationhub.com
+  IAM_AUTH_TYPE: basic
+  IAM_BASEURL: "https://iam.openintegrationhub.com"
+  IAM_JWT_AUDIENCE: openintegrationhub.com
+  IAM_JWT_COOKIENAME: oih-iam
+  IAM_ORIGINWHITELIST: "openintegrationhub.com,iam.oih-dev-ns.svc.cluster.local:3099"
+  IAM_PORT: "3099"
+  IAM_SERVICE_CLIENT_ID: 8ce00058-5f75-435f-9026-ad952480e15a
+  NODE_ENV: production
+  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"

@@ -21,21 +21,20 @@ spec:
       containers:
       - name: attachment-storage-service
         image: "openintegrationhub/attachment-storage-service:latest"
+        envFrom:
+        - configMapRef:
+            name: attachment-storage-service
         env:
         - name: REDIS_CONFIG
           valueFrom:
             secretKeyRef:
               name: attachment-storage-service
               key: REDIS_CONFIG
-        - name: PORT
-          value: "3002"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
               name: attachment-storage-service
               key: IAM_TOKEN
-        - name: LOG_LEVEL
-          value: trace
         resources:
           limits:
             cpu: 0.1
