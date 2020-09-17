@@ -21,6 +21,9 @@ spec:
       containers:
       - name: data-hub
         image: "openintegrationhub/data-hub:latest"
+        envFrom:
+        - configMapRef:
+            name: data-hub
         env:
         - name: MONGODB_URI
           valueFrom:
@@ -32,15 +35,11 @@ spec:
             secretKeyRef:
               name: data-hub
               key: RABBITMQ_URI
-        - name: PORT
-          value: "1234"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
               name: data-hub
               key: IAM_TOKEN
-        - name: LOG_LEVEL
-          value: trace
         resources:
           limits:
             cpu: 0.1

@@ -15,25 +15,10 @@ spec:
         image: openintegrationhub/web-ui:latest
         ports:
         - containerPort: 3000
-        env:
-        - name: PORT
-          value: "3000"
-        - name: ENDPOINT_SECRETS
-          value: "https://skm.openintegrationhub.com/api/v1"
-        - name: ENDPOINT_IAM
-          value: "https://iam.openintegrationhub.com"
-        - name: ENDPOINT_FLOW
-          value: "https://flow-repository.openintegrationhub.com"
-        - name: ENDPOINT_DISPATCHER
-          value: "https://dispatcher-service.openintegrationhub.com"
-        - name: ENDPOINT_METADATA
-          value: "https://metadata.openintegrationhub.com/api/v1"
-        - name: ENDPOINT_APP_DIRECTORY
-          value: "https://app-directory.openintegrationhub.com/api/v1"
-        - name: ENDPOINT_COMPONENT
-          value: "https://component-repository.openintegrationhub.com"
-        - name: ENDPOINT_WEBHOOKS
-          value: "https://webhooks.openintegrationhub.com"
+        envFrom:
+        - configMapRef:
+            name: web-ui
+        env: []
         resources:
           limits:
             cpu: "0.1"

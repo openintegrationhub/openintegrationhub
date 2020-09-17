@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logging-service
+  namespace: oih-dev-ns
+data:
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/lib/app/credentials/credentials.json
+  LOG_LEVEL: trace
+  PORT: "1234"

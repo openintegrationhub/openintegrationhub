@@ -21,18 +21,15 @@ spec:
       containers:
       - name: logging-service
         image: "openintegrationhub/logging-service:latest"
+        envFrom:
+        - configMapRef:
+            name: logging-service
         env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: "/usr/lib/app/credentials/credentials.json"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
               name: logging-service
               key: IAM_TOKEN
-        - name: PORT
-          value: "1234"
-        - name: LOG_LEVEL
-          value: trace
         resources:
           limits:
             cpu: 0.1

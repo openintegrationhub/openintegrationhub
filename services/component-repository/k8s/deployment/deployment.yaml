@@ -21,27 +21,20 @@ spec:
       containers:
       - name: component-repository
         image: "openintegrationhub/component-repository:latest"
+        envFrom:
+        - configMapRef:
+            name: component-repository
         env:
         - name: MONGODB_URI
           valueFrom:
             secretKeyRef:
               name: component-repository
               key: MONGODB_URI
-        - name: RABBITMQ_URI
-          value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local"
-        - name: PORT
-          value: "1234"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
               name: component-repository
               key: IAM_TOKEN
-        - name: LOG_LEVEL
-          value: trace
-        - name: "INTROSPECT_ENDPOINT_BASIC"
-          value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
-        - name: CORS_ORIGIN_WHITELIST
-          value: "openintegrationhub.com,http://web-ui.openintegrationhub.com"
         resources:
           limits:
             cpu: 0.1
