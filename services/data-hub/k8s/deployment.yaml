@@ -26,10 +26,10 @@ spec:
                   name: data-hub
                   key: MONGODB_URI
             - name: RABBITMQ_URI
-                valueFrom:
-                  secretKeyRef:
-                    name: data-hub
-                    key: RABBITMQ_URI
+              valueFrom:
+                secretKeyRef:
+                  name: data-hub
+                  key: RABBITMQ_URI
             - name: PORT
               value: '1234'
             - name: IAM_TOKEN
