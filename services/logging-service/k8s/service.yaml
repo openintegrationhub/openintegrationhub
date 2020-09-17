@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app: logging-service
   name: logging-service
   namespace: oih-dev-ns
+  labels:
+    app: logging-service
 spec:
-  ports:
-    - name: '1234'
-      port: 1234
-      protocol: TCP
-      targetPort: 1234
+  type: NodePort
   selector:
     app: logging-service
-  type: NodePort
+  ports:
+  - name: '1234'
+    protocol: TCP
+    port: 1234
+    targetPort: 1234
