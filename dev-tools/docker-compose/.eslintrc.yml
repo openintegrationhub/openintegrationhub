@@ -1,13 +1,12 @@
----
 env:
   node: true
 plugins:
-  - prettier
+- prettier
 extends:
-  - airbnb-base
-  - plugin:prettier/recommended
-  - plugin:import/errors
-  - plugin:import/warnings
+- airbnb-base
+- plugin:prettier/recommended
+- plugin:import/errors
+- plugin:import/warnings
 rules:
   no-console: "off"
   react/prop-types: 0

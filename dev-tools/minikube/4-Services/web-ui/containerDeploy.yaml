@@ -8,8 +8,6 @@ spec:
   selector:
     matchLabels:
       app: web-ui
-  minReadySeconds: 10
-  revisionHistoryLimit: 2
   template:
     metadata:
       labels:
@@ -18,6 +16,8 @@ spec:
       containers:
       - name: web-ui
         image: openintegrationhub/web-ui:latest
+        ports:
+        - containerPort: 3000
         env:
         - name: PORT
           value: '3000'
@@ -35,21 +35,21 @@ spec:
           value: 'http://metadata.localoih.com/api/v1'
         - name: ENDPOINT_APP_DIRECTORY
           value: 'http://app-directory.localoih.com/api/v1'
-        ports:
-        - containerPort: 3000
-        livenessProbe:
-          httpGet:
-            path: /healthcheck
-            port: 3000
-          initialDelaySeconds: 120
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            path: /healthcheck
-            port: 3000
-          initialDelaySeconds: 10
-          timeoutSeconds: 1
         resources:
           limits:
             cpu: '0.1'
             memory: 500Mi
+        livenessProbe:
+          httpGet:
+            port: 3000
+            path: /healthcheck
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            port: 3000
+            path: /healthcheck
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+  minReadySeconds: 10
+  revisionHistoryLimit: 2
