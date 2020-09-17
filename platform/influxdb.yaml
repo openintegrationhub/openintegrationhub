@@ -2,14 +2,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: influxdb
+  namespace: oih-dev-ns
   labels:
     app: influxdb
-  namespace: oih-dev-ns
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: influxdb
-  replicas: 1
   template:
     metadata:
       labels:
@@ -18,6 +18,8 @@ spec:
       containers:
       - name: influx-db
         image: influxdb:latest
+        ports:
+        - containerPort: 8086
         env:
         - name: INFLUXDB_LOGGING_LEVEL
           value: "error"
@@ -34,40 +36,38 @@ spec:
         - name: INFLUXDB_DATA_ENGINE
           value: "tsm1"
         volumeMounts:
-        - mountPath: /var/lib/influxdb
-          name: influx-pdisk
-        ports:
-        - containerPort: 8086
+        - name: influx-pdisk
+          mountPath: /var/lib/influxdb
         livenessProbe:
           httpGet:
-            path: /ping
             port: 8086
+            path: /ping
           initialDelaySeconds: 120
           timeoutSeconds: 1
         readinessProbe:
           httpGet:
-            path: /ping
             port: 8086
+            path: /ping
           initialDelaySeconds: 10
           timeoutSeconds: 1
       volumes:
       - name: influx-pdisk
         gcePersistentDisk:
-          pdName: timeseries-influx
           fsType: ext4
+          pdName: timeseries-influx
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: influxdb
+  namespace: oih-dev-ns
   labels:
     app: influxdb
-  namespace: oih-dev-ns
 spec:
-  ports:
-    - port: 8086
-      targetPort: 8086
-      protocol: TCP
+  type: NodePort
   selector:
     app: influxdb
-  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 8086
+    targetPort: 8086
