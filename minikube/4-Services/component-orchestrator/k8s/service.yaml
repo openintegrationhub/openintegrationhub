@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app: api-service
   name: api-service
   namespace: oih-dev-ns
+  labels:
+    app: api-service
 spec:
-  ports:
-    - name: '1234'
-      port: 1234
-      protocol: TCP
-      targetPort: 1234
+  type: ClusterIP
   selector:
     app: component-orchestrator
+  ports:
+  - name: '1234'
+    protocol: TCP
+    port: 1234
+    targetPort: 1234
   sessionAffinity: None
-  type: ClusterIP
