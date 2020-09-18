@@ -24,12 +24,9 @@ spec:
         envFrom:
         - configMapRef:
             name: logging-service
-        env:
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: logging-service
-              key: IAM_TOKEN
+        - secretMapRef:
+            name: logging-service
+        env: []
         resources:
           limits:
             cpu: 0.1

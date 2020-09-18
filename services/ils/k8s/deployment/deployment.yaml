@@ -18,17 +18,10 @@ spec:
         image: openintegrationhub/ils:latest
         ports:
         - containerPort: 3003
-        env:
-        - name: MONGODB_URL
-          valueFrom:
-            secretKeyRef:
-              name: ils
-              key: "mongourl"
-        - name: SCHEMA_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: ils
-              key: "iamtoken"
+        envFrom:
+        - secretMapRef:
+            name: ils
+        env: []
         resources:
           limits:
             cpu: "0.1"

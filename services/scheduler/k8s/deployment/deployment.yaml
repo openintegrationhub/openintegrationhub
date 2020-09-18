@@ -24,12 +24,9 @@ spec:
         envFrom:
         - configMapRef:
             name: scheduler
-        env:
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: scheduler
-              key: MONGODB_URI
+        - secretMapRef:
+            name: scheduler
+        env: []
         resources:
           limits:
             cpu: 0.1

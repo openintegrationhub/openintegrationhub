@@ -25,17 +25,9 @@ spec:
         envFrom:
         - configMapRef:
             name: component-orchestrator
-        env:
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: component-orchestrator
-              key: IAM_TOKEN
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: component-orchestrator
-              key: MONGODB_URI
+        - secretMapRef:
+            name: component-orchestrator
+        env: []
         resources:
           limits:
             cpu: 0.1

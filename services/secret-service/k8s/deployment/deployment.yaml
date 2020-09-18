@@ -18,22 +18,9 @@ spec:
         envFrom:
         - configMapRef:
             name: secret-service
+        - secretMapRef:
+            name: secret-service
         env:
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: secret-service
-              key: iamtoken
-        - name: MONGODB_CONNECTION
-          valueFrom:
-            secretKeyRef:
-              name: secret-service
-              key: mongourl
-        - name: CRYPTO_KEY
-          valueFrom:
-            secretKeyRef:
-              name: secret-service
-              key: crypto_key
         -
         #   value: 8ce00058-5f75-435f-9026-ad952480e15a
         # - name: IAM_OIDC_SERVICE_CLIENT_SECRET

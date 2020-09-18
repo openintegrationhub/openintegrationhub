@@ -25,12 +25,9 @@ spec:
         envFrom:
         - configMapRef:
             name: webhooks
-        env:
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: webhooks
-              key: MONGODB_URI
+        - secretMapRef:
+            name: webhooks
+        env: []
         resources:
           limits:
             cpu: 0.1

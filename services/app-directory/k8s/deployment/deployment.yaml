@@ -18,17 +18,9 @@ spec:
         envFrom:
         - configMapRef:
             name: app-directory
-        env:
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: app-directory
-              key: iamtoken
-        - name: MONGODB_CONNECTION
-          valueFrom:
-            secretKeyRef:
-              name: app-directory
-              key: mongourl
+        - secretMapRef:
+            name: app-directory
+        env: []
         livenessProbe:
           httpGet:
             port: 3000

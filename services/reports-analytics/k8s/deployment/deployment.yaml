@@ -18,22 +18,9 @@ spec:
         envFrom:
         - configMapRef:
             name: reports-analytics
-        env:
-        - name: GRAFANA_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: reports-analytics
-              key: grafanatoken
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: reports-analytics
-              key: iamtoken
-        - name: MONGODB_CONNECTION
-          valueFrom:
-            secretKeyRef:
-              name: reports-analytics
-              key: mongourl
+        - secretMapRef:
+            name: reports-analytics
+        env: []
         livenessProbe:
           httpGet:
             port: 3000

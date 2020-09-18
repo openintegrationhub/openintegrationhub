@@ -24,22 +24,9 @@ spec:
         envFrom:
         - configMapRef:
             name: snapshots-service
-        env:
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: snapshots-service
-              key: MONGODB_URI
-        - name: RABBITMQ_URI
-          valueFrom:
-            secretKeyRef:
-              name: snapshots-service
-              key: RABBITMQ_URI
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: snapshots-service
-              key: IAM_TOKEN
+        - secretMapRef:
+            name: snapshots-service
+        env: []
         resources:
           limits:
             cpu: 0.1

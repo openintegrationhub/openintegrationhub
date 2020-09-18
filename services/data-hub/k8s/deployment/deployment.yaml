@@ -24,22 +24,9 @@ spec:
         envFrom:
         - configMapRef:
             name: data-hub
-        env:
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: data-hub
-              key: MONGODB_URI
-        - name: RABBITMQ_URI
-          valueFrom:
-            secretKeyRef:
-              name: data-hub
-              key: RABBITMQ_URI
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: data-hub
-              key: IAM_TOKEN
+        - secretMapRef:
+            name: data-hub
+        env: []
         resources:
           limits:
             cpu: 0.1

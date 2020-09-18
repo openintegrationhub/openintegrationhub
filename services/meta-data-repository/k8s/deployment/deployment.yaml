@@ -18,17 +18,9 @@ spec:
         envFrom:
         - configMapRef:
             name: meta-data-repository
-        env:
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: meta-data-repository
-              key: iamtoken
-        - name: MONGODB_CONNECTION
-          valueFrom:
-            secretKeyRef:
-              name: meta-data-repository
-              key: mongourl
+        - secretMapRef:
+            name: meta-data-repository
+        env: []
         resources:
           limits:
             cpu: "0.1"

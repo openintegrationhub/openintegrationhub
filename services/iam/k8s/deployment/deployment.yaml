@@ -18,37 +18,9 @@ spec:
         envFrom:
         - configMapRef:
             name: iam
-        env:
-        - name: IAM_MONGODB_CONNECTION
-          valueFrom:
-            secretKeyRef:
-              name: iam
-              key: mongourl
-        - name: IAM_JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: iam
-              key: jwtsecret
-        - name: IAM_SESSION_COOKIE_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: iam
-              key: cookiesecret
-        - name: IAM_ACC_ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: iam
-              key: admin_password
-        - name: IAM_ACC_SERVICE_ACCOUNT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: iam
-              key: serviceacc_password
-        - name: IAM_SERVICE_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: iam
-              key: oidc_client_secret
+        - secretMapRef:
+            name: iam
+        env: []
         resources:
           limits:
             cpu: "0.1"

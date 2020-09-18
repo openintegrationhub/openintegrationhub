@@ -21,17 +21,9 @@ spec:
         envFrom:
         - configMapRef:
             name: audit-log
-        env:
-        - name: MONGODB_URL
-          valueFrom:
-            secretKeyRef:
-              name: audit-log
-              key: "mongourl"
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: audit-log
-              key: "iamtoken"
+        - secretMapRef:
+            name: audit-log
+        env: []
         resources:
           limits:
             cpu: "0.1"

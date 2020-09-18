@@ -24,17 +24,9 @@ spec:
         envFrom:
         - configMapRef:
             name: attachment-storage-service
-        env:
-        - name: REDIS_CONFIG
-          valueFrom:
-            secretKeyRef:
-              name: attachment-storage-service
-              key: REDIS_CONFIG
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: attachment-storage-service
-              key: IAM_TOKEN
+        - secretMapRef:
+            name: attachment-storage-service
+        env: []
         resources:
           limits:
             cpu: 0.1

@@ -24,17 +24,9 @@ spec:
         envFrom:
         - configMapRef:
             name: component-repository
-        env:
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: component-repository
-              key: MONGODB_URI
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: component-repository
-              key: IAM_TOKEN
+        - secretMapRef:
+            name: component-repository
+        env: []
         resources:
           limits:
             cpu: 0.1
