@@ -13,54 +13,54 @@ spec:
         app: meta-data-repository
     spec:
       containers:
-      - name: meta-data-repository
-        image: openintegrationhub/meta-data-repository:latest
-        env:
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: meta-data-repository
-              key: iamtoken
-        - name: MONGODB_CONNECTION
-          valueFrom:
-            secretKeyRef:
-              name: meta-data-repository
-              key: mongourl
-        - name: INTROSPECT_TYPE
-          value: "basic"
-        - name: ORIGINWHITELIST
-          value: openintegrationhub.com
-        - name: RABBITMQ_URI
-          value: amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672
-        - name: INTROSPECT_ENDPOINT_BASIC
-          value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
-        - name: BASE_URL
-          value: 'http://metadata.openintegrationhub.com'
-        - name: URLS_WITH_PORT
-          value: 'false'
-        - name: PORT
-          value: '3000'
-        - name: API_BASE
-          value: "/api/v1"
-        - name: LOGGING_LEVEL
-          value: "error"
-        - name: DEBUG_MODE
-          value: "false"
-        ports:
-        - containerPort: 3000
-        livenessProbe:
-          httpGet:
-            path: /healthcheck
-            port: 3000
-          initialDelaySeconds: 120
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            path: /healthcheck
-            port: 3000
-          initialDelaySeconds: 10
-          timeoutSeconds: 1
-        resources:
-          limits:
-            cpu: '0.1'
-            memory: 500Mi
+        - name: meta-data-repository
+          image: openintegrationhub/meta-data-repository:latest
+          env:
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meta-data-repository
+                  key: iamtoken
+            - name: MONGODB_CONNECTION
+              valueFrom:
+                secretKeyRef:
+                  name: meta-data-repository
+                  key: mongourl
+            - name: INTROSPECT_TYPE
+              value: "basic"
+            - name: ORIGINWHITELIST
+              value: openintegrationhub.com
+            - name: RABBITMQ_URI
+              value: amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672
+            - name: INTROSPECT_ENDPOINT_BASIC
+              value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
+            - name: BASE_URL
+              value: "http://metadata.openintegrationhub.com"
+            - name: URLS_WITH_PORT
+              value: "false"
+            - name: PORT
+              value: "3000"
+            - name: API_BASE
+              value: "/api/v1"
+            - name: LOG_LEVEL
+              value: "error"
+            - name: DEBUG_MODE
+              value: "false"
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3000
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3000
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "0.1"
+              memory: 500Mi
