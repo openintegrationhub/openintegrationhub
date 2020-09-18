@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 services:
   mongodb:
     image: mongo:latest
@@ -19,13 +19,13 @@ services:
       start_period: 20s
     command: --bind_ip_all --replSet "rs0"
   redis:
-    image: "redis:alpine"
+    image: 'redis:alpine'
     container_name: redis
     command: redis-server
     networks:
     - oih-dev
     ports:
-    - "6379:6379"
+    - '6379:6379'
     volumes:
     - ./data/redis:/var/lib/redis
     # - ./redis.conf:/usr/local/etc/redis/redis.conf
@@ -33,7 +33,7 @@ services:
     environment:
     - REDIS_REPLICATION_MODE=master
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 1s
       timeout: 3s
       retries: 30
@@ -55,7 +55,7 @@ services:
     - 5672:5672
     - 15672:15672
     healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "5672"]
+      test: ['CMD', 'nc', '-z', 'localhost', '5672']
       interval: 10s
       timeout: 10s
       retries: 5

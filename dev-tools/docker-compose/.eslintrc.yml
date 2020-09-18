@@ -8,7 +8,7 @@ extends:
 - plugin:import/errors
 - plugin:import/warnings
 rules:
-  no-console: "off"
+  no-console: 'off'
   react/prop-types: 0
   no-restricted-syntax: 0
   no-await-in-loop: 0

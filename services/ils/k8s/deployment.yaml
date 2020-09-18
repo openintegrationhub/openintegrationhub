@@ -23,15 +23,15 @@ spec:
           valueFrom:
             secretKeyRef:
               name: ils
-              key: 'mongourl'
+              key: "mongourl"
         - name: SCHEMA_TOKEN
           valueFrom:
             secretKeyRef:
               name: ils
-              key: 'iamtoken'
+              key: "iamtoken"
         resources:
           limits:
-            cpu: '0.1'
+            cpu: "0.1"
             memory: 500Mi
         livenessProbe:
           httpGet:

@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 services:
   influxdb:
     image: influxdb:latest
@@ -6,7 +6,7 @@ services:
     ports:
     - "8086:8086"
     env_file:
-    - 'env.influxdb'
+    - "env.influxdb"
     networks:
     - reports
     volumes:
@@ -18,7 +18,7 @@ services:
     ports:
     - "8888:3000"
     env_file:
-    - 'env.grafana'
+    - "env.grafana"
     networks:
     - reports
     volumes:

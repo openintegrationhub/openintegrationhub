@@ -33,7 +33,7 @@ spec:
         - name: ORIGIN_WHITELIST
           value: openintegrationhub.com,http://web-ui.openintegrationhub.com,https://web-ui.openintegrationhub.com
         - name: PORT
-          value: '3000'
+          value: "3000"
         - name: API_BASE
           value: "/api/v1"
         - name: LOGGING_LEVEL

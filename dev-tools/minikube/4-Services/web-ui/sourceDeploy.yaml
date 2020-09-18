@@ -23,28 +23,28 @@ spec:
         - containerPort: 3000
         env:
         - name: PORT
-          value: '3000'
+          value: "3000"
         - name: ENDPOINT_IAM
-          value: 'http://iam.localoih.com'
+          value: "http://iam.localoih.com"
         - name: ENDPOINT_FLOW
-          value: 'http://flow-repository.localoih.com'
+          value: "http://flow-repository.localoih.com"
         - name: ENDPOINT_COMPONENT
-          value: 'http://component-repository.localoih.com'
+          value: "http://component-repository.localoih.com"
         - name: ENDPOINT_SECRETS
-          value: 'http://skm.localoih.com/api/v1'
+          value: "http://skm.localoih.com/api/v1"
         - name: ENDPOINT_DISPATCHER
-          value: 'http://dispatcher-service.localoih.com'
+          value: "http://dispatcher-service.localoih.com"
         - name: ENDPOINT_METADATA
-          value: 'http://metadata.localoih.com/api/v1'
+          value: "http://metadata.localoih.com/api/v1"
         - name: ENDPOINT_APP_DIRECTORY
-          value: 'http://app-directory.localoih.com/api/v1'
+          value: "http://app-directory.localoih.com/api/v1"
         - name: NODE_ENV
           value: development
         - name: LOG_LEVEL
           value: debug
         resources:
           limits:
-            cpu: '0.1'
+            cpu: "0.1"
             memory: 500Mi
         volumeMounts:
         - name: code

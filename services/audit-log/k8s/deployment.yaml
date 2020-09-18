@@ -23,12 +23,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: audit-log
-              key: 'mongourl'
+              key: "mongourl"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
               name: audit-log
-              key: 'iamtoken'
+              key: "iamtoken"
         - name: "INTROSPECT_TYPE"
           value: "basic"
         - name: "INTROSPECT_ENDPOINT_BASIC"
@@ -41,7 +41,7 @@ spec:
           value: "logs"
         resources:
           limits:
-            cpu: '0.1'
+            cpu: "0.1"
             memory: 500Mi
         livenessProbe:
           httpGet:

@@ -23,12 +23,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: shared-secret
-              key: 'iamtoken'
+              key: "iamtoken"
         - name: MONGODB_CONNECTION
           valueFrom:
             secretKeyRef:
               name: shared-secret
-              key: 'appDirectoryMongourl'
+              key: "appDirectoryMongourl"
         - name: "INTROSPECT_TYPE"
           value: "basic"
         - name: "INTROSPECT_ENDPOINT_BASIC"
@@ -36,7 +36,7 @@ spec:
         - name: ORIGIN_WHITELIST
           value: localoih.com,http://web-ui.localoih.com,https://web-ui.localoih.com
         - name: PORT
-          value: '3000'
+          value: "3000"
         - name: API_BASE
           value: "/api/v1"
         - name: LOGGING_LEVEL

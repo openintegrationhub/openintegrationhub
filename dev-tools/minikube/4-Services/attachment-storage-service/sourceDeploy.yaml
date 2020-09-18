@@ -31,7 +31,7 @@ spec:
               name: shared-secret
               key: REDIS_CONFIG
         - name: PORT
-          value: '3002'
+          value: "3002"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:

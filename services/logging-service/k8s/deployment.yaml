@@ -20,17 +20,17 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: logging-service
-        image: 'openintegrationhub/logging-service:latest'
+        image: "openintegrationhub/logging-service:latest"
         env:
         - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: '/usr/lib/app/credentials/credentials.json'
+          value: "/usr/lib/app/credentials/credentials.json"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
               name: logging-service
               key: IAM_TOKEN
         - name: PORT
-          value: '1234'
+          value: "1234"
         - name: LOG_LEVEL
           value: trace
         resources:
@@ -39,7 +39,7 @@ spec:
             memory: 512Mi
         volumeMounts:
         - name: credentials
-          mountPath: '/usr/lib/app/credentials'
+          mountPath: "/usr/lib/app/credentials"
         livenessProbe:
           httpGet:
             port: 1234

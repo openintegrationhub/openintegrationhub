@@ -10,7 +10,7 @@ spec:
   selector:
     app: component-orchestrator
   ports:
-  - name: '1234'
+  - name: "1234"
     protocol: TCP
     port: 1234
     targetPort: 1234

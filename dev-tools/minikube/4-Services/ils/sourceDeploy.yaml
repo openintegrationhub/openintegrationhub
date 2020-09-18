@@ -26,14 +26,14 @@ spec:
           valueFrom:
             secretKeyRef:
               name: shared-secret
-              key: 'ilsMongourl'
+              key: "ilsMongourl"
         - name: NODE_ENV
           value: development
         - name: LOG_LEVEL
           value: info
         resources:
           limits:
-            cpu: '0.1'
+            cpu: "0.1"
             memory: 200Mi
         volumeMounts:
         - name: code

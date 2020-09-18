@@ -23,12 +23,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: dispatcher-service
-              key: 'mongourl'
+              key: "mongourl"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
               name: dispatcher-service
-              key: 'iamtoken'
+              key: "iamtoken"
         - name: "INTROSPECT_TYPE"
           value: "basic"
         - name: "INTROSPECT_ENDPOINT_BASIC"
@@ -41,12 +41,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: dispatcher-service
-              key: 'flowtoken'
+              key: "flowtoken"
         - name: "SDF_ID"
           value: "5d2484d2a422ca001bda5690"
         resources:
           limits:
-            cpu: '0.1'
+            cpu: "0.1"
             memory: 1000Mi
         livenessProbe:
           httpGet:

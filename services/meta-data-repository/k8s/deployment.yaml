@@ -35,11 +35,11 @@ spec:
         - name: INTROSPECT_ENDPOINT_BASIC
           value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
         - name: BASE_URL
-          value: 'http://metadata.openintegrationhub.com'
+          value: "http://metadata.openintegrationhub.com"
         - name: URLS_WITH_PORT
-          value: 'false'
+          value: "false"
         - name: PORT
-          value: '3000'
+          value: "3000"
         - name: API_BASE
           value: "/api/v1"
         - name: LOGGING_LEVEL
@@ -48,7 +48,7 @@ spec:
           value: "false"
         resources:
           limits:
-            cpu: '0.1'
+            cpu: "0.1"
             memory: 500Mi
         livenessProbe:
           httpGet:

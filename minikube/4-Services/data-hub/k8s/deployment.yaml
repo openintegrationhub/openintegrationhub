@@ -20,7 +20,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: data-hub
-        image: 'openintegrationhub/data-hub:latest'
+        image: "openintegrationhub/data-hub:latest"
         env:
         - name: MONGODB_URI
           valueFrom:
@@ -28,7 +28,7 @@ spec:
               name: shared-secret
               key: dataHubMongourl
         - name: PORT
-          value: '1234'
+          value: "1234"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
