@@ -1,32 +1,30 @@
 ---
 plugins:
-- jasmine
-- jest
+  - jasmine
+  - jest
 extends:
-- airbnb-base
+  - airbnb-base
 env:
   jest: true
   jasmine: true
   node: true
 parserOptions:
-  ecmaVersion: 8
-  ecmaFeatures:
-    experimentalObjectRestSpread: true
+  ecmaVersion: 2018
   sourceType: module
 rules:
   global-require: 0
   no-prototype-builtins: 0
   import/no-dynamic-require: 0
   max-len:
-  - warn
-  - code: 160
+    - warn
+    - code: 160
   no-unused-vars:
-  - 1
-  - vars: all
-    args: after-used
+    - 1
+    - vars: all
+      args: after-used
   no-cond-assign:
-  - 2
-  - except-parens
+    - 2
+    - except-parens
   no-console: 0
   no-constant-condition: 2
   no-control-regex: 2
@@ -47,9 +45,9 @@ rules:
   no-obj-calls: 2
   no-regex-spaces: 2
   quote-props:
-  - 0
-  - as-needed
-  - keywords: true
+    - 0
+    - as-needed
+    - keywords: true
   no-sparse-arrays: 0
   no-unreachable: 1
   use-isnan: 2
@@ -112,52 +110,52 @@ rules:
   no-undefined: 0
   no-undef: error
   no-use-before-define:
-  - 2
-  - nofunc
+    - 2
+    - nofunc
   no-mixed-requires: 0
   indent:
-  - 1
-  - 4
-  - SwitchCase: 1
+    - 1
+    - 4
+    - SwitchCase: 1
   brace-style:
-  - 2
-  - 1tbs
-  - allowSingleLine: true
+    - 2
+    - 1tbs
+    - allowSingleLine: true
   comma-spacing:
-  - 2
-  - before: false
-    after: true
+    - 2
+    - before: false
+      after: true
   comma-style:
-  - 2
-  - last
+    - 2
+    - last
   consistent-this:
-  - 1
-  - self
+    - 1
+    - self
   eol-last: 2
   func-names: 0
   func-style:
-  - 0
-  - expression
+    - 0
+    - expression
   key-spacing:
-  - 2
-  - beforeColon: false
-    afterColon: true
+    - 2
+    - beforeColon: false
+      afterColon: true
   max-nested-callbacks: 0
   new-cap: 0
   new-parens: 2
   newline-after-var: 0
   newline-per-chained-call:
-  - error
-  - ignoreChainWithDepth: 2
+    - error
+    - ignoreChainWithDepth: 2
   no-array-constructor: 2
   no-continue: 0
   no-inline-comments: 0
   no-lonely-if: 2
   no-mixed-spaces-and-tabs: 2
   no-multiple-empty-lines:
-  - error
-  - max: 1
-    maxEOF: 1
+    - error
+    - max: 1
+      maxEOF: 1
   no-nested-ternary: 0
   no-new-object: 2
   no-spaced-func: 2
@@ -165,43 +163,43 @@ rules:
   no-trailing-spaces: 0
   no-underscore-dangle: 0
   no-extra-parens:
-  - 2
-  - functions
+    - 2
+    - functions
   one-var: 0
   operator-assignment: 0
   padded-blocks: 0
   quotes:
-  - 2
-  - single
-  - avoid-escape
+    - 2
+    - single
+    - avoid-escape
   semi: 2
   semi-spacing:
-  - 2
-  - before: false
-    after: true
+    - 2
+    - before: false
+      after: true
   sort-vars: 0
   keyword-spacing: 2
   space-before-blocks:
-  - 2
-  - always
+    - 2
+    - always
   space-before-function-paren:
-  - 2
-  - anonymous: never
-    named: never
+    - 2
+    - anonymous: never
+      named: never
   space-in-brackets: 0
   space-in-parens:
-  - 2
-  - never
+    - 2
+    - never
   space-infix-ops: 2
   space-unary-ops: 2
   spaced-comment:
-  - 2
-  - always
-  - markers:
-    - ","
+    - 2
+    - always
+    - markers:
+        - ","
   wrap-regex: 0
 overrides:
-- files:
-  - "*.js"
-  rules:
-    prefer-destructuring: "off"
+  - files:
+      - "*.js"
+    rules:
+      prefer-destructuring: "off"
