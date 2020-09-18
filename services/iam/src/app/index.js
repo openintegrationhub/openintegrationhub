@@ -7,7 +7,6 @@ const cors = require('cors');
 const { EventBusManager } = require('@openintegrationhub/event-bus');
 const passport = require('passport');
 // const cors = require('cors');
-const Promise = require('bluebird');
 
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
@@ -65,12 +64,12 @@ class App {
     async setup() {
 
         this.mongoose = mongoose;
-        mongoose.Promise = Promise;
+
         await mongoose.connect(this.mongoConnection, {
             poolSize: 50,
-            // socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
             keepAlive: 120,
+            useUnifiedTopology: true,
             useNewUrlParser: true,
             useCreateIndex: true,
         });
@@ -247,7 +246,7 @@ class App {
 
     async stop() {
         if (this.server) {
-            // this.server.close();
+            this.server.close();
             await EventBusManager.destroy();
         }
     }
