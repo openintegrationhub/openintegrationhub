@@ -14,12 +14,12 @@ module.exports = [
     },
     resources: {
       requests: {
-        memory: '64Mi',
-        cpu: '250m',
-      },
-      limits: {
         memory: '128Mi',
         cpu: '500m',
+      },
+      limits: {
+        memory: '256Mi',
+        cpu: '1000m',
       },
     },
     owners: [

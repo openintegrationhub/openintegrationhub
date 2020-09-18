@@ -52,8 +52,8 @@ class RabbitMqQueuesManager extends QueuesManager {
         await this._deleteRabbitMqCredentialForGlobalComponent(component);
     }
 
-    async prepareQueues(flow, componentsMap) {
-        return await this._queueCreator.makeQueuesForTheFlow(flow, componentsMap);
+    async prepareQueues(flow, components) {
+        return await this._queueCreator.makeQueuesForTheFlow(flow, components);
     }
 
     async getSettingsForNodeExecution(flow, node, flowSettings) {
