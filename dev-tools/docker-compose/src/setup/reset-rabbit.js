@@ -1,6 +1,6 @@
 const { execSync } = require('child_process')
-
-const { checkTools } = require('../helper')
+const { dbRoot } = require('../config')
+const { checkTools, waitForRabbitMQ } = require('../helper')
 
 checkTools(['docker'])
 
@@ -24,6 +24,12 @@ process.on('SIGUSR2', exitHandler.bind(null))
 process.on('uncaughtException', exitHandler.bind(null))
 
 async function run() {
+  execSync(`cd ${dbRoot} && docker-compose up -d`, {
+    stdio: 'inherit',
+  })
+
+  waitForRabbitMQ()
+
   // docker exec -ti rabbitmq  sh -c "rabbitmqctl start_app"
   execSync(`docker exec -ti rabbitmq sh -c "rabbitmqctl stop_app"`, {
     stdio: 'inherit',

@@ -12,6 +12,16 @@ module.exports = [
       replicas: 1,
       imagePullPolicy: 'Never',
     },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '250m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '500m',
+      },
+    },
     owners: [
       {
         id: 't1_admin@local.dev',
@@ -31,6 +41,16 @@ module.exports = [
     descriptor: {
       replicas: 1,
       imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '250m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '500m',
+      },
     },
     owners: [
       {

@@ -113,7 +113,7 @@ async function run() {
   let iterations = 0
   let error = 0
   let success = 0
-  const max = 10
+  const max = process.argv[2] ? parseInt(process.argv[2], 10) : 1
 
   if (runTest) {
     while (iterations < max) {
@@ -134,6 +134,7 @@ async function run() {
           })
           .finally(() => {
             console.log(success, error)
+            if (error + success === max) exitHandler()
           })
       }
 

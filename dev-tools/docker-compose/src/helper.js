@@ -123,6 +123,19 @@ module.exports = {
       break
     }
   },
+  waitForRabbitMQ() {
+    console.log('Waiting for RabbitMQ')
+    while (true) {
+      try {
+        execSync(`docker exec -ti rabbitmq sh -c "rabbitmqctl status"`, {
+          stdio: 'inherit',
+        })
+      } catch (err) {
+        continue
+      }
+      break
+    }
+  },
   async waitForStatus({ url, status }) {
     console.log(`Waiting for ${status} on ${url}`)
     while (true) {
