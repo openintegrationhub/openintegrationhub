@@ -4,7 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { Event, EventBus, EventBusManager } = require('@openintegrationhub/event-bus');
+const { EventBusManager } = require('@openintegrationhub/event-bus');
 const passport = require('passport');
 // const cors = require('cors');
 const Promise = require('bluebird');
@@ -66,10 +66,9 @@ class App {
 
         this.mongoose = mongoose;
         mongoose.Promise = Promise;
-
         await mongoose.connect(this.mongoConnection, {
             poolSize: 50,
-            socketTimeoutMS: 60000,
+            // socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
             keepAlive: 120,
             useNewUrlParser: true,
@@ -109,8 +108,8 @@ class App {
         };
 
         this.app.use((req, res, next) => {
-            req.headers.origin = req.headers.origin || req.headers.host; 
-            next(); 
+            req.headers.origin = req.headers.origin || req.headers.host;
+            next();
         });
 
     }
@@ -167,7 +166,7 @@ class App {
 
         this.app.use(checkProto);
         this.app.use('/', cors(this.corsOptions), require('./../routes/general')); // eslint-disable-line global-require
-        
+
         // setup SwaggerUI
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
 
@@ -187,16 +186,16 @@ class App {
 
         // 404 log
         this.app.use(require('./../log/404')); // eslint-disable-line global-require
-                
+
         // error log
         this.app.use(require('./../log/error')); // eslint-disable-line global-require
 
         // error handling
         this.app.use(require('./../routes/error').default); // eslint-disable-line global-require
-        
+
     }
-    
-    static async createMasterAccount() {   
+
+    static async createMasterAccount() {
         if (!await Account.countDocuments()) {
             const roles = await Roles.find({ isGlobal: true }).lean();
             const admin = new Account({
@@ -212,7 +211,7 @@ class App {
 
             await admin.setPassword(conf.accounts.admin.password);
             await admin.save();
-        } 
+        }
     }
 
     static async setupDefaultRoles() {
@@ -232,14 +231,14 @@ class App {
 
     async start() {
         this.server = await this.app.listen(this.app.get('port'));
-    } 
+    }
 
     async startSecure() {
         const fs = require('fs'); // eslint-disable-line global-require
         const https = require('https'); // eslint-disable-line global-require
         const privateKey = fs.readFileSync(`${__dirname}/dev/dev.key.pem`, 'utf8');
         const certificate = fs.readFileSync(`${__dirname}/dev/dev.cert.pem`, 'utf8');
-        
+
         const credentials = { key: privateKey, cert: certificate };
         const httpsServer = https.createServer(credentials, this.app);
 
@@ -248,10 +247,10 @@ class App {
 
     async stop() {
         if (this.server) {
-            this.server.close();
+            // this.server.close();
             await EventBusManager.destroy();
         }
-    } 
+    }
 }
 
 module.exports = App;
