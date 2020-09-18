@@ -35,6 +35,8 @@ Then, in your Dockerfile, set
 
 To communicate with the Ferryman, each of your connector's Actions or Triggers should expose a function with this signature:
 
+#### processAction
+
 `processAction(msg, cfg, snapshot)`
 
 This function will be called by the Ferryman with the listed arguments:
@@ -44,6 +46,8 @@ This function will be called by the Ferryman with the listed arguments:
 - snapshot: Object. Allows your component to save a state between function calls. Contains whichever data you last emitted as a snapshot.
 
 The processAction is called automatically in a regular interval determined by the flow definition (e.g. once every hour).
+
+#### Emitter
 
 Additionally, the Ferryman injects another function into your processAction, used to communicate back to the Ferryman:
 
@@ -61,6 +65,24 @@ Call this function whenever you need to return data to the Open Integration Hub,
     - For a `data` emit, format the message in the same way you receive it in your process action. This means all content should be inside a `body` key
     - For a `snapshot` emit, you can pass on an arbitrary object containing whichever keys you require.
     - For an `error` emit, simply pass on the error object
+
+#### Transformer interface
+
+Finally, Ferryman offers a simple transformation interface. Using it allows your component to be configured to use custom flow-dependent transformations, as well as any transformations you provide as part of your connector.
+
+To use it, simply require it via `const { transform } = require('@openintegrationhub/ferryman')`
+
+Then, inside your processAction, call the `transform` function once for each data object you emit, with this signature:
+
+`transform(object, cfg, defaultMapping)`
+
+- object: Object. The data object that you want to transform before passing it on.
+- cfg: Object. The `cfg` object that you received in your processAction function. This allows users of your component to configure its transformation. In particular, two attributes of cfg are checked:
+    - skipTransformation: If set to `true`, the transformation will be skipped entirely, and the object will be returned unchanged
+    - customMapping: Allows users to inject a custom jsonata mapping. If set, will use this custom mapping instead of any defaultMapping
+- defaultMapping: Function. If you provide any default transformations as part of your connectors, simply pass the relevant one here as a function. `transform` will then execute that function with `object` and `cfg` as parameters.
+
+`transform` will return an object transformed according to either the custom or default mapping passed to it. If neither a custom nor default mapping is provided, then it simply returns the original `object` unchanged.
 
 ### Further Information
 

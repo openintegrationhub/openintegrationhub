@@ -40,9 +40,9 @@ spec:
           - name: ENDPOINT_APP_DIRECTORY
             value: 'http://app-directory.localoih.com/api/v1'
           - name: NODE_ENV
-              value: development
+            value: development
           - name: LOG_LEVEL
-              value: debug
+            value: debug
           ports:
           - containerPort: 3000
           volumeMounts:

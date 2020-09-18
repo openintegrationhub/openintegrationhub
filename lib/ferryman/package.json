@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/ferryman",
   "description": "Wrapper utility for Open Integration Hub connectors",
-  "version": "1.1.3",
+  "version": "1.1.5",
   "main": "run.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint lib mocha_spec lib runGlobal.js runService.js --fix",
@@ -19,15 +19,16 @@
     "co": "4.6.0",
     "debug": "3.1.0",
     "event-to-promise": "0.8.0",
+    "jsonata": "^1.8.3",
     "jsonwebtoken": "^8.5.1",
     "lodash": "4.17.15",
     "p-throttle": "2.1.0",
     "q": "1.4.1",
+    "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "request-promise-native": "1.0.5",
     "requestretry": "3.1.0",
-    "uuid": "3.0.1",
-    "request": "^2.88.0"
+    "uuid": "3.0.1"
   },
   "devDependencies": {
     "chai": "4.2.0",
