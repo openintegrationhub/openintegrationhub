@@ -26,7 +26,7 @@ describe('Role Routes', () => {
         conf = require('./../src/conf/index');
         const App = require('../src/app'); 
         app = new App({
-            mongoConnection: `${global.__MONGO_URI__}-accesscontrol`,
+            mongoConnection: global.__MONGO_URI__.replace('changeme', 'accessControll'),
         });
         await app.setup();
         await app.start();
