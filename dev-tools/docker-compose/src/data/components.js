@@ -9,7 +9,7 @@ module.exports = [
     name: 'component1',
     description: 'A component just for testing',
     descriptor: {
-      replicas: 1,
+      replicas: 3,
       imagePullPolicy: 'Never',
     },
     resources: {
@@ -39,17 +39,17 @@ module.exports = [
     name: 'component2',
     description: 'A component just for testing',
     descriptor: {
-      replicas: 1,
+      replicas: 3,
       imagePullPolicy: 'Never',
     },
     resources: {
       requests: {
-        memory: '64Mi',
-        cpu: '250m',
-      },
-      limits: {
         memory: '128Mi',
         cpu: '500m',
+      },
+      limits: {
+        memory: '256Mi',
+        cpu: '1000m',
       },
     },
     owners: [
