@@ -15,11 +15,11 @@ module.exports = [
     resources: {
       requests: {
         memory: '128Mi',
-        cpu: '500m',
+        cpu: '250m',
       },
       limits: {
         memory: '256Mi',
-        cpu: '1000m',
+        cpu: '500m',
       },
     },
     owners: [
@@ -45,11 +45,11 @@ module.exports = [
     resources: {
       requests: {
         memory: '128Mi',
-        cpu: '500m',
+        cpu: '250m',
       },
       limits: {
         memory: '256Mi',
-        cpu: '1000m',
+        cpu: '500m',
       },
     },
     owners: [
