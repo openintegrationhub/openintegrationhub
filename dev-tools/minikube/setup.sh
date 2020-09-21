@@ -28,6 +28,7 @@ EXPOSED_SERVICES=( \
     iam.localoih.com \
     skm.localoih.com \
     flow-repository.localoih.com \
+    flow-templates.localoih.com \
     auditlog.localoih.com \
     metadata.localoih.com \
     component-repository.localoih.com \

@@ -7,3 +7,5 @@ app/error.log
 .DS_Store
 /test/utils/globalConfig.json
 /.env
+
+yarn-error.log*
