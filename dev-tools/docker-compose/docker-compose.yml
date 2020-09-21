@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 services:
   iam:
     image: ${NODE_IMAGE}
@@ -10,7 +10,7 @@ services:
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       IAM_MONGODB_CONNECTION: mongodb://mongodb/${DEV_IAM_DB}
       IAM_AUTH_TYPE: basic
-      IAM_DEBUG: "true"
+      IAM_DEBUG: 'true'
       IAM_BASEURL: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}
       IAM_ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       IAM_JWT_SECRET: secret
@@ -19,18 +19,17 @@ services:
       IAM_JWT_AUDIENCE: oih-iam
       IAM_ACC_ADMIN_USERNAME: ${DEV_IAM_ADMIN_USERNAME}
       IAM_ACC_ADMIN_PASSWORD: ${DEV_IAM_ADMIN_PASSWORD}
-      IAM_ACC_SERVICEACCOUNT_PASSWORD: "secret"
+      IAM_ACC_SERVICEACCOUNT_PASSWORD: 'secret'
       PORT: ${DEV_IAM_PORT}
     ports:
-      - ${DEV_IAM_EXTERNAL_PORT}:${DEV_IAM_PORT}
+    - ${DEV_IAM_EXTERNAL_PORT}:${DEV_IAM_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   secret-service:
     image: ${NODE_IMAGE}
     container_name: ${DEV_SECRET_SERVICE_FOLDER}
@@ -46,20 +45,19 @@ services:
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       API_BASE: /api/v1
-      DEBUG_MODE: "true"
+      DEBUG_MODE: 'true'
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       PORT: ${DEV_SECRET_SERVICE_PORT}
     ports:
-      - ${DEV_SECRET_SERVICE_EXTERNAL_PORT}:${DEV_SECRET_SERVICE_PORT}
+    - ${DEV_SECRET_SERVICE_EXTERNAL_PORT}:${DEV_SECRET_SERVICE_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   component-repository:
     image: ${NODE_IMAGE}
     container_name: ${DEV_COMPONENT_REPOSITORY_FOLDER}
@@ -77,15 +75,14 @@ services:
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       PORT: ${DEV_COMPONENT_REPOSITORY_PORT}
     ports:
-      - ${DEV_COMPONENT_REPOSITORY_EXTERNAL_PORT}:${DEV_COMPONENT_REPOSITORY_PORT}
+    - ${DEV_COMPONENT_REPOSITORY_EXTERNAL_PORT}:${DEV_COMPONENT_REPOSITORY_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   snapshots-service:
     image: ${NODE_IMAGE}
     container_name: ${DEV_SNAPSHOTS_SERVICE_FOLDER}
@@ -103,15 +100,14 @@ services:
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       PORT: ${DEV_SNAPSHOTS_SERVICE_PORT}
     ports:
-      - ${DEV_SNAPSHOTS_SERVICE_EXTERNAL_PORT}:${DEV_SNAPSHOTS_SERVICE_PORT}
+    - ${DEV_SNAPSHOTS_SERVICE_EXTERNAL_PORT}:${DEV_SNAPSHOTS_SERVICE_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   component-orchestrator:
     image: ${NODE_IMAGE}
     container_name: ${DEV_COMPONENT_ORCHESTRATOR_FOLDER}
@@ -148,18 +144,19 @@ services:
 
       CACHE_COMPONENT_IGNORE: "false"
     ports:
-      - ${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}:${DEV_COMPONENT_ORCHESTRATOR_PORT}
+    - ${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}:${DEV_COMPONENT_ORCHESTRATOR_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     entrypoint:
-      - /bin/sh
-      - -c
-      - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" | tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator && yarn start:container
+    - /bin/sh
+    - -c
+    - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" |
+      tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator
+      && yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   app-directory:
     image: ${NODE_IMAGE}
     container_name: ${DEV_APP_DIRECTORY_FOLDER}
@@ -167,7 +164,7 @@ services:
     environment:
       NODE_ENV: development
       LOGGING_LEVEL: info
-      DEBUG_MODE: "true"
+      DEBUG_MODE: 'true'
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_APP_DIRECTORY_DB}
       IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
@@ -179,15 +176,14 @@ services:
       API_BASE: /api/v1
       PORT: ${DEV_APP_DIRECTORY_PORT}
     ports:
-      - ${DEV_APP_DIRECTORY_EXTERNAL_PORT}:${DEV_APP_DIRECTORY_PORT}
+    - ${DEV_APP_DIRECTORY_EXTERNAL_PORT}:${DEV_APP_DIRECTORY_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   attachment-storage-service:
     image: ${NODE_IMAGE}
     container_name: ${DEV_ATTACHMENT_STORAGE_SERVICE_FOLDER}
@@ -198,15 +194,14 @@ services:
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       PORT: ${DEV_ATTACHMENT_STORAGE_SERVICE_PORT}
     ports:
-      - ${DEV_ATTACHMENT_STORAGE_SERVICE_EXTERNAL_PORT}:${DEV_ATTACHMENT_STORAGE_SERVICE_PORT}
+    - ${DEV_ATTACHMENT_STORAGE_SERVICE_EXTERNAL_PORT}:${DEV_ATTACHMENT_STORAGE_SERVICE_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   audit-log:
     image: ${NODE_IMAGE}
     container_name: ${DEV_AUDIT_LOG_FOLDER}
@@ -223,15 +218,14 @@ services:
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_AUDIT_LOG_PORT}
     ports:
-      - ${DEV_AUDIT_LOG_EXTERNAL_PORT}:${DEV_AUDIT_LOG_PORT}
+    - ${DEV_AUDIT_LOG_EXTERNAL_PORT}:${DEV_AUDIT_LOG_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   data-hub:
     image: ${NODE_IMAGE}
     container_name: ${DEV_DATA_HUB_FOLDER}
@@ -246,15 +240,14 @@ services:
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_DATA_HUB_PORT}
     ports:
-      - ${DEV_DATA_HUB_EXTERNAL_PORT}:${DEV_DATA_HUB_PORT}
+    - ${DEV_DATA_HUB_EXTERNAL_PORT}:${DEV_DATA_HUB_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   dispatcher-service:
     image: ${NODE_IMAGE}
     container_name: ${DEV_DISPATCHER_SERVICE_FOLDER}
@@ -272,15 +265,14 @@ services:
       SDF_ID: ReplaceMe
       PORT: ${DEV_DISPATCHER_SERVICE_PORT}
     ports:
-      - ${DEV_DISPATCHER_SERVICE_EXTERNAL_PORT}:${DEV_DISPATCHER_SERVICE_PORT}
+    - ${DEV_DISPATCHER_SERVICE_EXTERNAL_PORT}:${DEV_DISPATCHER_SERVICE_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   flow-repository:
     image: ${NODE_IMAGE}
     container_name: ${DEV_FLOW_REPOSITORY_FOLDER}
@@ -297,15 +289,14 @@ services:
       PORT: ${DEV_FLOW_REPOSITORY_PORT}
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
     ports:
-      - ${DEV_FLOW_REPOSITORY_EXTERNAL_PORT}:${DEV_FLOW_REPOSITORY_PORT}
+    - ${DEV_FLOW_REPOSITORY_EXTERNAL_PORT}:${DEV_FLOW_REPOSITORY_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   ils:
     image: ${NODE_IMAGE}
     container_name: ${DEV_ILS_FOLDER}
@@ -319,15 +310,14 @@ services:
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_ILS_PORT}
     ports:
-      - ${DEV_ILS_EXTERNAL_PORT}:${DEV_ILS_PORT}
+    - ${DEV_ILS_EXTERNAL_PORT}:${DEV_ILS_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   meta-data-repository:
     image: ${NODE_IMAGE}
     container_name: ${DEV_META_DATA_REPOSITORY_FOLDER}
@@ -335,7 +325,7 @@ services:
     environment:
       NODE_ENV: development
       LOGGING_LEVEL: info
-      DEBUG_MODE: "true"
+      DEBUG_MODE: 'true'
       API_BASE: /api/v1
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_META_DATA_REPOSITORY_DB}
       IAM_TOKEN: ${DEV_IAM_TOKEN}
@@ -346,15 +336,14 @@ services:
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       PORT: ${DEV_META_DATA_REPOSITORY_PORT}
     ports:
-      - ${DEV_META_DATA_REPOSITORY_EXTERNAL_PORT}:${DEV_META_DATA_REPOSITORY_PORT}
+    - ${DEV_META_DATA_REPOSITORY_EXTERNAL_PORT}:${DEV_META_DATA_REPOSITORY_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   scheduler:
     image: ${NODE_IMAGE}
     container_name: ${DEV_SCHEDULER_FOLDER}
@@ -370,15 +359,14 @@ services:
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       PORT: ${DEV_SCHEDULER_PORT}
     ports:
-      - ${DEV_SCHEDULER_EXTERNAL_PORT}:${DEV_SCHEDULER_PORT}
+    - ${DEV_SCHEDULER_EXTERNAL_PORT}:${DEV_SCHEDULER_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   webhooks:
     image: ${NODE_IMAGE}
     container_name: ${DEV_WEBHOOKS_FOLDER}
@@ -395,15 +383,14 @@ services:
       CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       LISTEN_PORT: ${DEV_WEBHOOKS_PORT}
     ports:
-      - ${DEV_WEBHOOKS_EXTERNAL_PORT}:${DEV_WEBHOOKS_PORT}
+    - ${DEV_WEBHOOKS_EXTERNAL_PORT}:${DEV_WEBHOOKS_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
-
+    - oih-dev
   web-ui:
     image: ${NODE_IMAGE}
     container_name: ${DEV_WEB_UI_FOLDER}
@@ -420,14 +407,14 @@ services:
       ENDPOINT_WEBHOOKS: http://localhost:${DEV_WEBHOOKS_EXTERNAL_PORT}
       PORT: ${DEV_WEB_UI_PORT}
     ports:
-      - ${DEV_WEB_UI_EXTERNAL_PORT}:${DEV_WEB_UI_PORT}
+    - ${DEV_WEB_UI_EXTERNAL_PORT}:${DEV_WEB_UI_PORT}
     volumes:
-      - type: bind
-        source: ${HOST_REPOSITORY_ROOT}
-        target: /usr/src/app
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
     command: yarn start:container
     networks:
-      - oih-dev
+    - oih-dev
 networks:
   oih-dev:
     external:

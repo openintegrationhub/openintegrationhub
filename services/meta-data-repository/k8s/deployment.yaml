@@ -5,8 +5,6 @@ metadata:
   namespace: oih-dev-ns
 spec:
   replicas: 1
-  minReadySeconds: 10
-  revisionHistoryLimit: 2
   template:
     metadata:
       labels:
@@ -15,6 +13,8 @@ spec:
       containers:
       - name: meta-data-repository
         image: openintegrationhub/meta-data-repository:latest
+        ports:
+        - containerPort: 3000
         env:
         - name: IAM_TOKEN
           valueFrom:
@@ -35,32 +35,32 @@ spec:
         - name: INTROSPECT_ENDPOINT_BASIC
           value: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
         - name: BASE_URL
-          value: 'http://metadata.openintegrationhub.com'
+          value: "http://metadata.openintegrationhub.com"
         - name: URLS_WITH_PORT
-          value: 'false'
+          value: "false"
         - name: PORT
-          value: '3000'
+          value: "3000"
         - name: API_BASE
           value: "/api/v1"
         - name: LOGGING_LEVEL
           value: "error"
         - name: DEBUG_MODE
           value: "false"
-        ports:
-        - containerPort: 3000
+        resources:
+          limits:
+            cpu: "0.1"
+            memory: 500Mi
         livenessProbe:
           httpGet:
-            path: /healthcheck
             port: 3000
+            path: /healthcheck
           initialDelaySeconds: 120
           timeoutSeconds: 1
         readinessProbe:
           httpGet:
-            path: /healthcheck
             port: 3000
+            path: /healthcheck
           initialDelaySeconds: 10
           timeoutSeconds: 1
-        resources:
-          limits:
-            cpu: '0.1'
-            memory: 500Mi
+  minReadySeconds: 10
+  revisionHistoryLimit: 2

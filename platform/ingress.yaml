@@ -4,8 +4,8 @@ metadata:
   name: oih-dev-ingress
   namespace: oih-dev-ns
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: "oih-dev-ingress"
     kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "oih-dev-ingress"
 spec:
   rules:
   - host: iam.openintegrationhub.com
