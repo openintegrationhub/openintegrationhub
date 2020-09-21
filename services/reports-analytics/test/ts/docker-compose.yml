@@ -1,28 +1,28 @@
-version: '3.7'
+version: "3.7"
 services:
   influxdb:
     image: influxdb:latest
     container_name: influxdb
     ports:
-      - "8086:8086"
+    - "8086:8086"
     env_file:
-      - 'env.influxdb'
+    - "env.influxdb"
     networks:
-      - reports
+    - reports
     volumes:
-      - ../../data/influxdb:/var/lib/influxdb:delegated
+    - ../../data/influxdb:/var/lib/influxdb:delegated
   grafana:
     user: root
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "8888:3000"
+    - "8888:3000"
     env_file:
-      - 'env.grafana'
+    - "env.grafana"
     networks:
-      - reports
+    - reports
     volumes:
-      - ../../data/grafana:/var/lib/grafana:delegated
+    - ../../data/grafana:/var/lib/grafana:delegated
 networks:
   reports:
     driver: bridge

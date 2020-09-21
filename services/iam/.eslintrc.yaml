@@ -1,4 +1,3 @@
----
 plugins:
 - jasmine
 - jest
