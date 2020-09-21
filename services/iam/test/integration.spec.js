@@ -15,9 +15,10 @@ describe('routes', () => {
         process.env.IAM_AUTH_TYPE = 'basic';
         process.env.IAM_BASEURL = 'http://localhost';
         conf = require('./../src/conf/index');
-        const App = require('../src/app'); 
+        const App = require('../src/app');
+
         app = new App({
-            mongoConnection: `${global.__MONGO_URI__}-integration`,
+            mongoConnection: global.__MONGO_URI__.replace('changeme', 'integration'),
         });
 
         await app.setup();
@@ -41,9 +42,9 @@ describe('routes', () => {
     });
 
     afterAll(() => {
-        app.stop(); 
+        app.stop();
     });
-    
+
     describe('General Routes', () => {
 
         let tempLoginToken = '';
@@ -58,7 +59,7 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(200);
             tempLoginToken = `Bearer ${response.body.token}`;
-            
+
         });
 
         test('login fails for wrong username', async () => {
@@ -71,7 +72,7 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(401);
             expect(response.body.message).toBe(CONSTANTS.ERROR_CODES.USER_NOT_FOUND);
-    
+
         });
 
         test('login fails with wrong password', async () => {
@@ -84,7 +85,7 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(401);
             expect(response.body.message).toBe(CONSTANTS.ERROR_CODES.PASSWORD_INCORRECT);
-    
+
         });
 
         test('get redirect for error call', async () => {
@@ -98,7 +99,7 @@ describe('routes', () => {
                 .set('Accept', /application\/json/)
                 .expect(200);
             // expect(response.body).toBe(0);
-    
+
         });
 
         test('logout is successful', async () => {
@@ -933,7 +934,7 @@ describe('RSA Signing', () => {
         conf.jwt.algorithm = 'RS256';
         const App = require('../src/app');
         app = new App({
-            mongoConnection: `${global.__MONGO_URI__}-integration`,
+            mongoConnection: global.__MONGO_URI__.replace('changeme', 'integration'),
         });
         await app.setup();
         await app.start();

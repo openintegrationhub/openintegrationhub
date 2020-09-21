@@ -20,10 +20,9 @@ describe('basic OIDC test Suite', () => {
         process.env.IAM_ACC_SERVICEACCOUNT_USERNAME = 'testuser@basaas.de';
         process.env.IAM_ACC_SERVICEACCOUNT_PASSWORD = 'testpass';
         process.env.IAM_DEBUG = 'true';
-        process.env.IAM_MONGODB_CONNECTION = `${global.__MONGO_URI__}-oidc`;
+        process.env.IAM_MONGODB_CONNECTION = global.__MONGO_URI__.replace('changeme', 'oidc');
 
-        getHeader = `Basic ${encode(`${
-            encodeURIComponent(process.env.IAM_SERVICE_CLIENT_ID)}:${encodeURIComponent(process.env.IAM_SERVICE_CLIENT_SECRET)}`)
+        getHeader = `Basic ${encode(`${encodeURIComponent(process.env.IAM_SERVICE_CLIENT_ID)}:${encodeURIComponent(process.env.IAM_SERVICE_CLIENT_SECRET)}`)
         }`;
 
         const { generateFile } = require('../src/util/keystore');
@@ -164,10 +163,10 @@ describe('basic OIDC test Suite', () => {
     test('generate Keystore successful', async () => {
         const pathToKeystore = path.join(__dirname, '../keystore/keystore.json');
         const { generateFile } = require('../src/util/keystore');
-        
+
         await fs.unlinkSync(pathToKeystore);
         await generateFile();
-        
+
     });
 });
 

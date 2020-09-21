@@ -20,9 +20,9 @@ describe('User Routes', () => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_AUTH_TYPE = 'basic';
         conf = require('./../src/conf/index');
-        const App = require('../src/app'); 
+        const App = require('../src/app');
         app = new App({
-            mongoConnection: `${global.__MONGO_URI__}-users`,
+            mongoConnection: global.__MONGO_URI__.replace('changeme', 'users'),
         });
         await app.setup();
         await app.start();
@@ -46,7 +46,7 @@ describe('User Routes', () => {
     });
 
     afterAll(() => {
-        app.stop(); 
+        app.stop();
     });
 
     test('get all users is successful', async () => {
@@ -80,7 +80,7 @@ describe('User Routes', () => {
             .expect(200);
         testUser.id = response.body.id;
     });
-    
+
     test('create user with invalid body fails', async () => {
         const jsonPayload = {
             'firstname': 'blubb',

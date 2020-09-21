@@ -1,27 +1,34 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') });
 const fs = require('fs');
-const MongodbMemoryServer = require('mongodb-memory-server');
+const { MongoMemoryReplSet } = require('mongodb-memory-server');
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');
 
-const mongod = new MongodbMemoryServer.default({
-    instance: {
-        dbName: 'jest',
+const dbName = 'changeme';
+const setName = 'jestset';
+
+const mongod = new MongoMemoryReplSet({
+    instanceOpts: [
+        { storageEngine: 'wiredTiger' },
+        { storageEngine: 'wiredTiger' },
+    ],
+    replSet: {
+        dbName,
+        name: setName,
     },
-    binary: {
-        version: '3.6.17',
-    },
+    // debug: true,
     autoStart: false,
 });
 
 module.exports = async () => {
     if (!mongod.isRunning) {
         await mongod.start();
+        await mongod.waitUntilRunning();
     }
 
     const mongoConfig = {
-        mongoDBName: 'jest',
+        mongoDBName: dbName,
         mongoUri: await mongod.getConnectionString(),
     };
 

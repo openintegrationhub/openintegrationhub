@@ -8,6 +8,8 @@ extends:
 - plugin:import/errors
 - plugin:import/warnings
 rules:
+  no-loop-func: 0
+  no-plusplus: 0
   no-console: 'off'
   react/prop-types: 0
   no-restricted-syntax: 0

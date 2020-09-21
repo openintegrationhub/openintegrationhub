@@ -1,33 +1,33 @@
-const { execSync } = require("child_process")
-const fetch = require("node-fetch")
-const { dbRoot, devToolsRoot, env, services } = require("../config")
-const { checkTools, waitForMongo, waitForStatus, login } = require("../helper")
-const serviceAccounts = require("../data/service-accounts")
-const tenants = require("../data/tenants")
+const { execSync } = require('child_process')
+const fetch = require('node-fetch')
+const { dbRoot, devToolsRoot, env, services } = require('../config')
+const { checkTools, waitForMongo, waitForStatus, login } = require('../helper')
+const serviceAccounts = require('../data/service-accounts')
+const tenants = require('../data/tenants')
 
 const iamBase = `http://localhost:${services.iam.externalPort}`
 
 let response = null
 
 async function run() {
-  checkTools(["docker-compose", "mongo"])
+  checkTools(['docker-compose', 'mongo'])
 
   execSync(`cd ${devToolsRoot} && docker-compose down`, {
     env: {
       ...process.env,
       ...env,
     },
-    stdio: "inherit",
+    stdio: 'inherit',
   })
 
   execSync(`cd ${dbRoot} && docker-compose up -d`, {
-    stdio: "inherit",
+    stdio: 'inherit',
   })
 
   waitForMongo()
 
   execSync(`mongo ${services.iam.db} --eval "db.dropDatabase()"`, {
-    stdio: "inherit",
+    stdio: 'inherit',
   })
 
   execSync(`cd ${devToolsRoot} && docker-compose up -d iam`, {
@@ -35,7 +35,7 @@ async function run() {
       ...process.env,
       ...env,
     },
-    stdio: "inherit",
+    stdio: 'inherit',
   })
 
   await waitForStatus({ url: iamBase, status: 200 })
@@ -47,10 +47,10 @@ async function run() {
 
   for (const serviceAccount of serviceAccounts) {
     response = await fetch(`${iamBase}/api/v1/users`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(serviceAccount),
@@ -66,10 +66,10 @@ async function run() {
     delete tenant.users
 
     response = await fetch(`${iamBase}/api/v1/tenants`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(tenant),
@@ -83,10 +83,10 @@ async function run() {
 
     for (const user of users) {
       response = await fetch(`${iamBase}/api/v1/users`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({

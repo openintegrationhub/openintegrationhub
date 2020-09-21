@@ -122,7 +122,8 @@ services:
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       COMPONENT_REPOSITORY_BASE_URL: http://${DEV_COMPONENT_REPOSITORY_FOLDER}:${DEV_COMPONENT_REPOSITORY_PORT}
-      ### kuberneted pod -> minikube host
+
+      ### kubernetes pod -> minikube host
       SECRETS_SERVICE_BASE_URL: http://${MINIKUBE_HOST_IP}:${DEV_SECRET_SERVICE_EXTERNAL_PORT}/api/v1
       SNAPSHOTS_SERVICE_BASE_URL: http://${MINIKUBE_HOST_IP}:${DEV_SNAPSHOTS_SERVICE_EXTERNAL_PORT}
       SELF_URL: http://${MINIKUBE_HOST_IP}:${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}
@@ -140,6 +141,8 @@ services:
       TICK_INTERVAL: 10000
       KUBE_CONFIG: ../../dev-tools/docker-compose/src/setup/.kube/config
       LISTEN_PORT: ${DEV_COMPONENT_ORCHESTRATOR_PORT}
+
+      CACHE_COMPONENT_IGNORE: "false"
     ports:
     - ${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}:${DEV_COMPONENT_ORCHESTRATOR_PORT}
     volumes:

@@ -100,3 +100,11 @@ kubectl apply -f ./k8s
 | DEFAULT_MEM_REQUEST | Default memory request for a flow's node container. |
 | NAMESPACE | Kubernetes namespace, where flow's nodes will be deployed. |
 | KUBERNETES_IMAGE_PULL_POLICY | Kubernetes pull policy for all deployment images. |
+
+### Caching
+
+| Name | Description |
+| --- | --- |
+| CACHE_COMPONENT_SIZE | Size of components cache. Default 50 |
+| CACHE_COMPONENT_MAX_AGE | TTL for Cache in ms. Default 300000 (5 minutes) |
+| CACHE_COMPONENT_IGNORE | Disable cache. Default "false" |

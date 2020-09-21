@@ -8,6 +8,7 @@ const {
   checkTools,
   getMinikubeClusterIp,
   getMinikubeInternalIp,
+  minikubeArgs,
 } = require('./helper')
 
 checkTools([
@@ -45,7 +46,7 @@ process.on('SIGUSR2', exitHandler.bind(null))
 process.on('uncaughtException', exitHandler.bind(null))
 
 async function run() {
-  execSync(`minikube start`, {
+  execSync(`minikube start ${minikubeArgs}`, {
     stdio: 'inherit',
   })
 

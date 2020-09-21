@@ -15,9 +15,9 @@ describe('Tenant Routes', () => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_AUTH_TYPE = 'basic';
         conf = require('./../src/conf/index');
-        const App = require('../src/app'); 
+        const App = require('../src/app');
         app = new App({
-            mongoConnection: `${global.__MONGO_URI__}-tenants`,
+            mongoConnection: global.__MONGO_URI__.replace('changeme', 'tenants'),
         });
         await app.setup();
         await app.start();
@@ -41,7 +41,7 @@ describe('Tenant Routes', () => {
     });
 
     afterAll(() => {
-        app.stop(); 
+        app.stop();
     });
 
     test('create tenant succeeds', async () => {

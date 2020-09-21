@@ -21,12 +21,11 @@ function exitHandler(options, err) {
 
 process.on('SIGINT', exitHandler.bind(null));
 
-
 (async () => {
     try {
         // configuring the EventBus
         const eventBus = new EventBus({
-            serviceName: conf.log.namespace,
+            serviceName: conf.name,
             rabbitmqUri: process.env.RABBITMQ_URI,
         });
 

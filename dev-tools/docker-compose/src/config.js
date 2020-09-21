@@ -3,6 +3,8 @@ const { homedir } = require('os')
 
 const nodeImage = 'node:12-stretch'
 
+const minikubeArgs = '--kubernetes-version=v1.19.0'
+
 const clusterName = 'minikube'
 
 const kubernetesHost = 'https://host.docker.internal:9090'
@@ -204,4 +206,5 @@ module.exports = {
   nodeImage,
   libs,
   services,
+  minikubeArgs,
 }
