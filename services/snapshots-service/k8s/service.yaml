@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app: snapshots-service
   name: snapshots-service
   namespace: oih-dev-ns
+  labels:
+    app: snapshots-service
 spec:
-  ports:
-    - name: '1234'
-      port: 1234
-      protocol: TCP
-      targetPort: 1234
+  type: NodePort
   selector:
     app: snapshots-service
-  type: NodePort
+  ports:
+  - name: "1234"
+    protocol: TCP
+    port: 1234
+    targetPort: 1234

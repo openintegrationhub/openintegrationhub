@@ -2,66 +2,66 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
+  namespace: oih-dev-ns
   labels:
     app: grafana
-  namespace: oih-dev-ns
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: grafana
-  replicas: 1
-  minReadySeconds: 10
   template:
     metadata:
       labels:
         app: grafana
     spec:
-      securityContext:
-        runAsUser: 472
-        fsGroup: 472
       containers:
       - name: master
         image: grafana/grafana:latest
+        ports:
+        - containerPort: 3000
         env:
         - name: GF_LOG_LEVEL
           value: "error"
         - name: GF_INSTALL_PLUGINS
           value: "grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource"
         volumeMounts:
-        - mountPath: /var/lib/grafana
-          name: grafana-pdisk
-        ports:
-          - containerPort: 3000
+        - name: grafana-pdisk
+          mountPath: /var/lib/grafana
         livenessProbe:
           httpGet:
-            path: /robots.txt
             port: 3000
+            path: /robots.txt
           initialDelaySeconds: 120
           timeoutSeconds: 1
         readinessProbe:
           httpGet:
-            path: /robots.txt
             port: 3000
+            path: /robots.txt
           initialDelaySeconds: 30
           timeoutSeconds: 1
       volumes:
       - name: grafana-pdisk
         gcePersistentDisk:
-          pdName: timeseries-grafana
           fsType: ext4
+          pdName: timeseries-grafana
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+  minReadySeconds: 10
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: grafana
+  namespace: oih-dev-ns
   labels:
     app: grafana
-  namespace: oih-dev-ns
 spec:
-  ports:
-    - port: 80
-      targetPort: 3000
-      protocol: TCP
+  type: NodePort
   selector:
     app: grafana
-  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000

@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app: component-repository
   name: component-repository
   namespace: oih-dev-ns
+  labels:
+    app: component-repository
 spec:
-  ports:
-    - name: "1234"
-      port: 1234
-      protocol: TCP
-      targetPort: 1234
+  type: NodePort
   selector:
     app: component-repository
-  type: NodePort
+  ports:
+  - name: "1234"
+    protocol: TCP
+    port: 1234
+    targetPort: 1234

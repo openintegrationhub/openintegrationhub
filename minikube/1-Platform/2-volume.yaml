@@ -3,10 +3,10 @@ kind: PersistentVolume
 metadata:
   name: local-volume
 spec:
-  persistentVolumeReclaimPolicy: Recycle
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   capacity:
     storage: 1Gi
   hostPath:
     path: /data/localVolume/
+  persistentVolumeReclaimPolicy: Recycle
