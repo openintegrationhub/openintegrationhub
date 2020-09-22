@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webhooks
+  namespace: oih-dev-ns
+data:
+  CORS_ORIGIN_WHITELIST: "https://web-ui.openintegrationhub.com"
+  LISTEN_PORT: "1234"
+  LOG_LEVEL: trace
+  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local"

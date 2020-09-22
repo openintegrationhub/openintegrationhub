@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logging-service
+  namespace: oih-dev-ns
+  labels:
+    app: logging-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logging-service
+  template:
+    metadata:
+      name: logging-service
+      labels:
+        app: logging-service
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: logging-service
+        image: "openintegrationhub/logging-service:latest"
+        envFrom:
+        - configMapRef:
+            name: logging-service
+        env:
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: logging-service
+              key: IAM_TOKEN
+        resources:
+          limits:
+            cpu: 0.1
+            memory: 512Mi
+        volumeMounts:
+        - name: credentials
+          mountPath: "/usr/lib/app/credentials"
+        livenessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        readinessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+      volumes:
+      - name: credentials
+        secret:
+          items:
+          - key: GCLOUD_CREDENTIALS
+            path: credentials.json
+          secretName: logging-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1

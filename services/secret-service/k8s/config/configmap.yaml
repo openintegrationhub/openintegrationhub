@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: secret-service
+  namespace: oih-dev-ns
+data:
+  API_BASE: /api/v1
+  DEBUG_MODE: "false"
+  INTROSPECT_ENDPOINT_BASIC: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
+  INTROSPECT_TYPE: basic
+  LOG_LEVEL: error
+  ORIGINWHITELIST: openintegrationhub.com
+  PORT: "3000"
+  RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+  TTL_AUTHFLOW: 2m

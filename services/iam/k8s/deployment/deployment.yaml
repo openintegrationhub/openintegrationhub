@@ -1,0 +1,77 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: iam
+  namespace: oih-dev-ns
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: iam
+    spec:
+      containers:
+      - name: iam
+        image: openintegrationhub/iam:latest
+        ports:
+        - containerPort: 3099
+        envFrom:
+        - configMapRef:
+            name: iam
+        env:
+        - name: IAM_MONGODB_CONNECTION
+          valueFrom:
+            secretKeyRef:
+              name: iam
+              key: mongourl
+        - name: IAM_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: iam
+              key: jwtsecret
+        - name: IAM_SESSION_COOKIE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: iam
+              key: cookiesecret
+        - name: IAM_ACC_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: iam
+              key: admin_password
+        - name: IAM_ACC_SERVICE_ACCOUNT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: iam
+              key: serviceacc_password
+        - name: IAM_SERVICE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: iam
+              key: oidc_client_secret
+        resources:
+          limits:
+            cpu: "0.1"
+            memory: 1000Mi
+        volumeMounts:
+        - name: oidc-certs
+          readOnly: true
+          mountPath: /usr/src/app/keystore
+        livenessProbe:
+          httpGet:
+            port: 3099
+            path: /healthcheck
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            port: 3099
+            path: /healthcheck
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+      volumes:
+      - name: oidc-certs
+        secret:
+          secretName: oidc-certs
+  minReadySeconds: 10
+  revisionHistoryLimit: 2

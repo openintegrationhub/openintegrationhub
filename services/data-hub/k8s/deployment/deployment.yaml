@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-hub
+  namespace: oih-dev-ns
+  labels:
+    app: data-hub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-hub
+  template:
+    metadata:
+      name: data-hub
+      labels:
+        app: data-hub
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: data-hub
+        image: "openintegrationhub/data-hub:latest"
+        envFrom:
+        - configMapRef:
+            name: data-hub
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: data-hub
+              key: MONGODB_URI
+        - name: RABBITMQ_URI
+          valueFrom:
+            secretKeyRef:
+              name: data-hub
+              key: RABBITMQ_URI
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: data-hub
+              key: IAM_TOKEN
+        resources:
+          limits:
+            cpu: 0.1
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        readinessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
