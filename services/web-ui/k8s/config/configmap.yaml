@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-ui
+  namespace: oih-dev-ns
+data:
+  ENDPOINT_APP_DIRECTORY: "https://app-directory.openintegrationhub.com/api/v1"
+  ENDPOINT_COMPONENT: "https://component-repository.openintegrationhub.com"
+  ENDPOINT_DISPATCHER: "https://dispatcher-service.openintegrationhub.com"
+  ENDPOINT_FLOW: "https://flow-repository.openintegrationhub.com"
+  ENDPOINT_IAM: "https://iam.openintegrationhub.com"
+  ENDPOINT_METADATA: "https://metadata.openintegrationhub.com/api/v1"
+  ENDPOINT_SECRETS: "https://skm.openintegrationhub.com/api/v1"
+  ENDPOINT_WEBHOOKS: "https://webhooks.openintegrationhub.com"
+  PORT: "3000"

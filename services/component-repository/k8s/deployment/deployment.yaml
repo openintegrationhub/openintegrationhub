@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: component-repository
+  namespace: oih-dev-ns
+  labels:
+    app: component-repository
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: component-repository
+  template:
+    metadata:
+      name: component-repository
+      labels:
+        app: component-repository
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: component-repository
+        image: "openintegrationhub/component-repository:latest"
+        envFrom:
+        - configMapRef:
+            name: component-repository
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: component-repository
+              key: MONGODB_URI
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: component-repository
+              key: IAM_TOKEN
+        resources:
+          limits:
+            cpu: 0.1
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        readinessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1

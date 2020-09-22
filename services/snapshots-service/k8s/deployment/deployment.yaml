@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snapshots-service
+  namespace: oih-dev-ns
+  labels:
+    app: snapshots-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: snapshots-service
+  template:
+    metadata:
+      name: snapshots-service
+      labels:
+        app: snapshots-service
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: snapshots-service
+        image: "openintegrationhub/snapshots-service:latest"
+        envFrom:
+        - configMapRef:
+            name: snapshots-service
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: snapshots-service
+              key: MONGODB_URI
+        - name: RABBITMQ_URI
+          valueFrom:
+            secretKeyRef:
+              name: snapshots-service
+              key: RABBITMQ_URI
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: snapshots-service
+              key: IAM_TOKEN
+        resources:
+          limits:
+            cpu: 0.1
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        readinessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1

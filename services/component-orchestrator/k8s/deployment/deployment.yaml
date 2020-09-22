@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: component-orchestrator
+  namespace: oih-dev-ns
+  labels:
+    app: component-orchestrator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: component-orchestrator
+  template:
+    metadata:
+      name: component-orchestrator
+      labels:
+        app: component-orchestrator
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      serviceAccountName: component-orchestrator-account
+      containers:
+      - name: component-orchestrator
+        image: "openintegrationhub/component-orchestrator:latest"
+        envFrom:
+        - configMapRef:
+            name: component-orchestrator
+        env:
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: component-orchestrator
+              key: IAM_TOKEN
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: component-orchestrator
+              key: MONGODB_URI
+        resources:
+          limits:
+            cpu: 0.1
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        readinessProbe:
+          httpGet:
+            port: 1234
+            path: /healthcheck
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1

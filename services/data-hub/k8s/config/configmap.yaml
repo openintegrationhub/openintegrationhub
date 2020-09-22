@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-hub
+  namespace: oih-dev-ns
+data:
+  LOG_LEVEL: trace
+  PORT: "1234"
