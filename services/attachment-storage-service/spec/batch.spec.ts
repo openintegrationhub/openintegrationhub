@@ -73,7 +73,7 @@ describe('/batch', () => {
             expect(res.body.status).to.equal('started');
             expect(res.statusCode).to.equal(202);
 
-            await new Promise(resolve => setTimeout(resolve, 100)); // waiting for deletion
+            await new Promise(resolve => setTimeout(resolve, 2000)); // waiting for deletion
 
             nockIamIntrospection();
             res = await this.request
