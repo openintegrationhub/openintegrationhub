@@ -1,0 +1,14 @@
+extends: default
+
+ignore: |
+  .yarn-cache/
+  node_modules/
+  /bin/
+  !/bin/*.lint-me-anyway.yaml
+
+rules:
+  line-length:
+    max: 180
+    level: warning
+  indentation: disable
+  document-start: disable
