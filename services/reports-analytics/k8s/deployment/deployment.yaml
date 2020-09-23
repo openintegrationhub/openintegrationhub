@@ -3,8 +3,13 @@ kind: Deployment
 metadata:
   name: reports-analytics
   namespace: oih-dev-ns
+  labels:
+    app: reports-analytics
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: reports-analytics
   template:
     metadata:
       labels:

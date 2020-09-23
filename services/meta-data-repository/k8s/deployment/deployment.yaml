@@ -3,8 +3,13 @@ kind: Deployment
 metadata:
   name: meta-data-repository
   namespace: oih-dev-ns
+  labels:
+    app: meta-data-repository
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: meta-data-repository
   template:
     metadata:
       labels:

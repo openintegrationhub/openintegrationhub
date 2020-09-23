@@ -3,8 +3,13 @@ kind: Deployment
 metadata:
   name: iam
   namespace: oih-dev-ns
+  labels:
+    app: iam
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: iam
   template:
     metadata:
       labels:
