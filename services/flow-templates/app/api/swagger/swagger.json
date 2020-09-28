@@ -1,12 +1,12 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "This is the API for the Open Integration Hub Microservice \"Flow Repository\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "description": "This is the API for the Open Integration Hub Microservice \"Flow Templates\"\n[http://openintegrationhub.org](http://openintegrationhub.org)\n",
     "version": "0.0.1",
-    "title": "Flow Repository",
-    "termsOfService": "http://openintegrationhub.de/terms/",
+    "title": "Flow Templates",
+    "termsOfService": "http://openintegrationhub.org/terms/",
     "contact": {
-      "email": "hschmidt@wice.de"
+      "email": "james.weber@cloudecosystem.org"
     },
     "license": {
       "name": "Apache 2.0",
@@ -15,18 +15,18 @@
   },
   "tags": [
     {
-      "name": "flows",
-      "description": "Flow management",
+      "name": "templates",
+      "description": "Flow Templates",
       "externalDocs": {
         "description": "Find out more",
-        "url": "http://openintegrationhub.de"
+        "url": "http://openintegrationhub.org"
       }
     }
   ],
   "paths": {
-    "/flows": {
+    "/templates": {
       "get": {
-        "x-swagger-router-controller": "flow",
+        "x-swagger-router-controller": "flowTemplate",
         "security": [
           {
             "Bearer": [
@@ -35,16 +35,16 @@
           }
         ],
         "tags": [
-          "flows"
+          "templates"
         ],
-        "summary": "Retrieve all flows associated with the current user from the repository",
-        "description": "This will only return Flows that are either directly associated with the user, or that are associated with a tenant that the user is also a member of. Requires the 'flows.read' permissions.",
-        "operationId": "getFlows",
+        "summary": "Retrieve all flow templates associated with the current user from the repository",
+        "description": "This will only return Flow Templates that are either directly associated with the user, or that are associated with a tenant that the user is also a member of. Requires the 'flowTemplates.read' permissions.",
+        "operationId": "getFlowTemplates",
         "parameters": [
           {
           "name": "page[size]",
           "in": "query",
-          "description": "Amount of flows per page returned. Default is 10.",
+          "description": "Number of flow templates per page returned. Default is 10.",
           "required": false,
           "schema": {
             "type": "integer"
@@ -69,15 +69,6 @@
             }
           },
           {
-          "name": "filter[type]",
-          "in": "query",
-          "description": "Filter results by flow type (ordinary, long_running)",
-          "required": false,
-          "schema": {
-            "type": "string"
-            }
-          },
-          {
           "name": "filter[user]",
           "in": "query",
           "description": "Filter by user. Works for admin or users with same tenant.",
@@ -98,7 +89,7 @@
           {
           "name": "search",
           "in": "query",
-          "description": "Search flows by a word or a phrase contained in the flow description OR in the flow name (case-insensitive). Behavior is similar to operator LIKE in SQL but case insensitive.",
+          "description": "Search flows by a word or a phrase contained in the template description OR in the template name (case-insensitive). Behavior is similar to operator LIKE in SQL but case insensitive.",
           "required": false,
           "schema": {
             "type": "string"
@@ -107,7 +98,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of flows.",
+            "description": "A list of flow templates.",
             "content": {
               "application/json": {
                 "schema": {
@@ -115,7 +106,7 @@
                   "properties": {
                     "data": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/Flow" }
+                      "items": { "$ref": "#/components/schemas/FlowTemplates" }
                     },
                     "meta": { "$ref": "#/components/schemas/Meta" }
                   }
@@ -124,32 +115,32 @@
             }
           },
           "404": {
-            "description": "No flows associated with the current user could be found in the repository."
+            "description": "No flows templates associated with the current user could be found in the repository."
           }
         }
       },
       "post": {
-        "x-swagger-router-controller": "flow",
+        "x-swagger-router-controller": "flowTemplate",
         "security": [
           {
             "Bearer": []
           }
         ],
         "tags": [
-          "flows"
+          "templates"
         ],
         "summary": "Add a new flow to the repository",
-        "description": "This requires the 'flows.write' permissions. The new Flow will automatically be associated with the current user in the owners array, allowing editing and viewing by this user irrespective of tenancies.",
-        "operationId": "addFlow",
+        "description": "This requires the 'flowTemplates.write' permissions. The new Flow Template will automatically be associated with the current user in the owners array, allowing editing and viewing by this user irrespective of tenancies.",
+        "operationId": "addFlowTemplate",
         "responses": {
           "201": {
-            "description": "The created Flow.",
+            "description": "The created Flow Template.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {"$ref": "#/components/schemas/Flow"},
+                    "data": {"$ref": "#/components/schemas/FlowTemplate"},
                     "meta": {"type": "object"}
                   }
                 }
@@ -161,18 +152,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MutableFlow"
+                "$ref": "#/components/schemas/MutableFlowTemplate"
               }
             }
           },
-          "description": "A Flow object to be added to the repository.",
+          "description": "A Flow Template object to be added to the repository.",
           "required": true
         }
       }
     },
-    "/flows/{id}": {
+    "/templates/{id}": {
       "get": {
-        "x-swagger-router-controller": "flow",
+        "x-swagger-router-controller": "flowTemplate",
         "security": [
           {
             "Bearer": [
@@ -181,16 +172,16 @@
           }
         ],
         "tags": [
-          "flows"
+          "templates"
         ],
-        "summary": "Find Flow by ID",
-        "description": "Returns a single Flow by its ID, if the user is authorized to see it. This requires the 'flows.read' permission",
-        "operationId": "getFlowById",
+        "summary": "Find Flow Template by ID",
+        "description": "Returns a single Flow Template by its ID, if the user is authorized to see it. This requires the 'flowTemplates.read' permission",
+        "operationId": "getFlowTemplateById",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "ID of flow to return",
+            "description": "ID of flow template to return",
             "required": true,
             "schema": {
               "type": "string",
@@ -200,13 +191,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Returns the flow",
+            "description": "Returns the flow template",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": { "$ref": "#/components/schemas/Flow" },
+                    "data": { "$ref": "#/components/schemas/FlowTemplate" },
                     "meta": {
                       "type": "object"
                     }
@@ -221,7 +212,7 @@
         }
       },
       "delete": {
-        "x-swagger-router-controller": "flow",
+        "x-swagger-router-controller": "flowTemplate",
         "security": [
           {
             "Bearer": [
@@ -230,16 +221,16 @@
           }
         ],
         "tags": [
-          "flows"
+          "templates"
         ],
-        "summary": "Deletes a flow",
-        "description": "Entirely deletes a Flow from the repository. This cannot be reverted. Requires the 'flows.write' permission.",
-        "operationId": "deleteFlow",
+        "summary": "Deletes a flow template",
+        "description": "Entirely deletes a Flow Template from the repository. This cannot be reverted. Requires the 'flowTemplates.write' permission.",
+        "operationId": "deleteFlowTemplate",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Flow id to delete",
+            "description": "Flow Template id to delete",
             "required": true,
             "schema": {
               "type": "string",
@@ -249,21 +240,21 @@
         ],
         "responses": {
           "200": {
-            "description": "Flow was successfully deleted"
+            "description": "Flow Template was successfully deleted"
           },
           "400": {
             "description": "Invalid ID supplied"
           },
           "404": {
-            "description": "No Flow with this id was found."
+            "description": "No Flow Template with this id was found."
           },
           "409": {
-            "description": "Flow is currently not inactive. Only stopped, inactive flows may be deleted."
+            "description": "Flow Template is currently not inactive. Only stopped, inactive flows may be deleted."
           }
         }
       },
       "patch": {
-        "x-swagger-router-controller": "flow",
+        "x-swagger-router-controller": "flowTemplate",
         "security": [
           {
             "Bearer": [
@@ -272,13 +263,13 @@
           }
         ],
         "tags": [
-          "flows"
+          "templates"
         ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "ID of flow to update",
+            "description": "ID of flow template to update",
             "required": true,
             "schema": {
               "type": "string",
@@ -286,18 +277,18 @@
             }
           }
         ],
-        "summary": "Update an existing flow",
-        "description": "The id is used to match the existing Flow that will be updated. Requires the 'flows.write' permission.",
-        "operationId": "updateFlow",
+        "summary": "Update an existing flow template",
+        "description": "The id is used to match the existing Flow Template that will be updated. Requires the 'flowTemplates.write' permission.",
+        "operationId": "updateFlowTemplate",
         "responses": {
           "200": {
-            "description": "The updated Flow.",
+            "description": "The updated Flow Template.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {"$ref": "#/components/schemas/Flow"},
+                    "data": {"$ref": "#/components/schemas/FlowTemplate"},
                     "meta": {"type": "object"}
                   }
                 }
@@ -305,28 +296,28 @@
             }
           },
           "404": {
-            "description": "Flow not found"
+            "description": "Flow Template not found"
           },
           "409": {
-            "description": "Flow is currently not inactive. Only stopped, inactive flows may be updated."
+            "description": "Flow Template is currently not inactive. Only stopped, inactive flows may be updated."
           }
         },
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MutableFlow"
+                "$ref": "#/components/schemas/MutableFlowTemplate"
               }
             }
           },
-          "description": "Flow object containing the desired new values.",
+          "description": "Flow Template object containing the desired new values.",
           "required": true
         }
       }
     },
-    "/flows/{id}/start": {
+    "/templates/{id}/generate": {
       "post": {
-        "x-swagger-router-controller": "flow",
+        "x-swagger-router-controller": "flowTemplate",
         "security": [
           {
             "Bearer": [
@@ -335,16 +326,16 @@
           }
         ],
         "tags": [
-          "flows"
+          "templates"
         ],
-        "summary": "Start a flow",
-        "description": "Initiates the flow's integration process by publishing an appropriate event to the event bus. Requires the 'flows.control' permission.",
-        "operationId": "startFlow",
+        "summary": "Generate a flow from the flow template",
+        "description": "Creates a flow based on the settings in the flow template. Requires the 'flows.write' permission.",
+        "operationId": "generateFlow",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "ID of flow to start, must be a valid MongoDB ID.",
+            "description": "ID of flow template to clone, must be a valid MongoDB ID.",
             "required": true,
             "schema": {
               "type": "string",
@@ -354,7 +345,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Returns the id and new status of the flow",
+            "description": "Returns the id and status of the new flow",
             "content": {
               "application/json": {
                 "schema": {
@@ -383,83 +374,13 @@
             "description": "Invalid ID format."
           },
           "403": {
-            "description": "User is not authorised to start flows."
+            "description": "User is not authorised to create flows."
           },
           "404": {
-            "description": "No Flow with this id was found."
+            "description": "No Flow Template with this id was found."
           },
           "409": {
-            "description": "Flow is currently not inactive. Only inactive flows can be started."
-          }
-        }
-      }
-    },
-    "/flows/{id}/stop": {
-      "post": {
-        "x-swagger-router-controller": "flow",
-        "security": [
-          {
-            "Bearer": [
-
-            ]
-          }
-        ],
-        "tags": [
-          "flows"
-        ],
-        "summary": "Stop a flow",
-        "description": "Stops the flow's integration process by publishing an appropriate event to the event bus. Requires the 'flows.control' permission.",
-        "operationId": "stopFlow",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of flow to stop, must be a valid MongoDB ID.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns id and new status of the stopped flow",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "example": "5c99ec7e5ed40d3e7512cffa"
-                        },
-                        "status": {
-                          "type": "string",
-                          "example": "stopping"
-                        }
-                      }
-                    },
-                    "meta": {"type": "object"}
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID format."
-          },
-          "403": {
-            "description": "User is not authorised to stop flows."
-          },
-          "404": {
-            "description": "No Flow with this id was found."
-          },
-          "409": {
-            "description": "Flow is currently not active. Only active flows can be stopped."
+            "description": "Flow Template is currently not active. Only active flow templates can be used to generate flows."
           }
         }
       }
@@ -678,12 +599,12 @@
     }
   },
   "externalDocs": {
-    "description": "Find out more about the Flow Repository",
+    "description": "Find out more about the Flow Templates",
     "url": "https://github.com/openintegrationhub"
   },
   "servers": [
     {
-      "url": "http://flow-repository.openintegrationhub.com/"
+      "url": "http://flow-templates.openintegrationhub.com/"
     },
     {
       "url": "http://localhost:3001/"
@@ -762,7 +683,7 @@
       }
     },
     "schemas": {
-      "MutableFlow": {
+      "MutableFlowTemplate": {
         "type": "object",
         "required": [
           "name",
@@ -803,10 +724,10 @@
           }
         }
       },
-      "Flow": {
+      "FlowTemplate": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/MutableFlow"
+            "$ref": "#/components/schemas/MutableFlowTemplate"
           },
           {
             "type": "object",

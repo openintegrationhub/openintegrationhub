@@ -19,15 +19,15 @@ const { validate } = require('../../utils/validator');
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
 const jsonParser = bodyParser.json();
-// const urlParser = bodyParser.urlencoded({ extended: false });
+
 const router = express.Router();
 
 const log = require('../../config/logger'); // eslint-disable-line
 
 // require our MongoDB-Model
-const Flow = require('../../models/flow');
+const FlowTemplate = require('../../models/flowTemplate');
 
-// Gets all flows
+// Gets all flowTemplates
 router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => {
   let error = false;
 
@@ -118,7 +118,7 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   res.json(response);
 });
 
-// Adds a new flow to the repository
+// Adds a new flow template to the repository
 router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) => {
   const newFlow = req.body;
 
