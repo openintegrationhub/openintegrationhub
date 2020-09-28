@@ -62,7 +62,7 @@ const flowTemplate = new Schema({
   graph: { type: graph, required: [true, 'Flow Templates require a graph.'] },
   type: { type: String, maxlength: 30 },
   owners: { type: [owner] },
-  status: { type: String, default: 'inactive' },
+  status: { type: String, default: 'draft' },
   cron: { type: String, maxlength: 20 },
 }, { collection: 'flowTemplates', timestamps: true });
 

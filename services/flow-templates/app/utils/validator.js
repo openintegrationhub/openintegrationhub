@@ -7,11 +7,11 @@ function findNode(nodeId, flow) {
   return true;
 }
 
-function validate(flow) {
+function validate(template) {
   const errors = [];
 
   // Check for missing required attributes and length using the mongoose validation
-  const validateErrors = flow.validateSync();
+  const validateErrors = template.validateSync();
   if (validateErrors) {
     const validateErrorsKeys = Object.keys(validateErrors.errors);
     for (let i = 0; i < validateErrorsKeys.length; i += 1) {
@@ -20,12 +20,7 @@ function validate(flow) {
       }
     }
   }
-
-  // Check if status was attempted to be set manually
-  if (flow.status && flow.status !== 'inactive') {
-    errors.push({ message: 'Flow status cannot be set manually. Use the flow start/stop end points instead.', code: 400 });
-  }
-
+  const flow = template.flow;
   // Check if all edges point to nodes that actually exist
   if (flow.graph && flow.graph.edges && flow.graph.edges.length > 0) {
     for (let i = 0; i < flow.graph.edges.length; i += 1) {

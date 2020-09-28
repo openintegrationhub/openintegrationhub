@@ -62,7 +62,7 @@
           {
           "name": "filter[status]",
           "in": "query",
-          "description": "Filter results by flow status. Active = 1. Inactive = 0",
+          "description": "Filter results by flow status. Published = 1. Draft = 0",
           "required": false,
           "schema": {
             "type": "integer"
@@ -249,7 +249,7 @@
             "description": "No Flow Template with this id was found."
           },
           "409": {
-            "description": "Flow Template is currently not inactive. Only stopped, inactive flows may be deleted."
+            "description": "Flow Template is currently not draft. Only draft flows may be deleted."
           }
         }
       },
@@ -299,7 +299,7 @@
             "description": "Flow Template not found"
           },
           "409": {
-            "description": "Flow Template is currently not inactive. Only stopped, inactive flows may be updated."
+            "description": "Flow Template is currently not draft. Only draft flow templates may be updated."
           }
         },
         "requestBody": {
@@ -380,7 +380,7 @@
             "description": "No Flow Template with this id was found."
           },
           "409": {
-            "description": "Flow Template is currently not active. Only active flow templates can be used to generate flows."
+            "description": "Flow Template is currently not published. Only published flow templates can be used to generate flows."
           }
         }
       }
@@ -744,12 +744,10 @@
                 "type": "string",
                 "description": "Flow status, set automatically in response to start/stop commands",
                 "enum": [
-                  "active",
-                  "inactive",
-                  "starting",
-                  "stopping"
+                  "published",
+                  "draft"
                 ],
-                "example": "inactive"
+                "example": "draft"
               },
               "createdAt": {
                 "type": "string",

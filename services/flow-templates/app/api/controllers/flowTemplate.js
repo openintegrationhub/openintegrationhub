@@ -13,7 +13,7 @@ const { URL } = require('url');
 const path = require('path');
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
-const { publishQueue } = require('../../utils/eventBus');
+//const { publishQueue } = require('../../utils/eventBus');
 const { validate } = require('../../utils/validator');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
@@ -28,7 +28,7 @@ const log = require('../../config/logger'); // eslint-disable-line
 const FlowTemplate = require('../../models/flowTemplate');
 
 // Gets all flowTemplates
-router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => {
+router.get('/', jsonParser, can(config.templateReadPermission), async (req, res) => {
   let error = false;
 
   let pageSize = 10;
@@ -55,9 +55,9 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   // filter[status] 1 0
   if (req.query.filter && req.query.filter.status !== undefined) {
     if (req.query.filter.status === '1') {
-      filters.status = 'active';
+      filters.status = 'published';
     } else if (req.query.filter.status === '0') {
-      filters.status = 'inactive';
+      filters.status = 'draft';
     } else if (!res.headersSent) {
       res.status(400).send({ errors: [{ message: 'Invalid filter[status] parameter', code: 400 }] });
       return;

@@ -186,7 +186,7 @@ const startedFlow = flowId => new Promise((resolve) => {
 
   Flow.findOneAndUpdate(
     qry,
-    { $set: { status: 'active' } },
+    { $set: { status: 'published' } },
     { upsert: false, new: true },
   ).lean()
     .then((doc) => {
@@ -204,7 +204,7 @@ const stoppedFlow = flowId => new Promise((resolve) => {
 
   Flow.findOneAndUpdate(
     qry,
-    { $set: { status: 'inactive' } },
+    { $set: { status: 'draft' } },
     { upsert: false, new: true },
   ).lean()
     .then((doc) => {

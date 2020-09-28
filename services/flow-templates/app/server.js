@@ -10,7 +10,7 @@ const iamMiddleware = require('@openintegrationhub/iam-utils');
 const cors = require('cors');
 const config = require('./config/index');
 const flowTemplate = require('./api/controllers/flowTemplate');
-const { connectQueue, disconnectQueue } = require('./utils/eventBus');
+//const { connectQueue, disconnectQueue } = require('./utils/eventBus');
 const healthcheck = require('./api/controllers/healthcheck');
 const swaggerDocument = require('./api/swagger/swagger.json');
 
@@ -68,7 +68,7 @@ class Server {
     log.info('Middleware set up');
   }
 
-  async setupQueue() {  // eslint-disable-line
+  /*async setupQueue() {  // eslint-disable-line
     log.info('Connecting to Queue');
     await connectQueue();
   }
@@ -76,7 +76,7 @@ class Server {
   async terminateQueue() {  // eslint-disable-line
     log.info('Disconnecting from Queue');
     await disconnectQueue();
-  }
+  }*/
 
   setupRoutes() {
     // configure routes

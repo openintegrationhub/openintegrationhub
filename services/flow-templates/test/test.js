@@ -56,14 +56,14 @@ describe('Documentation', () => {
 
 describe('Login Security', () => {
   test('should not be able to get flows without login', async () => {
-    const res = await request.get('/flows');
+    const res = await request.get('/templates');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
   test('should not be able to get specific flows without login', async () => {
-    const res = await request.get('/flows/123456789012');
+    const res = await request.get('/templates/123456789012');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.errors[0].message).toEqual('Missing authorization header.');
@@ -71,7 +71,7 @@ describe('Login Security', () => {
 
   test('should not be able to add flows without login', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
@@ -87,7 +87,7 @@ describe('Login Security', () => {
 
   test('should not be able to delete flows without login', async () => {
     const res = await request
-      .delete('/flows/TestOIHID')
+      .delete('/templates/TestOIHID')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(401);
@@ -99,7 +99,7 @@ describe('Login Security', () => {
 describe('Permissions', () => {
   test('should not be able to get all flows without permissions', async () => {
     const res = await request
-      .get('/flows')
+      .get('/templates')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -110,7 +110,7 @@ describe('Permissions', () => {
 
   test('should not be able to get a single flow without permissions', async () => {
     const res = await request
-      .get('/flows/5ca5c44c187c040010a9bb8b')
+      .get('/templates/5ca5c44c187c040010a9bb8b')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -121,7 +121,7 @@ describe('Permissions', () => {
 
   test('should not be able to post a flow without permissions', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -137,7 +137,7 @@ describe('Permissions', () => {
 
   test('should not be able to patch a flow without permissions', async () => {
     const res = await request
-      .patch('/flows/5ca5c44c187c040010a9bb8b')
+      .patch('/templates/5ca5c44c187c040010a9bb8b')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -153,7 +153,7 @@ describe('Permissions', () => {
 
   test('should not be able to delete a flow without permissions', async () => {
     const res = await request
-      .delete('/flows/5ca5c44c187c040010a9bb8b')
+      .delete('/templates/5ca5c44c187c040010a9bb8b')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -164,7 +164,7 @@ describe('Permissions', () => {
 
   test('should not be able to start a flow without permissions', async () => {
     const res = await request
-      .post('/flows/5ca5c44c187c040010a9bb8b/start')
+      .post('/templates/5ca5c44c187c040010a9bb8b/start')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -175,7 +175,7 @@ describe('Permissions', () => {
 
   test('should not be able to stop a flow without permissions', async () => {
     const res = await request
-      .post('/flows/5ca5c44c187c040010a9bb8b/stop')
+      .post('/templates/5ca5c44c187c040010a9bb8b/stop')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -188,7 +188,7 @@ describe('Permissions', () => {
 describe('Flow Validation', () => {
   test('should refuse a flow missing a graph', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -203,7 +203,7 @@ describe('Flow Validation', () => {
 
   test('should refuse a flow missing nodes', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -219,7 +219,7 @@ describe('Flow Validation', () => {
 
   test('should refuse a flow with malformed nodes', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -243,7 +243,7 @@ describe('Flow Validation', () => {
 
   test('should refuse a flow with several nodes but no edges', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -277,7 +277,7 @@ describe('Flow Validation', () => {
 
   test('should refuse a flow with malformed edges', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -326,7 +326,7 @@ describe('Flow Validation', () => {
 
   test('should refuse a flow with malformed minor attributes', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -372,7 +372,7 @@ describe('Flow Validation', () => {
 
   test('should refuse a flow with too long attribute values', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -432,7 +432,7 @@ describe('Flow Validation', () => {
     const tempFlowId = (result._doc._id.toString());
 
     const res = await request
-      .patch(`/flows/${tempFlowId}`)
+      .patch(`/templates/${tempFlowId}`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -484,7 +484,7 @@ describe('Flow Validation', () => {
 describe('Flow Operations', () => {
   test('should add a flow', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -529,7 +529,7 @@ describe('Flow Operations', () => {
 
   test('should get the new flow', async () => {
     const res = await request
-      .get(`/flows/${flowId1}`)
+      .get(`/templates/${flowId1}`)
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
@@ -560,7 +560,7 @@ describe('Flow Operations', () => {
 
   test('should not show the flow to another users getAll', async () => {
     const res = await request
-      .get('/flows/')
+      .get('/templates/')
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(404);
@@ -570,7 +570,7 @@ describe('Flow Operations', () => {
 
   test('should not show the flow to another users get', async () => {
     const res = await request
-      .get('/flows/123456789012')
+      .get('/templates/123456789012')
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(404);
@@ -580,7 +580,7 @@ describe('Flow Operations', () => {
 
   test('should return 400 when attempting to get an invalid id', async () => {
     const res = await request
-      .get('/flows/SDSADGSDGH')
+      .get('/templates/SDSADGSDGH')
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(400);
@@ -589,7 +589,7 @@ describe('Flow Operations', () => {
 
   test('should return 404 when getting a non-existent flow', async () => {
     const res = await request
-      .get('/flows/123456789012')
+      .get('/templates/123456789012')
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(404);
@@ -599,7 +599,7 @@ describe('Flow Operations', () => {
 
   test('should add a second flow', async () => {
     const res = await request
-      .post('/flows')
+      .post('/templates')
       .set('Authorization', 'Bearer guestToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -643,7 +643,7 @@ describe('Flow Operations', () => {
 
   test('should get all flows, filtered by status', async () => {
     const res = await request
-      .get('/flows')
+      .get('/templates')
       .query({
         'page[size]': 5,
         'page[number]': 1,
@@ -662,7 +662,7 @@ describe('Flow Operations', () => {
 
   test('should get all flows, filtered by user', async () => {
     const res = await request
-      .get('/flows')
+      .get('/templates')
       .query({
         'page[size]': 5,
         'page[number]': 1,
@@ -680,7 +680,7 @@ describe('Flow Operations', () => {
 
   test('should get all flows, filtered by type', async () => {
     const res = await request
-      .get('/flows')
+      .get('/templates')
       .query({
         'page[size]': 5,
         'page[number]': 1,
@@ -698,7 +698,7 @@ describe('Flow Operations', () => {
 
   test('should get all flows, using a search', async () => {
     const res = await request
-      .get('/flows')
+      .get('/templates')
       .query({
         'page[size]': 5,
         'page[number]': 1,
@@ -716,7 +716,7 @@ describe('Flow Operations', () => {
 
   test('should update flow', async () => {
     const res = await request
-      .patch(`/flows/${flowId1}`)
+      .patch(`/templates/${flowId1}`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -741,7 +741,7 @@ describe('Flow Operations', () => {
 
   test('should start a flow', async () => {
     const res = await request
-      .post(`/flows/${flowId1}/start`)
+      .post(`/templates/${flowId1}/start`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -758,7 +758,7 @@ describe('Flow Operations', () => {
 
   test('should refuse to start an already starting flow', async () => {
     const res = await request
-      .post(`/flows/${flowId1}/start`)
+      .post(`/templates/${flowId1}/start`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -775,7 +775,7 @@ describe('Flow Operations', () => {
 
   test('should refuse to start an already active flow', async () => {
     const res = await request
-      .post(`/flows/${flowId1}/start`)
+      .post(`/templates/${flowId1}/start`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -785,7 +785,7 @@ describe('Flow Operations', () => {
 
   test('should refuse to update an active flow', async () => {
     const res = await request
-      .patch(`/flows/${flowId1}`)
+      .patch(`/templates/${flowId1}`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -805,7 +805,7 @@ describe('Flow Operations', () => {
 
   test('should stop a flow', async () => {
     const res = await request
-      .post(`/flows/${flowId1}/stop`)
+      .post(`/templates/${flowId1}/stop`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -822,7 +822,7 @@ describe('Flow Operations', () => {
 
   test('should refuse to stop an already stopping flow', async () => {
     const res = await request
-      .post(`/flows/${flowId1}/stop`)
+      .post(`/templates/${flowId1}/stop`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -847,7 +847,7 @@ describe('Flow Operations', () => {
 
   test('should refuse to stop an inactive flow', async () => {
     const res = await request
-      .post(`/flows/${flowId1}/stop`)
+      .post(`/templates/${flowId1}/stop`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -857,7 +857,7 @@ describe('Flow Operations', () => {
 
   test('should return 400 when attempting to update an invalid id', async () => {
     const res = await request
-      .patch('/flows/SDSADGSDGH')
+      .patch('/templates/SDSADGSDGH')
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(400);
@@ -866,7 +866,7 @@ describe('Flow Operations', () => {
 
   test('should not be able to update a non-existent flow', async () => {
     const res = await request
-      .patch('/flows/123456789012')
+      .patch('/templates/123456789012')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -884,7 +884,7 @@ describe('Flow Operations', () => {
 describe('Cleanup', () => {
   test('should return 400 when attempting to delete an invalid id', async () => {
     const res = await request
-      .delete('/flows/SDSADGSDGH')
+      .delete('/templates/SDSADGSDGH')
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(400);
@@ -893,7 +893,7 @@ describe('Cleanup', () => {
 
   test('should delete the first flow', async () => {
     const res = await request
-      .delete(`/flows/${flowId1}`)
+      .delete(`/templates/${flowId1}`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -904,7 +904,7 @@ describe('Cleanup', () => {
 
   test('should delete the second flow', async () => {
     const res = await request
-      .delete(`/flows/${flowId2}`)
+      .delete(`/templates/${flowId2}`)
       .set('Authorization', 'Bearer guestToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -915,7 +915,7 @@ describe('Cleanup', () => {
 
   test('should return 404 when attempting to get the just deleted flow', async () => {
     const res = await request
-      .get(`/flows/${flowId1}`)
+      .get(`/templates/${flowId1}`)
       .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
