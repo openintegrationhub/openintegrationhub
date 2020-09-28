@@ -53,6 +53,9 @@ Make sure that minikube is endowed with sufficient resources. We suggest at leas
 Make certain minikube is installed, configured, and started. The command for allocating sufficient resources is
 
     minikube start --memory 8192 --cpus 4
+    
+| ![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg) <br> The OIH Framework requires the *ingress* addon for kubernetes. This is not supported via Docker Bridge for Mac and Windows. Therefore, on these Operating Systems, minikube must be started with the flag `--vm=true`. More information can be found on the [minikube Github page](https://github.com/kubernetes/minikube/issues/7332). |
+|:---|
 
 If you already have an installed minikube instance that is using the virtualbox driver you can do
 
@@ -80,10 +83,6 @@ For further information about how to set up minikube, see here:
 | ![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg) <br> If you're using Docker for Desktop it overwrites the acutal kubectl version. THis version is generally not compatible with minikube. There are two options to correct this: |
 |:---|
 |<ul><li>Download the `kubectl.exe` from [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows). Navigate to the docker directory (e.g. Program Files\Docker\Docker\resources\bin) and replace the kubectl.exe in this folder with the one you just downloaded.</li><li> Use the "Edge" version of Docker Desktop. This can be done by installing the edge version of the application from the [Docker Desktop site](https://docs.docker.com/desktop/). If you already have Docker Desktop installed, you can switch to the Edge version from the Docker menu. Select **Preferences > Command Line** and then activate the **Enable experimental features** toggle. After selecting **Apply & Restart**, Docker will update versions. More information can be found [here](https://docs.docker.com/docker-for-mac/install/#switch-between-stable-and-edge-versions).</li></ul> |
-
-
-| ![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg) <br> The OIH Framework requires the *ingress* addon for kubernetes. This is not supported via Docker Bridge for Mac and Windows. Therefore, on these Operating Systems, minikube must be started with the flag `--vm=true`. This is handled in the setup script. More information can be found on the [minikube Github page](https://github.com/kubernetes/minikube/issues/7332). |
-|:---|
 <p>
 
 ## Basic Open Integration Hub Infrastructure Setup
