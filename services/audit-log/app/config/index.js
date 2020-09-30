@@ -43,6 +43,9 @@ const general = {
     'flowrepo.flow.created',
     'flowrepo.flow.modified',
     'flowrepo.flow.deleted',
+    'templaterepo.template.created',
+    'templaterepo.template.modified',
+    'templaterepo.template.deleted'
   ],
 
   gdprEventName: 'iam.user.deleted',
