@@ -25,11 +25,11 @@ spec:
       - backend:
           serviceName: flow-repository
           servicePort: 3001
-  - host: flow-templates.localoih.com
+  - host: template-repository.localoih.com
     http:
       paths:
       - backend:
-          serviceName: flow-templates
+          serviceName: template-repository
           servicePort: 3001
   - host: auditlog.localoih.com
     http:

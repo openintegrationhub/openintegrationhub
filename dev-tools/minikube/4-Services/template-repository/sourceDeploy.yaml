@@ -1,22 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flow-templates
+  name: template-repository
   namespace: oih-dev-ns
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: flow-templates
+      app: template-repository
   template:
     metadata:
       labels:
-        app: flow-templates
+        app: template-repository
     spec:
       containers:
-        - name: flow-templates
-          image: openintegrationhub/flow-templates:latest
-          imagePullPolicy: Always
+        - name: template-repository
+          imagePullPolicy: IfNotPresent
+          image: node:12-alpine
+          workingDir: /usr/src/app/
+          command: ["/bin/sh"]
+          args: ["-c","yarn install --network-timeout 9000000 --verbose --non-interactive && yarn start:container"]
           ports:
             - containerPort: 3001
           env:
@@ -24,7 +27,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: shared-secret
-                  key: "flowTemplateMongourl"
+                  key: "templateRepoMongourl"
             - name: IAM_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -38,19 +41,31 @@ spec:
               value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
             - name: ORIGINWHITELIST
               value: "localoih.com,http://web-ui.localoih.com,http://localhost:3000"
+            - name: NODE_ENV
+              value: development
+            - name: LOG_LEVEL
+              value: info
           resources:
             limits:
               cpu: "0.1"
               memory: 1000Mi
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+              subPath: services/template-repository
           livenessProbe:
             httpGet:
               path: /healthcheck
               port: 3001
-            initialDelaySeconds: 120
+            initialDelaySeconds: 1200
             timeoutSeconds: 1
           readinessProbe:
             httpGet:
               path: /healthcheck
               port: 3001
-            initialDelaySeconds: 10
+            initialDelaySeconds: 240
             timeoutSeconds: 1
+      volumes:
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim
