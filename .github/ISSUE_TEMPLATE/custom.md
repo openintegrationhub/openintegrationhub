@@ -18,5 +18,3 @@ Further description:
 - [ ] Criteria N
 
 ---
-
-[**Definition of done**](https://github.com/openintegrationhub/openintegrationhub/blob/contributingGuidelines/CONTRIBUTING.md#definition-of-done)
