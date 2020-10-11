@@ -5,13 +5,13 @@
 
 // const path = require('path');
 // const _ = require('lodash');
-const _ = require('lodash')
+const _ = require('lodash');
 const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
-const request = require('request');
-const { URL } = require('url');
-const path = require('path');
+// const request = require('request');
+// const { URL } = require('url');
+// const path = require('path');
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 const { publishQueue } = require('../../utils/eventBus');
@@ -177,10 +177,10 @@ router.patch('/:id', jsonParser, can(config.flowTemplateWritePermission), async 
     return res.status(404).send({ errors: [{ message: 'Template not found', code: 404 }] });
   }
 
-  //TODO: Decide How to handle Template States when Updated (i.e. Published -> Draft and bump version if changed?)
-  /*if (oldTemplate.status !== 'draft') {
-    return res.status(409).send({ errors: [{ message: `Flow is not inactive. Current status: ${oldFlow.status}`, code: 409 }] });
-  }*/
+  // TODO: Decide How to handle Template States when Updated (i.e. Published -> Draft and bump version if changed?)
+  /* if (oldTemplate.status !== 'draft') {
+     return res.status(409).send({ errors: [{ message: `Flow is not inactive. Current status: ${oldFlow.status}`, code: 409 }] });
+  } */
 
   const updateTemplate = Object.assign(oldTemplate, updateData);
   updateTemplate._id = updateTemplate.id;
@@ -261,7 +261,7 @@ router.delete('/:id', can(config.flowTemplateWritePermission), jsonParser, async
   // May not be needed also, because of the check when calling to storage.deleteTemplate()
   if (oldTemplate.status !== 'draft') {
     return res.status(409).send({ errors: [{ message: `Flow is not inactive. Current status: ${oldFlow.status}`, code: 409 }] });
-  }*/
+  } */
 
   const response = await storage.deleteTemplate(templateId, req.user);
 
@@ -314,7 +314,7 @@ router.post('/:id/generate', jsonParser, can(config.flowWritePermission), async 
 
   try {
     const response = await createFlow(newFlow);
-    log.info("response from createFLow: ",response);
+    log.info('response from createFLow: ', response);
     return res.status(201).send({ data: response, meta: {} });
   } catch (err) {
     log.error(err);

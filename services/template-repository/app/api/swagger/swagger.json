@@ -296,7 +296,7 @@
             }
           },
           "404": {
-            "description": "Flow Template not found"
+            "description": "Template not found"
           },
           "409": {
             "description": "Flow Template is currently not draft. Only draft flow templates may be updated."

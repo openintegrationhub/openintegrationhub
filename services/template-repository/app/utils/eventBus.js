@@ -14,7 +14,7 @@ async function connectQueue() {
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'template-repository' });
 
-  /*await eventBus.subscribe('flow.started', async (event) => {
+  /* await eventBus.subscribe('flow.started', async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
     const response = await flowStarted(event.payload.id);
 
@@ -34,7 +34,7 @@ async function connectQueue() {
     } else {
       await event.nack();
     }
-  });*/
+  }); */
 
   await eventBus.subscribe(config.gdprEventName, async (event) => {
     log.info('Anonymising user data...');

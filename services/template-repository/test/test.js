@@ -12,12 +12,12 @@ const port = process.env.PORT || 3001;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
-const { getOrphanedFlows } = require('../app/api/controllers/mongo');
+const { getOrphanedTemplates } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
 const {
-  flowStarted, flowStopped, gdprAnonymise, cleanupOrphans,
+  gdprAnonymise, cleanupOrphans,
 } = require('../app/utils/handlers');
-const Flow = require('../app/models/flow');
+const FlowTemplate = require('../app/models/flowTemplate');
 
 const Server = require('../app/server');
 
@@ -28,8 +28,8 @@ const log = require('../app/config/logger'); // eslint-disable-line
 const adminId = token.adminToken.value.sub;
 const guestId = token.guestToken.value.sub;
 
-let flowId1;
-let flowId2;
+let template1;
+let template2;
 let app;
 
 beforeAll(async () => {
@@ -55,27 +55,27 @@ describe('Documentation', () => {
 });
 
 describe('Login Security', () => {
-  test('should not be able to get flows without login', async () => {
+  test('should not be able to get templates without login', async () => {
     const res = await request.get('/templates');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
-  test('should not be able to get specific flows without login', async () => {
+  test('should not be able to get specific templates without login', async () => {
     const res = await request.get('/templates/123456789012');
     expect(res.status).toEqual(401);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
-  test('should not be able to add flows without login', async () => {
+  test('should not be able to add templates without login', async () => {
     const res = await request
       .post('/templates')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        type: 'flow',
+        type: 'template',
         name: 'WiceToSnazzy',
         status: 'active',
         description: 'A description',
@@ -85,7 +85,7 @@ describe('Login Security', () => {
     expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 
-  test('should not be able to delete flows without login', async () => {
+  test('should not be able to delete templates without login', async () => {
     const res = await request
       .delete('/templates/TestOIHID')
       .set('accept', 'application/json')
@@ -97,7 +97,7 @@ describe('Login Security', () => {
 });
 
 describe('Permissions', () => {
-  test('should not be able to get all flows without permissions', async () => {
+  test('should not be able to get all templates without permissions', async () => {
     const res = await request
       .get('/templates')
       .set('Authorization', 'Bearer unpermitToken')
@@ -108,7 +108,7 @@ describe('Permissions', () => {
     expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
   });
 
-  test('should not be able to get a single flow without permissions', async () => {
+  test('should not be able to get a single template without permissions', async () => {
     const res = await request
       .get('/templates/5ca5c44c187c040010a9bb8b')
       .set('Authorization', 'Bearer unpermitToken')
@@ -119,14 +119,14 @@ describe('Permissions', () => {
     expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
   });
 
-  test('should not be able to post a flow without permissions', async () => {
+  test('should not be able to post a template without permissions', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'This content should be irrelevant',
         graph: {},
       });
@@ -135,14 +135,14 @@ describe('Permissions', () => {
     expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
   });
 
-  test('should not be able to patch a flow without permissions', async () => {
+  test('should not be able to patch a template without permissions', async () => {
     const res = await request
       .patch('/templates/5ca5c44c187c040010a9bb8b')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'This content should be irrelevant',
         graph: {},
       });
@@ -151,7 +151,7 @@ describe('Permissions', () => {
     expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
   });
 
-  test('should not be able to delete a flow without permissions', async () => {
+  test('should not be able to delete a template without permissions', async () => {
     const res = await request
       .delete('/templates/5ca5c44c187c040010a9bb8b')
       .set('Authorization', 'Bearer unpermitToken')
@@ -162,20 +162,9 @@ describe('Permissions', () => {
     expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
   });
 
-  test('should not be able to start a flow without permissions', async () => {
+  test('should not be able to generate a flow without permissions', async () => {
     const res = await request
-      .post('/templates/5ca5c44c187c040010a9bb8b/start')
-      .set('Authorization', 'Bearer unpermitToken')
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json');
-    expect(res.status).toEqual(403);
-    expect(res.text).not.toHaveLength(0);
-    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
-  });
-
-  test('should not be able to stop a flow without permissions', async () => {
-    const res = await request
-      .post('/templates/5ca5c44c187c040010a9bb8b/stop')
+      .post('/templates/5ca5c44c187c040010a9bb8b/generate')
       .set('Authorization', 'Bearer unpermitToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -185,46 +174,46 @@ describe('Permissions', () => {
   });
 });
 
-describe('Flow Validation', () => {
-  test('should refuse a flow missing a graph', async () => {
+describe('Template Validation', () => {
+  test('should refuse a template missing a graph', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'Should throw an error because there is no graph',
       });
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(1);
-    expect(res.body.errors[0].message).toEqual('Flows require a graph.');
+    expect(res.body.errors[0].message).toEqual('Flow Templates require a graph.');
   });
 
-  test('should refuse a flow missing nodes', async () => {
+  test('should refuse a template missing nodes', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'Should throw an error because there are no nodes',
         graph: {},
       });
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(1);
-    expect(res.body.errors[0].message).toEqual('Flows require at least one node.');
+    expect(res.body.errors[0].message).toEqual('Flow Templates require at least one node.');
   });
 
-  test('should refuse a flow with malformed nodes', async () => {
+  test('should refuse a template with malformed nodes', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'Should throw several errors because the node lacks required attributes',
         graph: {
           nodes: [
@@ -236,19 +225,19 @@ describe('Flow Validation', () => {
       });
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(3);
-    expect(res.body.errors[0].message).toEqual('Flow nodes require a function.');
-    expect(res.body.errors[1].message).toEqual('Flow nodes require a componentId.');
-    expect(res.body.errors[2].message).toEqual('Flow nodes require an id.');
+    expect(res.body.errors[0].message).toEqual('Flow Template nodes require a function.');
+    expect(res.body.errors[1].message).toEqual('Flow Template nodes require a componentId.');
+    expect(res.body.errors[2].message).toEqual('Flow Template nodes require an id.');
   });
 
-  test('should refuse a flow with several nodes but no edges', async () => {
+  test('should refuse a template with several nodes but no edges', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'Should throw an error each for missing edges and invalid componentId',
         graph: {
           nodes: [
@@ -270,19 +259,19 @@ describe('Flow Validation', () => {
       });
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(3);
-    expect(res.body.errors[0].message).toEqual('Cast to ObjectID failed for value "abc" at path "componentId"');
-    expect(res.body.errors[1].message).toEqual('Cast to ObjectID failed for value "IncorrectSecret" at path "credentials_id"');
-    expect(res.body.errors[2].message).toEqual('Flows with more than one node require edges.');
+    expect(res.body.errors[1].message).toEqual('Cast to ObjectId failed for value "abc" at path "componentId"');
+    expect(res.body.errors[0].message).toEqual('Cast to ObjectId failed for value "IncorrectSecret" at path "credentials_id"');
+    expect(res.body.errors[2].message).toEqual('Flow Templates with more than one node require edges.');
   });
 
-  test('should refuse a flow with malformed edges', async () => {
+  test('should refuse a template with malformed edges', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'Should throw an error each for target/source and missing attributes',
         graph: {
           nodes: [
@@ -316,22 +305,22 @@ describe('Flow Validation', () => {
       });
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(6);
-    expect(res.body.errors[0].message).toEqual('Flow edges require a target.');
-    expect(res.body.errors[1].message).toEqual('Flow edges require a source.');
+    expect(res.body.errors[0].message).toEqual('Flow Template edges require a target.');
+    expect(res.body.errors[1].message).toEqual('Flow Template edges require a source.');
     expect(res.body.errors[2].message).toEqual('Edge source with id "undefined" could not be found among nodes.');
     expect(res.body.errors[3].message).toEqual('Edge target with id "undefined" could not be found among nodes.');
     expect(res.body.errors[4].message).toEqual('Edge source with id "NotANode" could not be found among nodes.');
     expect(res.body.errors[5].message).toEqual('Edge target with id "NotANode2" could not be found among nodes.');
   });
 
-  test('should refuse a flow with malformed minor attributes', async () => {
+  test('should refuse a template with malformed minor attributes', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'Should throw an error each for cron, status, and owner',
         cron: 'abcde',
         status: 'active',
@@ -363,21 +352,20 @@ describe('Flow Validation', () => {
         },
       });
     expect(res.status).toEqual(400);
-    expect(res.body.errors).toHaveLength(4);
-    expect(res.body.errors[0].message).toEqual('Flow owners require a type.');
-    expect(res.body.errors[1].message).toEqual('Flow owners require an id.');
-    expect(res.body.errors[2].message).toEqual('Flow status cannot be set manually. Use the flow start/stop end points instead.');
-    expect(res.body.errors[3].message).toEqual('Invalid cron expression.');
+    expect(res.body.errors).toHaveLength(3);
+    expect(res.body.errors[0].message).toEqual('Flow Template owners require a type.');
+    expect(res.body.errors[1].message).toEqual('Flow Template owners require an id.');
+    expect(res.body.errors[2].message).toEqual('Invalid cron expression.');
   });
 
-  test('should refuse a flow with too long attribute values', async () => {
+  test('should refuse a template with too long attribute values', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'Should throw an error for just about every single field due to length',
         owners: [
           { id: '01234567890123456789012345678901', type: '01234567890123456789012345678901' },
@@ -411,8 +399,8 @@ describe('Flow Validation', () => {
     expect(res.body.errors[0].message).toEqual('Path `id` (`01234567890123456789012345678901`) is longer than the maximum allowed length (30).');
   });
 
-  test('should refuse a flow according to the same rules when patching instead of posting', async () => {
-    const tempFlow = {
+  test('should refuse a template according to the same rules when patching instead of posting', async () => {
+    const tempTemplate = {
       graph: {
         nodes: [
           {
@@ -427,17 +415,17 @@ describe('Flow Validation', () => {
       ],
     };
 
-    const storeFlow = new Flow(tempFlow);
-    const result = await storeFlow.save();
-    const tempFlowId = (result._doc._id.toString());
+    const storeTemplate = new FlowTemplate(tempTemplate);
+    const result = await storeTemplate.save();
+    const tempTempId = (result._doc._id.toString());
 
     const res = await request
-      .patch(`/templates/${tempFlowId}`)
+      .patch(`/templates/${tempTempId}`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        name: 'emptyFlow',
+        name: 'emptyTemplate',
         description: 'Should throw a variety of errors for most fields',
         cron: 'abcde',
         status: 'active',
@@ -475,14 +463,14 @@ describe('Flow Validation', () => {
         },
       });
     expect(res.status).toEqual(400);
-    expect(res.body.errors).toHaveLength(12);
+    expect(res.body.errors).toHaveLength(11);
 
-    const delResponse = await Flow.findOneAndDelete({ _id: tempFlowId }).lean();
+    const delResponse = await FlowTemplate.findOneAndDelete({ _id: tempTempId }).lean();
   });
 });
 
-describe('Flow Operations', () => {
-  test('should add a flow', async () => {
+describe('Template Operations', () => {
+  test('should add a template', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer adminToken')
@@ -524,12 +512,12 @@ describe('Flow Operations', () => {
     expect(j).not.toBeNull();
     expect(j.data).toHaveProperty('id');
 
-    flowId1 = j.data.id;
+    template1 = j.data.id;
   });
 
-  test('should get the new flow', async () => {
+  test('should get the new template', async () => {
     const res = await request
-      .get(`/templates/${flowId1}`)
+      .get(`/templates/${template1}`)
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
@@ -558,24 +546,24 @@ describe('Flow Operations', () => {
     expect(j.data.owners[0].type).toEqual('user');
   });
 
-  test('should not show the flow to another users getAll', async () => {
+  test('should not show the template to another users getAll', async () => {
     const res = await request
       .get('/templates/')
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No flows found');
+    expect(res.body.errors[0].message).toEqual('No templates found');
   });
 
-  test('should not show the flow to another users get', async () => {
+  test('should not show the template to another users get', async () => {
     const res = await request
       .get('/templates/123456789012')
       .set('Authorization', 'Bearer guestToken');
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No flow found');
+    expect(res.body.errors[0].message).toEqual('No template found');
   });
 
   test('should return 400 when attempting to get an invalid id', async () => {
@@ -587,17 +575,17 @@ describe('Flow Operations', () => {
     expect(res.body).not.toBeNull();
   });
 
-  test('should return 404 when getting a non-existent flow', async () => {
+  test('should return 404 when getting a non-existent template', async () => {
     const res = await request
       .get('/templates/123456789012')
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No flow found');
+    expect(res.body.errors[0].message).toEqual('No template found');
   });
 
-  test('should add a second flow', async () => {
+  test('should add a second template', async () => {
     const res = await request
       .post('/templates')
       .set('Authorization', 'Bearer guestToken')
@@ -638,10 +626,10 @@ describe('Flow Operations', () => {
     expect(j).not.toBeNull();
 
     expect(j.data).toHaveProperty('id');
-    flowId2 = j.data.id;
+    template2 = j.data.id;
   });
 
-  test('should get all flows, filtered by status', async () => {
+  test('should get all templates, filtered by status', async () => {
     const res = await request
       .get('/templates')
       .query({
@@ -660,7 +648,7 @@ describe('Flow Operations', () => {
     expect(j.data[0]).toHaveProperty('id');
   });
 
-  test('should get all flows, filtered by user', async () => {
+  test('should get all templates, filtered by user', async () => {
     const res = await request
       .get('/templates')
       .query({
@@ -678,7 +666,7 @@ describe('Flow Operations', () => {
     expect(j.data[0]).toHaveProperty('id');
   });
 
-  test('should get all flows, filtered by type', async () => {
+  test('should get all templates, filtered by type', async () => {
     const res = await request
       .get('/templates')
       .query({
@@ -696,7 +684,7 @@ describe('Flow Operations', () => {
     expect(j.data[0]).toHaveProperty('id');
   });
 
-  test('should get all flows, using a search', async () => {
+  test('should get all templates, using a search', async () => {
     const res = await request
       .get('/templates')
       .query({
@@ -714,14 +702,14 @@ describe('Flow Operations', () => {
     expect(j.data[0]).toHaveProperty('id');
   });
 
-  test('should update flow', async () => {
+  test('should update template', async () => {
     const res = await request
-      .patch(`/templates/${flowId1}`)
+      .patch(`/templates/${template1}`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
       .send({
-        type: 'flow',
+        type: 'template',
         name: 'NewName',
         description: 'A description',
         owners: [
@@ -739,73 +727,9 @@ describe('Flow Operations', () => {
     expect(j.data).toHaveProperty('id');
   });
 
-  test('should start a flow', async () => {
+  /* test('should stop a flow', async () => {
     const res = await request
-      .post(`/templates/${flowId1}/start`)
-      .set('Authorization', 'Bearer adminToken')
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json');
-
-    expect(res.status).toEqual(200);
-    expect(res.body).not.toBeNull();
-    const j = res.body;
-    expect(j).not.toBeNull();
-    expect(j.data).toHaveProperty('id');
-    expect(j.data).toHaveProperty('status');
-    expect(j.data.id).toEqual(flowId1);
-    expect(j.data.status).toEqual('starting');
-  });
-
-  test('should refuse to start an already starting flow', async () => {
-    const res = await request
-      .post(`/templates/${flowId1}/start`)
-      .set('Authorization', 'Bearer adminToken')
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json');
-
-    expect(res.status).toEqual(409);
-  });
-
-  test('handle a flow.started event', async () => {
-    await flowStarted(flowId1);
-
-    const flow = await Flow.findOne({ _id: flowId1 }).lean();
-    expect(flow.status).toEqual('active');
-  });
-
-  test('should refuse to start an already active flow', async () => {
-    const res = await request
-      .post(`/templates/${flowId1}/start`)
-      .set('Authorization', 'Bearer adminToken')
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json');
-
-    expect(res.status).toEqual(409);
-  });
-
-  test('should refuse to update an active flow', async () => {
-    const res = await request
-      .patch(`/templates/${flowId1}`)
-      .set('Authorization', 'Bearer adminToken')
-      .set('accept', 'application/json')
-      .set('Content-Type', 'application/json')
-      .send({
-        type: 'flow',
-        name: 'NewName',
-        description: 'A description',
-        owners: [
-          {
-            type: 'user',
-            id: 'dude',
-          },
-        ],
-      });
-    expect(res.status).toEqual(409);
-  });
-
-  test('should stop a flow', async () => {
-    const res = await request
-      .post(`/templates/${flowId1}/stop`)
+      .post(`/templates/${template1}/stop`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
@@ -816,44 +740,44 @@ describe('Flow Operations', () => {
     expect(j).not.toBeNull();
     expect(j.data).toHaveProperty('id');
     expect(j.data).toHaveProperty('status');
-    expect(j.data.id).toEqual(flowId1);
+    expect(j.data.id).toEqual(template1);
     expect(j.data.status).toEqual('stopping');
-  });
+  }); */
 
-  test('should refuse to stop an already stopping flow', async () => {
+  /* test('should refuse to stop an already stopping flow', async () => {
     const res = await request
-      .post(`/templates/${flowId1}/stop`)
+      .post(`/templates/${template1}/stop`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
 
     expect(res.status).toEqual(409);
-  });
+  }); */
 
-  test('handle a flow.stopped event', async () => {
-    await flowStopped(flowId1);
+  /* test('handle a flow.stopped event', async () => {
+    await flowStopped(template1);
 
-    const flow = await Flow.findOne({ _id: flowId1 }).lean();
+    const flow = await Flow.findOne({ _id: template1 }).lean();
     expect(flow.status).toEqual('inactive');
-  });
+  }); */
 
   test('handle a user delete event', async () => {
     await gdprAnonymise('dude');
 
-    const flow = await Flow.findOne({ _id: flowId1 }).lean();
-    expect(flow.owners).toHaveLength(1);
-    expect(flow.owners.find(owner => (owner.id === 'dude'))).toEqual(undefined);
+    const template = await FlowTemplate.findOne({ _id: template1 }).lean();
+    expect(template.owners).toHaveLength(1);
+    expect(template.owners.find(owner => (owner.id === 'dude'))).toEqual(undefined);
   });
 
-  test('should refuse to stop an inactive flow', async () => {
+  /* test('should refuse to stop an inactive flow', async () => {
     const res = await request
-      .post(`/templates/${flowId1}/stop`)
+      .post(`/templates/${template1}/stop`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
 
     expect(res.status).toEqual(409);
-  });
+  }); */
 
   test('should return 400 when attempting to update an invalid id', async () => {
     const res = await request
@@ -864,7 +788,7 @@ describe('Flow Operations', () => {
     expect(res.body).not.toBeNull();
   });
 
-  test('should not be able to update a non-existent flow', async () => {
+  test('should not be able to update a non-existent template', async () => {
     const res = await request
       .patch('/templates/123456789012')
       .set('Authorization', 'Bearer adminToken')
@@ -877,7 +801,7 @@ describe('Flow Operations', () => {
       });
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('Flow not found');
+    expect(res.body.errors[0].message).toEqual('Template not found');
   });
 });
 
@@ -891,45 +815,45 @@ describe('Cleanup', () => {
     expect(res.text).not.toBeNull();
   });
 
-  test('should delete the first flow', async () => {
+  test('should delete the first template', async () => {
     const res = await request
-      .delete(`/templates/${flowId1}`)
+      .delete(`/templates/${template1}`)
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(200);
     expect(res.body).not.toBeNull();
-    expect(res.body.msg).toEqual('Flow was successfully deleted');
+    expect(res.body.msg).toEqual('Template was successfully deleted');
   });
 
-  test('should delete the second flow', async () => {
+  test('should delete the second template', async () => {
     const res = await request
-      .delete(`/templates/${flowId2}`)
+      .delete(`/templates/${template2}`)
       .set('Authorization', 'Bearer guestToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(200);
     expect(res.body).not.toBeNull();
-    expect(res.body.msg).toEqual('Flow was successfully deleted');
+    expect(res.body.msg).toEqual('Template was successfully deleted');
   });
 
-  test('should return 404 when attempting to get the just deleted flow', async () => {
+  test('should return 404 when attempting to get the just deleted template', async () => {
     const res = await request
-      .get(`/templates/${flowId1}`)
+      .get(`/templates/${template1}`)
       .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No flow found');
+    expect(res.body.errors[0].message).toEqual('No template found');
   });
 });
 
 describe('Maintenance functions', () => {
   beforeAll(async () => {
-    const orphanFlow = {
+    const orphanTemplate = {
       type: 'ordinary',
-      name: 'EmptyFlow',
-      description: 'A functional flow that lacks owners',
-      status: 'active',
+      name: 'EmptyTemplate',
+      description: 'A functional template that lacks owners',
+      status: 'published',
       graph: {
         nodes: [
           {
@@ -957,18 +881,18 @@ describe('Maintenance functions', () => {
       },
     };
 
-    const storeFlow = new Flow(orphanFlow);
-    await storeFlow.save();
+    const storeTemplate = new FlowTemplate(orphanTemplate);
+    await storeTemplate.save();
   });
 
-  test('should find an orphaned flow', async () => {
-    const orphans = await getOrphanedFlows();
+  test('should find an orphaned template', async () => {
+    const orphans = await getOrphanedTemplates();
 
     expect(orphans.length).toEqual(1);
-    expect(orphans[0].name).toEqual('EmptyFlow');
+    expect(orphans[0].name).toEqual('EmptyTemplate');
   });
 
-  test('should stop all active orphaned flows', async () => {
+  test('should unpublish orphaned templates', async () => {
     const count = await cleanupOrphans();
 
     expect(count).toEqual(1);

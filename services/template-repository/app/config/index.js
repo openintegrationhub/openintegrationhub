@@ -4,8 +4,8 @@ const general = {
   mongoUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/templateRepoDev',
   amqpUrl: process.env.QUEUE_URL || 'amqp://guest:guest@localhost:5672',
   iamToken: process.env.IAM_TOKEN,
-  flowRepositoryBaseUrl: process.env.FLOWREPO_URL || "http://flow-repository.oih-dev-ns.svc.cluster.local:3001",
-  //"IAM_BASE_URL": "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1",
+  flowRepositoryBaseUrl: process.env.FLOWREPO_URL || 'http://flow-repository.oih-dev-ns.svc.cluster.local:3001',
+  // "IAM_BASE_URL": "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1",
   gdprEventName: 'iam.user.deleted',
 
   flowTemplateReadPermission: process.env.FLOW_TEMPLATE_READ_PERMISSION || 'templates.read',

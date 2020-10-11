@@ -20,7 +20,7 @@ function validate(template) {
       }
     }
   }
- 
+
   // Check if all edges point to nodes that actually exist
   if (template.graph && template.graph.edges && template.graph.edges.length > 0) {
     for (let i = 0; i < template.graph.edges.length; i += 1) {
