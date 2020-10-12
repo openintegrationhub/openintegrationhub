@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 services:
   iam:
     image: ${NODE_IMAGE}
@@ -10,7 +10,7 @@ services:
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       IAM_MONGODB_CONNECTION: mongodb://mongodb/${DEV_IAM_DB}
       IAM_AUTH_TYPE: basic
-      IAM_DEBUG: "true"
+      IAM_DEBUG: 'true'
       IAM_BASEURL: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}
       IAM_ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       IAM_JWT_SECRET: secret
@@ -19,7 +19,7 @@ services:
       IAM_JWT_AUDIENCE: oih-iam
       IAM_ACC_ADMIN_USERNAME: ${DEV_IAM_ADMIN_USERNAME}
       IAM_ACC_ADMIN_PASSWORD: ${DEV_IAM_ADMIN_PASSWORD}
-      IAM_ACC_SERVICEACCOUNT_PASSWORD: "secret"
+      IAM_ACC_SERVICEACCOUNT_PASSWORD: 'secret'
       PORT: ${DEV_IAM_PORT}
     ports:
       - ${DEV_IAM_EXTERNAL_PORT}:${DEV_IAM_PORT}
@@ -37,7 +37,7 @@ services:
     working_dir: /usr/src/app/services/secret-service
     environment:
       NODE_ENV: development
-      LOGGING_LEVEL: info
+      LOG_LEVEL: info
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_SECRET_SERVICE_DB}
       TTL_AUTHFLOW: 2m
       IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
@@ -46,7 +46,7 @@ services:
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       API_BASE: /api/v1
-      DEBUG_MODE: "true"
+      DEBUG_MODE: 'true'
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       PORT: ${DEV_SECRET_SERVICE_PORT}
@@ -164,8 +164,8 @@ services:
     working_dir: /usr/src/app/services/app-directory
     environment:
       NODE_ENV: development
-      LOGGING_LEVEL: info
-      DEBUG_MODE: "true"
+      LOG_LEVEL: info
+      DEBUG_MODE: 'true'
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_APP_DIRECTORY_DB}
       IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
       IAM_TOKEN: ${DEV_IAM_TOKEN}
@@ -332,8 +332,8 @@ services:
     working_dir: /usr/src/app/services/meta-data-repository
     environment:
       NODE_ENV: development
-      LOGGING_LEVEL: info
-      DEBUG_MODE: "true"
+      LOG_LEVEL: info
+      DEBUG_MODE: 'true'
       API_BASE: /api/v1
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_META_DATA_REPOSITORY_DB}
       IAM_TOKEN: ${DEV_IAM_TOKEN}
