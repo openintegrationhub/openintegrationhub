@@ -34,10 +34,12 @@ describe('connectors', () => {
             connectors: [{
                 type: 'adapter',
                 name: 'foobar-adapter',
-            }, {
-                type: 'transformator',
-                name: 'foobar-transformator',
-            }],
+            },
+            // {
+            //     type: 'transformator',
+            //     name: 'foobar-transformator',
+            // }
+            ],
             isGlobal: true,
             urls: {
                 main: 'https://example.com/login',
@@ -99,7 +101,7 @@ describe('connectors', () => {
             dataModels: ['people'],
             components: {
                 adapter: 'fooAdapter',
-                transformer: 'barTransformer',
+                // transformer: 'barTransformer',
                 sdfAdapter: 'defaultSdf',
             },
             isGlobal: true,
