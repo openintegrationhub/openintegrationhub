@@ -36,15 +36,15 @@ function makeFlow(app, flow) {
         function: sdfAdapterReceiveAction,
         description: 'Receives data from SDF',
       },
+      // {
+      //   id: 'step_2',
+      //   componentId: app.transformerComponentId,
+      //   name: `${app.applicationName} Transformer`,
+      //   function: flow.transformerAction,
+      //   description: 'Transforms data',
+      // },
       {
         id: 'step_2',
-        componentId: app.transformerComponentId,
-        name: `${app.applicationName} Transformer`,
-        function: flow.transformerAction,
-        description: 'Transforms data',
-      },
-      {
-        id: 'step_3',
         componentId: app.adapterComponentId,
         credentials_id: app.secretId,
         ...(app.secretId && { credentials_id: app.secretId }),
@@ -54,7 +54,7 @@ function makeFlow(app, flow) {
         description: 'Pushes data',
       },
       {
-        id: 'step_4',
+        id: 'step_3',
         componentId: sdfAdapterId,
         name: 'SDF Adapter',
         function: sdfAdapterRecordAction,
@@ -71,10 +71,10 @@ function makeFlow(app, flow) {
         source: 'step_2',
         target: 'step_3',
       },
-      {
-        source: 'step_3',
-        target: 'step_4',
-      },
+      // {
+      //   source: 'step_3',
+      //   target: 'step_4',
+      // },
     ];
   } else {
     newFlow.name = `H&S Outbound Flow for ${app.applicationName}`;
@@ -102,15 +102,15 @@ function makeFlow(app, flow) {
         function: flow.adapterAction,
         description: 'Fetches data',
       },
+      // {
+      //   id: 'step_2',
+      //   componentId: app.transformerComponentId,
+      //   name: `${app.applicationName} Transformer`,
+      //   function: flow.transformerAction,
+      //   description: 'Transforms data',
+      // },
       {
         id: 'step_2',
-        componentId: app.transformerComponentId,
-        name: `${app.applicationName} Transformer`,
-        function: flow.transformerAction,
-        description: 'Transforms data',
-      },
-      {
-        id: 'step_3',
         componentId: sdfAdapterId,
         name: 'SDF Adapter',
         function: sdfAdapterPublishAction,
@@ -123,10 +123,10 @@ function makeFlow(app, flow) {
         source: 'step_1',
         target: 'step_2',
       },
-      {
-        source: 'step_2',
-        target: 'step_3',
-      },
+      // {
+      //   source: 'step_2',
+      //   target: 'step_3',
+      // },
     ];
   }
 
