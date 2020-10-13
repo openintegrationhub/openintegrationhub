@@ -21,7 +21,8 @@ aliases:
           - yarn-deps-{{ .Branch }}-{{ .Revision }}
     - run: yarn test
   - &build_steps
-    - setup_remote_docker
+    - setup_remote_docker:
+        version: 19.03.12
     - restore_cache:
         keys:
           - yarn-deps-{{ .Branch }}-{{ .Revision }}
