@@ -1,6 +1,6 @@
 FROM node:12-alpine
 LABEL NAME="app-directory"
-ARG local
+ARG local=0
 
 ADD package.json /tmp/package.json
 RUN apk --no-cache add \
