@@ -9,8 +9,6 @@ RUN apk --no-cache add \
     g++ \
     libc6-compat
 
-RUN mkdir -p /usr/local/share/.cache/yarn/v6/ && chown -R 1000:1000 /usr/local/share/.cache/yarn/v6/
-
 RUN if [ "$local" == "true" ]; \
     then cd /tmp && yarn ; \
     else cd /tmp && yarn --production ; \
