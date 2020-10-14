@@ -21,7 +21,7 @@ spec:
         ports:
         - containerPort: 8086
         env:
-        - name: INFLUXDB_LOGGING_LEVEL
+        - name: INFLUXDB_LOG_LEVEL
           value: "error"
         - name: INFLUXDB_REPORTING_DISABLED
           value: "true"
