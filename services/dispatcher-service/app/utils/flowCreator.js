@@ -146,6 +146,7 @@ function makeFlow(app, flow) {
 async function createFlows(applications, token) {
   try {
     const newApplications = lodash.cloneDeep(applications);
+
     for (let i = 0; i < newApplications.length; i += 1) {
       const app = applications[i];
 
