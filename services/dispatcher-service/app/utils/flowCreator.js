@@ -16,6 +16,7 @@ const {
   createOperation,
   updateOperation,
   deleteOperation,
+  amqpUrl,
 } = require('../config');
 
 function makeFlow(app, flow) {
@@ -35,6 +36,9 @@ function makeFlow(app, flow) {
         name: 'SDF Adapter',
         function: sdfAdapterReceiveAction,
         description: 'Receives data from SDF',
+        fields: {
+          amqpUrl,
+        },
       },
       // {
       //   id: 'step_2',
@@ -59,6 +63,9 @@ function makeFlow(app, flow) {
         name: 'SDF Adapter',
         function: sdfAdapterRecordAction,
         description: 'Updates recordUid',
+        fields: {
+          amqpUrl,
+        },
       },
     ];
 
@@ -115,6 +122,9 @@ function makeFlow(app, flow) {
         name: 'SDF Adapter',
         function: sdfAdapterPublishAction,
         description: 'Passes data to SDF',
+        fields: {
+          amqpUrl,
+        },
       },
     ];
 
@@ -136,6 +146,7 @@ function makeFlow(app, flow) {
 async function createFlows(applications, token) {
   try {
     const newApplications = lodash.cloneDeep(applications);
+
     for (let i = 0; i < newApplications.length; i += 1) {
       const app = applications[i];
 

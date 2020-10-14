@@ -637,6 +637,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'sendMessageToOih',
             description: 'Passes data to SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
         ],
         edges: [
@@ -684,6 +687,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'receiveEvents',
             description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
           // {
           //   id: 'step_2',
@@ -706,6 +712,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'processRecordUid',
             description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
         ],
         edges: [
@@ -757,6 +766,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'receiveEvents',
             description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
           // {
           //   id: 'step_2',
@@ -779,6 +791,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'processRecordUid',
             description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
         ],
         edges: [
@@ -810,7 +825,13 @@ describe('Flow Handling', () => {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
-            id: 'step_1', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'getPersons', description: 'Fetches data', componentId: 'snazzyAdapterId', fields: { domainId: 'testDomainId', schema: 'person', applicationUid: 'snazzy1234' },
+            id: 'step_1',
+            credentials_id: 'snazzySecretId',
+            name: 'Snazzy Contacts Adapter',
+            function: 'getPersons',
+            description: 'Fetches data',
+            componentId: 'snazzyAdapterId',
+            fields: { domainId: 'testDomainId', schema: 'person', applicationUid: 'snazzy1234' },
           },
           // {
           //   id: 'step_2', name: 'Snazzy Contacts Transformer',
@@ -818,7 +839,14 @@ describe('Flow Handling', () => {
           // componentId: 'snazzyTransformerId',
           // },
           {
-            id: 'step_2', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
+            id: 'step_2',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'sendMessageToOih',
+            description: 'Passes data to SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           }],
           edges: [
             { source: 'step_1', target: 'step_2' },
@@ -836,7 +864,14 @@ describe('Flow Handling', () => {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
-            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+            id: 'step_1',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'receiveEvents',
+            description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
           // {
           //   id: 'step_2', name: 'Snazzy Contacts Transformer',
@@ -846,7 +881,14 @@ describe('Flow Handling', () => {
           {
             id: 'step_2', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'createPerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           }, {
-            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_3',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'processRecordUid',
+            description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           }],
           edges: [
             { source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' },
@@ -864,7 +906,14 @@ describe('Flow Handling', () => {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
-            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+            id: 'step_1',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'receiveEvents',
+            description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
           // {
           //   id: 'step_2', name: 'Snazzy Contacts Transformer',
@@ -875,7 +924,14 @@ describe('Flow Handling', () => {
             id: 'step_2', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'updatePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           },
           {
-            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_3',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'processRecordUid',
+            description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           }],
           edges: [
             { source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' },
@@ -893,7 +949,14 @@ describe('Flow Handling', () => {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
-            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+            id: 'step_1',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'receiveEvents',
+            description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
           // {
           //   id: 'step_2', name: 'Snazzy Contacts Transformer',
@@ -903,7 +966,14 @@ describe('Flow Handling', () => {
           {
             id: 'step_2', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'deletePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           }, {
-            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_3',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'processRecordUid',
+            description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           }],
           edges: [
             { source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' },
