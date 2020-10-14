@@ -2,7 +2,9 @@ const bunyan = require('bunyan');
 const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/event-bus');
 const config = require('../config/index');
 const log = require('../config/logger');
-const { flowStarted, flowStopped, gdprAnonymise } = require('./handlers');
+const {
+  flowStarted, flowStopped, flowFailed, gdprAnonymise,
+} = require('./handlers');
 
 const logger = bunyan.createLogger({ name: 'events' });
 
@@ -28,6 +30,17 @@ async function connectQueue() {
   await eventBus.subscribe('flow.stopped', async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
     const response = await flowStopped(event.payload.id);
+
+    if (response === true) {
+      await event.ack();
+    } else {
+      await event.nack();
+    }
+  });
+
+  await eventBus.subscribe('flow.failed', async (event) => {
+    log.info(`Received event: ${JSON.stringify(event.headers)}`);
+    const response = await flowFailed(event.payload.id);
 
     if (response === true) {
       await event.ack();

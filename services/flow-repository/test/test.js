@@ -15,7 +15,7 @@ const token = require('./utils/tokens');
 const { getOrphanedFlows } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
 const {
-  flowStarted, flowStopped, gdprAnonymise, cleanupOrphans,
+  flowStarted, flowStopped, flowFailed, gdprAnonymise, cleanupOrphans,
 } = require('../app/utils/handlers');
 const Flow = require('../app/models/flow');
 
@@ -835,6 +835,49 @@ describe('Flow Operations', () => {
 
     const flow = await Flow.findOne({ _id: flowId1 }).lean();
     expect(flow.status).toEqual('inactive');
+  });
+
+  test('handle a flow.failed event', async () => {
+    const failedFlow = new Flow({
+      name: 'SnazzyToWice',
+      description: 'Different content',
+      status: 'starting',
+      graph: {
+        nodes: [
+          {
+            id: 'NodeOne',
+            componentId: '5ca5c44c187c040010a9bb8b',
+            function: 'upsertPerson',
+            fields: {
+              username: 'TestName',
+              password: 'TestPass',
+            },
+          },
+          {
+            id: 'NodeTwo',
+            componentId: '5ca5c44c187c040010a9bb8c',
+            function: 'transformTestFromOih',
+          },
+        ],
+        edges: [
+          {
+            source: 'NodeTwo',
+            target: 'NodeOne',
+          },
+        ],
+      },
+    });
+
+    const savedFailedFlow = await failedFlow.save();
+    expect(savedFailedFlow.status).toEqual('starting');
+
+    const response = await flowFailed(savedFailedFlow._id.toString());
+    expect(response).toEqual(true);
+
+    const flow = await Flow.findOne({ _id: savedFailedFlow._id.toString() }).lean();
+    expect(flow.status).toEqual('inactive');
+
+    await Flow.deleteOne({ _id: savedFailedFlow._id.toString() });
   });
 
   test('handle a user delete event', async () => {
