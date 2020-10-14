@@ -624,15 +624,15 @@ describe('Flow Handling', () => {
               schema: 'person',
             },
           },
+          // {
+          //   id: 'step_2',
+          //   componentId: 'testTransformerId',
+          //   name: 'Test Application Transformer',
+          //   function: 'transformPersonToOih',
+          //   description: 'Transforms data',
+          // },
           {
             id: 'step_2',
-            componentId: 'testTransformerId',
-            name: 'Test Application Transformer',
-            function: 'transformPersonToOih',
-            description: 'Transforms data',
-          },
-          {
-            id: 'step_3',
             componentId: '5d2484d2a422ca001bda5690',
             name: 'SDF Adapter',
             function: 'sendMessageToOih',
@@ -644,10 +644,10 @@ describe('Flow Handling', () => {
             source: 'step_1',
             target: 'step_2',
           },
-          {
-            source: 'step_2',
-            target: 'step_3',
-          },
+          // {
+          //   source: 'step_2',
+          //   target: 'step_3',
+          // },
         ],
       },
       type: 'ordinary',
@@ -685,15 +685,15 @@ describe('Flow Handling', () => {
             function: 'receiveEvents',
             description: 'Receives data from SDF',
           },
+          // {
+          //   id: 'step_2',
+          //   componentId: 'testTransformerId',
+          //   name: 'Test Application Transformer',
+          //   function: 'transformPersonFromOih',
+          //   description: 'Transforms data',
+          // },
           {
             id: 'step_2',
-            componentId: 'testTransformerId',
-            name: 'Test Application Transformer',
-            function: 'transformPersonFromOih',
-            description: 'Transforms data',
-          },
-          {
-            id: 'step_3',
             componentId: 'testAdapterId',
             credentials_id: 'testSecretId',
             name: 'Test Application Adapter',
@@ -701,7 +701,7 @@ describe('Flow Handling', () => {
             description: 'Pushes data',
           },
           {
-            id: 'step_4',
+            id: 'step_3',
             componentId: '5d2484d2a422ca001bda5690',
             name: 'SDF Adapter',
             function: 'processRecordUid',
@@ -717,10 +717,10 @@ describe('Flow Handling', () => {
             source: 'step_2',
             target: 'step_3',
           },
-          {
-            source: 'step_3',
-            target: 'step_4',
-          },
+          // {
+          //   source: 'step_3',
+          //   target: 'step_4',
+          // },
         ],
       },
       type: 'ordinary',
@@ -758,15 +758,15 @@ describe('Flow Handling', () => {
             function: 'receiveEvents',
             description: 'Receives data from SDF',
           },
+          // {
+          //   id: 'step_2',
+          //   componentId: 'testTransformerId',
+          //   name: 'Test Application Transformer',
+          //   function: 'transformPersonFromOih',
+          //   description: 'Transforms data',
+          // },
           {
             id: 'step_2',
-            componentId: 'testTransformerId',
-            name: 'Test Application Transformer',
-            function: 'transformPersonFromOih',
-            description: 'Transforms data',
-          },
-          {
-            id: 'step_3',
             componentId: 'testAdapterId',
             credentials_id: 'testSecretId',
             name: 'Test Application Adapter',
@@ -774,7 +774,7 @@ describe('Flow Handling', () => {
             description: 'Pushes data',
           },
           {
-            id: 'step_4',
+            id: 'step_3',
             componentId: '5d2484d2a422ca001bda5690',
             name: 'SDF Adapter',
             function: 'processRecordUid',
@@ -790,10 +790,10 @@ describe('Flow Handling', () => {
             source: 'step_2',
             target: 'step_3',
           },
-          {
-            source: 'step_3',
-            target: 'step_4',
-          },
+          // {
+          //   source: 'step_3',
+          //   target: 'step_4',
+          // },
         ],
       },
       type: 'ordinary',
@@ -811,12 +811,19 @@ describe('Flow Handling', () => {
         graph: {
           nodes: [{
             id: 'step_1', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'getPersons', description: 'Fetches data', componentId: 'snazzyAdapterId', fields: { domainId: 'testDomainId', schema: 'person', applicationUid: 'snazzy1234' },
-          }, {
-            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformToOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
-          }, {
-            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
+          },
+          // {
+          //   id: 'step_2', name: 'Snazzy Contacts Transformer',
+          // function: 'transformToOih', description: 'Transforms data',
+          // componentId: 'snazzyTransformerId',
+          // },
+          {
+            id: 'step_2', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
           }],
-          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }],
+          edges: [
+            { source: 'step_1', target: 'step_2' },
+            // { source: 'step_2', target: 'step_3' }
+          ],
         },
         type: 'ordinary',
         cron: '* * * * *',
@@ -830,14 +837,21 @@ describe('Flow Handling', () => {
         graph: {
           nodes: [{
             id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+          },
+          // {
+          //   id: 'step_2', name: 'Snazzy Contacts Transformer',
+          // function: 'transformFromOih', description: 'Transforms data',
+          // componentId: 'snazzyTransformerId',
+          // },
+          {
+            id: 'step_2', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'createPerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           }, {
-            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformFromOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
-          }, {
-            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'createPerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
-          }, {
-            id: 'step_4', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
-          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }, { source: 'step_3', target: 'step_4' }],
+          edges: [
+            { source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' },
+            // { source: 'step_3', target: 'step_4' }
+          ],
         },
         type: 'ordinary',
         cron: '* * * * *',
@@ -851,14 +865,22 @@ describe('Flow Handling', () => {
         graph: {
           nodes: [{
             id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
-          }, {
-            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformFromOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
-          }, {
-            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'updatePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
-          }, {
-            id: 'step_4', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+          },
+          // {
+          //   id: 'step_2', name: 'Snazzy Contacts Transformer',
+          // function: 'transformFromOih', description: 'Transforms data',
+          // componentId: 'snazzyTransformerId',
+          // },
+          {
+            id: 'step_2', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'updatePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
+          },
+          {
+            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
-          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }, { source: 'step_3', target: 'step_4' }],
+          edges: [
+            { source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' },
+            // { source: 'step_3', target: 'step_4' }
+          ],
         },
         type: 'ordinary',
         cron: '* * * * *',
@@ -872,14 +894,21 @@ describe('Flow Handling', () => {
         graph: {
           nodes: [{
             id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+          },
+          // {
+          //   id: 'step_2', name: 'Snazzy Contacts Transformer',
+          // function: 'transformFromOih', description: 'Transforms data',
+          // componentId: 'snazzyTransformerId',
+          // },
+          {
+            id: 'step_2', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'deletePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           }, {
-            id: 'step_2', name: 'Snazzy Contacts Transformer', function: 'transformFromOih', description: 'Transforms data', componentId: 'snazzyTransformerId',
-          }, {
-            id: 'step_3', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'deletePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
-          }, {
-            id: 'step_4', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
           }],
-          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }, { source: 'step_3', target: 'step_4' }],
+          edges: [
+            { source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' },
+            // { source: 'step_3', target: 'step_4' }
+          ],
         },
         type: 'ordinary',
         cron: '* * * * *',
