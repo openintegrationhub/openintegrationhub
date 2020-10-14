@@ -8,7 +8,7 @@ data:
   DEBUG_MODE: "false"
   INTROSPECT_ENDPOINT_BASIC: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
   INTROSPECT_TYPE: basic
-  LOGGING_LEVEL: error
+  LOG_LEVEL: error
   ORIGIN_WHITELIST: >-
     openintegrationhub.com,http://web-ui.openintegrationhub.com,https://web-ui.openintegrationhub.com
   PORT: "3000"
