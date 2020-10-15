@@ -199,7 +199,7 @@ async function createFlows(applications, token) {
 
             const response = await request(options);
 
-            if (response.statusCode === 201) {
+            if (response.statusCode === 200) {
               app.outbound.flows[j].flowId = flowId;
             } else {
               log.error('Could not create flow:', flowId);
@@ -257,7 +257,7 @@ async function createFlows(applications, token) {
             };
             const response = await request(options);
 
-            if (response.statusCode === 201) {
+            if (response.statusCode === 200) {
               app.inbound.flows[k].flowId = flowId;
             } else {
               log.error('Could not create flow:', flowId);
