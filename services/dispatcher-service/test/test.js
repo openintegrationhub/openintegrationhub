@@ -139,7 +139,7 @@ describe('API', () => {
 
       nock(`http://localhost:3001/flows/AutoFlow${i}`)
         .patch('')
-        .reply(201, { data: { id: `AutoFlow${i}` } });
+        .reply(200, { data: { id: `AutoFlow${i}` } });
     }
 
     const res = await request
@@ -210,7 +210,7 @@ describe('API', () => {
 
     nock('http://localhost:3001/flows/GoogleFlow')
       .patch('')
-      .reply(201, { data: { id: 'GoogleFlow' } });
+      .reply(200, { data: { id: 'GoogleFlow' } });
 
     const res = await request
       .put(`/dispatches/${configId}/app`)
@@ -346,7 +346,7 @@ describe('API', () => {
         cron: '* * * * *',
         name: 'H&S Inbound DELETE Flow for Wice CRM',
       })
-      .reply(201, { data: { id: 'PatchFlow' } });
+      .reply(200, { data: { id: 'PatchFlow' } });
 
     console.log('config2', config);
     const updatedConfig = lodash.cloneDeep(config);
@@ -900,7 +900,7 @@ describe('Flow Handling', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'OutboundId' } });
+      .reply(200, { data: { id: 'OutboundId' } });
 
 
     nock('http://localhost:3001/flows')
@@ -958,7 +958,7 @@ describe('Flow Handling', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'InboundIdCreate' } });
+      .reply(200, { data: { id: 'InboundIdCreate' } });
 
     nock('http://localhost:3001/flows')
       .post('', {
@@ -1016,7 +1016,7 @@ describe('Flow Handling', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'InboundIdUpdate' } });
+      .reply(200, { data: { id: 'InboundIdUpdate' } });
 
 
     nock('http://localhost:3001/flows')
@@ -1074,7 +1074,7 @@ describe('Flow Handling', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'InboundIdDelete' } });
+      .reply(200, { data: { id: 'InboundIdDelete' } });
 
     const applications = [
       {
@@ -1159,7 +1159,7 @@ describe('Flow Handling', () => {
         cron: '* * * * *',
         name: 'H&S Inbound CREATE Flow for Wice CRM',
       })
-      .reply(201, { data: { id: 'newInboundFlow' } });
+      .reply(200, { data: { id: 'newInboundFlow' } });
 
     const existingConfig = {
       tenant: 'abc',
