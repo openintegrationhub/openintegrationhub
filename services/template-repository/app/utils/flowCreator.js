@@ -42,5 +42,4 @@ async function createFlow(flow) {
   throw new Error('Failed to create the flow');
 }
 
-
 module.exports = { createFlow };
