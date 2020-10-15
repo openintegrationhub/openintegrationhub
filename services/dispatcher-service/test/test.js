@@ -330,7 +330,7 @@ describe('API', () => {
       .reply(201, { data: { id: 'PatchFlow' } });
 
     nock('http://localhost:3001/flows/PatchFlow')
-      .patch({
+      .patch('', {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{
@@ -370,7 +370,6 @@ describe('API', () => {
       .set('Content-Type', 'application/json')
       .send(updatedConfig);
 
-    console.log('res:', res.body);
     expect(res.status).toEqual(200);
     expect(res.text).not.toHaveLength(0);
     expect(res.body.data.tenant).toEqual('TestTenant');
@@ -1144,7 +1143,7 @@ describe('Flow Handling', () => {
       .reply(201, { data: { id: 'newInboundFlow' } });
 
     nock('http://localhost:3001/flows/newInboundFlow')
-      .patch({
+      .patch('', {
         description: 'This flow was automatically generated',
         graph: {
           nodes: [{

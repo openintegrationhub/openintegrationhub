@@ -323,11 +323,8 @@ async function deleteFlows(applications, token) {
 }
 
 async function updateConfigFlows(original, incoming, token) {
-  console.log('in updateConfigFlows');
   const newConfig = lodash.cloneDeep(incoming);
 
-  console.log('orginal:', original);
-  console.log('incoming:', incoming);
   const oldFlowIds = getFlowIds(original.applications);
   const newFlowIds = getFlowIds(incoming.applications);
 
