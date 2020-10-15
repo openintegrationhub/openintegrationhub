@@ -35,12 +35,7 @@ class Server {
         if (whitelist.find((elem) => origin.indexOf(elem) >= 0)) {
           callback(null, true);
         } else {
-          log.info({
-            message: 'Blocked by CORS',
-            origin,
-            originWhiteList: whitelist,
-          });
-          callback(new Error('Not allowed by CORS'));
+          callback(null, false);
         }
       },
       credentials: true,
