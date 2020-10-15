@@ -766,7 +766,7 @@ describe('Template Operations', () => {
 
     const template = await FlowTemplate.findOne({ _id: template1 }).lean();
     expect(template.owners).toHaveLength(1);
-    expect(template.owners.find(owner => (owner.id === 'dude'))).toEqual(undefined);
+    expect(template.owners.find((owner) => (owner.id === 'dude'))).toEqual(undefined);
   });
 
   /* test('should refuse to stop an inactive flow', async () => {

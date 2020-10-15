@@ -119,7 +119,7 @@ const getTemplateById = (flowTemplateId, user) => new Promise((resolve) => {
     });
 });
 
-const addTemplate = storeTemplate => new Promise((resolve) => {
+const addTemplate = (storeTemplate) => new Promise((resolve) => {
   storeTemplate.save()
     .then((doc) => {
       const template = format(doc._doc);
@@ -190,7 +190,7 @@ const deleteTemplate = (flowTemplateId, user) => new Promise((resolve) => {
     });
 });
 
-const anonymise = userId => new Promise((resolve) => {
+const anonymise = (userId) => new Promise((resolve) => {
   FlowTemplate.update(
     { 'owners.id': userId },
     { $pull: { owners: { id: userId } } },
