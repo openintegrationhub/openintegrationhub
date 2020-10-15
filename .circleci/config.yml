@@ -184,6 +184,9 @@ workflows:
       - flow-repository-test:
           requires:
             - deps
+      - template-repository-test:
+          requires:
+            - deps
       - audit-log-test:
           requires:
             - deps
@@ -226,6 +229,7 @@ workflows:
             - scheduler-test
             - secret-service-lib-test
             - flow-repository-test
+            - template-repository-test
             - audit-log-test
             - lib-component-repository-test
             - lib-ferryman-test
