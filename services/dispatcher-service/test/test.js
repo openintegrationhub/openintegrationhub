@@ -312,8 +312,6 @@ describe('API', () => {
     expect(res.body.data.applications[1].inbound.flows).toHaveLength(2);
     expect(res.body.data.applications[1].inbound.flows[0].flowId).toEqual('AutoFlow5');
     config = res.body.data;
-
-    console.log('config', config);
   });
 
   test('update the entire configuration', async () => {
@@ -348,7 +346,6 @@ describe('API', () => {
       })
       .reply(200, { data: { id: 'PatchFlow' } });
 
-    console.log('config2', config);
     const updatedConfig = lodash.cloneDeep(config);
 
     updatedConfig.name = 'UpdatedConfig';
@@ -908,7 +905,7 @@ describe('Flow Handling', () => {
         name: 'H&S Inbound CREATE Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
-          nodes: [],
+          nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }],
           edges: [],
         },
         type: 'ordinary',
@@ -965,7 +962,7 @@ describe('Flow Handling', () => {
         name: 'H&S Inbound UPDATE Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
-          nodes: [],
+          nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }],
           edges: [],
         },
         type: 'ordinary',
@@ -1024,7 +1021,7 @@ describe('Flow Handling', () => {
         name: 'H&S Inbound DELETE Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
-          nodes: [],
+          nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }],
           edges: [],
         },
         type: 'ordinary',

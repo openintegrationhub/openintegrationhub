@@ -221,7 +221,7 @@ async function createFlows(applications, token) {
             );
 
             const initialFlow = Object.assign({}, flow);
-            initialFlow.graph = { nodes: [], edges: [] };
+            initialFlow.graph = { nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }], edges: [] };
 
             const initialOptions = {
               method: 'POST',
