@@ -854,7 +854,7 @@ describe('Flow Handling', () => {
         name: 'H&S Outbound Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
-          nodes: [],
+          nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }],
           edges: [],
         },
         type: 'ordinary',
