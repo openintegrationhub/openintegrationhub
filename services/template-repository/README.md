@@ -8,7 +8,7 @@ The revolution in data synchronization — the Open Integration Hub enables simp
 
 Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
 
-# Template Repository (working title / Codename Bragi)
+# Template Repository
 
 The Template Repository stores, retrieves and updates flow teamplates in the Open Integration Hub.
 

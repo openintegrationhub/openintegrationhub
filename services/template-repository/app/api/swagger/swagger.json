@@ -106,7 +106,7 @@
                   "properties": {
                     "data": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/FlowTemplates" }
+                      "items": { "$ref": "#/components/schemas/FlowTemplate" }
                     },
                     "meta": { "$ref": "#/components/schemas/Meta" }
                   }

@@ -41,6 +41,11 @@ class Server {
       credentials: true,
     };
 
+    this.app.use((req, res, next) => {
+      req.headers.origin = req.headers.origin || req.headers.host;
+      next();
+    });
+
     // Enables preflight OPTIONS requests
     this.app.options('/', cors());
 
