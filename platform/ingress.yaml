@@ -26,6 +26,12 @@ spec:
       - backend:
           serviceName: flow-repository
           servicePort: 3001
+  - host: template-repository.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: template-repository
+          servicePort: 3001
   - host: auditlog.openintegrationhub.com
     http:
       paths:
