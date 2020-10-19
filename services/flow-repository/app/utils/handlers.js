@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const log = require('../config/logger');
 const config = require('../config/index');
+// const { publishQueue } = require('./eventBus');
 
 const storage = require(`../api/controllers/${config.storage}`); // eslint-disable-line
 
@@ -36,11 +37,14 @@ async function flowFailed(id) {
     return false;
   }
 
-  const response = await storage.stoppedFlow(id);
-  if (!response) {
+  const flow = await storage.stoppingFlow({ isAdmin: true }, id);
+
+  if (!flow) {
     log.error(`Flow with id ${id} could not be found.`);
+    return false;
   }
-  return true;
+
+  return flow;
 }
 
 async function cleanupOrphans() {
