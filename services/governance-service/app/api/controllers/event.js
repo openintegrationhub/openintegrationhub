@@ -39,8 +39,8 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   const filterFields = {
     'agent.id': 1,
     'agent.type': 1,
-    actedOnBehalfOf: 'actedOnBehalfOf.prov:delegate.id',
-    actedOnBehalfOfTenant: 'actedOnBehalfOf.prov:delegate.tenantId',
+    actedOnBehalfOf: 'actedOnBehalfOf.prov:responsible.id',
+    actedOnBehalfOfTenant: 'actedOnBehalfOf.prov:responsible.tenantId',
     'activity.function': 1,
     'activity.flowId': 1,
     'activity.action': 1,

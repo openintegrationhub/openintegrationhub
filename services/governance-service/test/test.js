@@ -184,7 +184,7 @@ describe('ProvenanceEvent Operations', () => {
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        'filter[actedOnBehalfOf]': actedOnBehalfOf1,
+        'filter[actedOnBehalfOf]': 'j460ge49qh3rusfuoh',
       })
       .set('Authorization', 'Bearer adminToken');
 
