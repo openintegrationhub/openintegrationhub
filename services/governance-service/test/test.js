@@ -85,7 +85,7 @@ describe('ProvenanceEvent Operations', () => {
   test('should add a ProvenanceEvent', async () => {
     const res = await addProvenanceEvent({
       entity: {
-        type: 'oihUid',
+        kind: 'oihUid',
         id: 'aoveu03dv921dvo',
       },
       activity: {
@@ -96,16 +96,16 @@ describe('ProvenanceEvent Operations', () => {
         'prov:endTime': '2020-10-19T09:47:15+00:00',
       },
       agent: {
-        type: 'Connector',
-        componentId: 'w4298jb9q74z4dmjuo',
+        kind: 'Connector',
+        id: 'w4298jb9q74z4dmjuo',
       },
       actedOnBehalfOf: {
         'prov:delegate': {
-          type: 'Connector',
+          kind: 'Connector',
           id: 'w4298jb9q74z4dmjuo',
         },
         'prov:responsible': {
-          type: 'User',
+          kind: 'User',
           id: 'j460ge49qh3rusfuoh',
           tenant: 't35fdhtz57586',
         },
@@ -145,7 +145,7 @@ describe('ProvenanceEvent Operations', () => {
   test('should add a second ProvenanceEvent', async () => {
     const res = await addProvenanceEvent({
       entity: {
-        type: 'oihUid',
+        kind: 'oihUid',
         id: 'aoveu03dv921dvo',
       },
       activity: {
@@ -156,16 +156,16 @@ describe('ProvenanceEvent Operations', () => {
         'prov:endTime': '2020-10-19T09:48:15+00:00',
       },
       agent: {
-        type: 'Connector',
-        componentId: 'w4298jb9q74z4dmjuo',
+        kind: 'Connector',
+        id: 'w4298jb9q74z4dmjuo',
       },
       actedOnBehalfOf: {
         'prov:delegate': {
-          type: 'Connector',
+          kind: 'Connector',
           id: 'w4298jb9q74z4dmjuo',
         },
         'prov:responsible': {
-          type: 'User',
+          kind: 'User',
           id: 'j460ge49qh3rusfuoh',
           tenant: 't35fdhtz57586',
         },
