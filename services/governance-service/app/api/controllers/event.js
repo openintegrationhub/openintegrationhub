@@ -73,9 +73,9 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
     pageNumber = parseInt(req.query.page.number, 10);
   }
 
-  // filter[status] 1 0
-  if (req.query.filter && req.query.filter.value !== undefined) {
-    for (const key in req.query.filter) { // eslint-disable-line no-restricted-syntax
+  // filter field & value
+  if (req.query.filter && req.query.filter !== undefined) {
+    for (const key in req.query.filter) { // eslint-disable-line
       if (key in filterFields) {
         if (filterFields[key] !== 1) {
           filters[filterFields[key]] = req.query.filter[key];
