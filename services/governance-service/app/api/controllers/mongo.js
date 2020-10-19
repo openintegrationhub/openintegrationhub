@@ -61,11 +61,11 @@ const getProvenanceEvents = async ( // eslint-disable-line
   }
 
   if (from !== false) {
-    qry['activity.prov:startTime'] = from;
+    qry['activity.prov:startTime'] = { $gte: new Date(from) };
   }
 
   if (until !== false) {
-    qry['activity.prov:endTime'] = until;
+    qry['activity.prov:endTime'] = { $lte: new Date(until) };
   }
 
 

@@ -50,14 +50,12 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
 
   // from
   if (req.query.from && req.query.from !== undefined) {
-    from = parseInt(req.query.from, 10);
-    if (Number.isNaN(from)) from = false;
+    from = req.query.from;
   }
 
   // until
-  if (req.query.from && req.query.until !== undefined) {
-    from = parseInt(req.query.until, 10);
-    if (Number.isNaN(until)) until = false;
+  if (req.query.until && req.query.until !== undefined) {
+    until = req.query.until;
   }
 
   const sortableFields = { startTime: 1, endTime: 1 };
