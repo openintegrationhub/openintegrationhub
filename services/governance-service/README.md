@@ -27,17 +27,31 @@ Example provenance object:
 {
   "entity": {
     "oihUid": "aoveu03dv921dvo",
+    "domain": "Addresses",
+    "schema": "Person",
+    "records": [
+      {
+        "application": "Google",
+        "recordUid": "abcde"
+      },
+      {
+        "application": "Wice",
+        "recordUid": 12345
+      }
+    ]
   },
   "activity": {
     "action": "ObjectReceived",
     "function": "getPersons",
     "flowId": "30j0hew9kwbnkksfb09",
     "prov:startTime": "2020-10-19T09:47:11+00:00",
-    "prov:endTime": "2020-10-19T09:47:15  +00:00"
+    "prov:endTime": "2020-10-19T09:47:15+00:00",
+    "protocol": "The object was successfully inserted"
   },
   "agent": {
     "type": "Component",
-    "id": "w4298jb9q74z4dmjuo"
+    "id": "w4298jb9q74z4dmjuo",
+    "name": "Google Connector"
   },
   "actedOnBehalfOf": {
     "prov:delegate": { "type": "Component", "id": "w4298jb9q74z4dmjuo"},
