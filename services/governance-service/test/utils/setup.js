@@ -1,32 +1,31 @@
 /* eslint no-underscore-dangle: "off" */
-/* eslint new-cap: "off" */
-
 const path = require('path');
-const fs = require('fs');
 require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') });
-const MongodbMemoryServer = require('mongodb-memory-server');
+const fs = require('fs');
+const { MongoMemoryReplSet } = require('mongodb-memory-server');
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');
 
-const mongod = new MongodbMemoryServer.default({
+const replSet = new MongoMemoryReplSet({
+  replSet: { storageEngine: 'wiredTiger' },
   instance: {
     dbName: 'jest',
   },
   binary: {
     version: 'latest',
-    ssl: true,
   },
-  autoStart: false,
 });
 
 module.exports = async () => {
-  if (!mongod.isRunning) {
-    await mongod.start();
-  }
+  // if (!mongod.isRunning) {
+  //     await mongod.start();
+  // }
+
+  await replSet.waitUntilRunning();
 
   const mongoConfig = {
     mongoDBName: 'jest',
-    mongoUri: await mongod.getConnectionString(),
+    mongoUri: await replSet.getUri(),
   };
 
   // Write global config to disk because all tests run in different contexts.
@@ -34,6 +33,6 @@ module.exports = async () => {
   console.log('Config is written');
 
   // Set reference to mongod in order to close the server during teardown.
-  global.__MONGOD__ = mongod;
+  global.__MONGOD__ = replSet;
   process.env.MONGO_URL = mongoConfig.mongoUri;
 };
