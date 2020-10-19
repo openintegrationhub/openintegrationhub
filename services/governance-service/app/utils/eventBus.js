@@ -3,6 +3,7 @@ const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/even
 const config = require('../config/index');
 const log = require('../config/logger');
 
+// const { addProvenanceEvent } = require('../api/controllers/mongo');
 
 const logger = bunyan.createLogger({ name: 'events' });
 
@@ -16,7 +17,7 @@ async function connectQueue() {
 
   await eventBus.subscribe('governance.*', async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
-    // const response = await someAction(event.payload.id);
+    // const response = await addProvenanceEvent(event.payload);
 
     // if (response === true) {
     //   await event.ack();
