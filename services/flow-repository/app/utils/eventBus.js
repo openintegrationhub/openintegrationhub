@@ -12,6 +12,16 @@ const storage = require(`../api/controllers/${config.storage}`); // eslint-disab
 
 let eventBus;
 
+async function publishQueue(ev) {
+  try {
+    const newEvent = new Event(ev);
+    await eventBus.publish(newEvent);
+    log.info(`Published event: ${JSON.stringify(ev)}`);
+  } catch (err) {
+    log.error(err);
+  }
+}
+
 async function connectQueue() {
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'flow-repository' });
@@ -42,7 +52,13 @@ async function connectQueue() {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
     const response = await flowFailed(event.payload.id);
 
-    if (response === true) {
+    if (response) {
+      await publishQueue({
+        headers: {
+          name: 'flow.stopping',
+        },
+        payload: response,
+      });
       await event.ack();
     } else {
       await event.nack();
@@ -61,16 +77,6 @@ async function connectQueue() {
   });
 
   await eventBus.connect();
-}
-
-async function publishQueue(ev) {
-  try {
-    const newEvent = new Event(ev);
-    await eventBus.publish(newEvent);
-    log.info(`Published event: ${JSON.stringify(ev)}`);
-  } catch (err) {
-    log.error(err);
-  }
 }
 
 async function disconnectQueue() {
