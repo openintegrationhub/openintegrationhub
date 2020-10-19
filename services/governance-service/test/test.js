@@ -15,7 +15,7 @@ const token = require('./utils/tokens');
 const { getOrphanedProvenanceEvents } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
 
-const ProvenanceEvent = require('../app/models/ProvenanceEvent');
+const ProvenanceEvent = require('../app/models/provenanceEvent');
 
 const Server = require('../app/server');
 

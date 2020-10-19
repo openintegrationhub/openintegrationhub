@@ -6,10 +6,10 @@
 const mongoose = require('mongoose');
 const config = require('../../config/index.js');
 const log = require('../../config/logger');
-const ProvenanceEvents = require('../../models/provenanceEvents');
+const ProvenanceEvent = require('../../models/provenanceEvent');
 
-const format = (ProvenanceEvent) => {
-  const newProvenanceEvent = ProvenanceEvent;
+const format = (provenanceEvent) => {
+  const newProvenanceEvent = provenanceEvent;
   if (newProvenanceEvent) {
     newProvenanceEvent.id = newProvenanceEvent._id.toString();
     delete newProvenanceEvent._id;
@@ -56,15 +56,15 @@ const getProvenanceEvents = async ( // eslint-disable-line
   if (length > 0) {
     let i;
     for (i = 0; i < length; i += 1) {
-        qry[filterFields[i]] = filters[filterFields[i]];
+      qry[filterFields[i]] = filters[filterFields[i]];
     }
   }
 
-  if(from !== false) {
+  if (from !== false) {
     qry['activity.prov:startTime'] = from;
   }
 
-  if(until !== false) {
+  if (until !== false) {
     qry['activity.prov:endTime'] = until;
   }
 
@@ -74,12 +74,12 @@ const getProvenanceEvents = async ( // eslint-disable-line
   sort[sortField] = sortOrder;
 
   console.log('Qry:', qry);
-  
+
   // count results
-  const count = await ProvenanceEvents.find(qry).estimatedDocumentCount();
+  const count = await ProvenanceEvent.find(qry).estimatedDocumentCount();
 
   // add offset and limit to query and execute
-  ProvenanceEvents.find(qry).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
+  ProvenanceEvent.find(qry).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
     .lean()
     .then((doc) => {
       const provenanceEvents = doc;
@@ -99,14 +99,13 @@ const addProvenanceEvent = newProvenanceEvent => new Promise((resolve) => {
 
   storeProvenanceEvent.save()
     .then((doc) => {
-      const ProvenanceEvent = format(doc._doc);
-      resolve(ProvenanceEvent);
+      const provenanceEvent = format(doc._doc);
+      resolve(provenanceEvent);
     })
     .catch((err) => {
       log.error(err);
     });
 });
-
 
 
 module.exports = {

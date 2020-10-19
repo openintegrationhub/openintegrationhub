@@ -82,7 +82,6 @@ class Server {
   setupRoutes() {
     // configure routes
     this.app.use('/event', event);
-    this.app.use('/flows', startstop);
     this.app.use('/healthcheck', healthcheck);
 
     // Reroute to docs

@@ -2,9 +2,7 @@ const bunyan = require('bunyan');
 const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/event-bus');
 const config = require('../config/index');
 const log = require('../config/logger');
-const {
-  flowStarted, flowStopped, flowFailed, gdprAnonymise,
-} = require('./handlers');
+
 
 const logger = bunyan.createLogger({ name: 'events' });
 
@@ -16,48 +14,15 @@ async function connectQueue() {
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'governance-service' });
 
-  await eventBus.subscribe('flow.started', async (event) => {
+  await eventBus.subscribe('governance.*', async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
-    const response = await flowStarted(event.payload.id);
+    // const response = await someAction(event.payload.id);
 
-    if (response === true) {
-      await event.ack();
-    } else {
-      await event.nack();
-    }
-  });
-
-  await eventBus.subscribe('flow.stopped', async (event) => {
-    log.info(`Received event: ${JSON.stringify(event.headers)}`);
-    const response = await flowStopped(event.payload.id);
-
-    if (response === true) {
-      await event.ack();
-    } else {
-      await event.nack();
-    }
-  });
-
-  await eventBus.subscribe('flow.failed', async (event) => {
-    log.info(`Received event: ${JSON.stringify(event.headers)}`);
-    const response = await flowFailed(event.payload.id);
-
-    if (response === true) {
-      await event.ack();
-    } else {
-      await event.nack();
-    }
-  });
-
-  await eventBus.subscribe(config.gdprEventName, async (event) => {
-    log.info('Anonymising user data...');
-    const response = await gdprAnonymise(event.payload.id);
-
-    if (response === true) {
-      await event.ack();
-    } else {
-      await event.nack();
-    }
+    // if (response === true) {
+    //   await event.ack();
+    // } else {
+    //   await event.nack();
+    // }
   });
 
   await eventBus.connect();

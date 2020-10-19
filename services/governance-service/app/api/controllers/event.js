@@ -5,16 +5,13 @@
 
 // const path = require('path');
 // const _ = require('lodash');
-const mongoose = require('mongoose');
+
 const express = require('express');
 const bodyParser = require('body-parser');
-const request = require('request');
-const { URL } = require('url');
-const path = require('path');
+
+
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
-const { publishQueue } = require('../../utils/eventBus');
-const { validate } = require('../../utils/validator');
 
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
@@ -26,7 +23,6 @@ const log = require('../../config/logger'); // eslint-disable-line
 
 // Gets all events
 router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => {
-
   if (!req.user.isAdmin) {
     return res.status(403).send({ errors: [{ message: 'Only available to admins', code: 403 }] });
   }
@@ -43,11 +39,11 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   const filterFields = {
     'agent.id': 1,
     'agent.type': 1,
-    'actedOnBehalfOf': 'actedOnBehalfOf.prov:delegate.id',
-    'actedOnBehalfOfTenant': 'actedOnBehalfOf.prov:delegate.tenantId',
+    actedOnBehalfOf: 'actedOnBehalfOf.prov:delegate.id',
+    actedOnBehalfOfTenant: 'actedOnBehalfOf.prov:delegate.tenantId',
     'activity.function': 1,
     'activity.flowId': 1,
-    'activity.action': 1
+    'activity.action': 1,
     // 'startTime': 1, // activity.prov:startTime
     // 'endTime': 1, // activity.prov:endTime
   };
@@ -55,13 +51,13 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   // from
   if (req.query.from && req.query.from !== undefined) {
     from = parseInt(req.query.from, 10);
-    if(isNaN(from)) from = false;
+    if (Number.isNaN(from)) from = false;
   }
 
   // until
   if (req.query.from && req.query.until !== undefined) {
     from = parseInt(req.query.until, 10);
-    if(isNaN(until)) until = false;
+    if (Number.isNaN(until)) until = false;
   }
 
   const sortableFields = { startTime: 1, endTime: 1 };
@@ -79,9 +75,9 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
 
   // filter[status] 1 0
   if (req.query.filter && req.query.filter.value !== undefined) {
-    for(const key in req.query.filter) {
-      if(key in filterFields) {
-        if(filterFields[key] !== 1) {
+    for (const key in req.query.filter) { // eslint-disable-line no-restricted-syntax
+      if (key in filterFields) {
+        if (filterFields[key] !== 1) {
           filters[filterFields[key]] = req.query.filter[key];
         } else {
           filters[key] = req.query.filter[key];
