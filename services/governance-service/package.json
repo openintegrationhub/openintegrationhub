@@ -1,7 +1,7 @@
 {
   "name": "governance-service",
   "version": "1.0.0",
-  "description": "Stores and manages integration flows.",
+  "description": "Stores provenance events and other governance related data.",
   "main": "index.js",
   "scripts": {
     "start": "node app/index.js",
