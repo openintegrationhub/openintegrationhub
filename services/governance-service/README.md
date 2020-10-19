@@ -1,4 +1,4 @@
-![prod](https://img.shields.io/badge/Status-Production-brightgreen.svg)
+![alpha](https://img.shields.io/badge/Status-Alpha-yellow.svg)
 
 <p align="center">
   <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
@@ -8,22 +8,50 @@ The revolution in data synchronization — the Open Integration Hub enables simp
 
 Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
 
-# Governance Service (working title / Codename Bragi)
+# Governance Service (working title / Codename Thoth)
 
-Bragi stores, retrieves and updates the integration flows of the Open Integration Hub.
+The Governance Service serves as the central repository for all data governance-related data and functions inside the OIH. It offers both a database for long-term storage of relevant data as well as an API for data retrieval and validation.
 
-All connected solutions to the Open Integration Hub and the work they are doing there are represented by an "integration flow". A data modification in one of the affected systems should propagate to all connected solutions / systems as defined in the corresponding integration flow.
+## Functions
 
-The integration flows are defined by a single user of the Open Integration Hub or a member of an organization which uses the Open Integration Hub.
+### Data Provenance
+The "Data Provenance" function of the Governance Repository is intended to allow users to reconstruct their data's path through the OIH from the very first time it was synchronized up until the current moment. This way, the data owner will be able to track all origins and destinations of their data, and whether it has been modified inside the OIH. This way, the data owner will be made more capable of complying with data governance policies and laws, such as the GDPR.
 
-The flows are specified in JSON, therefore we store and retrieve them in JSON.
+To this end, the Governance Service is capable of receiving metadata about certain events, such as a data object being transmitted from one application to another, and stores it as a detailed data provenance event. These events can then be retrieved, filtered, and searched using the Service's API.
+
+#### Provenance data model
+The used data model is based on [PROV-DM](https://www.w3.org/TR/prov-dm/). This allows for easy mapping and export of provenance data to other systems. The model describes tuples of entities, agents, and activities, in addition to optional situational fields, such as describing one agent acting on behalf of another.
+
+Example provenance object:
+```json
+{
+  "entity": {
+    "oihUid": "aoveu03dv921dvo",
+  },
+  "activity": {
+    "action": "ObjectReceived",
+    "function": "getPersons",
+    "flowId": "30j0hew9kwbnkksfb09",
+    "prov:startTime": "2020-10-19T09:47:11+00:00",
+    "prov:endTime": "2020-10-19T09:47:15  +00:00"
+  },
+  "agent": {
+    "type": "Component",
+    "id": "w4298jb9q74z4dmjuo"
+  },
+  "actedOnBehalfOf": {
+    "prov:delegate": { "type": "Component", "id": "w4298jb9q74z4dmjuo"},
+    "prov:responsible": { "type": "User", "id": "j460ge49qh3rusfuoh"}
+  }
+}
+```
 
 ## Technical description
 
-Bragi uses MongoDB for archiving the integration flows. You will need a MongoDB
+Thoth uses MongoDB for archiving the integration flows. You will need a MongoDB
 and change the path in the deployment.yaml. We use Mongoose for object modeling. Mongoose is built on top of the official MongoDB Node.js driver.
 
-For documenting the API Bragi uses the SwaggerUI.
+For documenting the API Thoth uses the SwaggerUI.
 
 ## Local installation/development
 
@@ -34,26 +62,6 @@ For documenting the API Bragi uses the SwaggerUI.
 - If using the IAM middleware/features, set the environment variable `INTROSPECT_ENDPOINT_BASIC` to match the respective endpoint used by your used IAM instance.
 - Run `npm start`
 
-### With Docker
-
-- Ensure a local MongoDB Database is running
-- Build (with `docker build . -t [IMAGENAME]`) or download the docker image
-- Run the image with `docker run --network="host" [IMAGENAME]`
-- If using the IAM middleware/features, set the environment variables to match those used by your IAM instance by using the `-e` option for `docker run`. For example: `docker run -e "INTROSPECT_ENDPOINT_BASIC=http://localhost:3099/api/v1/tokens/introspect" -t --network="host" [IMAGENAME]`
-
-### Use of IAM permissions.
-
-The Governance Service makes use of the IAM permission system, and requires appropriate permissions for all flow operations. The three used permissions are:
-
-- `flows.read` for getting flows. This applies to the end points GET `/flows` and GET `/flows/{id}`
-- `flows.write` for creating, updating, or deleting flows. This applies to the end points POST `/flows`, PATCH `/flows/{id}`, and DELETE `/flows/{id}`
-- `flows.control` for starting and stopping flows. This applies to the end points POST `/flows/{id}/start`, and POST `/flows/{id}/stop`
-
-So in order to carry out flow operations, the current user taking them needs to either:
-
-- Have the `ADMIN` role
-- Have the `SERVICE_ACCOUNT` role with the necessary permissions assigned to it directly, or
-- Have the necessary permissions assigned to their current context.
 
 ## REST-API documentation
 
