@@ -188,6 +188,8 @@ describe('ProvenanceEvent Operations', () => {
       })
       .set('Authorization', 'Bearer adminToken');
 
+    console.log('resA:', res.body);
+
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
     const j = JSON.parse(res.text);
@@ -206,6 +208,29 @@ describe('ProvenanceEvent Operations', () => {
         'filter[activity.action]': 'ObjectReceived',
       })
       .set('Authorization', 'Bearer adminToken');
+
+    console.log('resB:', res.body);
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveLength(1);
+    expect(j.data[0]).toHaveProperty('id');
+  });
+
+  test('should get all ProvenanceEvents, filtered by start and end time', async () => {
+    const res = await request
+      .get('/event')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+        from: '2020-10-19T09:48:11+00:00',
+        until: '2020-10-19T09:49:11+00:00',
+      })
+      .set('Authorization', 'Bearer adminToken');
+
+    console.log('resC:', res.body);
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
