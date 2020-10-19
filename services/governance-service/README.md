@@ -49,13 +49,13 @@ Example provenance object:
     "protocol": "The object was successfully inserted"
   },
   "agent": {
-    "type": "Component",
+    "kind": "Component",
     "id": "w4298jb9q74z4dmjuo",
     "name": "Google Connector"
   },
   "actedOnBehalfOf": {
-    "prov:delegate": { "type": "Component", "id": "w4298jb9q74z4dmjuo"},
-    "prov:responsible": { "type": "User", "id": "j460ge49qh3rusfuoh"}
+    "prov:delegate": { "kind": "Component", "id": "w4298jb9q74z4dmjuo"},
+    "prov:responsible": { "kind": "User", "id": "j460ge49qh3rusfuoh"}
   }
 }
 ```
