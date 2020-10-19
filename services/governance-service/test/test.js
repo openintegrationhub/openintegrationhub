@@ -113,9 +113,9 @@ describe('ProvenanceEvent Operations', () => {
     });
 
     expect(res).not.toBeNull();
-    expect(res.agent).toHaveProperty('id');
+    expect(res).toHaveProperty('id');
 
-    actedOnBehalfOf1 = res.actedOnBehalfOf['prov:delegate'].id;
+    actedOnBehalfOf1 = res.id;
   });
 
   test('should get the new ProvenanceEvent', async () => {
@@ -125,28 +125,10 @@ describe('ProvenanceEvent Operations', () => {
 
     expect(res.status).toEqual(200);
     expect(res.body).not.toBeNull();
-    const j = res.body[0];
 
-    expect(j).not.toBeNull();
-    expect(j.data.name).toEqual('WiceToSnazzy');
-    expect(j.data).toHaveProperty('id');
-    expect(j.data).toHaveProperty('graph');
-    expect(j.data).toHaveProperty('createdAt');
-    expect(j.data).toHaveProperty('updatedAt');
-    expect(j.data.createdAt).not.toBeNull();
-    expect(j.data.updatedAt).not.toBeNull();
-    expect(j.data.graph).toHaveProperty('nodes');
-    expect(j.data.graph).toHaveProperty('edges');
-    expect(j.data.graph.nodes[0].id).toEqual('NodeOne');
-    expect(j.data.graph.nodes[0].componentId).toEqual('5ca5c44c187c040010a9bb8b');
-    expect(j.data.graph.nodes[0].function).toEqual('getPersonsPolling');
-    expect(j.data.graph.nodes[0].credentials_id).toEqual('5ca5c44c187c040010a9bb8c');
-    expect(j.data.graph.nodes[0].fields.username).toEqual('TestName');
-    expect(j.data.graph.nodes[0].fields.password).toEqual('TestPass');
-    expect(j.data.graph.edges[0].source).toEqual('NodeOne');
-    expect(j.data.graph.edges[0].target).toEqual('NodeTwo');
-    expect(j.data.owners[0].id).toEqual('TestAdmin');
-    expect(j.data.owners[0].type).toEqual('user');
+    const j = res.body.data[0];
+
+    expect(j.id).toEqual(actedOnBehalfOf1);
   });
 
   test('should not show the ProvenanceEvent to another users getAll', async () => {
@@ -191,9 +173,9 @@ describe('ProvenanceEvent Operations', () => {
     });
 
     expect(res).not.toBeNull();
-    expect(res.agent).toHaveProperty('id');
+    expect(res).toHaveProperty('id');
 
-    actedOnBehalfOf2 = res.actedOnBehalfOf['prov:delegate'].id;
+    actedOnBehalfOf2 = res.id;
   });
 
   test('should get all ProvenanceEvents, filtered by actedOnBehalfOf', async () => {

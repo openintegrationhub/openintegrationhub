@@ -97,7 +97,7 @@ const getProvenanceEvents = async ( // eslint-disable-line
 const addProvenanceEvent = newProvenanceEvent => new Promise((resolve) => {
   const storeProvenanceEvent = new ProvenanceEvent(newProvenanceEvent);
 
-  storeProvenanceEvent.save()
+  return storeProvenanceEvent.save()
     .then((doc) => {
       const provenanceEvent = format(doc._doc);
       resolve(provenanceEvent);
