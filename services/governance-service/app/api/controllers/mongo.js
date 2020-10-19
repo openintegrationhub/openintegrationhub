@@ -42,13 +42,13 @@ const getProvenanceEvents = async ( // eslint-disable-line
   user,
   pageSize,
   pageNumber,
-  searchString,
   filters,
   sortField,
   sortOrder,
+  from,
+  until,
 ) => new Promise(async (resolve) => {
   const qry = buildQuery(user, config.ProvenanceEventReadPermission, null);
-  qry.$and = [];
 
   // Add all filtered fields to query
   const filterFields = Object.keys(filters);
@@ -56,51 +56,37 @@ const getProvenanceEvents = async ( // eslint-disable-line
   if (length > 0) {
     let i;
     for (i = 0; i < length; i += 1) {
-      if (filterFields[i] === 'user') {
-        qry['owners.id'] = filters.user;
-      } else {
         qry[filterFields[i]] = filters[filterFields[i]];
-      }
     }
   }
 
-  if (searchString !== '') {
-    const rx = new RegExp(searchString);
-    qry.$and.push({
-      $or: [
-        {
-          name: {
-            $regex: rx,
-          },
-        },
-        {
-          description: {
-            $regex: rx,
-          },
-        },
-      ],
-    });
+  if(from !== false) {
+    qry['activity.prov:startTime'] = from;
   }
+
+  if(until !== false) {
+    qry['activity.prov:endTime'] = until;
+  }
+
 
   // , sortField, sortOrder
   const sort = {};
   sort[sortField] = sortOrder;
 
+  console.log('Qry:', qry);
+  
   // count results
-  const count = await ProvenanceEvent.find(qry).estimatedDocumentCount();
+  const count = await ProvenanceEvents.find(qry).estimatedDocumentCount();
 
-  if (qry.$and.length === 0) {
-    delete qry.$and;
-  }
   // add offset and limit to query and execute
-  ProvenanceEvent.find(qry).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
+  ProvenanceEvents.find(qry).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
     .lean()
     .then((doc) => {
-      const ProvenanceEvents = doc;
-      for (let i = 0; i < ProvenanceEvents.length; i += 1) {
-        ProvenanceEvents[i] = format(ProvenanceEvents[i]);
+      const provenanceEvents = doc;
+      for (let i = 0; i < provenanceEvents.length; i += 1) {
+        provenanceEvents[i] = format(provenanceEvents[i]);
       }
-      resolve({ data: ProvenanceEvents, meta: { total: count } });
+      resolve({ data: provenanceEvents, meta: { total: count } });
     })
     .catch((err) => {
       log.error(err);
@@ -108,7 +94,9 @@ const getProvenanceEvents = async ( // eslint-disable-line
 });
 
 
-const addProvenanceEvent = storeProvenanceEvent => new Promise((resolve) => {
+const addProvenanceEvent = newProvenanceEvent => new Promise((resolve) => {
+  const storeProvenanceEvent = new ProvenanceEvent(newProvenanceEvent);
+
   storeProvenanceEvent.save()
     .then((doc) => {
       const ProvenanceEvent = format(doc._doc);
