@@ -136,9 +136,9 @@ describe('ProvenanceEvent Operations', () => {
       .get('/event')
       .set('Authorization', 'Bearer guestToken');
 
-    expect(res.status).toEqual(404);
+    expect(res.status).toEqual(403);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No ProvenanceEvents found');
+    expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
   });
 
 
