@@ -23,9 +23,9 @@ const log = require('../../config/logger'); // eslint-disable-line
 
 // Gets all events
 router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => {
-  if (!req.user.isAdmin) {
-    return res.status(403).send({ errors: [{ message: 'Only available to admins', code: 403 }] });
-  }
+  // if (!req.user.isAdmin) {
+  //   return res.status(403).send({ errors: [{ message: 'Only available to admins', code: 403 }] });
+  // }
 
   let error = false;
 

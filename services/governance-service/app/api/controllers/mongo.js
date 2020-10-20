@@ -30,7 +30,10 @@ const buildQuery = (user, permission, id) => {
   // If the user is not an OIH admin, constrain query by ProvenanceEvent ownership
   if (!user.isAdmin) {
     const owners = [user.sub];
-    if (user.tenant) owners.push(user.tenant);
+    // if (user.tenant) owners.push(user.tenant);
+    if (user.tenant) {
+      qry['actedOnBehalfOf.prov:responsible.tenant'] = user.tenant;
+    }
     qry['actedOnBehalfOf.prov:responsible.id'] = { $in: owners };
   }
 

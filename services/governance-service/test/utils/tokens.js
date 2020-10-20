@@ -29,13 +29,13 @@ module.exports = {
     value: {
       sub: 'PermitGuy',
       username: 'admin@example.com',
-      permissions: [],
+      permissions: ['tenant.all', 'provenance.read'],
       tenant: 'testTenant1',
       iat: 1337,
     },
   },
 
-  unpermitToken: {
+  denyToken: {
     token: 'unpermitToken',
     value: {
       sub: 'UnpermitGuy',

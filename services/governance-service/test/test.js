@@ -72,7 +72,7 @@ describe('Permissions', () => {
   test('should not be able to get all ProvenanceEvents without permissions', async () => {
     const res = await request
       .get('/event')
-      .set('Authorization', 'Bearer unpermitToken')
+      .set('Authorization', 'Bearer denyToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json');
     expect(res.status).toEqual(403);
@@ -183,8 +183,8 @@ describe('ProvenanceEvent Operations', () => {
         },
         'prov:responsible': {
           kind: 'User',
-          id: 'j460ge49qh3rusfuoh',
-          tenant: 't35fdhtz57586',
+          id: 'PermitGuy',
+          tenant: 'testTenant1',
         },
       }],
     });
@@ -212,8 +212,10 @@ describe('ProvenanceEvent Operations', () => {
     const j = JSON.parse(res.text);
 
     expect(j).not.toBeNull();
-    expect(j.data).toHaveLength(2);
+    expect(j.data).toHaveLength(1);
     expect(j.data[0]).toHaveProperty('id');
+
+    expect(j.data[0].actedOnBehalfOf[0]['prov:responsible'].id).toEqual('j460ge49qh3rusfuoh');
   });
 
   test('should get all ProvenanceEvents, filtered by action', async () => {
@@ -248,6 +250,27 @@ describe('ProvenanceEvent Operations', () => {
       .set('Authorization', 'Bearer adminToken');
 
     console.log('resC:', JSON.stringify(res.body));
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveLength(1);
+    expect(j.data[0]).toHaveProperty('entity');
+
+    expect(j.data[0].entity.id).toEqual('aoveu03dv921dvo2');
+  });
+
+  test('should only get ProvenanceEvents allowed for restricted user', async () => {
+    const res = await request
+      .get('/event')
+      .query({
+        'page[size]': 5,
+        'page[number]': 1,
+      })
+      .set('Authorization', 'Bearer permitToken');
+
+    console.log('resD:', JSON.stringify(res.body));
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
