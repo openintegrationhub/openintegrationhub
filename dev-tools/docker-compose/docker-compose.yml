@@ -36,7 +36,7 @@ services:
     working_dir: /usr/src/app/services/secret-service
     environment:
       NODE_ENV: development
-      LOGGING_LEVEL: info
+      LOG_LEVEL: info
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_SECRET_SERVICE_DB}
       TTL_AUTHFLOW: 2m
       IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
@@ -164,7 +164,7 @@ services:
     working_dir: /usr/src/app/services/app-directory
     environment:
       NODE_ENV: development
-      LOGGING_LEVEL: info
+      LOG_LEVEL: info
       DEBUG_MODE: 'true'
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_APP_DIRECTORY_DB}
       IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
@@ -325,7 +325,7 @@ services:
     working_dir: /usr/src/app/services/meta-data-repository
     environment:
       NODE_ENV: development
-      LOGGING_LEVEL: info
+      LOG_LEVEL: info
       DEBUG_MODE: 'true'
       API_BASE: /api/v1
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_META_DATA_REPOSITORY_DB}

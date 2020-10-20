@@ -32,16 +32,19 @@ class Server {
 
     const corsOptions = {
       origin(origin, callback) {
-        if (whitelist.indexOf(origin) !== -1 || !origin) {
+        if (whitelist.find((elem) => origin.indexOf(elem) >= 0)) {
           callback(null, true);
         } else {
-          log.info('Blocked by CORS');
-          log.info(origin);
-          callback(new Error('Not allowed by CORS'));
+          callback(null, false);
         }
       },
       credentials: true,
     };
+
+    this.app.use((req, res, next) => {
+      req.headers.origin = req.headers.origin || req.headers.host;
+      next();
+    });
 
     // Enables preflight OPTIONS requests
     this.app.options('/', cors());

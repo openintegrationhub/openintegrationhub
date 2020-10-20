@@ -128,7 +128,7 @@ router.post('/', jsonParser, can(config.flowTemplateWritePermission), async (req
   if (!newTemplate.owners) {
     newTemplate.owners = [];
   }
-  if (newTemplate.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+  if (newTemplate.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     newTemplate.owners.push({ id: req.user.sub, type: 'user' });
   }
 
@@ -190,7 +190,7 @@ router.patch('/:id', jsonParser, can(config.flowTemplateWritePermission), async 
   if (!updateTemplate.owners) {
     updateTemplate.owners = [];
   }
-  if (updateTemplate.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+  if (updateTemplate.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     updateTemplate.owners.push({ id: req.user.sub, type: 'user' });
   }
 
@@ -284,7 +284,6 @@ router.delete('/:id', can(config.flowTemplateWritePermission), jsonParser, async
   }
 });
 
-
 // Generates a flow from the template, plus provided data
 router.post('/:id/generate', jsonParser, can(config.flowWritePermission), async (req, res) => {
   const updateData = req.body;
@@ -308,7 +307,7 @@ router.post('/:id/generate', jsonParser, can(config.flowWritePermission), async 
   if (!newFlow.owners) {
     newFlow.owners = [];
   }
-  if (newFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+  if (newFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     newFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 

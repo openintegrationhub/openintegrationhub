@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const log = require('../config/logger');
 const config = require('../config/index');
+// const { publishQueue } = require('./eventBus');
 
 const storage = require(`../api/controllers/${config.storage}`); // eslint-disable-line
 
@@ -26,6 +27,24 @@ async function flowStopped(id) {
     log.error(`Flow with id ${id} could not be found.`);
   }
   return true;
+}
+
+async function flowFailed(id) {
+  // Todo: Investigate tagging of failed flows for later review
+
+  log.warn(`Flow with id ${id} failed to start!`);
+  if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+    return false;
+  }
+
+  const flow = await storage.stoppingFlow({ isAdmin: true }, id);
+
+  if (!flow) {
+    log.error(`Flow with id ${id} could not be found.`);
+    return false;
+  }
+
+  return flow;
 }
 
 async function cleanupOrphans() {
@@ -73,5 +92,5 @@ async function gdprAnonymise(id) {
 }
 
 module.exports = {
-  flowStarted, flowStopped, gdprAnonymise, cleanupOrphans,
+  flowStarted, flowStopped, gdprAnonymise, cleanupOrphans, flowFailed,
 };

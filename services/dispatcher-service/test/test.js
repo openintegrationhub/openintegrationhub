@@ -136,6 +136,10 @@ describe('API', () => {
       nock('http://localhost:3001/flows')
         .post('')
         .reply(201, { data: { id: `AutoFlow${i}` } });
+
+      nock(`http://localhost:3001/flows/AutoFlow${i}`)
+        .patch('')
+        .reply(200, { data: { id: `AutoFlow${i}` } });
     }
 
     const res = await request
@@ -203,6 +207,10 @@ describe('API', () => {
     nock('http://localhost:3001/flows')
       .post('')
       .reply(201, { data: { id: 'GoogleFlow' } });
+
+    nock('http://localhost:3001/flows/GoogleFlow')
+      .patch('')
+      .reply(200, { data: { id: 'GoogleFlow' } });
 
     const res = await request
       .put(`/dispatches/${configId}/app`)
@@ -318,6 +326,25 @@ describe('API', () => {
     nock('http://localhost:3001/flows')
       .post('')
       .reply(201, { data: { id: 'PatchFlow' } });
+
+    nock('http://localhost:3001/flows/PatchFlow')
+      .patch('', {
+        description: 'This flow was automatically generated',
+        graph: {
+          nodes: [{
+            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF', fields: { amqpUrl: 'amqp://guest:guest@localhost:5672', flowId: 'PatchFlow' },
+          }, {
+            id: 'step_2', componentId: 'wiceAdapterId', credentials_id: 'wiceSecretId', name: 'Wice CRM Adapter', function: 'deletePerson', description: 'Pushes data',
+          }, {
+            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid', fields: { amqpUrl: 'amqp://guest:guest@localhost:5672', flowId: 'PatchFlow' },
+          }],
+          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+        name: 'H&S Inbound DELETE Flow for Wice CRM',
+      })
+      .reply(200, { data: { id: 'PatchFlow' } });
 
     const updatedConfig = lodash.cloneDeep(config);
 
@@ -637,6 +664,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'sendMessageToOih',
             description: 'Passes data to SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
         ],
         edges: [
@@ -684,6 +714,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'receiveEvents',
             description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
           // {
           //   id: 'step_2',
@@ -706,6 +739,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'processRecordUid',
             description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
         ],
         edges: [
@@ -757,6 +793,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'receiveEvents',
             description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
           // {
           //   id: 'step_2',
@@ -779,6 +818,9 @@ describe('Flow Handling', () => {
             name: 'SDF Adapter',
             function: 'processRecordUid',
             description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+            },
           },
         ],
         edges: [
@@ -809,8 +851,27 @@ describe('Flow Handling', () => {
         name: 'H&S Outbound Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
+          nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }],
+          edges: [],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+      })
+      .reply(201, { data: { id: 'OutboundId' } });
+
+    nock('http://localhost:3001/flows/OutboundId')
+      .patch('', {
+        name: 'H&S Outbound Flow for Snazzy Contacts',
+        description: 'This flow was automatically generated',
+        graph: {
           nodes: [{
-            id: 'step_1', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'getPersons', description: 'Fetches data', componentId: 'snazzyAdapterId', fields: { domainId: 'testDomainId', schema: 'person', applicationUid: 'snazzy1234' },
+            id: 'step_1',
+            credentials_id: 'snazzySecretId',
+            name: 'Snazzy Contacts Adapter',
+            function: 'getPersons',
+            description: 'Fetches data',
+            componentId: 'snazzyAdapterId',
+            fields: { domainId: 'testDomainId', schema: 'person', applicationUid: 'snazzy1234' },
           },
           // {
           //   id: 'step_2', name: 'Snazzy Contacts Transformer',
@@ -818,7 +879,15 @@ describe('Flow Handling', () => {
           // componentId: 'snazzyTransformerId',
           // },
           {
-            id: 'step_2', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'sendMessageToOih', description: 'Passes data to SDF',
+            id: 'step_2',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'sendMessageToOih',
+            description: 'Passes data to SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+              flowId: 'OutboundId',
+            },
           }],
           edges: [
             { source: 'step_1', target: 'step_2' },
@@ -828,15 +897,37 @@ describe('Flow Handling', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'OutboundId' } });
+      .reply(200, { data: { id: 'OutboundId' } });
+
 
     nock('http://localhost:3001/flows')
       .post('', {
         name: 'H&S Inbound CREATE Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
+          nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }],
+          edges: [],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+      })
+      .reply(201, { data: { id: 'InboundIdCreate' } });
+
+    nock('http://localhost:3001/flows/InboundIdCreate')
+      .patch('', {
+        name: 'H&S Inbound CREATE Flow for Snazzy Contacts',
+        description: 'This flow was automatically generated',
+        graph: {
           nodes: [{
-            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+            id: 'step_1',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'receiveEvents',
+            description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+              flowId: 'InboundIdCreate',
+            },
           },
           // {
           //   id: 'step_2', name: 'Snazzy Contacts Transformer',
@@ -846,7 +937,15 @@ describe('Flow Handling', () => {
           {
             id: 'step_2', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'createPerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           }, {
-            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_3',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'processRecordUid',
+            description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+              flowId: 'InboundIdCreate',
+            },
           }],
           edges: [
             { source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' },
@@ -856,15 +955,36 @@ describe('Flow Handling', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'InboundIdCreate' } });
+      .reply(200, { data: { id: 'InboundIdCreate' } });
 
     nock('http://localhost:3001/flows')
       .post('', {
         name: 'H&S Inbound UPDATE Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
+          nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }],
+          edges: [],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+      })
+      .reply(201, { data: { id: 'InboundIdUpdate' } });
+
+    nock('http://localhost:3001/flows/InboundIdUpdate')
+      .patch('', {
+        name: 'H&S Inbound UPDATE Flow for Snazzy Contacts',
+        description: 'This flow was automatically generated',
+        graph: {
           nodes: [{
-            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+            id: 'step_1',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'receiveEvents',
+            description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+              flowId: 'InboundIdUpdate',
+            },
           },
           // {
           //   id: 'step_2', name: 'Snazzy Contacts Transformer',
@@ -875,7 +995,15 @@ describe('Flow Handling', () => {
             id: 'step_2', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'updatePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           },
           {
-            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_3',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'processRecordUid',
+            description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+              flowId: 'InboundIdUpdate',
+            },
           }],
           edges: [
             { source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' },
@@ -885,15 +1013,37 @@ describe('Flow Handling', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'InboundIdUpdate' } });
+      .reply(200, { data: { id: 'InboundIdUpdate' } });
+
 
     nock('http://localhost:3001/flows')
       .post('', {
         name: 'H&S Inbound DELETE Flow for Snazzy Contacts',
         description: 'This flow was automatically generated',
         graph: {
+          nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }],
+          edges: [],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+      })
+      .reply(201, { data: { id: 'InboundIdDelete' } });
+
+    nock('http://localhost:3001/flows/InboundIdDelete')
+      .patch('', {
+        name: 'H&S Inbound DELETE Flow for Snazzy Contacts',
+        description: 'This flow was automatically generated',
+        graph: {
           nodes: [{
-            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF',
+            id: 'step_1',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'receiveEvents',
+            description: 'Receives data from SDF',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+              flowId: 'InboundIdDelete',
+            },
           },
           // {
           //   id: 'step_2', name: 'Snazzy Contacts Transformer',
@@ -903,7 +1053,15 @@ describe('Flow Handling', () => {
           {
             id: 'step_2', credentials_id: 'snazzySecretId', name: 'Snazzy Contacts Adapter', function: 'deletePerson', description: 'Pushes data', componentId: 'snazzyAdapterId',
           }, {
-            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid',
+            id: 'step_3',
+            componentId: '5d2484d2a422ca001bda5690',
+            name: 'SDF Adapter',
+            function: 'processRecordUid',
+            description: 'Updates recordUid',
+            fields: {
+              amqpUrl: 'amqp://guest:guest@localhost:5672',
+              flowId: 'InboundIdDelete',
+            },
           }],
           edges: [
             { source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' },
@@ -913,7 +1071,7 @@ describe('Flow Handling', () => {
         type: 'ordinary',
         cron: '* * * * *',
       })
-      .reply(201, { data: { id: 'InboundIdDelete' } });
+      .reply(200, { data: { id: 'InboundIdDelete' } });
 
     const applications = [
       {
@@ -980,6 +1138,25 @@ describe('Flow Handling', () => {
     nock('http://localhost:3001/flows')
       .post('')
       .reply(201, { data: { id: 'newInboundFlow' } });
+
+    nock('http://localhost:3001/flows/newInboundFlow')
+      .patch('', {
+        description: 'This flow was automatically generated',
+        graph: {
+          nodes: [{
+            id: 'step_1', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'receiveEvents', description: 'Receives data from SDF', fields: { amqpUrl: 'amqp://guest:guest@localhost:5672', flowId: 'newInboundFlow' },
+          }, {
+            id: 'step_2', componentId: 'wiceAdapterId', credentials_id: 'wiceSecretId', name: 'Wice CRM Adapter', function: 'upsertPerson', description: 'Pushes data',
+          }, {
+            id: 'step_3', componentId: '5d2484d2a422ca001bda5690', name: 'SDF Adapter', function: 'processRecordUid', description: 'Updates recordUid', fields: { amqpUrl: 'amqp://guest:guest@localhost:5672', flowId: 'newInboundFlow' },
+          }],
+          edges: [{ source: 'step_1', target: 'step_2' }, { source: 'step_2', target: 'step_3' }],
+        },
+        type: 'ordinary',
+        cron: '* * * * *',
+        name: 'H&S Inbound CREATE Flow for Wice CRM',
+      })
+      .reply(200, { data: { id: 'newInboundFlow' } });
 
     const existingConfig = {
       tenant: 'abc',

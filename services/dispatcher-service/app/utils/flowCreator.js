@@ -16,6 +16,7 @@ const {
   createOperation,
   updateOperation,
   deleteOperation,
+  amqpUrl,
 } = require('../config');
 
 function makeFlow(app, flow) {
@@ -35,6 +36,9 @@ function makeFlow(app, flow) {
         name: 'SDF Adapter',
         function: sdfAdapterReceiveAction,
         description: 'Receives data from SDF',
+        fields: {
+          amqpUrl,
+        },
       },
       // {
       //   id: 'step_2',
@@ -59,6 +63,9 @@ function makeFlow(app, flow) {
         name: 'SDF Adapter',
         function: sdfAdapterRecordAction,
         description: 'Updates recordUid',
+        fields: {
+          amqpUrl,
+        },
       },
     ];
 
@@ -115,6 +122,9 @@ function makeFlow(app, flow) {
         name: 'SDF Adapter',
         function: sdfAdapterPublishAction,
         description: 'Passes data to SDF',
+        fields: {
+          amqpUrl,
+        },
       },
     ];
 
@@ -136,6 +146,7 @@ function makeFlow(app, flow) {
 async function createFlows(applications, token) {
   try {
     const newApplications = lodash.cloneDeep(applications);
+
     for (let i = 0; i < newApplications.length; i += 1) {
       const app = applications[i];
 
@@ -149,21 +160,49 @@ async function createFlows(applications, token) {
               'GET',
             );
 
-            const options = {
+            const initialFlow = Object.assign({}, flow);
+            initialFlow.graph = { nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }], edges: [] };
+
+            const initialOptions = {
               method: 'POST',
               json: true,
               url: `${flowRepoUrl}/flows`,
+              body: initialFlow,
+              headers: {
+                Authorization: token,
+              },
+            };
+
+            const createResponse = await request(initialOptions);
+
+
+            const flowId = createResponse.body.data.id;
+
+            const nodesLength = flow.graph.nodes.length;
+
+            for (let k = 0; k < nodesLength; k += 1) {
+              if (flow.graph.nodes[k].componentId === sdfAdapterId) {
+                flow.graph.nodes[k].fields.flowId = flowId;
+              }
+            }
+
+            const options = {
+              method: 'PATCH',
+              json: true,
+              url: `${flowRepoUrl}/flows/${flowId}`,
               body: flow,
               headers: {
                 Authorization: token,
               },
             };
+
+
             const response = await request(options);
 
-            if (response.statusCode === 201) {
-              app.outbound.flows[j].flowId = response.body.data.id;
+            if (response.statusCode === 200) {
+              app.outbound.flows[j].flowId = flowId;
             } else {
-              log.error('Could not create flow:');
+              log.error('Could not create flow:', flowId);
               log.error(response.statusCode);
               log.error(JSON.stringify(response.body));
               return false;
@@ -181,9 +220,35 @@ async function createFlows(applications, token) {
               current,
             );
 
-            const options = {
+            const initialFlow = Object.assign({}, flow);
+            initialFlow.graph = { nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }], edges: [] };
+
+            const initialOptions = {
               method: 'POST',
+              json: true,
               url: `${flowRepoUrl}/flows`,
+              body: initialFlow,
+              headers: {
+                Authorization: token,
+              },
+            };
+
+            const createResponse = await request(initialOptions);
+
+
+            const flowId = createResponse.body.data.id;
+
+            const nodesLength = flow.graph.nodes.length;
+
+            for (let l = 0; l < nodesLength; l += 1) {
+              if (flow.graph.nodes[l].componentId === sdfAdapterId) {
+                flow.graph.nodes[l].fields.flowId = flowId;
+              }
+            }
+
+            const options = {
+              method: 'PATCH',
+              url: `${flowRepoUrl}/flows/${flowId}`,
               json: true,
               body: flow,
               headers: {
@@ -192,10 +257,10 @@ async function createFlows(applications, token) {
             };
             const response = await request(options);
 
-            if (response.statusCode === 201) {
-              app.inbound.flows[k].flowId = response.body.data.id;
+            if (response.statusCode === 200) {
+              app.inbound.flows[k].flowId = flowId;
             } else {
-              log.error('Could not create flow:');
+              log.error('Could not create flow:', flowId);
               log.error(response.statusCode);
               log.error(JSON.stringify(response.body));
               return false;
@@ -259,6 +324,7 @@ async function deleteFlows(applications, token) {
 
 async function updateConfigFlows(original, incoming, token) {
   const newConfig = lodash.cloneDeep(incoming);
+
   const oldFlowIds = getFlowIds(original.applications);
   const newFlowIds = getFlowIds(incoming.applications);
 
