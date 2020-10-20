@@ -83,7 +83,7 @@ describe('Permissions', () => {
 
 describe('ProvenanceEvent Operations', () => {
   test('should add a ProvenanceEvent', async () => {
-    const res = await addProvenanceEvent({
+    const newEvent = {
       entity: {
         kind: 'oihUid',
         id: 'aoveu03dv921dvo',
@@ -110,12 +110,22 @@ describe('ProvenanceEvent Operations', () => {
           tenant: 't35fdhtz57586',
         },
       },
-    });
+    };
+
+    const res = await addProvenanceEvent(newEvent);
 
     expect(res).not.toBeNull();
     expect(res).toHaveProperty('id');
 
     actedOnBehalfOf1 = res.id;
+
+    delete res.id;
+
+    delete res.activity['prov:endTime'];
+    delete res.activity['prov:startTime'];
+
+    console.log('ResX:', res);
+    expect(res).toEqual(newEvent);
   });
 
   test('should get the new ProvenanceEvent', async () => {
@@ -188,7 +198,7 @@ describe('ProvenanceEvent Operations', () => {
       })
       .set('Authorization', 'Bearer adminToken');
 
-    console.log('resA:', res.body);
+    console.log('resA:', JSON.stringify(res.body));
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -209,7 +219,7 @@ describe('ProvenanceEvent Operations', () => {
       })
       .set('Authorization', 'Bearer adminToken');
 
-    console.log('resB:', res.body);
+    console.log('resB:', JSON.stringify(res.body));
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -230,7 +240,7 @@ describe('ProvenanceEvent Operations', () => {
       })
       .set('Authorization', 'Bearer adminToken');
 
-    console.log('resC:', res.body);
+    console.log('resC:', JSON.stringify(res.body));
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();

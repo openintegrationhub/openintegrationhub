@@ -104,6 +104,7 @@ const addProvenanceEvent = newProvenanceEvent => new Promise((resolve) => {
     })
     .catch((err) => {
       log.error(err);
+      resolve(false);
     });
 });
 

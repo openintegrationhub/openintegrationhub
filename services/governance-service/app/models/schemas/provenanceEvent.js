@@ -36,6 +36,7 @@ const provenanceEvent = new Schema({
     'prov:responsible': {
       kind: String,
       id: String,
+      tenant: String,
     },
   },
 }, { collection: 'provenanceEvents', timestamps: true });
