@@ -14,9 +14,107 @@
     }
   },
   "tags": [
-
+    {
+      "name": "events",
+      "description": "Provenance",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://openintegrationhub.de"
+      }
+    }
   ],
   "paths": {
+    "/event": {
+      "get": {
+        "x-swagger-router-controller": "events",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "events"
+        ],
+        "summary": "Retrieve a provenance events.",
+        "description": "Currently requires admin permissions.",
+        "operationId": "getEvents",
+        "parameters": [
+          {
+          "name": "page[size]",
+          "in": "query",
+          "description": "Amount of flows per page returned. Default is 10.",
+          "required": false,
+          "schema": {
+            "type": "integer"
+            }
+          },
+          {
+          "name": "page[number]",
+          "in": "query",
+          "description": "Number of the page to be returned. Default is 1.",
+          "required": false,
+          "schema": {
+            "type": "integer"
+            }
+          },
+          {
+          "name": "from",
+          "in": "query",
+          "description": "Limits results to events occurred after this time.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "2020-10-18T09:30:15+00:00"
+            }
+          },
+          {
+          "name": "until",
+          "in": "query",
+          "description": "Limits results to events occurred before this time.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "2020-10-19T15:47:15+00:00"
+            }
+          },
+          {
+          "name": "filter",
+          "in": "query",
+          "description": "Filter for the values of certain fields.",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "example": {
+                "filter[agent.id]": "q38fjv8dsv0jsac02",
+                "filter[activity.function]": "getPersons"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of provenance events.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/ProvenanceEvent" }
+                    },
+                    "meta": { "$ref": "#/components/schemas/Meta" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Events could be found."
+          }
+        }
+      }
+    },
     "/healthcheck": {
       "get": {
         "x-swagger-router-controller": "healthcheck",
@@ -122,5 +220,49 @@
     }
   ],
   "components": {
+  "securitySchemes": {
+    "Bearer": {
+      "type": "http",
+      "scheme": "bearer",
+      "description": "Enter the bearer token received by IAM"
+    }
+  },
+  "schemas": {
+    "ProvenanceEvent": {
+        "type": "object",
+        "properties": {
+          "entity": {
+            "type": "object"
+          },
+          "activity": {
+            "type": "object"
+          },
+          "agent": {
+            "type": "object"
+          }
+        }
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page (1-based numbering)"
+          },
+          "perPage": {
+            "type": "integer",
+            "description": "Number of objects per page"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of objects"
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of pages"
+          }
+        }
+      }
+    }
   }
 }
