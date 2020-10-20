@@ -169,6 +169,12 @@ const services = {
     folder: 'webhooks',
     db: 'webhooks',
   },
+  templateService: {
+    port: localPort,
+    externalPort: 3016,
+    folder: 'template-service',
+    db: 'templateService',
+  },
 }
 
 function generateEnvs(collection) {
