@@ -393,22 +393,22 @@ services:
     networks:
     - oih-dev
 
-  template-service:
+  template-repository:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_TEMPLATE_SERVICE_FOLDER}
+    container_name: ${DEV_TEMPLATE_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/webhooks
     environment:
       NODE_ENV: development
-      MONGODB_URL: mongodb://mongodb/${DEV_TEMPLATE_SERVICE_DB}
+      MONGODB_URL: mongodb://mongodb/${DEV_TEMPLATE_REPOSITORY_DB}
       LOG_LEVEL: trace
       QUEUE_URL: amqp://guest:guest@rabbitmq
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
-      LISTEN_PORT: ${DEV_TEMPLATE_SERVICE_PORT}
+      LISTEN_PORT: ${DEV_TEMPLATE_REPOSITORY_PORT}
     ports:
-    - ${DEV_TEMPLATE_SERVICE_EXTERNAL_PORT}:${DEV_TEMPLATE_SERVICE_PORT}
+    - ${DEV_TEMPLATE_REPOSITORY_EXTERNAL_PORT}:${DEV_TEMPLATE_REPOSITORY_PORT}
     volumes:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}

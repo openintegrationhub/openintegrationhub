@@ -169,11 +169,11 @@ const services = {
     folder: 'webhooks',
     db: 'webhooks',
   },
-  templateService: {
+  templateRepository: {
     port: localPort,
     externalPort: 3016,
-    folder: 'template-service',
-    db: 'templateService',
+    folder: 'template-repository',
+    db: 'templateRepository',
   },
 }
 
