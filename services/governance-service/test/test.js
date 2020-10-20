@@ -99,7 +99,7 @@ describe('ProvenanceEvent Operations', () => {
         kind: 'Connector',
         id: 'w4298jb9q74z4dmjuo',
       },
-      actedOnBehalfOf: {
+      actedOnBehalfOf: [{
         'prov:delegate': {
           kind: 'Connector',
           id: 'w4298jb9q74z4dmjuo',
@@ -109,22 +109,29 @@ describe('ProvenanceEvent Operations', () => {
           id: 'j460ge49qh3rusfuoh',
           tenant: 't35fdhtz57586',
         },
-      },
+      }],
     };
 
-    const res = await addProvenanceEvent(newEvent);
+    let res = await addProvenanceEvent(newEvent);
+    res = JSON.parse(JSON.stringify(res));
 
     expect(res).not.toBeNull();
     expect(res).toHaveProperty('id');
 
     actedOnBehalfOf1 = res.id;
+    console.log('actedOnBehalfOf1:', actedOnBehalfOf1);
 
     delete res.id;
 
+    delete newEvent.activity['prov:endTime'];
+    delete newEvent.activity['prov:startTime'];
     delete res.activity['prov:endTime'];
     delete res.activity['prov:startTime'];
+    delete res.entity.records;
+    delete res.updatedAt;
+    delete res.createdAt;
+    delete res.actedOnBehalfOf[0]._id;
 
-    console.log('ResX:', res);
     expect(res).toEqual(newEvent);
   });
 
@@ -156,7 +163,7 @@ describe('ProvenanceEvent Operations', () => {
     const res = await addProvenanceEvent({
       entity: {
         kind: 'oihUid',
-        id: 'aoveu03dv921dvo',
+        id: 'aoveu03dv921dvo2',
       },
       activity: {
         action: 'ObjectSent',
@@ -169,7 +176,7 @@ describe('ProvenanceEvent Operations', () => {
         kind: 'Connector',
         id: 'w4298jb9q74z4dmjuo',
       },
-      actedOnBehalfOf: {
+      actedOnBehalfOf: [{
         'prov:delegate': {
           kind: 'Connector',
           id: 'w4298jb9q74z4dmjuo',
@@ -179,7 +186,7 @@ describe('ProvenanceEvent Operations', () => {
           id: 'j460ge49qh3rusfuoh',
           tenant: 't35fdhtz57586',
         },
-      },
+      }],
     });
 
     expect(res).not.toBeNull();
@@ -247,6 +254,8 @@ describe('ProvenanceEvent Operations', () => {
     const j = JSON.parse(res.text);
     expect(j).not.toBeNull();
     expect(j.data).toHaveLength(1);
-    expect(j.data[0]).toHaveProperty('id');
+    expect(j.data[0]).toHaveProperty('entity');
+
+    expect(j.data[0].entity.id).toEqual('aoveu03dv921dvo2');
   });
 });

@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 // Define schema
 const provenanceEvent = new Schema({
   entity: {
-    oihUid: String,
+    kind: String,
+    id: String,
     domain: String,
     schema: String,
     records: [
@@ -28,17 +29,19 @@ const provenanceEvent = new Schema({
     id: String,
     name: String,
   },
-  actedOnBehalfOf: {
-    'prov:delegate': {
-      kind: String,
-      id: String,
+  actedOnBehalfOf: [
+    {
+      'prov:delegate': {
+        kind: String,
+        id: String,
+      },
+      'prov:responsible': {
+        kind: String,
+        id: String,
+        tenant: String,
+      },
     },
-    'prov:responsible': {
-      kind: String,
-      id: String,
-      tenant: String,
-    },
-  },
+  ],
 }, { collection: 'provenanceEvents', timestamps: true });
 
 module.exports.provenanceEvent = provenanceEvent;

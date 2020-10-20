@@ -31,7 +31,7 @@ const buildQuery = (user, permission, id) => {
   if (!user.isAdmin) {
     const owners = [user.sub];
     if (user.tenant) owners.push(user.tenant);
-    qry['owners.id'] = { $in: owners };
+    qry['actedOnBehalfOf.prov:responsible.id'] = { $in: owners };
   }
 
   return qry;
