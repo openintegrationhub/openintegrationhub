@@ -26,7 +26,8 @@ Example provenance object:
 ```json
 {
   "entity": {
-    "oihUid": "aoveu03dv921dvo",
+    "kind": "oihUid",
+    "id": "aoveu03dv921dvo",
     "domain": "Addresses",
     "schema": "Person",
     "records": [
@@ -53,10 +54,12 @@ Example provenance object:
     "id": "w4298jb9q74z4dmjuo",
     "name": "Google Connector"
   },
-  "actedOnBehalfOf": {
-    "prov:delegate": { "kind": "Component", "id": "w4298jb9q74z4dmjuo"},
-    "prov:responsible": { "kind": "User", "id": "j460ge49qh3rusfuoh"}
-  }
+  "actedOnBehalfOf": [
+    {
+      "prov:delegate": { "kind": "Component", "id": "w4298jb9q74z4dmjuo"},
+      "prov:responsible": { "kind": "User", "id": "j460ge49qh3rusfuoh", "tenantId": "t454rt565zz57"}
+    }
+  ]
 }
 ```
 
