@@ -37,7 +37,7 @@ Example provenance object:
       },
       {
         "application": "Wice",
-        "recordUid": 12345
+        "recordUid": "12345"
       }
     ]
   },
