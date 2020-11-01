@@ -164,7 +164,7 @@ POST: /login (see open api docs)
 
 POST /api/v1/tokens (see open api docs)
 
-_If you want to create a permanent token, pass the "tokenLifeSpan" of -1_
+_If you want to create a permanent token, pass an "expiresIn" value of -1_
 
 #### Introspect a token
 
