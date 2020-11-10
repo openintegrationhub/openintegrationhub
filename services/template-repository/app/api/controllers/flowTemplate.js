@@ -302,7 +302,7 @@ router.post('/:id/generate', jsonParser, can(config.flowWritePermission), async 
   const newFlow = _.merge(template, updateData);
   delete newFlow.id;
   delete newFlow.status;
-
+  newFlow.fromTemplate = req.params.id;
   // Re-adds the current user to the owners array if they're missing
   if (!newFlow.owners) {
     newFlow.owners = [];
