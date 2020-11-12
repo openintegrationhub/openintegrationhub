@@ -43,6 +43,7 @@ The Template Repository makes use of the IAM permission system, and requires app
 
 - `templates.read` for getting templates. This applies to the end points GET `/templates` and GET `/templates/{id}`
 - `templates.write` for creating, updating, or deleting templates. This applies to the end points POST `/templates`, PATCH `/templates/{id}`, and DELETE `/templates/{id}`
+- `flows.write` for generating Flows from a flow teamplate. This applies to end point POST `/templates/{id}/generate`
 
 So in order to carry out template operations, the current user taking them needs to either:
 

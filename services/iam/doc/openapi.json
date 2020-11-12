@@ -780,7 +780,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Token"
+                "$ref": "#/components/schemas/TokenCreate"
               }
             }
           }
@@ -952,6 +952,46 @@
           "tokenLifeSpan": {
             "type": "string",
             "description": "indicates the lifespan of the token. Possible values are -1 for permanent token and a string expression describing a time span, e.g. 2m, 5h"
+          }
+        }
+      },
+      "TokenCreate": {
+        "type": "object",
+        "properties": {
+          "inquirer": {
+            "type": "string",
+            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created.",
+            "required": true
+          },
+          "initiator": {
+            "type": "string",
+            "description": "user or a a service who initiated this token request. Who is requesting the token creation (must have the permission to create a token). Defaults to requester id."
+          },
+          "accountId": {
+            "type": "string",
+            "description": "Affected account the token is created for",
+            "required": true
+          },
+          "token": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "EPHEMERAL_SERVICE_ACCOUNT",
+              "PERSISTENT",
+              "SELF"
+            ]
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permissions"
+            }
+          },
+          "expiresIn": {
+            "type": "string",
+            "description": "Sets the lifespan of the token. Possible values are -1 for permanent token and a string expression describing a time span, e.g. 2m, 5h"
           }
         }
       },

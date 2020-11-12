@@ -64,6 +64,7 @@ const flow = new Schema({
   owners: { type: [owner] },
   status: { type: String, default: 'inactive' },
   cron: { type: String, maxlength: 20 },
+  fromTemplate: { type: mongoose.Types.ObjectId, ref: 'FlowTemplate' },
 }, { collection: 'flows', timestamps: true });
 
 module.exports.flow = flow;
