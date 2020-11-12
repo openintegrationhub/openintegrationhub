@@ -110,7 +110,7 @@ async function run() {
   }
 }
 
-; (async () => {
+;(async () => {
   try {
     await run()
   } catch (err) {

@@ -1,5 +1,11 @@
 const { execSync, spawn } = require('child_process')
-const { devToolsRoot, env, dbRoot, services } = require('./config')
+const {
+  devToolsRoot,
+  env,
+  dbRoot,
+  services,
+  minikubeArgs,
+} = require('./config')
 const serviceAccounts = require('./data/service-accounts')
 const {
   waitForStatus,
@@ -8,7 +14,6 @@ const {
   checkTools,
   getMinikubeClusterIp,
   getMinikubeInternalIp,
-  minikubeArgs,
 } = require('./helper')
 
 checkTools([
@@ -111,7 +116,7 @@ async function run() {
   })
 }
 
-; (async () => {
+;(async () => {
   try {
     await run()
   } catch (err) {

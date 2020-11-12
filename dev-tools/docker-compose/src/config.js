@@ -3,7 +3,7 @@ const { homedir } = require('os')
 
 const nodeImage = 'node:12-stretch'
 
-const minikubeArgs = '--kubernetes-version=v1.19.0'
+const minikubeArgs = '--kubernetes-version=v1.19.2'
 
 const clusterName = 'minikube'
 
