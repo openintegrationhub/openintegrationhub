@@ -5,6 +5,7 @@ const {
   dbRoot,
   services,
   minikubeArgs,
+  fullComposeArgs,
 } = require('./config')
 const serviceAccounts = require('./data/service-accounts')
 const {
@@ -105,7 +106,7 @@ async function run() {
 
   proxy = spawn('simpleproxy', ['-L', '9090', '-R', clusterIpPort])
 
-  execSync(`cd ${devToolsRoot} && docker-compose up -V --remove-orphans`, {
+  execSync(`cd ${devToolsRoot} && docker-compose up ${fullComposeArgs}`, {
     env: {
       ...process.env,
       ...env,

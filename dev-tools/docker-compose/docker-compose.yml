@@ -110,7 +110,7 @@ services:
     - oih-dev
   component-orchestrator:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_COMPONENT_ORCHESTRATOR_FOLDER}
+    # container_name: ${DEV_COMPONENT_ORCHESTRATOR_FOLDER}
     working_dir: /usr/src/app/services/component-orchestrator
     environment:
       NODE_ENV: development
