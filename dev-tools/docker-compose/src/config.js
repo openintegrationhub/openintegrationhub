@@ -3,7 +3,8 @@ const { homedir } = require('os')
 
 const nodeImage = 'node:12-stretch'
 
-const minikubeArgs = '--kubernetes-version=v1.19.0'
+const minikubeArgs = '--kubernetes-version=v1.19.2'
+const fullComposeArgs = '-V --remove-orphans --scale component-orchestrator=3'
 
 const clusterName = 'minikube'
 
@@ -95,83 +96,84 @@ const services = {
 
   componentOrchestrator: {
     port: localPort,
-    externalPort: 3005,
+    // define port range for vertical scaling
+    externalPort: '3005-3008',
     folder: 'component-orchestrator',
     db: 'componentOrchestrator',
   },
 
   appDirectory: {
     port: localPort,
-    externalPort: 3006,
+    externalPort: 3009,
     folder: 'app-directory',
     db: 'appDirectory',
   },
 
   attachmentStorageService: {
     port: localPort,
-    externalPort: 3007,
+    externalPort: 3010,
     folder: 'attachment-storage-service',
     db: 'attachmentStorageService',
   },
 
   auditLog: {
     port: localPort,
-    externalPort: 3008,
+    externalPort: 3011,
     folder: 'audit-log',
     db: 'auditLog',
   },
 
   dataHub: {
     port: localPort,
-    externalPort: 3009,
+    externalPort: 3012,
     folder: 'data-hub',
     db: 'dataHub',
   },
 
   dispatcherService: {
     port: localPort,
-    externalPort: 3010,
+    externalPort: 3013,
     folder: 'dispatcher-service',
     db: 'dispatcherService',
   },
 
   flowRepository: {
     port: localPort,
-    externalPort: 3011,
+    externalPort: 3014,
     folder: 'flow-repository',
     db: 'flowRepository',
   },
 
   ils: {
     port: localPort,
-    externalPort: 3012,
+    externalPort: 3015,
     folder: 'ils',
     db: 'ils',
   },
 
   metaDataRepository: {
     port: localPort,
-    externalPort: 3013,
+    externalPort: 3016,
     folder: 'meta-data-repository',
     db: 'metaDataRepository',
   },
 
   scheduler: {
     port: localPort,
-    externalPort: 3014,
+    externalPort: 3017,
     folder: 'scheduler',
     db: 'scheduler',
   },
 
   webhooks: {
     port: localPort,
-    externalPort: 3015,
+    externalPort: 3018,
     folder: 'webhooks',
     db: 'webhooks',
   },
   templateRepository: {
     port: localPort,
-    externalPort: 3016,
+    externalPort: 3019,
     folder: 'template-repository',
     db: 'templateRepository',
   },
@@ -213,4 +215,5 @@ module.exports = {
   libs,
   services,
   minikubeArgs,
+  fullComposeArgs,
 }
