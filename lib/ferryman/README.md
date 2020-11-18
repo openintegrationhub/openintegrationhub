@@ -41,7 +41,7 @@ To communicate with the Ferryman, each of your connector's Actions or Triggers s
 
 This function will be called by the Ferryman with the listed arguments:
 
-- msg: Object. Contains any data passed on from the preceding flow node. Always contains a key `body` with the actual data set, may optionally contain keys `headers`, `metadata`, or `attachments`
+- msg: Object. Contains any data passed on from the preceding flow node. Always contains a key `data` with the actual data set, may optionally contain keys `metadata` and `attachments`
 - cfg: Object. Contains configuration data and authentication secrets as defined in the Flow definition. Primarily used to pass on data such as API Keys necessary for authentication with the target application.
 - snapshot: Object. Allows your component to save a state between function calls. Contains whichever data you last emitted as a snapshot.
 
@@ -62,7 +62,7 @@ Call this function whenever you need to return data to the Open Integration Hub,
     - `error`: Allows to pass an error back to the Ferryman for centralised error display. Pass on the error object as the second argument
 
 - data: Object. Contains what data you need to pass along. The expected format differs slightly depending on the action:
-    - For a `data` emit, format the message in the same way you receive it in your process action. This means all content should be inside a `body` key
+    - For a `data` emit, format the message in the same way you receive it in your process action. This means you should pass it as an object, with a `data` key containing the content, and optionally a `metadata` key containing relevant metadata
     - For a `snapshot` emit, you can pass on an arbitrary object containing whichever keys you require.
     - For an `error` emit, simply pass on the error object
 
