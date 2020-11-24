@@ -38,12 +38,16 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   const filters = {};
   const filterFields = {
     'agent.id': 1,
-    'agent.type': 1,
-    actedOnBehalfOf: 'actedOnBehalfOf.prov:responsible.id',
-    actedOnBehalfOfTenant: 'actedOnBehalfOf.prov:responsible.tenantId',
-    'activity.function': 1,
-    'activity.flowId': 1,
-    'activity.action': 1,
+    // 'agent.type': 1,
+    'agent.agentType': 1,
+    actedOnBehalfOf: 'actedOnBehalfOf.id',
+    // actedOnBehalfOf: 'actedOnBehalfOf.prov:responsible.id',
+    // actedOnBehalfOfTenant: 'actedOnBehalfOf.prov:responsible.tenantId',
+    activityId: 'activity.id',
+    activityType: 'activity.activityType',
+    // 'activity.function': 1,
+    // 'activity.flowId': 1,
+    // 'activity.action': 1,
     // 'startTime': 1, // activity.prov:startTime
     // 'endTime': 1, // activity.prov:endTime
   };
@@ -58,9 +62,9 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
     until = req.query.until;
   }
 
-  const sortableFields = { startTime: 1, endTime: 1 };
-  let sortField = 'startTime';
-  let sortOrder = '1';
+  const sortableFields = { createdAt: 1, updatedAt: 1 };
+  let sortField = 'createdAt';
+  let sortOrder = '-1';
 
   // page[size]
   if (req.query.page && (req.query.page.size !== undefined)) {

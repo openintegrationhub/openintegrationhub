@@ -85,31 +85,37 @@ describe('ProvenanceEvent Operations', () => {
   test('should add a ProvenanceEvent', async () => {
     const newEvent = {
       entity: {
-        kind: 'oihUid',
         id: 'aoveu03dv921dvo',
+        entityType: 'oihUid',
       },
       activity: {
-        action: 'ObjectReceived',
-        function: 'getPersons',
-        flowId: '30j0hew9kwbnkksfb09',
-        'prov:startTime': '2020-10-19T09:47:11+00:00',
-        'prov:endTime': '2020-10-19T09:47:15+00:00',
+        id: '30j0hew9kwbnkksfb09',
+        activityType: 'ObjectReceived',
+        used: 'getPersons',
+        startedAtTime: '2020-10-19T09:47:11.000Z',
+        endedAtTime: '2020-10-19T09:47:15.000Z',
       },
       agent: {
-        kind: 'Connector',
         id: 'w4298jb9q74z4dmjuo',
+        agentType: 'Connector',
       },
-      actedOnBehalfOf: [{
-        'prov:delegate': {
-          kind: 'Connector',
+      actedOnBehalfOf: [
+        {
+          first: true,
           id: 'w4298jb9q74z4dmjuo',
+          agentType: 'Connector',
+          actedOnBehalfOf: 'j460ge49qh3rusfuoh',
         },
-        'prov:responsible': {
-          kind: 'User',
+        {
           id: 'j460ge49qh3rusfuoh',
-          tenant: 't35fdhtz57586',
+          agentType: 'User',
+          actedOnBehalfOf: 't35fdhtz57586',
         },
-      }],
+        {
+          id: 't35fdhtz57586',
+          agentType: 'Tenant',
+        },
+      ],
     };
 
     let res = await addProvenanceEvent(newEvent);
@@ -119,18 +125,28 @@ describe('ProvenanceEvent Operations', () => {
     expect(res).toHaveProperty('id');
 
     actedOnBehalfOf1 = res.id;
-    console.log('actedOnBehalfOf1:', actedOnBehalfOf1);
 
     delete res.id;
-
-    delete newEvent.activity['prov:endTime'];
-    delete newEvent.activity['prov:startTime'];
-    delete res.activity['prov:endTime'];
-    delete res.activity['prov:startTime'];
-    delete res.entity.records;
-    delete res.updatedAt;
     delete res.createdAt;
+    delete res.updatedAt;
+
     delete res.actedOnBehalfOf[0]._id;
+    delete res.actedOnBehalfOf[1]._id;
+    delete res.actedOnBehalfOf[2]._id;
+
+    newEvent.activity.generated = [];
+    newEvent.activity.id = '30j0hew9kwbnkksfb09';
+    newEvent.activity.invalidated = [];
+
+    newEvent.activity.qualifiedAssociation = {};
+    newEvent.activity.qualifiedEnd = {};
+    newEvent.activity.qualifiedStart = {};
+    newEvent.activity.qualifiedUsage = [];
+
+    newEvent.entity.alternateOf = [];
+    newEvent.entity.hadPrimarySource = [];
+    newEvent.entity.id = 'aoveu03dv921dvo';
+    newEvent.entity.wasDerivedFrom = [];
 
     expect(res).toEqual(newEvent);
   });
@@ -162,31 +178,37 @@ describe('ProvenanceEvent Operations', () => {
   test('should add a second ProvenanceEvent', async () => {
     const res = await addProvenanceEvent({
       entity: {
-        kind: 'oihUid',
         id: 'aoveu03dv921dvo2',
+        entityType: 'oihUid',
       },
       activity: {
-        action: 'ObjectSent',
-        function: 'upsertPerson',
-        flowId: '30j0hew9kwbnkksfb09',
-        'prov:startTime': '2020-10-19T09:48:11+00:00',
-        'prov:endTime': '2020-10-19T09:48:15+00:00',
+        id: '30j0hew9kwbnkksfb09',
+        activityType: 'ObjectSent',
+        used: 'upsertPerson',
+        startedAtTime: '2020-10-19T09:48:11.000Z',
+        endedAtTime: '2020-10-19T09:48:15.000Z',
       },
       agent: {
-        kind: 'Connector',
         id: 'w4298jb9q74z4dmjuo',
+        agentType: 'Connector',
       },
-      actedOnBehalfOf: [{
-        'prov:delegate': {
-          kind: 'Connector',
+      actedOnBehalfOf: [
+        {
+          first: true,
           id: 'w4298jb9q74z4dmjuo',
+          agentType: 'Connector',
+          actedOnBehalfOf: 'PermitGuy',
         },
-        'prov:responsible': {
-          kind: 'User',
+        {
           id: 'PermitGuy',
-          tenant: 'testTenant1',
+          agentType: 'User',
+          actedOnBehalfOf: 'testTenant1',
         },
-      }],
+        {
+          id: 'testTenant1',
+          agentType: 'Tenant',
+        },
+      ],
     });
 
     expect(res).not.toBeNull();
@@ -205,7 +227,6 @@ describe('ProvenanceEvent Operations', () => {
       })
       .set('Authorization', 'Bearer adminToken');
 
-    console.log('resA:', JSON.stringify(res.body));
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -215,20 +236,20 @@ describe('ProvenanceEvent Operations', () => {
     expect(j.data).toHaveLength(1);
     expect(j.data[0]).toHaveProperty('id');
 
-    expect(j.data[0].actedOnBehalfOf[0]['prov:responsible'].id).toEqual('j460ge49qh3rusfuoh');
+    expect(j.data[0].actedOnBehalfOf[0].id).toEqual('w4298jb9q74z4dmjuo');
+    expect(j.data[0].actedOnBehalfOf[1].id).toEqual('j460ge49qh3rusfuoh');
   });
 
-  test('should get all ProvenanceEvents, filtered by action', async () => {
+  test('should get all ProvenanceEvents, filtered by activityType', async () => {
     const res = await request
       .get('/event')
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        'filter[activity.action]': 'ObjectReceived',
+        'filter[activityType]': 'ObjectReceived',
       })
       .set('Authorization', 'Bearer adminToken');
 
-    console.log('resB:', JSON.stringify(res.body));
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -244,12 +265,11 @@ describe('ProvenanceEvent Operations', () => {
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        from: '2020-10-19T09:48:11+00:00',
-        until: '2020-10-19T09:49:11+00:00',
+        from: '2020-10-19T09:48:11.000Z',
+        until: '2020-10-19T09:48:15.000Z',
       })
       .set('Authorization', 'Bearer adminToken');
 
-    console.log('resC:', JSON.stringify(res.body));
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
@@ -269,8 +289,6 @@ describe('ProvenanceEvent Operations', () => {
         'page[number]': 1,
       })
       .set('Authorization', 'Bearer permitToken');
-
-    console.log('resD:', JSON.stringify(res.body));
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();

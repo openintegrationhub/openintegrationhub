@@ -32,9 +32,9 @@ const buildQuery = (user, permission, id) => {
     const owners = [user.sub];
     // if (user.tenant) owners.push(user.tenant);
     if (user.tenant) {
-      qry['actedOnBehalfOf.prov:responsible.tenant'] = user.tenant;
+      qry['actedOnBehalfOf.id'] = user.tenant;
     }
-    qry['actedOnBehalfOf.prov:responsible.id'] = { $in: owners };
+    qry['actedOnBehalfOf.id'] = { $in: owners };
   }
 
   return qry;
@@ -64,19 +64,17 @@ const getProvenanceEvents = async ( // eslint-disable-line
   }
 
   if (from !== false) {
-    qry['activity.prov:startTime'] = { $gte: new Date(from) };
+    qry['activity.startedAtTime'] = { $gte: new Date(from) };
   }
 
   if (until !== false) {
-    qry['activity.prov:endTime'] = { $lte: new Date(until) };
+    qry['activity.endedAtTime'] = { $lte: new Date(until) };
   }
 
 
   // , sortField, sortOrder
   const sort = {};
   sort[sortField] = sortOrder;
-
-  console.log('Qry:', qry);
 
   // count results
   const count = await ProvenanceEvent.find(qry).estimatedDocumentCount();

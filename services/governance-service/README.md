@@ -22,43 +22,41 @@ To this end, the Governance Service is capable of receiving metadata about certa
 #### Provenance data model
 The used data model is based on [PROV-DM](https://www.w3.org/TR/prov-dm/). This allows for easy mapping and export of provenance data to other systems. The model describes tuples of entities, agents, and activities, in addition to optional situational fields, such as describing one agent acting on behalf of another.
 
+
 Example provenance object:
 ```json
 {
   "entity": {
-    "kind": "oihUid",
     "id": "aoveu03dv921dvo",
-    "domain": "Addresses",
-    "schema": "Person",
-    "records": [
-      {
-        "application": "Google",
-        "recordUid": "abcde"
-      },
-      {
-        "application": "Wice",
-        "recordUid": "12345"
-      }
-    ]
+    "entityType": "oihUid"
   },
   "activity": {
-    "action": "ObjectReceived",
-    "function": "getPersons",
-    "flowId": "30j0hew9kwbnkksfb09",
-    "prov:startTime": "2020-10-19T09:47:11+00:00",
-    "prov:endTime": "2020-10-19T09:47:15+00:00",
-    "protocol": "The object was successfully inserted"
+    "activityType": "ObjectReceived",
+    "used": "getPersons",
+    "startedAtTime": "2020-10-19T09:47:11+00:00",
+    "endedAtTime": "2020-10-19T09:47:15+00:00"
   },
   "agent": {
-    "kind": "Component",
     "id": "w4298jb9q74z4dmjuo",
+    "agentType": "Component",
     "name": "Google Connector"
   },
   "actedOnBehalfOf": [
-    {
-      "prov:delegate": { "kind": "Component", "id": "w4298jb9q74z4dmjuo"},
-      "prov:responsible": { "kind": "User", "id": "j460ge49qh3rusfuoh", "tenantId": "t454rt565zz57"}
-    }
+      {
+          "first": true,
+          "id": "w4298jb9q74z4dmjuo",
+          "agentType": "Component",
+          "actedOnBehalfOf": "j460ge49qh3rusfuoh"
+      },
+      {
+          "id": "j460ge49qh3rusfuoh",
+          "agentType": "User",
+          "actedOnBehalfOf": "t454rt565zz57"
+      },
+      {
+          "id": "t454rt565zz57",
+          "agentType": "Tenant",
+      }
   ]
 }
 ```
