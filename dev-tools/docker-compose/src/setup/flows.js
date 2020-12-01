@@ -3,7 +3,7 @@ const find = require('lodash/find')
 const { services } = require('../config')
 const { checkTools, waitForStatus, login, setupMinimal } = require('../helper')
 const components = require('../data/components')
-const flows = require('../data/flows')
+const flows = require('../data/flows-load-test')
 const tenants = require('../data/tenants')
 
 const componentRepositoryBase = `http://localhost:${services.componentRepository.externalPort}`
@@ -110,7 +110,7 @@ async function run() {
   }
 }
 
-; (async () => {
+;(async () => {
   try {
     await run()
   } catch (err) {

@@ -32,9 +32,9 @@ router.post('/:id/start', jsonParser, can(config.flowControlPermission), async (
     return res.status(404).send({ errors: [{ message: 'No flow with this ID found', code: 404 }] });
   }
 
-  if (currentFlow.status !== 'inactive') {
-    return res.status(409).send({ errors: [{ message: `Flow is not inactive. Current status: ${currentFlow.status}`, code: 409 }] });
-  }
+  // if (currentFlow.status !== 'inactive') {
+  //   return res.status(409).send({ errors: [{ message: `Flow is not inactive. Current status: ${currentFlow.status}`, code: 409 }] });
+  // }
 
   const flow = await storage.startingFlow(req.user, flowId);
 
@@ -64,9 +64,9 @@ router.post('/:id/stop', jsonParser, can(config.flowControlPermission), async (r
     return res.status(404).send({ errors: [{ message: 'No flow with this ID found', code: 404 }] });
   }
 
-  if (currentFlow.status !== 'active') {
-    return res.status(409).send({ errors: [{ message: `Flow is not active. Current status: ${currentFlow.status}`, code: 409 }] });
-  }
+  // if (currentFlow.status !== 'active') {
+  //   return res.status(409).send({ errors: [{ message: `Flow is not active. Current status: ${currentFlow.status}`, code: 409 }] });
+  // }
 
   const flow = await storage.stoppingFlow(req.user, flowId);
 

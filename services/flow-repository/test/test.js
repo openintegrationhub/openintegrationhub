@@ -872,10 +872,12 @@ describe('Flow Operations', () => {
     expect(savedFailedFlow.status).toEqual('starting');
 
     const response = await flowFailed(savedFailedFlow._id.toString());
-    expect(response).toEqual(true);
+    expect(response).toHaveProperty('name', 'SnazzyToWice');
+    expect(response).toHaveProperty('status', 'stopping');
+    expect(response).toHaveProperty('id');
 
     const flow = await Flow.findOne({ _id: savedFailedFlow._id.toString() }).lean();
-    expect(flow.status).toEqual('inactive');
+    expect(flow.status).toEqual('stopping');
 
     await Flow.deleteOne({ _id: savedFailedFlow._id.toString() });
   });

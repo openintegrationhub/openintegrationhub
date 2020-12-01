@@ -36,3 +36,7 @@ Before you contribute please have a look at our [contribution guidelines](CONTRI
 ### Code of Conduct
 
 To see how members of the community are expected to behave, please read the [code of conduct](CODE_OF_CONDUCT.md). We apply the code of conduct defined by the Contributor Covenant, which is used across many open source projects, such as [NodeJS](https://github.com/nodejs/node), [Atom](https://github.com/atom/atom) and [Kubernetes](https://github.com/kubernetes/kubernetes).
+
+## Join the Community
+
+Do you have questions, ideas, feedback or just want to chat about integration? Please join our growing developer community on [Slack]( https://join.slack.com/t/openintegrationhub/shared_invite/zt-jhw1e65c-6o1OsAtWjTRrpeoGz68YXQ)! 

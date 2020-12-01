@@ -1,5 +1,12 @@
 const { execSync, spawn } = require('child_process')
-const { devToolsRoot, env, dbRoot, services } = require('./config')
+const {
+  devToolsRoot,
+  env,
+  dbRoot,
+  services,
+  minikubeArgs,
+  fullComposeArgs,
+} = require('./config')
 const serviceAccounts = require('./data/service-accounts')
 const {
   waitForStatus,
@@ -8,7 +15,6 @@ const {
   checkTools,
   getMinikubeClusterIp,
   getMinikubeInternalIp,
-  minikubeArgs,
 } = require('./helper')
 
 checkTools([
@@ -100,7 +106,7 @@ async function run() {
 
   proxy = spawn('simpleproxy', ['-L', '9090', '-R', clusterIpPort])
 
-  execSync(`cd ${devToolsRoot} && docker-compose up -V --remove-orphans`, {
+  execSync(`cd ${devToolsRoot} && docker-compose up ${fullComposeArgs}`, {
     env: {
       ...process.env,
       ...env,
@@ -111,7 +117,7 @@ async function run() {
   })
 }
 
-; (async () => {
+;(async () => {
   try {
     await run()
   } catch (err) {
