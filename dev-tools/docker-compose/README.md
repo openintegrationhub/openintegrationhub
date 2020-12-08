@@ -45,7 +45,7 @@ node packages/install
 Start with initial state
 
 ```bash
-node setup/minikube && node setup/kubernetes && node setup/iam && node setup/flows && node start
+node setup/minikube && node setup/kubernetes && node setup/reset-rabbit.js && node setup/iam && node setup/flows && node start
 ```
 
 If everything started up successfully you can visit the frontend with

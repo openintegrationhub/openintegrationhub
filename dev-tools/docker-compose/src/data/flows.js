@@ -7,6 +7,9 @@ module.exports = [
           id: 'step_1',
           componentId: 'simple-message',
           function: 'testTrigger',
+          config: {
+            
+          },
         },
         {
           id: 'step_2',

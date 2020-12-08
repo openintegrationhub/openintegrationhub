@@ -181,6 +181,12 @@ const services = {
     folder: 'template-repository',
     db: 'templateRepository',
   },
+  rds: {
+    port: localPort,
+    externalPort: 3020,
+    folder: 'rds',
+    db: 'rds',
+  },
 }
 
 function generateEnvs(collection) {
