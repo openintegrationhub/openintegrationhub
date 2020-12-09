@@ -6,7 +6,7 @@
 
 The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
 
-Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
 
 # Attachment Storage Service
 
@@ -46,9 +46,9 @@ Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 
 ### General
 
-| Name | Description |
-| --- | --- |
-| IAM_TOKEN | Token of the service account. |
-| LOG_LEVEL | Log level for logger. |
+| Name         | Description                                                                                                                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| IAM_TOKEN    | Token of the service account.                                                                                                                                                                    |
+| LOG_LEVEL    | Log level for logger.                                                                                                                                                                            |
 | REDIS_CONFIG | Stringified JSON object containing configuration settings for Redis. e.g.: {"host": "127.0.0.1", "keyPrefix": "attachments:"}. See: [ioredis](https://github.com/luin/ioredis#connect-to-redis). |
-| PORT | Port for HTTP interface. |
+| PORT         | Port for HTTP interface.                                                                                                                                                                         |

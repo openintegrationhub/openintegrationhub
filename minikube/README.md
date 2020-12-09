@@ -1,11 +1,10 @@
-
 <p align="center">
   <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/medium-oih-einzeilig-zentriert.jpg" alt="Sublime's custom image" width="400"/>
 </p>
 
 Open source framework for easy data synchronization between business applications.
 
-Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
 
 # Local Installation Guide
 
@@ -43,8 +42,8 @@ Make sure that minikube is endowed with sufficient resources. We suggest at leas
 
 ![Windows](https://img.shields.io/badge/Windows-blue.svg)
 
-|If you're using Windows we suggest to use virtual box. In order to use it, Hyper-V must be disabled [Enable/Disable Hyper-V on Windows 10](https://docs.microsoft.com/de-de/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v).You may also have to enable virtualisation features in you BIOS.|
-|---|
+| If you're using Windows we suggest to use virtual box. In order to use it, Hyper-V must be disabled [Enable/Disable Hyper-V on Windows 10](https://docs.microsoft.com/de-de/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v).You may also have to enable virtualisation features in you BIOS. |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 # Installation
 
@@ -53,9 +52,9 @@ Make sure that minikube is endowed with sufficient resources. We suggest at leas
 Make certain minikube is installed, configured, and started. The command for allocating sufficient resources is
 
     minikube start --memory 8192 --cpus 4
-    
-| ![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg) <br> The OIH Framework requires the *ingress* addon for kubernetes. This is not supported via Docker Bridge for Mac and Windows. Therefore, on these Operating Systems, minikube must be started with the flag `--vm=true`. More information can be found on the [minikube Github page](https://github.com/kubernetes/minikube/issues/7332). |
-|:---|
+
+| ![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg) <br> The OIH Framework requires the _ingress_ addon for kubernetes. This is not supported via Docker Bridge for Mac and Windows. Therefore, on these Operating Systems, minikube must be started with the flag `--vm=true`. More information can be found on the [minikube Github page](https://github.com/kubernetes/minikube/issues/7332). |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 If you already have an installed minikube instance that is using the virtualbox driver you can do
 
@@ -67,7 +66,7 @@ and then
 
 to adjust the resource limits before starting again.
 
-In particular, ensure that its ingress module is enabled.  
+In particular, ensure that its ingress module is enabled.
 
     minikube addons enable ingress
 
@@ -80,9 +79,10 @@ For further information about how to set up minikube, see here:
 - [Install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 - [Installing Kubernetes with Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/)
 
-| ![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg) <br> If you're using Docker for Desktop it overwrites the acutal kubectl version. THis version is generally not compatible with minikube. There are two options to correct this: |
-|:---|
-|<ul><li>Download the `kubectl.exe` from [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows). Navigate to the docker directory (e.g. Program Files\Docker\Docker\resources\bin) and replace the kubectl.exe in this folder with the one you just downloaded.</li><li> Use the "Edge" version of Docker Desktop. This can be done by installing the edge version of the application from the [Docker Desktop site](https://docs.docker.com/desktop/). If you already have Docker Desktop installed, you can switch to the Edge version from the Docker menu. Select **Preferences > Command Line** and then activate the **Enable experimental features** toggle. After selecting **Apply & Restart**, Docker will update versions. More information can be found [here](https://docs.docker.com/docker-for-mac/install/#switch-between-stable-and-edge-versions).</li></ul> |
+| ![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac](https://img.shields.io/badge/Mac-green.svg) <br> If you're using Docker for Desktop it overwrites the acutal kubectl version. THis version is generally not compatible with minikube. There are two options to correct this:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ul><li>Download the `kubectl.exe` from [Install kubectl on Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows). Navigate to the docker directory (e.g. Program Files\Docker\Docker\resources\bin) and replace the kubectl.exe in this folder with the one you just downloaded.</li><li> Use the "Edge" version of Docker Desktop. This can be done by installing the edge version of the application from the [Docker Desktop site](https://docs.docker.com/desktop/). If you already have Docker Desktop installed, you can switch to the Edge version from the Docker menu. Select **Preferences > Command Line** and then activate the **Enable experimental features** toggle. After selecting **Apply & Restart**, Docker will update versions. More information can be found [here](https://docs.docker.com/docker-for-mac/install/#switch-between-stable-and-edge-versions).</li></ul> |
+
 <p>
 
 ## Basic Open Integration Hub Infrastructure Setup
@@ -151,18 +151,18 @@ POST `/login`
 _Request Body:_
 
 ```json
-  {
-    "username": "admin@openintegrationhub.com",
-    "password": "somestring"
-  }
+{
+  "username": "admin@openintegrationhub.com",
+  "password": "somestring"
+}
 ```
 
 _Response Body Structure:_
 
 ```json
-  {
-    "token": "string"
-  }
+{
+  "token": "string"
+}
 ```
 
 Use the returned `token` as a Bearer token for the remaining requests.
@@ -173,21 +173,19 @@ POST `/api/v1/users`
 
 _Request Body:_
 
-  ```json
-  {
-    "username":"test@test.de",
-    "firstname":"a",
-    "lastname":"b",
-    "role":"SERVICE_ACCOUNT",
-    "status":"ACTIVE",
-    "password":"asd",
-    "permissions":[
-      "all"
-    ]
-  }
-  ```
+```json
+{
+  "username": "test@test.de",
+  "firstname": "a",
+  "lastname": "b",
+  "role": "SERVICE_ACCOUNT",
+  "status": "ACTIVE",
+  "password": "asd",
+  "permissions": ["all"]
+}
+```
 
- _Response Body Structure:_
+_Response Body Structure:_
 
 ```json
 {
@@ -212,7 +210,7 @@ _Request Body:_
 }
 ```
 
-The returned token is the service token that will be used by the other services to authenticate themselves to the IAM. Copy the value, encode it in *base64* (for encoding you can use online tools such as: <https://www.base64encode.org/>), and then past it into the file found at `./3-Secret/SharedSecret.yaml` at the indicated position (`REPLACE ME`).
+The returned token is the service token that will be used by the other services to authenticate themselves to the IAM. Copy the value, encode it in _base64_ (for encoding you can use online tools such as: <https://www.base64encode.org/>), and then past it into the file found at `./3-Secret/SharedSecret.yaml` at the indicated position (`REPLACE ME`).
 
 ## Shared Secret Application
 
@@ -269,15 +267,15 @@ Below you will find code snippets for two exemplary components. For the beginnin
 
 ```json
 {
-   "data":{
-      "distribution":{
-         "type":"docker",
-         "image":"elasticio/timer:ca9a6fea391ffa8f7c8593bd2a04143212ab63f6"
-      },
-      "access":"public",
-      "name":"Timer",
-      "description":"Timer component that periodically triggers flows on a given interval"
-   }
+  "data": {
+    "distribution": {
+      "type": "docker",
+      "image": "elasticio/timer:ca9a6fea391ffa8f7c8593bd2a04143212ab63f6"
+    },
+    "access": "public",
+    "name": "Timer",
+    "description": "Timer component that periodically triggers flows on a given interval"
+  }
 }
 ```
 
@@ -331,32 +329,32 @@ Afterwards please replace the `ADD WEBHOOK URL HERE` with the link in your clipb
 
 ```json
 {
-   "name":"Timer To Code Component Example",
-   "description:": "This flow periodically triggers the flow and sends request to webhook.site",
-   "graph":{
-      "nodes":[
-         {
-            "id":"step_1",
-            "componentId":"ADD COMPONENT ID HERE",
-            "function":"timer"
-         },
-         {
-            "id":"step_2",
-            "componentId":"ADD COMPONENT ID HERE",
-            "function":"execute",
-            "fields":{
-               "code":"function* run() {console.log('Calling external URL');yield request.post({uri: 'ADD WEBHOOK URL HERE', body: msg, json: true});}"
-            }
-         }
-      ],
-      "edges":[
-         {
-            "source":"step_1",
-            "target":"step_2"
-         }
-      ]
-   },
-   "cron":"*/2 * * * *"
+  "name": "Timer To Code Component Example",
+  "description:": "This flow periodically triggers the flow and sends request to webhook.site",
+  "graph": {
+    "nodes": [
+      {
+        "id": "step_1",
+        "componentId": "ADD COMPONENT ID HERE",
+        "function": "timer"
+      },
+      {
+        "id": "step_2",
+        "componentId": "ADD COMPONENT ID HERE",
+        "function": "execute",
+        "fields": {
+          "code": "function* run() {console.log('Calling external URL');yield request.post({uri: 'ADD WEBHOOK URL HERE', body: msg, json: true});}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "step_1",
+        "target": "step_2"
+      }
+    ]
+  },
+  "cron": "*/2 * * * *"
 }
 ```
 

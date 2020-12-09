@@ -6,9 +6,9 @@
 
 The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
 
-Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
 
-# Meta Data Repository (working title / codename: *TBD*)
+# Meta Data Repository (working title / codename: _TBD_)
 
 [Documentation on Swagger Hub](https://app.swaggerhub.com/apis/basaas5/metadata-service/0.0.2)
 
@@ -18,24 +18,24 @@ See the default config in src/config/index.js
 
 The following list contains the environment variables you can set to configure the service:
 
-* **PORT** - Service port, *default*: 3000
-* **BASE_URL** - Base URL for Schema endpoint, *default*: 'http://localhost'
-* **API_BASE** - API Base, *default*: 'api/v1'
-* **IAM_APIBASE** - IAM API Base, *default*: 'http://iam.openintegrationhub.com/api/v1'
-* **IAM_TOKEN** - Service token, *default*: 'token'
-* **IAM_TOKEN_API** - IAM token endpoint, *default*: 'http://iam.openintegrationhub.com/api/v1/tokens/ephemeral'
-* **INTROSPECT_TYPE** - Default token introspect method (basic or oidc), will be used if explicit http header is missing, *default*: 'basic'
-* **INTROSPECT_ENDPOINT_BASIC** - URL to basic introspect, *default*: 'http://iam.openintegrationhub.com/api/v1/tokens/introspect'
-* **INTROSPECT_ENDPOINT_OIDC** - URL to oidc introspect, *default*: 'https://iam.openintegrationhub.com/op/userinfo'
-* **IAM_OIDC_SERVICE_CLIENT_ID** - Oidc client id. *default*: 'id'
-* **IAM_OIDC_SERVICE_CLIENT_SECRET** - Oidc client secret, *default*: 3099
-* **LOG_NAMESPACE** - Namespace for all emitted logs, *default*: 'meta-data-repository'
-* **LOG_LEVEL** - Set global log level, *default*: 'error'
-* **RABBITMQ_URI** - RabbitMQ for the OIH event bus; *default*: 'amqp://guest:guest@localhost:5672'
-* **MONGODB_CONNECTION** – MongoDB connection string to replica set, *default*: 'mongodb://localhost:27017/meta-data-repository?replicaSet=rs`'
-* **DEBUG_MODE** – Get additional debug log, *default*: 'false'
-* **PAGINATION_DEFAULT_PAGE** - Set default start page,  *default*: 1
-* **PAGINATION_PAGE_SIZE** - Set items per page,  *default*: 30
+- **PORT** - Service port, _default_: 3000
+- **BASE_URL** - Base URL for Schema endpoint, _default_: 'http://localhost'
+- **API_BASE** - API Base, _default_: 'api/v1'
+- **IAM_APIBASE** - IAM API Base, _default_: 'http://iam.openintegrationhub.com/api/v1'
+- **IAM_TOKEN** - Service token, _default_: 'token'
+- **IAM_TOKEN_API** - IAM token endpoint, _default_: 'http://iam.openintegrationhub.com/api/v1/tokens/ephemeral'
+- **INTROSPECT_TYPE** - Default token introspect method (basic or oidc), will be used if explicit http header is missing, _default_: 'basic'
+- **INTROSPECT_ENDPOINT_BASIC** - URL to basic introspect, _default_: 'http://iam.openintegrationhub.com/api/v1/tokens/introspect'
+- **INTROSPECT_ENDPOINT_OIDC** - URL to oidc introspect, _default_: 'https://iam.openintegrationhub.com/op/userinfo'
+- **IAM_OIDC_SERVICE_CLIENT_ID** - Oidc client id. _default_: 'id'
+- **IAM_OIDC_SERVICE_CLIENT_SECRET** - Oidc client secret, _default_: 3099
+- **LOG_NAMESPACE** - Namespace for all emitted logs, _default_: 'meta-data-repository'
+- **LOG_LEVEL** - Set global log level, _default_: 'error'
+- **RABBITMQ_URI** - RabbitMQ for the OIH event bus; _default_: 'amqp://guest:guest@localhost:5672'
+- **MONGODB_CONNECTION** – MongoDB connection string to replica set, _default_: 'mongodb://localhost:27017/meta-data-repository?replicaSet=rs`'
+- **DEBUG_MODE** – Get additional debug log, _default_: 'false'
+- **PAGINATION_DEFAULT_PAGE** - Set default start page, _default_: 1
+- **PAGINATION_PAGE_SIZE** - Set items per page, _default_: 30
 
 ---
 
@@ -43,19 +43,16 @@ The following list contains the environment variables you can set to configure t
 
 Subscripes
 
-* **iam.tenant.deleted** - Deletes tenant domains and schemas
-
+- **iam.tenant.deleted** - Deletes tenant domains and schemas
 
 Publishes
 
-* **metadata.domain.deleted**
-* **metadata.schema.created**
-* **metadata.schema.modified**
-* **metadata.schema.deleted**
+- **metadata.domain.deleted**
+- **metadata.schema.created**
+- **metadata.schema.modified**
+- **metadata.schema.deleted**
 
 ---
-
-
 
 ## Development
 

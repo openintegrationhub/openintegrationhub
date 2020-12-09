@@ -4,7 +4,7 @@
 
 Open source framework for easy data synchronization between business applications.
 
-Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
 
 # Dev Tools
 
