@@ -7,15 +7,17 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "NODE_ENV=production node src/index.js",
-    "watch": "nodemon src/index.js --watch src/",
+    "start:container": "nodemon src/index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/iam-utils/src | bunyan",
+    "watch": "nodemon -r dotenv/config src/index.js --watch src/",
     "test": "jest"
   },
   "devDependencies": {
+    "dotenv": "8.2.0",
     "eslint": "7.15.0",
     "eslint-config-airbnb-base": "14.2.1",
     "eslint-config-prettier": "7.0.0",
     "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-prettier": "3.2.0",
+    "eslint-plugin-prettier": "3.1.4",
     "jest": "26.6.3",
     "nock":"13.0.5",
     "nodemon": "2.0.6",
@@ -23,6 +25,10 @@
     "supertest": "6.0.1"
   },
   "dependencies": {
+    "@openintegrationhub/event-bus": "*",
+    "@openintegrationhub/iam-utils": "*",
+    "bunyan": "1.8.14",
+    "bunyan-format": "0.2.1",
     "cors": "2.8.5",
     "express": "4.17.1",
     "mongoose": "5.11.5",

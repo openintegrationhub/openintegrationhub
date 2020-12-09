@@ -1,27 +1,29 @@
 const supertest = require('supertest')
-const iamMock = require('../../../test/iamMock')
-const conf = require('../../conf')
+const iamMock = require('../test/iamMock')
+const config = require('./config')
+const Server = require('./server')
 
 let port
 let request
+let server
 
-describe('notification - router', () => {
+describe('API', () => {
   beforeAll(async () => {
     port = 3003
-    request = supertest(`http://localhost:${port}${conf.apiBase}`)
-    webhook = new Webhook(
+    request = supertest(`http://localhost:${port}${config.apiBase}`)
+    server = new Server(
       global.__MONGO_URI__.replace('_replace_me_', 'foo'),
       port
     )
     iamMock.setup()
-    await webhook.start()
+    await server.start()
   })
 
   afterAll(async () => {
-    await webhook.stop()
+    await server.stop()
   })
 
-  test('POST request', async () => {
+  test('GET request', async () => {
     await request
       .post('/notification')
       .set(...global.userAuth1)

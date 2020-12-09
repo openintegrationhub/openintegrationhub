@@ -1,2 +1,5 @@
 node_modules
 mongodb-binaries
+
+.env
+error.log

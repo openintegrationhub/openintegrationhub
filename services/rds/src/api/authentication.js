@@ -3,9 +3,7 @@ const LRU = require('lru-cache')
 const { v4 } = require('uuid')
 const conf = require('./conf')
 
-const log = require('@basaas/node-logger').getLogger(`${conf.name}/auth`, {
-  level: 'info',
-})
+const log = require('../logger')
 
 const tokenCache = new LRU({
   max: 50,

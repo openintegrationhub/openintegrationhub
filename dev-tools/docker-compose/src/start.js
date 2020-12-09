@@ -106,15 +106,21 @@ async function run() {
 
   proxy = spawn('simpleproxy', ['-L', '9090', '-R', clusterIpPort])
 
-  execSync(`cd ${devToolsRoot} && docker-compose up ${fullComposeArgs}`, {
-    env: {
-      ...process.env,
-      ...env,
-      DEV_IAM_TOKEN: token,
-      MINIKUBE_HOST_IP: minikubeHostIp,
-    },
-    stdio: 'inherit',
-  })
+  // start specific containers obtained by argument
+  const container = process.argv[2] || ''
+
+  execSync(
+    `cd ${devToolsRoot} && COMPOSE_PARALLEL_LIMIT=1000 docker-compose up ${fullComposeArgs} ${container}`,
+    {
+      env: {
+        ...process.env,
+        ...env,
+        DEV_IAM_TOKEN: token,
+        MINIKUBE_HOST_IP: minikubeHostIp,
+      },
+      stdio: 'inherit',
+    }
+  )
 }
 
 ;(async () => {

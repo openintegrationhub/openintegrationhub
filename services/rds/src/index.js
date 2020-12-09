@@ -1,15 +1,9 @@
-const conf = require('./conf')
-
-const log = require('@basaas/node-logger').getLogger(`${conf.name}/start`, {
-  level: 'info',
-})
+const config = require('./config')
+const log = require('./logger')
 
 const Server = require('./server')
 
-
-
-
-process.title = `node ${conf.name} ${conf.version}`
+process.title = `node ${config.name} ${config.version}`
 
 function exitHandler(options, err) {
   if (options.cleanup) {
@@ -24,14 +18,12 @@ function exitHandler(options, err) {
 }
 
 process.on('exit', exitHandler.bind(null, { cleanup: true }))
-
 process.on('SIGINT', exitHandler.bind(null, { exit: true }))
-
-
 ;(async () => {
   try {
-
-    log.info(`started`)
+    const server = new Server()
+    await server.start()
+    log.info(`RDS ${config.version} started at ${config.port}`)
   } catch (error) {
     console.log(error)
   }

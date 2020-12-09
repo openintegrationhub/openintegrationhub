@@ -7,23 +7,15 @@ const cors = require('cors')
 const express = require('express')
 const mongoose = require('mongoose')
 
-const {
-  name,
-  port,
-  originWhitelist,
-  mongodbConnection,
-  apiBase,
-} = require('./conf')
-const errorHandler = require('./middleware/error')
+const config = require('./config')
+const api = require('./api')
 
-const infolog = logger.getLogger(name, {
-  level: 'info',
-})
+const log = require('./logger')
 
 class Server {
-  constructor(customMongoUri = mongodbConnection, customPort = port) {
+  constructor(mongodbUrl = config.mongodbUrl, customPort = config.port) {
     this.server = null
-    this.mongoUri = customMongoUri
+    this.mongodbUrl = mongodbUrl
     this.mongoSession = null
     this.app = express()
     this.app.disable('x-powered-by')
@@ -31,16 +23,15 @@ class Server {
   }
 
   async setup() {
-    await mongoose.connect(this.mongoUri, {
+    await mongoose.connect(this.mongodbUrl, {
       poolSize: 50,
       connectTimeoutMS: 30000,
-      keepAlive: 120,
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
       useCreateIndex: true,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     })
 
-    infolog.log('Mongo Connection established')
+    log.info('Mongo Connection established')
 
     this.setupCors()
     this.setupRoutes()
@@ -50,7 +41,7 @@ class Server {
     this.corsOptions = {
       credentials: true,
       origin(origin, callback) {
-        if (originWhitelist.find((elem) => origin.indexOf(elem) >= 0)) {
+        if (config.originWhitelist.find((elem) => origin.indexOf(elem) >= 0)) {
           callback(null, true)
         } else {
           callback(null, false)
@@ -69,18 +60,13 @@ class Server {
       res.sendStatus(200)
     })
 
-    const router = express.Router()
-    router.use(iamLib.middleware)
-    router.use('/raw-record', require('./route/raw-record'))
-    this.app.use(apiBase, cors(this.corsOptions), router)
-    this.app.use(errorHandler)
+    this.app.use(config.apiBase, cors(this.corsOptions), api)
   }
 
   async start() {
     try {
       await this.setup()
       this.server = await this.app.listen(this.app.get('port'))
-      infolog.info(`Webhook started`)
     } catch (error) {
       console.error(error)
     }

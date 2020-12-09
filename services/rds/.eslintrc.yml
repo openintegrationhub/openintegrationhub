@@ -1,3 +1,5 @@
+globals:
+  fetch: true
 env:
   commonjs: true
   node: true
