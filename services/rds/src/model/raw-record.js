@@ -20,16 +20,16 @@ const rawRecord = new Schema(
       type: String,
       required: true,
       unique: true,
+      index: true,
     },
     payload: {
       type: String,
       required: true,
     },
     owners: { type: [owner] },
+    createdAt: { type: Date, default: Date.now },
   },
-  {
-    timestamps: true,
-  }
+  { versionKey: false }
 )
 
 module.exports = mongoose.model(`rawRecord`, rawRecord)

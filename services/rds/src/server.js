@@ -10,25 +10,28 @@ const { connectQueue, disconnectQueue } = require('./event/bus')
 const config = require('./config')
 const api = require('./api')
 
-const log = require('./logger')
+const logger = require('./logger')
 
 class Server {
   constructor(
     mongodbUrl = config.mongodbUrl,
     customPort = config.port,
-    _EventBus,
-    transporter
+    Bus = EventBus,
+    Transport = RabbitMqTransport
   ) {
     this.server = null
     this.mongodbUrl = mongodbUrl
 
-    this.EventBus = _EventBus || EventBus
-    this.transporter =
-      transporter ||
-      new RabbitMqTransport({
-        rabbitmqUri: config.queueUrl,
-        log,
-      })
+    this.transport = new Transport({
+      rabbitmqUri: config.queueUrl,
+      logger,
+    })
+
+    this.eventBus = new Bus({
+      transport: this.transport,
+      logger,
+      serviceName: config.name,
+    })
 
     this.app = express()
     this.app.disable('x-powered-by')
@@ -36,19 +39,39 @@ class Server {
   }
 
   async setup() {
-    await mongoose.connect(this.mongodbUrl, {
-      poolSize: 50,
-      connectTimeoutMS: 30000,
-      useCreateIndex: true,
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-
-    log.info('Mongo Connection established')
+    await this.setupDb()
     await this.setupQueue()
     this.setupCors()
     this.setupRoutes()
     this.setupSwagger()
+  }
+
+  setupDb() {
+    return new Promise((resolve, reject) => {
+      mongoose.connect(
+        this.mongodbUrl,
+        {
+          poolSize: 50,
+          connectTimeoutMS: 30000,
+          useCreateIndex: true,
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        },
+        (err) => {
+          if (err) return reject(err)
+          // wait for index creation
+          require('./model/raw-record').on('index', (error) => {
+            if (error) {
+              console.error('RawRecord index error: %s', err)
+            } else {
+              resolve()
+            }
+          })
+        }
+      )
+
+      logger.info('Mongo Connection established')
+    })
   }
 
   setupCors() {
@@ -78,7 +101,7 @@ class Server {
   }
 
   setupSwagger() {
-    log.info('adding swagger api')
+    logger.info('adding swagger api')
     // Configure the Swagger-API
     /*eslint-disable */
     var config = {
@@ -106,8 +129,8 @@ class Server {
   }
 
   async setupQueue() {
-    await connectQueue(this.EventBus, this.transporter)
-    log.info('Connected to queue')
+    await connectQueue(this.eventBus, this.transporter)
+    logger.info('Connected to queue')
   }
 
   async terminateQueue() {

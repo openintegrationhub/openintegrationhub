@@ -17,6 +17,10 @@ class EventBusMock {
     this.subscribers[topic] = cb
   }
 
+  getSubscription(topic) {
+    return this.subscribers[topic]
+  }
+
   async trigger(topic, event) {
     if (!(topic in this.subscribers)) {
       return

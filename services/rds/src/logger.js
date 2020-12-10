@@ -9,7 +9,7 @@ const formatOut = bformat({
 const log = bunyan.createLogger({
   name: pkg.name,
   stream: formatOut,
-  level: 'trace',
+  level: process.env.LOG_LEVEL,
   src: true, // disable in production
 })
 

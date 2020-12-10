@@ -1,21 +1,16 @@
-const bunyan = require('bunyan')
-const config = require('../config')
 const log = require('../logger')
 const { createRawRecord } = require('./handlers')
-
-const logger = bunyan.createLogger({ name: 'events' })
+const { EVENT } = require('../constant')
 
 let eventBus
 
-async function connectQueue(EventBus, transport) {
-  eventBus = new EventBus({ transport, logger, serviceName: config.name })
-
-  await eventBus.subscribe('raw-record.created', async (event) => {
+async function connectQueue(_eventBus) {
+  eventBus = _eventBus
+  await eventBus.subscribe(EVENT.RAW_RECORD_CREATED, async (event) => {
     log.trace(`Received event: ${JSON.stringify(event.headers)}`)
 
     try {
       await createRawRecord(event)
-      log.info('done')
       await event.ack()
     } catch (err) {
       log.error(err)

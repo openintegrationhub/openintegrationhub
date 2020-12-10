@@ -1,5 +1,6 @@
+/* eslint import/no-extraneous-dependencies: 0 */
 const nock = require('nock')
-const token = require('./tokens')
+const token = require('../tokens')
 
 module.exports = {
   setup: () => {
