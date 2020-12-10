@@ -22159,17 +22159,17 @@ swagger-ui-express@4.1.4:
   dependencies:
     swagger-ui-dist "^3.18.1"
 
-swagger-ui-express@^3.0.8:
-  version "3.0.10"
-  resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-3.0.10.tgz#c72b32107a57a47913f3b46003e8fd62a7378ea2"
-  integrity sha1-xysyEHpXpHkT87RgA+j9Yqc3jqI=
-
-swagger-ui-express@^4.1.4:
+swagger-ui-express@4.1.5, swagger-ui-express@^4.1.4:
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-4.1.5.tgz#114f3ce017ca6d6069d960ea8ffef677784b6f2f"
   integrity sha512-hs9OqBu2jwmhYyFUhdTiwurvbZC+bq2XnWmmbYymVdwhgJCcGkLdnqymX24ZYUve2nkYSvKPEDCo20ZF+vyw9A==
   dependencies:
     swagger-ui-dist "^3.18.1"
+
+swagger-ui-express@^3.0.8:
+  version "3.0.10"
+  resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-3.0.10.tgz#c72b32107a57a47913f3b46003e8fd62a7378ea2"
+  integrity sha1-xysyEHpXpHkT87RgA+j9Yqc3jqI=
 
 symbol-observable@1.0.1:
   version "1.0.1"

@@ -1,7 +1,7 @@
 const supertest = require('supertest')
-const iamMock = require('../test/iamMock')
-const config = require('./config')
-const Server = require('./server')
+const iamMock = require('../../test/iamMock')
+const config = require('../config')
+const Server = require('../server')
 
 let port
 let request
@@ -12,7 +12,7 @@ describe('API', () => {
     port = 3003
     request = supertest(`http://localhost:${port}${config.apiBase}`)
     server = new Server(
-      global.__MONGO_URI__.replace('_replace_me_', 'foo'),
+      global.__MONGO_URI__.replace('_replace_me_', 'rds'),
       port
     )
     iamMock.setup()

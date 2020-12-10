@@ -6,7 +6,10 @@
 const cors = require('cors')
 const express = require('express')
 const mongoose = require('mongoose')
+const swaggerUi = require('swagger-ui-express')
 
+const swaggerDocument = require('./api/_doc/swagger.json')
+const { connectQueue, disconnectQueue } = require('./event/bus')
 const config = require('./config')
 const api = require('./api')
 
@@ -32,9 +35,10 @@ class Server {
     })
 
     log.info('Mongo Connection established')
-
+    await this.setupQueue()
     this.setupCors()
     this.setupRoutes()
+    this.setupSwagger()
   }
 
   setupCors() {
@@ -63,6 +67,43 @@ class Server {
     this.app.use(config.apiBase, cors(this.corsOptions), api)
   }
 
+  setupSwagger() {
+    log.info('adding swagger api')
+    // Configure the Swagger-API
+    /*eslint-disable */
+    var config = {
+      appRoot: __dirname, // required config
+
+      // This is just here to stop Swagger from complaining, without actual functionality
+
+      swaggerSecurityHandlers: {
+        Bearer: function (req, authOrSecDef, scopesOrApiKey, cb) {
+          if (true) {
+            cb();
+          } else {
+            cb(new Error('access denied!'));
+          }
+        }
+      }
+    };
+    /* eslint-enable */
+
+    this.app.use(
+      '/api-docs',
+      swaggerUi.serve,
+      swaggerUi.setup(swaggerDocument, { explorer: true })
+    )
+  }
+
+  async setupQueue() {  // eslint-disable-line
+    await connectQueue()
+    log.info('Connected to queue')
+  }
+
+  async terminateQueue() {  // eslint-disable-line
+    await disconnectQueue()
+  }
+
   async start() {
     try {
       await this.setup()
@@ -74,6 +115,7 @@ class Server {
 
   async stop() {
     this.server.close()
+    await this.terminateQueue()
     await mongoose.connection.close()
   }
 }

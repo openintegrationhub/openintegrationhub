@@ -23,7 +23,7 @@ process.on('SIGINT', exitHandler.bind(null, { exit: true }))
   try {
     const server = new Server()
     await server.start()
-    log.info(`RDS ${config.version} started at ${config.port}`)
+    log.info(`RDS ${config.version} started at port ${config.port}`)
   } catch (error) {
     console.log(error)
   }

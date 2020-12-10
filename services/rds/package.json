@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "NODE_ENV=production node src/index.js",
-    "start:container": "nodemon src/index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/iam-utils/src | bunyan",
+    "start:container": "nodemon src/index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/iam-utils/src --watch ../../lib/event-bus/src | bunyan",
     "watch": "nodemon -r dotenv/config src/index.js --watch src/",
     "test": "jest"
   },
@@ -34,6 +34,7 @@
     "mongoose": "5.11.5",
     "body-parser": "1.19.0",
     "isomorphic-fetch": "3.0.0",
+    "swagger-ui-express": "4.1.5",
     "uuid": "8.3.1"
   },
   "jest": {
