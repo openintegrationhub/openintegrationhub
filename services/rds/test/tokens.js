@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const iamLib = require('@openintegrationhub/iam-utils')
 
 const t1 = mongoose.Types.ObjectId()
 const t2 = mongoose.Types.ObjectId()
@@ -57,6 +58,7 @@ module.exports = {
       firstname: 'Userxx',
       lastname: 'Useryy',
       role: 'NOT_USER',
+      permissions: [iamLib.PERMISSIONS.common['rds.rawRecord.read']],
       tenant: t2,
       iat: 1337,
     },

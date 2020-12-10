@@ -18,7 +18,6 @@ module.exports = {
       .reply((uri, requestBody, cb) => {
         let tokenName = requestBody.split('=')
         tokenName = tokenName && tokenName[1] // OIDC sends token as form, not json
-
         cb(null, [200, token[tokenName].value])
         // ...
       })

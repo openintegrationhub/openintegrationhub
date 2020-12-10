@@ -3,3 +3,4 @@ mongodb-binaries
 
 globalConfig.json
 .env
+coverage/
