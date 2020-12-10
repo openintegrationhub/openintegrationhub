@@ -1,5 +1,4 @@
 const bunyan = require('bunyan')
-const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus')
 const config = require('../config')
 const log = require('../logger')
 const { createRawRecord } = require('./handlers')
@@ -8,11 +7,7 @@ const logger = bunyan.createLogger({ name: 'events' })
 
 let eventBus
 
-async function connectQueue() {
-  const transport = new RabbitMqTransport({
-    rabbitmqUri: config.queueUrl,
-    logger,
-  })
+async function connectQueue(EventBus, transport) {
   eventBus = new EventBus({ transport, logger, serviceName: config.name })
 
   await eventBus.subscribe('raw-record.created', async (event) => {

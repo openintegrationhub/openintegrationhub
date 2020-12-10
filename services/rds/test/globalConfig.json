@@ -1,1 +1,1 @@
-{"mongoUri":"mongodb://127.0.0.1:46675,127.0.0.1:37787/_replace_me_"}
+{"mongoUri":"mongodb://127.0.0.1:44587,127.0.0.1:42035/_replace_me_?replicaSet=jest-set"}

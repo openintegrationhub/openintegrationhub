@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: 0 */
+
 module.exports = (err, req, res, next) => {
   let status
   let message

@@ -1,13 +1,10 @@
-/**
- * Copyright (C) Basaas GmbH - All Rights Reserved.
- * Unauthorized copying of this file, via any medium is strictly prohibited. Proprietary and confidential.
- */
+/* eslint class-methods-use-this: 0 */
 
 const cors = require('cors')
 const express = require('express')
 const mongoose = require('mongoose')
 const swaggerUi = require('swagger-ui-express')
-
+const { EventBus, RabbitMqTransport } = require('@openintegrationhub/event-bus')
 const swaggerDocument = require('./api/_doc/swagger.json')
 const { connectQueue, disconnectQueue } = require('./event/bus')
 const config = require('./config')
@@ -16,10 +13,23 @@ const api = require('./api')
 const log = require('./logger')
 
 class Server {
-  constructor(mongodbUrl = config.mongodbUrl, customPort = config.port) {
+  constructor(
+    mongodbUrl = config.mongodbUrl,
+    customPort = config.port,
+    _EventBus,
+    transporter
+  ) {
     this.server = null
     this.mongodbUrl = mongodbUrl
-    this.mongoSession = null
+
+    this.EventBus = _EventBus || EventBus
+    this.transporter =
+      transporter ||
+      new RabbitMqTransport({
+        rabbitmqUri: config.queueUrl,
+        log,
+      })
+
     this.app = express()
     this.app.disable('x-powered-by')
     this.app.set('port', customPort)
@@ -95,12 +105,12 @@ class Server {
     )
   }
 
-  async setupQueue() {  // eslint-disable-line
-    await connectQueue()
+  async setupQueue() {
+    await connectQueue(this.EventBus, this.transporter)
     log.info('Connected to queue')
   }
 
-  async terminateQueue() {  // eslint-disable-line
+  async terminateQueue() {
     await disconnectQueue()
   }
 

@@ -24,6 +24,6 @@ module.exports = {
         ]
       : []
   ),
-  queueUrl: required('QUEUE_URL'),
-  mongodbUrl: required('MONGODB_URL'),
+  queueUrl: optional('QUEUE_URL', 'amqp://guest:guest@rabbitmq'),
+  mongodbUrl: optional('MONGODB_URL', 'mongodb://localhost'),
 }

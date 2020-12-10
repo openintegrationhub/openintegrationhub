@@ -1,3 +1,5 @@
+/* eslint import/no-extraneous-dependencies: 0 */
+
 const path = require('path')
 const fs = require('fs')
 require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') })
@@ -19,7 +21,7 @@ const replSet = new MongoMemoryReplSet({
 
 module.exports = async () => {
   await replSet.waitUntilRunning()
-  const uri = await replSet.getConnectionString()
+  const uri = await replSet.getUri()
 
   // Set reference to mongod in order to close the server during teardown.
   global.__MONGOD__ = replSet
