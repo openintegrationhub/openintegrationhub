@@ -1,6 +1,6 @@
 settings:
   react:
-    version: 16.8.0
+    version: 16.14.0
 parser: babel-eslint
 parserOptions:
   sourceType: module
