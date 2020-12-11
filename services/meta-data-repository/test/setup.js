@@ -5,34 +5,23 @@ const { MongoMemoryReplSet } = require('mongodb-memory-server');
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');
 
-const dbName = 'changeme';
-const setName = 'jestset';
+const dbName = '_replace_me_';
+const setName = 'jest-set';
 
-const mongod = new MongoMemoryReplSet({
-    binary: {
-        version: '4.0.16',
-    },
+const replSet = new MongoMemoryReplSet({
+    autoStart: true,
     instanceOpts: [
         { storageEngine: 'wiredTiger' },
         { storageEngine: 'wiredTiger' },
     ],
-    replSet: {
-        dbName,
-        name: setName,
-    },
-    // debug: true,
-    autoStart: false,
+    replSet: { dbName, name: setName },
 });
 
 module.exports = async () => {
-    if (!mongod.isRunning) {
-        await mongod.start();
-        await mongod.waitUntilRunning();
-    }
-
+    await replSet.waitUntilRunning();
     const mongoConfig = {
-        mongoDBName: dbName,
-        mongoUri: `${await mongod.getConnectionString()}?replicaSet=${setName}`,
+        mongoDBName: 'jest',
+        mongoUri: await replSet.getUri(),
     };
 
     // Write global config to disk because all tests run in different contexts.
@@ -40,6 +29,6 @@ module.exports = async () => {
     console.log('Config is written');
 
     // Set reference to mongod in order to close the server during teardown.
-    global.__MONGOD__ = mongod;
+    global.__MONGOD__ = replSet;
     process.env.MONGO_URL = mongoConfig.mongoUri;
 };

@@ -15,7 +15,7 @@ describe('Transaction', () => {
     beforeAll(async () => {
         port = 5100;
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'transaction'),
+            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'transaction'),
             port,
         });
         iamMock.setup();
