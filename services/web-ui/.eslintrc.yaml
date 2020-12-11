@@ -37,3 +37,4 @@ rules:
   react/no-deprecated: 1
   no-restricted-syntax: 0
   no-plusplus: 0
+  no-unused-expressions: 0
