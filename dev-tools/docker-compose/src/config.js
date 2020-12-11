@@ -187,6 +187,12 @@ const services = {
     folder: 'rds',
     db: 'rds',
   },
+  governanceService: {
+    port: localPort,
+    externalPort: 3021,
+    folder: 'governance-service',
+    db: 'governance-service',
+  },
 }
 
 function generateEnvs(collection) {
