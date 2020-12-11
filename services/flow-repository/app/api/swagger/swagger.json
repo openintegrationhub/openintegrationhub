@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "This is the API for the Open Integration Hub Microservice \"Flow Repository\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "description": "This is the API for the Open Integration Hub Microservice \"Flow Repository\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
     "version": "0.0.1",
     "title": "Flow Repository",
-    "termsOfService": "http://openintegrationhub.de/terms/",
+    "termsOfService": "https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
     "contact": {
       "email": "hschmidt@wice.de"
     },
@@ -19,7 +19,7 @@
       "description": "Flow management",
       "externalDocs": {
         "description": "Find out more",
-        "url": "http://openintegrationhub.de"
+        "url": "https://openintegrationhub.org"
       }
     }
   ],
@@ -29,79 +29,75 @@
         "x-swagger-router-controller": "flow",
         "security": [
           {
-            "Bearer": [
-
-            ]
+            "Bearer": []
           }
         ],
-        "tags": [
-          "flows"
-        ],
+        "tags": ["flows"],
         "summary": "Retrieve all flows associated with the current user from the repository",
         "description": "This will only return Flows that are either directly associated with the user, or that are associated with a tenant that the user is also a member of. Requires the 'flows.read' permissions.",
         "operationId": "getFlows",
         "parameters": [
           {
-          "name": "page[size]",
-          "in": "query",
-          "description": "Amount of flows per page returned. Default is 10.",
-          "required": false,
-          "schema": {
-            "type": "integer"
+            "name": "page[size]",
+            "in": "query",
+            "description": "Amount of flows per page returned. Default is 10.",
+            "required": false,
+            "schema": {
+              "type": "integer"
             }
           },
           {
-          "name": "page[number]",
-          "in": "query",
-          "description": "Number of the page to be returned. Default is 1.",
-          "required": false,
-          "schema": {
-            "type": "integer"
+            "name": "page[number]",
+            "in": "query",
+            "description": "Number of the page to be returned. Default is 1.",
+            "required": false,
+            "schema": {
+              "type": "integer"
             }
           },
           {
-          "name": "filter[status]",
-          "in": "query",
-          "description": "Filter results by flow status. Active = 1. Inactive = 0",
-          "required": false,
-          "schema": {
-            "type": "integer"
+            "name": "filter[status]",
+            "in": "query",
+            "description": "Filter results by flow status. Active = 1. Inactive = 0",
+            "required": false,
+            "schema": {
+              "type": "integer"
             }
           },
           {
-          "name": "filter[type]",
-          "in": "query",
-          "description": "Filter results by flow type (ordinary, long_running)",
-          "required": false,
-          "schema": {
-            "type": "string"
+            "name": "filter[type]",
+            "in": "query",
+            "description": "Filter results by flow type (ordinary, long_running)",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           },
           {
-          "name": "filter[user]",
-          "in": "query",
-          "description": "Filter by user. Works for admin or users with same tenant.",
-          "required": false,
-          "schema": {
-            "type": "string"
+            "name": "filter[user]",
+            "in": "query",
+            "description": "Filter by user. Works for admin or users with same tenant.",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           },
           {
-          "name": "sort",
-          "in": "query",
-          "description": "Sort the result by one property. Supported: createdAt, updatedAt and name. Prefix field name with - for reversed sort order (DESC) i.e. sort=-updatedAt. Default sorting is by id ASC",
-          "required": false,
-          "schema": {
-            "type": "string"
+            "name": "sort",
+            "in": "query",
+            "description": "Sort the result by one property. Supported: createdAt, updatedAt and name. Prefix field name with - for reversed sort order (DESC) i.e. sort=-updatedAt. Default sorting is by id ASC",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           },
           {
-          "name": "search",
-          "in": "query",
-          "description": "Search flows by a word or a phrase contained in the flow description OR in the flow name (case-insensitive). Behavior is similar to operator LIKE in SQL but case insensitive.",
-          "required": false,
-          "schema": {
-            "type": "string"
+            "name": "search",
+            "in": "query",
+            "description": "Search flows by a word or a phrase contained in the flow description OR in the flow name (case-insensitive). Behavior is similar to operator LIKE in SQL but case insensitive.",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -135,9 +131,7 @@
             "Bearer": []
           }
         ],
-        "tags": [
-          "flows"
-        ],
+        "tags": ["flows"],
         "summary": "Add a new flow to the repository",
         "description": "This requires the 'flows.write' permissions. The new Flow will automatically be associated with the current user in the owners array, allowing editing and viewing by this user irrespective of tenancies.",
         "operationId": "addFlow",
@@ -149,8 +143,8 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {"$ref": "#/components/schemas/Flow"},
-                    "meta": {"type": "object"}
+                    "data": { "$ref": "#/components/schemas/Flow" },
+                    "meta": { "type": "object" }
                   }
                 }
               }
@@ -175,14 +169,10 @@
         "x-swagger-router-controller": "flow",
         "security": [
           {
-            "Bearer": [
-
-            ]
+            "Bearer": []
           }
         ],
-        "tags": [
-          "flows"
-        ],
+        "tags": ["flows"],
         "summary": "Find Flow by ID",
         "description": "Returns a single Flow by its ID, if the user is authorized to see it. This requires the 'flows.read' permission",
         "operationId": "getFlowById",
@@ -224,14 +214,10 @@
         "x-swagger-router-controller": "flow",
         "security": [
           {
-            "Bearer": [
-
-            ]
+            "Bearer": []
           }
         ],
-        "tags": [
-          "flows"
-        ],
+        "tags": ["flows"],
         "summary": "Deletes a flow",
         "description": "Entirely deletes a Flow from the repository. This cannot be reverted. Requires the 'flows.write' permission.",
         "operationId": "deleteFlow",
@@ -266,14 +252,10 @@
         "x-swagger-router-controller": "flow",
         "security": [
           {
-            "Bearer": [
-
-            ]
+            "Bearer": []
           }
         ],
-        "tags": [
-          "flows"
-        ],
+        "tags": ["flows"],
         "parameters": [
           {
             "name": "id",
@@ -297,8 +279,8 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {"$ref": "#/components/schemas/Flow"},
-                    "meta": {"type": "object"}
+                    "data": { "$ref": "#/components/schemas/Flow" },
+                    "meta": { "type": "object" }
                   }
                 }
               }
@@ -329,14 +311,10 @@
         "x-swagger-router-controller": "flow",
         "security": [
           {
-            "Bearer": [
-
-            ]
+            "Bearer": []
           }
         ],
-        "tags": [
-          "flows"
-        ],
+        "tags": ["flows"],
         "summary": "Start a flow",
         "description": "Initiates the flow's integration process by publishing an appropriate event to the event bus. Requires the 'flows.control' permission.",
         "operationId": "startFlow",
@@ -373,7 +351,7 @@
                         }
                       }
                     },
-                    "meta": {"type": "object"}
+                    "meta": { "type": "object" }
                   }
                 }
               }
@@ -399,14 +377,10 @@
         "x-swagger-router-controller": "flow",
         "security": [
           {
-            "Bearer": [
-
-            ]
+            "Bearer": []
           }
         ],
-        "tags": [
-          "flows"
-        ],
+        "tags": ["flows"],
         "summary": "Stop a flow",
         "description": "Stops the flow's integration process by publishing an appropriate event to the event bus. Requires the 'flows.control' permission.",
         "operationId": "stopFlow",
@@ -443,7 +417,7 @@
                         }
                       }
                     },
-                    "meta": {"type": "object"}
+                    "meta": { "type": "object" }
                   }
                 }
               }
@@ -468,14 +442,10 @@
       "get": {
         "security": [
           {
-            "Bearer": [
-
-            ]
+            "Bearer": []
           }
         ],
-        "tags": [
-          "flows"
-        ],
+        "tags": ["flows"],
         "summary": "Get flow step's logs",
         "description": "Returns logs produced by a certain step of the flow",
         "parameters": [
@@ -537,7 +507,7 @@
                           },
                           "message": {
                             "oneOf": [
-                              {"type": "string"},
+                              { "type": "string" },
                               {
                                 "type": "object",
                                 "properties": {
@@ -589,9 +559,7 @@
       "get": {
         "x-swagger-router-controller": "healthcheck",
         "security": [],
-        "tags": [
-          "healthcheck"
-        ],
+        "tags": ["healthcheck"],
         "summary": "Performs a healthcheck",
         "description": "This will return 200 and a JSON object with relevant status information when the service is running and healthy.",
         "responses": {
@@ -745,10 +713,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "mapper_type",
-                "condition"
-              ]
+              "required": ["mapper_type", "condition"]
             }
           }
         }
@@ -764,11 +729,7 @@
     "schemas": {
       "MutableFlow": {
         "type": "object",
-        "required": [
-          "name",
-          "graph",
-          "type"
-        ],
+        "required": ["name", "graph", "type"],
         "properties": {
           "name": {
             "type": "string",
@@ -784,10 +745,7 @@
           "type": {
             "type": "string",
             "description": "Flow type",
-            "enum": [
-              "ordinary",
-              "realtime"
-            ],
+            "enum": ["ordinary", "realtime"],
             "example": "ordinary"
           },
           "cron": {
@@ -795,9 +753,9 @@
             "description": "A cron string describing the interval at which this flow is run. If unset, the flow uses webhooks instead",
             "example": "* /2 * * * *"
           },
-          "owners":{
+          "owners": {
             "type": "array",
-            "items":{
+            "items": {
               "$ref": "#/components/schemas/Owner"
             }
           }
@@ -810,11 +768,7 @@
           },
           {
             "type": "object",
-            "required": [
-              "id",
-              "createdAt",
-              "updatedAt"
-            ],
+            "required": ["id", "createdAt", "updatedAt"],
             "properties": {
               "id": {
                 "type": "string"
@@ -822,12 +776,7 @@
               "status": {
                 "type": "string",
                 "description": "Flow status, set automatically in response to start/stop commands",
-                "enum": [
-                  "active",
-                  "inactive",
-                  "starting",
-                  "stopping"
-                ],
+                "enum": ["active", "inactive", "starting", "stopping"],
                 "example": "inactive"
               },
               "createdAt": {
@@ -854,10 +803,7 @@
             "description": "An array of all components involved in this flow",
             "items": {
               "type": "object",
-              "required": [
-                "id",
-                "command"
-              ],
+              "required": ["id", "command"],
               "example": [
                 {
                   "id": "step_1",
@@ -873,7 +819,7 @@
                   "function": "execute",
                   "description": "",
                   "fields": {
-                      "code": "function* run() {console.log('Calling external URL');yield request.post({uri: 'http://webhook.site/debc8244-3ca0-4449-af2b-e346c4f57b85', body: msg.body, json: true});}"
+                    "code": "function* run() {console.log('Calling external URL');yield request.post({uri: 'http://webhook.site/debc8244-3ca0-4449-af2b-e346c4f57b85', body: msg.body, json: true});}"
                   }
                 }
               ],
@@ -913,10 +859,7 @@
             "description": "An array of edges linking nodes together, determining the order in which nodes are activated",
             "items": {
               "type": "object",
-              "required": [
-                "source",
-                "target"
-              ],
+              "required": ["source", "target"],
               "properties": {
                 "id": {
                   "type": "string"
@@ -969,22 +912,19 @@
         }
       },
       "Owner": {
-		    "type": "object",
-		    "required": [
-			    "id",
-			    "type"
-		    ],
-		    "properties": {
-			    "id": {
-				    "type": "string",
-				    "description": "External id of the owner"
-			    },
-			    "type": {
-				    "type": "string",
-				    "description": "Type to discriminate between user or tenant"
-			    }
-		    }
-	    }
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "External id of the owner"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type to discriminate between user or tenant"
+          }
+        }
+      }
     }
   }
 }

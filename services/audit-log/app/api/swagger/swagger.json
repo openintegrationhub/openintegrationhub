@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "This is the API for the Open Integration Hub Microservice \"Audit Log\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "description": "This is the API for the Open Integration Hub Microservice \"Audit Log\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
     "version": "0.0.2",
     "title": "Audit Log",
-    "termsOfService": "http://openintegrationhub.de/terms/",
+    "termsOfService": "https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
     "contact": {
       "email": "hschmidt@wice.de"
     },
@@ -19,7 +19,7 @@
       "description": "Retrieve audit logs",
       "externalDocs": {
         "description": "Find out more",
-        "url": "http://openintegrationhub.de"
+        "url": "https://openintegrationhub.org"
       }
     }
   ],
@@ -29,52 +29,48 @@
         "x-swagger-router-controller": "logs",
         "security": [
           {
-            "Bearer": [
-
-            ]
+            "Bearer": []
           }
         ],
-        "tags": [
-          "logs"
-        ],
+        "tags": ["logs"],
         "summary": "Retrieve all logs",
         "description": "This will only return Logs that pertain to the current user's tenant. OIH admins can see all logs. The 'filter' query parameter can be used with arbitrary keys beyond those listed here, which will be matched within the events' payload object.",
         "operationId": "getLogs",
         "parameters": [
           {
-          "name": "page[size]",
-          "in": "query",
-          "description": "Amount of logs per page returned. Default is 10.",
-          "required": false,
-          "schema": {
-            "type": "integer"
+            "name": "page[size]",
+            "in": "query",
+            "description": "Amount of logs per page returned. Default is 10.",
+            "required": false,
+            "schema": {
+              "type": "integer"
             }
           },
           {
-          "name": "page[number]",
-          "in": "query",
-          "description": "Number of the page to be returned. Default is 1.",
-          "required": false,
-          "schema": {
-            "type": "integer"
+            "name": "page[number]",
+            "in": "query",
+            "description": "Number of the page to be returned. Default is 1.",
+            "required": false,
+            "schema": {
+              "type": "integer"
             }
           },
           {
-          "name": "filter[tenant]",
-          "in": "query",
-          "description": "Filter by tenant. Only available to admins.",
-          "required": false,
-          "schema": {
-            "type": "string"
+            "name": "filter[tenant]",
+            "in": "query",
+            "description": "Filter by tenant. Only available to admins.",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           },
           {
-          "name": "filter[service]",
-          "in": "query",
-          "description": "Filter by service.",
-          "required": false,
-          "schema": {
-            "type": "string"
+            "name": "filter[service]",
+            "in": "query",
+            "description": "Filter by service.",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -111,9 +107,7 @@
             "Bearer": []
           }
         ],
-        "tags": [
-          "logs"
-        ],
+        "tags": ["logs"],
         "summary": "Post a log entry",
         "description": "Optional endpoint to add a log entry via post instead as message",
         "operationId": "addLog",
@@ -152,9 +146,7 @@
       "get": {
         "x-swagger-router-controller": "healthcheck",
         "security": [],
-        "tags": [
-          "healthcheck"
-        ],
+        "tags": ["healthcheck"],
         "summary": "Performs a healthcheck",
         "description": "This will return 200 and a JSON object with relevant status information when the service is running and healthy.",
         "responses": {
@@ -265,18 +257,11 @@
         "allOf": [
           {
             "type": "object",
-            "required": [
-              "headers",
-              "payload"
-            ],
+            "required": ["headers", "payload"],
             "properties": {
               "headers": {
                 "type": "object",
-                "required": [
-                  "serviceName",
-                  "createdAt",
-                  "name"
-                ],
+                "required": ["serviceName", "createdAt", "name"],
                 "properties": {
                   "serviceName": {
                     "type": "string",

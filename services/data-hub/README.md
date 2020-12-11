@@ -6,7 +6,7 @@
 
 The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
 
-Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
 
 # Data Hub
 
@@ -46,10 +46,10 @@ Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 
 ### General
 
-| Name | Description |
-| --- | --- |
-| IAM_TOKEN | Token of the service account. |
-| LOG_LEVEL | Log level for logger. |
-| MONGODB_URI | MongoDB connection string. |
-| RABBITMQ_URI | RabbitMQ connection string. |
-| PORT | Port for HTTP interface. |
+| Name         | Description                   |
+| ------------ | ----------------------------- |
+| IAM_TOKEN    | Token of the service account. |
+| LOG_LEVEL    | Log level for logger.         |
+| MONGODB_URI  | MongoDB connection string.    |
+| RABBITMQ_URI | RabbitMQ connection string.   |
+| PORT         | Port for HTTP interface.      |

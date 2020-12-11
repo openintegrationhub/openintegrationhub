@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "This is the API for the Open Integration Hub Microservice \"Integration Layer Service\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "description": "This is the API for the Open Integration Hub Microservice \"Integration Layer Service\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
     "version": "0.0.1",
     "title": "Integration Layer Service",
-    "termsOfService": "http://openintegrationhub.de/terms/",
+    "termsOfService": "https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
     "contact": {
       "email": "syanev@wice.de"
     },
@@ -19,7 +19,7 @@
       "description": "Chunks management",
       "externalDocs": {
         "description": "Find out more",
-        "url": "http://openintegrationhub.de"
+        "url": "https://openintegrationhub.org"
       }
     }
   ],
@@ -27,9 +27,7 @@
     "/chunks/{ilaId}": {
       "get": {
         "x-swagger-router-controller": "chunk",
-        "tags": [
-          "chunks"
-        ],
+        "tags": ["chunks"],
         "summary": "Get chunk",
         "description": "Get a chunk by ilaId",
         "operationId": "",
@@ -80,9 +78,7 @@
     "/chunks": {
       "post": {
         "x-swagger-router-controller": "chunk",
-        "tags": [
-          "chunks"
-        ],
+        "tags": ["chunks"],
         "summary": "Create chunk",
         "description": "Create a chunk object",
         "operationId": "",
@@ -129,9 +125,7 @@
     "/chunks/validate": {
       "post": {
         "x-swagger-router-controller": "chunk",
-        "tags": [
-          "chunks"
-        ],
+        "tags": ["chunks"],
         "summary": "Validate chunk",
         "description": "Validate chunk from SDF Adapter",
         "operationId": "",
@@ -175,9 +169,7 @@
     "/chunks/split": {
       "post": {
         "x-swagger-router-controller": "chunk",
-        "tags": [
-          "chunks"
-        ],
+        "tags": ["chunks"],
         "summary": "Split chunk",
         "description": "Split a chunk object in smaller chunks",
         "operationId": "",
