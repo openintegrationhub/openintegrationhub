@@ -7,8 +7,8 @@ module.exports = [
           id: 'step_1',
           componentId: 'simple-message',
           function: 'testTrigger',
-          config: {
-            
+          nodeSettings: {
+            storeRawData: true,
           },
         },
         {
