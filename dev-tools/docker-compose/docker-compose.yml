@@ -467,6 +467,30 @@ services:
     networks:
     - oih-dev
     
+  reports-analytics:
+    image: ${NODE_IMAGE}
+    container_name: ${DEV_REPORTS_ANALYTICS_FOLDER}
+    working_dir: /usr/src/app/services/${DEV_REPORTS_ANALYTICS_FOLDER}
+    environment:
+      NODE_ENV: development
+      MONGODB_CONNECTION: mongodb://mongodb/${DEV_REPORTS_ANALYTICS_DB}?replicaSet=rs0
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      INFLUX_HOST: influxdb
+      INFLUXDB_DATABASE: statistics
+      GRAFANA_URL: http://grafana:8888
+      LOG_LEVEL: debug
+      DEBUG_MODE: "true"
+      PORT: ${DEV_REPORTS_ANALYTICS_PORT}
+    ports:
+    - ${DEV_REPORTS_ANALYTICS_EXTERNAL_PORT}:${DEV_REPORTS_ANALYTICS_PORT}
+    volumes:
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
+    command: yarn start:container
+    networks:
+    - oih-dev
+
   web-ui:
     image: ${NODE_IMAGE}
     container_name: ${DEV_WEB_UI_FOLDER}

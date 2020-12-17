@@ -193,6 +193,12 @@ const services = {
     folder: 'governance-service',
     db: 'governance-service',
   },
+  reportsAnalytics: {
+    port: localPort,
+    externalPort: 3022,
+    folder: 'reports-analytics',
+    db: 'reports-analytics',
+  },
 }
 
 function generateEnvs(collection) {
