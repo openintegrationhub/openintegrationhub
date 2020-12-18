@@ -62,8 +62,8 @@ class RabbitMqManagementService {
         const user = encodeURIComponent(username);
         const buff = Buffer.from(`${this._managementSettings.username}:${this._managementSettings.password}`, 'utf8');
         const auth = buff.toString('base64');
-
-        return fetch(url.resolve(this._managementSettings.url, `/api/topic-permissions/${vhost}/${user}`), {
+        const _url = new url.URL(this._managementSettings.url, `/api/topic-permissions/${vhost}/${user}`);
+        return fetch(_url, {
             method: 'PUT',
             headers: {
                 'Content-type': 'application/json;charset=UTF-8',
@@ -75,7 +75,6 @@ class RabbitMqManagementService {
                 read:''
             })
           })
-
     }
 
     /**
