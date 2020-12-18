@@ -104,3 +104,9 @@ spec:
       - backend:
           serviceName: reports-analytics
           servicePort: 3000
+  - host: rds.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: rds
+          servicePort: 3000
