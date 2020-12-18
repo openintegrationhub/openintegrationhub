@@ -80,7 +80,7 @@ describe('RabbitMqManagementService', () => {
             expect(service._client.setUserPermissions).to.have.been.calledOnceWith(params.username, '/', {
                 configure: '',
                 read: `^flow-${params.flow.id}:`,
-                write: `^(${params.backchannel}|flow-${params.flow.id}|component-events-collector)$`
+                write: `^(${params.backchannel}|flow-${params.flow.id}|component-events-collector|event-bus)$`
             });
         });
     });

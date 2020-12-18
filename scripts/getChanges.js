@@ -4,13 +4,14 @@ const readjson = fs.readdirSync(`${__dirname}/../services`);
 const result = [];
 let buildnumber = 'dev';
 
-readjson.forEach((service) => {
+const ignoreServices = ["rds"]
 
+readjson.forEach((service) => {
     const directMatch = data.match(new RegExp(`services/${service}/`, 'i'));
     const matcher = (directMatch && directMatch.length > 0);
     if (matcher) {
+        if (ignoreServices.includes(service)) return
 
-        console.log(service);
         const temp = JSON.parse(fs.readFileSync(`${__dirname}/../services/${service}/package.json`));
         if (process.env.TRAVIS_BUILD_NUMBER) buildnumber = process.env.TRAVIS_BUILD_NUMBER
         if (process.env.CIRCLE_BUILD_NUM) buildnumber = process.env.CIRCLE_BUILD_NUM

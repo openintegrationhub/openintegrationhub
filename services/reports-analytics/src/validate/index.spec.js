@@ -6,9 +6,9 @@ const { getValidMeasurements } = require('.');
 
 let server;
 
-describe('index', () => {
+describe('validation', () => {
     beforeAll(async () => {
-        conf.mongoDbConnection = global.__MONGO_URI__.replace('changeme', 'dao');
+        conf.mongoDbConnection = global.__MONGO_URI__.replace('_replace_me_', 'dao');
         conf.port = 3000;
 
         server = new Server();
@@ -19,7 +19,7 @@ describe('index', () => {
         await server.stop();
     });
 
-    test('measurement validation', async () => {
+    test('measurement', async () => {
         // valid
         await Measurement.create({
             measurementName: 'test',

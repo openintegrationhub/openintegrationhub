@@ -4,7 +4,7 @@ services:
     image: mongo:latest
     container_name: mongodb
     volumes:
-    - ./data/mongo
+    - ./data/mongo:/data/mongo
     environment:
     - MONGO_LOG_DIR=/dev/null
     networks:
@@ -13,7 +13,7 @@ services:
     - 27017:27017
     healthcheck:
       test: 'test $$(mongo --quiet -eval "rs.initiate({ _id: \"rs0\", version: 1,
-        members: [{ _id: 0, host: \"127.0.0.1:27017\" }] }).ok || rs.status().ok")
+        members: [{ _id: 0, host: \"mongodb:27017\" }] }).ok || rs.status().ok")
         -eq 1'
       interval: 5s
       start_period: 20s
@@ -59,6 +59,30 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
+  influxdb:
+    image: influxdb:1.8.3
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+      - "8088:8088"
+    env_file:
+      - "env.influxdb"
+    networks:
+      - oih-dev
+    volumes:
+      - ./data/influxdb:/var/lib/influxdb
+  grafana:
+    user: root
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "8888:3000"
+    env_file:
+      - "env.grafana"
+    networks:
+      - oih-dev
+    volumes:
+      - ./data/grafana:/var/lib/grafana
 networks:
   oih-dev:
     driver: bridge

@@ -3,12 +3,6 @@ const { services } = require('./config')
 const serviceAccounts = require('./data/service-accounts')
 const { login } = require('./helper')
 
-async function wait(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
-
 process.stdin.resume() // so the program will not close instantly
 
 function exitHandler() {
@@ -147,7 +141,7 @@ async function run() {
   // get flows
 }
 
-; (async () => {
+;(async () => {
   try {
     await run()
   } catch (err) {

@@ -5,8 +5,6 @@ plugins:
 extends:
 - airbnb-base
 - plugin:prettier/recommended
-- plugin:import/errors
-- plugin:import/warnings
 rules:
   no-loop-func: 0
   no-plusplus: 0
