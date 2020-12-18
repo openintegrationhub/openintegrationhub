@@ -150,6 +150,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/dispatcher-service
     steps: *yarn_test_steps
+  rds-test:
+    docker: *node_env
+    working_directory: ~/oih/services/rds
+    steps: *yarn_test_steps
 workflows:
   pipeline:
     jobs:
@@ -185,6 +189,9 @@ workflows:
           requires:
             - deps
       - template-repository-test:
+          requires:
+            - deps
+      - rds-test:
           requires:
             - deps
       - audit-log-test:
@@ -231,6 +238,7 @@ workflows:
             - flow-repository-test
             - template-repository-test
             - audit-log-test
+            - rds-test
             - lib-component-repository-test
             - lib-ferryman-test
             - data-hub-test
