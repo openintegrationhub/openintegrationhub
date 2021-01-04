@@ -27,8 +27,8 @@ There are two main advantages having the original raw data:
 * It can be used later by some connector
 * Already transformed data in the Data Hub could be transformed again (replay) after modifying the underlying Master Data Model
 
-[API Reference](https://rds.openintegrationhub.com/api-docs/){: .btn .fs-5 .mb-4 .mb-md-0 }
-[Implementation](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/rds){: .btn .fs-5 .mb-4 .mb-md-0 }
+[API Reference](https://rds.openintegrationhub.com/api-docs/)<br>
+[Implementation](https://github.com/openintegrationhub/openintegrationhub/tree/master/services/rds)
 
 ## Technologies used
 <!-- please name and elaborate on other technologies or standards the service uses -->
