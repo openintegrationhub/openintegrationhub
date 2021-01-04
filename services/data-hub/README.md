@@ -48,7 +48,7 @@ Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 
 ### Initial situation
 
-The initial import of existing data from different sources poses some problems. The focus of this concept is the determination of the same identities for data sets from different sources. As an example, it should be shown here through the context of “contact details”.
+The initial import of existing data from different sources poses some problems. The focus of this concept is the determination of same identities for data sets from different sources. As an example, it should be shown here through the context of “contact details”.
 
 If you look at the schema for specific data records from one source and compare it with the schema of another, you can already see differences in essential fields such as "forename" and "name" or "lastname" and "surename".
 
@@ -64,9 +64,10 @@ By standardizing the data and comparing individual values ​​at random, the p
 
 ### Objectives of a prototype
 
-So that the effectiveness of the "MinHash" procedure can be tested, the Data Hub Service is expanded to include a specific import interface and the algorithm is incorporated in the form of a JS implementation for testing purposes.
+So that the effectiveness of the "MinHash" procedure can be tested, Data Hub Service is expanded to include a specific import interface and the algorithm is incorporated in the form of a JS implementation.
+See https://github.com/duhaime/minhash
 
-After the basic implementation, this functionality must be checked on the basis of various data sets and optimized in a further step so that “false positives” only occur to a minimal extent when determining the identity.
+After a basic implementation is done, this functionality should be challenged on the basis of various data sets and optimized in a further step so that “false positives” only occur to a minimal extent when determining the identity.
 
 ### General
 
