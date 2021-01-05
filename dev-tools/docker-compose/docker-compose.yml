@@ -475,9 +475,9 @@ services:
       NODE_ENV: development
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_REPORTS_ANALYTICS_DB}?replicaSet=rs0
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
-      INFLUX_HOST: influxdb
+      INFLUX_HOST: influx_db
       INFLUXDB_DATABASE: statistics
-      GRAFANA_URL: http://grafana:8888
+      GRAFANA_URL: http://grafana_frontend:8888
       LOG_LEVEL: debug
       DEBUG_MODE: "true"
       PORT: ${DEV_REPORTS_ANALYTICS_PORT}

@@ -59,9 +59,9 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-  influxdb:
+  influx_db:
     image: influxdb:1.8.3
-    container_name: influxdb
+    container_name: influx_db
     ports:
       - "8086:8086"
       - "8088:8088"
@@ -71,10 +71,10 @@ services:
       - oih-dev
     volumes:
       - ./data/influxdb:/var/lib/influxdb
-  grafana:
+  grafana_frontend:
     user: root
     image: grafana/grafana:latest
-    container_name: grafana
+    container_name: grafana_frontend
     ports:
       - "8888:3000"
     env_file:
