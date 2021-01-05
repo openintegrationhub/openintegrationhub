@@ -133,6 +133,8 @@ module.exports = {
                         $inc: {
                             'safeguard.failedLoginAttempts': 1,
                         },
+                    }, {
+                        timestamps: false, 
                     });
                     return next({ status: 401, message: CONSTANTS.ERROR_CODES.PASSWORD_INCORRECT });
                 }
@@ -179,6 +181,8 @@ module.exports = {
                         'safeguard.lastLogin': new Date(),
                         'safeguard.failedLoginAttempts': 0,
                     },
+                }, {
+                    timestamps: false, 
                 });
 
                 req.session.save((err) => {
