@@ -1829,6 +1829,16 @@
     bunyan "1.8.12"
     lodash "4.17.15"
 
+"@openintegrationhub/event-bus@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@openintegrationhub/event-bus/-/event-bus-1.2.0.tgz#0f0ffaa40fe55d0278bd8b361cc82da1a3ab0fef"
+  integrity sha512-OaqIaX9MAI0neCi0FQIFloc/RQrUgtrMooKWHxY8v1NAAm3HFNK8OcZGg3tV86ghshPeeV9M9X0apUSzQojMOA==
+  dependencies:
+    amqplib "0.5.2"
+    assert "1.4.1"
+    bunyan "1.8.12"
+    lodash "4.17.15"
+
 "@openintegrationhub/iam-utils@1.5.3":
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/@openintegrationhub/iam-utils/-/iam-utils-1.5.3.tgz#ba9922768cc046eb97a9e5ac846d0496806df95e"
