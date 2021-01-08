@@ -1,6 +1,15 @@
 FROM node:12-alpine AS base
 
+WORKDIR /usr/src/rds
+
+RUN apk update && apk add --no-cache bash
+
+COPY package.json yarn.lock ./
+COPY services/rds/package.json ./services/rds/
+COPY services/rds/src services/rds/src
+
 FROM base AS dependencies
+
 RUN apk update && apk add --no-cache \
     make \
     gcc \
@@ -8,21 +17,14 @@ RUN apk update && apk add --no-cache \
     python \
     bash
 
-WORKDIR /usr/src/raw-data-storage
-
-COPY package.json yarn.lock ./
-COPY lib/event-bus lib/event-bus
-COPY lib/iam-utils lib/iam-utils
-COPY services/raw-data-storage/package.json ./services/raw-data-storage/
-COPY services/raw-data-storage/src services/raw-data-storage/src
-
 RUN yarn install --production
 
 FROM base AS release
-COPY --from=dependencies /usr/src/raw-data-storage/node_modules ./node_modules
+
+COPY --from=dependencies /usr/src/rds/node_modules ./node_modules
 RUN rm yarn.lock
 
 RUN chown -R node:node .
 USER node
 
-CMD ["yarn", "--cwd", "services/raw-data-storage", "start"]
+CMD ["yarn", "--cwd", "services/rds", "start"]

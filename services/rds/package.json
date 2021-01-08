@@ -9,7 +9,8 @@
     "start": "NODE_ENV=production node src/index.js",
     "start:container": "nodemon src/index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/iam-utils/src --watch ../../lib/event-bus/src | bunyan",
     "watch": "nodemon -r dotenv/config src/index.js --watch src/",
-    "test": "jest"
+    "test": "jest",
+    "build:docker": "docker build -t openintegrationhub/rds:${VERSION} -f Dockerfile ../../"
   },
   "devDependencies": {
     "dotenv": "8.2.0",
