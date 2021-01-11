@@ -41,7 +41,7 @@
     "gulp-jasmine": "0.2.0",
     "jasmine-node": "3.0.0",
     "mocha": "7.1.2",
-    "nock": "10.0.6",
+    "nock": "^10.0.6",
     "sinon": "7.4.2",
     "sinon-chai": "3.5.0"
   },
