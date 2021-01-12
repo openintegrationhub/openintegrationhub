@@ -13,6 +13,7 @@ export default () => {
         .get('/', parsePagedQuery(), (ctx: RouterContext) => controller.getMany(ctx))
         .post('/', (ctx: RouterContext) => controller.postOne(ctx))
         .get('/:id', (ctx: RouterContext) => controller.getOne(ctx))
+        .get('/recordId/:id', (ctx: RouterContext) => controller.getOneByRecordId(ctx))
         .put('/:id', (ctx: RouterContext) => controller.putOne(ctx))
         .patch('/:id', (ctx: RouterContext) => controller.patchOne(ctx))
         .routes();
