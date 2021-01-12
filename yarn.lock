@@ -3391,6 +3391,18 @@ amqplib@0.5.2:
     readable-stream "1.x >=1.1.9"
     safe-buffer "^5.0.1"
 
+amqplib@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/amqplib/-/amqplib-0.6.0.tgz#87857c7c95d56d22438ced4cf1f7e5f0dc43b309"
+  integrity sha512-zXCh4jQ77TBZe1YtvZ1n7sUxnTjnNagpy8MVi2yc1ive239pS3iLwm4e4d5o4XZGx1BdTKQ/U0ZmaDU3c8MxYQ==
+  dependencies:
+    bitsyntax "~0.1.0"
+    bluebird "^3.5.2"
+    buffer-more-ints "~1.0.0"
+    readable-stream "1.x >=1.1.9"
+    safe-buffer "~5.1.2"
+    url-parse "~1.4.3"
+
 amqplib@^0.5.2:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/amqplib/-/amqplib-0.5.6.tgz#86a7850f4f39c568eaa0dd0300ef374e17941cf4"
