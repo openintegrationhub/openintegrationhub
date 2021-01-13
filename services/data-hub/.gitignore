@@ -1,3 +1,5 @@
 /dist
 /tmp
 !/package-lock.json
+node_modules
+/node_modules

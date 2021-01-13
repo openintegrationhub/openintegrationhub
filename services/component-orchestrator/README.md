@@ -40,8 +40,8 @@ If a container is running an outdated version of node, it will be redeployed.
 
 ## Prerequisites
 
-- Kubernetes cluster with enabled RBAC.
-- RabbitMQ with enabled [Management plugin](https://www.rabbitmq.com/management.html).
+- Kubernetes cluster with enabled RBAC
+- RabbitMQ with enabled [Management plugin](https://www.rabbitmq.com/management.html)
 - MongoDB
 
 ## Service Account

@@ -12,6 +12,8 @@ function nockIamIntrospection({ status = 200, body = { sub: 'user-id', role: 'AD
         .reply(status, body);
 }
 
+let objectId: any;
+
 describe('Data Route', () => {
     before(async function () {
         const config = {};
@@ -63,6 +65,7 @@ describe('Data Route', () => {
             expect(body).to.be.a('object');
             expect(body).to.haveOwnProperty('data');
             expect(body.data.id).to.be.a('string');
+            objectId = body.data.id;
             delete body.data.id;
             expect(body.data).to.deep.equal(Object.assign(record, {
                 owners: [{ id: 'user-id', type: 'user' }]
@@ -334,5 +337,140 @@ describe('Data Route', () => {
                 }
             });
         });
+    });
+});
+
+
+describe('GET /data/:id and /data/recordId/:id', () => {
+    before(async function () {
+        const config = {};
+        const logger = createLogger({ name: 'test', level: 'fatal' });
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri, { useNewUrlParser: true });
+        this.server = new Server({ config, logger });
+        this.request = agent(this.server.serverCallback);
+        this.auth = 'Bearer blablabla';
+    });
+
+    it('should create new item', async function () {
+        const record = {
+            "domainId": "my-domain",
+            "schemaUri": "my-schema",
+            "content": {
+                "some": "data"
+            },
+            "refs": [
+                {
+                    "applicationUid": "app-id",
+                    "recordUid": "record-id",
+                    "modificationHistory": [
+                        {
+                            "user": "user1",
+                            "operation": "put",
+                            "timestamp": "2019-07-18T13:37:50.867Z"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const scope = nockIamIntrospection();
+        const { body, statusCode } = await this.request
+            .post('/data')
+            .set('Authorization', this.auth)
+            .send(record);
+
+        expect(body).to.be.a('object');
+        expect(body).to.haveOwnProperty('data');
+        expect(body.data.id).to.be.a('string');
+        objectId = body.data.id;
+        delete body.data.id;
+        expect(body.data).to.deep.equal(Object.assign(record, {
+            owners: [{ id: 'user-id', type: 'user' }]
+        }));
+        expect(statusCode).to.equal(201);
+
+    });
+
+    it('should get an entry by id', async function () {
+        nockIamIntrospection();
+        const { body, statusCode } = await this.request
+            .get(`/data/${objectId}`)
+            .set('Authorization', this.auth);
+
+        expect(body.data.id).to.not.be.empty;
+
+        delete body.data.id;
+
+        expect(body).to.deep.equal({
+            "data": {
+                "content": {
+                    "some": "data",
+                },
+                "domainId": "my-domain",
+                "owners": [
+                    {
+                        "id": "user-id",
+                        "type": "user"
+                    }
+                ],
+                "refs": [
+                    {
+                        "applicationUid": "app-id",
+                        "modificationHistory": [
+                            {
+                                "operation": "put",
+                                "timestamp": "2019-07-18T13:37:50.867Z",
+                                "user": "user1"
+                            }
+                        ],
+                        "recordUid": "record-id",
+                    },
+                ],
+                "schemaUri": "my-schema",
+            },
+        });
+        expect(statusCode).to.equal(200);
+    });
+
+    it('should get an entry by recordId', async function () {
+        nockIamIntrospection();
+        const { body, statusCode } = await this.request
+            .get('/data/recordId/record-id')
+            .set('Authorization', this.auth);
+
+        expect(body.data.id).to.not.be.empty;
+
+        delete body.data.id;
+
+        expect(body).to.deep.equal({
+            "data": {
+                "content": {
+                    "some": "data",
+                },
+                "domainId": "my-domain",
+                "owners": [
+                    {
+                        "id": "user-id",
+                        "type": "user"
+                    }
+                ],
+                "refs": [
+                    {
+                        "applicationUid": "app-id",
+                        "modificationHistory": [
+                            {
+                                "operation": "put",
+                                "timestamp": "2019-07-18T13:37:50.867Z",
+                                "user": "user1"
+                            }
+                        ],
+                        "recordUid": "record-id",
+                    },
+                ],
+                "schemaUri": "my-schema",
+            },
+        });
+        expect(statusCode).to.equal(200);
     });
 });
