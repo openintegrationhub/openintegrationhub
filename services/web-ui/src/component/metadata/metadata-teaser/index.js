@@ -1,3 +1,4 @@
+/* eslint no-alert: 0 */
 import React from 'react';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';

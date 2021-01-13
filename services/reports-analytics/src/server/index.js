@@ -26,7 +26,6 @@ module.exports = class Server {
         const connectionString = this.mongoDbConnection
             || global.__MONGO_URI__
             || conf.mongoDbConnection;
-
         await mongoose.connect(connectionString, {
             poolSize: 50,
             socketTimeoutMS: 60000,
@@ -128,7 +127,6 @@ module.exports = class Server {
             // init express
             await this.setupExpress();
             this.server = await this.app.listen(conf.port);
-
             // load valid measuremnts
             this.measurements = getValidMeasurements(await Measurement.get());
             this.eventMap = new Map(this.measurements.map((m) => [m.eventName, m]));

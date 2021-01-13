@@ -2,8 +2,12 @@ const path = require('path')
 const { homedir } = require('os')
 
 const nodeImage = 'node:12-stretch'
+const kubernetesVersion = '1.19.2'
 
-const minikubeArgs = '--kubernetes-version=v1.19.2'
+const adminUsername = 'admin@openintegrationhub.com'
+const adminPassword = 'somestring'
+
+const minikubeArgs = `--kubernetes-version=v${kubernetesVersion}`
 const fullComposeArgs = '-V --remove-orphans --scale component-orchestrator=3'
 
 const clusterName = 'minikube'
@@ -70,8 +74,8 @@ const services = {
     externalPort: 3001,
     folder: 'iam',
     db: 'iam',
-    adminUsername: 'admin@openintegrationhub.com',
-    adminPassword: 'somestring',
+    adminUsername,
+    adminPassword,
   },
   secretService: {
     port: localPort,
@@ -176,6 +180,24 @@ const services = {
     externalPort: 3019,
     folder: 'template-repository',
     db: 'templateRepository',
+  },
+  rds: {
+    port: localPort,
+    externalPort: 3020,
+    folder: 'rds',
+    db: 'rds',
+  },
+  governanceService: {
+    port: localPort,
+    externalPort: 3021,
+    folder: 'governance-service',
+    db: 'governance-service',
+  },
+  reportsAnalytics: {
+    port: localPort,
+    externalPort: 3022,
+    folder: 'reports-analytics',
+    db: 'reports-analytics',
   },
 }
 

@@ -27,9 +27,7 @@ aliases:
         keys:
           - yarn-deps-{{ .Branch }}-{{ .Revision }}
     - run: |
-        git diff --no-commit-id --name-only -r `git log -n 2 --oneline --pretty=format:"%h" --first-parent master | tail -n1` > gitchanges.txt
         cd ./scripts # needed for compatible with travis implementation
-        node getChanges.js
         node build.js
     - save_cache:
         key: build-deps-{{ .Branch }}-{{ .Revision }}
@@ -150,6 +148,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/dispatcher-service
     steps: *yarn_test_steps
+  rds-test:
+    docker: *node_env
+    working_directory: ~/oih/services/rds
+    steps: *yarn_test_steps
 workflows:
   pipeline:
     jobs:
@@ -185,6 +187,9 @@ workflows:
           requires:
             - deps
       - template-repository-test:
+          requires:
+            - deps
+      - rds-test:
           requires:
             - deps
       - audit-log-test:
@@ -231,6 +236,7 @@ workflows:
             - flow-repository-test
             - template-repository-test
             - audit-log-test
+            - rds-test
             - lib-component-repository-test
             - lib-ferryman-test
             - data-hub-test

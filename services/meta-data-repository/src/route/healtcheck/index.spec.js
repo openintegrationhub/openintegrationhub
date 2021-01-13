@@ -11,7 +11,7 @@ describe('healthcheck', () => {
         port = 5110;
         request = supertest(`http://localhost:${port}`);
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'healthcheck'),
+            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'healthcheck'),
             port,
         });
         await server.start();

@@ -1,0 +1,144 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "description": "REST API of RDS service (basic implementation)\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
+    "version": "0.0.1",
+    "title": "Raw data storage",
+    "termsOfService": "https://openintegrationhub.org/terms/",
+    "contact": {
+      "email": "hans.eggert@basaas.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "paths": {
+    "/raw-record/{id}": {
+      "get": {
+        "x-swagger-router-controller": "record",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "raw record"
+        ],
+        "summary": "Find raw record by id",
+        "description": "Returns a single raw record by its ID, if the user is authorized to see it. This requires the 'raw-record.read' permission",
+        "operationId": "getRawRecordById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of raw record to return",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the raw record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/RawRecord"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Meta"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No raw record with this id was found."
+          }
+        }
+      }
+    },
+    "/healthcheck": {
+      "get": {
+        "x-swagger-router-controller": "healthcheck",
+        "security": [],
+        "tags": [
+          "healthcheck"
+        ],
+        "summary": "Performs a healthcheck",
+        "description": "This will return 200 status code if service is healthy.",
+        "responses": {
+          "200": {
+            "description": "Service is healthy"
+          },
+          "500": {
+            "description": "Service is unhealthy"
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about the Raw Data Service",
+    "url": "https://github.com/openintegrationhub"
+  },
+  "servers": [
+    {
+      "url": "https://rds.openintegrationhub.com/"
+    },
+    {
+      "url": "http://localhost:3001/"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Enter the bearer token received by IAM"
+      }
+    },
+    "schemas": {
+      "RawRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object"
+          },
+          "owners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Owner"
+            }
+          }
+        }
+      },
+      "Meta": {
+        "type": "object"
+      },
+      "Owner": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "External id of the owner"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type to discriminate between user or tenant"
+          }
+        }
+      }
+    }
+  }
+}

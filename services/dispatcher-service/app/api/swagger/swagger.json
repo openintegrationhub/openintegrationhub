@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "This is the API for the Open Integration Hub Microservice \"Dispatcher Service\"\n[http://openintegrationhub.de](http://openintegrationhub.de)\n",
+    "description": "This is the API for the Open Integration Hub Microservice \"Dispatcher Service\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
     "version": "0.0.1",
     "title": "Dispatcher Service",
-    "termsOfService": "http://openintegrationhub.de/terms/",
+    "termsOfService": "https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
     "contact": {
       "email": "shoeffler@wice.de"
     },
@@ -19,7 +19,7 @@
       "description": "Configure your dispatch settings",
       "externalDocs": {
         "description": "Find out more",
-        "url": "http://openintegrationhub.de"
+        "url": "https://openintegrationhub.org"
       }
     }
   ],
@@ -32,9 +32,7 @@
             "Bearer": []
           }
         ],
-        "tags": [
-          "dispatches"
-        ],
+        "tags": ["dispatches"],
         "summary": "Gets all of the tenants dispatch configurations",
         "operationId": "getConfigs",
         "responses": {
@@ -45,8 +43,11 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {"type": "array", "items": {"$ref": "#/components/schemas/Config"}},
-                    "meta": {"type": "object"}
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Config" }
+                    },
+                    "meta": { "type": "object" }
                   }
                 }
               }
@@ -64,9 +65,7 @@
             "Bearer": []
           }
         ],
-        "tags": [
-          "dispatches"
-        ],
+        "tags": ["dispatches"],
         "summary": "Adds a dispatch configuration",
         "description": "Necessary flows are automatically created.",
         "operationId": "addConfig",
@@ -75,7 +74,7 @@
             "application/json": {
               "schema": {
                 "type": "array",
-                "items": {"$ref": "#/components/schemas/MutableApplications"}
+                "items": { "$ref": "#/components/schemas/MutableApplications" }
               }
             }
           },
@@ -90,8 +89,8 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {"$ref": "#/components/schemas/Config"},
-                    "meta": {"type": "object"}
+                    "data": { "$ref": "#/components/schemas/Config" },
+                    "meta": { "type": "object" }
                   }
                 }
               }
@@ -99,205 +98,196 @@
           }
         }
       }
-      },
-      "/dispatches/{id}": {
-        "get": {
-          "x-swagger-router-controller": "configuration",
-          "security": [
-            {
-              "Bearer": []
-            }
-          ],
-          "tags": [
-            "dispatches"
-          ],
-          "summary": "Gets a single dispatch configuration",
-          "description": "All associated flows will also be deleted.",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "ID of the configuration to get",
-              "required": true,
-              "schema": {
-                "type": "string",
-                "format": "string"
-              }
-            }
-          ],
-          "operationId": "getSingleConfig",
-          "responses": {
-            "200": {
-              "description": "The configuration has been deleted.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "data": {"$ref": "#/components/schemas/Config"},
-                      "meta": {"type": "object"}
-                    }
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "No configuration found."
+    },
+    "/dispatches/{id}": {
+      "get": {
+        "x-swagger-router-controller": "configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": ["dispatches"],
+        "summary": "Gets a single dispatch configuration",
+        "description": "All associated flows will also be deleted.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the configuration to get",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
             }
           }
-        },
-        "delete": {
-          "x-swagger-router-controller": "configuration",
-          "security": [
-            {
-              "Bearer": []
-            }
-          ],
-          "tags": [
-            "dispatches"
-          ],
-          "summary": "Deletes the a dispatch configuration",
-          "description": "All associated flows will also be deleted.",
-          "operationId": "deleteConfig",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "ID of the configuration to delete",
-              "required": true,
-              "schema": {
-                "type": "string",
-                "format": "string"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "The configuration has been deleted."
-            },
-            "404": {
-              "description": "No configuration found."
-            }
-          }
-        }
-      },
-      "/dispatches/{id}/app": {
-        "put": {
-          "x-swagger-router-controller": "configuration",
-          "security": [
-            {
-              "Bearer": []
-            }
-          ],
-          "tags": [
-            "dispatches"
-          ],
-          "summary": "Adds one or several applications to an existing configuration",
-          "description": "All new flows will be automatically created.",
-          "requestBody": {
+        ],
+        "operationId": "getSingleConfig",
+        "responses": {
+          "200": {
+            "description": "The configuration has been deleted.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {"$ref": "#/components/schemas/MutableApplications"}
-                }
-              }
-            },
-            "description": "The applications of the configuration.",
-            "required": true
-          },
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "ID of the configuration to modify",
-              "required": true,
-              "schema": {
-                "type": "string",
-                "format": "string"
-              }
-            }
-          ],
-          "operationId": "addAppToConfig",
-          "responses": {
-            "200": {
-              "description": "Returns the updated configuration",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "data": {"$ref": "#/components/schemas/Config"},
-                      "meta": {"type": "object"}
-                    }
+                  "type": "object",
+                  "properties": {
+                    "data": { "$ref": "#/components/schemas/Config" },
+                    "meta": { "type": "object" }
                   }
                 }
               }
-            },
-            "404": {
-              "description": "No configuration found."
             }
+          },
+          "404": {
+            "description": "No configuration found."
           }
         }
       },
-      "/dispatches/{id}/app/{appId}": {
-        "delete": {
-          "x-swagger-router-controller": "configuration",
-          "security": [
-            {
-              "Bearer": []
+      "delete": {
+        "x-swagger-router-controller": "configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": ["dispatches"],
+        "summary": "Deletes the a dispatch configuration",
+        "description": "All associated flows will also be deleted.",
+        "operationId": "deleteConfig",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the configuration to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
             }
-          ],
-          "tags": [
-            "dispatches"
-          ],
-          "summary": "Removes one app from a configuration",
-          "description": "All associated flows will automatically be deleted",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "ID of the configuration to modify",
-              "required": true,
-              "schema": {
-                "type": "string",
-                "format": "string"
-              }
-            },
-            {
-              "name": "appId",
-              "in": "path",
-              "description": "MongoDB _id of the application (not appUid) to remove",
-              "required": true,
-              "schema": {
-                "type": "string",
-                "format": "string"
-              }
-            }
-          ],
-          "operationId": "removeAppFromConfig",
-          "responses": {
-            "200": {
-              "description": "Returns the updated configuration",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "data": {"$ref": "#/components/schemas/Config"},
-                      "meta": {"type": "object"}
-                    }
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "No configuration found."
-            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The configuration has been deleted."
+          },
+          "404": {
+            "description": "No configuration found."
           }
         }
       }
-
+    },
+    "/dispatches/{id}/app": {
+      "put": {
+        "x-swagger-router-controller": "configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": ["dispatches"],
+        "summary": "Adds one or several applications to an existing configuration",
+        "description": "All new flows will be automatically created.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/MutableApplications" }
+              }
+            }
+          },
+          "description": "The applications of the configuration.",
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the configuration to modify",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "operationId": "addAppToConfig",
+        "responses": {
+          "200": {
+            "description": "Returns the updated configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "$ref": "#/components/schemas/Config" },
+                    "meta": { "type": "object" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No configuration found."
+          }
+        }
+      }
+    },
+    "/dispatches/{id}/app/{appId}": {
+      "delete": {
+        "x-swagger-router-controller": "configuration",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": ["dispatches"],
+        "summary": "Removes one app from a configuration",
+        "description": "All associated flows will automatically be deleted",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the configuration to modify",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "description": "MongoDB _id of the application (not appUid) to remove",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "operationId": "removeAppFromConfig",
+        "responses": {
+          "200": {
+            "description": "Returns the updated configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "$ref": "#/components/schemas/Config" },
+                    "meta": { "type": "object" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No configuration found."
+          }
+        }
+      }
+    }
   },
   "externalDocs": {
     "description": "Find out more about the Open Integration Hub",
@@ -323,54 +313,129 @@
       "MutableApplications": {
         "type": "object",
         "properties": {
-          "applicationName": { "type": "string", "description": "Human-Readable name of the application", "example": "SnazzyContacts"},
-          "applicationUid": { "type": "string", "description": "Unique identifier of the application", "example": "32bsf84hzsf8a"},
-          "adapterComponentId": { "type": "string", "description": "ComponentId of the application's adapter", "example": "46u08ejsf"},
-          "transformerComponentId": { "type": "string", "description": "ComponentId of the application's transformer", "example": "twg9huh46"},
-          "secretId": { "type": "string", "description": "ID of the secret containing credentials for this application", "example": "548z9jvsda"},
+          "applicationName": {
+            "type": "string",
+            "description": "Human-Readable name of the application",
+            "example": "SnazzyContacts"
+          },
+          "applicationUid": {
+            "type": "string",
+            "description": "Unique identifier of the application",
+            "example": "32bsf84hzsf8a"
+          },
+          "adapterComponentId": {
+            "type": "string",
+            "description": "ComponentId of the application's adapter",
+            "example": "46u08ejsf"
+          },
+          "transformerComponentId": {
+            "type": "string",
+            "description": "ComponentId of the application's transformer",
+            "example": "twg9huh46"
+          },
+          "secretId": {
+            "type": "string",
+            "description": "ID of the secret containing credentials for this application",
+            "example": "548z9jvsda"
+          },
 
           "outbound": {
             "type": "object",
             "description": "Contains information about data received from the application",
             "properties": {
-              "active": {"type": "boolean", "description": "Denotes whether this direction is active", "example": true},
-              "flows": {"type": "array", "description": "Contains information about each flow", "items": {"$ref": "#/components/schemas/MutableOutboundFlow"}}
+              "active": {
+                "type": "boolean",
+                "description": "Denotes whether this direction is active",
+                "example": true
+              },
+              "flows": {
+                "type": "array",
+                "description": "Contains information about each flow",
+                "items": { "$ref": "#/components/schemas/MutableOutboundFlow" }
+              }
             }
           },
           "inbound": {
             "type": "object",
             "description": "Contains information about data sent to the application",
             "properties": {
-              "active": {"type": "boolean", "description": "Denotes whether this direction is active", "example": true},
-              "flows": {"type": "array", "description": "Contains information about each flow", "items": {"$ref": "#/components/schemas/MutableInboundFlow"}}
+              "active": {
+                "type": "boolean",
+                "description": "Denotes whether this direction is active",
+                "example": true
+              },
+              "flows": {
+                "type": "array",
+                "description": "Contains information about each flow",
+                "items": { "$ref": "#/components/schemas/MutableInboundFlow" }
+              }
             }
           }
         }
       },
       "Config": {
-          "type": "object",
-          "properties": {
-            "id": {"type": "string", "description": "Unique ID of this configuration", "example": "adgeth2huo31r59"},
-            "tenant": {"type": "string", "description": "ID of the tenant owning this configuration", "example": "aeg0ihq3w328"},
-            "applications": {"type": "array", "description": "An array containing all connected applications", "items": { "$ref": "#/components/schemas/MutableApplications" }
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique ID of this configuration",
+            "example": "adgeth2huo31r59"
+          },
+          "tenant": {
+            "type": "string",
+            "description": "ID of the tenant owning this configuration",
+            "example": "aeg0ihq3w328"
+          },
+          "applications": {
+            "type": "array",
+            "description": "An array containing all connected applications",
+            "items": { "$ref": "#/components/schemas/MutableApplications" }
           }
         }
       },
       "MutableOutboundFlow": {
         "type": "object",
         "properties": {
-          "adapterAction": {"type": "string", "description": "Action taken by the adapter", "example": "getPersons"},
-          "transformerAction": {"type": "string", "description": "Action taken by the transformer", "example": "transformToOih"},
-          "schemaUri": {"type": "string", "description": "URI of the schema used by this flow", "example": "http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person"}
+          "adapterAction": {
+            "type": "string",
+            "description": "Action taken by the adapter",
+            "example": "getPersons"
+          },
+          "transformerAction": {
+            "type": "string",
+            "description": "Action taken by the transformer",
+            "example": "transformToOih"
+          },
+          "schemaUri": {
+            "type": "string",
+            "description": "URI of the schema used by this flow",
+            "example": "http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person"
+          }
         }
       },
       "MutableInboundFlow": {
         "type": "object",
         "properties": {
-          "adapterAction": {"type": "string", "description": "Action taken by the adapter", "example": "createPerson"},
-          "transformerAction": {"type": "string", "description": "Action taken by the transformer", "example": "transformFromOih"},
-          "schemaUri": {"type": "string", "description": "URI of the schema used by this flow", "example": "http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person"},
-          "operation": {"type": "string", "description": "For inbound flows, denoting which operation (C/U/D) is used", "example": "CREATE"}
+          "adapterAction": {
+            "type": "string",
+            "description": "Action taken by the adapter",
+            "example": "createPerson"
+          },
+          "transformerAction": {
+            "type": "string",
+            "description": "Action taken by the transformer",
+            "example": "transformFromOih"
+          },
+          "schemaUri": {
+            "type": "string",
+            "description": "URI of the schema used by this flow",
+            "example": "http://metadata.openintegrationhub.com/api/v1/domains/testDomainId/schemas/person"
+          },
+          "operation": {
+            "type": "string",
+            "description": "For inbound flows, denoting which operation (C/U/D) is used",
+            "example": "CREATE"
+          }
         }
       },
       "OutboundFlow": {
@@ -381,7 +446,11 @@
           {
             "type": "object",
             "properties": {
-            "flowId": {"type": "string", "description": "ID of the automatically created flow", "example": "oaeh97w4tzasf2"}
+              "flowId": {
+                "type": "string",
+                "description": "ID of the automatically created flow",
+                "example": "oaeh97w4tzasf2"
+              }
             }
           }
         ]
@@ -394,7 +463,11 @@
           {
             "type": "object",
             "properties": {
-            "flowId": {"type": "string", "description": "ID of the automatically created flow", "example": "oaeh97w4tzasf2"}
+              "flowId": {
+                "type": "string",
+                "description": "ID of the automatically created flow",
+                "example": "oaeh97w4tzasf2"
+              }
             }
           }
         ]

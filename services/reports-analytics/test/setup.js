@@ -1,45 +1,38 @@
+/* eslint import/no-extraneous-dependencies: 0 */
+
 const path = require('path');
-require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') });
 const fs = require('fs');
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') });
 const { MongoMemoryReplSet } = require('mongodb-memory-server');
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');
 
-const dbName = 'changeme';
-const setName = 'jestset';
+const dbName = '_replace_me_';
+const setName = 'jest-set';
 
-const mongod = new MongoMemoryReplSet({
-    binary: {
-        version: '3.6.17',
-    },
+const replSet = new MongoMemoryReplSet({
+    autoStart: true,
     instanceOpts: [
         { storageEngine: 'wiredTiger' },
         { storageEngine: 'wiredTiger' },
     ],
-    replSet: {
-        dbName,
-        name: setName,
-    },
-    // debug: true,
-    autoStart: false,
+    replSet: { dbName, name: setName },
 });
 
 module.exports = async () => {
-    if (!mongod.isRunning) {
-        await mongod.start();
-        await mongod.waitUntilRunning();
-    }
-
-    const mongoConfig = {
-        mongoDBName: dbName,
-        mongoUri: `${await mongod.getConnectionString()}?replicaSet=${setName}`,
-    };
-
-    // Write global config to disk because all tests run in different contexts.
-    fs.writeFileSync(globalConfigPath, JSON.stringify(mongoConfig));
-    console.log('Config is written');
+    await replSet.waitUntilRunning();
+    const uri = await replSet.getUri();
 
     // Set reference to mongod in order to close the server during teardown.
-    global.__MONGOD__ = mongod;
-    process.env.MONGO_URL = mongoConfig.mongoUri;
+    global.__MONGOD__ = replSet;
+    process.env.MONGO_URL = uri;
+
+    // Write global config to disk because all tests run in different contexts.
+    fs.writeFileSync(
+        globalConfigPath,
+        JSON.stringify({
+            mongoUri: uri,
+        }),
+    );
+    console.log('Config is written');
 };

@@ -6,12 +6,14 @@
 
 The revolution in data synchronization — the Open Integration Hub enables simple data synchronization between any software applications and thus accelerates digitalisation
 
-Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.de/)
+Visit the official [Open Integration Hub homepage](https://www.openintegrationhub.org/)
 
 # Dispatcher Service
+
 The OIH Dispatcher Service can be used to transfer data from one flow to another. This allows for automated propagation of data among any number of connected applications and serves as the basis for the OIH Hub and Spoke functionality.
 
 ## Technical description
+
 The Dispatcher service consists of two main parts: A user-facing API that allows for the creation and modification of tenant-specific hub-and-spoke configurations, and an automated component that propagates data based on these configurations.
 
 ### Configuration
@@ -53,7 +55,7 @@ A configuration describes a list of applications, each with an arbitrary number 
       ]
     }
   },
-{
+  {
     "applicationName": "Wice CRM",
     "applicationUid": "wice",
     "adapterComponentId": "5ce27d653860ff001a034275",
@@ -87,36 +89,36 @@ A configuration describes a list of applications, each with an arbitrary number 
     }
   },
   {
-      "applicationName": "MS Outlook",
-      "applicationUid": "outlook",
-      "adapterComponentId": "5ce27d653860ff001a034642",
-      "transformerComponentId": "5ce27f2d3860ff001a036290",
-      "outbound": {
-        "active": false,
-        "flows": []
-      },
-      "inbound": {
-        "active": true,
-        "flows": [
-          {
-            "adapterAction": "createContact",
-            "transformerAction": "transformPersonFromOih",
-            "schemaUri": "http://metadata.openintegrationhub.com/api/v1/domains/5d9b2511d48c29001a202169/schemas/person",
-            "operation": "CREATE"
-          },
-          {
-            "adapterAction": "updateContact",
-            "transformerAction": "transformPersonFromOih",
-            "schemaUri": "http://metadata.openintegrationhub.com/api/v1/domains/5d9b2511d48c29001a202169/schemas/person",
-            "operation": "UPDATE"
-          }
-        ]
-      }
+    "applicationName": "MS Outlook",
+    "applicationUid": "outlook",
+    "adapterComponentId": "5ce27d653860ff001a034642",
+    "transformerComponentId": "5ce27f2d3860ff001a036290",
+    "outbound": {
+      "active": false,
+      "flows": []
+    },
+    "inbound": {
+      "active": true,
+      "flows": [
+        {
+          "adapterAction": "createContact",
+          "transformerAction": "transformPersonFromOih",
+          "schemaUri": "http://metadata.openintegrationhub.com/api/v1/domains/5d9b2511d48c29001a202169/schemas/person",
+          "operation": "CREATE"
+        },
+        {
+          "adapterAction": "updateContact",
+          "transformerAction": "transformPersonFromOih",
+          "schemaUri": "http://metadata.openintegrationhub.com/api/v1/domains/5d9b2511d48c29001a202169/schemas/person",
+          "operation": "UPDATE"
+        }
+      ]
     }
+  }
 ]
 ```
 
-In this example, any changes made in Wice are propagated to Snazzy and Outlook, and changes made in Snazzy are propagated to Wice and Outlook. Changes made in Outlook are not propagated, as it does not have an active outbound flow. In this configuration, only *Create* and *Update* operations are supported, whereas *Delete* operations are discarded.
+In this example, any changes made in Wice are propagated to Snazzy and Outlook, and changes made in Snazzy are propagated to Wice and Outlook. Changes made in Outlook are not propagated, as it does not have an active outbound flow. In this configuration, only _Create_ and _Update_ operations are supported, whereas _Delete_ operations are discarded.
 
 The dispatcher will automatically create a flow for each entry in the `flows` arrays at the Flow Repository, and save their ids as part of the configuration. When a configuration is deleted, all associated flows are automatically deleted alongside it.
 
@@ -139,7 +141,9 @@ In the `examples` folder you can find a simple node script that creates a basic 
 Visit `dispatcher-service.openintegrationhub.com/api-docs/` to view the Swagger API-Documentation
 
 ## Current status
+
 Dispatcher service is currently capable of:
+
 - Storing and retrieving dispatch configurations
 - Routing incoming dispatch events according to these configurations
 - Communicating with the Flow Repository to automatically create necessary flows for a configuration

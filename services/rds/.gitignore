@@ -1,0 +1,6 @@
+node_modules
+mongodb-binaries
+
+globalConfig.json
+.env
+coverage/

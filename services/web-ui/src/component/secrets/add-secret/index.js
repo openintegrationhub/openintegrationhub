@@ -154,7 +154,7 @@ AddSecret.propTypes = {
     close: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = () => ({
 
 });
 const mapDispatchToProps = dispatch => bindActionCreators({

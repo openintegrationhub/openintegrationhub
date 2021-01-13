@@ -101,16 +101,16 @@ class FlowTeaser extends React.PureComponent {
 
     getStatus(classes) {
         switch (this.props.data.status) {
-            case 'starting':
-                return <span className={classes.indicator} style={{ backgroundColor: 'yellow' }} />;
-            case 'stopping':
-                return <span className={classes.indicator} style={{ backgroundColor: 'red' }} />;
-            case 'active':
-                return <span className={classes.indicator} style={{ backgroundColor: 'green' }} />;
-            case 'inactive':
-                return <span className={classes.indicator} style={{ backgroundColor: 'grey' }} />;
-            default:
-                return null;
+        case 'starting':
+            return <span className={classes.indicator} style={{ backgroundColor: 'yellow' }} />;
+        case 'stopping':
+            return <span className={classes.indicator} style={{ backgroundColor: 'red' }} />;
+        case 'active':
+            return <span className={classes.indicator} style={{ backgroundColor: 'green' }} />;
+        case 'inactive':
+            return <span className={classes.indicator} style={{ backgroundColor: 'grey' }} />;
+        default:
+            return null;
         }
     }
 

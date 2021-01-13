@@ -1,6 +1,6 @@
 {
   "name": "template-repository",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Holds reproducible templates which can be used to generate flows.",
   "repository": {
     "type" : "git",
@@ -43,7 +43,7 @@
     "eslint-plugin-mocha": "^5.2.0",
     "eslint-plugin-prettier": "3.1.4",
     "prettier": "2.1.1",
-    "jest": "^24.7.1",
+    "jest": "26.6.0",
     "mongod": "^2.0.0",
     "mongodb-memory-server": "6.6.3",
     "nodemon": "^2.0.4",

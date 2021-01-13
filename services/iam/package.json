@@ -1,6 +1,6 @@
 {
   "name": "iam-service",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Identity and Access Management Service",
   "main": "index.js",
   "scripts": {
@@ -63,7 +63,7 @@
     "eslint-plugin-import": "2.16.0",
     "eslint-plugin-jasmine": "2.10.1",
     "eslint-plugin-jest": "22.2.2",
-    "jest": "24.7.1",
+    "jest": "26.6.0",
     "mongodb-memory-server": "6.7.6",
     "node-forge": "0.10.0",
     "node-sass-chokidar": "1.5.0",
