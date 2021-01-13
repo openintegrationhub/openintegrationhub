@@ -71,6 +71,34 @@ export default class DataController {
         };
     }
 
+    public async getOneByRecordId(ctx: RouterContext): Promise<void> {
+        const { id } = ctx.params;
+        const { user } = ctx.state;
+
+        console.log('DataObject:', DataObject);
+
+        const dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
+
+        if (!dataObject) {
+            throw new NotFound();
+        }
+
+        if (!dataObject.owners.find((o: any) => o.id === user.sub)) {
+            throw new Unauthorized();
+        }
+
+        dataObject.id = dataObject._id;
+        delete dataObject._id;
+        delete dataObject.createdAt;
+        delete dataObject.updatedAt;
+        delete dataObject.__v;
+
+        ctx.status = 200;
+        ctx.body = {
+            data: dataObject
+        };
+    }
+
     public async putOne(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { id } = ctx.params;
