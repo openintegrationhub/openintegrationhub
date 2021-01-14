@@ -74,7 +74,7 @@ describe('Data Route', () => {
         });
     });
 
-    describe.only('POST /data/recordId:id', () => {
+    describe('POST /data/recordId:id', () => {
         it('should create new item with recordId', async function () {
             const record = {
                 "domainId": "my-domain",
@@ -92,7 +92,7 @@ describe('Data Route', () => {
                                 "operation": "put",
                                 "timestamp": "2019-07-18T13:37:50.867Z"
                             }
-                        ]
+                        ],
                     }
                 ]
             };
@@ -102,7 +102,6 @@ describe('Data Route', () => {
                 .post('/data/recordId/record-id')
                 .set('Authorization', this.auth)
                 .send(record);
-
 
             expect(body).to.be.a('object');
 
@@ -141,12 +140,21 @@ describe('Data Route', () => {
                 ]
             };
 
-            const scope = nockIamIntrospection();
-            const { body, statusCode } = await this.request
+            let scope = nockIamIntrospection();
+
+            // Create
+            await this.request
                 .post('/data/recordId/record-id')
                 .set('Authorization', this.auth)
                 .send(record);
 
+            scope = nockIamIntrospection();
+
+            // Update
+            const { body, statusCode } = await this.request
+                .post('/data/recordId/record-id')
+                .set('Authorization', this.auth)
+                .send(record);
 
             expect(body).to.be.a('object');
 

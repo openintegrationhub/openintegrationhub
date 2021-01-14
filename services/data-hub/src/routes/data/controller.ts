@@ -177,8 +177,16 @@ export default class DataController {
 
         body.owners = body.owners || [];
 
+        if (!body.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+            body.owners.push({
+                id: user.sub,
+                type: 'user'
+            });
+        }
+        
         // let dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
-        let dataObject = await DataObject.findOne({}).lean();
+        let dataObject = await DataObject.findOne();
+        console.log(dataObject);
 
         console.log('dataObject', dataObject);
 
@@ -189,12 +197,6 @@ export default class DataController {
             await dataObject.save();
         } else {
             action = 'insert';
-            if (!body.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-                body.owners.push({
-                    id: user.sub,
-                    type: 'user'
-                });
-            }
             dataObject = await DataObject.create(body);
         }
 
