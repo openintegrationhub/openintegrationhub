@@ -169,4 +169,40 @@ export default class DataController {
             data: dataObject
         };
     }
+
+    public async postByRecordId(ctx: RouterContext): Promise<void> {
+        const { body } = ctx.request;
+        const { user } = ctx.state;
+        const { id } = ctx.params;
+
+        body.owners = body.owners || [];
+
+        // let dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
+        let dataObject = await DataObject.findOne({}).lean();
+
+        console.log('dataObject', dataObject);
+
+        let action;
+        if (dataObject) {
+            action = 'update';
+            Object.assign(dataObject, body);
+            await dataObject.save();
+        } else {
+            action = 'insert';
+            if (!body.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+                body.owners.push({
+                    id: user.sub,
+                    type: 'user'
+                });
+            }
+            dataObject = await DataObject.create(body);
+        }
+
+        ctx.status = 201;
+        ctx.body = {
+            data: dataObject,
+            action,
+        };
+
+    }
 }

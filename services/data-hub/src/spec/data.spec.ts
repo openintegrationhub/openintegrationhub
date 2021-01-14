@@ -74,6 +74,96 @@ describe('Data Route', () => {
         });
     });
 
+    describe.only('POST /data/recordId:id', () => {
+        it('should create new item with recordId', async function () {
+            const record = {
+                "domainId": "my-domain",
+                "schemaUri": "my-schema",
+                "content": {
+                    "some": "data"
+                },
+                "refs": [
+                    {
+                        "applicationUid": "app-id",
+                        "recordUid": "record-id",
+                        "modificationHistory": [
+                            {
+                                "user": "user1",
+                                "operation": "put",
+                                "timestamp": "2019-07-18T13:37:50.867Z"
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const scope = nockIamIntrospection();
+            const { body, statusCode } = await this.request
+                .post('/data/recordId/record-id')
+                .set('Authorization', this.auth)
+                .send(record);
+
+
+            expect(body).to.be.a('object');
+
+            expect(body).to.haveOwnProperty('action');
+            expect(body.action).to.equal('insert');
+
+            expect(body).to.haveOwnProperty('data');
+            expect(body.data.id).to.be.a('string');
+            objectId = body.data.id;
+            delete body.data.id;
+            expect(body.data).to.deep.equal(Object.assign(record, {
+                owners: [{ id: 'user-id', type: 'user' }]
+            }));
+            expect(statusCode).to.equal(201);
+        });
+
+        it('should update existing item with recordId', async function () {
+            const record = {
+                "domainId": "my-domain",
+                "schemaUri": "my-schema",
+                "content": {
+                    "some": "data"
+                },
+                "refs": [
+                    {
+                        "applicationUid": "app-id",
+                        "recordUid": "record-id",
+                        "modificationHistory": [
+                            {
+                                "user": "user1",
+                                "operation": "put",
+                                "timestamp": "2019-07-18T13:37:50.867Z"
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const scope = nockIamIntrospection();
+            const { body, statusCode } = await this.request
+                .post('/data/recordId/record-id')
+                .set('Authorization', this.auth)
+                .send(record);
+
+
+            expect(body).to.be.a('object');
+
+            expect(body).to.haveOwnProperty('action');
+            expect(body.action).to.equal('update');
+
+            expect(body).to.haveOwnProperty('data');
+            expect(body.data.id).to.be.a('string');
+            objectId = body.data.id;
+            delete body.data.id;
+            expect(body.data).to.deep.equal(Object.assign(record, {
+                owners: [{ id: 'user-id', type: 'user' }]
+            }));
+            expect(statusCode).to.equal(201);
+        });
+    });
+
     describe('PUT /data/:id', () => {
         it('should rewrite existing object', async function () {
             const record = {
