@@ -2,12 +2,12 @@ const path = require('path')
 const { homedir } = require('os')
 
 const nodeImage = 'node:12-stretch'
-const kubernetesVersion = '1.19.2'
+const kubernetesVersion = 'v1.20.2'
 
 const adminUsername = 'admin@openintegrationhub.com'
 const adminPassword = 'somestring'
 
-const minikubeArgs = `--kubernetes-version=v${kubernetesVersion}`
+const minikubeArgs = `--kubernetes-version=${kubernetesVersion}`
 const fullComposeArgs = '-V --remove-orphans --scale component-orchestrator=3'
 
 const clusterName = 'minikube'
