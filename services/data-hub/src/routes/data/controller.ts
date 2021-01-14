@@ -1,4 +1,5 @@
 import { RouterContext } from 'koa-router';
+import mongoose from 'mongoose';
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
@@ -168,5 +169,75 @@ export default class DataController {
         ctx.body = {
             data: dataObject
         };
+    }
+
+    public async postByRecordId(ctx: RouterContext): Promise<void> {
+        const { body } = ctx.request;
+        const { user } = ctx.state;
+        const { id } = ctx.params;
+
+        // let dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
+
+        const query = body.oihUid ?
+            {
+                $or: [
+                    { 'refs.recordUid': body.recordUid },
+                    {_id: mongoose.Types.ObjectId(body.oihUid)}
+                ]
+            } :
+            {'refs.recordUid': body.recordUid}
+
+        console.log('Hallo?')
+        console.log(query)
+        let dataObject = await DataObject.findOne(query);
+        console.log(dataObject);
+
+        console.log('dataObject', dataObject);
+
+        let action;
+        if (dataObject) {
+            action = 'update';
+
+            if (!dataObject.refs.find((ref => ref.recordUid === body.recordUid))) {
+                dataObject.refs.push({
+                    recordUid: body.recordUid,
+                    applicationUid: body.applicationUid
+                })
+            }
+
+            if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+                let newIOwner: IOwnerDocument;
+                newIOwner.id = user.sub;
+                newIOwner.type = 'user';
+                dataObject.owners.push(newIOwner);
+            }
+
+            await dataObject.save();
+        } else {
+            action = 'insert';
+
+            const newObject = {
+                refs: [
+                    {
+                        recordUid: body.recordUid,
+                        applicationUid: body.applicationUid
+                    }
+                ],
+                owners: [
+                    {
+                        id: user.sub,
+                        type: 'user'
+                    }
+                ]
+            }
+            dataObject = await DataObject.create(newObject);
+        }
+
+        ctx.status = 201;
+        ctx.body = {
+            data: dataObject,
+            action,
+        };
+
     }
 }

@@ -74,6 +74,94 @@ describe('Data Route', () => {
         });
     });
 
+    describe('POST /data/recordId', () => {
+        it('should create new item with recordId', async function () {
+            const record = {
+                "applicationUid": "app-id",
+                "recordUid": "record-id",
+            };
+
+            const scope = nockIamIntrospection();
+            const { body, statusCode } = await this.request
+                .post('/data/recordId')
+                .set('Authorization', this.auth)
+                .send(record);
+
+            expect(body).to.be.a('object');
+
+            expect(body).to.haveOwnProperty('action');
+            expect(body.action).to.equal('insert');
+
+            expect(body).to.haveOwnProperty('data');
+            expect(body.data.id).to.be.a('string');
+            objectId = body.data.id;
+            delete body.data.id;
+            expect(body.data).to.deep.equal({
+                refs: [
+                    { recordUid: 'record-id', applicationUid: 'app-id', modificationHistory: [] }
+                ],
+                owners: [{ id: 'user-id', type: 'user' }],
+            });
+            expect(statusCode).to.equal(201);
+        });
+
+        it('should update existing item with recordId', async function () {
+            const record = {
+                recordUid: 'record',
+                applicationUid: 'app'
+            };
+
+
+            let scope = nockIamIntrospection();
+
+            // Create
+            const createResponse = await this.request
+                .post('/data/recordId')
+                .set('Authorization', this.auth)
+                .send(record);
+
+            const oihUid = createResponse.body.data.id;
+
+            scope = nockIamIntrospection();
+
+            const anotherRecord = {
+                oihUid,
+                recordUid: 'another-record',
+                applicationUid: 'another-app'
+            };
+
+
+            // Update
+            const { body, statusCode } = await this.request
+                .post('/data/recordId')
+                .set('Authorization', this.auth)
+                .send(anotherRecord);
+
+            expect(body).to.be.a('object');
+
+            expect(body).to.haveOwnProperty('action');
+            expect(body.action).to.equal('update');
+
+            expect(body).to.haveOwnProperty('data');
+            expect(body.data.id).to.be.a('string');
+            objectId = body.data.id;
+            delete body.data.id;
+            expect(body.data.refs).to.deep.equal([
+                {
+                    recordUid: 'record',
+                    applicationUid: 'app',
+                    modificationHistory: []
+                },
+                {
+                    recordUid: 'another-record',
+                    applicationUid: 'another-app',
+                    modificationHistory: []
+                }
+            ]);
+            expect(statusCode).to.equal(201);
+        });
+    });
+
     describe('PUT /data/:id', () => {
         it('should rewrite existing object', async function () {
             const record = {

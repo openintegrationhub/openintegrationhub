@@ -1,6 +1,6 @@
 {
   "name": "data-hub",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Data hub",
   "main": "dist/index.js",
   "directories": {
@@ -14,13 +14,14 @@
     "start:dev": "NODE_ENV=development ts-node-dev ./src/app.ts | bunyan",
     "start:container": "ts-node-dev ./src/app.ts | bunyan",
     "test": "NODE_ENV=test mocha --exit --require ts-node/register src/**/*.spec.ts",
-    "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts ./src",
+    "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts ./src --fix",
     "pretest": "npm run eslint",
     "build:ts": "tsc",
     "build:docker": "docker build -t openintegrationhub/data-hub:${VERSION} -f Dockerfile ../../"
   },
   "license": "UNLICENSED",
   "devDependencies": {
+    "@types/babel__core": "7.1.12",
     "@types/bunyan": "1.8.6",
     "@types/chai": "4.1.7",
     "@types/koa-bodyparser": "4.3.0",
