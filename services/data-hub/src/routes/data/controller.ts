@@ -207,10 +207,8 @@ export default class DataController {
 
             if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
                 let newIOwner: IOwnerDocument;
-                Object.assign(newIOwner, {
-                    id: user.sub,
-                    type: 'user'
-                });
+                newIOwner.id = user.sub;
+                newIOwner.type = 'user';
                 dataObject.owners.push(newIOwner);
             }
 
