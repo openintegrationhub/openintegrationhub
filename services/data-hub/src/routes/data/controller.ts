@@ -205,12 +205,14 @@ export default class DataController {
                 })
             }
 
-            // if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-            //     dataObject.owners.push({
-            //         id: user.sub,
-            //         type: 'user'
-            //     });
-            // }
+            if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+                let newIOwner: IOwnerDocument;
+                Object.assign(newIOwner, {
+                    id: user.sub,
+                    type: 'user'
+                });
+                dataObject.owners.push(newIOwner);
+            }
 
             await dataObject.save();
         } else {
