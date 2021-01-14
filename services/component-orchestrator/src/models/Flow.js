@@ -22,6 +22,14 @@ class Flow {
         return this.status === 'stopping';
     }
 
+    get isPreparing() {
+        return this.status.includes('preparing-by')
+    }
+
+    preparingBy(orchestratorId) {
+        return this.status === `preparing-by-${orchestratorId}`
+    }
+
     getFirstNode() {
         const nodes = this.getNodes();
         const edges = this.getEdges();
@@ -61,12 +69,22 @@ class Flow {
         return this.graph.edges || [];
     }
 
-    onStarted() {
+    async onStarting(orchestratorId) {
+        this.status = `preparing-by-${orchestratorId}`;
+        return this.save();
+    }
+
+    async onPrepared() {
+        this.status = 'prepared';
+        return this.save();
+    }
+
+    async onStarted() {
         this.status = 'started';
         return this.save();
     }
 
-    onStopped() {
+    async onStopped() {
         return this.remove();
     }
 }
