@@ -1,4 +1,5 @@
 import { RouterContext } from 'koa-router';
+import mongoose from 'mongoose';
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
@@ -175,17 +176,20 @@ export default class DataController {
         const { user } = ctx.state;
         const { id } = ctx.params;
 
-        body.owners = body.owners || [];
-
-        if (!body.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-            body.owners.push({
-                id: user.sub,
-                type: 'user'
-            });
-        }
-        
         // let dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
-        let dataObject = await DataObject.findOne();
+
+        const query = body.oihUid ?
+            {
+                $or: [
+                    { 'refs.recordUid': body.recordUid },
+                    {_id: mongoose.Types.ObjectId(body.oihUid)}
+                ]
+            } :
+            {'refs.recordUid': body.recordUid}
+
+        console.log('Hallo?')
+        console.log(query)
+        let dataObject = await DataObject.findOne(query);
         console.log(dataObject);
 
         console.log('dataObject', dataObject);
@@ -193,11 +197,40 @@ export default class DataController {
         let action;
         if (dataObject) {
             action = 'update';
-            Object.assign(dataObject, body);
+
+            if (!dataObject.refs.find((ref => ref.recordUid === body.recordUid))) {
+                dataObject.refs.push({
+                    recordUid: body.recordUid,
+                    applicationUid: body.applicationUid
+                })
+            }
+
+            // if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+            //     dataObject.owners.push({
+            //         id: user.sub,
+            //         type: 'user'
+            //     });
+            // }
+
             await dataObject.save();
         } else {
             action = 'insert';
-            dataObject = await DataObject.create(body);
+
+            const newObject = {
+                refs: [
+                    {
+                        recordUid: body.recordUid,
+                        applicationUid: body.applicationUid
+                    }
+                ],
+                owners: [
+                    {
+                        id: user.sub,
+                        type: 'user'
+                    }
+                ]
+            }
+            dataObject = await DataObject.create(newObject);
         }
 
         ctx.status = 201;
