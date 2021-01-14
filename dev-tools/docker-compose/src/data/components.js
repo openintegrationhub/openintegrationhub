@@ -126,7 +126,7 @@ module.exports = [
       type: 'docker',
       image: 'oih/dev-connector:latest',
     },
-    isGlobal: true,
+    isGlobal: false,
     access: 'public',
     name: 'component4',
     description: 'A component just for testing',
