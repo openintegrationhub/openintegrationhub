@@ -187,12 +187,7 @@ export default class DataController {
             } :
             {'refs.recordUid': body.recordUid}
 
-        console.log('Hallo?')
-        console.log(query)
         let dataObject = await DataObject.findOne(query);
-        console.log(dataObject);
-
-        console.log('dataObject', dataObject);
 
         let action;
         if (dataObject) {
