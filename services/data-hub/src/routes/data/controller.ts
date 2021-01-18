@@ -76,8 +76,6 @@ export default class DataController {
         const { id } = ctx.params;
         const { user } = ctx.state;
 
-        console.log('DataObject:', DataObject);
-
         const dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
 
         if (!dataObject) {
@@ -187,12 +185,7 @@ export default class DataController {
             } :
             {'refs.recordUid': body.recordUid}
 
-        console.log('Hallo?')
-        console.log(query)
         let dataObject = await DataObject.findOne(query);
-        console.log(dataObject);
-
-        console.log('dataObject', dataObject);
 
         let action;
         if (dataObject) {
