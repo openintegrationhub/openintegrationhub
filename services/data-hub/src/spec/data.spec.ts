@@ -240,13 +240,13 @@ describe('Data Route', () => {
             };
 
             nockIamIntrospection();
-            // Write without waiting
+            // Post record
             await this.request
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send(record);
 
-            // Post same record again
+            // Write without waiting
             nockIamIntrospection();
             this.request
                 .post('/data')
