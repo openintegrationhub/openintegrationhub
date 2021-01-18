@@ -126,12 +126,42 @@ module.exports = [
       type: 'docker',
       image: 'oih/dev-connector:latest',
     },
-    isGlobal: true,
+    isGlobal: false,
     access: 'public',
     name: 'component4',
     description: 'A component just for testing',
     descriptor: {
       replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+      limits: {
+        memory: '256Mi',
+        cpu: '500m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/dev-connector:latest',
+    },
+    isGlobal: true,
+    access: 'public',
+    name: 'component5',
+    description: 'A component just for testing',
+    descriptor: {
+      replicas: 3,
       imagePullPolicy: 'Never',
     },
     resources: {

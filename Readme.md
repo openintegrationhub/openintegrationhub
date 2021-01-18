@@ -13,6 +13,10 @@ Visit the official [Open Integration Hub homepage](https://www.openintegrationhu
 ## Introduction
 The Open Integration Hub is a framework based on a microservice architecture. For a reference implementation please visit the [services folder](services). You can also customize services and combine them with your own technology. If you want to do so please visit the [lib folder](lib). There you will find `"daos"` that can be used to add your own functionality (e.g. [queues manager](https://github.com/openintegrationhub/openintegrationhub/blob/master/lib/component-orchestrator/src/QueuesManager.js#L2)).
 
+## Join the Community
+
+Do you have questions, ideas, feedback or just want to chat about integration? Please join our growing developer community on [Slack]( https://join.slack.com/t/openintegrationhub/shared_invite/zt-kwbj0osy-hgzhKJJmYn4tXeVN42udtg)! 
+
 ## Run it
 You may run the framework or single services on a platform of your choice. As a refrence and to make it easier for you to get started we created two guides for you.
 
@@ -36,7 +40,3 @@ Before you contribute please have a look at our [contribution guidelines](CONTRI
 ### Code of Conduct
 
 To see how members of the community are expected to behave, please read the [code of conduct](CODE_OF_CONDUCT.md). We apply the code of conduct defined by the Contributor Covenant, which is used across many open source projects, such as [NodeJS](https://github.com/nodejs/node), [Atom](https://github.com/atom/atom) and [Kubernetes](https://github.com/kubernetes/kubernetes).
-
-## Join the Community
-
-Do you have questions, ideas, feedback or just want to chat about integration? Please join our growing developer community on [Slack]( https://join.slack.com/t/openintegrationhub/shared_invite/zt-jhw1e65c-6o1OsAtWjTRrpeoGz68YXQ)! 

@@ -186,6 +186,7 @@ describe('Data Route', () => {
             };
 
             nockIamIntrospection();
+
             let { body, statusCode } = await this.request
                 .post('/data')
                 .set('Authorization', this.auth)
@@ -201,6 +202,82 @@ describe('Data Route', () => {
                 "content": {
                     "some": "new data"
                 }
+            };
+            nockIamIntrospection();
+            const res = await this.request
+                .put(`/data/${recordId}`)
+                .set('Authorization', this.auth)
+                .send(newRecord);
+            expect(res.body).to.be.a('object');
+            expect(res.body).to.haveOwnProperty('data');
+            expect(res.body.data.id).to.be.a('string');
+            delete res.body.data.id;
+            expect(res.body.data).to.deep.equal(newRecord);
+            expect(statusCode).to.equal(201);
+        });
+
+
+        it('should not change existing object if nothing is new', async function () {
+            const record = {
+                "domainId": "my-domain",
+                "schemaUri": "my-schema",
+                "content": {
+                    "some": "data"
+                },
+                "refs": [
+                    {
+                        "applicationUid": "app-id",
+                        "recordUid": "record-id",
+                        "modificationHistory": [
+                            {
+                                "user": "user1",
+                                "operation": "put",
+                                "timestamp": "2019-07-18T13:37:50.867Z"
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            nockIamIntrospection();
+            await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send(record);
+
+            // Post same record again
+            nockIamIntrospection();
+            await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send(record);
+
+            // Post same record again
+            nockIamIntrospection();
+            let { body, statusCode } = await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send(record);
+
+            console.log(body.data.refs);
+
+            expect(body).to.haveOwnProperty('data');
+            expect(statusCode).to.equal(201);
+
+            const recordId = body.data.id;
+
+            const modificationHistory: any[] = [];
+            const newRecord = {
+                "domainId": "my-domain",
+                "schemaUri": "my-schema",
+                "content": {
+                    "some": "new data"
+                },
+                "refs": [{
+                    applicationUid: 'app-id',
+                    recordUid: 'record-id',
+                    modificationHistory,
+                }],
             };
             nockIamIntrospection();
             const res = await this.request

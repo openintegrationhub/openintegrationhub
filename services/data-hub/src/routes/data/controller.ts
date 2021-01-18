@@ -76,8 +76,6 @@ export default class DataController {
         const { id } = ctx.params;
         const { user } = ctx.state;
 
-        console.log('DataObject:', DataObject);
-
         const dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
 
         if (!dataObject) {

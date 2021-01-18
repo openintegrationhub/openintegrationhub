@@ -1,8 +1,8 @@
 const { execSync } = require('child_process')
-const { dbRoot } = require('../config')
-const { checkTools, waitForRabbitMQ } = require('../helper')
+const { dbRoot, services } = require('../config')
+const { checkTools, waitForMongo } = require('../helper')
 
-checkTools(['docker'])
+checkTools(['mongo'])
 
 process.stdin.resume() // so the program will not close instantly
 
@@ -28,18 +28,17 @@ async function run() {
     stdio: 'inherit',
   })
 
-  waitForRabbitMQ()
+  waitForMongo()
 
-  // docker exec -ti rabbitmq  sh -c "rabbitmqctl start_app"
-  execSync(`docker exec -ti rabbitmq sh -c "rabbitmqctl stop_app"`, {
-    stdio: 'inherit',
-  })
-  execSync(`docker exec -ti rabbitmq sh -c "rabbitmqctl reset"`, {
-    stdio: 'inherit',
-  })
-  execSync(`docker exec -ti rabbitmq sh -c "rabbitmqctl start_app"`, {
-    stdio: 'inherit',
-  })
+  console.log('Dropping Databases')
+
+  for (const service of Object.values(services)) {
+    if (!service.db) continue
+
+    execSync(`mongo ${service.db} --eval "db.dropDatabase();"`, {
+      stdio: 'inherit',
+    })
+  }
 }
 ;(async () => {
   try {
