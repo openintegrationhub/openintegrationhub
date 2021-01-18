@@ -172,9 +172,6 @@ export default class DataController {
     public async postByRecordId(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
-        const { id } = ctx.params;
-
-        // let dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
 
         const query = body.oihUid ?
             {
