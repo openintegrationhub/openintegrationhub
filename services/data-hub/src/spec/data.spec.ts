@@ -259,7 +259,6 @@ describe('Data Route', () => {
                 .set('Authorization', this.auth)
                 .send(record);
 
-            console.log(body.data.refs);
 
             expect(body).to.haveOwnProperty('data');
             expect(statusCode).to.equal(201);
