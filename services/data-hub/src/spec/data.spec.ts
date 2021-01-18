@@ -241,14 +241,14 @@ describe('Data Route', () => {
 
             nockIamIntrospection();
             // Write without waiting
-            this.request
+            await this.request
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send(record);
 
             // Post same record again
             nockIamIntrospection();
-            await this.request
+            this.request
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send(record);
