@@ -76,8 +76,6 @@ export default class DataController {
         const { id } = ctx.params;
         const { user } = ctx.state;
 
-        console.log('DataObject:', DataObject);
-
         const dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
 
         if (!dataObject) {
@@ -174,9 +172,6 @@ export default class DataController {
     public async postByRecordId(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
-        const { id } = ctx.params;
-
-        // let dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
 
         const query = body.oihUid ?
             {
@@ -187,12 +182,7 @@ export default class DataController {
             } :
             {'refs.recordUid': body.recordUid}
 
-        console.log('Hallo?')
-        console.log(query)
         let dataObject = await DataObject.findOne(query);
-        console.log(dataObject);
-
-        console.log('dataObject', dataObject);
 
         let action;
         if (dataObject) {
