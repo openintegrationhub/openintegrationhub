@@ -71,7 +71,7 @@ class RabbitMqManagementService {
             },
             body: JSON.stringify({
                 exchange:'event-bus',
-                write:'raw-record.created',
+                write:'^(raw-record.created|provenance)',
                 read:''
             })
           })
