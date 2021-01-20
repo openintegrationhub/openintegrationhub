@@ -272,11 +272,11 @@ describe('Flow Validation', () => {
     expect(res.body.errors).toHaveLength(3);
 
     const bodyErrors = JSON.parse(JSON.stringify(res.body.errors));
-    bodyErrors.sort((a, b) => a.message > b.message);
+    bodyErrors.sort((a, b) => ((a.message > b.message) ? -1 : 1));
 
-    expect(bodyErrors[0].message).toEqual('Cast to ObjectID failed for value "abc" at path "componentId"');
-    expect(bodyErrors[1].message).toEqual('Cast to ObjectID failed for value "IncorrectSecret" at path "credentials_id"');
-    expect(bodyErrors[2].message).toEqual('Flows with more than one node require edges.');
+    expect(bodyErrors[0].message).toEqual('Flows with more than one node require edges.');
+    expect(bodyErrors[1].message).toEqual('Cast to ObjectID failed for value "abc" at path "componentId"');
+    expect(bodyErrors[2].message).toEqual('Cast to ObjectID failed for value "IncorrectSecret" at path "credentials_id"');
   });
 
   test('should refuse a flow with malformed edges', async () => {
