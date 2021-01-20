@@ -270,9 +270,12 @@ describe('Flow Validation', () => {
       });
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(3);
-    expect(res.body.errors).toContainEqual({ code: 400, message: 'Cast to ObjectID failed for value "abc" at path "componentId"' });
-    expect(res.body.errors).toContainEqual({ code: 400, message: 'Cast to ObjectID failed for value "IncorrectSecret" at path "credentials_id"' });
-    expect(res.body.errors).toContainEqual({ code: 400, message: 'Flows with more than one node require edges.' });
+    const expectedArray = [
+      { code: 400, message: 'Cast to ObjectID failed for value "abc" at path "componentId"' },
+      { code: 400, message: 'Cast to ObjectID failed for value "IncorrectSecret" at path "credentials_id"' },
+      { code: 400, message: 'Flows with more than one node require edges.' },
+    ];
+    expect(res.body.errors).toMatchObject(expectedArray);
   });
 
   test('should refuse a flow with malformed edges', async () => {
