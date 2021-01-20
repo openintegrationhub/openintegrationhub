@@ -271,7 +271,7 @@ describe('Flow Validation', () => {
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(3);
 
-    const bodyErrors = res.body.errors;
+    const bodyErrors = JSON.parse(JSON.stringify(res.body.errors));
     bodyErrors.sort((a, b) => a > b);
 
     expect(bodyErrors[0].message).toEqual('Cast to ObjectID failed for value "abc" at path "componentId"');
