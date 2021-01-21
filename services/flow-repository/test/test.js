@@ -271,7 +271,6 @@ describe('Flow Validation', () => {
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(3);
 
-    // Excluded because it is causing error in circleCI
     // const bodyErrors = JSON.parse(JSON.stringify(res.body.errors));
     // bodyErrors.sort((a, b) => ((a.message > b.message) ? -1 : 1));
     //
