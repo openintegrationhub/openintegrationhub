@@ -18,8 +18,6 @@ async function connectQueue() {
   await eventBus.subscribe('provenance', async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
-    log.debug(`Received event:${JSON.stringify(event.payload)}`);
-
     const response = await addProvenanceEvent(event.payload);
 
     if (response !== false && 'id' in response) {
