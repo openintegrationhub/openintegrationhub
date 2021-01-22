@@ -15,14 +15,14 @@ function getFlowRepoUrl(p) {
   return url.toString();
 }
 
-async function createFlow(flow) {
+async function createFlow(flow, auth) {
   const url = getFlowRepoUrl('/flows');
 
   const opts = {
     url,
     json: true,
     headers: {
-      authorization: `Bearer ${config.iamToken}`,
+      authorization: auth,
     },
     body: flow,
   };
