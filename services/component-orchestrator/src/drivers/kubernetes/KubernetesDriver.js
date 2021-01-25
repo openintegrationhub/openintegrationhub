@@ -30,7 +30,7 @@ class KubernetesDriver extends BaseDriver {
                 'Going to apply global deployment to k8s'
             );
             try {
-                const env = this._prepareEnvVars(envVars);
+                const env = this._prepareEnvVars(envVars, component);
                 const secret = await this._ensureSecret(
                     `${GLOBAL_PREFIX}${component.id}`,
                     env
@@ -45,7 +45,7 @@ class KubernetesDriver extends BaseDriver {
                 'Going to apply local deployment to k8s'
             );
             try {
-                const env = this._prepareEnvVars(envVars);
+                const env = this._prepareEnvVars(envVars, component);
                 const secret = await this._ensureSecret(
                     `${LOCAL_PREFIX}${flow.id}${node.id}`,
                     env
@@ -317,11 +317,11 @@ class KubernetesDriver extends BaseDriver {
         };
     }
 
-    _prepareEnvVars(vars) {
+    _prepareEnvVars(vars, component) {
         let envVars = Object.assign({}, vars);
 
         // Will be removed from ferryman so we set some dummy data
-        envVars.COMP_ID = 'remove me';
+        envVars.COMP_ID = component.id;
         envVars.USER_ID = 'remove me';
 
         envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config
