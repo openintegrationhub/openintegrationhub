@@ -41,7 +41,7 @@ module.exports = class Server {
     async setupExpress() {
         this.app = express();
         this.app.disable('x-powered-by');
-        this.app.use('/healthcheck', require('./../route/healthcheck'));
+        this.app.use('/healthcheck', require('../route/healthcheck'));
         this.app.use('/grafana-proxy', require('../route/grafana-proxy'));
     }
 
@@ -108,6 +108,7 @@ module.exports = class Server {
                     timestamp: `${event.createdAt}000000`,
                 });
             }
+            console.log(payload);
             await this.influx.writePoints(payload);
         } catch (err) {
             logger.error(err);
@@ -115,6 +116,7 @@ module.exports = class Server {
     }
 
     async handleEvent(event) {
+        console.log(event.name);
         this.writeTs(event, this.eventMap.get(event.name));
     }
 
