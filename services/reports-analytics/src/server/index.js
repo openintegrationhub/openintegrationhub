@@ -108,7 +108,6 @@ module.exports = class Server {
                     timestamp: `${event.createdAt}000000`,
                 });
             }
-            console.log(payload);
             await this.influx.writePoints(payload);
         } catch (err) {
             logger.error(err);
@@ -116,7 +115,6 @@ module.exports = class Server {
     }
 
     async handleEvent(event) {
-        console.log(event.name);
         this.writeTs(event, this.eventMap.get(event.name));
     }
 
