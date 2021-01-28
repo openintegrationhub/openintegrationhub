@@ -16,6 +16,7 @@ class Minhash {
   public hashBands: string[]
   public permA: number[]
   public permB: number[]
+  public permC: number[]
   public numPerm: number
   private seed: number
 
@@ -26,6 +27,7 @@ class Minhash {
     this.hashValues = []
     this.permA = []
     this.permB = []
+    this.permC = []
 
     // share permutation functions across all minhashes
     this.initHashValues()
@@ -51,7 +53,7 @@ class Minhash {
         perms.push(int)
         used[int] = true
       }
-      const key = ["permA", "permB"][i]
+      const key = ["permA", "permB", "permC"][i]
       this[key] = perms
     }
   }
@@ -62,30 +64,32 @@ class Minhash {
     return Math.floor((x - Math.floor(x)) * this.maxHash)
   }
 
+  // hash a string to a 32 bit unsigned int
+  private hash(str: string): number {
+    let hash = 0
+    if (str.length === 0) {
+      return hash + this.maxHash
+    }
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i)
+
+      hash = (hash << 5) - hash + char
+      hash = hash & hash // convert to a 32bit integer
+    }
+    return hash + this.maxHash
+  }
+
   // the update function updates internal hashvalues given user data
   public update(str: string): void {
     for (let i = 0; i < this.hashValues.length; i++) {
       const a = this.permA[i]
       const b = this.permB[i]
+      const c = this.permB[i]
       const hash = (a * this.hash(str) + b) % this.prime
       if (hash < this.hashValues[i]) {
         this.hashValues[i] = hash
       }
     }
-  }
-
-  // hash a string to a 32 bit unsigned int
-  private hash(str: string): number {
-    let hash = 0
-    if (str.length == 0) {
-      return hash + this.maxHash
-    }
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i)
-      hash = (hash << 5) - hash + char
-      hash = hash & hash // convert to a 32bit integer
-    }
-    return hash + this.maxHash
   }
 
   // estimate the jaccard similarity to another minhash

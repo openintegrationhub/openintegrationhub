@@ -11,6 +11,6 @@ module.exports = {
   ],
   rules: {
     "@typescript-eslint/ban-types": 1,
-    "@typescript-eslint/no-empty-function": 1,
+    // "@typescript-eslint/no-empty-function": 1,
   },
 };

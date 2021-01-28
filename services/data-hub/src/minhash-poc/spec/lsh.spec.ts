@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import chai from "chai"
 import Minhash from "../lib/Minhash"
 import LshIndex from "../lib/LshIndex"
 
 const should = chai.should()
 const assert = chai.assert
+
 describe("LshIndex", function () {
   const index = new LshIndex()
   const m1 = new Minhash()

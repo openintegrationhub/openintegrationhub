@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import chai from "chai"
 import Minhash from "../lib/Minhash"
 const should = chai.should()
