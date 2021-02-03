@@ -40,7 +40,6 @@ class LshIndex {
     for (let i = 0; i < hashBands.length; i++) {
       const band = hashBands[i]
       for (let j = 0; j < this.index[band].length; j++) {
-        console.log(this.index[band][j])
         matches[this.index[band][j]] = true
       }
     }

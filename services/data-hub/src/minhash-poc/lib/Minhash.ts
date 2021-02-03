@@ -16,7 +16,6 @@ class Minhash {
   public hashBands: string[]
   public permA: number[]
   public permB: number[]
-  public permC: number[]
   public numPerm: number
   private seed: number
 
@@ -27,7 +26,6 @@ class Minhash {
     this.hashValues = []
     this.permA = []
     this.permB = []
-    this.permC = []
 
     // share permutation functions across all minhashes
     this.initHashValues()
@@ -53,7 +51,7 @@ class Minhash {
         perms.push(int)
         used[int] = true
       }
-      const key = ["permA", "permB", "permC"][i]
+      const key = ["permA", "permB"][i]
       this[key] = perms
     }
   }
@@ -84,7 +82,6 @@ class Minhash {
     for (let i = 0; i < this.hashValues.length; i++) {
       const a = this.permA[i]
       const b = this.permB[i]
-      const c = this.permB[i]
       const hash = (a * this.hash(str) + b) % this.prime
       if (hash < this.hashValues[i]) {
         this.hashValues[i] = hash
