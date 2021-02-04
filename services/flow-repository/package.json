@@ -15,8 +15,8 @@
     "build:docker": "docker build -t openintegrationhub/flow-repository:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
-    "@openintegrationhub/event-bus": "^1.2.2",
-    "@openintegrationhub/iam-utils": "^1.5.3",
+    "@openintegrationhub/event-bus": "*",
+    "@openintegrationhub/iam-utils": "*",
     "body-parser": "^1.19",
     "bunyan": "^1.8.14",
     "bunyan-format": "^0.2.1",
