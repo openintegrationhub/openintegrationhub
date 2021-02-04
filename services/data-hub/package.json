@@ -57,6 +57,6 @@
     "koa-router": "7.4.0",
     "koa2-swagger-ui": "2.14.0",
     "lodash": "4.17.20",
-    "mongoose": "5.6.3"
+    "mongoose": "5.11.8"
   }
 }
