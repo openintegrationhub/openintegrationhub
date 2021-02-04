@@ -86,7 +86,7 @@ Then, inside your processAction, call the `transform` function once for each dat
 
 ##### Transformer interface for flow steps
 
-In the `nodeSettings` object of a flow steps fields the flag `applyTransform` can be set to `false, before, after` or `both`.
+In the `nodeSettings` object of a flow step the flag `applyTransform` can be set to `false, before, after` or `both`.
 
 When set to `before` the received data will be transformed `before` it is passed to the component.
 
