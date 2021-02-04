@@ -94,7 +94,7 @@ If set to `after` the output of the component will be transformed before being p
 
 With `both` each of the aforementioned steps will be executed.
 
-The executed transform depends on the field `transformFunction` in the nodeSettings. Which can contain any valid jsonata experession.
+The executed transform depends on the field `transformFunction` in the nodeSettings. Which can contain any valid jsonata expression as a string.
 
 If the field `secondTransformFunction` is provided it will be used by the `after`-transformation. If not then it will use the content of `transformFunction`.
 
