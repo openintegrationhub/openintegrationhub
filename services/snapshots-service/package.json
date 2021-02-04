@@ -1,6 +1,6 @@
 {
   "name": "snapshots-service",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Service for managing flow snapshots",
   "main": "dist/index.js",
   "directories": {
@@ -54,6 +54,6 @@
     "koa-router": "7.4.0",
     "koa2-swagger-ui": "2.14.0",
     "lodash": "4.17.11",
-    "mongoose": "5.6.3"
+    "mongoose": "5.11.8"
   }
 }

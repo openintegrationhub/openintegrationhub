@@ -1,6 +1,6 @@
 {
   "name": "attachment-storage",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Service for storing binary data",
   "main": "dist/index.js",
   "directories": {
@@ -55,8 +55,8 @@
   },
   "dependencies": {
     "@elastic.io/bunyan-logger": "1.0.4",
-    "@openintegrationhub/attachment-storage-service": "0.0.3",
-    "@openintegrationhub/iam-utils": "1.5.3",
+    "@openintegrationhub/attachment-storage-service": "*",
+    "@openintegrationhub/iam-utils": "*",
     "ioredis": "4.9.0",
     "koa": "2.7.0",
     "koa-bunyan-logger": "2.1.0",
