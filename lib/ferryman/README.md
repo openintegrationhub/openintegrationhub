@@ -84,6 +84,22 @@ Then, inside your processAction, call the `transform` function once for each dat
 
 `transform` will return an object transformed according to either the custom or default mapping passed to it. If neither a custom nor default mapping is provided, then it simply returns the original `object` unchanged.
 
+##### Transformer interface for flow steps
+
+In the `nodeSettings` object of a flow step the flag `applyTransform` can be set to `false, before, after` or `both`.
+
+When set to `before` the received data will be transformed `before` it is passed to the component.
+
+If set to `after` the output of the component will be transformed before being passed to the next step.
+
+With `both` each of the aforementioned steps will be executed.
+
+The executed transform depends on the field `transformFunction` in the nodeSettings. Which can contain any valid jsonata expression as a string.
+
+If the field `secondTransformFunction` is provided it will be used by the `after`-transformation. If not then it will use the content of `transformFunction`.
+
+*This features is currently experimental.*
+
 ### Further Information
 
 For additional information concerning the development of connectors, please refer to the [Connector Guide](https://openintegrationhub.github.io//docs/Connectors/ConnectorBasics.html)
