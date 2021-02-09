@@ -1,0 +1,399 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Workflow repository allows creation and management of workflows.",
+    "version": "0.0.1",
+    "title": "Workflow repository",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags": [
+    {
+      "name": "Workflow",
+      "description": "Workflow"
+    }
+  ],
+  "paths": {
+    "/workflows/": {
+      "get": {
+        "tags": [
+          "Workflow"
+        ],
+        "summary": "Get all workflows",
+        "description": "Retrieve all workflows.",
+        "operationId": "getWorkflows",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Workflow"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Workflows"
+        ],
+        "summary": "Create a workflow",
+        "description": "Create a workflow",
+        "operationId": "createWorkflow",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MutableWorkflow"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workflow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Workflows"
+        ],
+        "summary": "Delete all workflows by query",
+        "description": "Delete all workflows for a given query",
+        "operationId": "deleteworkflows",
+        "parameters": [
+          {
+            "name": "tenant",
+            "in": "query",
+            "description": "Delete all tenant workflows",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workflow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/workflows/:id": {
+      "get": {
+        "tags": [
+          "Workflow"
+        ],
+        "summary": "Find a workflow by id",
+        "description": "Returns a workflow with given ID",
+        "operationId": "getWorkflowById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workflow"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Workflows not found"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Workflow"
+        ],
+        "summary": "Update a workflow",
+        "description": "Update a workflow",
+        "operationId": "updateWorkflow",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the workflow to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MutableWorkflow"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workflow"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workflow with given ID not found"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Workflow"
+        ],
+        "summary": "Delete a workflow",
+        "description": "Delete a workflow",
+        "operationId": "deleteWorkflow",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Workflow to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workflow"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workflow with given ID not found"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/healthcheck": {
+      "get": {
+        "tags": [
+          "misc"
+        ],
+        "summary": "Retrieve health status",
+        "description": "Retrieve health status of the API.",
+        "operationId": "performHealthcheck",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "MutableWorkflow": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "tenant": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "templateRef": {
+            "type": "string"
+          },
+          "flows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "flowId": {
+                  "type": "string"
+                },
+                "dependencyType": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "dependencies": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Workflow": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MutableWorkflow"
+          },
+          {
+            "type": "object",
+            "required": [
+              "_id",
+              "createdAt"
+            ],
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "description": "Client creation time",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "description": "Client update time",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "perPage": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "totalPages": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}
