@@ -4,7 +4,7 @@ const path = require('path')
 const basePath = path.resolve(__dirname, "../services")
 const paths = fs.readdirSync(basePath)
 const services = []
-const ignoreServices = ["rds"]
+const ignoreServices = []
 
 for (const service of paths) {
   if (ignoreServices.includes(service)) continue
