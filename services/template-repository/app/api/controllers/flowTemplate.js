@@ -287,6 +287,7 @@ router.delete('/:id', can(config.flowTemplateWritePermission), jsonParser, async
 // Generates a flow from the template, plus provided data
 router.post('/:id/generate', jsonParser, can(config.flowWritePermission), async (req, res) => {
   const updateData = req.body;
+  const auth = req.headers.authorization;
 
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).send({ errors: 'Invalid id' });
@@ -312,7 +313,7 @@ router.post('/:id/generate', jsonParser, can(config.flowWritePermission), async 
   }
 
   try {
-    const response = await createFlow(newFlow);
+    const response = await createFlow(newFlow, auth);
     log.info('response from createFLow: ', response);
     return res.status(201).send({ data: response, meta: {} });
   } catch (err) {

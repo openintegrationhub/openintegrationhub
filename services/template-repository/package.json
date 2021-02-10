@@ -1,6 +1,6 @@
 {
   "name": "template-repository",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Holds reproducible templates which can be used to generate flows.",
   "repository": {
     "type" : "git",
@@ -20,8 +20,8 @@
     "build:docker": "docker build -t openintegrationhub/template-repository:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
-    "@openintegrationhub/event-bus": "^1.1.3",
-    "@openintegrationhub/iam-utils": "^1.5.3",
+    "@openintegrationhub/event-bus": "*",
+    "@openintegrationhub/iam-utils": "*",
     "body-parser": "^1.19",
     "bunyan": "^1.8.14",
     "bunyan-format": "^0.2.1",
@@ -29,7 +29,7 @@
     "cronstrue": "^1.94.0",
     "express": "^4.17.1",
     "lodash": "^4.17.20",
-    "mongoose": "^5.4.13",
+    "mongoose": "5.11.8",
     "request": "^2.87.0",
     "request-promise": "^4.2.5",
     "swagger-ui-express": "^4.1.4"

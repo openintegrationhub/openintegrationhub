@@ -86,10 +86,15 @@ export default class DataController {
             throw new Unauthorized();
         }
 
+        // @ts-ignore: TS2339
         dataObject.id = dataObject._id;
+        // @ts-ignore: TS2339
         delete dataObject._id;
+        // @ts-ignore: TS2339
         delete dataObject.createdAt;
+        // @ts-ignore: TS2339
         delete dataObject.updatedAt;
+        // @ts-ignore: TS2339
         delete dataObject.__v;
 
         ctx.status = 200;
@@ -220,7 +225,9 @@ export default class DataController {
                     }
                 ]
             }
+            // @ts-ignore: No overload matches this call.
             dataObject = await DataObject.create(newObject);
+
         }
 
         ctx.status = 201;

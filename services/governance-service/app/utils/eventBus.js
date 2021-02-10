@@ -15,8 +15,9 @@ async function connectQueue() {
   const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
   eventBus = new EventBus({ transport, logger, serviceName: 'governance-service' });
 
-  await eventBus.subscribe('provenance.event', async (event) => {
+  await eventBus.subscribe('provenance', async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);
+
     const response = await addProvenanceEvent(event.payload);
 
     if (response !== false && 'id' in response) {
