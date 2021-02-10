@@ -118,6 +118,7 @@ c:\windows\system32\drivers\etc\hosts
 then add
 
 your_minikube_ip app-directory.localoih.com
+your_minikube_ip workflow-repository.localoih.com
 your_minikube_ip iam.localoih.com
 your_minikube_ip skm.localoih.com
 your_minikube_ip flow-repository.localoih.com

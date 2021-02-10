@@ -185,6 +185,33 @@ services:
     command: yarn start:container
     networks:
     - oih-dev
+  workflow-repository:
+    image: ${NODE_IMAGE}
+    container_name: ${DEV_APP_DIRECTORY_FOLDER}
+    working_dir: /usr/src/app/services/workflow-repository
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: info
+      DEBUG_MODE: 'true'
+      MONGODB_CONNECTION: mongodb://mongodb/${DEV_WORKFLOW_REPOSITORY_DB}?replicaSet=rs0
+      IAM_API_BASE: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1
+      IAM_TOKEN: ${DEV_IAM_TOKEN}
+      INTROSPECT_TYPE: basic
+      INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
+      INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
+      ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      API_BASE: /api/v1
+      PORT: ${DEV_APP_DIRECTORY_PORT}
+    ports:
+    - ${DEV_WORKFLOW_REPOSITORY_EXTERNAL_PORT}:${DEV_WORKFLOW_REPOSITORY_PORT}
+    volumes:
+    - type: bind
+      source: ${HOST_REPOSITORY_ROOT}
+      target: /usr/src/app
+    command: yarn start:container
+    networks:
+    - oih-dev
   attachment-storage-service:
     image: ${NODE_IMAGE}
     container_name: ${DEV_ATTACHMENT_STORAGE_SERVICE_FOLDER}
