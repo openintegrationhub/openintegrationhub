@@ -33,6 +33,6 @@ Then different data sets were checked for the existence of a common identity. Th
 
 The "minhashing" of small data sets basically works here and is suitable for establishing the same identities in different data sets.
 
-In contrast to the conventional application of these algorithms, the OIH's context tends to handle tiny-sized data sets. Each set usually contains a small amount of characters and therefore results more often in a meager set of shingles. In the end this can lead to accumulated false positives.
+In contrast to the conventional application of these algorithms, the OIH's context tends to handle tiny-sized data sets. Each set usually contains a small number of characters and therefore results more often in a meager set of shingles. In the end, this can lead to a higher amount of false positives.
 
 One possible conclusion is that automatic detection using the Minhash method should not be accepted without a further verification process. This should be done by algorithmic post-processing or plain human interaction on a suited merge interface.

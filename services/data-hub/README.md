@@ -42,6 +42,10 @@ VERSION=latest npm run build:docker
 
 Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 
+## Import & Merge
+
+Find more details [here](./src/minhash-poc/README.md) 
+
 ## Environment variables
 
 ### General
