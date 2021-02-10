@@ -2063,6 +2063,11 @@
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.7.tgz#1b8e33b61a8c09cbe1f85133071baa0dbf9fa71a"
   integrity sha512-2Y8uPt0/jwjhQ6EiluT0XCri1Dbplr0ZxfFXUz+ye13gaqE8u5gL5ppao1JrUYr9cIip5S6MvQzBS7Kke7U9VA==
 
+"@types/chai@4.2.14":
+  version "4.2.14"
+  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.14.tgz#44d2dd0b5de6185089375d976b4ec5caf6861193"
+  integrity sha512-G+ITQPXkwTrslfG5L/BksmbLUA0M1iybEsmCWPqzSxsRRhJZimBKJkoMi8fr/CPygPTj4zO5pJH7I2/cm9M7SQ==
+
 "@types/connect@*":
   version "3.4.34"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.34.tgz#170a40223a6d666006d93ca128af2beb1d9b1901"
@@ -2292,6 +2297,14 @@
     "@types/bunyan" "*"
     "@types/koa" "*"
 
+"@types/koa-bunyan-logger@2.1.3":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@types/koa-bunyan-logger/-/koa-bunyan-logger-2.1.3.tgz#00c89b5176858922ce825425ce079efda21c3bc0"
+  integrity sha512-MydBatijVvh9t8p4MXwxJWPH+gnLkC6qD428Riwgp1pjClY6LviezGIFIl90IWdJDXc0JSMzBG/i3oSHMr6WAg==
+  dependencies:
+    "@types/bunyan" "*"
+    "@types/koa" "*"
+
 "@types/koa-compose@*":
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/@types/koa-compose/-/koa-compose-3.2.5.tgz#85eb2e80ac50be95f37ccf8c407c09bbe3468e9d"
@@ -2327,7 +2340,7 @@
   dependencies:
     "@types/koa" "*"
 
-"@types/koa@*", "@types/koa@^2.0.48":
+"@types/koa@*", "@types/koa@^2.0.48", "@types/koa@^2.11.6":
   version "2.11.7"
   resolved "https://registry.yarnpkg.com/@types/koa/-/koa-2.11.7.tgz#3b38f3b9faa66315a84890a771d166fb36463100"
   integrity sha512-1iXJZZWCePoMe9LGSIPWsu5k5RI4ooXijW78c+nljMn3YbUts8PXoEESu1OeFmrazLPl1l97vTxzwvmH32TWVQ==
@@ -5134,7 +5147,7 @@ bunyan@1.8.14:
     mv "~2"
     safe-json-stringify "~1"
 
-bunyan@^1.8.12, bunyan@^1.8.14, bunyan@~1.8.12:
+bunyan@1.8.15, bunyan@^1.8.12, bunyan@^1.8.14, bunyan@~1.8.12:
   version "1.8.15"
   resolved "https://registry.yarnpkg.com/bunyan/-/bunyan-1.8.15.tgz#8ce34ca908a17d0776576ca1b2f6cbd916e93b46"
   integrity sha512-0tECWShh6wUysgucJcBAoYegf3JJoZWibxdqhTm7OHPeT42qdjkZ29QCMcKwbgU1kiH+auSIasNRXMLWXafXig==
@@ -11242,7 +11255,7 @@ handle-thing@^2.0.0:
   resolved "https://registry.yarnpkg.com/handle-thing/-/handle-thing-2.0.1.tgz#857f79ce359580c340d43081cc648970d0bb234e"
   integrity sha512-9Qn4yBxelxoh2Ow62nP+Ka/kMnOXRi8BXnRaUwezLNhqelnN49xKz4F/dPP8OYLxLxq6JDtZb2i9XznUQbNPTg==
 
-handlebars@^4.0.1, handlebars@^4.0.2, handlebars@^4.1.2:
+handlebars@^4.0.1, handlebars@^4.0.2, handlebars@^4.1.2, handlebars@^4.7.6:
   version "4.7.6"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.6.tgz#d4c05c1baf90e9945f77aa68a7a219aa4a7df74e"
   integrity sha512-1f2BACcBfiwAfStCKZNrUCgqNZkGsAT7UM3kkYtXuLo0KnaVfjKOyf7PRzB6++aK9STyT1Pd2ZCPe3EGOXleXA==
@@ -11667,7 +11680,7 @@ http-errors@1.7.3, http-errors@~1.7.2:
     statuses ">= 1.5.0 < 2"
     toidentifier "1.0.0"
 
-http-errors@^1.3.1, http-errors@^1.6.3:
+http-errors@^1.3.1, http-errors@^1.6.3, http-errors@^1.7.3:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/http-errors/-/http-errors-1.8.0.tgz#75d1bbe497e1044f51e4ee9e704a62f28d336507"
   integrity sha512-4I8r0C5JDhT5VkvI47QktDW75rNlGVsUf/8hzjCC/wkWI/jdTRmBb9aI7erSG82r1bjKY3F6k28WnsVxB1C73A==
@@ -14036,6 +14049,14 @@ koa-bodyparser@4.2.1:
     co-body "^6.0.0"
     copy-to "^2.0.1"
 
+koa-bodyparser@4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/koa-bodyparser/-/koa-bodyparser-4.3.0.tgz#274c778555ff48fa221ee7f36a9fbdbace22759a"
+  integrity sha512-uyV8G29KAGwZc4q/0WUAjH+Tsmuv9ImfBUF2oZVyZtaeo0husInagyn/JH85xMSxM0hEk/mbCII5ubLDuqW/Rw==
+  dependencies:
+    co-body "^6.0.0"
+    copy-to "^2.0.1"
+
 koa-bunyan-logger@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/koa-bunyan-logger/-/koa-bunyan-logger-2.1.0.tgz#a3a32c0329ba52b10a33f01b3adcb5f01d70eac5"
@@ -14087,6 +14108,25 @@ koa-qs@2.0.0:
     merge-descriptors "~0.0.2"
     qs "~2.3.3"
 
+koa-qs@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/koa-qs/-/koa-qs-3.0.0.tgz#390b0b5e9be0658b0f863ceb121da9a414b78d78"
+  integrity sha512-05IB5KirwMs3heWW26iTz46HuMAtrlrRMus/aNH1BRDocLyF/099EtCB0MIfQpRuT0TISvaTsWwSy2gctIWiGA==
+  dependencies:
+    merge-descriptors "^1.0.1"
+    qs "^6.9.4"
+
+koa-router@10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/koa-router/-/koa-router-10.0.0.tgz#7bc76a031085731e61fc92c1683687b2f44de6a4"
+  integrity sha512-gAE5J1gBQTvfR8rMMtMUkE26+1MbO3DGpGmvfmM2pR9Z7w2VIb2Ecqeal98yVO7+4ltffby7gWOzpCmdNOQe0w==
+  dependencies:
+    debug "^4.1.1"
+    http-errors "^1.7.3"
+    koa-compose "^4.1.0"
+    methods "^1.1.2"
+    path-to-regexp "^6.1.0"
+
 koa-router@7.4.0, koa-router@^7.4.0:
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/koa-router/-/koa-router-7.4.0.tgz#aee1f7adc02d5cb31d7d67465c9eacc825e8c5e0"
@@ -14114,6 +14154,45 @@ koa2-swagger-ui@2.14.0:
     lodash "^4.17.11"
     read-pkg-up "^6.0.0"
 
+koa2-swagger-ui@5.0.5:
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/koa2-swagger-ui/-/koa2-swagger-ui-5.0.5.tgz#19bd95a099bf05f4aa8213df0f175933b62f4055"
+  integrity sha512-GpkiMghci0koi4a7t5UgsEDiTjGSwJxDjCDoAsbZMuPf3pnTaXaHAQqGFDldtD5xQyOV8OSR61DdwgVvqmfTjg==
+  dependencies:
+    "@types/koa" "^2.11.6"
+    handlebars "^4.7.6"
+    lodash "^4.17.20"
+    read-pkg-up "^7.0.1"
+
+koa@2.13.1, koa@^2.6.2:
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/koa/-/koa-2.13.1.tgz#6275172875b27bcfe1d454356a5b6b9f5a9b1051"
+  integrity sha512-Lb2Dloc72auj5vK4X4qqL7B5jyDPQaZucc9sR/71byg7ryoD1NCaCm63CShk9ID9quQvDEi1bGR/iGjCG7As3w==
+  dependencies:
+    accepts "^1.3.5"
+    cache-content-type "^1.0.0"
+    content-disposition "~0.5.2"
+    content-type "^1.0.4"
+    cookies "~0.8.0"
+    debug "~3.1.0"
+    delegates "^1.0.0"
+    depd "^2.0.0"
+    destroy "^1.0.4"
+    encodeurl "^1.0.2"
+    escape-html "^1.0.3"
+    fresh "~0.5.2"
+    http-assert "^1.3.0"
+    http-errors "^1.6.3"
+    is-generator-function "^1.0.7"
+    koa-compose "^4.1.0"
+    koa-convert "^1.2.0"
+    on-finished "^2.3.0"
+    only "~0.0.2"
+    parseurl "^1.3.2"
+    statuses "^1.5.0"
+    type-is "^1.6.16"
+    vary "^1.1.2"
+
 koa@2.7.0:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/koa/-/koa-2.7.0.tgz#7e00843506942b9d82c6cc33749f657c6e5e7adf"
@@ -14137,35 +14216,6 @@ koa@2.7.0:
     koa-compose "^4.1.0"
     koa-convert "^1.2.0"
     koa-is-json "^1.0.0"
-    on-finished "^2.3.0"
-    only "~0.0.2"
-    parseurl "^1.3.2"
-    statuses "^1.5.0"
-    type-is "^1.6.16"
-    vary "^1.1.2"
-
-koa@^2.6.2:
-  version "2.13.1"
-  resolved "https://registry.yarnpkg.com/koa/-/koa-2.13.1.tgz#6275172875b27bcfe1d454356a5b6b9f5a9b1051"
-  integrity sha512-Lb2Dloc72auj5vK4X4qqL7B5jyDPQaZucc9sR/71byg7ryoD1NCaCm63CShk9ID9quQvDEi1bGR/iGjCG7As3w==
-  dependencies:
-    accepts "^1.3.5"
-    cache-content-type "^1.0.0"
-    content-disposition "~0.5.2"
-    content-type "^1.0.4"
-    cookies "~0.8.0"
-    debug "~3.1.0"
-    delegates "^1.0.0"
-    depd "^2.0.0"
-    destroy "^1.0.4"
-    encodeurl "^1.0.2"
-    escape-html "^1.0.3"
-    fresh "~0.5.2"
-    http-assert "^1.3.0"
-    http-errors "^1.6.3"
-    is-generator-function "^1.0.7"
-    koa-compose "^4.1.0"
-    koa-convert "^1.2.0"
     on-finished "^2.3.0"
     only "~0.0.2"
     parseurl "^1.3.2"
@@ -15131,7 +15181,7 @@ meow@^4.0.0:
     redent "^2.0.0"
     trim-newlines "^2.0.0"
 
-merge-descriptors@1.0.1:
+merge-descriptors@1.0.1, merge-descriptors@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
   integrity sha1-sAqqVW3YtEVoFQ7J0blT8/kMu2E=
@@ -17657,6 +17707,11 @@ path-to-regexp@^1.1.1, path-to-regexp@^1.7.0:
   integrity sha512-n43JRhlUKUAlibEJhPeir1ncUID16QnEjNpwzNdO3Lm4ywrBpBZ5oLD0I6br9evr1Y9JTqwRtAh7JLoOzAQdVA==
   dependencies:
     isarray "0.0.1"
+
+path-to-regexp@^6.1.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-6.2.0.tgz#f7b3803336104c346889adece614669230645f38"
+  integrity sha512-f66KywYG6+43afgE/8j/GoiNyygk/bnoCbps++3ErRKsIYkGGupyv07R2Ok5m9i67Iqc+T2g1eAUGUPzWhYTyg==
 
 path-type@^1.0.0:
   version "1.1.0"

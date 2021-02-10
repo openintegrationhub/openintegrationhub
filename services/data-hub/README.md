@@ -42,32 +42,11 @@ VERSION=latest npm run build:docker
 
 Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 
-## Environment variables
-
 ## Import & Merge
 
-### Initial situation
+Find more details [here](./src/minhash-poc/README.md) 
 
-The initial import of existing data from different sources poses some problems. The focus of this concept is the determination of same identities for data sets from different sources. As an example, it should be shown here through the context of “contact details”.
-
-If you look at the schema for specific data records from one source and compare it with the schema of another, you can already see differences in essential fields such as "forename" and "name" or "lastname" and "surename".
-
-Furthermore, the redundant storage of data sets - possibly maintained independently by hand - can cause orthographic errors, which in turn lead to different values. Incorrect fields may also have been selected for entering a value.
-
-While the different assignment of field names can be solved by individually mapping known structures to a uniform data format, a solution for the second sub-problem is somewhat more difficult.
-
-### MinHash to determine common identity
-
-A possible solution can be given by using the so-called "MinHash" procedure (Broder 1997). See https://web.archive.org/web/20150131043133/http://gatekeeper.dec.com/ftp/pub/dec/SRC/publications/broder/positano-final-wpnums.pdf
-
-By standardizing the data and comparing individual values ​​at random, the probability of a common identity of two different data sets can be determined. Based on this probability, the affected data sets can be combined automatically if necessary.
-
-### Objectives of a prototype
-
-So that the effectiveness of the "MinHash" procedure can be tested, Data Hub Service is expanded to include a specific import interface and the algorithm is incorporated in the form of a JS implementation.
-See https://github.com/duhaime/minhash
-
-After a basic implementation is done, this functionality should be challenged on the basis of various data sets and optimized in a further step so that “false positives” only occur to a minimal extent when determining the identity.
+## Environment variables
 
 ### General
 
