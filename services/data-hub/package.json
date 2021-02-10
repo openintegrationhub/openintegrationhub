@@ -13,8 +13,8 @@
     "start": "node dist/app.js",
     "start:dev": "NODE_ENV=development ts-node-dev ./src/app.ts | bunyan",
     "start:container": "ts-node-dev ./src/app.ts | bunyan",
-    "_test": "NODE_ENV=test mocha --exit --require ts-node/register src/**/*.spec.ts src/minhash-poc/**/*.spec.ts",
-    "test": "NODE_ENV=test mocha --exit --require ts-node/register src/minhash-poc/**/data.spec.ts",
+    "test": "NODE_ENV=test mocha --exit --require ts-node/register src/**/*.spec.ts src/minhash-poc/**/*.spec.ts",
+    "test-minhash": "NODE_ENV=test mocha --exit --require ts-node/register src/minhash-poc/**/data.spec.ts",
     "eslint": "./node_modules/.bin/eslint -c ./.eslintrc.js --ext .ts ./src",
     "build:ts": "tsc",
     "build:docker": "docker build -t openintegrationhub/data-hub:${VERSION} -f Dockerfile ../../"
