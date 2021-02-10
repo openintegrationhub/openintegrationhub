@@ -24,7 +24,7 @@ const API = {
         },
     }),
 
-    stopFlow: async flowId => await rp.get({
+    stopFlow: async flowId => await rp.post({
         uri: `${conf.services.flowApi}/flows/${flowId}/stop`,
         json: true,
         headers: {
