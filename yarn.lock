@@ -5108,7 +5108,7 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-bunyan-format@0.2.1, bunyan-format@^0.2.1:
+bunyan-format@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/bunyan-format/-/bunyan-format-0.2.1.tgz#a4b3b0d80070a865279417269e3f00ff02fbcb47"
   integrity sha1-pLOw2ABwqGUnlBcmnj8A/wL7y0c=

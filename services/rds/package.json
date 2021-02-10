@@ -1,7 +1,7 @@
 {
   "name": "rds",
   "description": "Raw Data Storage",
-  "version": "1.0.1",
+  "version": "1.0.1-dev",
   "main": "index.js",
   "author": "Basaas GmbH",
   "license": "Apache-2.0",
@@ -31,7 +31,6 @@
     "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/iam-utils": "*",
     "bunyan": "1.8.14",
-    "bunyan-format": "0.2.1",
     "cors": "2.8.5",
     "express": "4.17.1",
     "mongoose": "5.11.8",
