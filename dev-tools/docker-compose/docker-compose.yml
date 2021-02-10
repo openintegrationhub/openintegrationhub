@@ -187,7 +187,7 @@ services:
     - oih-dev
   workflow-repository:
     image: ${NODE_IMAGE}
-    container_name: ${DEV_APP_DIRECTORY_FOLDER}
+    container_name: ${DEV_WORKFLOW_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/workflow-repository
     environment:
       NODE_ENV: development
@@ -202,7 +202,7 @@ services:
       ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       RABBITMQ_URI: amqp://guest:guest@rabbitmq
       API_BASE: /api/v1
-      PORT: ${DEV_APP_DIRECTORY_PORT}
+      PORT: ${DEV_WORKFLOW_REPOSITORY_PORT}
     ports:
     - ${DEV_WORKFLOW_REPOSITORY_EXTERNAL_PORT}:${DEV_WORKFLOW_REPOSITORY_PORT}
     volumes:
