@@ -11,10 +11,10 @@ const assert = chai.assert
 describe("identity check", function () {
   describe("LSH Index query", function () {
     it("should return expected members", function () {
-      const PERMS = process.argv[6] ? parseInt(process.argv[6], 10) : 128
+      const PERMS = 128
       const SEED = 1
-      const SHINGLES = process.argv[7] ? parseInt(process.argv[7], 10) : 3
-      const BANDSIZE = process.argv[8] ? parseInt(process.argv[8], 10) : 7
+      const SHINGLES = 3
+      const BANDSIZE = 7
 
       const records = {
         u1: {
@@ -132,10 +132,10 @@ describe("identity check", function () {
     })
 
     it("should return expected members", function () {
-      const PERMS = process.argv[6] ? parseInt(process.argv[6], 10) : 128
+      const PERMS = 128
       const SEED = 1
-      const SHINGLES = process.argv[7] ? parseInt(process.argv[7], 10) : 3
-      const BANDSIZE = process.argv[8] ? parseInt(process.argv[8], 10) : 7
+      const SHINGLES = 3
+      const BANDSIZE = 7
 
       const records = {
         u1: {
@@ -258,10 +258,10 @@ describe("identity check", function () {
       results.should.have.same.members(["u10", "u9", "u8", "u11"])
     })
     it("should return expected members 3", function () {
-      const PERMS = process.argv[6] ? parseInt(process.argv[6], 10) : 128
+      const PERMS = 128
       const SEED = 1
-      const SHINGLES = process.argv[7] ? parseInt(process.argv[7], 10) : 3
-      const BANDSIZE = process.argv[8] ? parseInt(process.argv[8], 10) : 5
+      const SHINGLES = 3
+      const BANDSIZE = 5
 
       const records = {
         u1: {
