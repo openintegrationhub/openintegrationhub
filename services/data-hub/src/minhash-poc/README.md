@@ -23,3 +23,16 @@ See https://github.com/duhaime/minhash
 
 After a basic implementation is done, this functionality should be challenged on the basis of various data sets and optimized in a further step so that “false positives” only occur to a minimal extent when determining the identity.
 
+### Proof of concept
+
+An initial implementation of the algorithms can be found at services/data-hub/src/minhash-poc/lib.
+
+We have used https://github.com/duhaime/minhash as a starting point and rewritten it in Data-Hub compatible typescript language. The correct functioning of the new library can be checked using the ported tests.
+
+Then different data sets were checked for the existence of a common identity. The result of this initial check can be summarized as follows:
+
+The "minhashing" of small data sets basically works here and is suitable for establishing the same identities in different data sets.
+
+In contrast to the conventional application of these algorithms, the OIH's context tends to handle tiny-sized data sets. Each set usually contains a small amount of characters and therefore results more often in a meager set of shingles. In the end this can lead to accumulated false positives.
+
+One possible conclusion is that automatic detection using the Minhash method should not be accepted without a further verification process. This should be done by algorithmic post-processing or plain human interaction on a suited merge interface.
