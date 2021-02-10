@@ -1,6 +1,6 @@
 {
   "name": "snapshots-service",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Service for managing flow snapshots",
   "main": "dist/index.js",
   "directories": {
@@ -28,7 +28,6 @@
     "@types/koa-router": "7.0.42",
     "@types/lodash": "4.14.135",
     "@types/mocha": "5.2.7",
-    "@types/mongoose": "5.5.7",
     "@types/nock": "10.0.3",
     "@types/supertest": "2.0.8",
     "@typescript-eslint/eslint-plugin": "1.9.0",
@@ -41,7 +40,7 @@
     "supertest": "4.0.2",
     "ts-node": "8.0.2",
     "ts-node-dev": "1.0.0-pre.40",
-    "typescript": "3.5.2"
+    "typescript": "3.8.3"
   },
   "dependencies": {
     "@openintegrationhub/iam-utils": "*",
@@ -54,6 +53,6 @@
     "koa-router": "7.4.0",
     "koa2-swagger-ui": "2.14.0",
     "lodash": "4.17.11",
-    "mongoose": "5.6.3"
+    "mongoose": "5.11.8"
   }
 }

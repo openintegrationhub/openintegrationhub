@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/secret-service",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "ExpressJS based service to manage credentials and secrets.",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -22,7 +22,7 @@
     "jsonwebtoken": "8.5.1",
     "lru-cache": "6.0.0",
     "moment": "2.29.1",
-    "mongoose": "5.11.6",
+    "mongoose": "5.11.8",
     "morgan": "1.10.0",
     "oauth": "0.9.15",
     "qs": "6.9.4",

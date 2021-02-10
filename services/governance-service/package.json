@@ -1,6 +1,6 @@
 {
   "name": "governance-service",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Stores provenance events and other governance related data.",
   "main": "index.js",
   "scripts": {
@@ -15,15 +15,15 @@
     "build:docker": "docker build -t openintegrationhub/governance-service:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
-    "@openintegrationhub/event-bus": "^1.2.2",
-    "@openintegrationhub/iam-utils": "^1.5.3",
+    "@openintegrationhub/event-bus": "*",
+    "@openintegrationhub/iam-utils": "*",
     "body-parser": "^1.19",
     "bunyan": "^1.8.14",
     "bunyan-format": "^0.2.1",
     "cors": "^2.8.5",
     "cronstrue": "^1.94.0",
     "express": "^4.17.1",
-    "mongoose": "^5.4.13",
+    "mongoose": "5.11.8",
     "request": "^2.87.0",
     "request-promise": "^4.2.5",
     "swagger-ui-express": "^4.1.4"
