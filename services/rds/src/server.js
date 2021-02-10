@@ -62,7 +62,7 @@ class Server {
           // wait for index creation
           require('./model/raw-record').on('index', (error) => {
             if (error) {
-              console.error('RawRecord index error: %s', err)
+              logger.error('RawRecord index error', error)
             } else {
               resolve()
             }
