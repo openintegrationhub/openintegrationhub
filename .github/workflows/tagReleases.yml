@@ -1,11 +1,13 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+# This workflow performs the following steps upon a release:
+# - Pulls all services from the monorepo
+# - Gets the version which was deployed for the current release
+# - Tags each image in Docker Hub with a tag matching the current release
 
 name: Release Versioned Service Images
 
 on:
   release:
-    types: [published, released]
+    types: [released]
 
 jobs:
   get-service-names:
@@ -32,8 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-service-names
     strategy: 
-      matrix: 
-        ${{ fromJSON(needs.get-service-names.outputs.matrix) }}
+      matrix: ${{fromJSON(needs.get-service-names.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2.3.4
       - name: Create Version
@@ -46,14 +47,14 @@ jobs:
         id: service-version
         uses: notiz-dev/github-action-json-property@release
         with:
-          path: ${{ join([matrix.service,'package.json'],'/') }}
+          path: ${{ join('[matrix.service,"package.json"]','/') }}
           prop_path: 'version'
       - name: Tag with release version
         uses: javajawa/remote-docker-tag@v1
         with:
           registry: openintegrationhub
           repository: ${{ matrix.service }} 
-          existing-tag: ${{ steps.service-version.outputs.prop }} # get from checked out code
+          existing-tag: ${{ steps.service-version.outputs.prop }}
           new-tag: ${{steps.semver.outputs.fullversion}}
           auth: ${{secrets.DOCKER_AUTH_TOKEN}}
           
