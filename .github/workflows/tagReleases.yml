@@ -45,14 +45,14 @@ jobs:
         id: service-version
         uses: notiz-dev/github-action-json-property@release
         with:
-          path: ${{ join([matrix.service,'package.json'],'/') }}
+          path: ${{ join('[matrix.service,"package.json"]','/') }}
           prop_path: 'version'
       - name: Tag with release version
         uses: javajawa/remote-docker-tag@v1
         with:
           registry: openintegrationhub
           repository: ${{ matrix.service }} 
-          existing-tag: ${{ steps.service-version.outputs.prop }} # get from checked out code
+          existing-tag: ${{ steps.service-version.outputs.prop }}
           new-tag: ${{steps.semver.outputs.fullversion}}
           auth: ${{secrets.DOCKER_AUTH_TOKEN}}
           
