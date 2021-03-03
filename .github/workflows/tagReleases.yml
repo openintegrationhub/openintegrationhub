@@ -14,12 +14,18 @@ jobs:
     outputs: 
       matrix: ${{ steps.set-matrix.outputs.matrix}}
     steps:
+      - uses: actions/checkout@v2.1.0
       - name: Aggregate Services
         id: set-matrix
         working-directory: ./services
         run: |
           array=(*/)
-          echo "::set-output name=matrix::{"\service\":[values from array]}"
+          jsonString={\"service\":[
+          for i in "${array[@]}"; do 
+            jsonString=$jsonString\"${i%/}\",
+          done
+          outputString="${jsonString%,}]}"
+          echo "::set-output name=matrix::$outputString"
   # Based on https://dille.name/blog/2018/09/20/how-to-tag-docker-images-without-pulling-them/
   tag-release-images:
     if: ${{ !github.event.release.prerelease }}
