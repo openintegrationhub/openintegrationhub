@@ -2,7 +2,7 @@ const path = require('path')
 const { homedir } = require('os')
 
 const nodeImage = 'node:12-stretch'
-const kubernetesVersion = 'v1.20.2'
+const kubernetesVersion = 'v1.21.0-alpha.3'
 
 const adminUsername = 'admin@openintegrationhub.com'
 const adminPassword = 'somestring'

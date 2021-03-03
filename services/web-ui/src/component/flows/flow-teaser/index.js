@@ -6,9 +6,8 @@ import moment from 'moment';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
@@ -121,15 +120,15 @@ class FlowTeaser extends React.PureComponent {
 
         return (
             <Grid item xs={12}>
-                <ExpansionPanel>
-                    <ExpansionPanelSummary
+                <Accordion>
+                    <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
                         id="panel1a-header"
                     >
 
                         <Grid container>
-                            <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
+                            <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography><Typography>{this.props.data.id}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid>
                             {this.props.data.status
                                 && <Grid item xs={2}><InputLabel>Status:</InputLabel><Typography >{this.getStatus(classes)} {this.props.data.status}</Typography></Grid>}
@@ -153,8 +152,8 @@ class FlowTeaser extends React.PureComponent {
                             </Grid>
                         </Grid>
 
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
+                    </AccordionSummary>
+                    <AccordionSummary>
                         <Grid container>
                             {/* <Grid item xs={12}><h3>Nodes</h3>
                                 {
@@ -186,8 +185,8 @@ class FlowTeaser extends React.PureComponent {
                             <Grid item xs={3}><InputLabel>Created:</InputLabel><Typography>{moment(this.props.data.createdAt).format('HH:mm:ss DD.MM.YYYY')}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{moment(this.props.data.updatedAt).format('HH:mm:ss DD.MM.YYYY')}</Typography></Grid>
                         </Grid>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
+                    </AccordionSummary>
+                </Accordion>
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
