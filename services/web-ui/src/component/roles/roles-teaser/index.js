@@ -7,9 +7,8 @@ import {
     Select, TextField, Button, Grid, MenuItem, List, ListItem, ListItemText,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -92,8 +91,8 @@ class RolesTeaser extends React.PureComponent {
         } = this.props;
         return (
             <Grid item xs={12}>
-                <ExpansionPanel>
-                    <ExpansionPanelSummary
+                <Accordion>
+                    <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
                         id="panel1a-header"
@@ -120,8 +119,8 @@ class RolesTeaser extends React.PureComponent {
                             </Grid>
                         </Grid>
 
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
+                    </AccordionSummary>
+                    <AccordionSummary>
                         <Grid container>
                             <Grid item xs={3}>
                                 <InputLabel>Permissions:</InputLabel>
@@ -138,8 +137,8 @@ class RolesTeaser extends React.PureComponent {
                             <Grid item xs={3}><InputLabel>Updated:</InputLabel><Typography >{this.props.data.updatedAt}</Typography></Grid>
 
                         </Grid>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
+                    </AccordionSummary>
+                </Accordion>
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"

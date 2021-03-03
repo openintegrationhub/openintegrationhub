@@ -6,9 +6,8 @@ import moment from 'moment';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
@@ -72,20 +71,20 @@ class ComponentTeaser extends React.PureComponent {
 
     getTrigger(data) {
         return (
-            Object.keys(data).map((key, index) => (<ExpansionPanel key={`triggers-${index}`} expandicon={<ExpandMoreIcon />}>
-                <ExpansionPanelSummary>
+            Object.keys(data).map((key, index) => (<Accordion key={`triggers-${index}`} expandicon={<ExpandMoreIcon />}>
+                <AccordionSummary>
                     <Grid container>
                         <Grid item xs={3}><InputLabel>Trigger:</InputLabel><Typography >{key}</Typography></Grid>
                     </Grid>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
+                </AccordionSummary>
+                <AccordionSummary>
                     <Grid container spacing={2}>
                         <Grid item xs={5}><InputLabel>Title:</InputLabel><Typography >{data[key].title}</Typography></Grid>
                         <Grid item xs={5}><InputLabel>Description:</InputLabel><Typography >{data[key].description}</Typography></Grid>
                         <Grid item xs={2}><InputLabel>Type:</InputLabel><Typography >{data[key].type}</Typography></Grid>
                     </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>))
+                </AccordionSummary>
+            </Accordion>))
 
         );
     }
@@ -93,19 +92,19 @@ class ComponentTeaser extends React.PureComponent {
 
     getActions(data) {
         return (
-            Object.keys(data).map((key, index) => (<ExpansionPanel key={`actions-${index}`} expandicon={<ExpandMoreIcon />}>
-                <ExpansionPanelSummary>
+            Object.keys(data).map((key, index) => (<Accordion key={`actions-${index}`} expandicon={<ExpandMoreIcon />}>
+                <AccordionSummary>
                     <Grid container>
                         <Grid item xs={3}><InputLabel>Action:</InputLabel><Typography >{key}</Typography></Grid>
                     </Grid>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
+                </AccordionSummary>
+                <AccordionSummary>
                     <Grid container spacing={2}>
                         <Grid item xs={4}><InputLabel>Title:</InputLabel><Typography >{data[key].title}</Typography></Grid>
                         <Grid item xs={4}><InputLabel>Description:</InputLabel><Typography >{data[key].description}</Typography></Grid>
                     </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>))
+                </AccordionSummary>
+            </Accordion>))
 
         );
     }
@@ -155,8 +154,8 @@ class ComponentTeaser extends React.PureComponent {
         console.log(this.props.data);
         return (
             <Grid item xs={12}>
-                <ExpansionPanel>
-                    <ExpansionPanelSummary
+                <Accordion>
+                    <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
                         id="panel1a-header"
@@ -173,14 +172,14 @@ class ComponentTeaser extends React.PureComponent {
                                         <AddBox style={{ height: '42', width: '42' }} />
                                     </Grid>
                             }
-                            <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography></Grid>
+                            <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography><Typography>{this.props.data.id}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid>
                             <Grid item xs={3}><InputLabel>Type:</InputLabel><Typography >{this.props.data.isGlobal ? 'global' : 'local'}{this.props.data.isGlobal ? <GlobalIcon className={classes.globalFlag} /> : ''}</Typography></Grid>
                             <Grid item xs={2}>{('active' in this.props.data && this.props.data.active) ? <div className={classes.activeFlag}></div> : ''}</Grid>
                         </Grid>
 
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
+                    </AccordionSummary>
+                    <AccordionSummary>
                         <Grid container>
 
                             {
@@ -228,8 +227,8 @@ class ComponentTeaser extends React.PureComponent {
                                 </Button>
                             </Grid>
                         </Grid>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
+                    </AccordionSummary>
+                </Accordion>
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
