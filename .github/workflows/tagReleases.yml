@@ -14,7 +14,7 @@ jobs:
     outputs: 
       matrix: ${{ steps.set-matrix.outputs.matrix}}
     steps:
-      - uses: actions/checkout@v2.1.0
+      - uses: actions/checkout@v2.3.4
       - name: Aggregate Services
         id: set-matrix
         working-directory: ./services
@@ -35,17 +35,25 @@ jobs:
       matrix: 
         ${{ fromJSON(needs.get-service-names.outputs.matrix) }}
     steps:
-      - uses: booxmedialtd/ws-action-parse-semver@v1
+      - uses: actions/checkout@v2.3.4
+      - name: Create Version
+        uses: booxmedialtd/ws-action-parse-semver@v1
         id: semver
         with:
           input_string: $GITHUB_REF
           version_extractor_regex: '\/v(.*)$'
-      - name: Tag with release version.
+      - name: Get Service Version
+        id: service-version
+        uses: notiz-dev/github-action-json-property@release
+        with:
+          path: ${{ join([matrix.service,'package.json'],'/') }}
+          prop_path: 'version'
+      - name: Tag with release version
         uses: javajawa/remote-docker-tag@v1
         with:
           registry: openintegrationhub
           repository: ${{ matrix.service }} 
-          existing-tag: ${{ needs.build.outputs.docker_tag }} # get from checked out code
+          existing-tag: ${{ steps.service-version.outputs.prop }} # get from checked out code
           new-tag: ${{steps.semver.outputs.fullversion}}
           auth: ${{secrets.DOCKER_AUTH_TOKEN}}
           
