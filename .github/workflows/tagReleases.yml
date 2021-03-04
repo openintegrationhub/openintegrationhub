@@ -74,5 +74,5 @@ jobs:
           repository: ${{ format('{0}/{1}','openintegrationhub',matrix.service) }} 
           existing-tag: ${{ steps.service-version.outputs.prop }}
           new-tag: ${{steps.semver.outputs.fullversion}}
-          auth: ${{steps.docker-auth.outputs.token}}
+          auth: Bearer ${{ steps.docker-auth.outputs.token}}
           
