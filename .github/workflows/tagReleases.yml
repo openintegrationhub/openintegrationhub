@@ -37,18 +37,24 @@ jobs:
       matrix: ${{fromJSON(needs.get-service-names.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2.3.4
+      - name: Log ref
+        run: echo "$GITHUB_REF"
       - name: Create Version
         uses: booxmedialtd/ws-action-parse-semver@v1
         id: semver
         with:
-          input_string: $GITHUB_REF
+          input_string: ${{github.ref}}
           version_extractor_regex: '\/v(.*)$'
+      - name: Log semver
+        run: echo "${{ steps.semver.outputs.fullversion }}"
       - name: Get Service Version
         id: service-version
         uses: notiz-dev/github-action-json-property@release
         with:
           path: ${{ join('[matrix.service,"package.json"]','/') }}
           prop_path: 'version'
+      - name: Log Service Version
+        run: echo "${{ steps.service-version.outputs.prop }}"
       - name: Tag with release version
         uses: javajawa/remote-docker-tag@v1
         with:
