@@ -51,7 +51,7 @@ jobs:
         id: service-version
         uses: notiz-dev/github-action-json-property@release
         with:
-          path: ${{ format('{0}/{1}',matrix.service,"package.json") }}
+          path: ${{ format('{0}/{1}',matrix.service,'package.json') }}
           prop_path: 'version'
       - name: Log Service Version
         run: echo "${{ steps.service-version.outputs.prop }}"
