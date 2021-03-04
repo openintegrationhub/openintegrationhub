@@ -57,14 +57,12 @@ jobs:
         run: echo "${{ steps.service-version.outputs.prop }}"
       - name: Login to Docker Hub API v2
         id: docker-auth
-        uses: indiesdev/curl@v1
-        with:
-          url: https://auth.docker.io/token
-          method: GET
-          basic-auth: ${{ secrets.DOCKER_AUTH_USERNAME }}:${{ secrets.DOCKER_AUTH_TOKEN }}
-          params: '{"service":"registry.docker.io","scope":"repository:openintegrationhub/${{ matrix.service }}:pull,push"}'
+        run: |
+          TOKEN=$(curl -sSL -u ${{ secrets.DOCKER_AUTH_USERNAME }}:${{ secrets.DOCKER_AUTH_TOKEN }} "https://auth.docker.io/token?service=registry.docker.io&scope=repository:openintegrationhub/${{ matrix.service }}:pull,push" \
+            | jq --raw-output .token)
+          echo "::set-output name=token::$TOKEN"
       - name: Log Auth Output
-        run: echo "${{ steps.docker-auth.outputs.response.data.token }}"
+        run: echo "${{ steps.docker-auth.outputs.token }}"
       - name: Tag with release version
         uses: javajawa/remote-docker-tag@v1
         with:
@@ -72,5 +70,5 @@ jobs:
           repository: ${{ format('{0}/{1}','openintegrationhub',matrix.service) }} 
           existing-tag: ${{ steps.service-version.outputs.prop }}
           new-tag: ${{steps.semver.outputs.fullversion}}
-          auth: ${{steps.docker-auth.outputs.response.data.token}}
+          auth: ${{steps.docker-auth.outputs.token}}
           
