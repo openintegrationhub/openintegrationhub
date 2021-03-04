@@ -64,7 +64,7 @@ jobs:
           basic-auth: ${{ secrets.DOCKER_AUTH_USERNAME }}:${{ secrets.DOCKER_AUTH_TOKEN }}
           params: '{"service":"registry.docker.io","scope":"repository:openintegrationhub/${{ matrix.service }}:pull,push"}'
       - name: Log Auth Output
-        run: echo "${{ toJson(steps.docker-auth.outputs.response) }}"
+        run: echo "${{ steps.docker-auth.outputs.response.data.token }}"
       - name: Tag with release version
         uses: javajawa/remote-docker-tag@v1
         with:
