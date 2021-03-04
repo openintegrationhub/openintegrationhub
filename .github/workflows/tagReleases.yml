@@ -62,7 +62,6 @@ jobs:
           url: https://auth.docker.io/token
           method: GET
           basic-auth: ${{ secrets.DOCKER_AUTH_USERNAME }}:${{ secrets.DOCKER_AUTH_TOKEN }}
-          headers: '{"Accept":"application/vnd.docker.distribution.manifest.v2+json"}'
           params: '{"service":"registry.docker.io","scope":"repository:openintegrationhub/${{ matrix.service }}:pull,push"}'
       - name: Log Auth Output
         run: echo "${{ steps.docker-auth.outputs }}"
