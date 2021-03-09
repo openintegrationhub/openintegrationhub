@@ -25,7 +25,7 @@ router.get('/', async (req, res, next) => {
             isGlobal: true,
         });
         apps = apps.concat(globalApps);
-        return res.send(apps);
+        return res.send({ data: apps, meta: { total: apps.length }});
     } catch (err) {
         log.error(err);
         return next({
@@ -80,7 +80,7 @@ router.get('/:id', async (req, res, next) => {
         if (!app) {
             return res.sendStatus(404);
         }
-        return res.send(app);
+        return res.send({ data: app });
     } catch (err) {
         log.error(err);
         return next({
