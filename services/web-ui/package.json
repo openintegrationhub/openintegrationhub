@@ -45,7 +45,7 @@
     "http-proxy-middleware": "0.19.1",
     "immutability-helper": "3.0.0",
     "jest": "26.6.0",
-    "lodash": "4.17.11",
+    "lodash": "^4.17.21",
     "prop-types": "15.7.2",
     "react": "16.14.0",
     "react-app-rewire-hot-loader": "2.0.1",
