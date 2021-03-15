@@ -37,10 +37,6 @@ jobs:
       matrix: ${{fromJSON(needs.get-service-names.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2.3.4
-      - uses: actions/checkout@v2.3.4 
-        with:
-          repository: weberjm/remote-docker-tag 
-          path: .github/actions/remote-docker-tag
       - name: Log ref
         run: echo "$GITHUB_REF"
       - name: Create Version
@@ -68,7 +64,7 @@ jobs:
       - name: Log Auth Output
         run: echo "${{ steps.docker-auth.outputs.token }}"
       - name: Tag with release version
-        uses: ./.github/actions/remote-docker-tag #javajawa/remote-docker-tag@v1
+        uses: javajawa/remote-docker-tag@v1.1
         with:
           registry: 'registry.hub.docker.com'
           repository: ${{ format('{0}/{1}','openintegrationhub',matrix.service) }} 
