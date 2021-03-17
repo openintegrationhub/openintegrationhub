@@ -18,7 +18,7 @@ export const getApps = () => async (dispatch) => {
 
         dispatch({
             type: GET_APPS,
-            data: result.data,
+            data: result.data.data,
         });
     } catch (err) {
         console.log(err);

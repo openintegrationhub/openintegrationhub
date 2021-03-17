@@ -37,6 +37,9 @@ router.get('/', auth.isAdmin, async (req, res, next) => {
         docs.forEach((elem) => {
             elem.token = elem.token.replace(/.(?=.{4,}$)/g, '*');
         });
+        if (req.query.meta) {
+            return res.send({ data: docs, meta: { total: docs.length } });
+        }
         return res.send(docs);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -164,6 +167,9 @@ router.get('/:id', auth.isAdmin, async (req, res, next) => {
         if (!doc) {
             return res.sendStatus(404);
         } else {
+            if (req.query.meta) {
+                return res.send({ data: doc });
+            }
             return res.send(doc);
         }
 

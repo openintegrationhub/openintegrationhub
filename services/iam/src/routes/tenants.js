@@ -24,6 +24,9 @@ const log = Logger.getLogger(`${conf.general.loggingNameSpace}/user`, {
 router.get('/', auth.isAdmin, async (req, res, next) => {
     try {
         const doc = await TenantDAO.find({});
+        if (req.query.meta) {
+            return res.send({ data: doc, meta: { total: doc.length } });
+        }
         return res.send(doc);
     } catch (err) {
         return next(err);
@@ -64,6 +67,9 @@ router.get('/:id/profile', auth.hasTenantPermissions([PERMISSIONS['tenant.profil
 
     try {
         const doc = await TenantDAO.findOne({ _id: tenantId });
+        if (req.query.meta) {
+            return res.send({ data: doc });
+        }
         return res.send(doc);
     } catch (err) {
         return next(err);
@@ -81,6 +87,9 @@ router.get('/:id', auth.hasTenantPermissions([PERMISSIONS['tenant.profile.read']
         const doc = await TenantDAO.findOne({ _id: tenantId });
         if (!doc) {
             return res.sendStatus(404);
+        }
+        if (req.query.meta) {
+            return res.send({ data: doc });
         }
         return res.send(doc);
     } catch (err) {
@@ -150,6 +159,9 @@ router.get('/:id/users', auth.hasTenantPermissions([PERMISSIONS['tenant.account.
 
     try {
         const doc = await AccountDAO.find({ tenant: tenantId });
+        if (req.query.meta) {
+            return res.send({ data: doc, meta: { total: doc.length } });
+        }
         return res.send(doc);
     } catch (err) {
         return next(err);
@@ -241,7 +253,7 @@ router.delete('/:id/user/:userId', auth.hasTenantPermissions([PERMISSIONS['tenan
         log.warn('An attempt was made to delete a user of another tenant');
         return next({ status: 400, message: 'User-Id and Tenant-Id mismatch' });
     }
-    
+
 });
 
 router.post('/:id/key/', auth.can([RESTRICTED_PERMISSIONS['iam.key.create']]), async (req, res, next) => {

@@ -55,9 +55,7 @@ export const updateComponent = component => async (dispatch) => {
             url: `${conf.endpoints.component}/components/${component.id}`,
             withCredentials: true,
             json: true,
-            data: {
-                data: component,
-            },
+            data: component,
         });
 
         dispatch({
@@ -115,9 +113,7 @@ export const createComponent = data => async (dispatch) => {
             url: `${conf.endpoints.component}/components`,
             withCredentials: true,
             json: true,
-            data: {
-                data,
-            },
+            data: data,
         });
 
         dispatch({

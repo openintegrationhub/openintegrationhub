@@ -59,6 +59,11 @@ router.post('/', auth.hasTenantPermissions([PERMISSIONS['tenant.account.create']
     try {
 
         const doc = await AccountDAO.create({ userObj });
+
+        if (req.query.meta) {
+            return res.send({ data: { id: doc._id } });
+        }
+
         return res.send({ id: doc._id });
 
     } catch (err) {
@@ -85,6 +90,11 @@ router.post('/', auth.hasTenantPermissions([PERMISSIONS['tenant.account.create']
 router.get('/', auth.isAdmin, async (req, res, next) => {
     try {
         const doc = await AccountDAO.find({});
+
+        if (req.query.meta) {
+            return res.send({ data: doc, meta: { total: doc.length } });
+        }
+
         return res.send(doc);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -98,6 +108,11 @@ router.get('/me', auth.isLoggedIn, async (req, res, next) => {
 
     try {
         const doc = await AccountDAO.findOne({ _id: req.user.userid });
+
+        if (req.query.meta) {
+            return res.send({ data: doc });
+        }
+
         return res.send(doc);
     } catch (err) {
         return next({ status: 500, message: CONSTANTS.ERROR_CODES.DEFAULT });
@@ -139,6 +154,9 @@ router.get('/:id', auth.hasTenantPermissions([PERMISSIONS['tenant.account.read']
         if (!doc) {
             return res.sendStatus(404);
         } else {
+            if (req.query.meta) {
+                return res.send({ data: doc });
+            }
             return res.send(doc);
         }
 

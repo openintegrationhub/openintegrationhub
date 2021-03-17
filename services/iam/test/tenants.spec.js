@@ -105,6 +105,17 @@ describe('Tenant Routes', () => {
         expect(response.body[0].name).toBe('testTenant');
     });
 
+    test('get all tenants is successful with meta format', async () => {
+        const response = await request.get('/api/v1/tenants')
+            .set('Accept', /application\/json/)
+            .set('Authorization', tokenAdmin)
+            .query({ meta: true })
+            .expect(200);
+        expect(response.body.data.length).not.toBe(0);
+        expect(response.body.data[0].name).toBe('testTenant');
+        expect(response.body.meta.total).not.toBe(0);
+    });
+
     test('get all tenants without Token', async () => {
         await request.get('/api/v1/tenants')
             .set('Accept', /application\/json/)
