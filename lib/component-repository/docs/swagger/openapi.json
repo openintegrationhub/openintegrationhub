@@ -71,12 +71,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableComponent"
-                  }
-                }
+                "$ref": "#/components/schemas/MutableComponent"
               }
             }
           }
@@ -163,12 +158,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "$ref": "#/components/schemas/MutableComponent"
-                  }
-                }
+                "$ref": "#/components/schemas/MutableComponent"
               }
             }
           }
