@@ -30,9 +30,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/App"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/App"
+                      }
+                    },
+                    "meta": {"$ref": "#/components/schemas/Meta"}
                   }
                 }
               }
@@ -121,7 +127,7 @@
         ]
       }
     },
-    "/apps/:id": {
+    "/apps/{id}": {
       "get": {
         "tags": [
           "Apps"
@@ -146,7 +152,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/App"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/App"
+                    }
+                  }
                 }
               }
             }
