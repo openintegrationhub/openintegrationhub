@@ -136,6 +136,17 @@
         "summary": "Get all tenants",
         "description": "This can only be done by a logged in user who has the required privileges.",
         "operationId": "getTenants",
+        "parameters": [
+          {
+            "name": "meta",
+            "in": "query",
+            "description": "Set to true to receive response in data/meta format",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of all tenants",
@@ -390,6 +401,17 @@
         "summary": "get all users",
         "description": "This can only be done by a logged in user who has the required privileges.",
         "operationId": "getUser",
+        "parameters": [
+          {
+            "name": "meta",
+            "in": "query",
+            "description": "Set to true to receive response in data/meta format",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List all users",
@@ -751,6 +773,17 @@
         "summary": "get all tokens",
         "description": "This can only be done by a logged in user who has the required privileges.",
         "operationId": "getTokens",
+        "parameters": [
+          {
+            "name": "meta",
+            "in": "query",
+            "description": "Set to true to receive response in data/meta format",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List all tokens",
