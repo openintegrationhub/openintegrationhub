@@ -16,7 +16,7 @@ There are two main sources to find information on what the framework does and ho
 
 The [General Documentation](https://openintegrationhub.github.io/) that explains the basic concepts, how to set it up and what each service does. You will also find [Installation Guides](https://openintegrationhub.github.io/docs/3%20-%20Deployment/Intro.html) to do your own local or cloud deployment to test the framework.
 
-The [Main repository](https://github.com/openintegrationhub/openintegrationhub) contains the actual code as well as additional technical information for each service for instance regarding configuration options.
+The [Main Repository](https://github.com/openintegrationhub/openintegrationhub) contains the actual code as well as additional technical information for each service for instance regarding configuration options.
 
 ## Sign the Contributor License Agreement
 
@@ -34,7 +34,7 @@ If you are new to oepn source development, welcome! Happy to have you checking o
 
 ## Issues
 
-Use issues to bring attention to problems you face, features you would love to see or potential improvoments. Issues are a major way of community collaboration and part of the documentation. So please take the time to really describe your issue in a way that others can understand.
+Use issues to bring attention to problems, features you would love to see or potential improvements. Issues are a major part of community collaboration and part of the documentation. So please take the time to really describe your issue in a way that others can understand.
 
 We use issues to also show what we are currently working on. So check the existing issues. With tools like [ZenHub](https://github.com/marketplace?query=zenhub) you can also keep track of our development in a kanban sort of way.
 
@@ -42,8 +42,9 @@ To make it easier for you, we provide templates for several types of issues.
 
 ## Pull Requests
 
-We are a community driven project. In order to make collaboration easy and pleasent for everyone, please mind some general prciniples when contributing:
+We are a community driven project. In order to make collaboration easy and pleasant for everyone, please mind some general prciniples when contributing:
 
 1. Generalize your code. What anyone uses the framework for, is up to them. Avoid pushing your own tooling, configurations and customizations. They may work for you, but not for others.
 2. Make it easy for others to understand. Break your contributions in small pieces, document the code and describe what you were trying to achive.
 3. Test your code before contributing. And let us know what you tested it with - where do you run your instance, framework or service versions, notable individual changes in your setup.
+4. Follow the process on GitHub. Use the templates and pass all automated checks.
