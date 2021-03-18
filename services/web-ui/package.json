@@ -1,6 +1,6 @@
 {
   "name": "web-ui",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "license": "Apache-2.0",
   "dependencies": {
@@ -44,6 +44,7 @@
     "history": "4.9.0",
     "http-proxy-middleware": "0.19.1",
     "immutability-helper": "3.0.0",
+    "eslint-config-airbnb-base": "13.1.0",
     "jest": "26.6.0",
     "lodash": "^4.17.21",
     "prop-types": "15.7.2",
