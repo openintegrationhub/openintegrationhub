@@ -58,9 +58,7 @@ async function run() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        data,
-      }),
+      body: JSON.stringify(data),
     })
 
     if (response.status >= 400) {
