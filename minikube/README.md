@@ -97,13 +97,13 @@ This may take a while to finish. You can use `minikube dashboard` to check the s
 
 ## Host Rules Setup
 
-To actually reach the services, you need to add an entry in your hosts file for each service. You can retrieve the IP with `minikube ip` and need to create an entry for each host listed in the `ingress.yaml` file (e.g. `iam.localoih.com`).
+To actually reach the services, you need to add an entry in your hosts file for each service. You can retrieve the IP with `minikube ip` and need to create an entry for each host listed in the `ingress.yaml` file (e.g. `iam.example.com`).
 If you are using...
 
 a **Linux** distribution, you can automate this by using this terminal command:
 
 ```console
-echo "$(minikube ip) app-directory.localoih.com iam.localoih.com skm.localoih.com flow-repository.localoih.com auditlog.localoih.com metadata.localoih.com component-repository.localoih.com dispatcher-service.localoih.com webhooks.localoih.com attachment-storage-service.localoih.com data-hub.localoih.com ils.localoih.com web-ui.localoih.com" | sudo tee -a /etc/hosts
+echo "$(minikube ip) app-directory.example.com iam.example.com skm.example.com flow-repository.example.com auditlog.example.com metadata.example.com component-repository.example.com dispatcher-service.example.com webhooks.example.com attachment-storage-service.example.com data-hub.example.com ils.example.com web-ui.example.com" | sudo tee -a /etc/hosts
 ```
 
 a **Windows** distribution, you can find the host files under:
@@ -117,19 +117,19 @@ c:\windows\system32\drivers\etc\hosts
 
 then add
 
-your_minikube_ip app-directory.localoih.com
-your_minikube_ip iam.localoih.com
-your_minikube_ip skm.localoih.com
-your_minikube_ip flow-repository.localoih.com
-your_minikube_ip auditlog.localoih.com
-your_minikube_ip dispatcher-service.localoih.com
-your_minikube_ip metadata.localoih.com
-your_minikube_ip component-repository.localoih.com
-your_minikube_ip webhooks.localoih.com
-your_minikube_ip attachment-storage-service.localoih.com
-your_minikube_ip data-hub.localoih.com
-your_minikube_ip ils.localoih.com
-your_minikube_ip web-ui.localoih.com
+your_minikube_ip app-directory.example.com
+your_minikube_ip iam.example.com
+your_minikube_ip skm.example.com
+your_minikube_ip flow-repository.example.com
+your_minikube_ip auditlog.example.com
+your_minikube_ip dispatcher-service.example.com
+your_minikube_ip metadata.example.com
+your_minikube_ip component-repository.example.com
+your_minikube_ip webhooks.example.com
+your_minikube_ip attachment-storage-service.example.com
+your_minikube_ip data-hub.example.com
+your_minikube_ip ils.example.com
+your_minikube_ip web-ui.example.com
 ```
 
 ## Identity and Access Management Deployment
@@ -140,7 +140,7 @@ Deploy the OIH Identity and Access Management. To do so, simply execute `kubectl
 
 Create a service account and token for the other services in the OIH IAM. Using Postman (or another similar tool of choice), send these POST requests the IAM.
 
-**Base URL:** `iam.localoih.com`
+**Base URL:** `iam.example.com`
 
 **Header:** `Content-Type: application/json`:
 
@@ -231,25 +231,25 @@ Deploy the remaining services via the following command. This may take a while.
 The Open Integration Hub is now running and ought to function just as it would in an online context. You can reach the various services via the following URLS:
 
 - **Identity and Access Management**. Create and modify users, tenants, roles, and permissions.
-  - `iam.localoih.com`
+  - `iam.example.com`
 - **Secret Service**. Securely store authentication data for other applications.
-  - `skm.localoih.com`
+  - `skm.example.com`
 - **Flow Repository**. Create, modify, and start/stop integration flows.
-  - `flow-repository.localoih.com`
+  - `flow-repository.example.com`
 - **Audit Log**. View event logs spawned by the other services.
-  - `auditlog.localoih.com`
+  - `auditlog.example.com`
 - **Metadata Repository**. Create and modify master data models used by your connectors.
-  - `metadata.localoih.com`
+  - `metadata.example.com`
 - **Component Repository**. Store and modify connector components.
-  - `component-repository.localoih.com`
+  - `component-repository.example.com`
 - **Attachment Storage Service**. Temporarily store larger files for easier handling in flows.
-  - `attachment-storage-service.localoih.com`
+  - `attachment-storage-service.example.com`
 - **Data Hub**. Long-term storage for flow content.
-  - `data-hub.localoih.com`
+  - `data-hub.example.com`
 - **Integration Layer Service**. Perform data operations such as merging or splitting objects.
-  - `ils.localoih.com`
+  - `ils.example.com`
 - **Web UI**. A basic browser-based UI to control certain other services.
-  - `web-ui.localoih.com`
+  - `web-ui.example.com`
 
 Most of these services have an OpenAPI documentation of their API available through the path `/api-docs`. You can also check the [API Reference Documentation](https://openintegrationhub.github.io/docs/API%20Reference/APIReferenceOverview.html). If you want to learn more about the services, check the [Service Documentation](https://openintegrationhub.github.io/docs/Services/Services.html) or their readmes in the `services` folder of the GitHub Repository: [Open Integration Hub Services](https://github.com/openintegrationhub/openintegrationhub/tree/master/services)
 
@@ -296,7 +296,7 @@ Below you will find code snippets for two exemplary components. For the beginnin
 
 The timer component is used to trigger flows on a provided interval, while the code component executes the code that was provided by the flow creator.
 
-In order to add those components, visit the web ui (`web-ui.localoih.com`) and navigate to the `Components` section.
+In order to add those components, visit the web ui (`web-ui.example.com`) and navigate to the `Components` section.
 
 <p align="left">
   <img src="assets/menu.png" alt="Sublime's custom image" width="150"/>

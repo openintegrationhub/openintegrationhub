@@ -39,7 +39,7 @@ spec:
         - name: "INTROSPECT_ENDPOINT_BASIC"
           value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
         - name: ORIGINWHITELIST
-          value: "localoih.com,http://web-ui.localoih.com,http://localhost:3000"
+          value: "example.com,http://web-ui.example.com,http://localhost:3000"
         - name: NODE_ENV
           value: development
         - name: LOG_LEVEL
