@@ -40,6 +40,13 @@ We use issues to also show what we are currently working on. So check the existi
 
 To make it easier for you, we provide templates for several types of issues.
 
+<p align="center">
+  <img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/CreateNewIssue.png" alt="Create New Issue" width="800"/>
+  </p>
+  <p align="center">
+<img src="https://github.com/openintegrationhub/openintegrationhub/blob/master/Assets/IssueTemplates.png" alt="Issue Templates" width="800"/>
+</p>
+
 ## Pull Requests
 
 We are a community driven project. In order to make collaboration easy and pleasant for everyone, please mind some general prciniples when contributing:

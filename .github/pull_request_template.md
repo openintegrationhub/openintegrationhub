@@ -6,7 +6,7 @@
 
 **Does a specific change require especially careful review?**
 
-_Please describe in short which change needs careful review, why and which files are affectd_
+_Please describe in short which change needs careful review, why and which files are affected_
 
 - Change X
   - Why?
