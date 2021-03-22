@@ -32,8 +32,9 @@ class ComponentOrchestratorApp extends App {
           console.error(err)
         })
 
-        channel.on('close', function() {
-          console.log('Closing');
+        channel.on('close', function(msg) {
+          console.log('Channel closing!');
+          console.log(msg);
         })
 
         const queueCreator = new QueueCreator(channel);
