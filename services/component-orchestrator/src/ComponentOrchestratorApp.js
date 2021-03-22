@@ -27,6 +27,16 @@ class ComponentOrchestratorApp extends App {
 
         const channel = await amqp.getConnection().createChannel();
 
+        channel.on('error', function(err) {
+          console.error('Channel Error!');
+          console.error(err)
+        })
+
+        channel.on('close', function(msg) {
+          console.log('Channel closing!');
+          console.log(msg);
+        })
+
         const queueCreator = new QueueCreator(channel);
         const queuePubSub = new QueuePubSub(channel)
 
