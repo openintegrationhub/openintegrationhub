@@ -101,8 +101,8 @@ describe('StoredFunction Operations', () => {
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
-    expect(res.body).have.lengthOf(1);
-    expect(res.body[0].name).toEqual('MyFunction1');
+    expect(res.body.data).have.lengthOf(1);
+    expect(res.body.data[0].name).toEqual('MyFunction1');
     // expect(res.body[0].code).toEqual('return x * y');
   });
 
@@ -139,12 +139,12 @@ describe('StoredFunction Operations', () => {
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
-    expect(res.body).have.lengthOf(2);
+    expect(res.body.data).have.lengthOf(2);
 
-    expect(res.body[0].name).toEqual('MyFunction1');
+    expect(res.body.data[0].name).toEqual('MyFunction1');
     // expect(res.body[0].code).toEqual('return x * y');
 
-    expect(res.body[1].name).toEqual('MyFunction2');
+    expect(res.body.data[1].name).toEqual('MyFunction2');
     // expect(res.body[1].code).toEqual('return x * y * z');
   });
 
@@ -157,10 +157,13 @@ describe('StoredFunction Operations', () => {
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
-    expect(res.body).have.lengthOf(1);
+    expect(res.body.data).have.lengthOf(1);
 
-    expect(res.body[0].name).toEqual('MyFunction2');
-    expect(res.body[0].code).toEqual('return x * y * z');
+    expect(res.body.data[0].name).toEqual('MyFunction2');
+    expect(res.body.data[0].code).toEqual('return x * y * z');
+
+    expect(res.body.defaultFunctions[0].name).toEqual('DefaultFunction1');
+    expect(res.body.efaultFunctions[0].code).toEqual('x * y');
   });
 
   test('should provide the selected stored functions code in list', async () => {
@@ -172,13 +175,13 @@ describe('StoredFunction Operations', () => {
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
-    expect(res.body).have.lengthOf(1);
+    expect(res.body.data).have.lengthOf(1);
 
-    expect(res.body[0].name).toEqual('MyFunction1');
-    expect(res.body[0].code).toEqual('return x * y');
+    expect(res.body.data[0].name).toEqual('MyFunction1');
+    expect(res.body.data[0].code).toEqual('return x * y');
 
-    expect(res.body[1].name).toEqual('MyFunction2');
-    expect(res.body[1].code).toEqual('return x * y * z');
+    expect(res.body.data[1].name).toEqual('MyFunction2');
+    expect(res.body.data[1].code).toEqual('return x * y * z');
   });
 
   test('should delete a stored function', async () => {
@@ -197,9 +200,9 @@ describe('StoredFunction Operations', () => {
       .set('Authorization', 'Bearer adminToken');
 
     expect(res.status).toEqual(200);
-    expect(res.body).have.lengthOf(1);
+    expect(res.body.data).have.lengthOf(1);
 
-    expect(res.body[0].name).toEqual('MyFunction2');
-    expect(res.body[0].code).toEqual('return x * y * z');
+    expect(res.body.data[0].name).toEqual('MyFunction2');
+    expect(res.body.data[0].code).toEqual('return x * y * z');
   });
 });

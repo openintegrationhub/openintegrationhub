@@ -13,6 +13,8 @@ const bodyParser = require('body-parser');
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 
+const defaultFunctions = require('../../config/defaultFunctions');
+
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
 const jsonParser = bodyParser.json();
@@ -127,6 +129,8 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   response.meta.page = pageNumber;
   response.meta.perPage = pageSize;
   response.meta.totalPages = Math.ceil(response.meta.total / pageSize);
+
+  response.defaultFunctions = defaultFunctions;
   res.json(response);
 });
 
