@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const config = require('../../config/index.js');
 const log = require('../../config/logger');
 const ProvenanceEvent = require('../../models/provenanceEvent');
+const StoredFunction = require('../../models/storedFunction');
 
 const format = (provenanceEvent) => {
   const newProvenanceEvent = provenanceEvent;
@@ -110,7 +111,121 @@ const addProvenanceEvent = newProvenanceEvent => new Promise((resolve) => {
 });
 
 
+// Retrieves all stored functions for authorized owner or for admin irrespective of ownership.
+const getStoredFunctions = async ( // eslint-disable-line
+  user,
+  pageSize,
+  pageNumber,
+  filters,
+  sortField,
+  sortOrder,
+  from,
+  until,
+  names,
+) => new Promise(async (resolve) => {
+  if (!user.isAdmin) {
+    // @todo: ferryman permissions
+    resolve(false);
+  }
+
+  const qry = {};
+
+  let fieldNames = 'id, name, updatedAt'
+  if (names && Array.isArray(names)) {
+    qry.name = { $in: names };
+    fieldNames = null;
+  }
+
+  // Add all filtered fields to query
+  const filterFields = Object.keys(filters);
+  const length = filterFields.length;
+  if (length > 0) {
+    let i;
+    for (i = 0; i < length; i += 1) {
+      qry[filterFields[i]] = filters[filterFields[i]];
+    }
+  }
+
+  if (from !== false) {
+    qry.updatedAt = { $gte: new Date(from) };
+  }
+
+  if (until !== false) {
+    qry.updatedAt = { $lte: new Date(until) };
+  }
+
+
+  // , sortField, sortOrder
+  const sort = {};
+  sort[sortField] = sortOrder;
+
+  // count results
+  const count = await StoredFunction.find(qry).estimatedDocumentCount();
+
+  // add offset and limit to query and execute
+  StoredFunction.find(qry, fieldNames).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
+    .lean()
+    .then((doc) => {
+      const storedFunctions = doc;
+      for (let i = 0; i < storedFunctions.length; i += 1) {
+        storedFunctions[i] = format(storedFunctions[i]);
+      }
+      resolve({ data: storedFunctions, meta: { total: count } });
+    })
+    .catch((err) => {
+      log.error(err);
+    });
+});
+
+
+// Adds a new stored function
+const addStoredFunction = async (user, name, code) => new Promise((resolve) => {
+  if (!user.isAdmin) {
+    return false;
+  }
+
+  const newStoredFunction = {
+    name,
+    code,
+  };
+
+  const storeStoredFunction = new StoredFunction(newStoredFunction);
+
+  return storeStoredFunction.save()
+    .then((doc) => {
+      const storedFunction = format(doc._doc);
+      resolve(storedFunction);
+    })
+    .catch((err) => {
+      log.error(err);
+      resolve(false);
+    });
+});
+
+// Deletes a stored function
+const deleteStoredFunction = async (user, id) => {
+  if (!user.isAdmin) {
+    return false;
+  }
+
+  const query = {
+    _id: id,
+  };
+
+  try {
+    return await StoredFunction.deleteOne(
+      query,
+    ).lean().exec();
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
 module.exports = {
   getProvenanceEvents,
   addProvenanceEvent,
+  getStoredFunctions,
+  addStoredFunction,
+  deleteStoredFunction,
 };
