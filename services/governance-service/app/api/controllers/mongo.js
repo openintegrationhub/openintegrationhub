@@ -130,7 +130,7 @@ const getStoredFunctions = async ( // eslint-disable-line
 
   const qry = {};
 
-  let fieldNames = 'id, name, updatedAt'
+  let fieldNames = 'id, name, updatedAt';
   if (names && Array.isArray(names)) {
     qry.name = { $in: names };
     fieldNames = null;
