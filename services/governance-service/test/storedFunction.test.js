@@ -13,7 +13,7 @@ const request = require('supertest')(`${hostUrl}:${port}`);
 const iamMock = require('./utils/iamMock.js');
 const token = require('./utils/tokens');
 const { addStoredFunction } = require('../app/api/controllers/mongo');
-const { reportHealth } = require('../app/utils/storedFunctionBus');
+const { reportHealth } = require('../app/utils/eventBus');
 
 const StoredFunction = require('../app/models/storedFunction');
 
@@ -76,7 +76,7 @@ describe('StoredFunction Operations', () => {
     };
 
     const res = await request
-      .post('/storedFunction');
+      .post('/storedFunction')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -113,7 +113,7 @@ describe('StoredFunction Operations', () => {
     };
 
     const res = await request
-      .post('/storedFunction');
+      .post('/storedFunction')
       .set('Authorization', 'Bearer adminToken')
       .set('accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -152,7 +152,7 @@ describe('StoredFunction Operations', () => {
     const res = await request
       .get('/storedFunction')
       .query({
-        fields: 'MyFunction2'
+        fields: 'MyFunction2',
       })
       .set('Authorization', 'Bearer adminToken');
 
@@ -167,7 +167,7 @@ describe('StoredFunction Operations', () => {
     const res = await request
       .get('/storedFunction')
       .query({
-        fields: 'MyFunction2, MyFunction1'
+        fields: 'MyFunction2, MyFunction1',
       })
       .set('Authorization', 'Bearer adminToken');
 
