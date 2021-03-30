@@ -13,7 +13,7 @@
     "amqplib": "0.6.0",
     "assert": "1.4.1",
     "bunyan": "1.8.12",
-    "lodash": "4.17.15"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "eslint": "4.5.0",
