@@ -33,7 +33,7 @@ router.post('/', jsonParser, can(config.flowReadPermission), async (req, res) =>
 router.delete('/:id', jsonParser, can(config.flowReadPermission), async (req, res) => {
   const id = req.params.id;
   const user = req.user;
-  const response = await storage.addStoredFunction(user, id);
+  const response = await storage.deleteStoredFunction(user, id);
   res.json(response);
 });
 
@@ -53,12 +53,15 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   let until = false;
 
   const filters = {};
-  const filterFields = {};
+  const filterFields = {
+    name: 1,
+    id: 1,
+  };
 
   let names;
   if (req.query.names && req.query.names !== undefined) {
     names = req.query.names.replace(/[\s]+/gi, '');
-    names = names.split();
+    names = names.split(',');
   }
 
   // from
