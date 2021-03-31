@@ -12,8 +12,10 @@ const storage = require(`../api/controllers/${config.storage}`); // eslint-disab
 let eventBus;
 
 function onErrorCallback(error) {
-  log.error('onErrorCallback called by EventBus!');
-  log.error(error);
+  console.log('onErrorCallback called by EventBus!');
+  console.log(error);
+  // log.error('onErrorCallback called by EventBus!');
+  // log.error(error);
 }
 
 async function connectQueue() {
