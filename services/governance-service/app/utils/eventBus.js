@@ -17,9 +17,9 @@ function onErrorCallback(error) {
 }
 
 async function connectQueue() {
-  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
+  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger, onErrorCallback });
   eventBus = new EventBus({
-    transport, logger, serviceName: 'governance-service', onErrorCallback,
+    transport, logger, serviceName: 'governance-service',
   });
 
   await eventBus.subscribe('provenance', async (event) => {
