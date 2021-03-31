@@ -130,8 +130,8 @@ const getStoredFunctions = async ( // eslint-disable-line
 
   const qry = {};
 
-  let fieldNames = 'id, name, updatedAt';
-  if (names && Array.isArray(names)) {
+  let fieldNames = 'id name updatedAt';
+  if (names && Array.isArray(names) && names.length > 0) {
     qry.name = { $in: names };
     fieldNames = null;
   }
@@ -159,10 +159,14 @@ const getStoredFunctions = async ( // eslint-disable-line
   const sort = {};
   sort[sortField] = sortOrder;
 
+  // console.log('Query:', qry);
+  // console.log('Fieldnames:', fieldNames);
+
   // count results
   const count = await StoredFunction.find(qry).estimatedDocumentCount();
 
   // add offset and limit to query and execute
+
   StoredFunction.find(qry, fieldNames).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
     .lean()
     .then((doc) => {
@@ -187,6 +191,9 @@ const addStoredFunction = async (user, name, code) => new Promise((resolve) => {
   const newStoredFunction = {
     name,
     code,
+    metaData: {
+      oihUser: user.username,
+    },
   };
 
   const storeStoredFunction = new StoredFunction(newStoredFunction);
