@@ -11,9 +11,18 @@ const storage = require(`../api/controllers/${config.storage}`); // eslint-disab
 
 let eventBus;
 
+function onErrorCallback(error) {
+  console.log('onErrorCallback called by EventBus!');
+  console.log(error);
+  // log.error('onErrorCallback called by EventBus!');
+  // log.error(error);
+}
+
 async function connectQueue() {
-  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
-  eventBus = new EventBus({ transport, logger, serviceName: 'governance-service' });
+  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger, onErrorCallback });
+  eventBus = new EventBus({
+    transport, logger, serviceName: 'governance-service',
+  });
 
   await eventBus.subscribe('provenance', async (event) => {
     log.info(`Received event: ${JSON.stringify(event.headers)}`);

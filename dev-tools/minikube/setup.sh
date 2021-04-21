@@ -103,6 +103,15 @@ function checkOS {
     echo "Operating System: $os"
 }
 
+function checkMachine {
+    unameOut="$(uname -m)"
+    case "${unameOut}" in
+        arm64*)     machine=ARM;;
+        *)          machine="${unameOut}"
+    esac
+    echo "Machine: $machine"
+}
+
 function colorEcho {
     # $1 bash color code
     # $2 text
@@ -120,7 +129,11 @@ function checkTools {
 }
 
 function updateHostsFile {
-    cluster_ip=$(minikube ip)
+    if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+        cluster_ip=127.0.0.1
+    else
+        cluster_ip=$(minikube ip)
+    fi
 
     for host_name in "${EXPOSED_SERVICES[@]}"
     do
@@ -772,6 +785,8 @@ trap cleanup EXIT
 
 checkOS
 
+checkMachine
+
 if [ "$os" == "Darwin" ]; then
     esc="\x1B"
 fi
@@ -819,7 +834,11 @@ checkTools
 clearMinikube
 
 if [ "$os" == "Darwin" ]; then
-    minikube start --vm=true --memory $MK_MEMORY --cpus $MK_CPUS
+    if [ "$machine" == "ARM" ]; then
+        minikube start --driver=docker --memory $MK_MEMORY --cpus $MK_CPUS
+    else 
+        minikube start --driver=hyperkit --vm=true --memory $MK_MEMORY --cpus $MK_CPUS
+    fi
 else
     minikube start --memory $MK_MEMORY --cpus $MK_CPUS
 fi
@@ -837,9 +856,14 @@ then
     fi
 fi
 
-minikube addons enable ingress
+#minikube addons enable ingress
 minikube addons enable dashboard
 minikube addons enable metrics-server
+if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.45.0/deploy/static/provider/cloud/deploy.yaml
+else
+    minikube addons enable ingress
+fi
 
 # remove oih resources
 kubectl -n oih-dev-ns delete pods,services,deployments --all
@@ -859,6 +883,9 @@ updateHostsFile
 
 waitForPodStatus ingress-nginx-controller.*1/1
 
+if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+    minikube tunnel &
+fi
 ###
 ### 4. deploy platform base
 ###
