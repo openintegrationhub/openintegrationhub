@@ -11,15 +11,15 @@ const storage = require(`../api/controllers/${config.storage}`); // eslint-disab
 
 let eventBus;
 
-function onErrorCallback(error) {
-  console.log('onErrorCallback called by EventBus!');
-  console.log(error);
-  // log.error('onErrorCallback called by EventBus!');
-  // log.error(error);
+function onCloseCallback(error) {
+  // console.log('onCloseCallback called by EventBus!');
+  if (error) {
+    log.error(error);
+  }
 }
 
 async function connectQueue() {
-  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger, onErrorCallback });
+  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger, onCloseCallback });
   eventBus = new EventBus({
     transport, logger, serviceName: 'governance-service',
   });
