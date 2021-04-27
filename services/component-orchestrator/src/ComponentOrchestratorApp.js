@@ -70,7 +70,8 @@ class ComponentOrchestratorApp extends App {
                 injector: () => ({
                     serviceName: this.constructor.NAME,
                     rabbitmqUri: config.get('RABBITMQ_URI'),
-                    transport: undefined // using default transport
+                    transport: undefined, // using default transport
+                    onCloseCallback: undefined,
                 })
             }).singleton(),
             componentOrchestrator: asClass(ComponentOrchestrator)
