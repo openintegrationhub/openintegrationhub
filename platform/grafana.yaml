@@ -42,9 +42,9 @@ spec:
           timeoutSeconds: 1
       volumes:
       - name: grafana-pdisk
-        gcePersistentDisk:
-          fsType: ext4
-          pdName: timeseries-grafana
+        persistentVolumeClaim:
+          claimName: grafana-pvc
+          readOnly: false
       securityContext:
         fsGroup: 472
         runAsUser: 472
