@@ -71,7 +71,7 @@ class ComponentOrchestratorApp extends App {
                     serviceName: this.constructor.NAME,
                     rabbitmqUri: config.get('RABBITMQ_URI'),
                     transport: undefined, // using default transport
-                    onCloseCallback: undefined,
+                    onCloseCallback: undefined
                 })
             }).singleton(),
             componentOrchestrator: asClass(ComponentOrchestrator)
