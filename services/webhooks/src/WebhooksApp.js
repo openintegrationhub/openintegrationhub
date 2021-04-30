@@ -38,7 +38,8 @@ class WebhooksApp extends App {
                 injector: () => ({
                     serviceName: this.constructor.NAME,
                     rabbitmqUri: config.get('RABBITMQ_URI'),
-                    transport: undefined
+                    transport: undefined,
+                    onCloseCallback: undefined,
                 })
             }).singleton(),
         });
