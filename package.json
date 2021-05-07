@@ -15,6 +15,5 @@
 	],
 	"dependencies": {
 		"child_process": "^1.0.2"
-	},
-	"version": "1.22.10"
+	}
 }
