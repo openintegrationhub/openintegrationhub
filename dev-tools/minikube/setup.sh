@@ -835,7 +835,7 @@ clearMinikube
 
 if [ "$os" == "Darwin" ]; then
     if [ "$machine" == "ARM" ]; then
-        minikube start --driver=docker --memory $MK_MEMORY --cpus $MK_CPUS
+        minikube start --driver=docker --memory $MK_MEMORY --cpus $MK_CPUS --mount=true --mount-string="/Users/james/OIH/openintegrationhub:/openintegrationhub"
     else 
         minikube start --driver=hyperkit --vm=true --memory $MK_MEMORY --cpus $MK_CPUS
     fi
