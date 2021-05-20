@@ -14,7 +14,7 @@
     "node": ">=12.13.0"
   },
   "dependencies": {
-    "amqplib": "0.6.0",
+    "amqplib": "0.8.0",
     "bunyan": "1.8.10",
     "co": "4.6.0",
     "debug": "3.1.0",

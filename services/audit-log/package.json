@@ -15,7 +15,7 @@
   "dependencies": {
     "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/iam-utils": "*",
-    "amqplib": "^0.5.2",
+    "amqplib": "0.8.0",
     "body-parser": "^1.18.2",
     "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
