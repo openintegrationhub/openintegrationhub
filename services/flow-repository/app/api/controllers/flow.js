@@ -8,7 +8,10 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
-const request = require('request');
+
+const fetch = require('node-fetch');
+const querystring = require('querystring');
+
 const { URL } = require('url');
 const path = require('path');
 const { can } = require('@openintegrationhub/iam-utils');
@@ -291,15 +294,17 @@ router.get('/:id/steps/:stepId/logs', async (req, res) => {
   const url = new URL(config.loggingServiceBaseUrl);
   url.pathname = path.join(url.pathname, `/logs/flows/${flowId}/steps/${stepId}`);
 
+  const fullUrl = `${url}?${querystring.stringify(req.query)}`;
   const options = {
-    url: url.toString(),
-    qs: req.query,
+    method: 'GET',
     headers: {
       authorization: `Bearer ${process.env.IAM_TOKEN}`,
     },
-    json: true,
   };
-  return request.get(options).pipe(res);
+
+  // @todo: needs to be checked
+  fetch(fullUrl, options)
+    .then(response => response.body.pipe(res));
 });
 
 module.exports = router;
