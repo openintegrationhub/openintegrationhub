@@ -164,7 +164,7 @@ async function createFlows(applications, token) {
 
             const initialOptions = {
               method: 'POST',
-              body: initialFlow,
+              body: JSON.stringify(initialFlow),
               headers: {
                 Authorization: token,
                 'Content-type': 'application/json',
@@ -187,7 +187,7 @@ async function createFlows(applications, token) {
 
             const options = {
               method: 'PATCH',
-              body: flow,
+              body: JSON.stringify(flow),
               headers: {
                 Authorization: token,
                 'Content-type': 'application/json',
@@ -222,7 +222,7 @@ async function createFlows(applications, token) {
 
             const initialOptions = {
               method: 'POST',
-              body: initialFlow,
+              body: JSON.stringify(initialFlow),
               headers: {
                 Authorization: token,
                 'Content-type': 'application/json',
@@ -244,7 +244,7 @@ async function createFlows(applications, token) {
 
             const options = {
               method: 'PATCH',
-              body: flow,
+              body: JSON.stringify(flow),
               headers: {
                 Authorization: token,
                 'Content-type': 'application/json',
