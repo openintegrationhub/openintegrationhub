@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: "off" */
 /* eslint no-unused-expressions: "off" */
-const request = require('request-promise');
+const fetch = require('node-fetch');
+
 const Chunk = require('../../models/chunk');
 const log = require('../../config/logger');
 
@@ -163,19 +164,23 @@ async function splitChunk(splitSchema, payload, ilaId) {
 async function fetchSchema(token, domainId, schemaUri) {
   globalToken = token;
   const MDR_URL = 'http://metadata.openintegrationhub.com/api/v1/domains';
+
   const options = {
     method: 'GET',
-    uri: `${MDR_URL}/${domainId}/schemas/${schemaUri}`,
-    json: true,
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-type': 'application/json',
     },
-    resolveWithFullResponse: true,
   };
 
   try {
-    const response = await request(options);
-    return response;
+    const response = await fetch(`${MDR_URL}/${domainId}/schemas/${schemaUri}`, options);
+    const responseBody = await response.json();
+    const responseData = {
+      status: response.status,
+      body: responseBody,
+    };
+    return responseData;
   } catch (e) {
     return e;
   }
@@ -187,24 +192,31 @@ async function fetchSchema(token, domainId, schemaUri) {
  * @param {String} uri - external schema uri
  * @return {Object} - a retrieved schema
  */
-function loadExternalSchema(uri) {
+async function loadExternalSchema(uri) {
   const options = {
     method: 'GET',
-    uri,
-    json: true,
     headers: {
+      'Content-type': 'application/json',
       Accept: 'application/json',
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${globalToken}`,
     },
   };
 
-  return request(options).then((res) => {
-    if (res.statusCode >= 400) throw new Error(`Loading error: ${res.statusCode}`);
-    return res;
-  }).catch((e) => {
+  try {
+    const response = await fetch(uri, options);
+    const responseBody = await response.json();
+
+    const responseData = {
+      status: response.status,
+      body: responseBody,
+    };
+    if (response.status >= 400) throw new Error(`Loading error: ${response.status}`);
+    return responseData;
+  } catch (e) {
     log.error('ERROR: ', e);
-  });
+  }
+
+  return false;
 }
 
 /**

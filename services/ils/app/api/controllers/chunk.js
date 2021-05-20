@@ -161,20 +161,20 @@ router.post('/', jsonParser, async (req, res) => {
   // Fetch schema from MDR
   if (domainId && schemaUri) {
     const domainSchema = await fetchSchema(token, domainId, schemaUri);
-    if (domainSchema.statusCode === 404) {
-      return res.status(domainSchema.statusCode).send(
+    if (domainSchema.status === 404) {
+      return res.status(domainSchema.status).send(
         {
           errors:
-          [{ message: 'DomainId or schemaUri not found!', code: domainSchema.statusCode }],
+          [{ message: 'DomainId or schemaUri not found!', code: domainSchema.status }],
         },
       );
     }
 
-    if (domainSchema.statusCode !== 200) {
-      return res.status(domainSchema.statusCode).send(
+    if (domainSchema.status !== 200) {
+      return res.status(domainSchema.status).send(
         {
           errors:
-            [{ message: domainSchema.message, code: domainSchema.statusCode }],
+            [{ message: domainSchema.message, code: domainSchema.status }],
         },
       );
     }
@@ -321,20 +321,20 @@ router.post('/validate', jsonParser, async (req, res) => {
 
   // Fetch schema from MDR
   const domainSchema = await fetchSchema(token, domainId, schemaUri);
-  if (domainSchema.statusCode === 404) {
-    return res.status(domainSchema.statusCode).send(
+  if (domainSchema.status === 404) {
+    return res.status(domainSchema.status).send(
       {
         errors:
-          [{ message: 'DomainId or schemaUri not found!', code: domainSchema.statusCode }],
+          [{ message: 'DomainId or schemaUri not found!', code: domainSchema.status }],
       },
     );
   }
 
-  if (domainSchema.statusCode !== 200) {
-    return res.status(domainSchema.statusCode).send(
+  if (domainSchema.status !== 200) {
+    return res.status(domainSchema.status).send(
       {
         errors:
-            [{ message: domainSchema.message, code: domainSchema.statusCode }],
+            [{ message: domainSchema.message, code: domainSchema.status }],
       },
     );
   }

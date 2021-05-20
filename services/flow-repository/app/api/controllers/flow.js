@@ -304,7 +304,6 @@ router.get('/:id/steps/:stepId/logs', async (req, res) => {
     },
   };
 
-  // @todo: needs to be checked
   await fetch(fullUrl, options)
     .then(response => response.body.pipe(res));
 });
