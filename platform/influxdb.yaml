@@ -52,9 +52,9 @@ spec:
           timeoutSeconds: 1
       volumes:
       - name: influx-pdisk
-        gcePersistentDisk:
-          fsType: ext4
-          pdName: timeseries-influx
+        persistentVolumeClaim:
+          claimName: influx-pvc
+          readOnly: false
 ---
 apiVersion: v1
 kind: Service
