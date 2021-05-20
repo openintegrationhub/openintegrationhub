@@ -2,10 +2,9 @@
 /* eslint no-await-in-loop: "off" */
 
 const lodash = require('lodash');
-const request = require('request-promise').defaults({
-  simple: false,
-  resolveWithFullResponse: true,
-});
+
+const fetch = require('node-fetch');
+
 const log = require('./logger');
 const {
   sdfAdapterId,
@@ -165,18 +164,18 @@ async function createFlows(applications, token) {
 
             const initialOptions = {
               method: 'POST',
-              json: true,
-              url: `${flowRepoUrl}/flows`,
               body: initialFlow,
               headers: {
                 Authorization: token,
+                'Content-type': 'application/json',
               },
             };
 
-            const createResponse = await request(initialOptions);
+            const intialResponse = await fetch(`${flowRepoUrl}/flows`, initialOptions);
+            const createResponse = await intialResponse.json();
 
-
-            const flowId = createResponse.body.data.id;
+            // const flowId = createResponse.body.data.id;
+            const flowId = createResponse.data.id;
 
             const nodesLength = flow.graph.nodes.length;
 
@@ -186,18 +185,28 @@ async function createFlows(applications, token) {
               }
             }
 
+            // const options = {
+            //   method: 'PATCH',
+            //   json: true,
+            //   url: `${flowRepoUrl}/flows/${flowId}`,
+            //   body: flow,
+            //   headers: {
+            //     Authorization: token,
+            //   },
+            // };
+            //
+            // const response = await request(options);
+
             const options = {
               method: 'PATCH',
-              json: true,
-              url: `${flowRepoUrl}/flows/${flowId}`,
               body: flow,
               headers: {
                 Authorization: token,
+                'Content-type': 'application/json',
               },
             };
 
-
-            const response = await request(options);
+            const response = await fetch(`${flowRepoUrl}/flows/${flowId}`, options);
 
             if (response.statusCode === 200) {
               app.outbound.flows[j].flowId = flowId;
@@ -225,18 +234,19 @@ async function createFlows(applications, token) {
 
             const initialOptions = {
               method: 'POST',
-              json: true,
-              url: `${flowRepoUrl}/flows`,
               body: initialFlow,
               headers: {
                 Authorization: token,
+                'Content-type': 'application/json',
               },
             };
 
-            const createResponse = await request(initialOptions);
+            const intialResponse = await fetch(`${flowRepoUrl}/flows`, initialOptions);
+            const createResponse = await intialResponse.json();
 
 
-            const flowId = createResponse.body.data.id;
+            // const flowId = createResponse.body.data.id;
+            const flowId = createResponse.data.id;
 
             const nodesLength = flow.graph.nodes.length;
 
@@ -248,14 +258,14 @@ async function createFlows(applications, token) {
 
             const options = {
               method: 'PATCH',
-              url: `${flowRepoUrl}/flows/${flowId}`,
-              json: true,
               body: flow,
               headers: {
                 Authorization: token,
+                'Content-type': 'application/json',
               },
             };
-            const response = await request(options);
+
+            const response = await fetch(`${flowRepoUrl}/flows/${flowId}`, options);
 
             if (response.statusCode === 200) {
               app.inbound.flows[k].flowId = flowId;
@@ -282,13 +292,13 @@ async function deleteFlowsById(flowIds, token) {
     for (let j = 0; j < flowIds.length; j += 1) {
       const options = {
         method: 'DELETE',
-        url: `${flowRepoUrl}/flows/${flowIds[j]}`,
-        json: true,
         headers: {
           Authorization: token,
+          'Content-type': 'application/json',
         },
       };
-      await request(options);
+
+      await fetch(`${flowRepoUrl}/flows/${flowIds[j]}`, options);
     }
   } catch (e) {
     log.error(`Error while deleting flows: ${e}`);

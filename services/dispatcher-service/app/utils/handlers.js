@@ -1,10 +1,8 @@
 /* eslint no-await-in-loop: "off" */
 const lodash = require('lodash');
 
-const request = require('request-promise').defaults({
-  simple: false,
-  resolveWithFullResponse: true,
-});
+const fetch = require('node-fetch');
+
 const storage = require('./mongo');
 const log = require('./logger'); // eslint-disable-line
 const config = require('../config');
@@ -12,30 +10,28 @@ const config = require('../config');
 async function checkFlows(targets) {
   for (let i = 0; i < targets.length; i += 1) {
     try {
-      const getOptions = {
+      const options = {
         method: 'GET',
-        uri: `${config.flowRepoUrl}/flows/${targets[i].flowId}`,
-        json: true,
         headers: {
           Authorization: `Bearer ${config.flowToken}`,
+          'Content-type': 'application/json',
         },
       };
 
-      const response = await request(getOptions);
+      const response = await fetch(`${config.flowRepoUrl}/flows/${targets[i].flowId}`, options);
 
       if (response.statusCode !== 200) {
         log.warn(`Flow with ID ${targets[i].flowId} could not be fetched`);
       } else if (response.body.data.status === 'inactive') {
         const startOptions = {
           method: 'POST',
-          uri: `${config.flowRepoUrl}/flows/${targets[i].flowId}/start`,
-          json: true,
           headers: {
             Authorization: `Bearer ${config.flowToken}`,
+            'Content-type': 'application/json',
           },
         };
 
-        await request(startOptions);
+        await fetch(`${config.flowRepoUrl}/flows/${targets[i].flowId}/start`, startOptions);
       }
     } catch (e) {
       log.error('Error while checking flows');

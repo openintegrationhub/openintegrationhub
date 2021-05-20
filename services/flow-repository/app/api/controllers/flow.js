@@ -299,6 +299,7 @@ router.get('/:id/steps/:stepId/logs', async (req, res) => {
     method: 'GET',
     headers: {
       authorization: `Bearer ${process.env.IAM_TOKEN}`,
+      'Content-type': 'application/json',
     },
   };
 

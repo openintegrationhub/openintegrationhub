@@ -24,8 +24,7 @@
     "express": "^4.16.3",
     "lodash": "^4.17.20",
     "mongoose": "5.11.8",
-    "request": "^2.87.0",
-    "request-promise": "^4.2.2",
+    "node-fetch": "^2.6.1",
     "swagger-ui-express": "^3.0.8"
   },
   "devDependencies": {
