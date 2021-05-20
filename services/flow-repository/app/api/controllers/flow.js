@@ -294,7 +294,8 @@ router.get('/:id/steps/:stepId/logs', async (req, res) => {
   const url = new URL(config.loggingServiceBaseUrl);
   url.pathname = path.join(url.pathname, `/logs/flows/${flowId}/steps/${stepId}`);
 
-  const fullUrl = `${url}?${querystring.stringify(req.query)}`;
+  const fullUrl = `${url.href}?${querystring.stringify(req.query)}`;
+
   const options = {
     method: 'GET',
     headers: {
@@ -304,7 +305,7 @@ router.get('/:id/steps/:stepId/logs', async (req, res) => {
   };
 
   // @todo: needs to be checked
-  fetch(fullUrl, options)
+  await fetch(fullUrl, options)
     .then(response => response.body.pipe(res));
 });
 

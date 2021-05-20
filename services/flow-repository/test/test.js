@@ -4,6 +4,7 @@
 /* eslint no-unused-vars: "off" */
 
 const mongoose = require('mongoose');
+const nock = require('nock');
 
 process.env.MONGODB_URL = global.__MONGO_URI__;
 
@@ -24,6 +25,8 @@ const Server = require('../app/server');
 const mainServer = new Server();
 
 const log = require('../app/config/logger'); // eslint-disable-line
+
+const config = require('../app/config/index');
 
 const adminId = token.adminToken.value.sub;
 const guestId = token.guestToken.value.sub;
@@ -890,7 +893,33 @@ describe('Flow Operations', () => {
   });
 });
 
-describe('Cleanup', () => {
+describe('Step logs', () => {
+  test('should get step logs', async () => {
+    nock(config.loggingServiceBaseUrl)
+      .get(`/logs/flows/${flowId1}/steps/0?`)
+      .reply(200, 'Some data');
+
+    const res = await request
+      .get(`/flows/${flowId1}/steps/0/logs`)
+      .set('Authorization', 'Bearer adminToken');
+
+    expect(res.status).toEqual(200);
+    expect(res.text).toEqual('Some data');
+  });
+
+  test('should not get not existent step logs', async () => {
+    const res = await request
+      .get('/flows/5fdedb7c25ab1352eef88f60/steps/2/logs')
+      .set('Authorization', 'Bearer adminToken');
+
+    expect(res.statusCode).toEqual(404);
+
+    expect(res.body.errors[0].message).toEqual('Flow not found');
+    expect(res.body.errors[0].code).toEqual(404);
+  });
+});
+
+describe('Flow Cleanup', () => {
   test('should return 400 when attempting to delete an invalid id', async () => {
     const res = await request
       .delete('/flows/SDSADGSDGH')
@@ -931,6 +960,7 @@ describe('Cleanup', () => {
     expect(res.body.errors[0].message).toEqual('No flow found');
   });
 });
+
 
 describe('Maintenance functions', () => {
   beforeAll(async () => {
@@ -981,5 +1011,12 @@ describe('Maintenance functions', () => {
     const count = await cleanupOrphans();
 
     expect(count).toEqual(1);
+  });
+
+  test('should find an orphaned flow', async () => {
+    const orphans = await getOrphanedFlows();
+
+    expect(orphans.length).toEqual(1);
+    expect(orphans[0].name).toEqual('EmptyFlow');
   });
 });
