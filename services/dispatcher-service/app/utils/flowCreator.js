@@ -172,9 +172,9 @@ async function createFlows(applications, token) {
             };
 
             const intialResponse = await fetch(`${flowRepoUrl}/flows`, initialOptions);
+
             const createResponse = await intialResponse.json();
 
-            // const flowId = createResponse.body.data.id;
             const flowId = createResponse.data.id;
 
             const nodesLength = flow.graph.nodes.length;
@@ -184,18 +184,6 @@ async function createFlows(applications, token) {
                 flow.graph.nodes[k].fields.flowId = flowId;
               }
             }
-
-            // const options = {
-            //   method: 'PATCH',
-            //   json: true,
-            //   url: `${flowRepoUrl}/flows/${flowId}`,
-            //   body: flow,
-            //   headers: {
-            //     Authorization: token,
-            //   },
-            // };
-            //
-            // const response = await request(options);
 
             const options = {
               method: 'PATCH',
@@ -208,11 +196,11 @@ async function createFlows(applications, token) {
 
             const response = await fetch(`${flowRepoUrl}/flows/${flowId}`, options);
 
-            if (response.statusCode === 200) {
+            if (response.status === 200) {
               app.outbound.flows[j].flowId = flowId;
             } else {
               log.error('Could not create flow:', flowId);
-              log.error(response.statusCode);
+              log.error(response.status);
               log.error(JSON.stringify(response.body));
               return false;
             }
@@ -244,8 +232,6 @@ async function createFlows(applications, token) {
             const intialResponse = await fetch(`${flowRepoUrl}/flows`, initialOptions);
             const createResponse = await intialResponse.json();
 
-
-            // const flowId = createResponse.body.data.id;
             const flowId = createResponse.data.id;
 
             const nodesLength = flow.graph.nodes.length;
@@ -267,11 +253,11 @@ async function createFlows(applications, token) {
 
             const response = await fetch(`${flowRepoUrl}/flows/${flowId}`, options);
 
-            if (response.statusCode === 200) {
+            if (response.status === 200) {
               app.inbound.flows[k].flowId = flowId;
             } else {
               log.error('Could not create flow:', flowId);
-              log.error(response.statusCode);
+              log.error(response.status);
               log.error(JSON.stringify(response.body));
               return false;
             }

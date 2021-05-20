@@ -20,7 +20,7 @@ async function checkFlows(targets) {
 
       const response = await fetch(`${config.flowRepoUrl}/flows/${targets[i].flowId}`, options);
 
-      if (response.statusCode !== 200) {
+      if (response.status !== 200) {
         log.warn(`Flow with ID ${targets[i].flowId} could not be fetched`);
       } else if (response.body.data.status === 'inactive') {
         const startOptions = {
