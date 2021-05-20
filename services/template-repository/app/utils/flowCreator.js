@@ -1,11 +1,9 @@
-const request = require('request');
+const fetch = require('node-fetch');
 const { URL } = require('url');
 const path = require('path');
 const _ = require('lodash');
-const { promisify } = require('util');
-const config = require('../config/index');
 
-const postAsync = promisify(request.post);
+const config = require('../config/index');
 
 const log = require('../config/logger');
 
@@ -18,24 +16,26 @@ function getFlowRepoUrl(p) {
 async function createFlow(flow, auth) {
   const url = getFlowRepoUrl('/flows');
 
-  const opts = {
-    url,
-    json: true,
+  const options = {
+    method: 'POST',
     headers: {
       authorization: auth,
+      'Content-type': 'application/json',
     },
-    body: flow,
+    body: JSON.stringify(flow),
   };
 
-  const { body, statusCode } = await postAsync(opts);
+  const response = await fetch(url, options);
+  const body = await response.json();
   log.info('Response Body: ', body);
-  if (statusCode === 201) {
+
+  if (response.status === 201) {
     const outFlow = _.get(body, 'data');
     log.info('Returning: ', outFlow);
     return outFlow;
   }
 
-  if (statusCode === 404) {
+  if (response.status === 404) {
     return null;
   }
 
