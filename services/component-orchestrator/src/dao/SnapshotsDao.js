@@ -1,9 +1,9 @@
-const request = require('request');
+const fetch = require('node-fetch');
 const { URL } = require('url');
 const path = require('path');
 const _ = require('lodash');
-const { promisify } = require('util');
-const getAsync = promisify(request.get);
+// const { promisify } = require('util');
+// const getAsync = promisify(request.get);
 
 module.exports = class OIHSnapshotsDao {
     constructor({config, logger}) {
@@ -14,27 +14,44 @@ module.exports = class OIHSnapshotsDao {
     async findOne({flowId, stepId, auth}) {
         const logger = this._logger.child({flowId, stepId});
         const url = this._getSnapshotsServiceUrl(`/snapshots/flows/${flowId}/steps/${stepId}`);
-        const opts = {
-            url,
-            json: true,
-            timeout: 5000,
-            headers: {
-                authorization: `Bearer ${auth.token}`
-            }
+        // const opts = {
+        //     url,
+        //     json: true,
+        //     timeout: 5000,
+        //     headers: {
+        //         authorization: `Bearer ${auth.token}`
+        //     }
+        // };
+
+        const options = {
+          method: 'GET',
+          headers: {
+            authorization: `Bearer ${auth.token}`,
+            'Content-type': 'application/json',
+          },
         };
 
-        logger.trace({opts}, 'Fetching the snapshot');
-        const { body, statusCode } = await getAsync(opts);
+        logger.trace({options}, 'Fetching the snapshot');
+        // const { body, statusCode } = await getAsync(opts);
 
-        if (statusCode === 200) {
+        const response = await fetch(url, options);
+
+        let body = null;
+        try {
+          body = await response.json();
+        } catch (e) {
+          console.log(e);
+        }
+
+        if (response.status === 200 && body) {
             return _.get(body, 'data');
         }
 
-        if (statusCode === 404) {
+        if (response.status === 404) {
             return null;
         }
 
-        logger.trace({statusCode, body}, 'Failed to get the snapshot');
+        logger.trace({status, body}, 'Failed to get the snapshot');
         throw new Error(`Failed to fetch the snapshot ${flowId}:${stepId}`);
     }
 

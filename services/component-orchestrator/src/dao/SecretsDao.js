@@ -1,9 +1,9 @@
-const request = require('request');
+const fetch = require('node-fetch');
 const { URL } = require('url');
 const path = require('path');
 const _ = require('lodash');
-const { promisify } = require('util');
-const getAsync = promisify(request.get);
+// const { promisify } = require('util');
+// const getAsync = promisify(request.get);
 
 // NOT USED ANYMORE
 
@@ -14,29 +14,48 @@ module.exports = class OIHSecretsDao {
     }
 
     async findById(secretId, { auth }) {
+      console.log('here!!!');
         const logger = this._logger.child({ secretId });
         const url = this._getSecretsServiceUrl(`/secrets/${secretId}`);
-        const opts = {
-            url,
-            json: true,
-            timeout: 5000,
-            headers: {
-                authorization: `Bearer ${auth.token}`
-            }
+        // const opts = {
+        //     url,
+        //     json: true,
+        //     timeout: 5000,
+        //     headers: {
+        //         authorization: `Bearer ${auth.token}`
+        //     }
+        // };
+
+        const options = {
+          method: 'GET',
+          headers: {
+            authorization: `Bearer ${auth.token}`,
+            'Content-type': 'application/json',
+          },
+          timeout: 5000,
         };
 
-        logger.trace({ opts }, 'Fetching the secret');
-        const { body, statusCode } = await getAsync(opts);
+        logger.trace({ options }, 'Fetching the secret');
+        // const { body, statusCode } = await getAsync(opts);
 
-        if (statusCode === 200) {
+        const response = await fetch(url, options);
+
+        let body = null;
+        try {
+          body = await response.json();
+        } catch (e) {
+          console.log(e);
+        }
+
+        if (response.status === 200 && body) {
             return _.get(body, 'data');
         }
 
-        if (statusCode === 404) {
+        if (response.status === 404) {
             return null;
         }
 
-        logger.trace({ statusCode, body }, 'Failed to get the secret');
+        logger.trace({ status, body }, 'Failed to get the secret');
         throw new Error(`Failed to fetch the secret ${secretId}`);
     }
 

@@ -1,11 +1,11 @@
 const { ComponentsDao } = require('@openintegrationhub/component-orchestrator');
 const LRU = require('lru-cache')
-const request = require('request');
+const fetch = require('node-fetch');
 const { URL } = require('url');
 const path = require('path');
 const _ = require('lodash');
-const { promisify } = require('util');
-const getAsync = promisify(request.get);
+// const { promisify } = require('util');
+// const getAsync = promisify(request.get);
 
 class OIHComponentsDao extends ComponentsDao {
     constructor({ config, logger }) {
@@ -32,24 +32,32 @@ class OIHComponentsDao extends ComponentsDao {
 
         const url = this._getComponentRepoUrl(`/components/${compId}`);
 
-        const opts = {
-            url,
-            json: true,
-            headers: {
-                authorization: `Bearer ${this._config.get('IAM_TOKEN')}`
-            }
+        this._logger.trace({ compId }, 'Fetching component info');
+
+        const options = {
+          method: 'GET',
+          headers: {
+            authorization: `Bearer ${this._config.get('IAM_TOKEN')}`,
+            'Content-type': 'application/json',
+          },
         };
 
-        this._logger.trace({ compId }, 'Fetching component info');
-        const { body, statusCode } = await getAsync(opts);
+        const response = await fetch(url, options);
 
-        if (statusCode === 200) {
+        let body = null;
+        try {
+          body = await response.json();
+        } catch (e) {
+          console.log(e);
+        }
+
+        if (response.status === 200 && body) {
             let component = _.get(body, 'data')
             this._cache.set(compId, component)
             return component;
         }
 
-        if (statusCode === 404) {
+        if (response.status === 404) {
             return null;
         }
 
