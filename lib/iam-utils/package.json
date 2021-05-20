@@ -17,8 +17,7 @@
     "@basaas/node-logger": "1.1.5",
     "base64url": "3.0.1",
     "node-cache": "4.2.0",
-    "request": "2.88.0",
-    "request-promise": "4.2.4"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "express": "4.17.1"
