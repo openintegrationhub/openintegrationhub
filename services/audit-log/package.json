@@ -24,8 +24,6 @@
     "express": "^4.16.3",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "5.11.8",
-    "request": "^2.87.0",
-    "request-promise": "^4.2.2",
     "swagger-ui-express": "^4.1.4",
     "uniqid": "^5.0.3"
   },
