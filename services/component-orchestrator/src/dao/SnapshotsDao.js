@@ -51,7 +51,7 @@ module.exports = class OIHSnapshotsDao {
             return null;
         }
 
-        logger.trace({status, body}, 'Failed to get the snapshot');
+        logger.trace({status: response.status, body}, 'Failed to get the snapshot');
         throw new Error(`Failed to fetch the snapshot ${flowId}:${stepId}`);
     }
 

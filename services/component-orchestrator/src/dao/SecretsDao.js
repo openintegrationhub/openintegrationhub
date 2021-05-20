@@ -14,7 +14,6 @@ module.exports = class OIHSecretsDao {
     }
 
     async findById(secretId, { auth }) {
-      console.log('here!!!');
         const logger = this._logger.child({ secretId });
         const url = this._getSecretsServiceUrl(`/secrets/${secretId}`);
         // const opts = {
@@ -55,7 +54,7 @@ module.exports = class OIHSecretsDao {
             return null;
         }
 
-        logger.trace({ status, body }, 'Failed to get the secret');
+        logger.trace({ status: response.status, body }, 'Failed to get the secret');
         throw new Error(`Failed to fetch the secret ${secretId}`);
     }
 
