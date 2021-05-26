@@ -5,7 +5,7 @@ import { Logger, ConfigStore } from 'backend-commons-lib';
 import healthcheck from './routes/healthcheck';
 import snapshots from './routes/snapshots';
 import koaBunyanLogger from 'koa-bunyan-logger';
-import koaSwagger from 'koa2-swagger-ui';
+import { koaSwagger } from 'koa2-swagger-ui';
 import errorResponder from './middleware/error-responder';
 import * as path from 'path';
 import koaQs from 'koa-qs';

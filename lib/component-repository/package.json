@@ -17,7 +17,7 @@
     "cors": "2.8.5",
     "express": "4.17.1",
     "express-async-handler": "1.1.4",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "mongoose": "5.11.8",
     "swagger-ui-express": "4.0.2"
   },
