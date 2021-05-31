@@ -891,6 +891,12 @@ fi
 ###
 
 kubectl apply -f ./1-Platform
+if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+    kubectl apply -f ./1.1-CodeVolume/sourceCodeVolumeARM.yaml
+else
+    kubectl apply -f ./1.1-CodeVolume/sourceCodeVolume.yaml
+fi
+kubectl apply -f ./1.2-CodeClaim
 
 waitForPodStatus mongodb.*1/1
 waitForPodStatus rabbitmq.*1/1
