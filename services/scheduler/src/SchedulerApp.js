@@ -42,6 +42,8 @@ class SchedulerApp extends App {
                     rabbitmqUri: config.get('RABBITMQ_URI'),
                     transport: undefined,
                     onCloseCallback: undefined,
+                    onErrorCallback: undefined,
+                    onReconnectCallback: undefined,
                 })
             }).singleton(),
             scheduler: asClass(Scheduler).singleton()

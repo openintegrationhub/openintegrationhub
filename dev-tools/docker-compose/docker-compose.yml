@@ -7,7 +7,7 @@ services:
     environment:
       NODE_ENV: development
       LOG_LEVEL: info
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       IAM_MONGODB_CONNECTION: mongodb://mongodb/${DEV_IAM_DB}?replicaSet=rs0
       IAM_AUTH_TYPE: basic
       IAM_DEBUG: 'true'
@@ -46,7 +46,7 @@ services:
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       API_BASE: /api/v1
       DEBUG_MODE: 'true'
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       PORT: ${DEV_SECRET_SERVICE_PORT}
     ports:
@@ -72,7 +72,7 @@ services:
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       PORT: ${DEV_COMPONENT_REPOSITORY_PORT}
     ports:
     - ${DEV_COMPONENT_REPOSITORY_EXTERNAL_PORT}:${DEV_COMPONENT_REPOSITORY_PORT}
@@ -97,7 +97,7 @@ services:
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       CORS_ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       PORT: ${DEV_SNAPSHOTS_SERVICE_PORT}
     ports:
     - ${DEV_SNAPSHOTS_SERVICE_EXTERNAL_PORT}:${DEV_SNAPSHOTS_SERVICE_PORT}
@@ -132,7 +132,7 @@ services:
       RABBITMQ_URI_FLOWS: amqp://${MINIKUBE_HOST_IP}:5672
       ###
 
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       RABBITMQ_MANAGEMENT_URI: http://guest:guest@rabbitmq:15672
       DEFAULT_CPU_LIMIT: 100m
       DEFAULT_MEM_LIMIT: 256Mi
@@ -173,7 +173,7 @@ services:
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
       ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       API_BASE: /api/v1
       PORT: ${DEV_APP_DIRECTORY_PORT}
     ports:
@@ -210,7 +210,7 @@ services:
     environment:
       NODE_ENV: development
       MONGODB_URL: mongodb://mongodb/${DEV_AUDIT_LOG_DB}?replicaSet=rs0
-      QUEUE_URL: amqp://guest:guest@rabbitmq
+      QUEUE_URL: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       EXCHANGE_NAME: audit-logs
       EXCHANGE_TOPIC: logs
       IAM_TOKEN: ${DEV_IAM_TOKEN}
@@ -261,7 +261,7 @@ services:
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
-      QUEUE_URL: amqp://guest:guest@rabbitmq
+      QUEUE_URL: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       FLOWREPO_URL: http://localhost:${DEV_FLOW_REPOSITORY_EXTERNAL_PORT}
       SDF_ID: ReplaceMe
       PORT: ${DEV_DISPATCHER_SERVICE_PORT}
@@ -282,7 +282,7 @@ services:
       NODE_ENV: development
       MONGODB_URL: mongodb://mongodb/${DEV_FLOW_REPOSITORY_DB}?replicaSet=rs0
       LOG_LEVEL: trace
-      QUEUE_URL: amqp://guest:guest@rabbitmq
+      QUEUE_URL: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
@@ -333,7 +333,7 @@ services:
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       ORIGINWHITELIST: ${ORIGIN_WHITELIST}
       PORT: ${DEV_META_DATA_REPOSITORY_PORT}
     ports:
@@ -353,7 +353,7 @@ services:
       NODE_ENV: development
       MONGODB_URI: mongodb://mongodb/${DEV_SCHEDULER_DB}?replicaSet=rs0
       LOG_LEVEL: trace
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
@@ -376,7 +376,7 @@ services:
       NODE_ENV: development
       MONGODB_URI: mongodb://mongodb/${DEV_WEBHOOKS_DB}?replicaSet=rs0
       LOG_LEVEL: trace
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
@@ -401,7 +401,7 @@ services:
       NODE_ENV: development
       MONGODB_URL: mongodb://mongodb/${DEV_TEMPLATE_REPOSITORY_DB}?replicaSet=rs0
       LOG_LEVEL: trace
-      QUEUE_URL: amqp://guest:guest@rabbitmq
+      QUEUE_URL: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
@@ -425,7 +425,7 @@ services:
       NODE_ENV: development
       MONGODB_URL: mongodb://mongodb/${DEV_RDS_DB}?replicaSet=rs0
       LOG_LEVEL: trace
-      QUEUE_URL: amqp://guest:guest@rabbitmq
+      QUEUE_URL: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
@@ -450,7 +450,7 @@ services:
       NODE_ENV: development
       MONGODB_URL: mongodb://mongodb/${DEV_GOVERNANCE_SERVICE_DB}?replicaSet=rs0
       LOG_LEVEL: trace
-      QUEUE_URL: amqp://guest:guest@rabbitmq
+      QUEUE_URL: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       IAM_TOKEN: ${DEV_IAM_TOKEN}
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
@@ -474,7 +474,7 @@ services:
     environment:
       NODE_ENV: development
       MONGODB_CONNECTION: mongodb://mongodb/${DEV_REPORTS_ANALYTICS_DB}?replicaSet=rs0
-      RABBITMQ_URI: amqp://guest:guest@rabbitmq
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq?heartbeat=5&connection_timeout=10000
       INFLUX_HOST: influx_db
       INFLUXDB_DATABASE: statistics
       GRAFANA_URL: http://grafana_frontend:8888

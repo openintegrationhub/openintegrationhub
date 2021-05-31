@@ -25,6 +25,8 @@ class ComponentOrchestratorApp extends App {
 
         await k8s.start(config.get('KUBE_CONFIG'));
 
+        amqp.getConnection().on('error', (error) => {console.log('fooooooooooooo', error)})
+
         const channel = await amqp.getConnection().createChannel();
 
         channel.on('error', function(err) {
@@ -71,7 +73,9 @@ class ComponentOrchestratorApp extends App {
                     serviceName: this.constructor.NAME,
                     rabbitmqUri: config.get('RABBITMQ_URI'),
                     transport: undefined, // using default transport
-                    onCloseCallback: undefined
+                    onCloseCallback: undefined,
+                    onErrorCallback: undefined,
+                    onReconnectCallback: undefined,
                 })
             }).singleton(),
             componentOrchestrator: asClass(ComponentOrchestrator)

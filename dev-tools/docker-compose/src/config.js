@@ -8,7 +8,7 @@ const adminUsername = 'admin@openintegrationhub.com'
 const adminPassword = 'somestring'
 
 const minikubeArgs = `--kubernetes-version=${kubernetesVersion}`
-const fullComposeArgs = '-V --remove-orphans --scale component-orchestrator=3'
+const fullComposeArgs = '-V --remove-orphans --scale component-orchestrator=1'
 
 const clusterName = 'minikube'
 
