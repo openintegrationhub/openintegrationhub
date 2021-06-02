@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/webhooks",
   "description": "webhooks",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"

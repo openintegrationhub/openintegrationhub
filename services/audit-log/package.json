@@ -1,6 +1,6 @@
 {
   "name": "audit-log",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Stores and retrieves audit logging data.",
   "main": "index.js",
   "scripts": {
