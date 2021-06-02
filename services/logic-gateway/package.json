@@ -12,7 +12,7 @@
     "start:container": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
     "test": "echo \"noop\"",
     "build": "echo \"No Build defined\"",
-    "build:docker": "docker build -t openintegrationhub/logic-gateway:${VERSION} -f Dockerfile ."
+    "build:docker": "echo \"No Docker Build defined\""
   },
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
