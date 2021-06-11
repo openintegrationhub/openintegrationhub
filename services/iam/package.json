@@ -1,6 +1,6 @@
 {
   "name": "iam-service",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Identity and Access Management Service",
   "main": "index.js",
   "scripts": {
