@@ -1,6 +1,6 @@
 const Lib = require('backend-commons-lib');
 const {
-    QueueCreator,
+    // QueueCreator,
     App
 } = Lib;
 
@@ -12,14 +12,14 @@ const { EventBus } = require('@openintegrationhub/event-bus');
 
 class WebhooksApp extends App {
     async _run () {
-        const { asValue, asClass, asFunction } = this.awilix;
+        const { asClass, asFunction } = this.awilix;
         const container = this.getContainer();
         const config = container.resolve('config');
         const logger = container.resolve('logger');
-        const amqp = container.resolve('amqp');
-        await amqp.start();
-        const channel = await amqp.getConnection().createChannel();
-        const queueCreator = new QueueCreator(channel);
+        // const amqp = container.resolve('amqp');
+        // await amqp.start();
+        // const channel = await amqp.getConnection().createChannel();
+        // const queueCreator = new QueueCreator(channel);
 
         const mongooseOptions = {
             socketTimeoutMS: 60000,
@@ -29,8 +29,7 @@ class WebhooksApp extends App {
         await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
 
         container.register({
-            channel: asValue(channel),
-            queueCreator: asValue(queueCreator),
+            // channel: asValue(channel),
             flowsDao: asClass(FlowsDao),
             messagePublisher: asClass(MessagePublisher),
             httpApi: asClass(HttpApi).singleton(),

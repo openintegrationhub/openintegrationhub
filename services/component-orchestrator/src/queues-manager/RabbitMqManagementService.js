@@ -142,8 +142,6 @@ class RabbitMqManagementService {
         };
 
         await this._client.setUserPermissions(username, this._vhost, permissionsBody);
-        const response = await this.setUserTopicPermissions(username)
-        console.log(response)
     }
 
 

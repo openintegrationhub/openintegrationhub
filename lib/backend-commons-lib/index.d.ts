@@ -1,6 +1,6 @@
 /// <reference types="node" />
 
-import { Channel, Connection } from 'amqplib';
+import { Channel, Connection, Message } from 'amqplib';
 import Logger from 'bunyan';
 import { IStore } from 'nconf';
 
@@ -39,7 +39,20 @@ export class QueueCreator {
     bindQueue(queueName: string, exchangeName: string, routingKey: string): Promise<void>;
     bindExchange(destination: string, source: string, pattern: string): Promise<void>;
     deleteQueue(queueName: string): Promise<void>;
+    onRecover(newChannel: Channel): any;
 }
+
+export class QueuePubSub {
+    static COLLECTOR_EXCHANGE: string;
+
+    constructor(channel: Channel);
+
+    subscribe(queue: string, callback: Function): Promise<object>;
+    ack(message: Message): Promise<void>;
+    publish(): any;
+    onRecover(newChannel: Channel): any;
+}
+
 
 export interface AMQPServiceOptions {
     logger: Logger;
@@ -51,6 +64,13 @@ export class AMQPService {
     start(): Promise<void>;
     getConnection(): Connection;
 }
+
+export class AMQPServiceV2 {
+    constructor(opts: AMQPServiceOptions);
+    start(): Promise<void>;
+    getConnection(): Connection;
+}
+
 
 import * as AMQPLib from 'amqplib';
 export {Logger, AMQPLib, IStore as ConfigStore};

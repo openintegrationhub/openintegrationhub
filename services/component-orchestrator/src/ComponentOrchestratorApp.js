@@ -19,25 +19,23 @@ class ComponentOrchestratorApp extends App {
         const { asValue, asClass, asFunction } = this.awilix;
         const container = this.getContainer();
         const config = container.resolve('config');
-        const amqp = container.resolve('amqp');
+        const amqp = container.resolve('amqpV2');
         const k8s = container.resolve('k8s');
-        await amqp.start();
 
+        let channel = null
+
+        await amqp.start();
         await k8s.start(config.get('KUBE_CONFIG'));
 
-        amqp.getConnection().on('error', (error) => {console.log('fooooooooooooo', error)})
+        // amqp.getConnection().on('error', (error) => {console.log('fooooooooooooo', error)})
 
-        const channel = await amqp.getConnection().createChannel();
+        const amqpChannelWrapper = await amqp.getConnection().createChannel({
+            setup: function(ch) {
+                channel = ch
+            }
+        });
 
-        channel.on('error', function(err) {
-          console.error('Channel Error!');
-          console.error(err)
-        })
-
-        channel.on('close', function(msg) {
-          console.log('Channel closing!');
-          console.log(msg);
-        })
+        await amqpChannelWrapper.waitForConnect()
 
         const queueCreator = new QueueCreator(channel);
         const queuePubSub = new QueuePubSub(channel)
@@ -48,6 +46,7 @@ class ComponentOrchestratorApp extends App {
             useNewUrlParser: true,
             useUnifiedTopology: true
         };
+
         await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
         const iamClient = iamUtils.createClient({
             iamToken: config.get('IAM_TOKEN'),
@@ -59,6 +58,7 @@ class ComponentOrchestratorApp extends App {
             queuesManager: asClass(RabbitMqQueuesManager),
             queuePubSub: asValue(queuePubSub),
             channel: asValue(channel),
+            amqpChannelWrapper: asValue(amqpChannelWrapper),
             iamClient: asValue(iamClient),
             flowsDao: asClass(FlowsDao),
             componentsDao: asClass(ComponentsDao),

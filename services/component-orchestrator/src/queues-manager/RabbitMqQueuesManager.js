@@ -25,6 +25,11 @@ class RabbitMqQueuesManager extends QueuesManager {
         this._credentialsStorage = credentialsStorage || new InMemoryCredentialsStorage();
     }
 
+    onRecover(newChannel) {
+        this._queueCreator.onRecover(newChannel)
+        this._queuePubSub.onRecover(newChannel)
+    }
+
     async setupBackchannel() {
         await this._queueCreator.prepareExchange(BACKCHANNEL_EXCHANGE)
         await this._queueCreator.assertMessagesQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_DEAD_LETTER_KEY);
@@ -39,7 +44,7 @@ class RabbitMqQueuesManager extends QueuesManager {
             await callback(message)
             await this._queuePubSub.ack(message)
         }
-        this._queuePubSub.subscribe(BACKCHANNEL_MESSAGES_QUEUE, processCallback.bind(this))
+        return this._queuePubSub.subscribe(BACKCHANNEL_MESSAGES_QUEUE, processCallback.bind(this))
     }
 
     async deleteForFlow(flow) {
@@ -69,6 +74,15 @@ class RabbitMqQueuesManager extends QueuesManager {
         return stepSettings;
     }
 
+    async ensureCredentials(globalComponent, flow, node) {
+        await this._ensureRabbitMqCredentials(globalComponent, flow, node, true)
+    }
+
+    async getExistingCredentialIdentifiers() {
+        return  this._credentialsStorage.getIdentifiers()
+    }
+
+
     async prepareQueuesForGlobalComponent(component) {
         return await this._queueCreator.createQueuesForGlobalComponent(component);
     }
@@ -93,56 +107,61 @@ class RabbitMqQueuesManager extends QueuesManager {
         return baseUri.toString();
     }
 
-    async _ensureRabbitMqCredentialsForFlowNode(flow, node) {
-        const creds = await this._getRabbitMqCredential(flow, node);
-        if (creds) {
-            this._logger.trace(creds, 'Found created credentials');
-            return creds;
+    async _ensureRabbitMqCredentials(globalComponent, flow, node, forcePut = false) {
+        const type = globalComponent ? 'globalComponent' : 'flowNode'
+
+        let creds = null
+        let username = null
+        let password = null
+
+        if (type === 'flowNode') {
+            creds = await this._getRabbitMqCredential(flow, node);
+        } else {
+            creds = await this._getRabbitMqCredentialForGlobalComponent(globalComponent);
         }
 
-        const username = `flow-${flow.id}-${node.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
-        const password = v4();
+        if (!creds || forcePut) {
+            password = creds ? creds.password : v4()
 
-        this._logger.trace({ username, password }, 'About to create RabbitMQ user');
-        // @todo: create node user
-        await this._rabbitmqManagement.createFlowUser({
-            username,
-            password,
-            flow,
-            backchannel: BACKCHANNEL_EXCHANGE
-        });
-        this._logger.trace({ username }, 'Created RabbitMQ user');
+            if (type === 'flowNode') {
+                username = creds ? creds.username : `flow-${flow.id}-${node.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '')
+                await this._rabbitmqManagement.createFlowUser({
+                    username,
+                    password,
+                    flow,
+                    backchannel: BACKCHANNEL_EXCHANGE
+                });
+            } else {
+                username = creds ? creds.username : `component-${globalComponent.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                await this._rabbitmqManagement.createGlobalComponentUser({
+                    username,
+                    password,
+                    component: globalComponent,
+                    backchannel: BACKCHANNEL_EXCHANGE
+                });
+            }
+            this._logger.trace({ username }, 'Upserted RabbitMQ user');
+        }
+
+        if (creds) return creds
 
         const newCreds = { username, password };
-        await this._saveRabbitMqCredential(flow, node, newCreds);
+
+        if (type === 'flowNode') {
+            await this._saveRabbitMqCredential(flow, node, newCreds);
+        } else {
+            await this._saveRabbitMqCredentialForGlobalComponent(globalComponent, newCreds);
+        }
 
         return newCreds;
     }
 
-    async _ensureRabbitMqCredentialsForGlobalComponent(component) {
-        const creds = await this._getRabbitMqCredentialForGlobalComponent(component);
-        if (creds) {
-            this._logger.trace(creds, 'Found created credentials');
-            return creds;
-        }
+    async _ensureRabbitMqCredentialsForFlowNode(flow, node, forcePut) {
+        return this._ensureRabbitMqCredentials(null, flow, node, forcePut);
+    }
 
-        const username = `component-${component.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
-        const password = v4();
-
-        this._logger.trace({ username, password }, 'About to create RabbitMQ user');
-        // @todo: create node user
-        await this._rabbitmqManagement.createGlobalComponentUser({
-            username,
-            password,
-            component,
-            backchannel: BACKCHANNEL_EXCHANGE
-        });
-        this._logger.trace({ username }, 'Created RabbitMQ user');
-
-        const newCreds = { username, password };
-        await this._saveRabbitMqCredentialForGlobalComponent(component, newCreds);
-
-        return newCreds;
+    async _ensureRabbitMqCredentialsForGlobalComponent(component, forcePut) {
+        return this._ensureRabbitMqCredentials(component, null, null, forcePut);
     }
 
     _getRabbitMqCredential(flow, node) {

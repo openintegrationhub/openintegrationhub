@@ -82,6 +82,14 @@ class MongoDbCredentialsStorage extends CredentialsStorage {
         }));
     }
 
+    async getIdentifiers() {
+        const creds = await RabbitMqCredential.find()
+        return {
+            flowNodes: creds.filter(cred => cred.flowId && cred.nodeId).map(cred => `${cred.flowId}.${cred.nodeId}`),
+            globalComponents: creds.filter(cred => cred.componentId).map(cred => cred.componentId),
+        }
+    }
+
     async clear() {
         await RabbitMqCredential.deleteMany();
     }
