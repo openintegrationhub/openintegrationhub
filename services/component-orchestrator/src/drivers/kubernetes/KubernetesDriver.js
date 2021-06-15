@@ -335,11 +335,9 @@ class KubernetesDriver extends BaseDriver {
             .replace(/\/$/, '');
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
 
-        const dataHubUrl = (process.env.DATAHUB_BASE_URL)? process.env.DATAHUB_BASE_URL : (this._config
+        envVars.DATAHUB_BASE_URL = this._config
             .get('DATAHUB_BASE_URL')
-            .replace(/\/$/, ''));
-
-        envVars.DATAHUB_BASE_URL = dataHubUrl;
+            .replace(/\/$/, '');
 
         // // if running from host use cluster internal references instead
         // if (this._config.get('RUNNING_ON_HOST') === 'true') {
