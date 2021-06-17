@@ -62,7 +62,7 @@ export default class DataController {
             throw new NotFound();
         }
 
-        if (!dataObject.owners.find(o => o.id === user.sub)) {
+        if (!dataObject.owners.find(o => o.id === user.sub) && !user.permissions.includes('all')) {
             throw new Unauthorized();
         }
 
@@ -82,7 +82,7 @@ export default class DataController {
             throw new NotFound();
         }
 
-        if (!dataObject.owners.find((o: any) => o.id === user.sub)) {
+        if (!dataObject.owners.find((o: any) => o.id === user.sub) && !user.permissions.includes('all')) {
             throw new Unauthorized();
         }
 
