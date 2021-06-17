@@ -81,6 +81,14 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
     filters.user = req.query.filter.user;
   }
 
+  // filter[templateId]
+  if (req.query.filter && req.query.filter.user !== undefined) {
+    if (!req.fromTemplate) {
+      return res.status(400).send({ errors: [{ message: 'Filtering by template failed', code: 400 }] });
+    }
+    filters.fromTemplate = req.query.filter.fromTemplate;
+  }
+
   // sort createdAt, updatedAt and name,  Prefix -
   if (req.query.sort !== undefined) {
     const array = req.query.sort.split('-');
