@@ -81,12 +81,13 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
     filters.user = req.query.filter.user;
   }
 
-  // filter[templateId]
-  if (req.query.filter && req.query.filter.user !== undefined) {
-    if (!req.fromTemplate) {
-      return res.status(400).send({ errors: [{ message: 'Filtering by template failed', code: 400 }] });
+  // filter[fromTemplate]
+  if (req.query.filter && req.query.filter.fromTemplate !== undefined) {
+    if (req.query.filter.fromTemplate) {
+      filters.fromTemplate = req.query.filter.fromTemplate;
+    } else {
+      return res.status(400).send({ errors: [{ message: 'Invalid filter[fromTemplate] parameter', code: 400 }] });
     }
-    filters.fromTemplate = req.query.filter.fromTemplate;
   }
 
   // sort createdAt, updatedAt and name,  Prefix -
