@@ -81,14 +81,13 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
     filters.user = req.query.filter.user;
   }
 
-  // filter[fromTemplate]
-  if (req.query.filter && req.query.filter.fromTemplate !== undefined) {
-    if (mongoose.Types.ObjectId.isValid(req.query.filter.fromTemplate)) {
+   // filter[fromTemplate]
+  if (req.query.filter && mongoose.Types.ObjectId.isValid(req.query.filter.fromTemplate)) {
       filters.fromTemplate = req.query.filter.fromTemplate;
     } else {
       return res.status(400).send({ errors: [{ message: 'Invalid filter[fromTemplate] parameter', code: 400 }] });
     }
-  }
+  
 
   // sort createdAt, updatedAt and name,  Prefix -
   if (req.query.sort !== undefined) {
