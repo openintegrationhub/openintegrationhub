@@ -6,7 +6,7 @@ import { expect } from 'chai';
 import DataObject from '../models/data-object';
 import nock from 'nock';
 
-function nockIamIntrospection({ status = 200, body = { sub: 'user-id', role: 'ADMIN' } } = {}) {
+function nockIamIntrospection({ status = 200, body = { sub: 'user-id', role: 'ADMIN', permissions: ['all'] } } = {}) {
     return nock('http://iam.openintegrationhub.com')
         .post('/api/v1/tokens/introspect')
         .reply(status, body);
