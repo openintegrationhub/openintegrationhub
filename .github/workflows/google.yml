@@ -58,7 +58,7 @@ jobs:
           --tag "eu.gcr.io/$PROJECT_ID/$IMAGE:latest" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
-          ./services/flow-repository
+          ./services/flow-repository/Dockerfile
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
