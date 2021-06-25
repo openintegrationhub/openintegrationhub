@@ -7,9 +7,6 @@ spec:
   - ReadWriteMany
   capacity:
     storage: 1Gi
-  #nfs:
-  #  path: "/System/Volumes/Data/Users/james/OIH/openintegrationhub"
-  #  server: host.docker.internal
   hostPath:
     path: "/openintegrationhub"
   persistentVolumeReclaimPolicy: Retain

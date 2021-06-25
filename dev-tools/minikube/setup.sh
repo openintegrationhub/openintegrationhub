@@ -6,6 +6,8 @@ set -e
 
 DEV_CONTAINER_IMAGE="openintegrationhub/dev-connector:latest"
 
+HOST_OIH_DIRECTORY="/Users/james/OIH/openintegrationhub"
+
 TENANT_1_NAME="Tenant 1"
 TENANT_1_ADMIN="ta1@example.com"
 TENANT_1_ADMIN_PASSWORD="1234"
@@ -835,7 +837,7 @@ clearMinikube
 
 if [ "$os" == "Darwin" ]; then
     if [ "$machine" == "ARM" ]; then
-        minikube start --driver=docker --memory $MK_MEMORY --cpus $MK_CPUS --mount=true --mount-string="/Users/james/OIH/openintegrationhub:/openintegrationhub"
+        minikube start --driver=docker --memory $MK_MEMORY --cpus $MK_CPUS --mount=true --mount-string="${HOST_OIH_DIRECTORY}:/openintegrationhub"
     else 
         minikube start --driver=hyperkit --vm=true --memory $MK_MEMORY --cpus $MK_CPUS
     fi
