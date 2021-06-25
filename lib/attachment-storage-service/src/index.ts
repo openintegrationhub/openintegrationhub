@@ -6,7 +6,7 @@ import healthcheck from './routes/healthcheck';
 import objects from './routes/objects';
 import batch from './routes/batch';
 import koaBunyanLogger from 'koa-bunyan-logger';
-import koaSwagger from 'koa2-swagger-ui';
+import { koaSwagger } from 'koa2-swagger-ui';
 import errorResponder from './middleware/error-responder';
 import Healthcheckable from './healthcheckable';
 import StorageDriver, {

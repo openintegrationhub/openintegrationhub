@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/component-orchestrator",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Orchestrates cluster resources",
   "main": "src/index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "dependencies": {
     "@openintegrationhub/event-bus": "*",
     "jsonwebtoken": "8.5.1",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "uuid": "8.3.0"
   },
   "devDependencies": {

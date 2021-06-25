@@ -62,9 +62,9 @@ export default class DataController {
             throw new NotFound();
         }
 
-        if (!dataObject.owners.find(o => o.id === user.sub)) {
-            throw new Unauthorized();
-        }
+        // if (!dataObject.owners.find(o => o.id === user.sub) && !user.permissions.includes('all')) {
+        //     throw new Unauthorized();
+        // }
 
         ctx.status = 200;
         ctx.body = {
@@ -82,9 +82,9 @@ export default class DataController {
             throw new NotFound();
         }
 
-        if (!dataObject.owners.find((o: any) => o.id === user.sub)) {
-            throw new Unauthorized();
-        }
+        // if (!dataObject.owners.find((o: any) => o.id === user.sub) && !user.permissions.includes('all')) {
+        //     throw new Unauthorized();
+        // }
 
         // @ts-ignore: TS2339
         dataObject.id = dataObject._id;

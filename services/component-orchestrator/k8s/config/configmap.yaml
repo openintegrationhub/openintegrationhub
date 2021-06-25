@@ -14,3 +14,4 @@ data:
   SECRET_SERVICE_URL: "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1"
   SELF_URL: "http://api-service.oih-dev-ns.svc.cluster.local"
   SNAPSHOTS_SERVICE_BASE_URL: "http://snapshots-service.oih-dev-ns.svc.cluster.local:1234"
+  DATAHUB_BASE_URL: "http://snapshots-service.oih-dev-ns.svc.cluster.local:1234"
