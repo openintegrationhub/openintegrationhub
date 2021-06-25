@@ -50,7 +50,7 @@ The setup script will attempt to provision the minikube instance with these valu
 
 # Configuration
 
-Before running the setup script, the location of your NFS server must be updated in ./1-Platform/2.1-sourceCodeVolume.yaml. The server host is the IP address which minikube uses to access the host. In order to verify your server address, you will need to start minikube and then execute the following command: `minikube ssh grep host.minikube.internal /etc/hosts | cut -f1`
+Before running the setup script, the location of your host files must be updated in ./1.1-CodeVolume/sourceCodeVolume.yaml and the HOST_OIH_DIRECTORY in setup.sh. The server host is the IP address which minikube uses to access the host. In order to verify your server address, you will need to start minikube and then execute the following command: `minikube ssh grep host.minikube.internal /etc/hosts | cut -f1`. The server value as provided ('host.docker.internal') will work in most cases.
 
 The path is the path to the root of your cloned repository / base path of the framework
 
