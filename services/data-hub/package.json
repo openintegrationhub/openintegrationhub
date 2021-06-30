@@ -1,6 +1,6 @@
 {
   "name": "data-hub",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Data hub",
   "main": "dist/index.js",
   "directories": {
