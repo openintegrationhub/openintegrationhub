@@ -17,8 +17,8 @@ spec:
       - name: secret-service
         image: node:12-alpine
         command: ["/bin/sh"]
-        args: ["-c", "yarn install --focus --network-timeout 9000000 --verbose --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/services/secret-service
+        args: ["-c", "apk update && apk add --no-cache python && yarn install --network-timeout 9000000 --verbose --non-interactive && yarn start:container"]
+        workingDir: /usr/src/app
         ports:
         - containerPort: 3000
         env:
@@ -67,7 +67,7 @@ spec:
         volumeMounts:
         - name: code
           mountPath: /usr/src/app
-          #subPath: services/secret-service
+          subPath: services/secret-service
         livenessProbe:
           httpGet:
             port: 3000

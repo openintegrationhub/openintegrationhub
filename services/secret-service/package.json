@@ -7,9 +7,9 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "node index.js",
-    "start:nodemon": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
+    "start:nodemon": "nodemon index.js --watch ./",
     "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
-    "start:container": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
+    "start:container": "nodemon index.js --watch ./",
     "test": "jest",
     "coverage": "yarn test --coverage",
     "build": "echo \"No Build defined\"",

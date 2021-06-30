@@ -862,7 +862,7 @@ fi
 minikube addons enable dashboard
 minikube addons enable metrics-server
 if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.45.0/deploy/static/provider/cloud/deploy.yaml
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.47.0/deploy/static/provider/cloud/deploy.yaml
 else
     minikube addons enable ingress
 fi
