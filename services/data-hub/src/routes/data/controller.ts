@@ -201,7 +201,7 @@ export default class DataController {
             }
 
             if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-                let newIOwner: IOwnerDocument;
+                let newIOwner = {} as IOwnerDocument;
                 newIOwner.id = user.sub;
                 newIOwner.type = 'user';
                 dataObject.owners.push(newIOwner);
@@ -227,7 +227,6 @@ export default class DataController {
             }
             // @ts-ignore: No overload matches this call.
             dataObject = await DataObject.create(newObject);
-
         }
 
         ctx.status = 201;
