@@ -3,9 +3,9 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const logger = require('@basaas/node-logger');
 
-const Server = require('@openintegrationhub/secret-service');
 const { EventBus } = require('@openintegrationhub/event-bus');
-const conf = require('@openintegrationhub/secret-service/src/conf');
+const Server = require('./src/server');
+const conf = require('./src/conf');
 
 const log = logger.getLogger(`${conf.log.namespace}/main`);
 
@@ -31,9 +31,9 @@ process.on('SIGINT', exitHandler.bind(null));
 
         const server = new Server({
             adapter: {
-                key: require('@openintegrationhub/secret-service/src/adapter/key/global'),
+                key: require('./src/adapter/key/global'),
                 preprocessor: {
-                    microsoft: require('@openintegrationhub/secret-service/src/adapter/preprocessor/microsoft'),
+                    microsoft: require('./src/adapter/preprocessor/microsoft'),
                 },
             },
             eventBus,
