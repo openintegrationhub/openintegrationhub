@@ -42,3 +42,6 @@ basaas-queue.json
 certs/
 
 clients.json
+
+run-test-container
+.npmrc
