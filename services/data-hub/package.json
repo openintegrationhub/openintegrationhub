@@ -1,6 +1,6 @@
 {
   "name": "data-hub",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Data hub",
   "main": "dist/index.js",
   "directories": {
@@ -40,14 +40,14 @@
     "nock": "10.0.6",
     "supertest": "4.0.2",
     "ts-node": "9.1.1",
-    "ts-node-dev": "1.1.1",
+    "ts-node-dev": "1.1.7",
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "@openintegrationhub/event-bus": "*",
+    "@openintegrationhub/event-bus": "1.2.5",
     "@openintegrationhub/iam-utils": "*",
     "@wice-devs/cfm": "1.0.8",
-    "backend-commons-lib": "*",
+    "backend-commons-lib": "1.1.3",
     "bunyan": "1.8.15",
     "koa": "2.13.1",
     "koa-bodyparser": "4.3.0",
