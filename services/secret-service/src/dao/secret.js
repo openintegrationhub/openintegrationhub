@@ -232,6 +232,18 @@ module.exports = {
         props);
     },
 
+    async findByAuthClient(
+        id,
+        authClientId,
+    ) {
+        return await Secret.full.find({
+            'value.authClientId': authClientId,
+            'owners.id': id,
+        },
+        'name type value.authClientId value.scope value.expires value.externalId owners currentError',
+        );
+    },
+
     async findByExternalId(externalId, authClientId) {
         return await Secret.full.findOne({
             'value.externalId': externalId,
