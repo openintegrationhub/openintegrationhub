@@ -212,9 +212,11 @@ describe('KubernetesDriver', () => {
                                             'cpu': '0.1',
                                             'memory': '256'
                                         }
-                                    }
+                                    },
+                                    'volumeMounts': []
                                 }
                             ],
+                            'volumes': []
                         }
                     }
                 }
@@ -274,9 +276,11 @@ describe('KubernetesDriver', () => {
                                             'cpu': '0.1',
                                             'memory': '256'
                                         }
-                                    }
+                                    },
+                                    'volumeMounts': []
                                 }
                             ],
+                            'volumes': []
                         }
                     }
                 }
