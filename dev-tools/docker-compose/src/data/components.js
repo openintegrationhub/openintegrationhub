@@ -188,7 +188,10 @@ module.exports = [
       type: 'docker',
       image: 'oih/test-component:latest',
     },
-    isGlobal: false,
+    isGlobal: true,
+    specialFlags: {
+      privilegedComponent: true,
+    },
     access: 'public',
     name: 'test-component',
     description: 'A component just for testing',

@@ -1,6 +1,6 @@
 module.exports = [
   {
-    name: 'Webhook1',
+    name: 'lg-flow1',
     graph: {
       nodes: [
         {
@@ -12,7 +12,6 @@ module.exports = [
           id: 'step_2',
           componentId: 'test-component',
           function: 'testAction',
-          nodeSettings: {},
         },
       ],
       edges: [
