@@ -9,6 +9,14 @@
       "metadata": {
         "out": {}
       }
+    },
+    "lgAction": {
+      "title": "Logic Gateway Action",
+      "description": "LG mock",
+      "main": "./lib/actions/lgAction.js",
+      "metadata": {
+        "out": {}
+      }
     }
   },
   "triggers": {
