@@ -6,6 +6,8 @@ set -e
 
 DEV_CONTAINER_IMAGE="openintegrationhub/dev-connector:latest"
 
+HOST_OIH_DIRECTORY="/Users/james/OIH/openintegrationhub"
+
 TENANT_1_NAME="Tenant 1"
 TENANT_1_ADMIN="ta1@example.com"
 TENANT_1_ADMIN_PASSWORD="1234"
@@ -103,6 +105,15 @@ function checkOS {
     echo "Operating System: $os"
 }
 
+function checkMachine {
+    unameOut="$(uname -m)"
+    case "${unameOut}" in
+        arm64*)     machine=ARM;;
+        *)          machine="${unameOut}"
+    esac
+    echo "Machine: $machine"
+}
+
 function colorEcho {
     # $1 bash color code
     # $2 text
@@ -120,7 +131,11 @@ function checkTools {
 }
 
 function updateHostsFile {
-    cluster_ip=$(minikube ip)
+    if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+        cluster_ip=127.0.0.1
+    else
+        cluster_ip=$(minikube ip)
+    fi
 
     for host_name in "${EXPOSED_SERVICES[@]}"
     do
@@ -772,6 +787,8 @@ trap cleanup EXIT
 
 checkOS
 
+checkMachine
+
 if [ "$os" == "Darwin" ]; then
     esc="\x1B"
 fi
@@ -819,7 +836,11 @@ checkTools
 clearMinikube
 
 if [ "$os" == "Darwin" ]; then
-    minikube start --vm=true --memory $MK_MEMORY --cpus $MK_CPUS
+    if [ "$machine" == "ARM" ]; then
+        minikube start --driver=docker --memory $MK_MEMORY --cpus $MK_CPUS --mount=true --mount-string="${HOST_OIH_DIRECTORY}:/openintegrationhub"
+    else 
+        minikube start --driver=hyperkit --vm=true --memory $MK_MEMORY --cpus $MK_CPUS
+    fi
 else
     minikube start --memory $MK_MEMORY --cpus $MK_CPUS
 fi
@@ -837,9 +858,14 @@ then
     fi
 fi
 
-minikube addons enable ingress
+#minikube addons enable ingress
 minikube addons enable dashboard
 minikube addons enable metrics-server
+if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.47.0/deploy/static/provider/cloud/deploy.yaml
+else
+    minikube addons enable ingress
+fi
 
 # remove oih resources
 kubectl -n oih-dev-ns delete pods,services,deployments --all
@@ -859,11 +885,20 @@ updateHostsFile
 
 waitForPodStatus ingress-nginx-controller.*1/1
 
+if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+    minikube tunnel &
+fi
 ###
 ### 4. deploy platform base
 ###
 
 kubectl apply -f ./1-Platform
+if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+    kubectl apply -f ./1.1-CodeVolume/sourceCodeVolumeARM.yaml
+else
+    kubectl apply -f ./1.1-CodeVolume/sourceCodeVolume.yaml
+fi
+kubectl apply -f ./1.2-CodeClaim
 
 waitForPodStatus mongodb.*1/1
 waitForPodStatus rabbitmq.*1/1

@@ -62,9 +62,9 @@ export default class DataController {
             throw new NotFound();
         }
 
-        if (!dataObject.owners.find(o => o.id === user.sub)) {
-            throw new Unauthorized();
-        }
+        // if (!dataObject.owners.find(o => o.id === user.sub) && !user.permissions.includes('all')) {
+        //     throw new Unauthorized();
+        // }
 
         ctx.status = 200;
         ctx.body = {
@@ -82,9 +82,9 @@ export default class DataController {
             throw new NotFound();
         }
 
-        if (!dataObject.owners.find((o: any) => o.id === user.sub)) {
-            throw new Unauthorized();
-        }
+        // if (!dataObject.owners.find((o: any) => o.id === user.sub) && !user.permissions.includes('all')) {
+        //     throw new Unauthorized();
+        // }
 
         // @ts-ignore: TS2339
         dataObject.id = dataObject._id;
@@ -201,7 +201,7 @@ export default class DataController {
             }
 
             if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-                let newIOwner: IOwnerDocument;
+                let newIOwner = {} as IOwnerDocument;
                 newIOwner.id = user.sub;
                 newIOwner.type = 'user';
                 dataObject.owners.push(newIOwner);
@@ -227,7 +227,6 @@ export default class DataController {
             }
             // @ts-ignore: No overload matches this call.
             dataObject = await DataObject.create(newObject);
-
         }
 
         ctx.status = 201;

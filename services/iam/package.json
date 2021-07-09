@@ -1,6 +1,6 @@
 {
   "name": "iam-service",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Identity and Access Management Service",
   "main": "index.js",
   "scripts": {
@@ -40,7 +40,7 @@
     "express": "4.17.1",
     "express-session": "1.17.1",
     "jsonwebtoken": "8.5.1",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "moment": "2.28.0",
     "mongodb": "3.6.2",
     "mongoose": "5.11.8",
