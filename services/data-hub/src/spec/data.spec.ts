@@ -10,21 +10,21 @@ function nockIamIntrospection({
     status = 200,
     body = { sub: 'user-id', role: 'ADMIN', permissions: ['all'] },
     body2 = { sub: 'user-id2', role: 'ADMIN', permissions: ['all'] }
-    } = {}
-  ) {
+} = {}
+) {
     // return nock('http://iam.openintegrationhub.com')
     //     .post('/api/v1/tokens/introspect')
     //     .reply(status, body);
 
     nock('http://iam.openintegrationhub.com')
         .post('/api/v1/tokens/introspect', {
-          token: 'someOtherUser',
+            token: 'someOtherUser',
         })
         .reply(status, body2);
 
     nock('http://iam.openintegrationhub.com')
         .post('/api/v1/tokens/introspect', {
-          token: 'blablabla',
+            token: 'blablabla',
         })
         .reply(status, body);
 

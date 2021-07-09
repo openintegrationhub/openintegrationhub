@@ -12,6 +12,7 @@ export default () => {
         .use(koaMiddleware)
         .get('/', parsePagedQuery(), (ctx: RouterContext) => controller.getMany(ctx))
         .post('/', (ctx: RouterContext) => controller.postOne(ctx))
+        .post('/import', (ctx: RouterContext) => controller.postMany(ctx))
         .get('/:id', (ctx: RouterContext) => controller.getOne(ctx))
         .get('/recordId/:id', (ctx: RouterContext) => controller.getOneByRecordId(ctx))
         .post('/recordId', (ctx: RouterContext) => controller.postByRecordId(ctx))

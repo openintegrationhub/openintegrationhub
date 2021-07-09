@@ -174,6 +174,26 @@ export default class DataController {
         };
     }
 
+    public async postMany(ctx: RouterContext): Promise<void> {
+        const { body } = ctx.request;
+        const { user } = ctx.state;
+        body.owners = body.owners || [];
+        if (!body.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+            body.owners.push({
+                id: user.sub,
+                type: 'user'
+            });
+        }
+        
+        const createPromises = []
+
+        body.records.forEach(record => createPromises.push(DataObject.create(record)))
+
+        await Promise.all(createPromises)
+
+        ctx.status = 201;
+    }
+
     public async postByRecordId(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
