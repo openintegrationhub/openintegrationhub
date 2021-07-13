@@ -11,6 +11,7 @@ export default () => {
         .use(bodyParser())
         .use(koaMiddleware)
         .get('/', parsePagedQuery(), (ctx: RouterContext) => controller.getMany(ctx))
+        .post('/apply', parsePagedQuery(), (ctx: RouterContext) => controller.applyFunctions(ctx))
         .post('/', (ctx: RouterContext) => controller.postOne(ctx))
         .get('/:id', (ctx: RouterContext) => controller.getOne(ctx))
         .get('/recordId/:id', (ctx: RouterContext) => controller.getOneByRecordId(ctx))

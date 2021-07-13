@@ -14,6 +14,12 @@ interface IGetManyCondition {
     updatedAt?: IGteQuery;
 }
 
+const definedFunctions = {
+    'someFunction': function() {
+
+    },
+}
+
 export default class DataController {
     public async getMany(ctx: RouterContext): Promise<void> {
         const { paging, user } = ctx.state;
@@ -51,6 +57,67 @@ export default class DataController {
             data,
             meta
         };
+    }
+
+    public async applyFunctions(ctx: RouterContext): Promise<void> {
+        const { paging, user } = ctx.state;
+        const { body } = ctx.request;
+
+        if(!body.functions || !Array.isArray(body.functions)) {
+          ctx.status = 500;
+          ctx.body = {
+              error: 'No functions configured',
+              meta: {},
+          };
+          ctx.res.end()
+        } else {
+          ctx.status = 200;
+          ctx.body = 'Preparing data';
+          ctx.res.end()
+
+          // Prepare DB query
+          const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
+          const condition: IGetManyCondition = {
+              'owners.id': user.sub
+          };
+
+          if (createdSince) {
+              condition.createdAt = {
+                  $gte: createdSince
+              };
+          }
+
+          if (updatedSince) {
+              condition.updatedAt = {
+                  $gte: updatedSince
+              };
+          }
+
+
+          const handleDocument = (doc) => {
+            let preparedDoc = doc;
+            // Apply configured functions one after another
+              for (let i = 0; i < body.functions.length; i++) {
+                if(body.functions[i].name && body.functions[i].name in definedFunctions) {
+                  preparedDoc = definedFunctions[body.functions[i].name](doc, body.functions[i].fields)
+                } else {
+                  console.log('Function not found:', body.functions[i].name);
+                }
+              }
+            if(preparedDoc !== false) {
+              // Update db
+              DataObject.update({_id: doc._id}, preparedDoc);
+            }
+          }
+
+          // Query DB
+          const rows = await DataObject.find(condition)
+            .skip(paging.offset)
+            .limit(paging.perPage)
+            .exec(handleDocument);
+
+
+        }
     }
 
     public async getOne(ctx: RouterContext): Promise<void> {
