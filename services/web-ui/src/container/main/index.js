@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import flow from 'lodash/flow';
@@ -28,21 +28,10 @@ import {
 // Actions & Components
 
 import { Button } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 import { logout } from '../../action/auth';
 import { getUsers } from '../../action/users';
-import Home from '../../component/home';
-import Users from '../../component/users';
-import Tenants from '../../component/tenants';
-import Flows from '../../component/flows';
-import Components from '../../component/components';
-import HubAndSpoke from '../../component/hub-and-spoke';
-import HubAndSpokeDetails from '../../component/hub-and-spoke/details';
-import AppDirectory from '../../component/app-directory';
-import AppDetails from '../../component/app-directory/app-details';
-import MetaData from '../../component/metadata';
-import Secrets from '../../component/secrets';
-import Roles from '../../component/roles';
-import Profile from '../../component/profile';
+import routes from '../../routes';
 
 const drawerWidth = 240;
 
@@ -177,186 +166,169 @@ const ADMIN_MENU = {
 
 };
 
-class Main extends React.Component {
-    constructor(props) {
-        super(props);
+const Main = (props) => {
+    const [open, setOpen] = useState(false);
+    const [context, setContext] = useState(null);
 
-        this.state = {
-            open: false,
-            context: null,
-        };
-    }
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
 
-  handleDrawerOpen = () => {
-      this.setState({ open: true });
-  };
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
 
-  handleDrawerClose = () => {
-      this.setState({ open: false });
-  };
+    const getTenants = () => {
+        if (props.auth.memberships && props.auth.memberships.length) {
+            return props.auth.memberships.map((tenant, index) => <option key={`tenant-${index}`} value={tenant.name}>{tenant.name}</option>);
+        }
+        return null;
+    };
 
-  logout = () => {
-      this.props.logout();
-  };
+    const changeSelect = (event) => {
+        setContext(event.target.value);
+    };
 
-  getTenants = () => {
-      if (this.props.auth.memberships && this.props.auth.memberships.length) {
-          return this.props.auth.memberships.map((tenant, index) => <option key={`tenant-${index}`} value={tenant.name}>{tenant.name}</option>);
-      }
-      return null;
-  }
+    const getMenuItems = () => {
+        const menuCopy = [...Object.values(MENU)];
+        if (props.auth.isAdmin) {
+            menuCopy.splice(1, 0, ADMIN_MENU.TENANTS);
+            menuCopy.splice(1, 0, ADMIN_MENU.USERS);
+        }
+        if (props.auth.isTenantAdmin) {
+            menuCopy.splice(1, 0, ADMIN_MENU.USERS);
+        }
+        return <div>
+            {
+                menuCopy.map(menuItem => <ListItem button key={menuItem.label} onClick={() => { props.history.push(menuItem.path); setOpen(false); }}>
+                    <ListItemIcon>{menuItem.icon}</ListItemIcon>
+                    <ListItemText primary={menuItem.label} />
+                </ListItem>)
+            }
+            <ListItem button key={'Logout'} onClick={() => props.logout()}>
+                <ListItemIcon><LockOpen /></ListItemIcon>
+                <ListItemText primary={'Logout'} />
+            </ListItem>
+        </div>;
+    };
 
-  changeSelect = (event) => {
-      this.setState({
-          context: event.target.value,
-      });
-  }
 
-  getMenuItems = () => {
-      const menuCopy = [...Object.values(MENU)];
-      if (this.props.auth.isAdmin) {
-          menuCopy.splice(1, 0, ADMIN_MENU.TENANTS);
-          menuCopy.splice(1, 0, ADMIN_MENU.USERS);
-      }
-      if (this.props.auth.isTenantAdmin) {
-          menuCopy.splice(1, 0, ADMIN_MENU.USERS);
-      }
-      return <div>
-          {
-              menuCopy.map(menuItem => <ListItem button key={menuItem.label} onClick={() => { this.props.history.push(menuItem.path); }}>
-                  <ListItemIcon>{menuItem.icon}</ListItemIcon>
-                  <ListItemText primary={menuItem.label} />
-              </ListItem>)
-          }
-          <ListItem button key={'Logout'} onClick={this.logout}>
-              <ListItemIcon><LockOpen /></ListItemIcon>
-              <ListItemText primary={'Logout'} />
-          </ListItem>
-      </div>;
-  }
+    const { classes, theme } = props;
+    const { t, i18n } = useTranslation();
+    return (
+        <Grid container className={classes.root}>
+            <CssBaseline />
+            <Drawer
+                className={classes.drawer}
+                variant="persistent"
+                anchor="left"
+                open={open}
+                classes={{
+                    paper: classes.drawerPaper,
+                }}
+            >
+                <div className={classes.drawerHeader}>
+                    <IconButton onClick={handleDrawerClose}>
+                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                    </IconButton>
+                </div>
 
-  render() {
-      const { classes, theme } = this.props;
-      const { open } = this.state;
+                <List>
+                    {getMenuItems()}
+                </List>
+            </Drawer>
+            <Grid item xs={12}>
+                <AppBar
+                    className={classNames(classes.appBar, {
+                        [classes.appBarShift]: open,
+                    })}
+                >
+                    <Toolbar disableGutters={!open}>
+                        <Grid container>
+                            <IconButton
+                                color="inherit"
+                                aria-label="Open drawer"
+                                onClick={handleDrawerOpen}
+                                className={classNames(classes.menuButton, classes.drawerIcon, open && classes.hide)}
+                            >
+                                <MenuIcon />
+                            </IconButton>
 
-      return (
-          <Grid container className={classes.root}>
-              <CssBaseline />
-              <Drawer
-                  className={classes.drawer}
-                  variant="persistent"
-                  anchor="left"
-                  open={open}
-                  classes={{
-                      paper: classes.drawerPaper,
-                  }}
-              >
-                  <div className={classes.drawerHeader}>
-                      <IconButton onClick={this.handleDrawerClose}>
-                          {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                      </IconButton>
-                  </div>
+                            {
+                                context && <Grid item xs={1}>
+                                    <NativeSelect
+                                        value={context}
+                                        onChange={changeSelect}
+                                        name="tenants"
+                                        className={classes.select}
+                                        inputProps={{ 'aria-label': 'age' }}
+                                    >
+                                        <option value="Global">{context}</option>
+                                        {
+                                            getTenants()
+                                        }
+                                    </NativeSelect>
+                                </Grid>
+                            }
 
-                  <List>
-                      {this.getMenuItems()}
-                  </List>
-              </Drawer>
-              <Grid item xs={12}>
-                  <AppBar
-                      className={classNames(classes.appBar, {
-                          [classes.appBarShift]: open,
-                      })}
-                  >
-                      <Toolbar disableGutters={!open}>
-                          <Grid container>
-                              <IconButton
-                                  color="inherit"
-                                  aria-label="Open drawer"
-                                  onClick={this.handleDrawerOpen}
-                                  className={classNames(classes.menuButton, classes.drawerIcon, open && classes.hide)}
-                              >
-                                  <MenuIcon />
-                              </IconButton>
+                            <Grid item xs={6}>
+                                <img
+                                    src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
+                                    alt="Open Integration Hub"
+                                    id="logo"
+                                    data-height-percentage="54"
+                                    data-actual-width="271"
+                                    data-actual-height="40"
+                                />
 
-                              {
-                                  this.state.context && <Grid item xs={1}>
-                                      <NativeSelect
-                                          value={this.state.context}
-                                          onChange={this.changeSelect}
-                                          name="tenants"
-                                          className={classes.select}
-                                          inputProps={{ 'aria-label': 'age' }}
-                                      >
-                                          <option value="Global">{this.state.context}</option>
-                                          {
-                                              this.getTenants()
-                                          }
-                                      </NativeSelect>
-                                  </Grid>
-                              }
+                            </Grid>
+                            <Grid container item xs={2} justify='flex-end' wrap='nowrap'>
 
-                              <Grid item xs={9}>
-                                  <img
-                                      src="https://www.openintegrationhub.org/wp-content/uploads/2018/07/oih-logo.svg"
-                                      alt="Open Integration Hub"
-                                      id="logo"
-                                      data-height-percentage="54"
-                                      data-actual-width="271"
-                                      data-actual-height="40"
-                                  />
-                              </Grid>
-                              <Grid container item xs={2} justify='flex-end' wrap='nowrap'>
-                                  <Grid item style={{ marginTop: '10px' }}>
-                                      {this.props.auth.username}
-                                  </Grid>
-                                  <Grid item>
-                                      <Button
-                                          style={{
-                                              width: '100px',
-                                              marginTop: '3px',
-                                              marginLeft: '6px',
-                                          }}
-                                          onClick={() => {
-                                              this.props.history.push('/profile');
-                                          }}>
-                                          <Person />
-                                      </Button>
-                                  </Grid>
-                              </Grid>
+                                <Grid item style={{ marginTop: '10px' }}>
+                                    <span style={{ marginRight: '5px' }}>{t('hello')}</span>
+                                    <span style={{ marginRight: '5px' }} onClick={() => i18n.changeLanguage('en-US')}>English</span>
+                                    <span style={{ marginRight: '5px' }} onClick={() => i18n.changeLanguage('de-DE')}>Deutsch</span>
+                                    {props.auth.username}
+                                </Grid>
+                                <Grid item>
+                                    <Button
+                                        style={{
+                                            width: '100px',
+                                            marginTop: '3px',
+                                            marginLeft: '6px',
+                                        }}
+                                        onClick={() => {
+                                            props.history.push('/profile');
+                                        }}>
+                                        <Person />
+                                    </Button>
+                                </Grid>
+                            </Grid>
 
-                          </Grid>
+                        </Grid>
 
-                      </Toolbar>
-                  </AppBar>
-              </Grid>
-              <Grid item xs={12}>
-                  <main
-                      className={classNames(classes.content, {
-                          [classes.contentShift]: open,
-                      })}
-                  >
-                      <Switch>
-                          <Route exact path="/" component={Home} />
-                          <Route exact path="/users" component={Users} />
-                          <Route exact path="/tenants" component={Tenants} />
-                          <Route exact path="/roles" component={Roles} />
-                          <Route exact path="/flows" component={Flows} />
-                          <Route exact path="/components" component={Components} />
-                          <Route exact path="/hub-and-spoke" component={HubAndSpoke} />
-                          <Route exact path="/hub-and-spoke/:id" component={HubAndSpokeDetails} />
-                          <Route exact path="/app-directory" component={AppDirectory} />
-                          <Route exact path="/app-details/:id" component={AppDetails} />
-                          <Route exact path="/metadata" component={MetaData} />
-                          <Route exact path="/secrets" component={Secrets} />
-                          <Route exact path="/profile" component={Profile} />
-                      </Switch>
-                  </main>
-              </Grid>
+                    </Toolbar>
+                </AppBar>
+            </Grid>
+            <Grid item xs={12}>
+                <main
+                    className={classNames(classes.content, {
+                        [classes.contentShift]: open,
+                    })}
+                >
+                    <Switch>
+                        {routes.map(route => (
+                            <Route path={route.path}
+                                key={route.path}
+                                exact={route.exact}
+                                component={route.component}/>))}
+                    </Switch>
+                </main>
+            </Grid>
 
-          </Grid>
-      );
-  }
-}
+        </Grid>
+    );
+};
 
 Main.propTypes = {
     classes: PropTypes.object.isRequired,
