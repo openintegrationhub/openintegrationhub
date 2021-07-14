@@ -67,15 +67,10 @@ export default class DataController {
 
         if(!body.functions || !Array.isArray(body.functions)) {
           ctx.status = 500;
-          ctx.body = {
-              error: 'No functions configured',
-              meta: {},
-          };
-          ctx.res.end()
+          ctx.body = 'No functions configured';
         } else {
           ctx.status = 200;
           ctx.body = 'Preparing data';
-          ctx.res.end()
 
           // Prepare DB query
           const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
