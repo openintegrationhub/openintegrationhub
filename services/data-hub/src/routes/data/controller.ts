@@ -5,6 +5,7 @@ import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/da
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
 import BadRequest from '../../errors/api/BadRequest';
+import scoreObject from '../../handlers/scorer';
 
 interface IGteQuery {
     $gte: string;
@@ -23,6 +24,7 @@ const definedFunctions = {
     'someFunction': function() {
 
     },
+    score: scoreObject,
 }
 
 export default class DataController {
