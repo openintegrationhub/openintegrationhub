@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
+import scoreObject from '../../handlers/scorer';
 
 interface IGteQuery {
     $gte: string;
@@ -18,6 +19,7 @@ const definedFunctions = {
     'someFunction': function() {
 
     },
+    score: scoreObject,
 }
 
 export default class DataController {

@@ -1,6 +1,6 @@
 const { Notation } = require('notation');
 
-function scoreObject(object, fields) {
+export default function scoreObject(object, fields) {
   const notate = Notation.create;
   const { content } = object;
   let score = 0;
@@ -31,4 +31,4 @@ function scoreObject(object, fields) {
 
 }
 
-module.exports = { scoreObject }
+// module.exports = { scoreObject }
