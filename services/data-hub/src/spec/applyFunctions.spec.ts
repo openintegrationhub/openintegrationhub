@@ -102,8 +102,8 @@ describe.only('Data Enrichment and Cleansing', () => {
 
             expect(result.meta).to.be.an('object');
 
-            expect(result.meta.score).to.be.equal(0);
-            expect(result.meta.normalizedScore).to.be.equal(0);
+            expect(result.meta.score).to.be.equal(2);
+            expect(result.meta.normalizedScore).to.be.equal(1);
 
             expect(result.content).to.be.an('object');
 

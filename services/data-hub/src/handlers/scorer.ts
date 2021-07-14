@@ -13,11 +13,14 @@ export default function scoreObject(object, fields) {
 
   for (let i = 0; i < fields.length; i += 1) {
     const value = notate(content).get(fields[i].key);
+    console.log(value)
     if (value) {
       let passes = true;
 
-      if (fields[i].minLength && value.length <= fields[i].minLength) passes = false;
-      if (fields[i].maxLength && value.length >= fields[i].maxLength) passes = false;
+      if (fields[i].minLength && value.length < fields[i].minLength) passes = false;
+      if (fields[i].maxLength && value.length > fields[i].maxLength) passes = false;
+
+      console.log(passes)
 
       if (passes) score += fields[i].weight || 1;
     }
