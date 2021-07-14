@@ -91,12 +91,23 @@ export default class DataController {
           }
 
 
-          const handleDocument = (doc) => {
+          const handleDocument = (error, doc) => {
+            if(!error) {
+              console.debug('Error:', error);
+              return false;
+            }
+
             let preparedDoc = doc;
+            console.log('preparedDoc');
+            console.log(JSON.stringify(preparedDoc));
+
+
             // Apply configured functions one after another
               for (let i = 0; i < body.functions.length; i++) {
                 if(body.functions[i].name && body.functions[i].name in definedFunctions) {
-                  preparedDoc = definedFunctions[body.functions[i].name](doc, body.functions[i].fields)
+                  preparedDoc = definedFunctions[body.functions[i].name](preparedDoc, body.functions[i].fields);
+                  console.log('preparedDoc after', body.functions[i].name);
+                  console.log(JSON.stringify(preparedDoc));
                 } else {
                   console.log('Function not found:', body.functions[i].name);
                 }

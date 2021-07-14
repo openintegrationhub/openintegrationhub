@@ -2,6 +2,11 @@ const { Notation } = require('notation');
 
 export default function scoreObject(object, fields) {
   const notate = Notation.create;
+  if(!object || !object.content) {
+    console.debug('Content or dataObject not set', object);
+    return object;
+  }
+
   const { content } = object;
   let score = 0;
   let totalWeights = 0;
@@ -30,5 +35,3 @@ export default function scoreObject(object, fields) {
   return returnObject
 
 }
-
-// module.exports = { scoreObject }
