@@ -4,7 +4,7 @@ export default function scoreObject(object, fields) {
   const notate = Notation.create;
   const { content } = object;
   let score = 0;
-  let totalWeigths = 0;
+  let totalWeights = 0;
 
   for (let i = 0; i < fields.length; i += 1) {
     const value = notate(content).get(fields[i].key);
