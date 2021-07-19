@@ -80,4 +80,101 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('XXXXXXXXXX');
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
+
+  test.only('should verify a simple constraint', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'Customer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'categories.label',
+              operator: 'equals',
+              rightOperand: 'Customer',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should apply a simple constraint', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'Anothercategory',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'categories.label',
+              operator: 'equals',
+              rightOperand: 'Customer',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
 });

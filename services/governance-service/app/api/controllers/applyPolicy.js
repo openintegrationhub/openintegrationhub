@@ -25,6 +25,7 @@ const log = require('../../config/logger'); // eslint-disable-line
 // Applies a policy
 router.post('/', jsonParser, async (req, res) => {
   const { data, metadata } = req.body;
+  const { action } = req.query;
 
   if (!metadata || !metadata.policy) {
     return res.status(400).send({ errors: [{ code: 400, message: 'No policy in request' }] });
@@ -58,11 +59,18 @@ router.post('/', jsonParser, async (req, res) => {
   if (metadata.policy.permission && metadata.policy.permission.length) {
     for (let i = 0; i < metadata.policy.permission.length; i += 1) {
       const currentPermission = metadata.policy.permission[i];
-      const handler = defaultFunctions.find(el => el.name === currentPermission.action);
-      if (handler) {
-        result = handler.code(result.data, currentPermission);
-      } else {
-        log.warn(`Attempted to apply permission action ${currentPermission.action} but could not find handler`);
+      let actions = false;
+      if (currentPermission.action) {
+        actions = currentPermission.action.replace(/[\s]+/g, '');
+        actions = actions.split(',');
+      }
+      if (actions === false || actions.indexOf(action) > -1) {
+        const handler = defaultFunctions.find(el => el.name === currentPermission.constraint.operator);
+        if (handler) {
+          result = handler.code(result.data, currentPermission);
+        } else {
+          log.warn(`Attempted to apply permission action ${currentPermission.action} but could not find handler`);
+        }
       }
     }
   }
