@@ -22,7 +22,7 @@ const router = express.Router();
 
 const log = require('../../config/logger'); // eslint-disable-line
 
-// Adds a new stored function
+// Applies a policy
 router.post('/', jsonParser, async (req, res) => {
   const { data, metadata } = req.body;
 
@@ -39,7 +39,7 @@ router.post('/', jsonParser, async (req, res) => {
     data,
   };
 
-  // TODO: Load in any DB-based functions is present
+  // TODO: Load in any DB-based functions if present
 
   // First, apply any duties if present
   if (metadata.policy.duty && metadata.policy.duty.length) {
