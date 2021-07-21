@@ -41,6 +41,9 @@ router.post('/', jsonParser, async (req, res) => {
   };
 
   // TODO: Load in any DB-based functions if present
+  // Might be better to only load them when changed and keep stored
+  // const storedFunctions = await storage.getStoredFunctions(req.user, 1000);
+
 
   // First, apply any duties if present
   if (metadata.policy.duty && metadata.policy.duty.length) {
@@ -50,7 +53,13 @@ router.post('/', jsonParser, async (req, res) => {
       if (handler) {
         result = handler.code(result.data, currentDuty);
       } else {
+        // let storedHandler = storedFunctions.find(el => el.name === currentDuty.action);
+        // if(storedHandler) {
+        //   storedHandler
+        //   result = storedHandler.code(result.data, currentDuty);
+        // } else {
         log.warn(`Attempted to apply duty action ${currentDuty.action} but could not find handler`);
+        // }
       }
     }
   }
