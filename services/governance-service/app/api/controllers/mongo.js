@@ -157,7 +157,12 @@ const getStoredFunctions = async ( // eslint-disable-line
 
   // , sortField, sortOrder
   const sort = {};
-  sort[sortField] = sortOrder;
+
+  if (sortField && sortOrder) {
+    sort[sortField] = sortOrder;
+  } else {
+    sort.updatedAt = 1;
+  }
 
   // console.log('Query:', qry);
   // console.log('Fieldnames:', fieldNames);
@@ -167,7 +172,9 @@ const getStoredFunctions = async ( // eslint-disable-line
 
   // add offset and limit to query and execute
 
-  StoredFunction.find(qry, fieldNames).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
+  const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
+
+  StoredFunction.find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
     .lean()
     .then((doc) => {
       const storedFunctions = doc;

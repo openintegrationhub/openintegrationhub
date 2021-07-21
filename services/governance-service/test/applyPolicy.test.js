@@ -81,7 +81,7 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
 
-  test.only('should verify a simple constraint with equal', async () => {
+  test('should verify a simple constraint with equals', async () => {
     const body = {
       data: {
         firstName: 'Jane',
@@ -130,7 +130,7 @@ describe('applyPolicy Operations', () => {
   });
 
 
-  test('should apply a simple constraint with equal', async () => {
+  test('should apply a simple constraint with equals', async () => {
     const body = {
       data: {
         firstName: 'Jane',
@@ -176,5 +176,599 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.firstName).toEqual('Jane');
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should verify a simple constraint with notEquals', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'Anothercategory',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'categories.label',
+              operator: 'notEquals',
+              rightOperand: 'Customer',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should apply a simple constraint with notEquals', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'Customer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'categories.label',
+              operator: 'notEquals',
+              rightOperand: 'Customer',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+  test('should verify a simple constraint with smallerThen', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        timestamp: 1234,
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'timestamp',
+              operator: 'smallerThen',
+              rightOperand: 12345,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.timestamp).toEqual(1234);
+  });
+
+
+  test('should apply a simple constraint with smallerThen', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        timestamp: 12345,
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'timestamp',
+              operator: 'smallerThen',
+              rightOperand: 12345,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.timestamp).toEqual(12345);
+  });
+
+  // ////
+
+  test('should verify a simple constraint with biggerThen', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        timestamp: 12345,
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'timestamp',
+              operator: 'biggerThen',
+              rightOperand: 1234,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.timestamp).toEqual(12345);
+  });
+
+
+  test('should apply a simple constraint with biggerThen', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        timestamp: 12345,
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'timestamp',
+              operator: 'biggerThen',
+              rightOperand: 12345,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.timestamp).toEqual(12345);
+  });
+
+  // ////
+
+  test('should verify a simple constraint with smallerOrEqual', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        timestamp: '12345',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'timestamp',
+              operator: 'smallerOrEqual',
+              rightOperand: 12345,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.timestamp).toEqual('12345');
+  });
+
+
+  test('should apply a simple constraint with smallerOrEqual', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        timestamp: '123456',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'timestamp',
+              operator: 'smallerOrEqual',
+              rightOperand: 12345,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.timestamp).toEqual('123456');
+  });
+
+  // ////
+
+  test('should verify a simple constraint with biggerOrEqual', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        timestamp: '12345',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'timestamp',
+              operator: 'biggerOrEqual',
+              rightOperand: 12345,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.timestamp).toEqual('12345');
+  });
+
+
+  test('should apply a simple constraint with biggerOrEqual', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        timestamp: '123456',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'timestamp',
+              operator: 'biggerOrEqual',
+              rightOperand: 1234567,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.timestamp).toEqual('123456');
+  });
+
+  // ////
+
+  test('should verify a simple constraint with contains', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        comment: 'Awful customer service',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'comment',
+              operator: 'contains',
+              rightOperand: 'service',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.comment).toEqual('Awful customer service');
+  });
+
+
+  test('should apply a simple constraint with contains', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        comment: 'Awful food',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'comment',
+              operator: 'contains',
+              rightOperand: 'service',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.comment).toEqual('Awful food');
+  });
+
+  // ////
+
+  test('should verify a simple constraint with notContains', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        comment: 'Awful food',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'comment',
+              operator: 'notContains',
+              rightOperand: 'service',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.comment).toEqual('Awful food');
+  });
+
+
+  test('should apply a simple constraint with notContains', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        comment: 'Awful service',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'comment',
+              operator: 'notContains',
+              rightOperand: 'service',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.comment).toEqual('Awful service');
   });
 });
