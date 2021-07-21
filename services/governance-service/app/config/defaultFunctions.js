@@ -93,6 +93,34 @@ const defaultFunctions = [
       };
     },
   },
+  {
+    name: 'notEquals',
+    code: (data, permission) => {},
+  },
+  {
+    name: 'smallerThen',
+    code: (data, permission) => {},
+  },
+  {
+    name: 'biggerThen',
+    code: (data, permission) => {},
+  },
+  {
+    name: 'smallerOrEqual',
+    code: (data, permission) => {},
+  },
+  {
+    name: 'biggerOrEqual',
+    code: (data, permission) => {},
+  },
+  {
+    name: 'contains',
+    code: (data, permission) => {},
+  },
+  {
+    name: 'notContains',
+    code: (data, permission) => {},
+  },
 ];
 
 
