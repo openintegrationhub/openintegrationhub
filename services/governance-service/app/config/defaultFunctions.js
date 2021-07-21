@@ -121,6 +121,124 @@ const defaultFunctions = [
     name: 'notContains',
     code: (data, permission) => {},
   },
+
+  {
+    name: 'exists',
+    code: (data, permission) => {
+      let passes = false;
+      const returnData = Object.assign({}, data);
+
+      if (permission.constraint && permission.constraint.operator) {
+        if (permission.constraint.operator === 'exists') {
+          const result = getValuesFromData(returnData, permission.constraint.leftOperand);
+          if (result.found) {
+            passes = true;
+          }
+        }
+      }
+
+      return {
+        passes,
+        data: returnData,
+      };
+    },
+  },
+
+  {
+    name: 'notExists',
+    code: (data, permission) => {
+      let passes = false;
+      const returnData = Object.assign({}, data);
+
+      if (permission.constraint && permission.constraint.operator) {
+        if (permission.constraint.operator === 'notExists') {
+          const result = getValuesFromData(returnData, permission.constraint.leftOperand);
+          if (!result.found) {
+            passes = true;
+          }
+        }
+      }
+
+      return {
+        passes,
+        data: returnData,
+      };
+    },
+  },
+
+  {
+    name: 'keyExists',
+    code: (data, permission) => {},
+  },
+
+  {
+    name: 'hasLength',
+    code: (data, permission) => {
+      let passes = false;
+      const returnData = Object.assign({}, data);
+
+      if (permission.constraint && permission.constraint.operator) {
+        if (permission.constraint.operator === 'hasLength') {
+          const result = getValuesFromData(returnData, permission.constraint.leftOperand);
+          if (result.found) {
+            if (result.value && result.value.length === permission.constraint.rightOperand) passes = true
+          }
+        }
+      }
+
+      return {
+        passes,
+        data: returnData,
+      };
+    },
+  },
+
+  {
+    name: 'keyLength',
+    code: (data, permission) => {
+      let passes = false;
+      const returnData = Object.assign({}, data);
+
+      if (permission.constraint && permission.constraint.operator) {
+        if (permission.constraint.operator === 'keyLength') {
+          const result = getValuesFromData(returnData, permission.constraint.leftOperand);
+          if (result.found) {
+            if (result.value && typeof result.value === 'object') {
+              const keys = Object.keys(result.value);
+              if (keys && keys.length === permission.constraint.rightOperand) passes = true;
+            }
+          }
+        }
+      }
+
+      return {
+        passes,
+        data: returnData,
+      };
+    },
+  },
+
+  {
+    name: 'isType',
+    code: (data, permission) => {
+      let passes = false;
+      const returnData = Object.assign({}, data);
+
+      if (permission.constraint && permission.constraint.operator) {
+        if (permission.constraint.operator === 'isType') {
+          const result = getValuesFromData(returnData, permission.constraint.leftOperand);
+          if (result.found) {
+            if (result.value && typeof result.value === permission.constraint.rightOperand) passes = true
+          }
+        }
+      }
+
+      return {
+        passes,
+        data: returnData,
+      };
+    },
+  },
 ];
 
 
