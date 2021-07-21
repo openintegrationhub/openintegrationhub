@@ -81,7 +81,7 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
 
-  test.only('should verify a simple constraint', async () => {
+  test.only('should verify a simple constraint with equal', async () => {
     const body = {
       data: {
         firstName: 'Jane',
@@ -130,7 +130,7 @@ describe('applyPolicy Operations', () => {
   });
 
 
-  test('should apply a simple constraint', async () => {
+  test('should apply a simple constraint with equal', async () => {
     const body = {
       data: {
         firstName: 'Jane',
