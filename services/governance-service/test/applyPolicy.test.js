@@ -1183,4 +1183,416 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.age).toEqual(42);
   });
+
+  test('should apply a simple constraint with exists', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        comment: 'Awful service',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'lastName',
+              operator: 'exists',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.comment).toEqual('Awful service');
+  });
+
+  test('should apply a simple constraint with exists', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        comment: 'Awful service',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'middleName',
+              operator: 'exists',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.comment).toEqual('Awful service');
+  });
+
+  test('should apply a simple constraint with notExists', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        comment: 'Awful service',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'lastName',
+              operator: 'notExists',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.comment).toEqual('Awful service');
+  });
+
+  test('should apply a simple constraint with notExists', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        comment: 'Awful service',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'middleName',
+              operator: 'notExists',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.comment).toEqual('Awful service');
+  });
+
+  test('should apply a simple constraint with hasLength', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        categories: ['customer', 'complaint'],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'categories',
+              operator: 'hasLength',
+              rightOperand: 2,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.categories).toEqual(['customer', 'complaint']);
+  });
+
+  test('should apply a simple constraint with hasLength', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        categories: ['customer', 'complaint'],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'categories',
+              operator: 'hasLength',
+              rightOperand: 3,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.categories).toEqual(['customer', 'complaint']);
+  });
+
+  test('should apply a simple constraint with keyLength', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        address: {
+          street: 'Somestreet',
+          city: 'Somecity',
+          country: 'Somecountry',
+        },
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'address',
+              operator: 'keyLength',
+              rightOperand: 3,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.address).toEqual({
+      street: 'Somestreet',
+      city: 'Somecity',
+      country: 'Somecountry',
+    });
+  });
+
+  test('should apply a simple constraint with keyLength', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        address: {
+          street: 'Somestreet',
+          city: 'Somecity',
+          country: 'Somecountry',
+        },
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'address',
+              operator: 'keyLength',
+              rightOperand: 4,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.address).toEqual({
+      street: 'Somestreet',
+      city: 'Somecity',
+      country: 'Somecountry',
+    });
+  });
+
+  test('should apply a simple constraint with isType', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        age: 42,
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'age',
+              operator: 'isType',
+              rightOperand: 'number',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.age).toEqual(42);
+  });
+
+  test('should apply a simple constraint with isType', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        age: 42,
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'age',
+              operator: 'isType',
+              rightOperand: 'string',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.age).toEqual(42);
+  });
 });
