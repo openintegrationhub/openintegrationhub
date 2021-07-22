@@ -1,4 +1,5 @@
 import Flows from './component/flows';
+import FlowDetails from './component/flows/detail-page';
 import Home from './component/home';
 import Users from './component/users';
 import Tenants from './component/tenants';
@@ -36,6 +37,11 @@ export default [
     {
         path: '/flows',
         component: Flows,
+        exact: true,
+    },
+    {
+        path: '/flows/:id',
+        component: FlowDetails,
         exact: true,
     },
     {

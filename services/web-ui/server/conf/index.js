@@ -8,7 +8,7 @@ module.exports = {
     },
     endpoints: {
         iam: optional('ENDPOINT_IAM', 'https://localhost:3099' /* 'https://iam.openintegrationhub.com' */),
-        flow: optional('ENDPOINT_FLOW', 'https://flow-repository.openintegrationhub.com'),
+        flow: optional('ENDPOINT_FLOW', 'http://localhost:3001' /* 'https://flow-repository.openintegrationhub.com' */),
         component: optional('ENDPOINT_COMPONENT', 'https://component-repository.openintegrationhub.com'),
         metadata: optional('ENDPOINT_METADATA', 'https://metadata.openintegrationhub.com/api/v1'),
         appDirectory: optional('ENDPOINT_APP_DIRECTORY', 'https://app-directory.openintegrationhub.com/api/v1'),

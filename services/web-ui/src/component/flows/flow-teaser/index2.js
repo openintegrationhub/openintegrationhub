@@ -119,8 +119,6 @@ class FlowTeaser extends React.PureComponent {
             classes,
         } = this.props;
 
-        console.log('Graph:', this.props.data.graph);
-
         return (
             <Grid item xs={12}>
                 <Accordion>
@@ -132,7 +130,7 @@ class FlowTeaser extends React.PureComponent {
 
                         <Grid container>
                             <Grid item xs={3}><InputLabel>Name:</InputLabel><Typography >{this.props.data.name}</Typography><Typography>{this.props.data.id}</Typography></Grid>
-                            <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid>
+                            {/* <Grid item xs={3}><InputLabel>Description:</InputLabel><Typography >{this.props.data.description}</Typography></Grid> */}
                             {this.props.data.status
                                 && <Grid item xs={2}><InputLabel>Status:</InputLabel><Typography >{this.getStatus(classes)} {this.props.data.status}</Typography></Grid>}
                             <Grid item xs={4}>
@@ -174,8 +172,8 @@ class FlowTeaser extends React.PureComponent {
 
                             <Grid item xs={12}>
                                 <FlowGraph
-                                    width={1080}
-                                    height={300}
+                                    width={108}
+                                    height={30}
                                     name={this.props.data.name}
                                     id={this.props.data.id}
                                     data={{

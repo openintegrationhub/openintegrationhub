@@ -39,6 +39,7 @@ const useStyles = {
 
 class Flows extends React.Component {
     constructor(props) {
+        console.log('FLows props: ', props);
         super(props);
         props.getFlows();
         this.state = {
@@ -47,12 +48,13 @@ class Flows extends React.Component {
             wasChanged: false,
         };
         this.dummyData = {
+            id: '1',
             name: 'Flow Template with 1 exemplary flow node',
             description: 'This is a template for flow creation with an exemplary flow node',
             graph: {
                 nodes: [
                     {
-                        id: 'step_1',
+                        id: 'step_1000',
                         componentId: 'COMPONENT ID',
                         name: 'Flow node name',
                         function: 'TRIGGER',
@@ -72,7 +74,7 @@ class Flows extends React.Component {
                         id: 'step_3',
                         componentId: 'COMPONENT ID',
                         name: 'Flow node name',
-                        function: 'TRIGGER',
+                        function: 'TRIGGER2',
                         description: 'Flow node description',
                     },
                 ],
@@ -165,8 +167,6 @@ class Flows extends React.Component {
                             </Grid>
                         </Grid>
                     </Grid>}
-
-
                 </Grid>
                 <Grid container justify="center" spacing={2}>
                     {
