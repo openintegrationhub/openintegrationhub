@@ -22,6 +22,70 @@ const router = express.Router();
 
 const log = require('../../config/logger'); // eslint-disable-line
 
+
+function evaluateSingleConstraint(data, currentPermission) {
+  let result = {
+    passes: false,
+  };
+  const handler = defaultFunctions.find(el => el.name === currentPermission.operator);
+  if (handler) {
+    result = handler.code(data, { constraint: currentPermission });
+  } else {
+    log.warn(`Attempted to evaluate constraint with operator ${currentPermission.operator} but could not find handler`);
+  }
+
+  return result.passes;
+}
+
+function evaluateConstraints(data, current, logicOperator) {
+  let passes = false;
+
+  if (Array.isArray(current)) {
+    for (let i = 0; i < current.length; i += 1) {
+      const result = evaluateConstraints(data, current[i], logicOperator);
+      if (logicOperator) {
+        if (logicOperator === 'or') {
+          if (result === true) return true;
+        } else if (logicOperator === 'xone') {
+          if (passes === false && result === true) {
+            passes = true;
+          } else if (passes === true && result === true) {
+            return false;
+          }
+        } else if (logicOperator === 'and') {
+          if (result === false) return false;
+          passes = result;
+        }
+      } else {
+        if (result === false) return false;
+        passes = result;
+      }
+    }
+
+    return passes;
+  }
+
+  if (typeof current === 'object') {
+    if ('operator' in current) {
+      // evalute single constraint
+      return evaluateSingleConstraint(data, current);
+      // return true;
+    } if ('or' in current) {
+      passes = evaluateConstraints(data, current.or, 'or');
+    } else if ('xone' in current) {
+      passes = evaluateConstraints(data, current.xone, 'xone');
+    } else if ('and' in current) {
+      passes = evaluateConstraints(data, current.and, 'and');
+    } else {
+      log.warn('Logic operator not found in:', current);
+    }
+  } else {
+    log.warn('Invalid constraint format:', current);
+  }
+
+  return passes;
+}
+
 // Applies a policy
 router.post('/', jsonParser, async (req, res) => {
   const { data, metadata } = req.body;
@@ -65,6 +129,7 @@ router.post('/', jsonParser, async (req, res) => {
   }
 
   // Repeat the process with permissions and their constraints
+
   if (metadata.policy.permission && metadata.policy.permission.length) {
     for (let i = 0; i < metadata.policy.permission.length; i += 1) {
       const currentPermission = metadata.policy.permission[i];
@@ -74,11 +139,10 @@ router.post('/', jsonParser, async (req, res) => {
         actions = actions.split(',');
       }
       if (actions === false || actions.indexOf(action) > -1) {
-        const handler = defaultFunctions.find(el => el.name === currentPermission.constraint.operator);
-        if (handler) {
-          result = handler.code(result.data, currentPermission);
-        } else {
-          log.warn(`Attempted to apply permission action ${currentPermission.action} but could not find handler`);
+        const passes = evaluateConstraints(result.data, currentPermission.constraint);
+        if (passes === false) {
+          result.passes = false;
+          break;
         }
       }
     }
