@@ -771,4 +771,566 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.comment).toEqual('Awful service');
   });
+
+
+  test('should verify a constraint with logical operator or', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'PremiumCustomer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [
+            {
+              action: 'distribute',
+              constraint:
+                {
+                  or: [
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'Customer',
+                    },
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'PremiumCustomer',
+                    },
+                  ],
+                },
+            },
+          ],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should verify a constraint with logical operator xone', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'PremiumCustomer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [
+            {
+              action: 'distribute',
+              constraint:
+                {
+                  xone: [
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'Customer',
+                    },
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'PremiumCustomer',
+                    },
+                  ],
+                },
+            },
+          ],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should apply a constraint with logical operator xone', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Customer',
+          },
+          {
+            label: 'PremiumCustomer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [
+            {
+              action: 'distribute',
+              constraint:
+                {
+                  xone: [
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'Customer',
+                    },
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'PremiumCustomer',
+                    },
+                  ],
+                },
+            },
+          ],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should verify a constraint with logical operator and', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Customer',
+          },
+          {
+            label: 'PremiumCustomer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [
+            {
+              action: 'distribute',
+              constraint:
+                {
+                  and: [
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'Customer',
+                    },
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'PremiumCustomer',
+                    },
+                  ],
+                },
+            },
+          ],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should apply a constraint with logical operator and', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'PremiumCustomer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [
+            {
+              action: 'distribute',
+              constraint:
+                {
+                  and: [
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'Customer',
+                    },
+                    {
+                      leftOperand: 'categories.label',
+                      operator: 'equals',
+                      rightOperand: 'PremiumCustomer',
+                    },
+                  ],
+                },
+            },
+          ],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should verify a constraint with logical operator and', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'PremiumCustomer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [
+            {
+              action: 'distribute',
+              constraint:
+                {
+                  and: [
+                    {
+                      leftOperand: 'lastName',
+                      operator: 'equals',
+                      rightOperand: 'Doe',
+                    },
+                    {
+                      or: [
+                        {
+                          leftOperand: 'categories.label',
+                          operator: 'equals',
+                          rightOperand: 'Customer',
+                        },
+                        {
+                          leftOperand: 'categories.label',
+                          operator: 'equals',
+                          rightOperand: 'PremiumCustomer',
+                        },
+                      ],
+                    },
+                  ],
+                },
+            },
+          ],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should apply a constraint with nested logical operators', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'Someothercategory',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [
+            {
+              action: 'distribute',
+              constraint:
+                {
+                  and: [
+                    {
+                      leftOperand: 'lastName',
+                      operator: 'equals',
+                      rightOperand: 'Doe',
+                    },
+                    {
+                      or: [
+                        {
+                          leftOperand: 'categories.label',
+                          operator: 'equals',
+                          rightOperand: 'Customer',
+                        },
+                        {
+                          leftOperand: 'categories.label',
+                          operator: 'equals',
+                          rightOperand: 'PremiumCustomer',
+                        },
+                      ],
+                    },
+                  ],
+                },
+            },
+          ],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+  test('should verify a constraint with implicit and', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Customer',
+          },
+          {
+            label: 'PremiumCustomer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [
+            {
+              action: 'distribute',
+              constraint:
+                [
+                  {
+                    leftOperand: 'categories.label',
+                    operator: 'equals',
+                    rightOperand: 'Customer',
+                  },
+                  {
+                    leftOperand: 'categories.label',
+                    operator: 'equals',
+                    rightOperand: 'PremiumCustomer',
+                  },
+                ],
+            },
+          ],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+
+  test('should apply a constraint with implicit and', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'PremiumCustomer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [
+            {
+              action: 'distribute',
+              constraint:
+                [
+                  {
+                    leftOperand: 'categories.label',
+                    operator: 'equals',
+                    rightOperand: 'Customer',
+                  },
+                  {
+                    leftOperand: 'categories.label',
+                    operator: 'equals',
+                    rightOperand: 'PremiumCustomer',
+                  },
+                ],
+            },
+          ],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
 });
