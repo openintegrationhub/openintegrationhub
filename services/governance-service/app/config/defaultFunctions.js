@@ -45,7 +45,6 @@ const defaultFunctions = [
   {
     name: 'anonymize',
     code: (data, duty) => {
-      console.log(data, duty);
       const returnData = Object.assign({}, data);
 
       // TODO: Genericise constraint operator handling
@@ -386,10 +385,10 @@ const defaultFunctions = [
     },
   },
 
-  {
-    name: 'keyExists',
-    code: (data, permission) => {},
-  },
+  // {
+  //   name: 'keyExists',
+  //   code: (data, permission) => {},
+  // },
 
   {
     name: 'hasLength',
@@ -401,7 +400,8 @@ const defaultFunctions = [
         if (permission.constraint.operator === 'hasLength') {
           const result = getValuesFromData(returnData, permission.constraint.leftOperand);
           if (result.found) {
-            if (result.value && result.value.length === permission.constraint.rightOperand) passes = true
+            if (result.value
+               && result.value.length === permission.constraint.rightOperand) passes = true;
           }
         }
       }
@@ -448,7 +448,10 @@ const defaultFunctions = [
         if (permission.constraint.operator === 'isType') {
           const result = getValuesFromData(returnData, permission.constraint.leftOperand);
           if (result.found) {
-            if (result.value && typeof result.value === permission.constraint.rightOperand) passes = true
+            // eslint-disable-next-line valid-typeof
+            if (result.value && typeof result.value === permission.constraint.rightOperand) {
+              passes = true;
+            }
           }
         }
       }
