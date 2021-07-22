@@ -29,79 +29,58 @@ function evaluateSingleConstraint(data, currentPermission) {
   };
   const handler = defaultFunctions.find(el => el.name === currentPermission.operator);
   if (handler) {
-    console.log('Has handler');
-    console.log('data', JSON.stringify(data));
-    console.log('currentPermission', currentPermission);
     result = handler.code(data, { constraint: currentPermission });
   } else {
     log.warn(`Attempted to evaluate constraint with operator ${currentPermission.operator} but could not find handler`);
   }
 
-  console.log(result);
   return result.passes;
 }
 
 function evaluateConstraints(data, current, logicOperator) {
   let passes = false;
 
-  console.log('Current:', JSON.stringify(current));
   if (Array.isArray(current)) {
-    console.log(logicOperator, 'Array');
     for (let i = 0; i < current.length; i += 1) {
-      console.log('i', i);
       const result = evaluateConstraints(data, current[i], logicOperator);
       if (logicOperator) {
         if (logicOperator === 'or') {
-          console.log('current[i]', current[i]);
-          console.log('logicOperator', logicOperator);
-          console.log('or', result);
           if (result === true) return true;
         } else if (logicOperator === 'xone') {
-          console.log('xone', result);
           if (passes === false && result === true) {
             passes = true;
           } else if (passes === true && result === true) {
             return false;
           }
         } else if (logicOperator === 'and') {
-          console.log('and', result);
           if (result === false) return false;
           passes = result;
         }
       } else {
-        console.log('Implicit and', result);
         if (result === false) return false;
         passes = result;
       }
     }
 
-    console.log('current', current);
-    console.log('logicOperator', logicOperator);
-    console.log('Result after array loop:', passes);
     return passes;
   }
 
   if (typeof current === 'object') {
     if ('operator' in current) {
       // evalute single constraint
-      console.log('evaluate single constraint');
-      console.log(current);
       return evaluateSingleConstraint(data, current);
       // return true;
     } if ('or' in current) {
-      console.log("evaluateConstraints(current.or, 'or')");
       passes = evaluateConstraints(data, current.or, 'or');
     } else if ('xone' in current) {
-      console.log("evaluateConstraints(current.xone, 'xone')");
       passes = evaluateConstraints(data, current.xone, 'xone');
     } else if ('and' in current) {
-      console.log("evaluateConstraints(current.and, 'and')");
       passes = evaluateConstraints(data, current.and, 'and');
     } else {
-      console.log('Logic operator not found in:', current);
+      log.warn('Logic operator not found in:', current);
     }
   } else {
-    console.log('Invalid constraint format:', current);
+    log.warn('Invalid constraint format:', current);
   }
 
   return passes;
