@@ -7,7 +7,6 @@ spec:
   - ReadWriteMany
   capacity:
     storage: 1Gi
-  nfs:
-    path: "/Users/james/OIH/openintegrationhub"
-    server: 192.168.64.1
+  hostPath:
+    path: "/openintegrationhub"
   persistentVolumeReclaimPolicy: Retain

@@ -6,10 +6,29 @@ import { expect } from 'chai';
 import DataObject from '../models/data-object';
 import nock from 'nock';
 
-function nockIamIntrospection({ status = 200, body = { sub: 'user-id', role: 'ADMIN' } } = {}) {
-    return nock('http://iam.openintegrationhub.com')
-        .post('/api/v1/tokens/introspect')
+function nockIamIntrospection({
+    status = 200,
+    body = { sub: 'user-id', role: 'ADMIN', permissions: ['all'] },
+    body2 = { sub: 'user-id2', role: 'ADMIN', permissions: ['all'] }
+    } = {}
+  ) {
+    // return nock('http://iam.openintegrationhub.com')
+    //     .post('/api/v1/tokens/introspect')
+    //     .reply(status, body);
+
+    nock('http://iam.openintegrationhub.com')
+        .post('/api/v1/tokens/introspect', {
+          token: 'someOtherUser',
+        })
+        .reply(status, body2);
+
+    nock('http://iam.openintegrationhub.com')
+        .post('/api/v1/tokens/introspect', {
+          token: 'blablabla',
+        })
         .reply(status, body);
+
+    return;
 }
 
 let objectId: any;
@@ -106,6 +125,62 @@ describe('Data Route', () => {
         });
 
         it('should update existing item with recordId', async function () {
+            const record = {
+                recordUid: 'record',
+                applicationUid: 'app'
+            };
+
+
+            let scope = nockIamIntrospection();
+
+            // Create
+            const createResponse = await this.request
+                .post('/data/recordId')
+                .set('Authorization', 'Bearer someOtherUser')
+                .send(record);
+
+            const oihUid = createResponse.body.data.id;
+
+            scope = nockIamIntrospection();
+
+            const anotherRecord = {
+                oihUid,
+                recordUid: 'another-record',
+                applicationUid: 'another-app'
+            };
+
+
+            // Update
+            const { body, statusCode } = await this.request
+                .post('/data/recordId')
+                .set('Authorization', this.auth)
+                .send(anotherRecord);
+
+            expect(body).to.be.a('object');
+
+            expect(body).to.haveOwnProperty('action');
+            expect(body.action).to.equal('update');
+
+            expect(body).to.haveOwnProperty('data');
+            expect(body.data.id).to.be.a('string');
+            objectId = body.data.id;
+            delete body.data.id;
+            expect(body.data.refs).to.deep.equal([
+                {
+                    recordUid: 'record',
+                    applicationUid: 'app',
+                    modificationHistory: []
+                },
+                {
+                    recordUid: 'another-record',
+                    applicationUid: 'another-app',
+                    modificationHistory: []
+                }
+            ]);
+            expect(statusCode).to.equal(201);
+        });
+
+        it('should update existing item as an different user with recordId', async function () {
             const record = {
                 recordUid: 'record',
                 applicationUid: 'app'

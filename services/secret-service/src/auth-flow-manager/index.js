@@ -103,6 +103,7 @@ async function requestHelper(url, form) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'application/json',
         },
         body: params,
     });
@@ -186,6 +187,7 @@ async function userinfoRequest(url, token) {
     const response = await fetch(url, {
         headers: {
             Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
         },
     });
     return checkStatus(response).json();

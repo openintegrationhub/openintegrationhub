@@ -1,6 +1,6 @@
 {
   "name": "component-orchestrator",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "description": "Resource coordinator",
   "main": "index.js",
   "scripts": {
@@ -19,11 +19,11 @@
   "author": "elastic.io",
   "license": "APL-2.0",
   "dependencies": {
-    "@openintegrationhub/component-orchestrator": "*",
-    "@openintegrationhub/event-bus": "*",
+    "@openintegrationhub/component-orchestrator": "^1.2.6",
+    "@openintegrationhub/event-bus": "^1.2.5",
     "@openintegrationhub/iam-utils": "*",
     "JSONStream": "1.3.5",
-    "backend-commons-lib": "*",
+    "backend-commons-lib": "^1.1.3",
     "basic-auth": "2.0.1",
     "express": "4.17.1",
     "isomorphic-fetch": "3.0.0",
