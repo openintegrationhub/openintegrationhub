@@ -9,7 +9,7 @@ async function processAction(msg, cfg) {
     log.info('LGC Action:', msg)
     this.emit('data', {
       command: 'run-next-steps',
-      parameters: ['60e7341ed36b1f00335a3c22:step_2'],
+      parameters: ['60fe7dd0bffd380032dcbe50:step_1'],
     })
     // this.emit('data', {
     //   command: 'pass',
