@@ -55,7 +55,7 @@ const getProvenanceEvents = async ( // eslint-disable-line
   const qry = buildQuery(user, config.ProvenanceEventReadPermission, null);
 
   // Add all filtered fields to query
-  const filterFields = Object.keys(filters);
+  const filterFields = (filters) ? Object.keys(filters) : [];
   const length = filterFields.length;
   if (length > 0) {
     let i;
@@ -122,6 +122,7 @@ const getStoredFunctions = async ( // eslint-disable-line
   from,
   until,
   names,
+  customFieldNames,
 ) => new Promise(async (resolve) => {
   if (!user.isAdmin) {
     // @todo: ferryman permissions
@@ -136,8 +137,11 @@ const getStoredFunctions = async ( // eslint-disable-line
     fieldNames = null;
   }
 
+  if (customFieldNames) fieldNames = customFieldNames;
+
+
   // Add all filtered fields to query
-  const filterFields = Object.keys(filters);
+  const filterFields = (filters) ? Object.keys(filters) : [];
   const length = filterFields.length;
   if (length > 0) {
     let i;
@@ -146,11 +150,11 @@ const getStoredFunctions = async ( // eslint-disable-line
     }
   }
 
-  if (from !== false) {
+  if (from) {
     qry.updatedAt = { $gte: new Date(from) };
   }
 
-  if (until !== false) {
+  if (until) {
     qry.updatedAt = { $lte: new Date(until) };
   }
 
@@ -174,9 +178,12 @@ const getStoredFunctions = async ( // eslint-disable-line
 
   const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
 
+  // console.log('pageOffset', pageOffset);
+
   StoredFunction.find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
     .lean()
     .then((doc) => {
+      // console.log('doc', doc);
       const storedFunctions = doc;
       for (let i = 0; i < storedFunctions.length; i += 1) {
         storedFunctions[i] = format(storedFunctions[i]);
@@ -216,6 +223,26 @@ const addStoredFunction = async (user, name, code) => new Promise((resolve) => {
     });
 });
 
+// Get's a single stored function
+const getStoredFunction = async (user, id) => {
+  if (!user.isAdmin) {
+    return false;
+  }
+
+  const query = {
+    _id: id,
+  };
+
+  try {
+    return await StoredFunction.findOne(
+      query,
+    ).lean().exec();
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
 // Deletes a stored function
 const deleteStoredFunction = async (user, id) => {
   if (!user.isAdmin) {
@@ -241,5 +268,6 @@ module.exports = {
   addProvenanceEvent,
   getStoredFunctions,
   addStoredFunction,
+  getStoredFunction,
   deleteStoredFunction,
 };

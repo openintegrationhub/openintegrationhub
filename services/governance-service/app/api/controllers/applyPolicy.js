@@ -14,6 +14,8 @@ const config = require('../../config/index');
 
 const defaultFunctions = require('../../config/defaultFunctions');
 
+const storedFunctionCache = require('../../config/storedFunctionCache');
+
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
 const jsonParser = bodyParser.json();
@@ -31,7 +33,22 @@ function evaluateSingleConstraint(data, currentPermission) {
   if (handler) {
     result = handler.code(data, { constraint: currentPermission });
   } else {
-    log.warn(`Attempted to evaluate constraint with operator ${currentPermission.operator} but could not find handler`);
+    let found = false;
+    if (currentPermission.operator in storedFunctionCache.storedFunctions) {
+      for (let i = 0; i < storedFunctionCache.storedFunctions[currentPermission.operator]; i += 1) {
+        // @todo: check for user
+        // if(storedFunctionCache[currentPermission.operator][i].oihUser === x)
+        found = true;
+        log.debug(`${currentPermission.operator} found in storedFunctionCache`);
+        // @todo: execute code some how
+        // result = storedFunctionCache[currentPermission.operator].code(data, { constraint: currentPermission });
+        break;
+      }
+    }
+
+    if (!found) {
+      log.warn(`Attempted to evaluate constraint with operator ${currentPermission.operator} but could not find handler`);
+    }
   }
 
   return result.passes;
@@ -106,7 +123,7 @@ router.post('/', jsonParser, async (req, res) => {
 
   // TODO: Load in any DB-based functions if present
   // Might be better to only load them when changed and keep stored
-  // const storedFunctions = await storage.getStoredFunctions(req.user, 1000);
+  // const storedFunctionCache = await storage.getStoredFunctions(req.user, 1000);
 
 
   // First, apply any duties if present
@@ -117,7 +134,7 @@ router.post('/', jsonParser, async (req, res) => {
       if (handler) {
         result = handler.code(result.data, currentDuty);
       } else {
-        // let storedHandler = storedFunctions.find(el => el.name === currentDuty.action);
+        // let storedHandler = storedFunctionCache.find(el => el.name === currentDuty.action);
         // if(storedHandler) {
         //   storedHandler
         //   result = storedHandler.code(result.data, currentDuty);

@@ -15,6 +15,8 @@ const config = require('../../config/index');
 
 const defaultFunctions = require('../../config/defaultFunctions');
 
+const storedFunctionCache = require('../../config/storedFunctionCache');
+
 const storage = require(`./${config.storage}`); // eslint-disable-line
 
 const jsonParser = bodyParser.json();
@@ -26,6 +28,7 @@ const log = require('../../config/logger'); // eslint-disable-line
 // Adds a new stored function
 router.post('/', jsonParser, can(config.flowReadPermission), async (req, res) => {
   const response = await storage.addStoredFunction(req.user, req.body.name, req.body.code);
+  storedFunctionCache.upsert(req.body.name, req.user, req.body.code);
   res.json(response);
 });
 
@@ -33,7 +36,13 @@ router.post('/', jsonParser, can(config.flowReadPermission), async (req, res) =>
 router.delete('/:id', jsonParser, can(config.flowReadPermission), async (req, res) => {
   const id = req.params.id;
   const user = req.user;
+
+  const document = await storage.getStoredFunction(user, id);
+  const functionName = document.name;
+
   const response = await storage.deleteStoredFunction(user, id);
+
+  storedFunctionCache.delete(functionName, user);
   res.json(response);
 });
 
@@ -126,7 +135,7 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   const response = await storage.getStoredFunctions(req.user, pageSize, pageNumber, filters, sortField, sortOrder, from, until, names);
 
   if (response.data.length === 0 && !res.headersSent) {
-    return res.status(404).send({ errors: [{ message: 'No ProvenanceEvents found', code: 404 }] });
+    return res.status(404).send({ errors: [{ message: 'No stored functions found', code: 404 }] });
   }
 
   response.meta.page = pageNumber;
