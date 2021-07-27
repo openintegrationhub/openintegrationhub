@@ -185,11 +185,11 @@ const getStoredFunctions = async ( // eslint-disable-line
     .lean()
     .then((doc) => {
       console.log('doc', doc);
-      const storedFunctions = doc;
-      for (let i = 0; i < storedFunctions.length; i += 1) {
-        storedFunctions[i] = format(storedFunctions[i]);
+      const storedFunctionsList = doc;
+      for (let i = 0; i < storedFunctionsList.length; i += 1) {
+        storedFunctionsList[i] = format(storedFunctionsList[i]);
       }
-      resolve({ data: storedFunctions, meta: { total: count } });
+      resolve({ data: storedFunctionsList, meta: { total: count } });
     })
     .catch((err) => {
       log.error(err);

@@ -69,15 +69,15 @@ afterAll(async () => {
 
 describe('StoredFunctionCache Operations', () => {
   test.only('should load all already existing stored functions', async () => {
-    expect(true).toBe(true);
-    // await storedFunctionCache.loadAll();
-    // expect(typeof storedFunctionCache.storedFunctions).toBe('object');
-    // expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(1);
-    // expect(Array.isArray(storedFunctionCache.storedFunctions.MyStoredFunction1)).toEqual(true);
-    // expect(storedFunctionCache.storedFunctions.MyStoredFunction1.length).toEqual(1);
-    // expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction1[0]).toBe('object');
-    // expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].code).toEqual('return x * y');
-    // expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual(adminId);
+    // expect(true).toBe(true);
+    await storedFunctionCache.loadAll();
+    expect(typeof storedFunctionCache.storedFunctions).toBe('object');
+    expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(1);
+    expect(Array.isArray(storedFunctionCache.storedFunctions.MyStoredFunction1)).toEqual(true);
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction1.length).toEqual(1);
+    expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction1[0]).toBe('object');
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].code).toEqual('return x * y');
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual(adminId);
   });
 
   // test('should add a StoredFunction via endpoint', async () => {
