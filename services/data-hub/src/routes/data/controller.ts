@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
+import BadRequest from '../../errors/api/BadRequest';
 
 interface IGteQuery {
     $gte: string;
@@ -177,17 +178,29 @@ export default class DataController {
     public async postMany(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
-        body.owners = body.owners || [];
-        if (!body.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-            body.owners.push({
-                id: user.sub,
-                type: 'user'
-            });
-        }
         
         const createPromises = []
 
-        body.records.forEach(record => createPromises.push(DataObject.create(record)))
+        if (!Array.isArray(body) || body.length === 0) {
+            throw new BadRequest()
+        }
+
+        body.forEach(record => {
+            const owners = record.owners || []
+
+            if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+                owners.push({
+                    id: user.sub,
+                    type: 'user'
+                });
+            }
+
+            createPromises.push(DataObject.create({
+                ...record,
+                owners,
+            }))
+
+        })
 
         await Promise.all(createPromises)
 

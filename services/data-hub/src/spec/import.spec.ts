@@ -21,6 +21,7 @@ function nockIamIntrospection({
     //     .reply(status, body2);
 
     nock('http://iam.openintegrationhub.com')
+        .persist()
         .post('/api/v1/tokens/introspect', {
             token: 'foobar',
         })
@@ -33,27 +34,28 @@ describe('Data Import Route', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test-import'
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
         await mongoose.connect(mongoUri, { useNewUrlParser: true });
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
         this.auth = 'Bearer foobar';
     });
 
-    after(async function () {
+    after(async ()  => {
         await mongoose.connection.close();
     });
 
-    beforeEach(async function f() {
+    beforeEach(async () => {
         await DataObject.deleteMany({});
     });
 
     describe('POST /data/import', () => {
-        it('should create new item', async function () {
+        it('should import many items', async function () {
+            this.timeout(5000);
 
             nockIamIntrospection();
 
-            const persons: Person[] = getDummyOihPersons(1000)
+            const persons: Person[] = getDummyOihPersons(5)
             const records = []
 
             persons.forEach(person => records.push(
@@ -80,11 +82,31 @@ describe('Data Import Route', () => {
             ))
             
             const { statusCode } = await this.request
-                .post('/data')
+                .post('/data/import')
                 .set('Authorization', this.auth)
                 .send(records);
 
             expect(statusCode).to.equal(201);
+
+        });
+
+        it('should return 400 if wrong request format', async function () {
+
+            nockIamIntrospection();
+
+            let statusCode = (await this.request
+                .post('/data/import')
+                .set('Authorization', this.auth)
+                .send()).statusCode;
+
+            expect(statusCode).to.equal(400);
+
+            statusCode = (await this.request
+                .post('/data/import')
+                .set('Authorization', this.auth)
+                .send([])).statusCode;
+
+            expect(statusCode).to.equal(400);
 
         });
     });
