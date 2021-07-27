@@ -74,7 +74,7 @@ The data model used to represent policies is based on a simplified version of th
 
 A minimal example:
 
-´´´json
+```json
  {
    permission: [{
      action: 'distribute',
@@ -85,7 +85,7 @@ A minimal example:
        },
      }]
  {
-´´´
+```
 
 The meaning of the keys are: 
 
