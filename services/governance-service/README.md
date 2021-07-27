@@ -76,12 +76,12 @@ A minimal example:
 
 ```json
  {
-   permission: [{
-     action: 'distribute',
-     constraint: {
-       leftOperand: 'categories.label',
-       operator: 'equals',
-       rightOperand: 'Customer',
+   "permission": [{
+     "action": "distribute",
+     "constraint": {
+       "leftOperand": "categories.label",
+       "operator": "equals",
+       "rightOperand": "Customer"
        },
      }]
  {
