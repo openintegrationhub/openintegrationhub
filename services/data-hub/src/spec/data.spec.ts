@@ -44,7 +44,7 @@ describe('Data Route', () => {
         this.auth = 'Bearer blablabla';
     });
 
-    after(async function () {
+    after(async ()  => {
         await mongoose.connection.close();
     });
 
@@ -590,6 +590,10 @@ describe('GET /data/:id and /data/recordId/:id', () => {
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
         this.auth = 'Bearer blablabla';
+    });
+
+    after(async ()  => {
+        await mongoose.connection.close();
     });
 
     it('should create new item', async function () {
