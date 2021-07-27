@@ -12,6 +12,7 @@ import MetaData from './component/metadata';
 import Secrets from './component/secrets';
 import Roles from './component/roles';
 import Profile from './component/profile';
+import DataHub from './component/data-hub';
 
 export default [
     {
@@ -35,12 +36,17 @@ export default [
         exact: true,
     },
     {
+        path: '/datahub',
+        component: DataHub,
+        exact: true,
+    },
+    {
         path: '/flows',
         component: Flows,
         exact: true,
     },
     {
-        path: '/flows/:id',
+        path: '/flows/:flowID',
         component: FlowDetails,
         exact: true,
     },

@@ -135,6 +135,11 @@ const MENU = {
         icon: <AppsIcon />,
         path: '/hub-and-spoke',
     },
+    DATA_HUB: {
+        label: 'Data Hub',
+        icon: <AppsIcon/>,
+        path: '/datahub',
+    },
     COMPONENTS: {
         label: 'Components',
         icon: <SettingsInputComponent />,

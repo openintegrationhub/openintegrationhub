@@ -2,59 +2,25 @@ import React, { useState } from 'react';
 import Tree from 'react-d3-tree';
 import clone from 'clone';
 import { useParams } from 'react-router-dom';
-
+import './details.css';
 
 let count = 0;
 const FlowDetails = () => {
-    const { id } = useParams();
-    console.log(id);
+    const { flowID } = useParams();
 
     const orgChart = { id: 'step_1', name: 'step_1', children: [{ id: 'step_2', name: 'step_2', children: [{ id: 'step_3', name: 'step_3', children: [] }] }] };
-    // const orgChart = {
-    //     name: 'CEO',
-    //     children: [
-    //         {
-    //             name: 'Manager',
-    //             attributes: {
-    //                 department: 'Production',
-    //             },
-    //             children: [
-    //                 {
-    //                     name: 'Foreman',
-    //                     attributes: {
-    //                         department: 'Fabrication',
-    //                     },
-    //                     children: [
-    //                         {
-    //                             name: 'Worker',
-    //                         },
-    //                     ],
-    //                 },
-    //                 {
-    //                     name: 'Foreman',
-    //                     attributes: {
-    //                         department: 'Assembly',
-    //                     },
-    //                     children: [
-    //                         {
-    //                             name: 'Worker',
-    //                         },
-    //                     ],
-    //                 },
-    //             ],
-    //         },
-    //     ],
-    // };
 
     const [data, setData] = useState(orgChart);
-    // const [selNode, setSelNode] = useState();
-    const [lastAdded, setLastAdded] = useState('');
     const [visible, setVisible] = useState(false);
-    // console.log(JSON.stringify(data, null, '\t'));
-
+    const [selectedNode, setSelectedNode] = useState('');
+    const [parentNode, setParentNode] = useState('');
+    const [nodeName, setNodeName] = useState('Inserted Node');
+    const translate = {
+        x: window.innerWidth / 4,
+        y: 250,
+    };
 
     function searchTree(element, matchingTitle) {
-        // console.log('reached', element, matchingTitle);
         if (element.id === matchingTitle) {
             return element;
         } if (element.children != null) {
@@ -63,64 +29,59 @@ const FlowDetails = () => {
             for (i = 0; result == null && i < element.children.length; i++) {
                 result = searchTree(element.children[i], matchingTitle);
             }
-            // console.log('result is:', result);
             return result;
         }
         return null;
     }
 
-
-    const addChildNode = (e) => {
+    const addChildNode = () => {
         setVisible(!visible);
         const nextData = clone(data);
-        const selectedNode = searchTree(nextData, e.data.id);
-        const target = selectedNode.children;
+        const selNode = searchTree(nextData, selectedNode.id);
+        const target = selNode.children;
         count++;
         target.push({
-            name: `Inserted Node ${count}`,
-            id: `inserted-node-${count}`,
+            name: `${nodeName}`,
+            id: `inserted-node-${nodeName}-${count}`,
             children: [],
         });
         setData(nextData);
-        setLastAdded(target);
+    };
+
+    const selectNode = (e) => {
+        setVisible(!visible);
+        const nextData = clone(data);
+        const selNode = searchTree(nextData, e.data.id);
+        setSelectedNode(selNode);
+        setParentNode(e.parent);
     };
 
 
-    const removeChildNode = (e) => {
-        console.log('Remove E is', e);
-        if (count === 0) {
-            return;
-        }
+    const removeChildNode = () => {
         const nextData = clone(data);
-        // const target = nextData.children;
-        lastAdded.pop();
-        count--;
+        const parent = searchTree(nextData, parentNode.data.id);
+        parent.children.forEach((id) => {
+            const itemIndex = parent.children.findIndex(i => i.id === id);
+            parent.children.splice(itemIndex, 1);
+        });
         setData(nextData);
     };
 
-    return (<div id="" style={{ width: '100vw', height: '30vh', background: 'silver' }} >
-        <Tree data={data} onNodeClick={e => addChildNode(e)} onNodeMouseOver={e => console.log('Hover', e)}/>
-        <button onClick={e => removeChildNode(e)}>Test</button>
+    return <div>
+        <h3 style={{ textAlign: 'center' }}>Flow id: {flowID}</h3>
+        <div id="treeWrapper" style={{ width: '100vw', height: '60vh', background: 'silver' }} >
+            <Tree data={data} onNodeClick={e => selectNode(e)} translate={translate} /* onNodeMouseOver={e => console.log('Hover', e)} */ rootNodeClassName="node__root"
+                branchNodeClassName="node__branch"
+                leafNodeClassName="node__leaf"/>
+            <div style={{ padding: '10px' }}>
+                <p >Selected: <span>{selectedNode.name}</span></p>
+                {selectedNode && <div><input onChange={e => setNodeName(e.target.value)} placeholder="Node name"/>
+                    <button onClick={e => addChildNode(e)} style={{ marginLeft: 10, marginRight: 10 }}>Add Node</button>
+                    <button onClick={e => removeChildNode(e)}>Remove Node</button></div>}
+            </div>
+        </div>
 
-        <p>Test id: {id}</p>
-    </div>);
+    </div>;
 };
 
 export default FlowDetails;
-
-
-// import React from 'react';
-
-
-// // This is a simplified example of an org chart with a depth of 2.
-// // Note how deeper levels are defined recursively via the `children` property.
-// const orgChart = { id: 'step_1', name: 'step_1', children: [{ id: 'step_2', name: 'step_2', children: [{ id: 'step_3', name: 'step_3', children: [] }] }] };
-
-// export default function OrgChartTree() {
-//     return (
-//     // `<Tree />` will fill width/height of its container; in this case `#treeWrapper`.
-//         <div id="treeWrapper" style={{ width: '100%', height: '20em', background: 'silver' }}>
-//             <Tree data={orgChart} />
-//         </div>
-//     );
-// }
