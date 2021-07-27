@@ -28,7 +28,8 @@ const log = require('../../config/logger'); // eslint-disable-line
 // Adds a new stored function
 router.post('/', jsonParser, can(config.flowReadPermission), async (req, res) => {
   const response = await storage.addStoredFunction(req.user, req.body.name, req.body.code);
-  storedFunctionCache.upsert(req.body.name, req.user, req.body.code);
+  console.log('add response:', response);
+  storedFunctionCache.upsert(response._id, req.body.name, req.user, req.body.code);
   res.json(response);
 });
 
@@ -42,7 +43,7 @@ router.delete('/:id', jsonParser, can(config.flowReadPermission), async (req, re
 
   const response = await storage.deleteStoredFunction(user, id);
 
-  storedFunctionCache.delete(functionName, user);
+  storedFunctionCache.delete(id, functionName, user);
   res.json(response);
 });
 

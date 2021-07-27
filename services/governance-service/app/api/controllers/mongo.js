@@ -168,8 +168,8 @@ const getStoredFunctions = async ( // eslint-disable-line
     sort.updatedAt = 1;
   }
 
-  // console.log('Query:', qry);
-  // console.log('Fieldnames:', fieldNames);
+  console.log('Query:', qry);
+  console.log('Fieldnames:', fieldNames);
 
   // count results
   const count = await StoredFunction.find(qry).estimatedDocumentCount();
@@ -178,12 +178,12 @@ const getStoredFunctions = async ( // eslint-disable-line
 
   const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
 
-  // console.log('pageOffset', pageOffset);
+  console.log('pageOffset', pageOffset);
 
   StoredFunction.find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
     .lean()
     .then((doc) => {
-      // console.log('doc', doc);
+      console.log('doc', doc);
       const storedFunctions = doc;
       for (let i = 0; i < storedFunctions.length; i += 1) {
         storedFunctions[i] = format(storedFunctions[i]);
