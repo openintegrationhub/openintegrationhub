@@ -133,7 +133,11 @@ class StoredFunctionCache {
   }
 
   upsert(id, name, oihUser, code) {
-    fs.writeFileSync(`${functionsDir}${id}.js`, code);
+    try {
+      fs.writeFileSync(`${functionsDir}${id}.js`, code);
+    } catch (e) {
+      console.log(e);
+    }
 
     if (name in this.storedFunctions) {
       let found = false;
