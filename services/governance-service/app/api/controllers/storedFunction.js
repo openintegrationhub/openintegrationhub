@@ -28,7 +28,7 @@ const log = require('../../config/logger'); // eslint-disable-line
 // Adds a new stored function
 router.post('/', jsonParser, can(config.flowReadPermission), async (req, res) => {
   const response = await storage.addStoredFunction(req.user, req.body.name, req.body.code);
-  console.log('add response:', response);
+
   storedFunctionCache.upsert(response.id, req.body.name, req.user, req.body.code);
   res.json(response);
 });

@@ -168,8 +168,8 @@ const getStoredFunctions = async ( // eslint-disable-line
     sort.updatedAt = 1;
   }
 
-  console.log('Query:', qry);
-  console.log('Fieldnames:', fieldNames);
+  // console.log('Query:', qry);
+  // console.log('Fieldnames:', fieldNames);
 
   // count results
   const count = await StoredFunction.find(qry).estimatedDocumentCount();
@@ -179,12 +179,12 @@ const getStoredFunctions = async ( // eslint-disable-line
 
   const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
 
-  console.log('pageOffset', pageOffset);
+  // console.log('pageOffset', pageOffset);
 
   StoredFunction.find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
     .lean()
     .then((doc) => {
-      console.log('doc', doc);
+      // console.log('doc', doc);
       const storedFunctionsList = doc;
       for (let i = 0; i < storedFunctionsList.length; i += 1) {
         storedFunctionsList[i] = format(storedFunctionsList[i]);
@@ -196,6 +196,10 @@ const getStoredFunctions = async ( // eslint-disable-line
     });
 });
 
+const getAllStoredFunctions = async () => {
+  const result = await StoredFunction.find();
+  return result;
+};
 
 // Adds a new stored function
 const addStoredFunction = async (user, name, code) => new Promise((resolve) => {
@@ -268,6 +272,7 @@ module.exports = {
   getProvenanceEvents,
   addProvenanceEvent,
   getStoredFunctions,
+  getAllStoredFunctions,
   addStoredFunction,
   getStoredFunction,
   deleteStoredFunction,
