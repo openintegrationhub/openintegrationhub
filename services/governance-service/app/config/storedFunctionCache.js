@@ -35,7 +35,7 @@ process.on('message', message => {
   console.log('Error:', e);
  }
 
-});;
+});
 `;
 
 class StoredFunctionCache {
