@@ -54,9 +54,6 @@ const libs = {
   scheduler: {
     folder: 'scheduler',
   },
-  secretService: {
-    folder: 'secret-service',
-  },
   webhooks: {
     folder: 'webhooks',
   },
