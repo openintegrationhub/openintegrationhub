@@ -176,7 +176,7 @@ class StoredFunctionCache {
     for (let i = 0; i < this.storedFunctions[name].length; i += 1) {
       if (this.storedFunctions[name][i].id === id) {
         try {
-          this.processes[id].code.kill();
+          if (id in this.processes) this.processes[id].code.kill();
         } catch (e) {
           console.log(e);
         }

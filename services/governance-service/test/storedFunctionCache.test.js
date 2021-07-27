@@ -37,7 +37,7 @@ let functionId2;
 let app;
 
 beforeAll(async () => {
-  mongoose.connection.collections.storedFunction.remove();
+  // mongoose.connection.collections.storedFunction.remove();
 
   const newFunction = {
     name: 'MyStoredFunction1',
