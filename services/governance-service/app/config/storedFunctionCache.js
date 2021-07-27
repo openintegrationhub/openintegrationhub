@@ -116,28 +116,26 @@ class StoredFunctionCache {
       } catch (e) {
         console.log(e);
       }
+      const name = this.processes[key].name;
       delete this.processes[key];
+      this.delete(key, name);
     }
     this.storedFunctions = {};
   }
 
   async loadAll() {
     console.log('In load all');
-    const response = await storage.getStoredFunctions(
-      { isAdmin: true },
-      null, null, null, null,
-      null, null, null, null,
-      'id name code metaData',
-    );
+
+    const response = await storage.getAllStoredFunctions();
 
     console.log('Response:', response);
 
-    if (response.data.length > 0) {
-      for (let i = 0; i < response.data.length; i += 1) {
-        console.log(response.data[i].name, response.data[i].oihUser);
-        this.storedFunctions[response.data[i].name] = [{
-          id: response.data[i].id,
-          oihUser: response.data[i].metaData.oihUser,
+    if (response.length > 0) {
+      for (let i = 0; i < response.length; i += 1) {
+        console.log(response[i].name, response[i].metaData.oihUser);
+        this.storedFunctions[response[i].name] = [{
+          id: response[i].id,
+          oihUser: response[i].metaData.oihUser,
         }];
       }
     } else {
@@ -185,7 +183,7 @@ class StoredFunctionCache {
 
   delete(id, name) {
     try {
-      fs.unlinkSync(`./functionsCache/${id}.js`);
+      fs.unlinkSync(`${functionsDir}${id}.js`);
     } catch (e) {
       console.log(e);
     }

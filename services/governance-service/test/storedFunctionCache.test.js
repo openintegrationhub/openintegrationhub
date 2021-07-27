@@ -23,9 +23,9 @@ const storage = require(`../app/api/controllers/${config.storage}`); // eslint-d
 
 const storedFunctionCache = require('../app/config/storedFunctionCache');
 
-// const Server = require('../app/server');
-//
-// const mainServer = new Server();
+const Server = require('../app/server');
+
+const mainServer = new Server();
 
 const log = require('../app/config/logger'); // eslint-disable-line
 
@@ -39,6 +39,13 @@ let app;
 beforeAll(async () => {
   // mongoose.connection.collections.storedFunction.remove();
 
+  iamMock.setup();
+  await mainServer.setupMiddleware();
+  await mainServer.setupRoutes();
+  mainServer.setupSwagger();
+  await mainServer.setup(mongoose);
+  app = mainServer.listen();
+
   const newFunction = {
     name: 'MyStoredFunction1',
     code: 'return x * y',
@@ -49,22 +56,14 @@ beforeAll(async () => {
   functionId1 = result.id;
   console.log('functionId1', functionId1);
 
-  // iamMock.setup();
-  // await mainServer.setupMiddleware();
-  // await mainServer.setupRoutes();
-  // mainServer.setupSwagger();
-  // await mainServer.setup(mongoose);
-  // await mainServer.listen();
-  //
-  // app = mainServer;
-
-  // await storedFunctionCache.loadAll();
+  await storedFunctionCache.loadAll();
 });
 
 afterAll(async () => {
+  storedFunctionCache.clearAll();
   if (mongoose.connection && mongoose.connection.db) await mongoose.connection.db.dropDatabase();
   mongoose.connection.close();
-  if (app) app.close();
+  app.close();
 });
 
 describe('StoredFunctionCache Operations', () => {
