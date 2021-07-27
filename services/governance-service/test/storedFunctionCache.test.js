@@ -62,7 +62,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  // if (mongoose.connection && mongoose.connection.db) await mongoose.connection.db.dropDatabase();
+  if (mongoose.connection && mongoose.connection.db) await mongoose.connection.db.dropDatabase();
   mongoose.connection.close();
   if (app) app.close();
 });
@@ -76,7 +76,6 @@ describe('StoredFunctionCache Operations', () => {
     expect(Array.isArray(storedFunctionCache.storedFunctions.MyStoredFunction1)).toEqual(true);
     expect(storedFunctionCache.storedFunctions.MyStoredFunction1.length).toEqual(1);
     expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction1[0]).toBe('object');
-    expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].code).toEqual('return x * y');
     expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual(adminId);
   });
 
@@ -101,7 +100,6 @@ describe('StoredFunctionCache Operations', () => {
   //
   //   expect(res.body.metaData.oihUser).toEqual(adminId);
   //   expect(res.body.name).toEqual(newFunction.name);
-  //   expect(res.body.code).toEqual(newFunction.code);
   //
   //   expect(res.body).toHaveProperty('createdAt');
   //   expect(res.body).toHaveProperty('updatedAt');
