@@ -18,7 +18,25 @@ const processConfig = {
   // cwd: appDir,
 };
 
-const functionsDir = './functionsCache/';
+const functionsDir = `${__dirname}/functionsCache/`;
+
+const template = `
+const executor = function (a, b) {
+ <<<code>>>
+};
+
+process.on('message', message => {
+ console.log('Received msg in executor:', message);
+
+ try {
+  const result = executor(message);
+  process.send(result);
+ } catch (e) {
+  console.log('Error:', e);
+ }
+
+});;
+`;
 
 class StoredFunctionCache {
   constructor() {
@@ -134,7 +152,8 @@ class StoredFunctionCache {
 
   upsert(id, name, oihUser, code) {
     try {
-      fs.writeFileSync(`${functionsDir}${id}.js`, code);
+      const fullCode = template.replace('<<<code>>>', code);
+      fs.writeFileSync(`${functionsDir}${id}.js`, fullCode);
     } catch (e) {
       console.log(e);
     }
