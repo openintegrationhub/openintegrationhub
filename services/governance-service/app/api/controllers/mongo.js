@@ -173,6 +173,7 @@ const getStoredFunctions = async ( // eslint-disable-line
 
   // count results
   const count = await StoredFunction.find(qry).estimatedDocumentCount();
+  // const count = await StoredFunction.count(qry);
 
   // add offset and limit to query and execute
 
