@@ -221,6 +221,7 @@ export default class DataController {
             }
 
             if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+                // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
                 let newIOwner = {} as IOwnerDocument;
                 newIOwner.id = user.sub;
                 newIOwner.type = 'user';
