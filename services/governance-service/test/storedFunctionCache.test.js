@@ -32,7 +32,8 @@ const log = require('../app/config/logger'); // eslint-disable-line
 const adminId = token.adminToken.value.sub;
 const guestId = token.guestToken.value.sub;
 
-let functionId;
+let functionId1;
+let functionId2;
 let app;
 
 beforeAll(async () => {
@@ -44,8 +45,9 @@ beforeAll(async () => {
   };
 
   const result = await storage.addStoredFunction(adminId, newFunction.name, newFunction.code);
-  functionId = result._id;
-  console.log('functionId', functionId);
+  console.log('this result:', result);
+  functionId1 = result._id;
+  console.log('functionId1', functionId1);
 
   iamMock.setup();
   await mainServer.setupMiddleware();
@@ -117,7 +119,7 @@ describe('StoredFunctionCache Operations', () => {
   });
 
   test('should add a stored function to the cache', async () => {
-    storedFunctionCache.upsert('MyStoredFunction2', adminId, 'somecode');
+    storedFunctionCache.upsert('bogusId2', 'MyStoredFunction2', adminId, 'somecode');
 
     expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(2);
     expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction2[0]).toBe('object');
@@ -126,7 +128,7 @@ describe('StoredFunctionCache Operations', () => {
   });
 
   test('should update a stored function in the cache', async () => {
-    storedFunctionCache.upsert('MyStoredFunction1', adminId, 'somecode');
+    storedFunctionCache.upsert(functionId1, 'MyStoredFunction1', adminId, 'somecode');
     expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(2);
     expect(Array.isArray(storedFunctionCache.storedFunctions.MyStoredFunction1)).toEqual(true);
     expect(storedFunctionCache.storedFunctions.MyStoredFunction1.length).toEqual(1);
@@ -136,7 +138,7 @@ describe('StoredFunctionCache Operations', () => {
   });
 
   test('should delete a stored function from the cache', async () => {
-    storedFunctionCache.delete('MyStoredFunction1', adminId);
+    storedFunctionCache.delete(functionId1, 'MyStoredFunction1', adminId);
     expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(1);
     expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction2[0]).toBe('object');
 

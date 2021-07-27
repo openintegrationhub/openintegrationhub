@@ -161,7 +161,12 @@ class StoredFunctionCache {
   }
 
   delete(id, name) {
-    fs.unlinkSync(`./functionsCache/${id}.js`);
+    try {
+      fs.unlinkSync(`./functionsCache/${id}.js`);
+    } catch (e) {
+      console.log(e);
+    }
+
     if (!this.storedFunctions || !(name in this.storedFunctions)) return false;
 
     for (let i = 0; i < this.storedFunctions[name].length; i += 1) {
