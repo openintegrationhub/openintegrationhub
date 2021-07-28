@@ -19,6 +19,16 @@ const format = (provenanceEvent) => {
   return newProvenanceEvent;
 };
 
+const formatStoredFunction = (data) => {
+  const newData = data;
+  if (data) {
+    newData.id = newData._id.toString();
+    delete newData._id;
+    delete newData.__v;
+  }
+  return newData;
+};
+
 // Builds a query depending on user's tenants and permissions
 const buildQuery = (user, permission, id) => {
   let findId;
@@ -219,8 +229,10 @@ const addStoredFunction = async (user, name, code) => {
     const storeStoredFunction = new StoredFunction(newStoredFunction);
 
     const response = await storeStoredFunction.save();
+    console.log('response._doc', response._doc);
 
-    return format(response._doc);
+    console.log('formatted', formatStoredFunction(response._doc));
+    return formatStoredFunction(response._doc);
   } catch (e) {
     log.error(e);
     return false;
