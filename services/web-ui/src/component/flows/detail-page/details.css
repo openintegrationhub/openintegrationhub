@@ -2,9 +2,8 @@
 
 
 .node__leaf > circle{
-  fill: green;
-  /* Let's also make the radius of leaf nodes larger */
-  r: 40;
+  fill: silver;
+  r: 12;
 }
 .rd3t-node > circle {
   fill: white;
