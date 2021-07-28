@@ -202,31 +202,30 @@ const getAllStoredFunctions = async () => {
 };
 
 // Adds a new stored function
-const addStoredFunction = async (user, name, code) => new Promise((resolve) => {
-  if (!user.isAdmin) {
+const addStoredFunction = async (user, name, code) => {
+  try {
+    if (!user.isAdmin) {
+      return false;
+    }
+
+    const newStoredFunction = {
+      name,
+      code,
+      metaData: {
+        oihUser: user.username,
+      },
+    };
+
+    const storeStoredFunction = new StoredFunction(newStoredFunction);
+
+    const response = await storeStoredFunction.save();
+
+    return format(response._doc);
+  } catch (e) {
+    log.error(e);
     return false;
   }
-
-  const newStoredFunction = {
-    name,
-    code,
-    metaData: {
-      oihUser: user.username,
-    },
-  };
-
-  const storeStoredFunction = new StoredFunction(newStoredFunction);
-
-  return storeStoredFunction.save()
-    .then((doc) => {
-      const storedFunction = format(doc._doc);
-      resolve(storedFunction);
-    })
-    .catch((err) => {
-      log.error(err);
-      resolve(false);
-    });
-});
+};
 
 // Get's a single stored function
 const getStoredFunction = async (user, id) => {
