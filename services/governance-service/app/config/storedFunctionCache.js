@@ -209,6 +209,6 @@ class StoredFunctionCache {
 const storedFunctionCache = new StoredFunctionCache();
 
 // Ensure unused processes end
-if (!process.env.TEST) setInterval(storedFunctionCache.clearUnused, 100000);
+if (!process.env.NODE_ENV === 'test') setInterval(storedFunctionCache.clearUnused, 100000);
 
 module.exports = storedFunctionCache;
