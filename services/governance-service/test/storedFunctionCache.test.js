@@ -65,7 +65,7 @@ afterAll(async () => {
 });
 
 describe('StoredFunctionCache Operations', () => {
-  test.only('should load all already existing stored functions', async () => {
+  test('should load all already existing stored functions', async () => {
     // expect(true).toBe(true);
     await storedFunctionCache.loadAll();
     expect(typeof storedFunctionCache.storedFunctions).toBe('object');
@@ -139,5 +139,65 @@ describe('StoredFunctionCache Operations', () => {
     expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction2[0]).toBe('object');
 
     expect(storedFunctionCache.storedFunctions.MyStoredFunction2[0].oihUser).toEqual(adminId);
+  });
+
+
+  test('should add another stored function to the cache', async () => {
+    const testCode = `
+    const returnData = Object.assign({}, data);
+    returnData.permission = Object.assign({}, permission);
+    return {
+      passes,
+      data: returnData,
+    };
+    `;
+
+    storedFunctionCache.upsert('fakeId', 'TestFunction', adminId, testCode);
+
+    expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(2);
+    expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction2[0]).toBe('object');
+
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction2[0].oihUser).toEqual(adminId);
+  });
+
+  test('should execute a stored function', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        timestamp: '12345',
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'distribute',
+            constraint: {
+              leftOperand: 'timestamp',
+              operator: 'TestFunction',
+              rightOperand: 12345,
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(true);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.timestamp).toEqual('12345');
+    expect(res.body.data.permission).toEqual('12345');
   });
 });
