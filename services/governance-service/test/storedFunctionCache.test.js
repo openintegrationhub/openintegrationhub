@@ -76,68 +76,68 @@ describe('StoredFunctionCache Operations', () => {
     expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual('admin@example.com');
   });
 
-  // test('should add a StoredFunction via endpoint', async () => {
-  //   const newFunction = {
-  //     name: 'MyStoredFunction0',
-  //     code: 'return x * y * z',
-  //   };
-  //
-  //   const res = await request
-  //     .post('/storedFunction')
-  //     .set('Authorization', 'Bearer adminToken')
-  //     .set('accept', 'application/json')
-  //     .set('Content-Type', 'application/json')
-  //     .send(newFunction);
-  //
-  //   expect(res.status).toEqual(200);
-  //   expect(res.text).not.toHaveLength(0);
-  //
-  //   expect(res).not.toBeNull();
-  //   expect(res.body).toHaveProperty('id');
-  //
-  //   expect(res.body.metaData.oihUser).toEqual(adminId);
-  //   expect(res.body.name).toEqual(newFunction.name);
-  //
-  //   expect(res.body).toHaveProperty('createdAt');
-  //   expect(res.body).toHaveProperty('updatedAt');
-  // });
+  test('should add a StoredFunction via endpoint', async () => {
+    const newFunction = {
+      name: 'MyStoredFunction0',
+      code: 'return x * y * z',
+    };
 
-  // test('should get all already stored functions', async () => {
-  //   console.log('=============================');
-  //   console.log(JSON.stringify(storedFunctionCache.storedFunctions));
-  //   console.log('=============================');
-  //   expect(typeof storedFunctionCache.storedFunctions).toBe('object');
-  //   expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(2);
-  //   expect(Array.isArray(storedFunctionCache.storedFunctions.MyStoredFunction1)).toEqual(true);
-  //   expect(storedFunctionCache.storedFunctions.MyStoredFunction1.length).toEqual(1);
-  //   expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction1[0]).toBe('object');
-  //   expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual(adminId);
-  // });
-  //
-  // test('should add a stored function to the cache', async () => {
-  //   storedFunctionCache.upsert(functionId1, 'MyStoredFunction2', adminId, 'somecode');
-  //
-  //   expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(2);
-  //   expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction2[0]).toBe('object');
-  //
-  //   expect(storedFunctionCache.storedFunctions.MyStoredFunction2[0].oihUser).toEqual(adminId);
-  // });
-  //
-  // test('should update a stored function in the cache', async () => {
-  //   storedFunctionCache.upsert(functionId1, 'MyStoredFunction1', adminId, 'somecode');
-  //   expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(2);
-  //   expect(Array.isArray(storedFunctionCache.storedFunctions.MyStoredFunction1)).toEqual(true);
-  //   expect(storedFunctionCache.storedFunctions.MyStoredFunction1.length).toEqual(1);
-  //   expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction1[0]).toBe('object');
-  //
-  //   expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual(adminId);
-  // });
-  //
-  // test('should delete a stored function from the cache', async () => {
-  //   storedFunctionCache.delete(functionId1, 'MyStoredFunction1', adminId);
-  //   expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(1);
-  //   expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction2[0]).toBe('object');
-  //
-  //   expect(storedFunctionCache.storedFunctions.MyStoredFunction2[0].oihUser).toEqual(adminId);
-  // });
+    const res = await request
+      .post('/storedFunction')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(newFunction);
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toHaveLength(0);
+
+    expect(res).not.toBeNull();
+    expect(res.body).toHaveProperty('id');
+
+    expect(res.body.metaData.oihUser).toEqual(adminId);
+    expect(res.body.name).toEqual(newFunction.name);
+
+    expect(res.body).toHaveProperty('createdAt');
+    expect(res.body).toHaveProperty('updatedAt');
+  });
+
+  test('should get all already stored functions', async () => {
+    console.log('=============================');
+    console.log(JSON.stringify(storedFunctionCache.storedFunctions));
+    console.log('=============================');
+    expect(typeof storedFunctionCache.storedFunctions).toBe('object');
+    expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(2);
+    expect(Array.isArray(storedFunctionCache.storedFunctions.MyStoredFunction1)).toEqual(true);
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction1.length).toEqual(1);
+    expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction1[0]).toBe('object');
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual(adminId);
+  });
+
+  test('should add a stored function to the cache', async () => {
+    storedFunctionCache.upsert(functionId1, 'MyStoredFunction2', adminId, 'somecode');
+
+    expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(2);
+    expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction2[0]).toBe('object');
+
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction2[0].oihUser).toEqual(adminId);
+  });
+
+  test('should update a stored function in the cache', async () => {
+    storedFunctionCache.upsert(functionId1, 'MyStoredFunction1', adminId, 'somecode');
+    expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(2);
+    expect(Array.isArray(storedFunctionCache.storedFunctions.MyStoredFunction1)).toEqual(true);
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction1.length).toEqual(1);
+    expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction1[0]).toBe('object');
+
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual(adminId);
+  });
+
+  test('should delete a stored function from the cache', async () => {
+    storedFunctionCache.delete(functionId1, 'MyStoredFunction1', adminId);
+    expect(Object.keys(storedFunctionCache.storedFunctions).length).toEqual(1);
+    expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction2[0]).toBe('object');
+
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction2[0].oihUser).toEqual(adminId);
+  });
 });
