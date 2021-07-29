@@ -89,6 +89,22 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "domain_id",
+            "description": "Used to retrieve data records that have specific domainId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "schema_uri",
+            "description": "Used to retrieve data records that have specific schemaUri",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
