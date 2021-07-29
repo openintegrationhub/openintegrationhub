@@ -17,7 +17,7 @@ const { reportHealth } = require('../app/utils/eventBus');
 
 const config = require('../app/config/index');
 
-const storage = require(`../app/api/controllers/${config.storage}`); // eslint-disable-line
+const storage = require(`../app/api/controllers/mongo`); // eslint-disable-line
 
 // const StoredFunction = require('../app/models/storedFunction');
 
@@ -51,10 +51,8 @@ beforeAll(async () => {
     code: 'return x * y',
   };
 
-  const result = await storage.addStoredFunction(adminId, newFunction.name, newFunction.code);
-  console.log('this result:', result);
+  const result = await storage.addStoredFunction(token.adminToken.value, newFunction.name, newFunction.code);
   functionId1 = result.id;
-  console.log('functionId1', functionId1);
 
   await storedFunctionCache.loadAll();
 });
