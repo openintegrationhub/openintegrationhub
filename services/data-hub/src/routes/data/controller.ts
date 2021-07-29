@@ -11,6 +11,8 @@ interface IGteQuery {
 
 interface IGetManyCondition {
     'owners.id': string;
+    domainId?: string;
+    schemaUri?: string;
     createdAt?: IGteQuery;
     updatedAt?: IGteQuery;
 }
@@ -18,7 +20,13 @@ interface IGetManyCondition {
 export default class DataController {
     public async getMany(ctx: RouterContext): Promise<void> {
         const { paging, user } = ctx.state;
-        const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
+        const {
+            created_since: createdSince,
+            updated_since: updatedSince,
+            domain_id: domainId,
+            schema_uri: schemaUri
+        } = ctx.query;
+
         const condition: IGetManyCondition = {
             'owners.id': user.sub
         };
@@ -33,6 +41,14 @@ export default class DataController {
             condition.updatedAt = {
                 $gte: updatedSince
             };
+        }
+
+        if (domainId) {
+            condition.domainId = domainId;
+        }
+
+        if (schemaUri) {
+            condition.schemaUri = schemaUri
         }
 
         const [data, total] = await Promise.all([

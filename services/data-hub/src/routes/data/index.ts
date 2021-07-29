@@ -8,7 +8,10 @@ import { koaMiddleware } from '@openintegrationhub/iam-utils';
 export default () => {
     const controller = new Controller();
     return new KoaRouter()
-        .use(bodyParser())
+        .use(bodyParser({
+            // TODO: Add process.env to set jsonLimit
+            jsonLimit: "10mb"
+        }))
         .use(koaMiddleware)
         .get('/', parsePagedQuery(), (ctx: RouterContext) => controller.getMany(ctx))
         .post('/', (ctx: RouterContext) => controller.postOne(ctx))
