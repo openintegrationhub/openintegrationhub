@@ -46,10 +46,9 @@ describe('Data Import Route', () => {
         it('should import many items', async function () {
             this.timeout(5000);
 
-            const persons: Person[] = getDummyOihPersons(PERSONS_SET_LENGTH)
             const records = []
 
-            persons.forEach(person => records.push(
+            getDummyOihPersons(PERSONS_SET_LENGTH).forEach(person => records.push(
                 {
                     domainId: "my-domain",
                     schemaUri: "my-schema",
@@ -72,7 +71,7 @@ describe('Data Import Route', () => {
                 }
             ))
 
-            persons.forEach(person => records.push(
+            getDummyOihPersons(PERSONS_SET_LENGTH).forEach(person => records.push(
                 {
                     domainId: "my-domain2",
                     schemaUri: "my-schema",
@@ -95,7 +94,7 @@ describe('Data Import Route', () => {
                 }
             ))
 
-            persons.forEach(person => records.push(
+            getDummyOihPersons(PERSONS_SET_LENGTH).forEach(person => records.push(
                 {
                     domainId: "my-domain2",
                     schemaUri: "my-schema2",
