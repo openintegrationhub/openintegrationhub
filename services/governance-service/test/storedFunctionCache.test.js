@@ -73,7 +73,7 @@ describe('StoredFunctionCache Operations', () => {
     expect(Array.isArray(storedFunctionCache.storedFunctions.MyStoredFunction1)).toEqual(true);
     expect(storedFunctionCache.storedFunctions.MyStoredFunction1.length).toEqual(1);
     expect(typeof storedFunctionCache.storedFunctions.MyStoredFunction1[0]).toBe('object');
-    expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual(adminId);
+    expect(storedFunctionCache.storedFunctions.MyStoredFunction1[0].oihUser).toEqual('admin@example.com');
   });
 
   // test('should add a StoredFunction via endpoint', async () => {

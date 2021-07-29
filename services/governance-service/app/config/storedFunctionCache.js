@@ -124,15 +124,10 @@ class StoredFunctionCache {
   }
 
   async loadAll() {
-    console.log('In load all');
-
     const response = await storage.getAllStoredFunctions();
-
-    console.log('Response:', response);
 
     if (response.length > 0) {
       for (let i = 0; i < response.length; i += 1) {
-        console.log(response[i].name, response[i].metaData.oihUser);
         this.storedFunctions[response[i].name] = [{
           id: response[i].id,
           oihUser: response[i].metaData.oihUser,
