@@ -4,34 +4,10 @@ import clone from 'clone';
 import { useParams } from 'react-router-dom';
 import './details.css';
 
-let count = 0;
+// let count = 0;
 const FlowDetails = () => {
     const { flowID } = useParams();
 
-    // const ting = {
-    //     context: {
-    //         device: {
-    //             localeCountryCode: 'AX',
-    //             datetime: '3047-09-29T07:09:52.498Z',
-    //         },
-    //         currentLocation: {
-    //             country: 'KM',
-    //             lon: -78789486,
-    //         },
-    //     },
-    // };
-    // const transformObject = (obj = {}) => {
-    //     if (obj && typeof obj === 'object') {
-    //         return Object.keys(obj).map((el) => {
-    //             const children = transformObject(obj[el]); return children ? { label: el, children } : {
-    //                 label: el,
-    //             };
-    //         });
-    //     }
-    //     return null;
-    // };
-    // console.log(JSON.stringify(ting, undefined, 4));
-    // console.log(JSON.stringify(transformObject(ting), undefined, 4));
     // const orgChart = { id: 'step_1', name: 'step_1', children: [{ id: 'step_2', name: 'step_2', children: [{ id: 'step_3', name: 'step_3', children: [] }] }] };
     const orgChart2 = {
         status: 'inactive',
@@ -63,13 +39,6 @@ const FlowDetails = () => {
                     function: 'TRIGGER',
                     description: 'Flow node description',
                 },
-                {
-                    id: 'step_4',
-                    componentId: '434f4d504f4e454e54204944',
-                    name: 'Flow node name 3',
-                    function: 'TRIGGER',
-                    description: 'Flow node description',
-                },
             ],
             edges: [
                 {
@@ -79,10 +48,6 @@ const FlowDetails = () => {
                 {
                     source: 'step_2',
                     target: 'step_3',
-                },
-                {
-                    source: 'step_2',
-                    target: 'step_4',
                 },
             ],
         },
@@ -99,28 +64,7 @@ const FlowDetails = () => {
         id: '60eee6202615249590397600',
     };
 
-    // const orgChart2 = { id: 'step_1', name: 'step_1', children: [{ id: 'step_2', name: 'step_2', children: [{ id: 'step_3', name: 'step_3', children: [] }] }] };
-    /* eslint-disable no-unused-vars */
-    // const transformFlowJson = (obj) => {
-    //     // const { edges, nodes } = obj.graph;
-    //     const graph = clone(obj.graph);
-    //     const edges = clone(obj.graph.edges);
-    //     const nodes = clone(obj.graph.nodes);
-    //     // const treeRoot = obj.graph.nodes.find(node => obj.graph.edges.filter(edge => edge.target === node.id).length === 0);
-    //     // const itsChild = obj.graph.nodes.find(node => obj.graph.edges.filter(edge => edge.target !== node.id).length === 0);
-    //     // treeRoot.children = [];
-    //     // console.log('treeRoot: ', treeRoot);
-    //     // console.log('itsChild', itsChild);
-
-    //     // console.log('edges: ', edges);
-    //     // console.log('nodes', nodes);
-
-
-    //     return null;
-    // };
-
     const tree = [];
-    const tree2 = [];
     const flow = clone(orgChart2);
     flow.graph.nodes.forEach((node) => {
         const matchingEdge = flow.graph.edges.find(edge => edge.target === node.id);
@@ -131,9 +75,6 @@ const FlowDetails = () => {
             parent: matchingEdge ? matchingEdge.source : null,
         });
     });
-    // const graph = clone(orgChart2.graph);
-    // const edges = clone(obj.graph.edges);
-    // const nodes = clone(obj.graph.nodes);
 
     const idMapping = tree.reduce((acc, el, i) => {
         acc[el.id] = i;
@@ -152,17 +93,26 @@ const FlowDetails = () => {
         // Add our current el to its parent's `children` array
         parentEl.children = [...(parentEl.children || []), el];
     });
-    console.log('Tree:', tree);
-    console.log('Root', root);
+    // console.log('Tree:', tree);
+    // console.log('Root', root);
+    console.log('flow', flow);
 
-    const cloneChart = clone(orgChart2);
-    // const createdTree = createTree(tree.parent);
-    // console.log('HERE:', JSON.stringify(transformFlowJson(cloneChart), undefined, 4));
     const [data, setData] = useState(root);
     const [selectedNode, setSelectedNode] = useState('');
-    console.log('selectedNode is', selectedNode);
+    console.log('data', data);
     const [parentNode, setParentNode] = useState('');
     const [nodeName, setNodeName] = useState('Inserted Node');
+    const [nodeId, setNodeId] = useState('');
+    const [nodeComponentId, setNodeComponentId] = useState('');
+    const [nodeDescription, setNodeDescription] = useState('');
+    const [nodeFunction, setNodeFunction] = useState('');
+    const [nodeFields, setNodeFields] = useState('');
+
+    const getData = () => {
+        const flowData = flow.graph.nodes.find(node => node.id === selectedNode.id);
+        return flowData;
+    };
+
     const translate = {
         x: window.innerWidth / 4,
         y: 250,
@@ -192,19 +142,25 @@ const FlowDetails = () => {
             selNode.children = [];
             const newTarget = selNode.children;
             newTarget.push({
-                name: `${nodeName}`,
-                id: `inserted-node-${nodeName}-${count}`,
-                children: [],
+                name: nodeName,
+                id: nodeId,
+                function: nodeFunction,
+                componentId: nodeComponentId,
+                description: nodeDescription,
+                fields: nodeFields,
             });
             setData(nextData);
             return;
         }
         const target = selNode.children;
-        count++;
+        // count++;
         target.push({
-            name: `${nodeName}`,
-            id: `inserted-node-${nodeName}-${count}`,
-            children: [],
+            name: nodeName,
+            id: nodeId,
+            function: nodeFunction,
+            componentId: nodeComponentId,
+            description: nodeDescription,
+            fields: nodeFields,
         });
         setData(nextData);
     };
@@ -214,6 +170,7 @@ const FlowDetails = () => {
             setSelectedNode('');
             return;
         }
+
         const nextData = clone(data);
         const selNode = searchTree(nextData, e.data.id);
         setSelectedNode(selNode);
@@ -232,19 +189,34 @@ const FlowDetails = () => {
         selectNode('', true);
     };
 
+    const retransformToJson = (obj) => {
+        console.log('Transform', obj);
+    };
+
+    const flowData = getData();
+    retransformToJson(data);
     return <div>
         <h3 style={{ textAlign: 'center' }}>Flow id: {flowID}</h3>
         <div id="treeWrapper" style={{ width: '100vw', height: '60vh', background: 'silver' }} >
-            <Tree data={data} onNodeClick={e => selectNode(e)} translate={translate} /* onNodeMouseOver={e => console.log('Hover', e)} */ rootNodeClassName="node__root"
+            <Tree data={data} onNodeClick={e => selectNode(e)} translate={translate} rootNodeClassName="node__root"
                 branchNodeClassName="node__branch"
                 leafNodeClassName="node__leaf"/>
             <div style={{ padding: '10px' }}>
-                <p >Selected: <span>{selectedNode.name}</span></p>
-                {selectedNode && <div><input onChange={e => setNodeName(e.target.value)} placeholder="Node name"/>
+                <p >Selected Node: <span>{selectedNode.name}</span></p>
+                <div>{flowData ? <div>
+                    <p>Name: {flowData.name}</p>
+                    <p>Function: {flowData.function}</p>
+                    <p>Description: {flowData.description}</p></div> : null}</div>
+                {selectedNode && <div>
+                    <input onChange={e => setNodeId(e.target.value)} placeholder="Node id"/>
+                    <input onChange={e => setNodeName(e.target.value)} placeholder="Node name"/>
+                    <input onChange={e => setNodeComponentId(e.target.value)} placeholder="Node componentId"/>
+                    <input onChange={e => setNodeFunction(e.target.value)} placeholder="Node function"/>
+                    <input onChange={e => setNodeDescription(e.target.value)} placeholder="Node description"/>
+                    <input onChange={e => setNodeFields(e.target.value)} placeholder="Node fields (optional)"/>
                     <button onClick={e => addChildNode(e)} style={{ marginLeft: 10, marginRight: 10 }}>Add Node</button>
                     <button onClick={e => removeChildNode(e)}>Remove Node</button><br/>
                     <button style={{ marginTop: '10px' }}>Save</button></div>}
-                {/* {orgChart.name} */}
             </div>
         </div>
 
