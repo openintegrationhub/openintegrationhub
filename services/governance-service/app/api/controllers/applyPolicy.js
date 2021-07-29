@@ -41,7 +41,7 @@ function evaluateSingleConstraint(data, currentPermission) {
         found = true;
         log.debug(`${currentPermission.operator} found in storedFunctionCache`);
         // @todo: execute code some how
-        // result = storedFunctionCache[currentPermission.operator].code(data, { constraint: currentPermission });
+        // result = await storedFunctionCache[currentPermission.operator][i].code(data, { constraint: currentPermission });
         break;
       }
     }
@@ -133,14 +133,13 @@ router.post('/', jsonParser, async (req, res) => {
       const handler = defaultFunctions.find(el => el.name === currentDuty.action);
       if (handler) {
         result = handler.code(result.data, currentDuty);
+      } else if (currentDuty.action in storedFunctionCache.storedFunctions) {
+        for (let j = 0; j < storedFunctionCache.storedFunctions[currentDuty.action].length; j += 1) {
+          // @todo: check for user
+          // result = await storedFunctionCache.storedFunctions[currentDuty.action][j].code(result.data, currentDuty);
+        }
       } else {
-        // let storedHandler = storedFunctionCache.find(el => el.name === currentDuty.action);
-        // if(storedHandler) {
-        //   storedHandler
-        //   result = storedHandler.code(result.data, currentDuty);
-        // } else {
         log.warn(`Attempted to apply duty action ${currentDuty.action} but could not find handler`);
-        // }
       }
     }
   }
