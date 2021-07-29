@@ -229,9 +229,6 @@ const addStoredFunction = async (user, name, code) => {
     const storeStoredFunction = new StoredFunction(newStoredFunction);
 
     const response = await storeStoredFunction.save();
-    console.log('response._doc', response._doc);
-
-    console.log('formatted', formatStoredFunction(response._doc));
     return formatStoredFunction(response._doc);
   } catch (e) {
     log.error(e);
