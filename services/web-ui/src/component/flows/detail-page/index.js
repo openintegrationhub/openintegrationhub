@@ -71,8 +71,11 @@ const FlowDetails = () => {
 
         tree.push({
             id: node.id,
-            name: node.id,
+            name: node.name,
             parent: matchingEdge ? matchingEdge.source : null,
+            componentId: node.componentId,
+            description: node.description,
+            function: node.function,
         });
     });
 
@@ -83,7 +86,6 @@ const FlowDetails = () => {
 
     let root;
     tree.forEach((el) => {
-        // Handle the root element
         if (el.parent === null) {
             root = el;
             return;
@@ -101,7 +103,7 @@ const FlowDetails = () => {
     const [selectedNode, setSelectedNode] = useState('');
     console.log('data', data);
     const [parentNode, setParentNode] = useState('');
-    const [nodeName, setNodeName] = useState('Inserted Node');
+    const [nodeName, setNodeName] = useState('');
     const [nodeId, setNodeId] = useState('');
     const [nodeComponentId, setNodeComponentId] = useState('');
     const [nodeDescription, setNodeDescription] = useState('');
@@ -150,6 +152,12 @@ const FlowDetails = () => {
                 fields: nodeFields,
             });
             setData(nextData);
+            setNodeName('');
+            setNodeId('');
+            setNodeDescription('');
+            setNodeFunction('');
+            setNodeComponentId('');
+            setNodeFields('');
             return;
         }
         const target = selNode.children;
@@ -163,6 +171,12 @@ const FlowDetails = () => {
             fields: nodeFields,
         });
         setData(nextData);
+        setNodeName('');
+        setNodeId('');
+        setNodeDescription('');
+        setNodeFunction('');
+        setNodeComponentId('');
+        setNodeFields('');
     };
 
     const selectNode = (e, unselect) => {
@@ -204,17 +218,19 @@ const FlowDetails = () => {
             <div style={{ padding: '10px' }}>
                 <p >Selected Node: <span>{selectedNode.name}</span></p>
                 <div>{flowData ? <div>
+                    <p>ID: {flowData.id}</p>
                     <p>Name: {flowData.name}</p>
                     <p>Function: {flowData.function}</p>
                     <p>Description: {flowData.description}</p></div> : null}</div>
                 {selectedNode && <div>
-                    <input onChange={e => setNodeId(e.target.value)} placeholder="Node id"/>
-                    <input onChange={e => setNodeName(e.target.value)} placeholder="Node name"/>
-                    <input onChange={e => setNodeComponentId(e.target.value)} placeholder="Node componentId"/>
-                    <input onChange={e => setNodeFunction(e.target.value)} placeholder="Node function"/>
-                    <input onChange={e => setNodeDescription(e.target.value)} placeholder="Node description"/>
-                    <input onChange={e => setNodeFields(e.target.value)} placeholder="Node fields (optional)"/>
-                    <button onClick={e => addChildNode(e)} style={{ marginLeft: 10, marginRight: 10 }}>Add Node</button>
+                    <input onChange={e => setNodeId(e.target.value)} placeholder="Node id" value={nodeId}/>
+                    <input onChange={e => setNodeName(e.target.value)} placeholder="Node name" value={nodeName}/>
+                    <input onChange={e => setNodeComponentId(e.target.value)} placeholder="Node componentId" value={nodeComponentId}/>
+                    <input onChange={e => setNodeFunction(e.target.value)} placeholder="Node function" value={nodeFunction}/>
+                    <input onChange={e => setNodeDescription(e.target.value)} placeholder="Node description" value={nodeDescription}/>
+                    <input onChange={e => setNodeFields(e.target.value)} placeholder="Node fields (optional)" value={nodeFields}/>
+                    <button onClick={e => addChildNode(e)} style={{ marginLeft: 10, marginRight: 10 }}
+                        disabled={!nodeId || !nodeName || !nodeComponentId || !nodeDescription || !nodeFunction }>Add Node</button>
                     <button onClick={e => removeChildNode(e)}>Remove Node</button><br/>
                     <button style={{ marginTop: '10px' }}>Save</button></div>}
             </div>
