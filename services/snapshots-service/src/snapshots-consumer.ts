@@ -44,12 +44,13 @@ export default class SnapshotsConsumer {
 
     private async onMessage(msg: AMQPLib.Message): Promise<void> {
         const snapshot = JSON.parse(msg.content.toString());
-        const { taskId: flowId, stepId } = msg.properties.headers;
-        this.logger.trace({flowId, stepId, snapshot}, 'Received snapshot');
+        const { taskId: flowId, stepId, flowExecId } = msg.properties.headers;
+        this.logger.trace({flowId, stepId, flowExecId, snapshot}, 'Received snapshot');
 
         await Snapshot.findOneAndUpdate({
             flowId,
-            stepId
+            stepId,
+            flowExecId,
         }, {
             snapshot
         }, {

@@ -9,7 +9,11 @@
     "node-fetch": "2.6.1",
     "yaml": "1.10.0",
     "lodash": "4.17.21",
-    "uuid": "8.3.2"
+    "uuid": "8.3.2",
+    "dotenv": "^8.2.0",
+    "qs": "6.9.4",
+    "request": "2.88.0",
+    "request-promise": "4.1.1"
   },
   "devDependencies": {
     "eslint": "7.15.0",

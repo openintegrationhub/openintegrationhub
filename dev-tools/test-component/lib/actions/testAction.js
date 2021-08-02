@@ -24,10 +24,15 @@ limitations under the License.
 const log = require('../logger')
 
 /**
- * This method will be called from elastic.io platform providing following data
+ * This method will be called from OIH platform upon receiving data
  *
- * @param msg incoming message object that contains ``body`` with payload
+ * @param {Object} msg - incoming message object that contains keys `data` and `metadata`
+ * @param {Object} cfg - configuration that contains login information and configuration field values
+ * @param {Object} snapshot - current step snapshot data
+ * @param {Object} incomingMessageHeaders - contains transformed incoming message headers
+ * @param {Object} tokenData - parsed orchestrator token data
  */
+
 async function processAction(msg, cfg) {
   try {
     log.info('processAction called with msg:', msg)
