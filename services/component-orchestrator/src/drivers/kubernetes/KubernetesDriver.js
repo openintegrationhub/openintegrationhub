@@ -182,7 +182,31 @@ class KubernetesDriver extends BaseDriver {
         );
     }
 
-    async _generateDefinition({ flow, node, secret, component, options = {} }) {
+    _generateVolumes() {
+        if (this._config.get('KUBERNETES_VOLUME_HOSTPATH_ENABLED') === 'true' && this._config.get('KUBERNETES_VOLUME_HOSTPATH_PATH')) {
+            return [{
+                name: 'pv-hostpath',
+                hostPath: {
+                    path: this._config.get('KUBERNETES_VOLUME_HOSTPATH_PATH'),
+                    type: 'Directory'
+                }
+            }]
+        }
+        return []
+    }
+
+    _generateVolumeMounts() {
+        if (this._config.get('KUBERNETES_VOLUME_HOSTPATH_ENABLED') === 'true' && this._config.get('KUBERNETES_VOLUME_HOSTPATH_MOUNTPATH')) {
+            return [{
+                name: 'pv-hostpath',
+                mountPath: this._config.get('KUBERNETES_VOLUME_HOSTPATH_MOUNTPATH')
+            }]
+
+        }
+        return []
+    }
+
+    _generateDefinition({ flow, node, secret, component, options = {} }) {
         // default options
         let { replicas = 1, imagePullPolicy = 'Always' } = options;
 
@@ -234,6 +258,8 @@ class KubernetesDriver extends BaseDriver {
 
         const image = _.get(component, 'distribution.image');
 
+        console.log(this._generateVolumes())
+        console.log(this._generateVolumeMounts())
         return {
             apiVersion: 'apps/v1',
             kind: 'Deployment',
@@ -253,6 +279,7 @@ class KubernetesDriver extends BaseDriver {
                         annotations,
                     },
                     spec: {
+                        volumes: this._generateVolumes(),
                         containers: [
                             {
                                 image,
@@ -270,6 +297,7 @@ class KubernetesDriver extends BaseDriver {
                                     node,
                                     component,
                                 }),
+                                volumeMounts: this._generateVolumeMounts()
                             },
                         ],
                     },

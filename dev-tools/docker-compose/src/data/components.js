@@ -181,4 +181,36 @@ module.exports = [
       },
     ],
   },
+
+  /// /
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: false,
+    access: 'public',
+    name: 'test-component',
+    description: 'A component just for testing',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+      limits: {
+        memory: '256Mi',
+        cpu: '500m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
 ]

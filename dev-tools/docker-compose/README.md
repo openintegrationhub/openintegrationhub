@@ -1,7 +1,5 @@
 # Docker Compose (Linux)
 
-In theory, this approach could also be used on macOS.
-
 Every service will be configured via NodeJS, managed by docker-compose, and finally runs inside a docker container. In addition, a Kubernetes cluster is created to host all deployments of flow nodes.
 
 **Simpleproxy** proxies tcp traffic from docker host to the kubernetes cluster, so a connection **_cluster server -> docker-host -> component orchestrator_** will be ensured.
