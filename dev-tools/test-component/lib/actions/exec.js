@@ -49,6 +49,7 @@ async function processAction(
     const snapshotData = await getSnapshotDataForFlow({
       flowId,
       iamToken: apiKey,
+      flowExecId: tokenData.flowExecId,
     })
 
     if (cfg.nodeSettings.devMode) {
