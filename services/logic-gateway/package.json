@@ -54,7 +54,7 @@
     ],
     "ext": "js json yaml"
   },
-  "jest": {
+  "xxjest": {
     "globalSetup": "./test/setup.js",
     "globalTeardown": "./test/teardown.js",
     "testEnvironment": "./test/mongo-environment.js",

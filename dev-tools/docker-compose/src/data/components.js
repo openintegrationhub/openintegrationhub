@@ -44,12 +44,12 @@ module.exports = [
     },
     resources: {
       requests: {
-        memory: '128Mi',
-        cpu: '250m',
+        memory: '64Mi',
+        cpu: '125m',
       },
       limits: {
-        memory: '256Mi',
-        cpu: '500m',
+        memory: '128Mi',
+        cpu: '250m',
       },
     },
     owners: [
@@ -172,6 +172,71 @@ module.exports = [
       limits: {
         memory: '256Mi',
         cpu: '500m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+
+  /// / Logic Gateway Testing
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: true,
+    specialFlags: {
+      privilegedComponent: true,
+    },
+    access: 'public',
+    name: 'logicGateway',
+    description: 'Dummy lgc',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: false,
+    access: 'public',
+    name: 'dummy',
+    description: 'Dummy',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
       },
     },
     owners: [
