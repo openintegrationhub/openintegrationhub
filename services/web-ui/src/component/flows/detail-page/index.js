@@ -46,6 +46,9 @@ class FlowDetails extends React.PureComponent {
             });
             this.setState({ flowObject: result.data.data[0], isLoading: false });
 
+            if (!this.state.data) {
+                this.setupTree();
+            }
             return result;
         } catch (err) {
             console.log(err);
@@ -73,7 +76,6 @@ class FlowDetails extends React.PureComponent {
             let i;
             let result = null;
             for (i = 0; result == null && i < element.children.length; i++) {
-                console.log('');
                 result = this.searchTree(element.children[i], matchingTitle);
             }
 
@@ -144,8 +146,7 @@ class FlowDetails extends React.PureComponent {
         return null;
     };
 
-
-    render() {
+    setupTree = () => {
         const tree = [];
         const flowClone = clone(this.state.flowObject);
 
@@ -173,6 +174,7 @@ class FlowDetails extends React.PureComponent {
         tree.forEach((el) => {
             if (el.parent === null) {
                 root = el;
+
                 return;
             }
             // Use our mapping to locate the parent element in our data array
@@ -180,14 +182,13 @@ class FlowDetails extends React.PureComponent {
             // Add our current el to its parent's `children` array
             parentEl.children = [...(parentEl.children || []), el];
         });
+        this.setState({ data: root });
+    }
 
+
+    render() {
         const { flowID } = this.props.match.params;
         const displayData = this.dataToDisplay();
-
-        if (!this.state.data) {
-            this.setState({ data: root });
-        }
-
         return (
             <div>
                 {!this.state.isLoading ? <div>
