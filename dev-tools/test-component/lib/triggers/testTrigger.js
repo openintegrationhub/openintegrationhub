@@ -41,11 +41,11 @@ async function processTrigger() {
 
     const message = {
       metadata: {
-        testMeta: 'Some LG Meta',
+        testMeta: 'some meta',
         foo: 'bar',
       },
       data: {
-        username: 'Some LG Data',
+        username: 'Bert Müller',
       },
     }
 

@@ -8,7 +8,7 @@ const kubernetesVersion = 'v1.21.3'
 const adminUsername = 'admin@openintegrationhub.com'
 const adminPassword = 'somestring'
 
-const minikubeArgs = `--kubernetes-version=${kubernetesVersion} --driver=virtualbox`
+const minikubeArgs = `--kubernetes-version=${kubernetesVersion} --mount`
 const fullComposeArgs = '-V --remove-orphans --scale component-orchestrator=3'
 
 const clusterName = 'minikube'
