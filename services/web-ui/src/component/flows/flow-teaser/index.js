@@ -119,8 +119,6 @@ class FlowTeaser extends React.PureComponent {
             classes,
         } = this.props;
 
-        console.log('Graph:', this.props.data.graph);
-
         return (
             <Grid item xs={12}>
                 <Accordion>
@@ -136,7 +134,7 @@ class FlowTeaser extends React.PureComponent {
                             {this.props.data.status
                                 && <Grid item xs={2}><InputLabel>Status:</InputLabel><Typography >{this.getStatus(classes)} {this.props.data.status}</Typography></Grid>}
                             <Grid item xs={4}>
-                                <Button aria-label="next" onClick={() => this.props.history.push('/flows/1')}>
+                                <Button aria-label="next" onClick={() => this.props.history.push(`/flows/${this.props.data.id}`)}>
                                     <LaunchIcon />
                                 </Button>
                                 <Button aria-label="next" onClick={this.editOpen}>

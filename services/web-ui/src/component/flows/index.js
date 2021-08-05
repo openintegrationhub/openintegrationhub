@@ -39,7 +39,6 @@ const useStyles = {
 
 class Flows extends React.Component {
     constructor(props) {
-        console.log('FLows props: ', props);
         super(props);
         props.getFlows();
         this.state = {

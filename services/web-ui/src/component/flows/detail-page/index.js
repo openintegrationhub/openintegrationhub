@@ -1,242 +1,244 @@
-import React, { useState } from 'react';
+
+
+import React from 'react';
+
+import { withRouter } from 'react-router';
+
 import Tree from 'react-d3-tree';
 import clone from 'clone';
-import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import './details.css';
+import flow from 'lodash/flow';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+// import { getConfig } from '../../../conf';
+import {
+    getFlows/* , createFlow, getFlowsPage, switchAddState */,
+} from '../../../action/flows';
 
-// let count = 0;
-const FlowDetails = () => {
-    const { flowID } = useParams();
+// const conf = getConfig();
+let root;
+class FlowDetails extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            flowObject: '',
+            data: '',
+            selectedNode: '',
+            parentOfSelected: '',
+            nodeName: '',
+            nodeId: '',
+            nodeComponentId: '',
+            nodeDescription: '',
+            nodeFunction: '',
+            nodeFields: '',
+        };
+    }
 
-    // const orgChart = { id: 'step_1', name: 'step_1', children: [{ id: 'step_2', name: 'step_2', children: [{ id: 'step_3', name: 'step_3', children: [] }] }] };
-    const orgChart2 = {
-        status: 'inactive',
-        name: 'Flow Template with 1 exemplary flow node',
-        description: 'This is a template for flow creation with an exemplary flow node',
-        graph: {
-            nodes: [
-                {
-                    id: 'step_1',
-                    componentId: '434f4d504f4e454e54204944',
-                    name: 'Flow node name',
-                    function: 'TRIGGER',
-                    description: 'Flow node description',
-                },
-                {
-                    id: 'step_2',
-                    componentId: '5cdaba4d6474a5001a8b2588',
-                    name: 'Code Component',
-                    function: 'execute',
-                    description: 'Exemplary flow node',
-                    fields: {
-                        code: 'function* run() {console.log(\'Calling external URL\');yield request.post({uri: \'http://webhook.site/d5d29c09-79ff-4e97-8137-537c6282a668\', body: msg.body, json: true});}',
-                    },
-                },
-                {
-                    id: 'step_3',
-                    componentId: '434f4d504f4e454e54204944',
-                    name: 'Flow node name 3',
-                    function: 'TRIGGER',
-                    description: 'Flow node description',
-                },
-            ],
-            edges: [
-                {
-                    source: 'step_1',
-                    target: 'step_2',
-                },
-                {
-                    source: 'step_2',
-                    target: 'step_3',
-                },
-            ],
-        },
-        type: 'ordinary',
-        cron: '*/2 * * * *',
-        owners: [
-            {
-                id: '60af6d595fdd471f1c3b9846',
-                type: 'user',
-            },
-        ],
-        createdAt: '2021-07-14T13:26:56.383Z',
-        updatedAt: '2021-07-14T13:26:56.383Z',
-        id: '60eee6202615249590397600',
-    };
 
-    const tree = [];
-    const flow = clone(orgChart2);
-    flow.graph.nodes.forEach((node) => {
-        const matchingEdge = flow.graph.edges.find(edge => edge.target === node.id);
+    async componentDidMount() {
+        try {
+            const result = await axios({
+                method: 'get',
+                url: 'http://localhost:3001/flows',
+                withCredentials: true,
+            });
+            this.setState({ flowObject: result.data.data[0], isLoading: false });
 
-        tree.push({
-            id: node.id,
-            name: node.name,
-            parent: matchingEdge ? matchingEdge.source : null,
-            componentId: node.componentId,
-            description: node.description,
-            function: node.function,
-        });
-    });
+            return result;
+        } catch (err) {
+            console.log(err);
+        }
+        return null;
+    }
 
-    const idMapping = tree.reduce((acc, el, i) => {
-        acc[el.id] = i;
-        return acc;
-    }, {});
-
-    let root;
-    tree.forEach((el) => {
-        if (el.parent === null) {
-            root = el;
+    selectNode = (e, unselect) => {
+        if (unselect) {
+            this.setState({ selectedNode: '' });
             return;
         }
-        // Use our mapping to locate the parent element in our data array
-        const parentEl = tree[idMapping[el.parent]];
-        // Add our current el to its parent's `children` array
-        parentEl.children = [...(parentEl.children || []), el];
-    });
-    // console.log('Tree:', tree);
-    // console.log('Root', root);
-    console.log('flow', flow);
+        const nextData = clone(this.state.data);
 
-    const [data, setData] = useState(root);
-    const [selectedNode, setSelectedNode] = useState('');
-    console.log('data', data);
-    const [parentNode, setParentNode] = useState('');
-    const [nodeName, setNodeName] = useState('');
-    const [nodeId, setNodeId] = useState('');
-    const [nodeComponentId, setNodeComponentId] = useState('');
-    const [nodeDescription, setNodeDescription] = useState('');
-    const [nodeFunction, setNodeFunction] = useState('');
-    const [nodeFields, setNodeFields] = useState('');
+        const selNode = this.searchTree(nextData, e.data.id);
 
-    const getData = () => {
-        const flowData = flow.graph.nodes.find(node => node.id === selectedNode.id);
-        return flowData;
+        this.setState({ selectedNode: selNode });
+        this.setState({ parentOfSelected: e.parent });
     };
 
-    const translate = {
-        x: window.innerWidth / 4,
-        y: 250,
-    };
-
-    function searchTree(element, matchingTitle) {
+    searchTree(element, matchingTitle) {
         if (element.id === matchingTitle) {
             return element;
         } if (element.children != null) {
             let i;
             let result = null;
             for (i = 0; result == null && i < element.children.length; i++) {
-                result = searchTree(element.children[i], matchingTitle);
+                console.log('');
+                result = this.searchTree(element.children[i], matchingTitle);
             }
+
             return result;
         }
         return null;
     }
 
-    const addChildNode = () => {
-        if (selectedNode === '') {
+    handleChange(evt) {
+        const { value } = evt.target;
+        this.setState({
+            [evt.target.name]: value,
+        });
+    }
+
+    addChildNode = () => {
+        if (this.state.selectedNode === '') {
             return;
         }
-        const nextData = clone(data);
-        const selNode = searchTree(nextData, selectedNode.id);
+        const nextData = clone(this.state.data);
+        const selNode = this.searchTree(nextData, this.state.selectedNode.id);
         if (!Object.prototype.hasOwnProperty.call(selNode, 'children')) {
             selNode.children = [];
             const newTarget = selNode.children;
             newTarget.push({
-                name: nodeName,
-                id: nodeId,
-                function: nodeFunction,
-                componentId: nodeComponentId,
-                description: nodeDescription,
-                fields: nodeFields,
+                name: this.state.nodeName,
+                id: this.state.nodeId,
+                function: this.state.nodeFunction,
+                componentId: this.state.nodeComponentId,
+                description: this.state.nodeDescription,
+                fields: this.state.nodeFields,
             });
-            setData(nextData);
-            setNodeName('');
-            setNodeId('');
-            setNodeDescription('');
-            setNodeFunction('');
-            setNodeComponentId('');
-            setNodeFields('');
+            this.setState({
+                data: nextData, nodeName: '', nodeId: '', nodeDescription: '', nodeFunction: '', nodeFields: '', nodeComponentId: '',
+            });
             return;
         }
         const target = selNode.children;
-        // count++;
         target.push({
-            name: nodeName,
-            id: nodeId,
-            function: nodeFunction,
-            componentId: nodeComponentId,
-            description: nodeDescription,
-            fields: nodeFields,
+            name: this.state.nodeName,
+            id: this.state.nodeId,
+            function: this.state.nodeFunction,
+            componentId: this.state.nodeComponentId,
+            description: this.state.nodeDescription,
+            fields: this.state.nodeFields,
         });
-        setData(nextData);
-        setNodeName('');
-        setNodeId('');
-        setNodeDescription('');
-        setNodeFunction('');
-        setNodeComponentId('');
-        setNodeFields('');
+        this.setState({
+            data: nextData, nodeName: '', nodeId: '', nodeDescription: '', nodeFunction: '', nodeFields: '', nodeComponentId: '',
+        });
     };
 
-    const selectNode = (e, unselect) => {
-        if (unselect) {
-            setSelectedNode('');
-            return;
-        }
-
-        const nextData = clone(data);
-        const selNode = searchTree(nextData, e.data.id);
-        setSelectedNode(selNode);
-        setParentNode(e.parent);
-    };
-
-
-    const removeChildNode = () => {
-        const nextData = clone(data);
-        const parent = searchTree(nextData, parentNode.data.id);
+    removeChildNode = () => {
+        const nextData = clone(this.state.data);
+        const parent = this.searchTree(nextData, this.state.parentOfSelected.data.id);
         parent.children.forEach((id) => {
             const itemIndex = parent.children.findIndex(i => i.id === id);
             parent.children.splice(itemIndex, 1);
         });
-        setData(nextData);
-        selectNode('', true);
+        this.setState({ data: nextData });
+        this.selectNode('', true);
     };
 
-    const retransformToJson = (obj) => {
-        console.log('Transform', obj);
+    dataToDisplay = () => {
+        if (!this.state.isLoading) {
+            const content = this.state.flowObject.graph.nodes.find(node => node.id === this.state.selectedNode.id);
+            return content;
+        }
+        return null;
     };
 
-    const flowData = getData();
-    retransformToJson(data);
-    return <div>
-        <h3 style={{ textAlign: 'center' }}>Flow id: {flowID}</h3>
-        <div id="treeWrapper" style={{ width: '100vw', height: '60vh', background: 'silver' }} >
-            <Tree data={data} onNodeClick={e => selectNode(e)} translate={translate} rootNodeClassName="node__root"
-                branchNodeClassName="node__branch"
-                leafNodeClassName="node__leaf"/>
-            <div style={{ padding: '10px' }}>
-                <p >Selected Node: <span>{selectedNode.name}</span></p>
-                <div>{flowData ? <div>
-                    <p>ID: {flowData.id}</p>
-                    <p>Name: {flowData.name}</p>
-                    <p>Function: {flowData.function}</p>
-                    <p>Description: {flowData.description}</p></div> : null}</div>
-                {selectedNode && <div>
-                    <input onChange={e => setNodeId(e.target.value)} placeholder="Node id" value={nodeId}/>
-                    <input onChange={e => setNodeName(e.target.value)} placeholder="Node name" value={nodeName}/>
-                    <input onChange={e => setNodeComponentId(e.target.value)} placeholder="Node componentId" value={nodeComponentId}/>
-                    <input onChange={e => setNodeFunction(e.target.value)} placeholder="Node function" value={nodeFunction}/>
-                    <input onChange={e => setNodeDescription(e.target.value)} placeholder="Node description" value={nodeDescription}/>
-                    <input onChange={e => setNodeFields(e.target.value)} placeholder="Node fields (optional)" value={nodeFields}/>
-                    <button onClick={e => addChildNode(e)} style={{ marginLeft: 10, marginRight: 10 }}
-                        disabled={!nodeId || !nodeName || !nodeComponentId || !nodeDescription || !nodeFunction }>Add Node</button>
-                    <button onClick={e => removeChildNode(e)}>Remove Node</button><br/>
-                    <button style={{ marginTop: '10px' }}>Save</button></div>}
-            </div>
-        </div>
 
-    </div>;
-};
+    render() {
+        const tree = [];
+        const flowClone = clone(this.state.flowObject);
 
-export default FlowDetails;
+        if (flowClone) {
+        /* eslint no-unused-vars: */
+            const flowObj = flowClone.graph.nodes.forEach((node) => {
+                const matchingEdge = flowClone.graph.edges.find(edge => edge.target === node.id);
+
+                tree.push({
+                    id: node.id,
+                    name: node.name,
+                    parent: matchingEdge ? matchingEdge.source : null,
+                    componentId: node.componentId,
+                    description: node.description,
+                    function: node.function,
+                });
+            });
+        }
+
+        const idMapping = tree.reduce((acc, el, i) => {
+            acc[el.id] = i;
+            return acc;
+        }, {});
+
+        tree.forEach((el) => {
+            if (el.parent === null) {
+                root = el;
+                return;
+            }
+            // Use our mapping to locate the parent element in our data array
+            const parentEl = tree[idMapping[el.parent]];
+            // Add our current el to its parent's `children` array
+            parentEl.children = [...(parentEl.children || []), el];
+        });
+
+        const { flowID } = this.props.match.params;
+        const displayData = this.dataToDisplay();
+
+        if (!this.state.data) {
+            this.setState({ data: root });
+        }
+
+        return (
+            <div>
+                {!this.state.isLoading ? <div>
+                    <h3 style={{ textAlign: 'center' }}>Flow id: {flowID}</h3>
+                    <div id="treeWrapper" style={{ width: '100vw', height: '60vh', background: 'silver' }}>
+                        {this.state.data && <Tree data={this.state.data} onNodeClick={e => this.selectNode(e)} translate={{
+                            x: window.innerWidth / 4,
+                            y: 250,
+                        }} rootNodeClassName="node__root"
+                        branchNodeClassName="node__branch"
+                        leafNodeClassName="node__leaf"/>}</div>
+                    <div style={{ padding: '10px' }}>
+                        <p >Selected Node: <span>{this.state.selectedNode.name}</span></p>
+                        <div>{displayData ? <div>
+                            <p>ID: {displayData.id}</p>
+                            <p>Name: {displayData.name}</p>
+                            <p>Function: {displayData.function}</p>
+                            <p>Description: {displayData.description}</p></div> : null}</div>
+                        {this.state.selectedNode && <div>
+                            <input name="nodeId" onChange={e => this.handleChange(e)} value={this.state.nodeId} placeholder="Node ID *"/>
+                            <input name="nodeName" onChange={e => this.handleChange(e)} value={this.state.nodeName} placeholder="Node Name *"/>
+                            <input name="nodeComponentId" onChange={e => this.handleChange(e)} value={this.state.nodeComponentId} placeholder="Node Component ID *"/>
+                            <input name="nodeDescription" onChange={e => this.handleChange(e)} value={this.state.nodeDescription} placeholder="Node Description *"/>
+                            <input name="nodeFunction" onChange={e => this.handleChange(e)} value={this.state.nodeFunction} placeholder="Node Function *"/>
+                            <input name="nodeFields" onChange={e => this.handleChange(e)} value={this.state.nodeFields} placeholder="Node Fields (optional)"/>
+                            <button onClick={e => this.addChildNode(e)} style={{ marginLeft: 10, marginRight: 10 }}
+                                disabled={!this.state.nodeId || !this.state.nodeName || !this.state.nodeComponentId || !this.state.nodeDescription || !this.state.nodeFunction }>Add Node</button>
+                            <button onClick={e => this.removeChildNode(e)}>Remove Node</button><br/>
+                            <button style={{ marginTop: '10px' }} onClick={() => this.saveFlow()}>Save</button>
+                        </div>}
+                    </div>
+                </div> : null}
+
+            </div>);
+    }
+}
+
+const mapStateToProps = state => ({
+    flows: state.flows,
+});
+const mapDispatchToProps = dispatch => bindActionCreators({
+    getFlows,
+    // createFlow,
+    // getFlowsPage,
+    // switchAddState,
+}, dispatch);
+
+export default
+flow(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    ),
+)(withRouter(FlowDetails));
