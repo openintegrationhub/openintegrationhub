@@ -1105,6 +1105,23 @@
           }
         }
       },
+      "MutableRole": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permissions"
+            }
+          },
+          "scope": {
+            "type": "string"
+          }
+        }
+      },
       "UserBody": {
         "title": "User body",
         "type": "object",
