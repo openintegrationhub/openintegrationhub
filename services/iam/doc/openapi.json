@@ -1100,7 +1100,7 @@
               "$ref": "#/components/schemas/Permissions"
             }
           },
-          "scope": {
+          "description": {
             "type": "string"
           }
         }
@@ -1111,14 +1111,17 @@
           "name": {
             "type": "string"
           },
+          "description": {
+            "type": "string"
+          },
           "permissions": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Permissions"
             }
           },
-          "scope": {
-            "type": "string"
+          "isGlobal": {
+            "type":"boolean"
           }
         }
       },
