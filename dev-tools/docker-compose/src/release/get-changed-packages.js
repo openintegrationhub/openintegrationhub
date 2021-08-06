@@ -44,21 +44,22 @@ function getDependentPackages(available = {}, changedLib = '', type = '') {
   return dependent
 }
 
-function bumpMinor(available = {}, pkg = '') {
+function bumpMinor(available = {}, pkg = '', shouldPerformBump = false) {
   const found = available.find((p) => p.name === pkg)
   if (found) {
-    const [major, minor, patch] = found.version
-      .split('.')
-      .map((v) => parseInt(v, 10))
+    const [major, minor] = found.version.split('.').map((v) => parseInt(v, 10))
 
-    console.log(major, minor, patch)
-    const temp = JSON.parse(fs.readFileSync(`${found.path}/package.json`))
-    temp.version = `${major}.${minor + 1}.${0}`
-    fs.writeFileSync(
-      `${found.path}/package.json`,
-      JSON.stringify(temp, null, 2),
-      'utf8'
-    )
+    const newVersion = `${major}.${minor + 1}.${0}`
+
+    console.log(`${found.path}: ${found.version} -> ${newVersion}`)
+    if (shouldPerformBump) {
+      const temp = JSON.parse(fs.readFileSync(`${found.path}/package.json`))
+      temp.version = fs.writeFileSync(
+        `${found.path}/package.json`,
+        JSON.stringify(temp, null, 2),
+        'utf8'
+      )
+    }
   }
 }
 
@@ -66,7 +67,7 @@ checkTools(['git'])
 
 async function run() {
   const tag = process.argv[2]
-  const shouldBump = !!(process.argv[3] && process.argv[3] === 'bump')
+  const shouldPerformBump = !!(process.argv[3] && process.argv[3] === 'bump')
 
   const available = {
     services: getAvailablePackages('services'),
@@ -128,10 +129,10 @@ async function run() {
   console.log('lib', total.lib.length, total.lib)
   console.log('services', total.services.length, total.services)
 
-  if (shouldBump) {
-    total.lib.forEach((lib) => bumpMinor(available.lib, lib))
-    total.services.forEach((service) => bumpMinor(available.services, service))
-  }
+  total.lib.forEach((lib) => bumpMinor(available.lib, lib, shouldPerformBump))
+  total.services.forEach((service) =>
+    bumpMinor(available.services, service, shouldPerformBump)
+  )
 }
 
 ;(async () => {
