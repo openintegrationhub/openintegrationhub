@@ -47,7 +47,7 @@ function bumpMinor(available = {}, pkg = '', shouldPerformBump = false) {
     const newVersion = `${major}.${minor + 1}.${0}`
 
     console.log(
-      `${found.path.match(/(service|lib).+/)}: ${
+      `${found.path.match(/(service|lib).+/)[0]}: ${
         found.version
       } -> ${newVersion}`
     )
