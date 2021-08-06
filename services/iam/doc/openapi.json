@@ -1091,6 +1091,9 @@
       "Role": {
         "type": "object",
         "properties": {
+          "id": {
+            "type":"string"
+          },
           "name": {
             "type": "string"
           },
@@ -1102,6 +1105,13 @@
           },
           "scope": {
             "type": "string"
+          },
+          "isCreated":{
+            "type": "string"
+          },
+          "isUpdated":{
+            "type": "string"
+
           }
         }
       },
