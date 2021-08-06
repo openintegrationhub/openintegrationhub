@@ -45,7 +45,7 @@
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "@openintegrationhub/event-bus": "1.2.5",
+    "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/iam-utils": "*",
     "@wice-devs/cfm": "1.0.8",
     "backend-commons-lib": "1.1.3",
