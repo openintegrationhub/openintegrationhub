@@ -54,7 +54,9 @@ function bumpMinor(available = {}, pkg = '', shouldPerformBump = false) {
     console.log(`${found.path}: ${found.version} -> ${newVersion}`)
     if (shouldPerformBump) {
       const temp = JSON.parse(fs.readFileSync(`${found.path}/package.json`))
-      temp.version = fs.writeFileSync(
+      temp.version = newVersion
+
+      fs.writeFileSync(
         `${found.path}/package.json`,
         JSON.stringify(temp, null, 2),
         'utf8'
