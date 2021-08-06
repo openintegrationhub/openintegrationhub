@@ -1106,10 +1106,10 @@
           "scope": {
             "type": "string"
           },
-          "isCreated":{
+          "createdAt":{
             "type": "string"
           },
-          "isUpdated":{
+          "updatedAt":{
             "type": "string"
 
           }
