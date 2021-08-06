@@ -25,17 +25,12 @@ function getAvailablePackages(type = 'services') {
 function getDependentPackages(available = {}, changedLib = '', type = '') {
   const dependent = []
   available[type].forEach((availablePkg) => {
-    if (available[type] === 'lib' && availablePkg.name === changedLib) return
     const match = new RegExp(changedLib, 'i')
 
-    for (const dep of Object.keys(availablePkg.dependencies)) {
+    for (const dep of Object.keys(availablePkg.devDependencies).concat(
+      Object.keys(availablePkg.dependencies)
+    )) {
       if (match.test(dep)) {
-        dependent.push(availablePkg.name)
-        return
-      }
-    }
-    for (const devDep of Object.keys(availablePkg.devDependencies)) {
-      if (match.test(devDep)) {
         dependent.push(availablePkg.name)
         return
       }
@@ -51,7 +46,11 @@ function bumpMinor(available = {}, pkg = '', shouldPerformBump = false) {
 
     const newVersion = `${major}.${minor + 1}.${0}`
 
-    console.log(`${found.path}: ${found.version} -> ${newVersion}`)
+    console.log(
+      `${found.path.match(/(service|lib).+/)}: ${
+        found.version
+      } -> ${newVersion}`
+    )
     if (shouldPerformBump) {
       const temp = JSON.parse(fs.readFileSync(`${found.path}/package.json`))
       temp.version = newVersion
