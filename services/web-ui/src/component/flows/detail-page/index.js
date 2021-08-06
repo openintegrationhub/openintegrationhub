@@ -1,9 +1,8 @@
 
 
 import React from 'react';
-
+import _ from 'lodash';
 import { withRouter } from 'react-router';
-
 import Tree from 'react-d3-tree';
 import clone from 'clone';
 import axios from 'axios';
@@ -18,6 +17,8 @@ import {
 
 // const conf = getConfig();
 let root;
+const edgeArray = [];
+const nodeArray = [];
 class FlowDetails extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -25,6 +26,7 @@ class FlowDetails extends React.PureComponent {
             isLoading: true,
             flowObject: '',
             data: '',
+            edges: '',
             selectedNode: '',
             parentOfSelected: '',
             nodeName: '',
@@ -35,7 +37,6 @@ class FlowDetails extends React.PureComponent {
             nodeFields: '',
         };
     }
-
 
     async componentDidMount() {
         try {
@@ -62,9 +63,7 @@ class FlowDetails extends React.PureComponent {
             return;
         }
         const nextData = clone(this.state.data);
-
         const selNode = this.searchTree(nextData, e.data.id);
-
         this.setState({ selectedNode: selNode });
         this.setState({ parentOfSelected: e.parent });
     };
@@ -107,6 +106,7 @@ class FlowDetails extends React.PureComponent {
                 componentId: this.state.nodeComponentId,
                 description: this.state.nodeDescription,
                 fields: this.state.nodeFields,
+                children: [],
             });
             this.setState({
                 data: nextData, nodeName: '', nodeId: '', nodeDescription: '', nodeFunction: '', nodeFields: '', nodeComponentId: '',
@@ -121,6 +121,7 @@ class FlowDetails extends React.PureComponent {
             componentId: this.state.nodeComponentId,
             description: this.state.nodeDescription,
             fields: this.state.nodeFields,
+            children: [],
         });
         this.setState({
             data: nextData, nodeName: '', nodeId: '', nodeDescription: '', nodeFunction: '', nodeFields: '', nodeComponentId: '',
@@ -162,6 +163,7 @@ class FlowDetails extends React.PureComponent {
                     componentId: node.componentId,
                     description: node.description,
                     function: node.function,
+                    children: [],
                 });
             });
         }
@@ -185,10 +187,53 @@ class FlowDetails extends React.PureComponent {
         this.setState({ data: root });
     }
 
+    setupEdges = (dataObj) => {
+        if (dataObj.children && dataObj.children.length) {
+            for (const child of dataObj.children) {
+                edgeArray.push({ source: dataObj.id, target: child.id });
+                this.setupEdges(child);
+            }
+        }
+        return edgeArray;
+    }
+
+    setupNodes = (dataObj) => {
+        if (dataObj.children) {
+            for (const child of dataObj.children) {
+                nodeArray.push({
+                    id: dataObj.id, name: dataObj.name, componentId: dataObj.componentId, function: dataObj.function, description: dataObj.description,
+                });
+                this.setupNodes(child);
+            }
+        }
+        if (dataObj.children && dataObj.children.length === 0) {
+            nodeArray.push({
+                id: dataObj.id, name: dataObj.name, componentId: dataObj.componentId, function: dataObj.function, description: dataObj.description,
+            });
+        }
+
+        return nodeArray;
+    }
+
+    handleSave = (edges, nodes) => {
+        console.log('Input', edges, nodes);
+
+
+        // const filt = this.state.data.children.
+    }
+
 
     render() {
         const { flowID } = this.props.match.params;
         const displayData = this.dataToDisplay();
+        if (this.state.data) {
+            const prepareEdges = this.setupEdges(this.state.data);
+            const edges = _.uniqWith(prepareEdges, _.isEqual);
+            const prepareNodes = this.setupNodes(this.state.data);
+            const nodes = _.uniqWith(prepareNodes, _.isEqual);
+            this.handleSave(edges, nodes);
+        }
+        console.log('data', this.state.data);
         return (
             <div>
                 {!this.state.isLoading ? <div>
