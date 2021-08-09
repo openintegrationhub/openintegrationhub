@@ -1,5 +1,6 @@
 import { RouterContext } from 'koa-router';
 import mongoose from 'mongoose';
+import { isAdmin } from '@openintegrationhub/iam-utils'
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
@@ -10,11 +11,12 @@ interface IGteQuery {
 }
 
 interface IGetManyCondition {
-    'owners.id': string;
+    'owners.id'?: string;
     domainId?: string;
     schemaUri?: string;
     createdAt?: IGteQuery;
     updatedAt?: IGteQuery;
+    tenant?: IGteQuery;
 }
 
 export default class DataController {
@@ -24,12 +26,21 @@ export default class DataController {
             created_since: createdSince,
             updated_since: updatedSince,
             domain_id: domainId,
-            schema_uri: schemaUri
+            schema_uri: schemaUri,
+            tenant: tenant
         } = ctx.query;
 
-        const condition: IGetManyCondition = {
-            'owners.id': user.sub
-        };
+        let condition: IGetManyCondition = {};
+
+        if (!isAdmin(user)) {
+            condition["owners.id"] = user.sub
+        }
+
+        if (isAdmin(user)) {
+            if (tenant) {
+                condition.tenant = tenant
+            }
+        }
 
         if (createdSince) {
             condition.createdAt = {
@@ -213,6 +224,7 @@ export default class DataController {
 
             createPromises.push(DataObject.create({
                 ...record,
+                tenant: user.tenant,
                 owners,
             }))
 

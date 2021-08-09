@@ -105,6 +105,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "tenant",
+            "description": "Used to retrieve data records that have specific Tenant ID. This requires ADMIN permissions",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -309,6 +317,10 @@
           },
           "content": {
             "type": "object"
+          },
+          "tenant": {
+            "type": "string",
+            "description": "Tenant  ID"
           },
           "refs": {
             "type": "array",
