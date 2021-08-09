@@ -1111,7 +1111,12 @@
           },
           "updatedAt":{
             "type": "string"
-
+          },
+          "isGlobal": {
+            "type":"boolean"
+          },
+          "description": {
+            "type": "string"
           }
         }
       },
