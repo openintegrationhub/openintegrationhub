@@ -24,9 +24,11 @@ class FlowDetails extends React.PureComponent {
         super(props);
         this.state = {
             isLoading: true,
+            treeChanged: false,
             flowObject: '',
             data: '',
             edges: '',
+            nodes: '',
             selectedNode: '',
             parentOfSelected: '',
             nodeName: '',
@@ -35,6 +37,7 @@ class FlowDetails extends React.PureComponent {
             nodeDescription: '',
             nodeFunction: '',
             nodeFields: '',
+            nodeSettings: '',
         };
     }
 
@@ -45,6 +48,7 @@ class FlowDetails extends React.PureComponent {
                 url: 'http://localhost:3001/flows',
                 withCredentials: true,
             });
+            console.log('Mountrd');
             this.setState({ flowObject: result.data.data[0], isLoading: false });
 
             if (!this.state.data) {
@@ -54,7 +58,19 @@ class FlowDetails extends React.PureComponent {
         } catch (err) {
             console.log(err);
         }
+        console.log('Ting');
         return null;
+    }
+
+    componentDidUpdate() {
+        console.log('Edges', this.state.edges);
+        const prepareEdges = this.setupEdges(this.state.data);
+        const edges = _.uniqWith(prepareEdges, _.isEqual);
+        const prepareNodes = this.setupNodes(this.state.data);
+        const nodes = _.uniqWith(prepareNodes, _.isEqual);
+        if (this.state.treeChanged) {
+            this.handleTreeChanges(edges, nodes);
+        }
     }
 
     selectNode = (e, unselect) => {
@@ -107,6 +123,7 @@ class FlowDetails extends React.PureComponent {
                 description: this.state.nodeDescription,
                 fields: this.state.nodeFields,
                 children: [],
+                nodeSettings: this.state.nodeSettings,
             });
             this.setState({
                 data: nextData, nodeName: '', nodeId: '', nodeDescription: '', nodeFunction: '', nodeFields: '', nodeComponentId: '',
@@ -121,11 +138,13 @@ class FlowDetails extends React.PureComponent {
             componentId: this.state.nodeComponentId,
             description: this.state.nodeDescription,
             fields: this.state.nodeFields,
+            nodeSettings: this.state.nodeSettings,
             children: [],
         });
         this.setState({
             data: nextData, nodeName: '', nodeId: '', nodeDescription: '', nodeFunction: '', nodeFields: '', nodeComponentId: '',
         });
+        this.setState({ treeChanged: true });
     };
 
     removeChildNode = () => {
@@ -201,24 +220,43 @@ class FlowDetails extends React.PureComponent {
         if (dataObj.children) {
             for (const child of dataObj.children) {
                 nodeArray.push({
-                    id: dataObj.id, name: dataObj.name, componentId: dataObj.componentId, function: dataObj.function, description: dataObj.description,
+                    id: dataObj.id, name: dataObj.name, componentId: dataObj.componentId, function: dataObj.function, description: dataObj.description, fields: dataObj.fields, nodeSettings: dataObj.nodeSettings,
                 });
                 this.setupNodes(child);
             }
         }
         if (dataObj.children && dataObj.children.length === 0) {
             nodeArray.push({
-                id: dataObj.id, name: dataObj.name, componentId: dataObj.componentId, function: dataObj.function, description: dataObj.description,
+                id: dataObj.id, name: dataObj.name, componentId: dataObj.componentId, function: dataObj.function, description: dataObj.description, fields: dataObj.fields, nodeSettings: dataObj.nodeSettings,
             });
         }
 
         return nodeArray;
     }
 
-    handleSave = (edges, nodes) => {
+
+    handleTreeChanges(edges, nodes) {
+        this.setState({ edges, nodes, treeChanged: false });
+    }
+
+    handleSave = async (edges, nodes) => {
+        const { flowID } = this.props.match.params;
+        console.log('save flowID', flowID);
         console.log('Input', edges, nodes);
-
-
+        const saveObj = clone(this.state.flowObject);
+        saveObj.graph.edges = this.state.edges;
+        saveObj.graph.nodes = this.state.nodes;
+        console.log('SaveObj', saveObj);
+        try {
+            const result = await axios({
+                method: 'post',
+                url: `http://localhost:3001/flows/${flowID}`,
+                withCredentials: true,
+            });
+        } catch (err) {
+            console.log(err);
+        }
+        return null;
         // const filt = this.state.data.children.
     }
 
@@ -226,13 +264,14 @@ class FlowDetails extends React.PureComponent {
     render() {
         const { flowID } = this.props.match.params;
         const displayData = this.dataToDisplay();
-        if (this.state.data) {
-            const prepareEdges = this.setupEdges(this.state.data);
-            const edges = _.uniqWith(prepareEdges, _.isEqual);
-            const prepareNodes = this.setupNodes(this.state.data);
-            const nodes = _.uniqWith(prepareNodes, _.isEqual);
-            this.handleSave(edges, nodes);
-        }
+        console.log('flow', this.state.flowObject);
+        // if (this.state.data) {
+        //     const prepareEdges = this.setupEdges(this.state.data);
+        //     const edges = _.uniqWith(prepareEdges, _.isEqual);
+        //     const prepareNodes = this.setupNodes(this.state.data);
+        //     const nodes = _.uniqWith(prepareNodes, _.isEqual);
+        //     this.handleSave(edges, nodes);
+        // }
         console.log('data', this.state.data);
         return (
             <div>
@@ -259,10 +298,11 @@ class FlowDetails extends React.PureComponent {
                             <input name="nodeDescription" onChange={e => this.handleChange(e)} value={this.state.nodeDescription} placeholder="Node Description *"/>
                             <input name="nodeFunction" onChange={e => this.handleChange(e)} value={this.state.nodeFunction} placeholder="Node Function *"/>
                             <input name="nodeFields" onChange={e => this.handleChange(e)} value={this.state.nodeFields} placeholder="Node Fields (optional)"/>
+                            <input name="nodeSettings" onChange={e => this.handleChange(e)} value={this.state.nodeSettings} placeholder="Node Settings (optional)"/>
                             <button onClick={e => this.addChildNode(e)} style={{ marginLeft: 10, marginRight: 10 }}
                                 disabled={!this.state.nodeId || !this.state.nodeName || !this.state.nodeComponentId || !this.state.nodeDescription || !this.state.nodeFunction }>Add Node</button>
                             <button onClick={e => this.removeChildNode(e)}>Remove Node</button><br/>
-                            <button style={{ marginTop: '10px' }} onClick={() => this.saveFlow()}>Save</button>
+                            <button style={{ marginTop: '10px' }} onClick={() => this.handleSave()}>Save</button>
                         </div>}
                     </div>
                 </div> : null}
