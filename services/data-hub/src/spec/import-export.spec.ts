@@ -18,11 +18,17 @@ function nockIamIntrospection(user = {}) {
 const PERSONS_SET_LENGTH = 100
 
 const user1 = { sub: 'user1', role: 'USER', permissions: [], tenant: "tenant1" }
-const user2 = { sub: 'user2', role: 'USER', permissions: [], tenant: "tenant2" }
-const user3 = { sub: 'user3', role: 'USER', permissions: [], tenant: "tenant3" }
-const admin = { sub: 'admin', role: 'ADMIN', permissions: ["all"], tenant: "tenant3" }
 
-describe('Data Import Route', () => {
+const admin2 = { sub: 'admin2', role: 'ADMIN', permissions: ["all"], tenant: "tenant2" }
+const tenantAdmin2 = { sub: 'tenant-admin2', role: 'TENANT_ADMIN', permissions: ["tenant.all"], tenant: "tenant2" }
+const user2 = { sub: 'user2', role: 'USER', permissions: [], tenant: "tenant2" }
+
+const admin = { sub: 'admin', role: 'ADMIN', permissions: ["all"], tenant: "tenant3" }
+const tenantAdmin = { sub: 'tenant-admin', role: 'TENANT_ADMIN', permissions: ["tenant.all"], tenant: "tenant3" }
+const user3 = { sub: 'user3', role: 'USER', permissions: [], tenant: "tenant3" }
+
+
+describe('Mass Data Handling', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
@@ -392,6 +398,56 @@ describe('Data Import Route', () => {
             body.data.forEach((dataObject) => {
                 expect(dataObject.tenant).to.equal("tenant2")
             })
+        });
+    });
+
+    describe('Get record status with GET /data/status', () => {
+
+        it('should send a record status if requester is admin or tenant admin', async function () {
+
+            nockIamIntrospection(admin);
+
+            let body = (await this.request
+                .get('/data/status')
+                .set('Authorization', this.auth)
+                .expect(200)).body
+
+            expect(body.data.totalRecords).to.equal(0 * PERSONS_SET_LENGTH);
+
+            nockIamIntrospection(tenantAdmin);
+
+            body = (await this.request
+                .get('/data/status')
+                .set('Authorization', this.auth)
+                .expect(200)).body
+
+            expect(body.data.totalRecords).to.equal(0 * PERSONS_SET_LENGTH);
+
+            nockIamIntrospection(user1);
+
+            body = (await this.request
+                .get('/data/status')
+                .set('Authorization', this.auth)
+                .expect(401)).body
+            
+            nockIamIntrospection(admin2);
+
+            body = (await this.request
+                .get('/data/status')
+                .set('Authorization', this.auth)
+                .expect(200)).body
+    
+            expect(body.data.totalRecords).to.equal(1 * PERSONS_SET_LENGTH);
+
+            nockIamIntrospection(tenantAdmin2);
+
+            body = (await this.request
+                .get('/data/status')
+                .set('Authorization', this.auth)
+                .expect(200)).body
+    
+            expect(body.data.totalRecords).to.equal(1 * PERSONS_SET_LENGTH);
+
         });
     });
 });

@@ -1,6 +1,6 @@
 import { RouterContext } from 'koa-router';
 import mongoose from 'mongoose';
-import { isAdmin } from '@openintegrationhub/iam-utils'
+import { isAdmin, isTenantAdmin } from '@openintegrationhub/iam-utils'
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
@@ -20,6 +20,29 @@ interface IGetManyCondition {
 }
 
 export default class DataController {
+
+    public async getRecordCount(ctx: RouterContext): Promise<void> {
+        const { user } = ctx.state;
+
+        let condition: IGetManyCondition = {};
+
+        if (isAdmin(user) || isTenantAdmin(user)) {
+            condition.tenant = user.tenant
+        } else {
+            throw new Unauthorized();
+        }
+
+        const total = await DataObject.countDocuments(condition)
+
+        ctx.status = 200;
+
+        ctx.body = {
+            data: {
+                totalRecords: total
+            }
+        };
+    }
+
     public async getMany(ctx: RouterContext): Promise<void> {
         const { paging, user } = ctx.state;
         const {
