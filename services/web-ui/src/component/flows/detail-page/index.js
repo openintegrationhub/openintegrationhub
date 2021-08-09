@@ -52,7 +52,6 @@ class FlowDetails extends React.PureComponent {
                 url: 'http://localhost:3001/flows',
                 withCredentials: true,
             });
-            console.log('Mountrd');
             this.setState({ flowObject: result.data.data[0], isLoading: false });
 
             if (!this.state.data) {
@@ -62,12 +61,10 @@ class FlowDetails extends React.PureComponent {
         } catch (err) {
             console.log(err);
         }
-        console.log('Ting');
         return null;
     }
 
     componentDidUpdate() {
-        console.log('Edges', this.state.edges);
         const prepareEdges = this.setupEdges(this.state.data);
         const edges = _.uniqWith(prepareEdges, _.isEqual);
         const prepareNodes = this.setupNodes(this.state.data);
@@ -245,23 +242,20 @@ class FlowDetails extends React.PureComponent {
 
     handleSave = async (edges, nodes) => {
         const { flowID } = this.props.match.params;
-        console.log('save flowID', flowID);
-        console.log('Input', edges, nodes);
         const saveObj = clone(this.state.flowObject);
         saveObj.graph.edges = this.state.edges;
         saveObj.graph.nodes = this.state.nodes;
-        console.log('SaveObj', saveObj);
         try {
             const result = await axios({
                 method: 'post',
                 url: `http://localhost:3001/flows/${flowID}`,
+                saveObj,
                 withCredentials: true,
             });
         } catch (err) {
             console.log(err);
         }
         return null;
-        // const filt = this.state.data.children.
     }
 
 
@@ -269,16 +263,6 @@ class FlowDetails extends React.PureComponent {
         const { flowID } = this.props.match.params;
         const displayData = this.dataToDisplay();
 
-        console.log('flow', this.state.flowObject);
-        // if (this.state.data) {
-        //     const prepareEdges = this.setupEdges(this.state.data);
-        //     const edges = _.uniqWith(prepareEdges, _.isEqual);
-        //     const prepareNodes = this.setupNodes(this.state.data);
-        //     const nodes = _.uniqWith(prepareNodes, _.isEqual);
-        //     this.handleSave(edges, nodes);
-        // }
-        console.log('data', this.state.data);
-        console.log('PROPS', this.props);
         return (
             <div>
                 <Translation>
