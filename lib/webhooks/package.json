@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/webhooks",
   "description": "webhooks",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"
@@ -15,7 +15,7 @@
     "body-parser": "1.15.2",
     "bunyan": "1.8.12",
     "cors": "^2.8.5",
-    "elasticio-node": "0.0.7",
+    "elasticio-node": "0.0.9",
     "express": "4.16.2",
     "express-async-handler": "1.1.4",
     "express-xml-bodyparser": "0.3.0",
@@ -23,8 +23,8 @@
     "mime-types": "2.1.13",
     "multiparty": "4.1.2",
     "on-finished": "2.3.0",
-    "qs": "6.3.0",
-    "request": "2.74.0",
+    "qs": "6.10.1",
+    "request": "2.88.2",
     "request-promise": "3.0.0",
     "request-promise-native": "1.0.5",
     "type-is": "1.6.14",
