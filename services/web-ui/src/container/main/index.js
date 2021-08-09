@@ -43,6 +43,7 @@ import MetaData from '../../component/metadata';
 import Secrets from '../../component/secrets';
 import Roles from '../../component/roles';
 import Profile from '../../component/profile';
+import DataHub from '../../component/data-hub';
 
 const drawerWidth = 240;
 
@@ -349,6 +350,7 @@ class Main extends React.Component {
                           <Route exact path="/metadata" component={MetaData} />
                           <Route exact path="/secrets" component={Secrets} />
                           <Route exact path="/profile" component={Profile} />
+                          <Route exact path="/datahub" component={DataHub} />
                       </Switch>
                   </main>
               </Grid>
