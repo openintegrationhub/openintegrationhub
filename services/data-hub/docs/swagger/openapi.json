@@ -284,6 +284,32 @@
           }
         }
       }
+    },
+    "/data/status": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get status of data records by tenant.",
+        "description": "Get status of data records by tenant. Requires admin or tenant admin permissions.",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StatusData"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -398,6 +424,14 @@
             "$ref": "#/components/schemas/Record"
           }
         ]
+      },
+      "StatusData": {
+        "type": "object",
+        "properties": {
+          "totalRecords": {
+            "type": "integer"
+          }
+        }
       },
       "Meta": {
         "type": "object",
