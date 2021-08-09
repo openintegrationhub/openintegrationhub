@@ -1,3 +1,9 @@
 {
-  "hello": "Hallo"
+  "hello": "Hallo",
+  "flows.selected.node": "Ausgewählter Knoten:",
+  "flows.add.node": "Knoten hinzufügen",
+  "flows.remove.node": "Knoten entfernen",
+  "flows.save": "Speichern",
+  "flows.function": "Funktion",
+  "flows.description": "Beschreibung"
 }

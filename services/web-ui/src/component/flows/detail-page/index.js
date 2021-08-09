@@ -1,6 +1,9 @@
 
 
 import React from 'react';
+// import { useTranslation } from 'react-i18next';
+// import { withTranslation } from 'react-i18next';
+import { Translation } from 'react-i18next';
 import _ from 'lodash';
 import { withRouter } from 'react-router';
 import Tree from 'react-d3-tree';
@@ -19,6 +22,7 @@ import {
 let root;
 const edgeArray = [];
 const nodeArray = [];
+
 class FlowDetails extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -264,6 +268,7 @@ class FlowDetails extends React.PureComponent {
     render() {
         const { flowID } = this.props.match.params;
         const displayData = this.dataToDisplay();
+
         console.log('flow', this.state.flowObject);
         // if (this.state.data) {
         //     const prepareEdges = this.setupEdges(this.state.data);
@@ -273,40 +278,46 @@ class FlowDetails extends React.PureComponent {
         //     this.handleSave(edges, nodes);
         // }
         console.log('data', this.state.data);
+        console.log('PROPS', this.props);
         return (
             <div>
-                {!this.state.isLoading ? <div>
-                    <h3 style={{ textAlign: 'center' }}>Flow id: {flowID}</h3>
-                    <div id="treeWrapper" style={{ width: '100vw', height: '60vh', background: 'silver' }}>
-                        {this.state.data && <Tree data={this.state.data} onNodeClick={e => this.selectNode(e)} translate={{
-                            x: window.innerWidth / 4,
-                            y: 250,
-                        }} rootNodeClassName="node__root"
-                        branchNodeClassName="node__branch"
-                        leafNodeClassName="node__leaf"/>}</div>
-                    <div style={{ padding: '10px' }}>
-                        <p >Selected Node: <span>{this.state.selectedNode.name}</span></p>
-                        <div>{displayData ? <div>
-                            <p>ID: {displayData.id}</p>
-                            <p>Name: {displayData.name}</p>
-                            <p>Function: {displayData.function}</p>
-                            <p>Description: {displayData.description}</p></div> : null}</div>
-                        {this.state.selectedNode && <div>
-                            <input name="nodeId" onChange={e => this.handleChange(e)} value={this.state.nodeId} placeholder="Node ID *"/>
-                            <input name="nodeName" onChange={e => this.handleChange(e)} value={this.state.nodeName} placeholder="Node Name *"/>
-                            <input name="nodeComponentId" onChange={e => this.handleChange(e)} value={this.state.nodeComponentId} placeholder="Node Component ID *"/>
-                            <input name="nodeDescription" onChange={e => this.handleChange(e)} value={this.state.nodeDescription} placeholder="Node Description *"/>
-                            <input name="nodeFunction" onChange={e => this.handleChange(e)} value={this.state.nodeFunction} placeholder="Node Function *"/>
-                            <input name="nodeFields" onChange={e => this.handleChange(e)} value={this.state.nodeFields} placeholder="Node Fields (optional)"/>
-                            <input name="nodeSettings" onChange={e => this.handleChange(e)} value={this.state.nodeSettings} placeholder="Node Settings (optional)"/>
-                            <button onClick={e => this.addChildNode(e)} style={{ marginLeft: 10, marginRight: 10 }}
-                                disabled={!this.state.nodeId || !this.state.nodeName || !this.state.nodeComponentId || !this.state.nodeDescription || !this.state.nodeFunction }>Add Node</button>
-                            <button onClick={e => this.removeChildNode(e)}>Remove Node</button><br/>
-                            <button style={{ marginTop: '10px' }} onClick={() => this.handleSave()}>Save</button>
-                        </div>}
-                    </div>
-                </div> : null}
-
+                <Translation>
+                    {t => (
+                        <div className="header">
+                            {!this.state.isLoading ? <div>
+                                <h3 style={{ textAlign: 'center' }}>Flow id: {flowID}</h3>
+                                <div id="treeWrapper" style={{ width: '100vw', height: '60vh', background: 'silver' }}>
+                                    {this.state.data && <Tree data={this.state.data} onNodeClick={e => this.selectNode(e)} translate={{
+                                        x: window.innerWidth / 4,
+                                        y: 250,
+                                    }} rootNodeClassName="node__root"
+                                    branchNodeClassName="node__branch"
+                                    leafNodeClassName="node__leaf"/>}</div>
+                                <div style={{ padding: '10px' }}>
+                                    <p >{t('flows.selected.node')}: <span>{this.state.selectedNode.name}</span></p>
+                                    <div>{displayData ? <div>
+                                        <p>ID: {displayData.id}</p>
+                                        <p>Name: {displayData.name}</p>
+                                        <p>{t('flows.function')}: {displayData.function}</p>
+                                        <p>{t('flows.description')}: {displayData.description}</p></div> : null}</div>
+                                    {this.state.selectedNode && <div>
+                                        <input name="nodeId" onChange={e => this.handleChange(e)} value={this.state.nodeId} placeholder="Node ID *"/>
+                                        <input name="nodeName" onChange={e => this.handleChange(e)} value={this.state.nodeName} placeholder="Node Name *"/>
+                                        <input name="nodeComponentId" onChange={e => this.handleChange(e)} value={this.state.nodeComponentId} placeholder="Node Component ID *"/>
+                                        <input name="nodeDescription" onChange={e => this.handleChange(e)} value={this.state.nodeDescription} placeholder="Node Description *"/>
+                                        <input name="nodeFunction" onChange={e => this.handleChange(e)} value={this.state.nodeFunction} placeholder="Node Function *"/>
+                                        <input name="nodeFields" onChange={e => this.handleChange(e)} value={this.state.nodeFields} placeholder="Node Fields (optional)"/>
+                                        <input name="nodeSettings" onChange={e => this.handleChange(e)} value={this.state.nodeSettings} placeholder="Node Settings (optional)"/>
+                                        <button onClick={e => this.addChildNode(e)} style={{ marginLeft: 10, marginRight: 10 }}
+                                            disabled={!this.state.nodeId || !this.state.nodeName || !this.state.nodeComponentId || !this.state.nodeDescription || !this.state.nodeFunction }>{t('flows.add.node')}</button>
+                                        <button onClick={e => this.removeChildNode(e)}>{t('flows.remove.node')}</button><br/>
+                                        <button style={{ marginTop: '10px' }} onClick={() => this.handleSave()}>{t('flows.save')}</button>
+                                    </div>}
+                                </div>
+                            </div> : null}
+                        </div>
+                    )}
+                </Translation>
             </div>);
     }
 }

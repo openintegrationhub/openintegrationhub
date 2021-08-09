@@ -1,3 +1,9 @@
 {
-  "hello": "Hello"
+  "hello": "Hello",
+  "flows.selected.node": "Selected node",
+  "flows.add.node": "Add node",
+  "flows.remove.node": "Remove node",
+  "flows.save": "Save",
+  "flows.function": "Function",
+  "flows.description": "Description"
 }

@@ -218,7 +218,8 @@ const Main = (props) => {
     };
 
     const { classes, theme } = props;
-    const { t, i18n } = useTranslation();
+    const { i18n } = useTranslation();
+    console.log('i18n', i18n.language);
     return (
         <Grid container className={classes.root}>
             <CssBaseline />
@@ -288,10 +289,11 @@ const Main = (props) => {
                             </Grid>
                             <Grid container item xs={5} justify='flex-end' wrap='nowrap'>
                                 <Grid item style={{ marginTop: '10px' }}>
-                                    <span style={{ marginRight: '5px' }}>{t('hello')}</span>
-                                    <span style={{ marginRight: '20px' }}>{props.auth.username}</span>
-                                    <span style={{ marginRight: '5px' }} onClick={() => i18n.changeLanguage('en-US')}>EN</span>
-                                    <span style={{ marginRight: '5px' }} onClick={() => i18n.changeLanguage('de-DE')}>DE</span>
+                                    {/* <span style={{ marginRight: '5px' }}>{t('hello')}</span>
+                                    <span style={{ marginRight: '20px' }}>{props.auth.username}</span> */}
+                                    {/* {i18n.language} */}
+                                    {i18n.language === 'en-US' ? <span style={{ marginRight: '5px' }} onClick={() => i18n.changeLanguage('de-DE')}>EN</span> : <span style={{ marginRight: '5px' }} onClick={() => i18n.changeLanguage('en-US')}>DE</span>}
+
 
                                 </Grid>
                                 <Grid item>
