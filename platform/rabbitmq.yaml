@@ -41,7 +41,10 @@ spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       containers:
-      - name: rabbitmq
+      - env:
+        - name: RABBITMQ_NODENAME
+          value: rabbitmq@rabbitmq-service
+        name: rabbitmq
         image: "rabbitmq:management"
         envFrom: []
         livenessProbe:
@@ -49,9 +52,17 @@ spec:
             port: 5672
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/rabbitmq/mnesia
+          name: rabbitvolume
         imagePullPolicy: Always
         securityContext:
           privileged: false
+      hostname: rabbitmq-service
+      volumes:
+      - name: rabbitvolume
+        persistentVolumeClaim:
+          claimName: rabbitmq-pvc
   strategy:
     type: RollingUpdate
     rollingUpdate:
