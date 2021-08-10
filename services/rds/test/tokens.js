@@ -73,6 +73,7 @@ module.exports = {
       firstname: 'Userxx',
       lastname: 'Useryy',
       role: 'USER',
+      permissions: [iamLib.PERMISSIONS.common['rds.rawRecord.read']],
       tenant: t2,
       iat: 1337,
     },

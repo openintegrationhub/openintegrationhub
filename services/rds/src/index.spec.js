@@ -1,4 +1,5 @@
 const supertest = require('supertest')
+const { v4 } = require('uuid')
 const config = require('./config')
 const iamMock = require('../test/mock/iam')
 const EventBusMock = require('../test/mock/EventBus')
@@ -6,7 +7,7 @@ const TransportMock = require('../test/mock/Transport')
 const { EVENT } = require('./constant')
 const Server = require('./server')
 
-const { userToken2 } = require('../test/tokens')
+const { userToken3, userToken2 } = require('../test/tokens')
 
 let port
 let server
@@ -181,6 +182,53 @@ describe('RDS', () => {
         .get('/raw-record/with-owner')
         .set(...global.adminAuth1)
         .expect(404)
+
+      const result = (
+        await request
+          .get('/raw-record')
+          .set(...global.userAuth2)
+          .expect(200)
+      ).body
+
+      expect(result.data.length).toEqual(result.meta.total)
+    })
+
+    test('Mass data', async () => {
+      const TOTAL = 200
+      // add records for user2
+      for (let i = 0; i < TOTAL; i++) {
+        await server.eventBus.trigger(EVENT.RAW_RECORD_CREATED, {
+          ack: jest.fn(),
+          nack: jest.fn(),
+          payload: {
+            rawRecordId: v4(),
+            payload: JSON.stringify({
+              foo: 'bar',
+              counter: i,
+            }),
+            userId: userToken3.value.sub,
+          },
+        })
+      }
+
+      let result = (
+        await request
+          .get('/raw-record')
+          .query({ page: 1, perPage: 150 })
+          .set(...global.userAuth3)
+          .expect(200)
+      ).body
+
+      expect(result.meta.total).toEqual(TOTAL)
+
+      result = (
+        await request
+          .get('/raw-record/status')
+          .set(...global.userAuth3)
+          .expect(200)
+      ).body
+
+      expect(result.data.totalRecords).toEqual(TOTAL)
     })
   })
 })

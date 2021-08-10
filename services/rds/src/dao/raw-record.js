@@ -19,6 +19,20 @@ module.exports = {
     return rawRecord.save()
   },
 
+  async findByOwner(user, perPage = 50, page = 1) {
+    const condition = {
+      'owners.id': user.sub,
+    }
+
+    return Promise.all([
+      RawRecord.find(condition)
+        .skip(perPage * page)
+        .limit(perPage)
+        .lean(),
+      RawRecord.countDocuments(condition),
+    ])
+  },
+
   async findByOwnerAndId(user, rawRecordId) {
     const record = await RawRecord.findOne(
       {
@@ -36,5 +50,13 @@ module.exports = {
     }
 
     return record
+  },
+
+  async countByOwner(user) {
+    const condition = {
+      'owners.id': user.sub,
+    }
+
+    return RawRecord.countDocuments(condition)
   },
 }
