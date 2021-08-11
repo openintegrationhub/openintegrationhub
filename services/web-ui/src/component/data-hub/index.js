@@ -13,9 +13,12 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
 // actions
+// import {
+//     getFlows, createFlow, getFlowsPage, switchAddState,
+// } from '../../action/flows';
 import {
-    getFlows, createFlow, getFlowsPage, switchAddState,
-} from '../../action/flows';
+    getTenants,
+} from '../../action/tenants';
 
 
 const useStyles = {
@@ -29,30 +32,37 @@ const useStyles = {
     },
 };
 
-class Flows extends React.Component {
+class DataHub extends React.Component {
     constructor(props) {
         super(props);
-        props.getFlows();
+        props.getTenants();
         this.state = {
             age: '',
             isLoading: true,
+            tenants: '',
         };
     }
 
     async componentDidMount() {
+        // const tenants = getTenants();
+
+        this.props.getTenants();
+        const { tenants } = this.props;
+        this.setState({ tenants, isLoading: false });
+
         try {
-            const result = await axios({
+            const { data } = await axios({
                 method: 'get',
                 url: 'http://localhost:3099/api/v1/tenants',
-                // url: `${conf.endpoints.iam}/api/v1/tenants`,
                 withCredentials: true,
             });
-            console.log('reszult', result);
+            console.log(data);
             // dispatch({
             //     type: GET_TENANTS,
             //     tenants: result.data,
             // });
         } catch (err) {
+            console.log(err);
             // dispatch({
             //     type: TENANTS_ERROR,
             //     err,
@@ -69,9 +79,12 @@ class Flows extends React.Component {
             classes,
         } = this.props;
 
+        console.log('tenants', this.state.tenants.all);
+
+        // this.state.tenants.all.map(tenant => console.log(tenant._id));
         return (
             <Container className={classes.wrapper}>
-                <div>
+                {!this.state.isLoading && <div>
                     <FormControl className={classes.formControl}>
                         <InputLabel id="demo-simple-select-helper-label">Tenant</InputLabel>
                         <Select
@@ -80,12 +93,13 @@ class Flows extends React.Component {
                             value={this.state.age}
                             onChange={this.handleChange}
                         >
-                            <MenuItem value="">
+                            {/* <MenuItem value="">
                                 <em>None</em>
                             </MenuItem>
                             <MenuItem value={10}>Ten</MenuItem>
                             <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem>
+                            <MenuItem value={30}>Thirty</MenuItem> */}
+                            {this.state.tenants.all.map(tenant => (<MenuItem key={tenant._id} value={tenant._id}>{tenant._id}</MenuItem>))}
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
@@ -108,20 +122,20 @@ class Flows extends React.Component {
                     </FormControl>
                     <input placeholder="Fields"/>
                     <button>Submit</button>
-                </div>
+                </div>}
             </Container>
         );
     }
 }
 
 const mapStateToProps = state => ({
-    flows: state.flows,
+    tenants: state.tenants,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
-    getFlows,
-    createFlow,
-    getFlowsPage,
-    switchAddState,
+    getTenants,
+    // createFlow,
+    // getFlowsPage,
+    // switchAddState,
 }, dispatch);
 
 export default flow(
@@ -130,4 +144,4 @@ export default flow(
         mapDispatchToProps,
     ),
     withStyles(useStyles),
-)(Flows);
+)(DataHub);

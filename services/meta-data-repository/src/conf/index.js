@@ -12,7 +12,7 @@ module.exports = {
     userAuthType: optional('AUTH_TYPE', 'basic'),
     importFilePath: path.resolve(optional('IMPORT_FILE_PATH', 'temp')),
     iam: {
-        apiBase: optional('IAM_API_BASE', 'http://iam.openintegrationhub.com/api/v1'),
+        apiBase: optional('IAM_API_BASE', 'https://localhost:3099'/* 'http://iam.openintegrationhub.com/api/v1' */),
         introspectType: optional('INTROSPECT_TYPE', 'basic'),
         introspectEndpoint: optional('INTROSPECT_ENDPOINT_OIDC', 'https://iam.openintegrationhub.com/op/userinfo'),
         introspectEndpointBasic: optional('INTROSPECT_ENDPOINT_BASIC', 'http://iam.openintegrationhub.com/api/v1/tokens/introspect'),
