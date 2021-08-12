@@ -100,9 +100,9 @@ jobs:
     docker: *node_mongo_env
     working_directory: ~/oih/services/scheduler
     steps: *yarn_test_steps
-  secret-service-lib-test:
+  secret-service-test:
     docker: *node_env
-    working_directory: ~/oih/lib/secret-service
+    working_directory: ~/oih/services/secret-service
     steps: *yarn_test_steps
   lib-backend-commons-lib-test:
     docker: *node_env
@@ -187,7 +187,7 @@ workflows:
       - scheduler-test:
           requires:
             - lib-scheduler-test
-      - secret-service-lib-test:
+      - secret-service-test:
           requires:
             - deps
       - flow-repository-test:
@@ -240,7 +240,7 @@ workflows:
             - workflow-repository-test
             - component-orchestrator-test
             - scheduler-test
-            - secret-service-lib-test
+            - secret-service-test
             - flow-repository-test
             - template-repository-test
             - audit-log-test

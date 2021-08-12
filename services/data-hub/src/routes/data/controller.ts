@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
+import BadRequest from '../../errors/api/BadRequest';
 
 interface IGteQuery {
     $gte: string;
@@ -10,6 +11,8 @@ interface IGteQuery {
 
 interface IGetManyCondition {
     'owners.id': string;
+    domainId?: string;
+    schemaUri?: string;
     createdAt?: IGteQuery;
     updatedAt?: IGteQuery;
 }
@@ -17,7 +20,13 @@ interface IGetManyCondition {
 export default class DataController {
     public async getMany(ctx: RouterContext): Promise<void> {
         const { paging, user } = ctx.state;
-        const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
+        const {
+            created_since: createdSince,
+            updated_since: updatedSince,
+            domain_id: domainId,
+            schema_uri: schemaUri
+        } = ctx.query;
+
         const condition: IGetManyCondition = {
             'owners.id': user.sub
         };
@@ -32,6 +41,14 @@ export default class DataController {
             condition.updatedAt = {
                 $gte: updatedSince
             };
+        }
+
+        if (domainId) {
+            condition.domainId = domainId;
+        }
+
+        if (schemaUri) {
+            condition.schemaUri = schemaUri
         }
 
         const [data, total] = await Promise.all([
@@ -174,6 +191,38 @@ export default class DataController {
         };
     }
 
+    public async postMany(ctx: RouterContext): Promise<void> {
+        const { body } = ctx.request;
+        const { user } = ctx.state;
+        
+        const createPromises = []
+
+        if (!Array.isArray(body) || body.length === 0) {
+            throw new BadRequest()
+        }
+
+        body.forEach(record => {
+            const owners = record.owners || []
+
+            if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+                owners.push({
+                    id: user.sub,
+                    type: 'user'
+                });
+            }
+
+            createPromises.push(DataObject.create({
+                ...record,
+                owners,
+            }))
+
+        })
+
+        await Promise.all(createPromises)
+
+        ctx.status = 201;
+    }
+
     public async postByRecordId(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
@@ -201,7 +250,8 @@ export default class DataController {
             }
 
             if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-                let newIOwner: IOwnerDocument;
+                // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
+                let newIOwner = {} as IOwnerDocument;
                 newIOwner.id = user.sub;
                 newIOwner.type = 'user';
                 dataObject.owners.push(newIOwner);
@@ -227,7 +277,6 @@ export default class DataController {
             }
             // @ts-ignore: No overload matches this call.
             dataObject = await DataObject.create(newObject);
-
         }
 
         ctx.status = 201;

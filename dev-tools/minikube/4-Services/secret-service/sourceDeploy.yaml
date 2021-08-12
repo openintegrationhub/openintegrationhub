@@ -17,7 +17,7 @@ spec:
       - name: secret-service
         image: node:12-alpine
         command: ["/bin/sh"]
-        args: ["-c", "yarn install --non-interactive && yarn start:container"]
+        args: ["-c", "apk update && apk add --no-cache python && yarn install --network-timeout 9000000 --verbose --non-interactive && yarn start:container"]
         workingDir: /usr/src/app
         ports:
         - containerPort: 3000
@@ -72,13 +72,13 @@ spec:
           httpGet:
             port: 3000
             path: /healthcheck
-          initialDelaySeconds: 300
+          initialDelaySeconds: 2400
           timeoutSeconds: 1
         readinessProbe:
           httpGet:
             port: 3000
             path: /healthcheck
-          initialDelaySeconds: 120
+          initialDelaySeconds: 2400
           timeoutSeconds: 1
         imagePullPolicy: IfNotPresent
       volumes:

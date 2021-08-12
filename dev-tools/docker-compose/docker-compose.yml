@@ -144,6 +144,12 @@ services:
       LISTEN_PORT: ${DEV_COMPONENT_ORCHESTRATOR_PORT}
 
       CACHE_COMPONENT_IGNORE: "false"
+
+      ### mount hostpath - use this with caution see https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+      KUBERNETES_VOLUME_HOSTPATH_ENABLED: ${KUBERNETES_VOLUME_HOSTPATH_ENABLED}
+      KUBERNETES_VOLUME_HOSTPATH_PATH: ${KUBERNETES_VOLUME_HOSTPATH_PATH}
+      KUBERNETES_VOLUME_HOSTPATH_MOUNTPATH: "/mnt-test"
+
     ports:
     - ${DEV_COMPONENT_ORCHESTRATOR_EXTERNAL_PORT}:${DEV_COMPONENT_ORCHESTRATOR_PORT}
     volumes:

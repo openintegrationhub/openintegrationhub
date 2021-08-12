@@ -9,7 +9,6 @@ export default async function errorResponder(ctx: Context, next: Function): Prom
             ctx.log.error(err);
             err = new ApiError(err.status, err.message);
         }
-
         ctx.body = {
             errors: [
                 {

@@ -5,6 +5,7 @@ const base64url = require('base64url');
 const { restricted, common } = require('../../constant/permission');
 const AuthClientDAO = require('../../dao/auth-client');
 const AuthFlowDAO = require('../../dao/auth-flow');
+const { findByAuthClient } = require('../../dao/secret');
 const { userIsOwnerOfAuthClient } = require('../../middleware/auth');
 const { getKeyParameter } = require('../../middleware/key');
 const conf = require('../../conf');
@@ -184,6 +185,26 @@ class AuthClientRouter {
                 next({
                     err,
                     status: 500,
+                    message: err.message,
+                });
+            }
+        });
+
+        this.router.get('/:id/secrets', /* userIsOwnerOfAuthClient, */ async (req, res, next) => {
+            const authClient = await AuthClientDAO.findOne({ _id: req.params.id });
+            try {
+                const secrets = findByAuthClient(
+                    req.user.sub,
+                    authClient._id,
+                );
+                res.send({
+                    data: secrets,
+                });
+            } catch (err) {
+                log.error(err);
+                next({
+                    err,
+                    status: 400,
                     message: err.message,
                 });
             }

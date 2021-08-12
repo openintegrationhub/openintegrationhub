@@ -1091,6 +1091,9 @@
       "Role": {
         "type": "object",
         "properties": {
+          "id": {
+            "type":"string"
+          },
           "name": {
             "type": "string"
           },
@@ -1102,6 +1105,38 @@
           },
           "scope": {
             "type": "string"
+          },
+          "createdAt":{
+            "type": "string"
+          },
+          "updatedAt":{
+            "type": "string"
+          },
+          "isGlobal": {
+            "type":"boolean"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "MutableRole": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Permissions"
+            }
+          },
+          "isGlobal": {
+            "type":"boolean"
           }
         }
       },
