@@ -7,93 +7,93 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: iam.localoih.com
+  - host: iam.example.com
     http:
       paths:
       - backend:
           serviceName: iam
           servicePort: 3099
-  - host: skm.localoih.com
+  - host: skm.example.com
     http:
       paths:
       - backend:
           serviceName: secret-service
           servicePort: 3000
-  - host: flow-repository.localoih.com
+  - host: flow-repository.example.com
     http:
       paths:
       - backend:
           serviceName: flow-repository
           servicePort: 3001
-  - host: auditlog.localoih.com
+  - host: auditlog.example.com
     http:
       paths:
       - backend:
           serviceName: audit-log
           servicePort: 3007
-  - host: metadata.localoih.com
+  - host: metadata.example.com
     http:
       paths:
       - backend:
           serviceName: meta-data-repository
           servicePort: 3000
-  - host: component-repository.localoih.com
+  - host: component-repository.example.com
     http:
       paths:
       - backend:
           serviceName: component-repository
           servicePort: 1234
-  - host: snapshots-service.localoih.com
+  - host: snapshots-service.example.com
     http:
       paths:
       - backend:
           serviceName: snapshots-service
           servicePort: 1234
-  - host: webhooks.localoih.com
+  - host: webhooks.example.com
     http:
       paths:
       - backend:
           serviceName: webhooks
           servicePort: 1234
-  - host: web-ui.localoih.com
+  - host: web-ui.example.com
     http:
       paths:
       - backend:
           serviceName: web-ui
           servicePort: 3000
-  - host: attachment-storage-service.localoih.com
+  - host: attachment-storage-service.example.com
     http:
       paths:
       - backend:
           serviceName: attachment-storage-service
           servicePort: 3002
-  - host: data-hub.localoih.com
+  - host: data-hub.example.com
     http:
       paths:
       - backend:
           serviceName: data-hub-service
           servicePort: 1234
-  - host: ils.localoih.com
+  - host: ils.example.com
     http:
       paths:
       - backend:
           serviceName: ils
           servicePort: 3003
-  - host: app-directory.localoih.com
+  - host: app-directory.example.com
     http:
       paths:
       - backend:
           serviceName: app-directory
           servicePort: 3000
-  - host: workflow-repository.localoih.com
-    http:
-      paths:
-      - backend:
-          serviceName: workflow-repository
-          servicePort: 3000
-  - host: dispatcher-service.localoih.com
+  - host: dispatcher-service.example.com
     http:
       paths:
       - backend:
           serviceName: dispatcher-service
           servicePort: 3013
+  - host: workflow-repository.example.com
+    http:
+      paths:
+        - backend:
+            serviceName: workflow-repository
+            servicePort: 3000

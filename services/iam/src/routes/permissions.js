@@ -22,6 +22,9 @@ router.get('/', async (req, res, next) => {
         if (req.user && req.user.isAdmin) {
             docs = docs.concat(Object.values(RESTRICTED_PERMISSIONS));
         }
+        if (req.query.meta) {
+            return res.send({ data: docs, meta: { total: docs.length } });
+        }
         return res.send(docs);
     } catch (err) {
         logger.error(err);

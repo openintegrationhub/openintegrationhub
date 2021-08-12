@@ -24,21 +24,21 @@ SERVICE_ACCOUNT_PASSWORD=testtest1234
 ######
 
 EXPOSED_SERVICES=( \
-    app-directory.localoih.com \
-    iam.localoih.com \
-    skm.localoih.com \
-    flow-repository.localoih.com \
-    template-repository.localoih.com \
-    auditlog.localoih.com \
-    metadata.localoih.com \
-    component-repository.localoih.com \
-    snapshots-service.localoih.com \
-    dispatcher-service.localoih.com \
-    webhooks.localoih.com \
-    attachment-storage-service.localoih.com \
-    data-hub.localoih.com \
-    ils.localoih.com \
-    web-ui.localoih.com \
+    app-directory.example.com \
+    iam.example.com \
+    skm.example.com \
+    flow-repository.example.com \
+    template-repository.example.com \
+    auditlog.example.com \
+    metadata.example.com \
+    component-repository.example.com \
+    snapshots-service.example.com \
+    dispatcher-service.example.com \
+    webhooks.example.com \
+    attachment-storage-service.example.com \
+    data-hub.example.com \
+    ils.example.com \
+    web-ui.example.com \
 )
 
 REQUIRED_TOOLS=( \
@@ -103,6 +103,15 @@ function checkOS {
     echo "Operating System: $os"
 }
 
+function checkMachine {
+    unameOut="$(uname -m)"
+    case "${unameOut}" in
+        arm64*)     machine=ARM;;
+        *)          machine="${unameOut}"
+    esac
+    echo "Machine: $machine"
+}
+
 function colorEcho {
     # $1 bash color code
     # $2 text
@@ -120,7 +129,11 @@ function checkTools {
 }
 
 function updateHostsFile {
-    cluster_ip=$(minikube ip)
+    if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+        cluster_ip=127.0.0.1
+    else
+        cluster_ip=$(minikube ip)
+    fi
 
     for host_name in "${EXPOSED_SERVICES[@]}"
     do
@@ -185,7 +198,7 @@ function setAdminToken {
         "password": "somestring"
     }
 EOM
-    postJSON http://iam.localoih.com/login "$JSON"
+    postJSON http://iam.example.com/login "$JSON"
     admin_token=$(echo "$result"| python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
 }
 
@@ -203,7 +216,7 @@ function createServiceAccount {
         ]
     }
 EOM
-    postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
+    postJSON http://iam.example.com/api/v1/users "$JSON" "$admin_token"
     service_account_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
 }
 
@@ -216,7 +229,7 @@ function createTenantAndUsers_1 {
         "status": "ACTIVE"
     }
 EOM
-    postJSON http://iam.localoih.com/api/v1/tenants "$JSON" "$admin_token"
+    postJSON http://iam.example.com/api/v1/tenants "$JSON" "$admin_token"
     tenant_1_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
 
     # create tenant admin
@@ -231,7 +244,7 @@ EOM
         "tenant": "$tenant_1_id"
     }
 EOM
-    postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
+    postJSON http://iam.example.com/api/v1/users "$JSON" "$admin_token"
     tenant_1_admin_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
     # create user
     read -r -d '' JSON << EOM || true
@@ -244,7 +257,7 @@ EOM
         "tenant": "$tenant_1_id"
     }
 EOM
-    postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
+    postJSON http://iam.example.com/api/v1/users "$JSON" "$admin_token"
     tenant_1_user_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
 }
 
@@ -257,7 +270,7 @@ function createTenantAndUsers_2 {
         "status": "ACTIVE"
     }
 EOM
-    postJSON http://iam.localoih.com/api/v1/tenants "$JSON" "$admin_token"
+    postJSON http://iam.example.com/api/v1/tenants "$JSON" "$admin_token"
     tenant_2_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
 
     # create tenant admin
@@ -272,7 +285,7 @@ EOM
         "tenant": "$tenant_2_id"
     }
 EOM
-    postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
+    postJSON http://iam.example.com/api/v1/users "$JSON" "$admin_token"
     tenant_2_admin_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
     # create user
     read -r -d '' JSON << EOM || true
@@ -285,7 +298,7 @@ EOM
         "tenant": "$tenant_2_id"
     }
 EOM
-    postJSON http://iam.localoih.com/api/v1/users "$JSON" "$admin_token"
+    postJSON http://iam.example.com/api/v1/users "$JSON" "$admin_token"
     tenant_2_user_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
 }
 
@@ -298,7 +311,7 @@ function setServiceAccountToken {
         "inquirer": "$service_account_id"
     }
 EOM
-    postJSON http://iam.localoih.com/api/v1/tokens "$JSON" "$admin_token"
+    postJSON http://iam.example.com/api/v1/tokens "$JSON" "$admin_token"
     service_account_token=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
 }
 
@@ -386,7 +399,7 @@ function createCustomSecret {
         }
     }
 EOM
-    postJSON http://skm.localoih.com/api/v1/secrets "$JSON" "$admin_token"
+    postJSON http://skm.example.com/api/v1/secrets "$JSON" "$admin_token"
     custom_secret_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['_id'])")
     echo "$custom_secret_id"
 }
@@ -394,61 +407,55 @@ EOM
 function createDevComponent {
     read -r -d '' JSON << EOM || true
     {
-        "data": {
-            "distribution": {
-                "type": "docker",
-                "image": "$DEV_CONTAINER_IMAGE"
-            },
-            "access": "public",
-            "name": "Development Component",
-            "description": "A component just for testing"
-        }
+        "distribution": {
+            "type": "docker",
+            "image": "$DEV_CONTAINER_IMAGE"
+        },
+        "access": "public",
+        "name": "Development Component",
+        "description": "A component just for testing"
     }
 EOM
-    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
+    postJSON http://component-repository.example.com/components "$JSON" "$admin_token"
     development_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
 function createDevPrivateComponent {
     read -r -d '' JSON << EOM || true
     {
-        "data": {
-            "distribution": {
-                "type": "docker",
-                "image": "$DEV_CONTAINER_IMAGE"
-            },
-            "access": "private",
-            "name": "Development Component (Private)",
-            "description": "A component just for testing",
-            "owners": [
-                {
-                    "id": "$tenant_2_user_id",
-                    "type": "user"
-                }
-            ]
-        }
+        "distribution": {
+            "type": "docker",
+            "image": "$DEV_CONTAINER_IMAGE"
+        },
+        "access": "private",
+        "name": "Development Component (Private)",
+        "description": "A component just for testing",
+        "owners": [
+            {
+                "id": "$tenant_2_user_id",
+                "type": "user"
+            }
+        ]
     }
 EOM
-    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
+    postJSON http://component-repository.example.com/components "$JSON" "$admin_token"
     development_private_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
 function createDevGlobalComponent {
     read -r -d '' JSON << EOM || true
     {
-        "data": {
-            "distribution": {
-                "type": "docker",
-                "image": "$DEV_CONTAINER_IMAGE"
-            },
-            "access": "public",
-            "isGlobal": true,
-            "name": "Global Development Component",
-            "description": "A component just for testing"
-        }
+        "distribution": {
+            "type": "docker",
+            "image": "$DEV_CONTAINER_IMAGE"
+        },
+        "access": "public",
+        "isGlobal": true,
+        "name": "Global Development Component",
+        "description": "A component just for testing"
     }
 EOM
-    postJSON http://component-repository.localoih.com/components "$JSON" "$admin_token"
+    postJSON http://component-repository.example.com/components "$JSON" "$admin_token"
     development_global_component_id=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
 }
 
@@ -471,7 +478,7 @@ function createDevSimpleFlow {
         "cron":"*/1 * * * *"
     }
 EOM
-    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+    postJSON http://flow-repository.example.com/flows "$JSON" "$admin_token"
 }
 
 function createDevWebhookFlow {
@@ -535,7 +542,7 @@ function createDevWebhookFlow {
         }
     }
 EOM
-    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+    postJSON http://flow-repository.example.com/flows "$JSON" "$admin_token"
 }
 
 function createDevConsecutiveFlow {
@@ -574,7 +581,7 @@ function createDevConsecutiveFlow {
         "cron": "*/1 * * * *"
     }
 EOM
-    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+    postJSON http://flow-repository.example.com/flows "$JSON" "$admin_token"
 }
 
 function createDevGlobalConsecutiveFlow {
@@ -612,7 +619,7 @@ function createDevGlobalConsecutiveFlow {
         }
     }
 EOM
-    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+    postJSON http://flow-repository.example.com/flows "$JSON" "$admin_token"
 }
 
 function createDevConcurrentFlow {
@@ -651,7 +658,7 @@ function createDevConcurrentFlow {
         "cron": "*/1 * * * *"
     }
 EOM
-    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+    postJSON http://flow-repository.example.com/flows "$JSON" "$admin_token"
 }
 
 function createDevGlobalFlow {
@@ -752,7 +759,7 @@ function createDevGlobalFlow {
         }
     }
 EOM
-    postJSON http://flow-repository.localoih.com/flows "$JSON" "$admin_token"
+    postJSON http://flow-repository.example.com/flows "$JSON" "$admin_token"
 }
 
 function writeDotEnvFile {
@@ -777,6 +784,8 @@ function clearMinikube {
 trap cleanup EXIT
 
 checkOS
+
+checkMachine
 
 if [ "$os" == "Darwin" ]; then
     esc="\x1B"
@@ -825,7 +834,11 @@ checkTools
 clearMinikube
 
 if [ "$os" == "Darwin" ]; then
-    minikube start --vm=true --memory $MK_MEMORY --cpus $MK_CPUS
+    if [ "$machine" == "ARM" ]; then
+        minikube start --driver=docker --memory $MK_MEMORY --cpus $MK_CPUS
+    else 
+        minikube start --driver=hyperkit --vm=true --memory $MK_MEMORY --cpus $MK_CPUS
+    fi
 else
     minikube start --memory $MK_MEMORY --cpus $MK_CPUS
 fi
@@ -843,9 +856,14 @@ then
     fi
 fi
 
-minikube addons enable ingress
+#minikube addons enable ingress
 minikube addons enable dashboard
 minikube addons enable metrics-server
+if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.45.0/deploy/static/provider/cloud/deploy.yaml
+else
+    minikube addons enable ingress
+fi
 
 # remove oih resources
 kubectl -n oih-dev-ns delete pods,services,deployments --all
@@ -865,6 +883,9 @@ updateHostsFile
 
 waitForPodStatus ingress-nginx-controller.*1/1
 
+if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+    minikube tunnel &
+fi
 ###
 ### 4. deploy platform base
 ###
@@ -879,7 +900,7 @@ waitForPodStatus redis.*1/1
 ### 5. deploy IAM
 ###
 deployIAM
-waitForServiceStatus http://iam.localoih.com 200
+waitForServiceStatus http://iam.example.com 200
 
 ###
 ### 6. set admin token
@@ -920,14 +941,14 @@ deployServices
 ### 10. create custom secret
 ###
 
-waitForServiceStatus http://skm.localoih.com/api/v1/secrets 401
+waitForServiceStatus http://skm.example.com/api/v1/secrets 401
 createCustomSecret
 
 ###
 ### 11. add example components and flow
 ###
 
-waitForServiceStatus http://component-repository.localoih.com/components 401
+waitForServiceStatus http://component-repository.example.com/components 401
 
 createDevComponent
 
@@ -938,7 +959,7 @@ createDevGlobalComponent
 # create for tenant_2_user_id
 createDevPrivateComponent
 
-waitForServiceStatus http://flow-repository.localoih.com/flows 401
+waitForServiceStatus http://flow-repository.example.com/flows 401
 
 createDevSimpleFlow
 createDevWebhookFlow
@@ -951,7 +972,7 @@ createDevGlobalFlow
 ### 12. Point to web ui if ready
 ###
 
-waitForServiceStatus http://web-ui.localoih.com 200
+waitForServiceStatus http://web-ui.example.com 200
 
 ###
 ### 13. Remove temporary deployments

@@ -35,7 +35,7 @@ spec:
         - name: IAM_BASEURL
           value: "http://iam.oih-dev-ns.svc.cluster.local:3099"
         - name: IAM_ORIGINWHITELIST
-          value: "http://localhost:3000,localoih.com,127.0.0.1,.oih-dev-ns.svc.cluster.local"
+          value: "http://localhost:3000,example.com,127.0.0.1,.oih-dev-ns.svc.cluster.local"
         - name: NODE_ENV
           value: "production"
         - name: IAM_JWT_SECRET

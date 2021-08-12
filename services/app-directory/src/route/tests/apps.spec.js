@@ -60,7 +60,7 @@ describe('connectors', () => {
         const appResp = (await request.get(`/apps/${response.body._id}`)
             .set(...global.adminAuth1)
             .expect(200)).body;
-        expect(appResp.artifactId).toEqual(appData.artifactId);
+        expect(appResp.data.artifactId).toEqual(appData.artifactId);
     });
 
     test('Only authorized admin can create a connector', async () => {
@@ -91,7 +91,8 @@ describe('connectors', () => {
             .set(...global.userAuth1)
             .expect(200);
 
-        expect(body.length).toBe(1);
+        expect(body.data.length).toBe(1);
+        expect(body.meta.total).toBe(1);
     });
 
     test('Modify an app', async () => {
@@ -138,10 +139,10 @@ describe('connectors', () => {
             .set(...global.userAuth1)
             .expect(200)).body;
 
-        expect(appResponse.name).toEqual(newValues.name);
-        expect(appResponse.urls.main).toEqual(newValues.urls.main);
-        expect(appResponse.status).toEqual(newValues.status);
-        expect(appResponse.credentials.authClient).toEqual(newValues.credentials.authClient);
+        expect(appResponse.data.name).toEqual(newValues.name);
+        expect(appResponse.data.urls.main).toEqual(newValues.urls.main);
+        expect(appResponse.data.status).toEqual(newValues.status);
+        expect(appResponse.data.credentials.authClient).toEqual(newValues.credentials.authClient);
     });
 
     test('Remove an app', async () => {

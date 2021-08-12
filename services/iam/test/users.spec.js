@@ -58,6 +58,17 @@ describe('User Routes', () => {
         expect(response.body[0].firstname).toBe(conf.accounts.admin.firstname);
     });
 
+    test('get all users is successful with meta format', async () => {
+        const response = await request.get('/api/v1/users')
+            .set('Accept', /application\/json/)
+            .set('Authorization', tokenAdmin)
+            .query({ meta: true })
+            .expect(200);
+        expect(response.body.data.length).not.toBe(0);
+        expect(response.body.data[0].firstname).toBe(conf.accounts.admin.firstname);
+        expect(response.body.meta.total).not.toBe(0);
+    });
+
     test('get all users without a valid token fails', async () => {
         await request.get('/api/v1/users')
             .set('Accept', /application\/json/)

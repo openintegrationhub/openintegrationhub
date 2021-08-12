@@ -6,12 +6,17 @@
 
 **Does a specific change require especially careful review?**
 
-_Please describe in short which change needs careful review, why and which files are affectd_
- 
+_Please describe in short which change needs careful review, why and which files are affected_
+
 - Change X
   - Why?
   - What files are affected?
 
----
+**What is still open or a known issue?**
 
-[**Definition of Done**](https://github.com/openintegrationhub/openintegrationhub/blob/crudmonitoring/CONTRIBUTING.md#definition-of-done)
+**Release Notes**
+
+<!--
+Please describe the changes in a single line that explains this improvement in
+terms that a user can understand. This text may be used in our release notes.
+-->

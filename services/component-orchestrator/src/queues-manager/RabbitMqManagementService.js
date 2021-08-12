@@ -56,6 +56,7 @@ class RabbitMqManagementService {
      * @param {string} username
      * @returns {Promise<void>}
      */
+
     // rabbitmq-stats does not support setting a topic permission, so we have to implement our own PUT request
     async setUserTopicPermissions(username) {
         const vhost = encodeURIComponent(this._vhost);

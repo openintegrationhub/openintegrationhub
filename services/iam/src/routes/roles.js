@@ -82,6 +82,9 @@ router.get('/:id', userIsOwnerOfResource, async (req, res, next) => {
             _id: req.params.id,
         });
         if (docs) {
+            if (req.query.meta) {
+                return res.send({ data: docs, meta: { total: docs.length } });
+            }
             return res.send(docs);
         }
         return res.sendStatus(404);

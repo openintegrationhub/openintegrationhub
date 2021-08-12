@@ -34,7 +34,7 @@ spec:
         - name: "INTROSPECT_ENDPOINT_BASIC"
           value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
         - name: ORIGIN_WHITELIST
-          value: localoih.com,http://web-ui.localoih.com,https://web-ui.localoih.com
+          value: example.com,http://web-ui.example.com,https://web-ui.example.com
         - name: PORT
           value: "3000"
         - name: API_BASE

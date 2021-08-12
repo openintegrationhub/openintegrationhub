@@ -4,7 +4,7 @@ const path = require('path')
 const basePath = path.resolve(__dirname, "../services")
 const paths = fs.readdirSync(basePath)
 const services = []
-const ignoreServices = []
+const ignoreServices = ['logic-gateway']
 
 for (const service of paths) {
   if (ignoreServices.includes(service)) continue
