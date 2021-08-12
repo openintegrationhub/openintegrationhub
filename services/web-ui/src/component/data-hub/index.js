@@ -11,24 +11,21 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import DataTable from './Table';
+import DataTable from './DataTable';
 // actions
-
 import {
     getTenants,
 } from '../../action/tenants';
 
-
 const useStyles = {
 
     formControl: {
-        // margin: theme.spacing(1),
         minWidth: 120,
     },
-    selectEmpty: {
-        // marginTop: theme.spacing(2),
-    },
     input: {
+        height: '48px',
+    },
+    submitBtn: {
         height: '48px',
     },
 };
@@ -38,10 +35,11 @@ class DataHub extends React.Component {
         super(props);
         props.getTenants();
         this.state = {
-            age: '',
-            isLoading: true,
             tenants: '',
             schemas: '',
+            isLoading: true,
+            selectedTenant: '',
+            selectedSchema: '',
             fields: '',
         };
     }
@@ -70,12 +68,32 @@ class DataHub extends React.Component {
             console.log(err);
         }
         this.setState({ isLoading: false });
+
+        // add functionality to allow tabs in text area
+        document.getElementById('textbox').addEventListener('keydown', function (e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = `${this.value.substring(0, start)
+                }\t${this.value.substring(end)}`;
+                this.selectionStart = +start + 1;
+            }
+        });
         return null;
     }
 
     handleChange = (event) => {
+        this.setState({ [event.target.name]: event.target.value });
+    };
+
+    handleFields = (event) => {
         this.setState({ fields: event.target.value });
     };
+
+    handleSubmit = () => {
+        console.log('Submit button clicked');
+    }
 
     render() {
         const {
@@ -84,16 +102,17 @@ class DataHub extends React.Component {
 
         return (
             <Container className={classes.container}>
-                {!this.state.isLoading && <div>
+                {!this.state.isLoading && <div style={{ display: 'flex' }}>
                     <FormControl className={classes.formControl}>
                         <InputLabel id="demo-simple-select-helper-label">Tenant</InputLabel>
                         <Select
                             labelId="demo-simple-select-helper-label"
                             id="demo-simple-select-helper"
-                            value={this.state.age}
+                            name="selectedTenant"
+                            value={this.state.selectedTenant}
                             onChange={this.handleChange}
                         >
-                            {this.state.tenants.map(tenant => (<MenuItem key={tenant._id} value={tenant._id}>{tenant._id}</MenuItem>))}
+                            {this.state.tenants.map(tenant => (<MenuItem name="selectedTenant" key={tenant._id} value={tenant._id}>{tenant._id}</MenuItem>))}
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
@@ -102,17 +121,17 @@ class DataHub extends React.Component {
                         <Select
                             labelId="demo-simple-select-helper-label"
                             id="demo-simple-select-helper"
-                            value={this.state.age}
+                            name="selectedSchema"
+                            value={this.state.selectedSchema}
                             onChange={this.handleChange}
                         >
                             {this.state.schemas.data.map(schema => (<MenuItem key={schema.id} value={schema.id}>{schema.id}</MenuItem>))}
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <textarea placeholder="Fields" name="fields" value={this.state.fields} onChange={e => this.handleChange(e)} className={classes.input}></textarea>
-                    <button>Submit</button>
-                    <DataTable/>
-                </div>}
+                    <textarea id="textbox" placeholder="Fields" name="fields" value={this.state.fields} onChange={e => this.handleFields(e)} className={classes.input}></textarea>
+                    <div><button className={classes.submitBtn} onClick={this.handleSubmit}>Submit</button></div></div>}
+                {!this.state.isLoading && <DataTable/>}
             </Container>
         );
     }
@@ -123,9 +142,6 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     getTenants,
-    // createFlow,
-    // getFlowsPage,
-    // switchAddState,
 }, dispatch);
 
 export default flow(
