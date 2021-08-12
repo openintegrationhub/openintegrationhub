@@ -5,7 +5,7 @@ const { version, name } = require('../../package.json');
 const originwhitelist = optional('ORIGINWHITELIST') ? optional('ORIGINWHITELIST').split(',') : [];
 
 module.exports = {
-    port: optional('PORT', 3000),
+    port: optional('PORT', 3001),
     urlsWithPort: optional('URLS_WITH_PORT', 'true') === 'true',
     baseUrl: optional('BASE_URL', 'http://localhost'),
     apiBase: optional('API_BASE', '/api/v1'),

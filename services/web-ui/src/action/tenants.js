@@ -10,7 +10,6 @@ export const DELETE_TENANT = 'DELETE_USER';
 export const TENANTS_ERROR = 'TENANTS_ERROR';
 export const TENANTS_ERROR_CLEAR = 'TENANTS_ERROR_CLEAR';
 
-
 export const getTenants = () => async (dispatch) => {
     try {
         const result = await axios({

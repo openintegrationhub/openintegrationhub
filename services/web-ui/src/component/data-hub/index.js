@@ -2,7 +2,7 @@ import React from 'react';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { axios } from 'axios';
+import axios from 'axios';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
@@ -11,24 +11,25 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-
+import DataTable from './Table';
 // actions
-// import {
-//     getFlows, createFlow, getFlowsPage, switchAddState,
-// } from '../../action/flows';
+
 import {
     getTenants,
 } from '../../action/tenants';
 
 
 const useStyles = {
+
     formControl: {
         // margin: theme.spacing(1),
-
         minWidth: 120,
     },
     selectEmpty: {
         // marginTop: theme.spacing(2),
+    },
+    input: {
+        height: '48px',
     },
 };
 
@@ -40,38 +41,40 @@ class DataHub extends React.Component {
             age: '',
             isLoading: true,
             tenants: '',
+            schemas: '',
+            fields: '',
         };
     }
 
     async componentDidMount() {
-        // const tenants = getTenants();
-
-        this.props.getTenants();
-        const { tenants } = this.props;
-        this.setState({ tenants, isLoading: false });
-
+        // get tenants
+        try {
+            const result = await axios({
+                method: 'get',
+                url: 'https://localhost:3099/api/v1/tenants',
+                withCredentials: true,
+            });
+            this.setState({ tenants: result.data });
+        } catch (err) {
+            console.log(err);
+        }
+        // // get schemas
         try {
             const { data } = await axios({
                 method: 'get',
-                url: 'http://localhost:3099/api/v1/tenants',
+                url: 'http://localhost:3001/api/v1/domains/6113a8d49744d2880a00ed0a/schemas',
                 withCredentials: true,
             });
-            console.log(data);
-            // dispatch({
-            //     type: GET_TENANTS,
-            //     tenants: result.data,
-            // });
+            this.setState({ schemas: data });
         } catch (err) {
             console.log(err);
-            // dispatch({
-            //     type: TENANTS_ERROR,
-            //     err,
-            // });
         }
+        this.setState({ isLoading: false });
+        return null;
     }
 
     handleChange = (event) => {
-        this.setState({ age: event.target.value });
+        this.setState({ fields: event.target.value });
     };
 
     render() {
@@ -79,11 +82,8 @@ class DataHub extends React.Component {
             classes,
         } = this.props;
 
-        console.log('tenants', this.state.tenants.all);
-
-        // this.state.tenants.all.map(tenant => console.log(tenant._id));
         return (
-            <Container className={classes.wrapper}>
+            <Container className={classes.container}>
                 {!this.state.isLoading && <div>
                     <FormControl className={classes.formControl}>
                         <InputLabel id="demo-simple-select-helper-label">Tenant</InputLabel>
@@ -93,13 +93,7 @@ class DataHub extends React.Component {
                             value={this.state.age}
                             onChange={this.handleChange}
                         >
-                            {/* <MenuItem value="">
-                                <em>None</em>
-                            </MenuItem>
-                            <MenuItem value={10}>Ten</MenuItem>
-                            <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem> */}
-                            {this.state.tenants.all.map(tenant => (<MenuItem key={tenant._id} value={tenant._id}>{tenant._id}</MenuItem>))}
+                            {this.state.tenants.map(tenant => (<MenuItem key={tenant._id} value={tenant._id}>{tenant._id}</MenuItem>))}
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
@@ -111,17 +105,13 @@ class DataHub extends React.Component {
                             value={this.state.age}
                             onChange={this.handleChange}
                         >
-                            <MenuItem value="">
-                                <em>None</em>
-                            </MenuItem>
-                            <MenuItem value={10}>Ten</MenuItem>
-                            <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem>
+                            {this.state.schemas.data.map(schema => (<MenuItem key={schema.id} value={schema.id}>{schema.id}</MenuItem>))}
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <input placeholder="Fields"/>
+                    <textarea placeholder="Fields" name="fields" value={this.state.fields} onChange={e => this.handleChange(e)} className={classes.input}></textarea>
                     <button>Submit</button>
+                    <DataTable/>
                 </div>}
             </Container>
         );
