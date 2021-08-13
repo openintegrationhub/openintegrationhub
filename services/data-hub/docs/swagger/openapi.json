@@ -105,6 +105,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "tenant",
+            "description": "Used to retrieve data records that have specific Tenant ID. Requires \"all\" or \"tenant.all\" permission.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -128,6 +136,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Required permissions missing."
           }
         }
       }
@@ -276,6 +287,35 @@
           }
         }
       }
+    },
+    "/data/status": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get status of data records by tenant.",
+        "description": "Get status of data records by tenant. Requires \"all\" or \"tenant.all\" permission.",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StatusData"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Required permissions missing."
+          }
+        }
+      }
     }
   },
   "components": {
@@ -309,6 +349,10 @@
           },
           "content": {
             "type": "object"
+          },
+          "tenant": {
+            "type": "string",
+            "description": "Tenant  ID"
           },
           "refs": {
             "type": "array",
@@ -386,6 +430,14 @@
             "$ref": "#/components/schemas/Record"
           }
         ]
+      },
+      "StatusData": {
+        "type": "object",
+        "properties": {
+          "totalRecords": {
+            "type": "integer"
+          }
+        }
       },
       "Meta": {
         "type": "object",

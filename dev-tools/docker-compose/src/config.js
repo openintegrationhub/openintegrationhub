@@ -2,6 +2,7 @@ require('dotenv').config()
 const path = require('path')
 const { homedir } = require('os')
 
+const orchestratorReplica = 1
 const nodeImage = 'node:12-stretch'
 const kubernetesVersion = 'v1.21.3'
 
@@ -9,7 +10,7 @@ const adminUsername = 'admin@openintegrationhub.com'
 const adminPassword = 'somestring'
 
 const minikubeArgs = `--kubernetes-version=${kubernetesVersion} --mount`
-const fullComposeArgs = '-V --remove-orphans --scale component-orchestrator=3'
+const fullComposeArgs = `-V --remove-orphans --scale component-orchestrator=${orchestratorReplica}`
 
 const clusterName = 'minikube'
 

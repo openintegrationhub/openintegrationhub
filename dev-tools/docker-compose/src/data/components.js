@@ -188,13 +188,13 @@ module.exports = [
       type: 'docker',
       image: 'oih/test-component:latest',
     },
-    isGlobal: true,
+    isGlobal: false,
     specialFlags: {
       privilegedComponent: true,
     },
     access: 'public',
     name: 'logicGateway',
-    description: 'Dummy lgc',
+    description: 'This is an example logic gateway component',
     descriptor: {
       replicas: 1,
       imagePullPolicy: 'Never',

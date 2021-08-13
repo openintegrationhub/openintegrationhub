@@ -80,6 +80,7 @@ const dataObjectSchema = new Schema({
     content: {
         type: Schema.Types.Mixed
     },
+    tenant: String,
     refs: [refsSchema],
     owners: [ownerSchema]
 }, {
@@ -87,7 +88,7 @@ const dataObjectSchema = new Schema({
 });
 
 function dataObjectTransform (doc: IDataObjectDocument, ret: IDataObjectDocument) {
-    const safeFields = ['id', 'domainId', 'schemaUri', 'content', 'refs', 'owners'];
+    const safeFields = ['id', 'domainId', 'schemaUri', 'content', 'refs', 'owners', 'tenant'];
     ret.id = doc.id;
     // ret.id = doc._id;
     return _.pick(ret, safeFields);

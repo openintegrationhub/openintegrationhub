@@ -14,6 +14,67 @@
     }
   },
   "paths": {
+    "/raw-record": {
+      "get": {
+        "tags": [
+          "raw record"
+        ],
+        "summary": "Get all raw records by tenant.",
+        "description": "Get all raw records by tenant. Requires \"all\" or \"tenant.all\" permission.",
+        "parameters": [
+          {
+            "name": "perPage",
+            "description": "The amount of records per page returned. Defaults to 50.",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "description": "The number of the page to be returned. Defaults to 1.",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tenant",
+            "description": "Used to retrieve data records that have specific Tenant ID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RawRecordArray"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Meta"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Required permissions missing."
+          }
+        }
+      }
+    },
     "/raw-record/{id}": {
       "get": {
         "x-swagger-router-controller": "record",
@@ -26,7 +87,7 @@
           "raw record"
         ],
         "summary": "Find raw record by id",
-        "description": "Returns a single raw record by its ID, if the user is authorized to see it. This requires the 'raw-record.read' permission",
+        "description": "Returns a single raw record by its ID, if the user is authorized to see it.",
         "operationId": "getRawRecordById",
         "parameters": [
           {
@@ -61,6 +122,51 @@
           },
           "404": {
             "description": "No raw record with this id was found."
+          }
+        }
+      }
+    },
+    "/raw-record/status": {
+      "get": {
+        "x-swagger-router-controller": "record",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "raw record"
+        ],
+        "summary": "Counts all raw records by any or specific tenant.",
+        "description": "Counts all raw records by any or specific tenant. Requires \"all\" for any or \"tenant.all\" for specific count.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "tenant",
+            "description": "Count data records per tenant. Requires \"all\" or \"tenant.all\" permission.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StatusData"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Required permissions missing."
           }
         }
       }
@@ -106,6 +212,12 @@
       }
     },
     "schemas": {
+      "RawRecordArray": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RawRecord"
+        }
+      },
       "RawRecord": {
         "type": "object",
         "properties": {
@@ -115,6 +227,9 @@
           "payload": {
             "type": "object"
           },
+          "tenant": {
+            "type": "string"
+          },
           "owners": {
             "type": "array",
             "items": {
@@ -123,8 +238,30 @@
           }
         }
       },
+      "StatusData": {
+        "type": "object",
+        "properties": {
+          "totalRecords": {
+            "type": "integer"
+          }
+        }
+      },
       "Meta": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "perPage": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "totalPages": {
+            "type": "integer"
+          }
+        }
       },
       "Owner": {
         "type": "object",

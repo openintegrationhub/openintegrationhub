@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const schema = new Schema({
+    tenant: {
+        type: String
+    },
     graph: {
         type: Schema.Types.Mixed
     },

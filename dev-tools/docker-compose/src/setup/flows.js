@@ -1,7 +1,13 @@
 const fetch = require('node-fetch')
 const find = require('lodash/find')
 const { services } = require('../config')
-const { checkTools, waitForStatus, login, setupMinimal } = require('../helper')
+const {
+  checkTools,
+  waitForStatus,
+  login,
+  setupMinimal,
+  getUserInfo,
+} = require('../helper')
 const components = require('../data/components')
 const flows = require('../data/flows/raw-data-test')
 const tenants = require('../data/tenants')
@@ -87,10 +93,14 @@ async function run() {
       },
     ]
 
+    const userData = await getUserInfo(token)
+
     data.graph.nodes = data.graph.nodes.map((node) => ({
       ...node,
       componentId: componentsCache[node.componentId].id,
     }))
+
+    data.tenant = userData.tenant
 
     response = await fetch(`${flowRepositoryBase}/flows`, {
       method: 'POST',
