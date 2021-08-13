@@ -81,14 +81,6 @@ const WorkflowController = {
         const targetWorkflow = await WorkflowDAO.findOne({
             'flows.flowId': flowId,
         });
-        //
-        // targetWorkflow.flows.forEach((flow) => {
-        //     if (flow.flowId === flowId) {
-        //         flow.status = status;
-        //     }
-        // });
-        //
-        // console.log('targetWorkflow', targetWorkflow.flows, flowId, status);
 
         await WorkflowDAO.update({
             _id: targetWorkflow._id,

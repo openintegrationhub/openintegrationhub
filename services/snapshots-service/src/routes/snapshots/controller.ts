@@ -2,6 +2,13 @@ import { RouterContext } from 'koa-router';
 import Snapshot from '../../models/snapshot';
 
 export default class DataController {
+    public async getAllByWorkflow(ctx: RouterContext): Promise<void> {
+        const { workflowId } = ctx.params;
+        const doc = await Snapshot.find({workflowId});
+        ctx.body = {
+            data: doc
+        };
+    }
     public async getAll(ctx: RouterContext): Promise<void> {
         const { flowId } = ctx.params;
         const { flowExecId } = ctx.query;

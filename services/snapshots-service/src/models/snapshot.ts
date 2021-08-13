@@ -9,6 +9,7 @@ export interface IOwnerDocument extends Types.Subdocument {
 export interface ISnapshotDocument extends Document {
     flowId: string;
     stepId: string;
+    workflowId: string;
     flowExecId: string;
     snapshot: any;
     owners?: IOwnerDocument[];
@@ -28,6 +29,9 @@ const ownerSchema = new Schema({
 });
 
 const snapshotSchema = new Schema({
+    workflowId: {
+        type: String,
+    },
     flowId: {
         type: String,
         required: true
@@ -50,7 +54,7 @@ const snapshotSchema = new Schema({
 snapshotSchema.index({flowId: 1, stepId: 1, flowExecId: 1}, {unique: true});
 
 function snapshotTransform (doc: ISnapshotDocument, ret: ISnapshotDocument) {
-    const safeFields = ['id', 'snapshot', 'flowId', 'stepId', 'flowExecId'];
+    const safeFields = ['id', 'snapshot', 'flowId', 'stepId', 'flowExecId', 'workflowId'];
     ret.id = doc.id;
     return _.pick(ret, safeFields);
 }
