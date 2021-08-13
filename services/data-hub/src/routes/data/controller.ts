@@ -23,13 +23,28 @@ export default class DataController {
 
     public async getRecordCount(ctx: RouterContext): Promise<void> {
         const { user } = ctx.state;
+        const {
+            tenant: tenant
+        } = ctx.query;
 
         let condition: IGetManyCondition = {};
 
-        if (isAdmin(user) || isTenantAdmin(user)) {
-            condition.tenant = user.tenant
-        } else {
+        if (!isAdmin(user) && !isTenantAdmin(user)) {
             throw new Unauthorized();
+        }
+      
+        if (tenant) {
+            if (user.tenant !== tenant) {
+                if (!isAdmin(user)) {
+                    throw new Unauthorized();
+                }
+            }
+        }
+
+        if (tenant) {
+            condition.tenant = tenant
+        } else if (isTenantAdmin(user)) {
+            condition.tenant = user.tenant
         }
 
         const total = await DataObject.countDocuments(condition)

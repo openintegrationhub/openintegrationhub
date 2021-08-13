@@ -109,7 +109,7 @@
           {
             "in": "query",
             "name": "tenant",
-            "description": "Used to retrieve data records that have specific Tenant ID. This requires ADMIN permissions",
+            "description": "Used to retrieve data records that have specific Tenant ID. Requires \"all\" or \"tenant.all\" permission.",
             "schema": {
               "type": "string"
             }
@@ -136,6 +136,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Required permissions missing."
           }
         }
       }
@@ -291,7 +294,7 @@
           "data"
         ],
         "summary": "Get status of data records by tenant.",
-        "description": "Get status of data records by tenant. Requires admin or tenant admin permissions.",
+        "description": "Get status of data records by tenant. Requires \"all\" or \"tenant.all\" permission.",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -307,6 +310,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Required permissions missing."
           }
         }
       }

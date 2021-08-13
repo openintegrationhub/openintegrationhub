@@ -412,7 +412,7 @@ describe('Mass Data Handling', () => {
                 .set('Authorization', this.auth)
                 .expect(200)).body
 
-            expect(body.data.totalRecords).to.equal(0 * PERSONS_SET_LENGTH);
+            expect(body.data.totalRecords).to.equal(4 * PERSONS_SET_LENGTH);
 
             nockIamIntrospection(tenantAdmin);
 
@@ -434,6 +434,9 @@ describe('Mass Data Handling', () => {
 
             body = (await this.request
                 .get('/data/status')
+                .query({
+                    tenant: "tenant2",
+                })
                 .set('Authorization', this.auth)
                 .expect(200)).body
     
@@ -447,6 +450,16 @@ describe('Mass Data Handling', () => {
                 .expect(200)).body
     
             expect(body.data.totalRecords).to.equal(1 * PERSONS_SET_LENGTH);
+
+            nockIamIntrospection(tenantAdmin2);
+
+            await this.request
+                .get('/data/status')
+                .query({
+                    tenant: "tenant1",
+                })
+                .set('Authorization', this.auth)
+                .expect(401)
 
         });
     });
