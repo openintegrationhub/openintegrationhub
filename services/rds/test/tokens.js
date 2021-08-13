@@ -35,6 +35,21 @@ module.exports = {
     },
   },
 
+  tenantAdminToken1: {
+    token: 'tenantAdminToken1',
+    value: {
+      sub: 'ta1',
+      _id: mongoose.Types.ObjectId(),
+      username: 'ta1@basaas.de',
+      role: 'TENANT_ADMIN',
+      firstname: 'Userxx1',
+      lastname: 'Useryy1',
+      permissions: ['tenant.all'],
+      tenant: t1,
+      iat: 1337,
+    },
+  },
+
   adminToken2: {
     token: 'adminToken2',
     value: {

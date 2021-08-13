@@ -1,12 +1,36 @@
+const { isAdmin, isTenantAdmin } = require('@openintegrationhub/iam-utils')
 const rawRecordDAO = require('../../../dao/raw-record')
 const { transformRecord, transformRecords } = require('./transform')
 
 module.exports = {
   async getStatus(req, res, next) {
+    const { tenant } = req.query
+
+    if (!isAdmin(req.user) && !isTenantAdmin(req.user)) {
+      return next({ status: 401 })
+    }
+
+    if (tenant) {
+      if (req.user.tenant !== tenant) {
+        if (!isAdmin(req.user)) {
+          return next({ status: 401 })
+        }
+      }
+    }
+
     try {
+      let totalRecords = 0
+      if (tenant) {
+        totalRecords = await rawRecordDAO.countByTenant(tenant)
+      } else if (isTenantAdmin(req.user)) {
+        totalRecords = await rawRecordDAO.countByTenant(req.user.tenant)
+      } else {
+        totalRecords = await rawRecordDAO.count(req.user)
+      }
+
       res.json({
         data: {
-          totalRecords: await rawRecordDAO.countByOwner(req.user),
+          totalRecords,
         },
       })
     } catch (err) {
@@ -31,14 +55,29 @@ module.exports = {
   },
 
   async getMany(req, res, next) {
-    const page = Math.max(0, req.query.page || 0)
+    let { tenant } = req.query
+    const page = Math.max(1, req.query.page || 0)
     const perPage = Math.max(0, req.query.perPage || 50)
 
+    if (!isAdmin(req.user) && !isTenantAdmin(req.user)) {
+      return next({ status: 401 })
+    }
+
+    if (tenant) {
+      if (req.user.tenant !== tenant) {
+        if (!isAdmin(req.user)) {
+          return next({ status: 401 })
+        }
+      }
+    } else {
+      tenant = req.user.tenant
+    }
+
     try {
-      const [records, total] = await rawRecordDAO.findByOwner(
-        req.user,
+      const [records, total] = await rawRecordDAO.findByTenant(
+        tenant,
         perPage,
-        page
+        page - 1
       )
 
       const meta = {

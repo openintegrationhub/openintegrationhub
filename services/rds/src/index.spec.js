@@ -7,7 +7,12 @@ const TransportMock = require('../test/mock/Transport')
 const { EVENT } = require('./constant')
 const Server = require('./server')
 
-const { userToken3, userToken2 } = require('../test/tokens')
+const {
+  adminToken1,
+  tenantAdminToken1,
+  userToken1,
+  userToken2,
+} = require('../test/tokens')
 
 let port
 let server
@@ -186,14 +191,14 @@ describe('RDS', () => {
       const result = (
         await request
           .get('/raw-record')
-          .set(...global.userAuth2)
+          .set(...global.adminAuth1)
           .expect(200)
       ).body
 
-      expect(result.data.length).toEqual(result.meta.total)
+      expect(result.data.length).toEqual(0)
     })
 
-    test('Mass data', async () => {
+    test('Mass data and permissions', async () => {
       const TOTAL = 200
       // add records for user2
       for (let i = 0; i < TOTAL; i++) {
@@ -202,11 +207,28 @@ describe('RDS', () => {
           nack: jest.fn(),
           payload: {
             rawRecordId: v4(),
+            tenant: userToken1.value.tenant,
             payload: JSON.stringify({
               foo: 'bar',
               counter: i,
             }),
-            userId: userToken3.value.sub,
+            userId: userToken1.value.sub,
+          },
+        })
+      }
+
+      for (let i = 0; i < TOTAL - 10; i++) {
+        await server.eventBus.trigger(EVENT.RAW_RECORD_CREATED, {
+          ack: jest.fn(),
+          nack: jest.fn(),
+          payload: {
+            rawRecordId: v4(),
+            tenant: userToken2.value.tenant,
+            payload: JSON.stringify({
+              foo: 'bar',
+              counter: i,
+            }),
+            userId: userToken2.value.sub,
           },
         })
       }
@@ -215,20 +237,169 @@ describe('RDS', () => {
         await request
           .get('/raw-record')
           .query({ page: 1, perPage: 150 })
-          .set(...global.userAuth3)
+          .set(...global.adminAuth1)
           .expect(200)
       ).body
 
+      result.data.forEach(
+        (record) => record.tenant === adminToken1.value.tenant.toString()
+      )
+
+      expect(result.data.length).toEqual(150)
       expect(result.meta.total).toEqual(TOTAL)
 
       result = (
         await request
-          .get('/raw-record/status')
-          .set(...global.userAuth3)
+          .get('/raw-record')
+          .query({
+            page: 1,
+            perPage: 150,
+            tenant: userToken2.value.tenant.toString(),
+          })
+          .set(...global.adminAuth1)
           .expect(200)
       ).body
 
-      expect(result.data.totalRecords).toEqual(TOTAL)
+      result.data.forEach(
+        (record) => record.tenant === userToken2.value.tenant.toString()
+      )
+
+      expect(result.data.length).toEqual(150)
+      expect(result.meta.total).toEqual(TOTAL - 10)
+
+      result = (
+        await request
+          .get('/raw-record')
+          .query({
+            page: 1,
+            perPage: 150,
+          })
+          .set(...global.tenantAdmin1)
+          .expect(200)
+      ).body
+
+      result.data.forEach(
+        (record) => record.tenant === tenantAdminToken1.value.tenant.toString()
+      )
+
+      expect(result.data.length).toEqual(150)
+      expect(result.meta.total).toEqual(TOTAL)
+
+      await request
+        .get('/raw-record')
+        .query({
+          page: 1,
+          perPage: 150,
+          tenant: tenantAdminToken1.value.tenant.toString(),
+        })
+        .set(...global.tenantAdmin1)
+        .expect(200)
+
+      await request
+        .get('/raw-record')
+        .query({
+          page: 1,
+          perPage: 150,
+          tenant: userToken2.value.tenant.toString(),
+        })
+        .set(...global.tenantAdmin1)
+        .expect(401)
+
+      await request
+        .get('/raw-record')
+        .query({
+          page: 1,
+          perPage: 150,
+          tenant: userToken2.value.tenant.toString(),
+        })
+        .set(...global.userAuth2)
+        .expect(401)
+
+      await request
+        .get('/raw-record')
+        .query({
+          page: 1,
+          perPage: 150,
+        })
+        .set(...global.userAuth2)
+        .expect(401)
+
+      // test status
+
+      result = (
+        await request
+          .get('/raw-record/status')
+          .set(...global.adminAuth1)
+          .expect(200)
+      ).body
+
+      expect(result.data.totalRecords).toEqual(396)
+
+      result = (
+        await request
+          .get('/raw-record/status')
+          .query({
+            tenant: userToken1.value.tenant.toString(),
+          })
+          .set(...global.adminAuth1)
+          .expect(200)
+      ).body
+
+      expect(result.data.totalRecords).toEqual(200)
+
+      result = (
+        await request
+          .get('/raw-record/status')
+          .query({
+            tenant: 'not existing',
+          })
+          .set(...global.adminAuth1)
+          .expect(200)
+      ).body
+
+      expect(result.data.totalRecords).toEqual(0)
+
+      result = (
+        await request
+          .get('/raw-record/status')
+          .query({
+            tenant: userToken2.value.tenant.toString(),
+          })
+          .set(...global.adminAuth1)
+          .expect(200)
+      ).body
+
+      expect(result.data.totalRecords).toEqual(190)
+
+      result = (
+        await request
+          .get('/raw-record/status')
+          .set(...global.tenantAdmin1)
+          .expect(200)
+      ).body
+
+      expect(result.data.totalRecords).toEqual(200)
+
+      await request
+        .get('/raw-record/status')
+        .query({
+          tenant: userToken2.value.tenant.toString(),
+        })
+        .set(...global.tenantAdmin1)
+        .expect(401)
+
+      await request
+        .get('/raw-record/status')
+        .query({
+          tenant: userToken2.value.tenant.toString(),
+        })
+        .set(...global.userAuth2)
+        .expect(401)
+
+      await request
+        .get('/raw-record/status')
+        .set(...global.userAuth2)
+        .expect(401)
     })
   })
 })
