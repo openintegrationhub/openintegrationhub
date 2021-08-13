@@ -32,7 +32,9 @@
             "Bearer": []
           }
         ],
-        "tags": ["flows"],
+        "tags": [
+          "flows"
+        ],
         "summary": "Retrieve all flows associated with the current user from the repository",
         "description": "This will only return Flows that are either directly associated with the user, or that are associated with a tenant that the user is also a member of. Requires the 'flows.read' permissions.",
         "operationId": "getFlows",
@@ -111,9 +113,13 @@
                   "properties": {
                     "data": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/Flow" }
+                      "items": {
+                        "$ref": "#/components/schemas/Flow"
+                      }
                     },
-                    "meta": { "$ref": "#/components/schemas/Meta" }
+                    "meta": {
+                      "$ref": "#/components/schemas/Meta"
+                    }
                   }
                 }
               }
@@ -131,7 +137,9 @@
             "Bearer": []
           }
         ],
-        "tags": ["flows"],
+        "tags": [
+          "flows"
+        ],
         "summary": "Add a new flow to the repository",
         "description": "This requires the 'flows.write' permissions. The new Flow will automatically be associated with the current user in the owners array, allowing editing and viewing by this user irrespective of tenancies.",
         "operationId": "addFlow",
@@ -143,8 +151,12 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": { "$ref": "#/components/schemas/Flow" },
-                    "meta": { "type": "object" }
+                    "data": {
+                      "$ref": "#/components/schemas/Flow"
+                    },
+                    "meta": {
+                      "type": "object"
+                    }
                   }
                 }
               }
@@ -172,7 +184,9 @@
             "Bearer": []
           }
         ],
-        "tags": ["flows"],
+        "tags": [
+          "flows"
+        ],
         "summary": "Find Flow by ID",
         "description": "Returns a single Flow by its ID, if the user is authorized to see it. This requires the 'flows.read' permission",
         "operationId": "getFlowById",
@@ -196,7 +210,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": { "$ref": "#/components/schemas/Flow" },
+                    "data": {
+                      "$ref": "#/components/schemas/Flow"
+                    },
                     "meta": {
                       "type": "object"
                     }
@@ -217,7 +233,9 @@
             "Bearer": []
           }
         ],
-        "tags": ["flows"],
+        "tags": [
+          "flows"
+        ],
         "summary": "Deletes a flow",
         "description": "Entirely deletes a Flow from the repository. This cannot be reverted. Requires the 'flows.write' permission.",
         "operationId": "deleteFlow",
@@ -255,7 +273,9 @@
             "Bearer": []
           }
         ],
-        "tags": ["flows"],
+        "tags": [
+          "flows"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -279,8 +299,12 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": { "$ref": "#/components/schemas/Flow" },
-                    "meta": { "type": "object" }
+                    "data": {
+                      "$ref": "#/components/schemas/Flow"
+                    },
+                    "meta": {
+                      "type": "object"
+                    }
                   }
                 }
               }
@@ -314,7 +338,9 @@
             "Bearer": []
           }
         ],
-        "tags": ["flows"],
+        "tags": [
+          "flows"
+        ],
         "summary": "Start a flow",
         "description": "Initiates the flow's integration process by publishing an appropriate event to the event bus. Requires the 'flows.control' permission.",
         "operationId": "startFlow",
@@ -351,7 +377,9 @@
                         }
                       }
                     },
-                    "meta": { "type": "object" }
+                    "meta": {
+                      "type": "object"
+                    }
                   }
                 }
               }
@@ -380,7 +408,9 @@
             "Bearer": []
           }
         ],
-        "tags": ["flows"],
+        "tags": [
+          "flows"
+        ],
         "summary": "Stop a flow",
         "description": "Stops the flow's integration process by publishing an appropriate event to the event bus. Requires the 'flows.control' permission.",
         "operationId": "stopFlow",
@@ -417,7 +447,9 @@
                         }
                       }
                     },
-                    "meta": { "type": "object" }
+                    "meta": {
+                      "type": "object"
+                    }
                   }
                 }
               }
@@ -445,7 +477,9 @@
             "Bearer": []
           }
         ],
-        "tags": ["flows"],
+        "tags": [
+          "flows"
+        ],
         "summary": "Get flow step's logs",
         "description": "Returns logs produced by a certain step of the flow",
         "parameters": [
@@ -507,7 +541,9 @@
                           },
                           "message": {
                             "oneOf": [
-                              { "type": "string" },
+                              {
+                                "type": "string"
+                              },
                               {
                                 "type": "object",
                                 "properties": {
@@ -559,7 +595,9 @@
       "get": {
         "x-swagger-router-controller": "healthcheck",
         "security": [],
-        "tags": ["healthcheck"],
+        "tags": [
+          "healthcheck"
+        ],
         "summary": "Performs a healthcheck",
         "description": "This will return 200 and a JSON object with relevant status information when the service is running and healthy.",
         "responses": {
@@ -713,7 +751,10 @@
                   "type": "string"
                 }
               },
-              "required": ["mapper_type", "condition"]
+              "required": [
+                "mapper_type",
+                "condition"
+              ]
             }
           }
         }
@@ -729,7 +770,11 @@
     "schemas": {
       "MutableFlow": {
         "type": "object",
-        "required": ["name", "graph", "type"],
+        "required": [
+          "name",
+          "graph",
+          "type"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -739,13 +784,19 @@
             "type": "string",
             "example": "This flow polls for persons and posts them on webhoo.site."
           },
+          "tenant": {
+            "type": "string"
+          },
           "graph": {
             "$ref": "#/components/schemas/FlowGraph"
           },
           "type": {
             "type": "string",
             "description": "Flow type",
-            "enum": ["ordinary", "realtime"],
+            "enum": [
+              "ordinary",
+              "realtime"
+            ],
             "example": "ordinary"
           },
           "cron": {
@@ -768,7 +819,11 @@
           },
           {
             "type": "object",
-            "required": ["id", "createdAt", "updatedAt"],
+            "required": [
+              "id",
+              "createdAt",
+              "updatedAt"
+            ],
             "properties": {
               "id": {
                 "type": "string"
@@ -776,7 +831,12 @@
               "status": {
                 "type": "string",
                 "description": "Flow status, set automatically in response to start/stop commands",
-                "enum": ["active", "inactive", "starting", "stopping"],
+                "enum": [
+                  "active",
+                  "inactive",
+                  "starting",
+                  "stopping"
+                ],
                 "example": "inactive"
               },
               "createdAt": {
@@ -803,7 +863,10 @@
             "description": "An array of all components involved in this flow",
             "items": {
               "type": "object",
-              "required": ["id", "command"],
+              "required": [
+                "id",
+                "command"
+              ],
               "example": [
                 {
                   "id": "step_1",
@@ -859,7 +922,10 @@
             "description": "An array of edges linking nodes together, determining the order in which nodes are activated",
             "items": {
               "type": "object",
-              "required": ["source", "target"],
+              "required": [
+                "source",
+                "target"
+              ],
               "properties": {
                 "id": {
                   "type": "string"
@@ -913,7 +979,10 @@
       },
       "Owner": {
         "type": "object",
-        "required": ["id", "type"],
+        "required": [
+          "id",
+          "type"
+        ],
         "properties": {
           "id": {
             "type": "string",

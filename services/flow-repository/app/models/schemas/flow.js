@@ -62,6 +62,7 @@ const flow = new Schema({
   description: { type: String, maxlength: 100 },
   graph: { type: graph, required: [true, 'Flows require a graph.'] },
   type: { type: String, maxlength: 30 },
+  tenant: String,
   owners: { type: [owner] },
   status: { type: String, default: 'inactive' },
   cron: { type: String, maxlength: 20 },
