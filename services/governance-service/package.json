@@ -1,6 +1,6 @@
 {
   "name": "governance-service",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Stores provenance events and other governance related data.",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "bunyan-format": "^0.2.1",
     "cors": "^2.8.5",
     "cronstrue": "^1.94.0",
-    "dot-prop": "^5.3.0",
+    "dot-prop": "^6.0.1",
     "express": "^4.17.1",
     "mongoose": "5.11.8",
     "request": "^2.87.0",
