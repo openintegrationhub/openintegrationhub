@@ -26,7 +26,7 @@ export interface IDataObjectDocument extends Document {
     owners?: IOwnerDocument[];
 }
 
-const mofificationHistorySchema = new Schema({
+const modificationHistorySchema = new Schema({
     user: {
         type: String,
         required: true
@@ -52,7 +52,7 @@ const refsSchema = new Schema({
         type: String,
         required: true
     },
-    modificationHistory: [mofificationHistorySchema]
+    modificationHistory: [modificationHistorySchema]
 }, {
     _id: false
 });
