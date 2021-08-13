@@ -194,6 +194,8 @@ class StoredFunctionCache {
         }
         delete this.processes[id];
         delete this.storedFunctions[name][i];
+        this.storedFunctions[name].splice(i, 1);
+        i -= 1;
       }
     }
     if (this.storedFunctions[name].length === 0) delete this.storedFunctions[name];
