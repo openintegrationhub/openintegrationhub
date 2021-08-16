@@ -1,3 +1,5 @@
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../../', '.env') })
 const fetch = require('node-fetch')
 
 const { services } = require('../config')
@@ -8,14 +10,21 @@ const generateProduct = require('./generate-product')
 const PERSONS_SET_LENGTH = 10
 const PRODUCTS_SET_LENGTH = 10
 
-// use local setup as target for import
-const iamBase = null // will take local iam api base
-const metaDataBase = `http://localhost:${services.metaDataRepository.externalPort}/api/v1`
-const dataHubBase = `http://localhost:${services.dataHub.externalPort}`
+// use dev cluster setup
 
-const username = 't1_admin@local.dev'
-const password = 'password'
-const domainId = '61168848e8c7c7002bd91861'
+const iamBase = 'https://iam.openintegrationhub.com'
+const metaDataBase = 'https://metadata.openintegrationhub.com/api/v1'
+const dataHubBase = 'https://data-hub.openintegrationhub.com'
+const domainId = '5db82cdb0e1048001a39711a'
+
+// use local setup as target for import
+// const iamBase = null // will take local iam api base
+// const metaDataBase = `http://localhost:${services.metaDataRepository.externalPort}/api/v1`
+// const dataHubBase = `http://localhost:${services.dataHub.externalPort}`
+// const domainId = '61168848e8c7c7002bd91861'
+
+const username = process.env.DEV_CLUSTER_USERNAME || 't1_admin@local.dev'
+const password = process.env.DEV_CLUSTER_PASSWORD || 'password'
 
 const personSchemaUri = `${metaDataBase}/domains/${domainId}/schemas/addresses/personV2.json`
 const productSchemaUri = `${metaDataBase}/domains/${domainId}/schemas/products/product.json`
@@ -28,7 +37,7 @@ async function run() {
 
   // login as owner
   const { token } = await login({
-    iamBase,
+    customIamBase: iamBase,
     username,
     password,
   })
