@@ -6,7 +6,7 @@ WORKDIR /usr/src/governance-service
 
 RUN apk add --no-cache bash
 
-COPY package.json yarn.lock ./
+COPY package.json ./
 COPY lib/event-bus lib/event-bus
 COPY services/governance-service/package.json ./services/governance-service/
 COPY services/governance-service/app services/governance-service/app
@@ -17,11 +17,11 @@ COPY services/governance-service/app services/governance-service/app
 # that's not required in runtime
 FROM base AS dependencies
 RUN apk add --no-cache make gcc g++ python
-RUN yarn install --production
+RUN npm install --production
 
 FROM base AS release
 COPY --from=dependencies /usr/src/governance-service/node_modules ./node_modules
-RUN rm yarn.lock
+# RUN rm package-lock.json
 
 RUN chown -R node:node .
 USER node

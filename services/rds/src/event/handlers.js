@@ -13,9 +13,11 @@ function transformRecord(event) {
 
   let userId = null
   let payload = null
+  let tenant = null
 
   // optional
   if (event.payload.userId) userId = event.payload.userId
+  if (event.payload.tenant) tenant = event.payload.tenant
 
   if (
     typeof event.payload.payload === 'object' &&
@@ -26,7 +28,7 @@ function transformRecord(event) {
     payload = event.payload.payload
   }
 
-  return [userId, rawRecordId, payload]
+  return [userId, tenant, rawRecordId, payload]
 }
 
 module.exports = {

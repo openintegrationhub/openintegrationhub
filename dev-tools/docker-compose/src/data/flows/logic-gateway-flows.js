@@ -1,17 +1,17 @@
 module.exports = [
   {
-    name: 'lg-test-flow',
+    name: 'logic-gateway-flow',
     graph: {
       nodes: [
         {
-          id: 'step_1',
-          componentId: 'dummy',
+          id: 'trigger',
+          componentId: 'test-component-local',
           function: 'testTrigger',
         },
         {
-          id: 'step_2',
+          id: 'logic_gateway',
           componentId: 'logicGateway',
-          function: 'processStep',
+          function: 'exec',
           nodeSettings: {
             devMode: true,
           },
@@ -27,52 +27,52 @@ module.exports = [
                     type: 'ref',
                     data: {
                       flowId: 123,
-                      stepId: 'step_1',
+                      stepId: 'trigger',
                       field: 'username',
                     },
                   },
                   value: {
                     type: 'string',
-                    data: 'Some LG Data',
+                    data: 'Bert Meier',
                   },
                 },
               ],
               actions: {
                 positive: {
                   command: 'run-next-steps',
-                  parameters: ['123:step_3'],
+                  parameters: ['123:positive'],
                 },
                 negative: {
                   command: 'run-next-steps',
-                  parameters: ['123:step_4'],
+                  parameters: ['123:negative'],
                 },
               },
             },
           },
         },
         {
-          id: 'step_3',
-          componentId: 'dummy',
+          id: 'positive',
+          componentId: 'test-component-local',
           function: 'testAction',
         },
         {
-          id: 'step_4',
-          componentId: 'dummy',
+          id: 'negative',
+          componentId: 'test-component-local',
           function: 'testAction',
         },
       ],
       edges: [
         {
-          source: 'step_1',
-          target: 'step_2',
+          source: 'trigger',
+          target: 'logic_gateway',
         },
         {
-          source: 'step_2',
-          target: 'step_3',
+          source: 'logic_gateway',
+          target: 'positive',
         },
         {
-          source: 'step_2',
-          target: 'step_4',
+          source: 'logic_gateway',
+          target: 'negative',
         },
       ],
     },
@@ -84,43 +84,4 @@ module.exports = [
       },
     ],
   },
-  // {
-  //   name: 'dummy-flow',
-  //   graph: {
-  //     nodes: [
-  //       {
-  //         id: 'step_1',
-  //         componentId: 'dummy',
-  //         function: 'testTrigger',
-  //       },
-  //       {
-  //         id: 'step_2',
-  //         componentId: 'dummy',
-  //         function: 'testAction',
-  //       },
-  //       {
-  //         id: 'step_3',
-  //         componentId: 'dummy',
-  //         function: 'testAction',
-  //       },
-  //     ],
-  //     edges: [
-  //       {
-  //         source: 'step_1',
-  //         target: 'step_2',
-  //       },
-  //       {
-  //         source: 'step_2',
-  //         target: 'step_3',
-  //       },
-  //     ],
-  //   },
-
-  //   owners: [
-  //     {
-  //       id: 't1_admin@local.dev',
-  //       type: 'user',
-  //     },
-  //   ],
-  // },
 ]

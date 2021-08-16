@@ -38,12 +38,6 @@ async function processAction(
   try {
     const { rule } = cfg
 
-    console.log(msg)
-    console.log(cfg)
-    console.log(snapshot)
-    console.log(incomingMessageHeaders)
-    console.log(tokenData)
-
     const { apiKey, flowId } = tokenData
 
     const snapshotData = await getSnapshotDataForFlow({
