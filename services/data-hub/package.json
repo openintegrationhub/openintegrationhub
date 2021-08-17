@@ -51,6 +51,7 @@
     "backend-commons-lib": "1.1.3",
     "bunyan": "1.8.15",
     "faker": "5.5.3",
+    "jsonata": "1.8.4",
     "koa": "2.13.1",
     "koa-bodyparser": "4.3.0",
     "koa-bunyan-logger": "2.1.0",

@@ -8,6 +8,7 @@ import nock from 'nock';
 
 import scoreObject from '../handlers/scorer';
 import tagObject from '../handlers/tagger';
+import formatObject from '../handlers/formatter';
 
 function nockIamIntrospection({
     status = 200,
@@ -168,6 +169,19 @@ describe.only('Data Enrichment and Cleansing', () => {
 
             expect(result.content.firstName).to.be.equal('James');
             expect(result.content.lastName).to.be.equal('Blond');
+        });
+    });
+
+    describe('formatter', () => {
+        it('should format test entry correctly', async function () {
+            const result = formatObject(testEntry, [{expression: '{ "fullName": firstName & " " & lastName }' }]);
+
+            expect(result.domainId).to.exist;
+            expect(result.schemaUri).to.exist;
+
+            expect(result.content).to.be.an('object');
+
+            expect(result.content.fullName).to.be.equal('James Blond');
         });
     });
 
