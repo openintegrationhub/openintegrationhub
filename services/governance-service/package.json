@@ -1,6 +1,6 @@
 {
   "name": "governance-service",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Stores provenance events and other governance related data.",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "test": "jest --runInBand",
     "lint_fix": "eslint app test --fix",
     "build": "echo \"No Build defined\"",
-    "build:docker": "docker build -t openintegrationhub/governance-service:latest -f Dockerfile ."
+    "build:docker": "docker build -t openintegrationhub/governance-service:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
     "@openintegrationhub/event-bus": "^1.2.5",
@@ -25,6 +25,8 @@
     "dot-prop": "^6.0.1",
     "express": "^4.17.1",
     "mongoose": "5.11.8",
+    "request": "^2.87.0",
+    "request-promise": "^4.2.5",
     "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
