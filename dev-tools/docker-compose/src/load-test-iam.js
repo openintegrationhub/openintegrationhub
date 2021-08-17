@@ -36,8 +36,6 @@ async function run() {
     (account) => account.firstname === 'default'
   )
 
-  // const { token } = await login({ username, password })
-
   process.env.INTROSPECT_ENDPOINT_BASIC = `${iamBase}/tokens/introspect`
   process.env.IAM_BASE_URL = iamBase
   // process.env.IAM_TOKEN = token
@@ -72,7 +70,7 @@ async function run() {
   // get flows
 }
 
-; (async () => {
+;(async () => {
   try {
     await run()
   } catch (err) {

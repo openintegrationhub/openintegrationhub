@@ -47,12 +47,14 @@ async function run() {
     const owner = find(tenant.users, { username: component.owners[0].id })
 
     // login as owner
-    const { token, id } = await login(owner)
+    const { token } = await login(owner)
+    const userData = await getUserInfo(token)
+
     const data = { ...component }
 
     data.owners = [
       {
-        id,
+        id: userData._id,
         type: 'user',
       },
     ]
@@ -83,17 +85,17 @@ async function run() {
     const owner = find(tenant.users, { username: flow.owners[0].id })
 
     // login as owner
-    const { token, id } = await login(owner)
+    const { token } = await login(owner)
+    const userData = await getUserInfo(token)
+
     const data = { ...flow }
 
     data.owners = [
       {
-        id,
+        id: userData._id,
         type: 'user',
       },
     ]
-
-    const userData = await getUserInfo(token)
 
     data.graph.nodes = data.graph.nodes.map((node) => ({
       ...node,
