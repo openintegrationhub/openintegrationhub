@@ -26,7 +26,7 @@ module.exports = [
                   key: {
                     type: 'ref',
                     data: {
-                      flowId: 123,
+                      flowId: '$flow_ref(logic-gateway-flow)',
                       stepId: 'trigger',
                       field: 'username',
                     },
@@ -40,11 +40,11 @@ module.exports = [
               actions: {
                 positive: {
                   command: 'run-next-steps',
-                  parameters: ['123:positive'],
+                  parameters: ['$flow_ref(simple-flow):trigger'],
                 },
                 negative: {
                   command: 'run-next-steps',
-                  parameters: ['123:negative'],
+                  parameters: ['$flow_ref(logic-gateway-flow):negative'],
                 },
               },
             },
@@ -73,6 +73,45 @@ module.exports = [
         {
           source: 'logic_gateway',
           target: 'negative',
+        },
+      ],
+    },
+
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    name: 'simple-flow',
+    graph: {
+      nodes: [
+        {
+          id: 'trigger',
+          componentId: 'test-component-local',
+          function: 'testTrigger',
+        },
+        {
+          id: 'action1',
+          componentId: 'test-component-local',
+          function: 'testAction',
+        },
+        {
+          id: 'action2',
+          componentId: 'test-component-local',
+          function: 'testAction',
+        },
+      ],
+      edges: [
+        {
+          source: 'trigger',
+          target: 'action1',
+        },
+        {
+          source: 'trigger',
+          target: 'action2',
         },
       ],
     },
