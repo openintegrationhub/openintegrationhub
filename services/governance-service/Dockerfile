@@ -2,28 +2,22 @@ FROM node:12-alpine AS base
 LABEL NAME="oih-governance-service"
 LABEL MAINTAINER Hansjörg Schmidt "hschmidt@wice.de"
 
-WORKDIR /usr/src/governance-service
+ARG local
 
-RUN apk add --no-cache bash
-
-COPY package.json ./
-COPY lib/event-bus lib/event-bus
-COPY services/governance-service/package.json ./services/governance-service/
-COPY services/governance-service/app services/governance-service/app
-
-# Image for building and installing dependencies
-# node-gyp is required as dependency by some npm package
-# but node-gyp requires in build time python, build-essential, ....
-# that's not required in runtime
-FROM base AS dependencies
-RUN apk add --no-cache make gcc g++ python
-RUN npm install --production
-
-FROM base AS release
-COPY --from=dependencies /usr/src/governance-service/node_modules ./node_modules
-# RUN rm package-lock.json
-
-RUN chown -R node:node .
+ADD package.json /tmp/package.json
+RUN apk --no-cache add \
+    python \
+    make \
+    g++ \
+    libc6-compat
+RUN if [ "$local" == "true" ]; \
+    then cd /tmp && npm install ; \
+    else cd /tmp && npm install --production ; \
+    fi
+WORKDIR /usr/src/app
+ADD . /usr/src/app
+RUN ln -s /tmp/node_modules /usr/src/app/ && chown -R 1000:1000 /usr/src/app
+# just for start
 USER node
 
-CMD ["yarn", "--cwd", "services/governance-service", "start"]
+CMD npm run -s start
