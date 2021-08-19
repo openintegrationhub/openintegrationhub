@@ -222,6 +222,39 @@ module.exports = [
       image: 'oih/test-component:latest',
     },
     isGlobal: true,
+    specialFlags: {
+      privilegedComponent: true,
+    },
+    access: 'public',
+    name: 'logicGateway-global',
+    description: 'This is an example logic gateway component',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: true,
     access: 'public',
     name: 'test-component',
     description:

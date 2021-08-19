@@ -136,7 +136,6 @@ async function run() {
 
     const flowData = (await response.json()).data
     flowCache[flowData.id] = flowData
-    console.log(JSON.stringify(flowData))
   }
 
   const flowRefRegex = new RegExp(/\$flow_ref\((.+)\)/)
