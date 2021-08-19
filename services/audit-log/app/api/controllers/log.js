@@ -16,7 +16,7 @@ const router = express.Router();
 
 const log = require('../../config/logger'); // eslint-disable-line
 
-// Gets all flows
+// Gets all logs
 router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
   let pageSize = 10;
   let pageNumber = 1;
@@ -44,9 +44,7 @@ router.get('/', jsonParser, can(config.logReadPermission), async (req, res) => {
     sortField,
     sortOrder);
 
-  if (response.data.length === 0 && !res.headersSent) {
-    return res.status(404).send({ errors: [{ message: 'No logs found', code: 404 }] });
-  } if (!res.headersSent) {
+  if (!res.headersSent) {
     response.meta.page = pageNumber;
     response.meta.perPage = pageSize;
     response.meta.totalPages = Math.ceil(response.meta.total / pageSize);

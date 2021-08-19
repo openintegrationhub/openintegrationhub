@@ -124,9 +124,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "No flows associated with the current user could be found in the repository."
           }
         }
       },
