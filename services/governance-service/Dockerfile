@@ -2,22 +2,34 @@ FROM node:12-alpine AS base
 LABEL NAME="oih-governance-service"
 LABEL MAINTAINER Hansjörg Schmidt "hschmidt@wice.de"
 
-ARG local
-
-ADD package.json /tmp/package.json
-RUN apk --no-cache add \
-    python \
-    make \
-    g++ \
-    libc6-compat
-RUN if [ "$local" == "true" ]; \
-    then cd /tmp && npm install ; \
-    else cd /tmp && npm install --production ; \
-    fi
 WORKDIR /usr/src/app
-ADD . /usr/src/app
-RUN ln -s /tmp/node_modules /usr/src/app/ && chown -R 1000:1000 /usr/src/app
-# just for start
+
+RUN apk update && apk add --no-cache bash
+
+COPY yarn.lock ./
+COPY services/governance-service/package.json ./
+COPY services/governance-service/app ./app
+
+FROM base AS dependencies
+
+RUN apk update && apk add --no-cache \
+    make \
+    gcc \
+    g++ \
+    python \
+    bash
+
+RUN if [ "$local" == "true" ]; \
+    then yarn install ; \
+    else yarn install --production ; \
+    fi
+
+FROM base AS release
+
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+RUN rm yarn.lock
+
+RUN chown -R node:node .
 USER node
 
-CMD npm run -s start
+CMD ["yarn", "start"]
