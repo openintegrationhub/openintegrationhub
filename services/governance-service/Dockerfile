@@ -2,6 +2,8 @@ FROM node:12-alpine AS base
 LABEL NAME="oih-governance-service"
 LABEL MAINTAINER Hansjörg Schmidt "hschmidt@wice.de"
 
+ARG local
+
 WORKDIR /usr/src/app
 
 RUN apk update && apk add --no-cache bash
