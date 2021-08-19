@@ -113,10 +113,6 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
 
   const response = await storage.getProvenanceEvents(req.user, pageSize, pageNumber, filters, sortField, sortOrder, from, until);
 
-  if (response.data.length === 0 && !res.headersSent) {
-    return res.status(404).send({ errors: [{ message: 'No ProvenanceEvents found', code: 404 }] });
-  }
-
   response.meta.page = pageNumber;
   response.meta.perPage = pageSize;
   response.meta.totalPages = Math.ceil(response.meta.total / pageSize);

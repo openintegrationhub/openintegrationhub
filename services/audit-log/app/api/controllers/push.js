@@ -22,7 +22,7 @@ const log = require('../../config/logger'); // eslint-disable-line
 // ajv.addSchema(payloadSchema);
 // const validator = ajv.compile(schema);
 
-// Gets all logs
+// Create new log
 router.post('/', jsonParser, can(config.logPushPermission), async (req, res) => {
   const message = req.body;
 

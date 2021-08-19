@@ -567,9 +567,8 @@ describe('Flow Operations', () => {
       .get('/flows/')
       .set('Authorization', 'Bearer guestToken');
 
-    expect(res.status).toEqual(404);
-    expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No flows found');
+    expect(res.status).toEqual(200);
+    expect(res.body.data).toHaveLength(0);
   });
 
   test('should not show the flow to another users get', async () => {
