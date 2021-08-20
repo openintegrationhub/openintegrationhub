@@ -81,6 +81,94 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
 
+  test('should refuse to pass if no matching permission is found', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'Customer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+          permission: [{
+            action: 'publish',
+            constraint: {
+              leftOperand: 'categories.label',
+              operator: 'equals',
+              rightOperand: 'Customer',
+            },
+          }],
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
+  test('should refuse to pass if no permission at all is present', async () => {
+    const body = {
+      data: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        birthday: '01.01.1970',
+        categories: [
+          {
+            label: 'Somecategory',
+          },
+          {
+            label: 'Customer',
+          },
+        ],
+      },
+      metadata: {
+        applicationUid: 'google',
+        recordUid: 'people/q308tz8adv088q8z',
+        policy: {
+        },
+      },
+    };
+
+    const res = await request
+      .post('/applyPolicy')
+      .query({
+        action: 'distribute',
+      })
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.passes).toEqual(false);
+    expect(res.body.data.firstName).toEqual('Jane');
+    expect(res.body.data.lastName).toEqual('Doe');
+    expect(res.body.data.birthday).toEqual('01.01.1970');
+  });
+
   test('should verify a simple constraint with equals', async () => {
     const body = {
       data: {
@@ -276,7 +364,7 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
 
-  test('should verify a simple constraint with smallerThen', async () => {
+  test('should verify a simple constraint with smallerThan', async () => {
     const body = {
       data: {
         firstName: 'Jane',
@@ -291,7 +379,7 @@ describe('applyPolicy Operations', () => {
             action: 'distribute',
             constraint: {
               leftOperand: 'timestamp',
-              operator: 'smallerThen',
+              operator: 'smallerThan',
               rightOperand: 12345,
             },
           }],
@@ -317,7 +405,7 @@ describe('applyPolicy Operations', () => {
   });
 
 
-  test('should apply a simple constraint with smallerThen', async () => {
+  test('should apply a simple constraint with smallerThan', async () => {
     const body = {
       data: {
         firstName: 'Jane',
@@ -332,7 +420,7 @@ describe('applyPolicy Operations', () => {
             action: 'distribute',
             constraint: {
               leftOperand: 'timestamp',
-              operator: 'smallerThen',
+              operator: 'smallerThan',
               rightOperand: 12345,
             },
           }],
@@ -359,7 +447,7 @@ describe('applyPolicy Operations', () => {
 
   // ////
 
-  test('should verify a simple constraint with biggerThen', async () => {
+  test('should verify a simple constraint with biggerThan', async () => {
     const body = {
       data: {
         firstName: 'Jane',
@@ -374,7 +462,7 @@ describe('applyPolicy Operations', () => {
             action: 'distribute',
             constraint: {
               leftOperand: 'timestamp',
-              operator: 'biggerThen',
+              operator: 'biggerThan',
               rightOperand: 1234,
             },
           }],
@@ -400,7 +488,7 @@ describe('applyPolicy Operations', () => {
   });
 
 
-  test('should apply a simple constraint with biggerThen', async () => {
+  test('should apply a simple constraint with biggerThan', async () => {
     const body = {
       data: {
         firstName: 'Jane',
@@ -415,7 +503,7 @@ describe('applyPolicy Operations', () => {
             action: 'distribute',
             constraint: {
               leftOperand: 'timestamp',
-              operator: 'biggerThen',
+              operator: 'biggerThan',
               rightOperand: 12345,
             },
           }],
