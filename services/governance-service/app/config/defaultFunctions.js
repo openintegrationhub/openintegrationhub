@@ -128,13 +128,13 @@ const defaultFunctions = [
     },
   },
   {
-    name: 'smallerThen',
+    name: 'smallerThan',
     code: (data, permission) => {
       let passes = false;
       const returnData = Object.assign({}, data);
 
       if (permission.constraint && permission.constraint.operator) {
-        if (permission.constraint.operator === 'smallerThen') {
+        if (permission.constraint.operator === 'smallerThan') {
           const result = getValuesFromData(returnData, permission.constraint.leftOperand);
           if (result.found) {
             if (Array.isArray(result.value)) {
@@ -161,13 +161,13 @@ const defaultFunctions = [
     },
   },
   {
-    name: 'biggerThen',
+    name: 'biggerThan',
     code: (data, permission) => {
       let passes = false;
       const returnData = Object.assign({}, data);
 
       if (permission.constraint && permission.constraint.operator) {
-        if (permission.constraint.operator === 'biggerThen') {
+        if (permission.constraint.operator === 'biggerThan') {
           const result = getValuesFromData(returnData, permission.constraint.leftOperand);
           if (result.found) {
             if (Array.isArray(result.value)) {
