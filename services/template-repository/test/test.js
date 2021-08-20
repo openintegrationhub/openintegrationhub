@@ -551,9 +551,8 @@ describe('Template Operations', () => {
       .get('/templates/')
       .set('Authorization', 'Bearer guestToken');
 
-    expect(res.status).toEqual(404);
+    expect(res.status).toEqual(200);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No templates found');
   });
 
   test('should not show the template to another users get', async () => {
