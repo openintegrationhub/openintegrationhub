@@ -117,10 +117,6 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
 
   const response = await storage.getFlows(req.user, pageSize, pageNumber, searchString, filters, sortField, sortOrder);
 
-  if (response.data.length === 0 && !res.headersSent) {
-    return res.status(404).send({ errors: [{ message: 'No flows found', code: 404 }] });
-  }
-
   response.meta.page = pageNumber;
   response.meta.perPage = pageSize;
   response.meta.totalPages = Math.ceil(response.meta.total / pageSize);

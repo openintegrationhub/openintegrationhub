@@ -113,9 +113,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "No flows templates associated with the current user could be found in the repository."
           }
         }
       },
@@ -207,7 +204,7 @@
             }
           },
           "404": {
-            "description": "No Flow with this id was found."
+            "description": "Template not found"
           }
         }
       },
@@ -501,7 +498,7 @@
             "description": "User is not authorised to get logs."
           },
           "404": {
-            "description": "No Flow with this id was found."
+            "description": "Template not found"
           }
         }
       }

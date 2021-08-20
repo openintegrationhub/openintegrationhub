@@ -219,8 +219,9 @@ describe('Log Operations', () => {
       })
       .set('Authorization', 'Bearer adminToken');
 
-    expect(res.status).toEqual(404);
+    expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
+    expect(res.body.data).toHaveLength(0);
   });
 
   test('should find no logs when filtering over an absent attribute', async () => {
@@ -233,8 +234,9 @@ describe('Log Operations', () => {
       })
       .set('Authorization', 'Bearer adminToken');
 
-    expect(res.status).toEqual(404);
+    expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
+    expect(res.body.data).toHaveLength(0);
   });
 
   test('should anonymyse a user', async () => {
