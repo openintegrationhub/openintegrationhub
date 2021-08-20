@@ -117,7 +117,7 @@ router.post('/', jsonParser, async (req, res) => {
   }
 
   let result = {
-    passes: true,
+    passes: false,
     data,
   };
 
@@ -145,7 +145,6 @@ router.post('/', jsonParser, async (req, res) => {
   }
 
   // Repeat the process with permissions and their constraints
-
   if (metadata.policy.permission && metadata.policy.permission.length) {
     for (let i = 0; i < metadata.policy.permission.length; i += 1) {
       const currentPermission = metadata.policy.permission[i];
@@ -159,9 +158,14 @@ router.post('/', jsonParser, async (req, res) => {
         if (passes === false) {
           result.passes = false;
           break;
+        } else {
+          result.passes = true;
         }
       }
     }
+  } else if (action) {
+    // Default to false if no permissions at all are present.
+    result.passes = false;
   }
 
   return res.status(200).send(result);
