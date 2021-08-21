@@ -92,6 +92,12 @@ spec:
       - backend:
           serviceName: app-directory
           servicePort: 3000
+  - host: workflow-repository.openintegrationhub.com
+    http:
+      paths:
+      - backend:
+          serviceName: workflow-repository
+          servicePort: 3000
   - host: grafana.openintegrationhub.com
     http:
       paths:

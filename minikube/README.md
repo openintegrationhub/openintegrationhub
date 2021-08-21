@@ -130,6 +130,7 @@ your_minikube_ip attachment-storage-service.example.com
 your_minikube_ip data-hub.example.com
 your_minikube_ip ils.example.com
 your_minikube_ip web-ui.example.com
+your_minikube_ip workflow-repository.example.com
 ```
 
 ## Identity and Access Management Deployment

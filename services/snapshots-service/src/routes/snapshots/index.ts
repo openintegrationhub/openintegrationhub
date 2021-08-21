@@ -9,6 +9,7 @@ export default () => {
     return new KoaRouter()
         .use(bodyParser())
         // .use(koaMiddleware)
+        .get('/workflows/:workflowId', (ctx: RouterContext) => controller.getAllByWorkflow(ctx))
         .get('/flows/:flowId/steps', (ctx: RouterContext) => controller.getAll(ctx))
         .get('/flows/:flowId/steps/:stepId', (ctx: RouterContext) => controller.getOne(ctx))
         .delete('/flows/:flowId/steps/:stepId', (ctx: RouterContext) => controller.deleteOne(ctx))

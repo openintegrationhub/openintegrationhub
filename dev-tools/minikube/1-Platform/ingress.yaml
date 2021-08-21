@@ -97,3 +97,9 @@ spec:
       - backend:
           serviceName: dispatcher-service
           servicePort: 3013
+  - host: workflow-repository.example.com
+    http:
+      paths:
+        - backend:
+            serviceName: workflow-repository
+            servicePort: 3000
