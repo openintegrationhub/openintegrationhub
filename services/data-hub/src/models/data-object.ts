@@ -81,7 +81,10 @@ const dataObjectSchema = new Schema({
         type: Schema.Types.Mixed
     },
     refs: [refsSchema],
-    owners: [ownerSchema]
+    owners: [ownerSchema],
+    meta: {
+      type: Schema.Types.Mixed
+    }
 }, {
     timestamps: true
 });
