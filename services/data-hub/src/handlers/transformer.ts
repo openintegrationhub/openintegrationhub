@@ -1,6 +1,6 @@
 const jsonata = require('jsonata');
 
-export default function formatObject(object, fields) {
+export default function transformObject(object, fields) {
 
   if(!object || !object.content) {
     console.debug('Content or dataObject not set', object);
