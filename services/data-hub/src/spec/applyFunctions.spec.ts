@@ -8,7 +8,7 @@ import nock from 'nock';
 
 import scoreObject from '../handlers/scorer';
 import tagObject from '../handlers/tagger';
-import formatObject from '../handlers/formatter';
+import transformObject from '../handlers/transformer';
 
 function nockIamIntrospection({
     status = 200,
@@ -172,9 +172,9 @@ describe.only('Data Enrichment and Cleansing', () => {
         });
     });
 
-    describe('formatter', () => {
-        it('should format test entry correctly', async function () {
-            const result = formatObject(testEntry, [{expression: '{ "fullName": firstName & " " & lastName }' }]);
+    describe('transformer', () => {
+        it('should transform test entry correctly', async function () {
+            const result = transformObject(testEntry, [{expression: '{ "fullName": firstName & " " & lastName }' }]);
 
             expect(result.domainId).to.exist;
             expect(result.schemaUri).to.exist;
