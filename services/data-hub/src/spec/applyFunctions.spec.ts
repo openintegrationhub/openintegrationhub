@@ -9,6 +9,7 @@ import nock from 'nock';
 import scoreObject from '../handlers/scorer';
 import tagObject from '../handlers/tagger';
 import transformObject from '../handlers/transformer';
+import dedupeObject from '../handlers/deduplicator';
 
 function nockIamIntrospection({
     status = 200,
@@ -108,15 +109,19 @@ describe.only('Data Enrichment and Cleansing', () => {
         await mongoose.connection.close();
     });
 
-    beforeEach(async function f() {
+    afterEach(async function () {
         await DataObject.deleteMany({});
-
-        uid = await DataObject.create(testEntry);
-        uid = uid._id;
-        // refs: [],
-        // owners: []
-
     });
+
+    // beforeEach(async function f() {
+    //     await DataObject.deleteMany({});
+    //
+    //     uid = await DataObject.create(testEntry);
+    //     uid = uid._id;
+    //     // refs: [],
+    //     // owners: []
+    //
+    // });
 
     describe('scorer', () => {
         it('should score test entry correctly', async function () {
@@ -182,6 +187,76 @@ describe.only('Data Enrichment and Cleansing', () => {
             expect(result.content).to.be.an('object');
 
             expect(result.content.fullName).to.be.equal('James Blond');
+        });
+    });
+
+    describe.only('deduplicator', () => {
+      let subsetUid;
+      let dupeUid;
+      let noMatchUid;
+
+      before(async function () {
+        const subset = await DataObject.create({
+          domainId: '',
+          schemaUri: '',
+          content: {
+            firstName: 'Jane',
+            lastName: 'Doe',
+          }
+        })
+        subsetUid = subset._id;
+
+        const noMatch = await DataObject.create({
+          domainId: '',
+          schemaUri: '',
+          content: {
+            firstName: 'Jim',
+            lastName: 'Doe',
+          }
+        })
+        noMatchUid = noMatch._id;
+
+        const dupe = await DataObject.create({
+          domainId: '',
+          schemaUri: '',
+          content: {
+            firstName: 'Jane',
+            lastName: 'Doe',
+            birthday: '10.09.1985'
+          }
+        })
+        dupeUid = dupe._id;
+      });
+
+
+        it('should correctly recognize duplicates and subsets', async function () {
+          const result = await dedupeObject(
+            {
+              content: {
+                firstName: 'Jane',
+                lastName: 'Doe',
+                birthday: '10.09.1985'
+              },
+              refs: [],
+              meta: {
+                knownDuplicates: [],
+                knownSubsets: []
+              }
+            },
+            [{checkSubset: true}],
+            {}
+          )
+
+          expect(result.content).to.deep.equal({
+            firstName: 'Jane',
+            lastName: 'Doe',
+            birthday: '10.09.1985'
+          })
+
+          expect(result.meta.knownDuplicates.length).to.be.equal(1);
+          expect(result.meta.knownDuplicates[0]).to.be.equal(dupeUid.toString());
+          expect(result.meta.knownSubsets.length).to.be.equal(1);
+          expect(result.meta.knownSubsets[0]).to.be.equal(subsetUid.toString());
         });
     });
 
