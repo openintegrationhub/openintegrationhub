@@ -10,9 +10,13 @@ export default function tagObject(object, fields) {
 
   const { content } = object;
 
-  const tags = [];
+  let tags = object.enrichtmentResults.tags || [];
 
   for (let i = 0; i < fields.length; i += 1) {
+    if (!fields[i].additive) {
+      tags = [];
+    }
+
     const comparator = comparators[fields[i].comparator];
     if (!comparator) {
       console.error('Comparator ' + fields[i].comparator + ' not found.');

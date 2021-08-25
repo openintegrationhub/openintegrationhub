@@ -316,7 +316,28 @@
           }
         }
       }
-    }
+    },
+    "/data/enrich" : {
+        "post" : {
+          "tags" : [ "data" ],
+          "summary" : "Start the data enrichment process.",
+          "description" : "Will analyze stored data objects and apply enrichment functions to them based on provided configuration.",
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EnrichmentFunctions"
+                }
+              }
+            }
+          },
+          "responses" : {
+            "200" : {
+              "description" : "Enrichment started, will complete asynchronously"
+            }
+          }
+        }
+      }
   },
   "components": {
     "securitySchemes": {
@@ -439,11 +460,44 @@
           }
         }
       },
-      "Meta": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "integer"
+      "EnrichmentFunctions" : {
+        "type" : "object",
+        "required" : [ "functions" ],
+        "properties" : {
+          "functions" : {
+            "type" : "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "score"
+                },
+                "active": {
+                  "type": "boolean",
+                  "example": true,
+                },
+                "fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "example": {
+                      "key": "firstName",
+                      "minLength": 5,
+                      "weight": 2
+                    }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+      "Meta" : {
+        "type" : "object",
+        "properties" : {
+          "page" : {
+            "type" : "integer"
           },
           "perPage": {
             "type": "integer"
