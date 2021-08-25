@@ -106,22 +106,10 @@ describe.only('Data Enrichment and Cleansing', () => {
     });
 
     after(async function () {
+        await DataObject.deleteMany({});
         await mongoose.connection.close();
     });
 
-    afterEach(async function () {
-        await DataObject.deleteMany({});
-    });
-
-    // beforeEach(async function f() {
-    //     await DataObject.deleteMany({});
-    //
-    //     uid = await DataObject.create(testEntry);
-    //     uid = uid._id;
-    //     // refs: [],
-    //     // owners: []
-    //
-    // });
 
     describe('scorer', () => {
         it('should score test entry correctly', async function () {
@@ -198,6 +186,12 @@ describe.only('Data Enrichment and Cleansing', () => {
         const subset = await DataObject.create({
           domainId: '',
           schemaUri: '',
+          refs: [
+            {
+              applicationUid: 'google',
+              recordUid: 'moogle'
+            }
+          ],
           content: {
             firstName: 'Jane',
             lastName: 'Doe',
@@ -209,7 +203,7 @@ describe.only('Data Enrichment and Cleansing', () => {
             ]
           }
         })
-        subsetUid = subset._id;
+        subsetUid = subset._id.toString();
 
         const noMatch = await DataObject.create({
           domainId: '',
@@ -228,11 +222,17 @@ describe.only('Data Enrichment and Cleansing', () => {
             ]
           }
         })
-        noMatchUid = noMatch._id;
+        noMatchUid = noMatch._id.toString();
 
         const dupe = await DataObject.create({
           domainId: '',
           schemaUri: '',
+          refs: [
+            {
+              applicationUid: 'snazzy',
+              recordUid: 'bazzy'
+            }
+          ],
           content: {
             firstName: 'Jane',
             lastName: 'Doe',
@@ -249,7 +249,7 @@ describe.only('Data Enrichment and Cleansing', () => {
             ]
           }
         })
-        dupeUid = dupe._id;
+        dupeUid = dupe._id.toString();
       });
 
 
@@ -298,9 +298,75 @@ describe.only('Data Enrichment and Cleansing', () => {
           })
 
           expect(result.enrichtmentResults.knownDuplicates.length).to.be.equal(1);
-          expect(result.enrichtmentResults.knownDuplicates[0]).to.be.equal(dupeUid.toString());
+          expect(result.enrichtmentResults.knownDuplicates[0]).to.be.equal(dupeUid);
           expect(result.enrichtmentResults.knownSubsets.length).to.be.equal(1);
-          expect(result.enrichtmentResults.knownSubsets[0]).to.be.equal(subsetUid.toString());
+          expect(result.enrichtmentResults.knownSubsets[0]).to.be.equal(subsetUid);
+        });
+
+        it('should automatically delete duplicates and subsets', async function () {
+          const result = await dedupeObject(
+            {
+              content: {
+                firstName: 'Jane',
+                lastName: 'Doe',
+                birthday: '10.09.1985',
+                contactData: [
+                  {
+                    type: 'email',
+                    value: 'j@doe.com'
+                  },
+                  {
+                    type: 'phone',
+                    value: '123456'
+                  }
+                ]
+              },
+              refs: [],
+              enrichtmentResults: {
+                knownDuplicates: [],
+                knownSubsets: []
+              }
+            },
+            [{checkSubset: true, autoDeleteDuplicactes: true, autoDeleteSubsets: true, mergeRefs: true}],
+            {}
+          )
+
+          expect(result.content).to.deep.equal({
+            firstName: 'Jane',
+            lastName: 'Doe',
+            birthday: '10.09.1985',
+            contactData: [
+              {
+                type: 'email',
+                value: 'j@doe.com'
+              },
+              {
+                type: 'phone',
+                value: '123456'
+              }
+            ]
+          })
+
+          expect(result.refs).to.deep.equal([
+            {
+              applicationUid: 'google',
+              recordUid: 'moogle',
+              modificationHistory: []
+            },
+            {
+              applicationUid: 'snazzy',
+              recordUid: 'bazzy',
+              modificationHistory: []
+            }
+          ])
+
+          expect(result.enrichtmentResults.knownDuplicates.length).to.be.equal(0);
+          expect(result.enrichtmentResults.knownSubsets.length).to.be.equal(0);
+
+          const allObjects = await DataObject.find().lean();
+          expect(allObjects.length).to.be.equal(1);
+          expect(allObjects[0]._id.toString()).to.be.equal(noMatchUid);
+
         });
     });
 
