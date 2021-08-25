@@ -13,6 +13,13 @@ export default async function dedupeObject(object, fields, query) {
   const returnObject = Object.assign({}, object);
 
     for (let i = 0; i < fields.length; i += 1) {
+      if (!fields[i].additive ||
+        !Array.isArray(returnObject.enrichtmentResults.knownDuplicates) ||
+        !Array.isArray(returnObject.enrichtmentResults.knownSubsets)){
+          returnObject.enrichtmentResults.knownDuplicates = [];
+          returnObject.enrichtmentResults.knownSubsets = [];
+        }
+
       const cursor = DataObject.find(query).lean().cursor();
       for (let doc = await cursor.next(); doc !== null; doc = await cursor.next()) {
 
@@ -21,24 +28,24 @@ export default async function dedupeObject(object, fields, query) {
 
         if (_.isEqual(content, compareContent)) {
           isDupe = true;
-          if (fields[i].autoDeleteDuplicacte) {
+          if (fields[i].autoDeleteDuplicactes) {
             if (fields[i].mergeRefs) {
               returnObject.refs = returnObject.refs.concat(doc.refs || []);
             }
             await DataObject.findOneAndDelete({_id: doc._id});
           } else {
-            returnObject.meta.knownDuplicates.push(doc._id.toString());
+            returnObject.enrichtmentResults.knownDuplicates.push(doc._id.toString());
           }
         }
 
         if (fields[i].checkSubset && !isDupe && _.isMatch(content, compareContent)) {
-          if (fields[i].autoDeleteSubset) {
+          if (fields[i].autoDeleteSubsets) {
             if (fields[i].mergeRefs) {
               returnObject.refs = returnObject.refs.concat(doc.refs || []);
             }
             await DataObject.findOneAndDelete({_id: doc._id});
           } else {
-            returnObject.meta.knownSubsets.push(doc._id.toString());
+            returnObject.enrichtmentResults.knownSubsets.push(doc._id.toString());
           }
         }
       }

@@ -24,8 +24,8 @@ export default function tagObject(object, fields) {
   }
 
   const returnObject = Object.assign({}, object);
-  if (!returnObject.meta) returnObject.meta = {};
-  returnObject.meta.tags = tags;
+  if (!returnObject.enrichtmentResults) returnObject.enrichtmentResults = {};
+  returnObject.enrichtmentResults.tags = tags;
 
   return returnObject;
 }

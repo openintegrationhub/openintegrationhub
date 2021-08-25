@@ -82,7 +82,7 @@ const dataObjectSchema = new Schema({
     },
     refs: [refsSchema],
     owners: [ownerSchema],
-    meta: {
+    enrichmentResults: {
       type: Schema.Types.Mixed
     }
 }, {
@@ -90,7 +90,7 @@ const dataObjectSchema = new Schema({
 });
 
 function dataObjectTransform (doc: IDataObjectDocument, ret: IDataObjectDocument) {
-    const safeFields = ['id', 'domainId', 'schemaUri', 'content', 'refs', 'owners'];
+    const safeFields = ['id', 'domainId', 'schemaUri', 'content', 'refs', 'owners', 'meta'];
     ret.id = doc.id;
     // ret.id = doc._id;
     return _.pick(ret, safeFields);
