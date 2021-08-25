@@ -5,6 +5,7 @@ import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/da
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
 import BadRequest from '../../errors/api/BadRequest';
+import handlers from '../../handlers/'
 
 interface IGteQuery {
     $gte: string;
@@ -32,7 +33,7 @@ export default class DataController {
         if (!isAdmin(user) && !isTenantAdmin(user)) {
             throw new Unauthorized();
         }
-      
+
         if (tenant) {
             if (user.tenant !== tenant) {
                 if (!isAdmin(user)) {
@@ -117,6 +118,68 @@ export default class DataController {
             data,
             meta
         };
+    }
+
+    public async applyFunctions(ctx: RouterContext): Promise<void> {
+        const { paging, user } = ctx.state;
+        const { body } = ctx.request;
+
+        if(!body.functions || !Array.isArray(body.functions)) {
+          ctx.status = 500;
+          ctx.body = 'No functions configured';
+        } else {
+          ctx.status = 200;
+          ctx.body = 'Preparing data';
+
+          // Prepare DB query
+          const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
+          const condition: IGetManyCondition = {
+              'owners.id': user.sub
+          };
+
+          if (createdSince) {
+              condition.createdAt = {
+                  $gte: createdSince
+              };
+          }
+
+          if (updatedSince) {
+              condition.updatedAt = {
+                  $gte: updatedSince
+              };
+          }
+
+
+          const handleDocument = (error, doc) => {
+            if(!error) {
+              console.debug('Error:', error);
+              return false;
+            }
+
+            let preparedDoc = doc;
+
+            // Apply configured functions one after another
+              for (let i = 0; i < body.functions.length; i++) {
+                if(body.functions[i].name && body.functions[i].name in handlers) {
+                  preparedDoc = handlers[body.functions[i].name](preparedDoc, body.functions[i].fields, condition);
+                } else {
+                  console.log('Function not found:', body.functions[i].name);
+                }
+              }
+            if(preparedDoc !== false) {
+              // Update db
+              DataObject.update({_id: doc._id}, preparedDoc);
+            }
+          }
+
+          // Query DB
+          const rows = await DataObject.find(condition)
+            .skip(paging.offset)
+            .limit(paging.perPage)
+            .exec(handleDocument);
+
+
+        }
     }
 
     public async getOne(ctx: RouterContext): Promise<void> {
@@ -243,7 +306,7 @@ export default class DataController {
     public async postMany(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
-        
+
         const createPromises = []
 
         if (!Array.isArray(body) || body.length === 0) {

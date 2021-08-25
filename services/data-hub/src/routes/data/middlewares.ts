@@ -8,7 +8,6 @@ const MAX_PER_PAGE = 100;
 export function parsePagedQuery (): IMiddleware {
     return function middleware (ctx: RouterContext, next: () => Promise<any>) {
         const paging = ctx.query.page || {};
-        console.log('Paging', ctx.query);
         const page = parseInt(paging.number) || DEFAULT_PAGE;
         const perPage = parseInt(paging.size) || DEFAULT_PER_PAGE;
 

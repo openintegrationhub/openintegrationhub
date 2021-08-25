@@ -14,6 +14,7 @@ export default () => {
         }))
         .use(koaMiddleware)
         .get('/', parsePagedQuery(), (ctx: RouterContext) => controller.getMany(ctx))
+        .post('/enrich', parsePagedQuery(), (ctx: RouterContext) => controller.applyFunctions(ctx))
         .post('/', (ctx: RouterContext) => controller.postOne(ctx))
         .post('/import', (ctx: RouterContext) => controller.postMany(ctx))
         .get('/status', (ctx: RouterContext) => controller.getRecordCount(ctx))
