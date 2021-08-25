@@ -400,7 +400,7 @@
         ],
         "summary": "get all users",
         "description": "This can only be done by a logged in user who has the required privileges.",
-        "operationId": "getUser",
+        "operationId": "getUsers",
         "parameters": [
           {
             "name": "meta",
@@ -953,8 +953,7 @@
         "properties": {
           "inquirer": {
             "type": "string",
-            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created.",
-            "required": true
+            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created."
           },
           "initiator": {
             "type": "string",
@@ -962,8 +961,7 @@
           },
           "accountId": {
             "type": "string",
-            "description": "Affected account the token is created for",
-            "required": true
+            "description": "Affected account the token is created for"
           },
           "token": {
             "type": "string"
@@ -986,15 +984,18 @@
             "type": "string",
             "description": "indicates the lifespan of the token. Possible values are -1 for permanent token and a string expression describing a time span, e.g. 2m, 5h"
           }
-        }
+        },
+        "required":[
+          "inquirer",
+          "accountId"
+        ]
       },
       "TokenCreate": {
         "type": "object",
         "properties": {
           "inquirer": {
             "type": "string",
-            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created.",
-            "required": true
+            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created."
           },
           "initiator": {
             "type": "string",
@@ -1002,8 +1003,7 @@
           },
           "accountId": {
             "type": "string",
-            "description": "Affected account the token is created for",
-            "required": true
+            "description": "Affected account the token is created for"
           },
           "token": {
             "type": "string"
@@ -1026,8 +1026,12 @@
             "type": "string",
             "description": "Sets the lifespan of the token. Possible values are -1 for permanent token and a string expression describing a time span, e.g. 2m, 5h"
           }
-        }
-      },
+        },
+        "required":[
+          "inquirer",
+          "accountId"
+        ]
+    },
       "Login": {
         "title": "Login data",
         "type": "object",
