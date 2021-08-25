@@ -1,7 +1,14 @@
 const testData = require('./testdata.json');
-const { example1 } = require('./examples');
+const testDataSnapshotRepo = require('./testdata-snapshot-repo.json');
+const { example1, exampleRefactoredRule, exampleRefactoredRule2 } = require('./examples');
 
-const { EngineGoBroom } = require('./rule-impl');
+const { LogicGateway } = require('./rule-impl');
 
-const engine = new EngineGoBroom(example1, testData);
-engine.process();
+// const l1 = new LogicGateway({ rule: example1, snapshotData: testData });
+// console.log(l1.process());
+
+const l2 = new LogicGateway({ rule: exampleRefactoredRule2, snapshotData: testDataSnapshotRepo.data });
+console.log(l2.process());
+
+const l3 = new LogicGateway({ rule: exampleRefactoredRule, snapshotData: testDataSnapshotRepo.data });
+console.log(l3.process());

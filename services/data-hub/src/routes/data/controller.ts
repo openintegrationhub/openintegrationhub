@@ -1,8 +1,10 @@
 import { RouterContext } from 'koa-router';
 import mongoose from 'mongoose';
+import { isAdmin, isTenantAdmin } from '@openintegrationhub/iam-utils'
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
+import BadRequest from '../../errors/api/BadRequest';
 import handlers from '../../handlers/'
 
 interface IGteQuery {
@@ -10,18 +12,74 @@ interface IGteQuery {
 }
 
 interface IGetManyCondition {
-    'owners.id': string;
+    'owners.id'?: string;
+    domainId?: string;
+    schemaUri?: string;
     createdAt?: IGteQuery;
     updatedAt?: IGteQuery;
+    tenant?: IGteQuery;
 }
 
 export default class DataController {
+
+    public async getRecordCount(ctx: RouterContext): Promise<void> {
+        const { user } = ctx.state;
+        const {
+            tenant: tenant
+        } = ctx.query;
+
+        let condition: IGetManyCondition = {};
+
+        if (!isAdmin(user) && !isTenantAdmin(user)) {
+            throw new Unauthorized();
+        }
+
+        if (tenant) {
+            if (user.tenant !== tenant) {
+                if (!isAdmin(user)) {
+                    throw new Unauthorized();
+                }
+            }
+        }
+
+        if (tenant) {
+            condition.tenant = tenant
+        } else if (isTenantAdmin(user)) {
+            condition.tenant = user.tenant
+        }
+
+        const total = await DataObject.countDocuments(condition)
+
+        ctx.status = 200;
+
+        ctx.body = {
+            data: {
+                totalRecords: total
+            }
+        };
+    }
+
     public async getMany(ctx: RouterContext): Promise<void> {
         const { paging, user } = ctx.state;
-        const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
-        const condition: IGetManyCondition = {
-            'owners.id': user.sub
-        };
+        const {
+            created_since: createdSince,
+            updated_since: updatedSince,
+            domain_id: domainId,
+            schema_uri: schemaUri,
+            tenant: tenant
+        } = ctx.query;
+
+        let condition: IGetManyCondition = {};
+
+        if (!isAdmin(user)) {
+            condition["owners.id"] = user.sub
+        }
+
+        if (isAdmin(user)) {
+            if (tenant) {
+                condition.tenant = tenant
+            }
+        }
 
         if (createdSince) {
             condition.createdAt = {
@@ -33,6 +91,14 @@ export default class DataController {
             condition.updatedAt = {
                 $gte: updatedSince
             };
+        }
+
+        if (domainId) {
+            condition.domainId = domainId;
+        }
+
+        if (schemaUri) {
+            condition.schemaUri = schemaUri
         }
 
         const [data, total] = await Promise.all([
@@ -237,6 +303,39 @@ export default class DataController {
         };
     }
 
+    public async postMany(ctx: RouterContext): Promise<void> {
+        const { body } = ctx.request;
+        const { user } = ctx.state;
+
+        const createPromises = []
+
+        if (!Array.isArray(body) || body.length === 0) {
+            throw new BadRequest()
+        }
+
+        body.forEach(record => {
+            const owners = record.owners || []
+
+            if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+                owners.push({
+                    id: user.sub,
+                    type: 'user'
+                });
+            }
+
+            createPromises.push(DataObject.create({
+                ...record,
+                tenant: user.tenant,
+                owners,
+            }))
+
+        })
+
+        await Promise.all(createPromises)
+
+        ctx.status = 201;
+    }
+
     public async postByRecordId(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
@@ -264,6 +363,7 @@ export default class DataController {
             }
 
             if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+                // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
                 let newIOwner = {} as IOwnerDocument;
                 newIOwner.id = user.sub;
                 newIOwner.type = 'user';

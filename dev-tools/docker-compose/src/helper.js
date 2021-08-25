@@ -17,8 +17,10 @@ const {
 const iamBase = `http://localhost:${services.iam.externalPort}`
 
 module.exports = {
-  async login({ username, password }) {
-    const response = await fetch(`${iamBase}/login`, {
+  async login({ customIamBase, username, password }) {
+    const base = customIamBase || iamBase
+
+    const response = await fetch(`${base}/login`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -32,6 +34,23 @@ module.exports = {
 
     if (response.status !== 200) {
       throw new Error('Account missing')
+    }
+
+    return response.json()
+  },
+  async getUserInfo(token, customIamBase = null) {
+    const base = customIamBase || iamBase
+    const response = await fetch(`${base}/api/v1/users/me`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (response.status !== 200) {
+      throw new Error('Could not get userinfo')
     }
 
     return response.json()

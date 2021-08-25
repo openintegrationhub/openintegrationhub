@@ -26,7 +26,7 @@ export interface IDataObjectDocument extends Document {
     owners?: IOwnerDocument[];
 }
 
-const mofificationHistorySchema = new Schema({
+const modificationHistorySchema = new Schema({
     user: {
         type: String,
         required: true
@@ -52,7 +52,7 @@ const refsSchema = new Schema({
         type: String,
         required: true
     },
-    modificationHistory: [mofificationHistorySchema]
+    modificationHistory: [modificationHistorySchema]
 }, {
     _id: false
 });
@@ -80,6 +80,7 @@ const dataObjectSchema = new Schema({
     content: {
         type: Schema.Types.Mixed
     },
+    tenant: String,
     refs: [refsSchema],
     owners: [ownerSchema],
     enrichmentResults: {
@@ -90,7 +91,7 @@ const dataObjectSchema = new Schema({
 });
 
 function dataObjectTransform (doc: IDataObjectDocument, ret: IDataObjectDocument) {
-    const safeFields = ['id', 'domainId', 'schemaUri', 'content', 'refs', 'owners', 'meta'];
+    const safeFields = ['id', 'domainId', 'schemaUri', 'content', 'refs', 'owners', 'tenant', 'enrichmentResults'];
     ret.id = doc.id;
     // ret.id = doc._id;
     return _.pick(ret, safeFields);

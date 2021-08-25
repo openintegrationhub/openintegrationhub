@@ -1,6 +1,6 @@
 {
   "name": "governance-service",
-  "version": "1.0.9",
+  "version": "1.2.0",
   "description": "Stores provenance events and other governance related data.",
   "main": "index.js",
   "scripts": {
@@ -15,13 +15,14 @@
     "build:docker": "docker build -t openintegrationhub/governance-service:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
-    "@openintegrationhub/event-bus": "*",
+    "@openintegrationhub/event-bus": "^1.2.5",
     "@openintegrationhub/iam-utils": "*",
     "body-parser": "^1.19",
     "bunyan": "^1.8.14",
     "bunyan-format": "^0.2.1",
     "cors": "^2.8.5",
     "cronstrue": "^1.94.0",
+    "dot-prop": "^6.0.1",
     "express": "^4.17.1",
     "mongoose": "5.11.8",
     "request": "^2.87.0",
@@ -29,6 +30,7 @@
     "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
+    "dotenv": "^8.2.0",
     "eslint": "5.3.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "^2.14.0",
@@ -36,12 +38,11 @@
     "eslint-plugin-json": "^1.2.1",
     "eslint-plugin-mocha": "^5.2.0",
     "jest": "26.6.0",
-    "mongodb-memory-server": "6.9.2",
-    "nodemon": "^2.0.4",
-    "dotenv": "^8.2.0",
-    "nock": "^13.0.2",
     "jest-environment-node": "^26.1.0",
     "mongodb": "^3.6.0",
+    "mongodb-memory-server": "6.9.2",
+    "nock": "^13.0.2",
+    "nodemon": "^2.0.4",
     "path": "^0.12.7",
     "supertest": "^3.1.0"
   },
