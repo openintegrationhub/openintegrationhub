@@ -161,7 +161,6 @@ describe.only('Data Enrichment and Cleansing', () => {
 
         it('should tag an object correctly with fieldEquals', async function () {
             const result = tagObject(testEntry, configuration.functions[2].fields);
-            console.log(testEntry)
 
             expect(result.domainId).to.exist;
             expect(result.schemaUri).to.exist;
@@ -190,7 +189,7 @@ describe.only('Data Enrichment and Cleansing', () => {
         });
     });
 
-    describe.only('deduplicator', () => {
+    describe('deduplicator', () => {
       let subsetUid;
       let dupeUid;
       let noMatchUid;
@@ -202,6 +201,12 @@ describe.only('Data Enrichment and Cleansing', () => {
           content: {
             firstName: 'Jane',
             lastName: 'Doe',
+            contactData: [
+              {
+                type: 'email',
+                value: 'j@doe.com'
+              }
+            ]
           }
         })
         subsetUid = subset._id;
@@ -210,8 +215,17 @@ describe.only('Data Enrichment and Cleansing', () => {
           domainId: '',
           schemaUri: '',
           content: {
-            firstName: 'Jim',
             lastName: 'Doe',
+            contactData: [
+              {
+                type: 'email',
+                value: 'j@doe.com'
+              },
+              {
+                type: 'phone',
+                value: '654321'
+              }
+            ]
           }
         })
         noMatchUid = noMatch._id;
@@ -222,7 +236,17 @@ describe.only('Data Enrichment and Cleansing', () => {
           content: {
             firstName: 'Jane',
             lastName: 'Doe',
-            birthday: '10.09.1985'
+            birthday: '10.09.1985',
+            contactData: [
+              {
+                type: 'email',
+                value: 'j@doe.com'
+              },
+              {
+                type: 'phone',
+                value: '123456'
+              }
+            ]
           }
         })
         dupeUid = dupe._id;
@@ -235,7 +259,17 @@ describe.only('Data Enrichment and Cleansing', () => {
               content: {
                 firstName: 'Jane',
                 lastName: 'Doe',
-                birthday: '10.09.1985'
+                birthday: '10.09.1985',
+                contactData: [
+                  {
+                    type: 'email',
+                    value: 'j@doe.com'
+                  },
+                  {
+                    type: 'phone',
+                    value: '123456'
+                  }
+                ]
               },
               refs: [],
               meta: {
@@ -250,7 +284,17 @@ describe.only('Data Enrichment and Cleansing', () => {
           expect(result.content).to.deep.equal({
             firstName: 'Jane',
             lastName: 'Doe',
-            birthday: '10.09.1985'
+            birthday: '10.09.1985',
+            contactData: [
+              {
+                type: 'email',
+                value: 'j@doe.com'
+              },
+              {
+                type: 'phone',
+                value: '123456'
+              }
+            ]
           })
 
           expect(result.meta.knownDuplicates.length).to.be.equal(1);

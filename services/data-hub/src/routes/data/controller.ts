@@ -6,6 +6,7 @@ import NotFound from '../../errors/api/NotFound';
 import Unauthorized from '../../errors/api/Unauthorized';
 import BadRequest from '../../errors/api/BadRequest';
 import scoreObject from '../../handlers/scorer';
+import handlers from '../../handlers/'
 
 interface IGteQuery {
     $gte: string;
@@ -18,13 +19,6 @@ interface IGetManyCondition {
     createdAt?: IGteQuery;
     updatedAt?: IGteQuery;
     tenant?: IGteQuery;
-}
-
-const definedFunctions = {
-    'someFunction': function() {
-
-    },
-    score: scoreObject,
 }
 
 export default class DataController {
@@ -167,8 +161,8 @@ export default class DataController {
 
             // Apply configured functions one after another
               for (let i = 0; i < body.functions.length; i++) {
-                if(body.functions[i].name && body.functions[i].name in definedFunctions) {
-                  preparedDoc = definedFunctions[body.functions[i].name](preparedDoc, body.functions[i].fields);
+                if(body.functions[i].name && body.functions[i].name in handlers) {
+                  preparedDoc = handlers[body.functions[i].name](preparedDoc, body.functions[i].fields, condition);
                 } else {
                   console.log('Function not found:', body.functions[i].name);
                 }
