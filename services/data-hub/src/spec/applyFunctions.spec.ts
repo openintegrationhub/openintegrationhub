@@ -43,7 +43,7 @@ let uid: any;
 const testEntry : any = {
   domainId: '',
   schemaUri: '',
-  meta: {},
+  enrichtmentResults: {},
   content: {
       firstName: 'James',
       lastName: 'Blond',
@@ -130,10 +130,10 @@ describe.only('Data Enrichment and Cleansing', () => {
             expect(result.domainId).to.exist;
             expect(result.schemaUri).to.exist;
 
-            expect(result.meta).to.be.an('object');
+            expect(result.enrichtmentResults).to.be.an('object');
 
-            expect(result.meta.score).to.be.equal(2);
-            expect(result.meta.normalizedScore).to.be.equal(1);
+            expect(result.enrichtmentResults.score).to.be.equal(2);
+            expect(result.enrichtmentResults.normalizedScore).to.be.equal(1);
 
             expect(result.content).to.be.an('object');
 
@@ -149,9 +149,9 @@ describe.only('Data Enrichment and Cleansing', () => {
             expect(result.domainId).to.exist;
             expect(result.schemaUri).to.exist;
 
-            expect(result.meta).to.be.an('object');
+            expect(result.enrichtmentResults).to.be.an('object');
 
-            expect(result.meta.tags).to.deep.equal(['Has a Name']);
+            expect(result.enrichtmentResults.tags).to.deep.equal(['Has a Name']);
 
             expect(result.content).to.be.an('object');
 
@@ -165,9 +165,9 @@ describe.only('Data Enrichment and Cleansing', () => {
             expect(result.domainId).to.exist;
             expect(result.schemaUri).to.exist;
 
-            expect(result.meta).to.be.an('object');
+            expect(result.enrichtmentResults).to.be.an('object');
 
-            expect(result.meta.tags).to.deep.equal(['Is a James']);
+            expect(result.enrichtmentResults.tags).to.deep.equal(['Is a James']);
 
             expect(result.content).to.be.an('object');
 
@@ -272,7 +272,7 @@ describe.only('Data Enrichment and Cleansing', () => {
                 ]
               },
               refs: [],
-              meta: {
+              enrichtmentResults: {
                 knownDuplicates: [],
                 knownSubsets: []
               }
@@ -297,18 +297,18 @@ describe.only('Data Enrichment and Cleansing', () => {
             ]
           })
 
-          expect(result.meta.knownDuplicates.length).to.be.equal(1);
-          expect(result.meta.knownDuplicates[0]).to.be.equal(dupeUid.toString());
-          expect(result.meta.knownSubsets.length).to.be.equal(1);
-          expect(result.meta.knownSubsets[0]).to.be.equal(subsetUid.toString());
+          expect(result.enrichtmentResults.knownDuplicates.length).to.be.equal(1);
+          expect(result.enrichtmentResults.knownDuplicates[0]).to.be.equal(dupeUid.toString());
+          expect(result.enrichtmentResults.knownSubsets.length).to.be.equal(1);
+          expect(result.enrichtmentResults.knownSubsets[0]).to.be.equal(subsetUid.toString());
         });
     });
 
-    describe('POST /data/apply', () => {
+    describe('POST /data/enrich', () => {
         it('should start scorer', async function () {
             const scope = nockIamIntrospection();
             const { text, statusCode } = await this.request
-                .post('/data/apply')
+                .post('/data/enrich')
                 .set('Authorization', this.auth)
                 .send(configuration);
 
@@ -323,7 +323,7 @@ describe.only('Data Enrichment and Cleansing', () => {
 
             const scope = nockIamIntrospection();
             const { text, statusCode } = await this.request
-                .post('/data/apply')
+                .post('/data/enrich')
                 .set('Authorization', this.auth)
                 .send(configuration);
 

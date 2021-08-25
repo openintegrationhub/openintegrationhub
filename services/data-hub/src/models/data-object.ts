@@ -83,8 +83,8 @@ const dataObjectSchema = new Schema({
     tenant: String,
     refs: [refsSchema],
     owners: [ownerSchema],
-    meta: {
-      type: Schema.Types.Mixed
+    enrichmentResults: {
+        type: Schema.Types.Mixed
     }
 }, {
     timestamps: true

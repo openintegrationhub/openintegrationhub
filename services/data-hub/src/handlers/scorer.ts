@@ -27,10 +27,10 @@ export default function scoreObject(object, fields) {
 
   const returnObject = Object.assign({}, object);
 
-  if (!returnObject.meta) returnObject.meta = {};
+  if (!returnObject.enrichtmentResults) returnObject.enrichtmentResults = {};
 
-  returnObject.meta.score = score;
-  returnObject.meta.normalizedScore = score/totalWeights;
+  returnObject.enrichtmentResults.score = score;
+  returnObject.enrichtmentResults.normalizedScore = score/totalWeights;
 
   return returnObject
 
