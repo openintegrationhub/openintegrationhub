@@ -3,7 +3,7 @@ const path = require('path')
 const { homedir } = require('os')
 
 const orchestratorReplica = 1
-const nodeImage = 'node:12-stretch'
+const nodeImage = 'node:12-bullseye'
 const kubernetesVersion = 'v1.21.3'
 
 const adminUsername = 'admin@openintegrationhub.com'
