@@ -68,7 +68,11 @@ export default class DataController {
             updated_since: updatedSince,
             domain_id: domainId,
             schema_uri: schemaUri,
-            tenant: tenant
+            tenant: tenant,
+            min_score: minScore,
+            has_duplicates: hasDuplicates,
+            has_subsets: hasSubsets,
+            is_unique: isUnique
         } = ctx.query;
 
         let condition: IGetManyCondition = {};
@@ -101,6 +105,23 @@ export default class DataController {
 
         if (schemaUri) {
             condition.schemaUri = schemaUri
+        }
+
+        if (minScore) {
+          condition['enrichmentResults.score'] = { $gte: minScore }
+        }
+
+        if (hasDuplicates) {
+          condition['enrichmentResults.knownDuplicates.0'] = { $exists: true }
+        }
+
+        if (hasSubsets) {
+          condition['enrichmentResults.knownSubsets.0'] = { $exists: true }
+        }
+
+        if (isUnique) {
+          condition['enrichmentResults.knownDuplicates.0'] = { $exists: false };
+          condition['enrichmentResults.knownSubsets.0'] = { $exists: false };
         }
 
         const [data, total] = await Promise.all([
