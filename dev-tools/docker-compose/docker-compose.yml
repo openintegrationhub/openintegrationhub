@@ -110,6 +110,8 @@ services:
     - oih-dev
   component-orchestrator:
     image: ${NODE_IMAGE}
+    extra_hosts:
+      host.docker.internal: host-gateway
     # container_name: ${DEV_COMPONENT_ORCHESTRATOR_FOLDER}
     working_dir: /usr/src/app/services/component-orchestrator
     environment:
@@ -156,12 +158,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    entrypoint:
-    - /bin/sh
-    - -c
-    - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" |
-      tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator
-      && yarn start:container
+    command: yarn start:container
     networks:
     - oih-dev
   app-directory:
