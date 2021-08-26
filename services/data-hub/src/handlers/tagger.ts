@@ -1,5 +1,5 @@
 const { Notation } = require('notation');
-const { comparators } = require('./comparators.ts');
+const { comparators } = require('./comparators');
 
 export default function tagObject(object, fields) {
   const notate = Notation.create;
