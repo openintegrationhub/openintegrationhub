@@ -1,5 +1,6 @@
 import { RouterContext } from 'koa-router';
 import mongoose from 'mongoose';
+import _ from 'lodash';
 import { isAdmin, isTenantAdmin } from '@openintegrationhub/iam-utils'
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
@@ -66,7 +67,11 @@ export default class DataController {
             updated_since: updatedSince,
             domain_id: domainId,
             schema_uri: schemaUri,
-            tenant: tenant
+            tenant: tenant,
+            min_score: minScore,
+            has_duplicates: hasDuplicates,
+            has_subsets: hasSubsets,
+            is_unique: isUnique
         } = ctx.query;
 
         let condition: IGetManyCondition = {};
@@ -99,6 +104,23 @@ export default class DataController {
 
         if (schemaUri) {
             condition.schemaUri = schemaUri
+        }
+
+        if (minScore) {
+          condition['enrichmentResults.score'] = { $gte: minScore }
+        }
+
+        if (hasDuplicates) {
+          condition['enrichmentResults.knownDuplicates.0'] = { $exists: true }
+        }
+
+        if (hasSubsets) {
+          condition['enrichmentResults.knownSubsets.0'] = { $exists: true }
+        }
+
+        if (isUnique) {
+          condition['enrichmentResults.knownDuplicates.0'] = { $exists: false };
+          condition['enrichmentResults.knownSubsets.0'] = { $exists: false };
         }
 
         const [data, total] = await Promise.all([
@@ -303,6 +325,7 @@ export default class DataController {
         };
     }
 
+
     public async postMany(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
@@ -397,6 +420,66 @@ export default class DataController {
             data: dataObject,
             action,
         };
-
     }
+
+    public async getStatistics(ctx: RouterContext): Promise<void> {
+        const { user } = ctx.state;
+
+          const scores = {};
+          let allDuplicates = [];
+          let allSubsets = [];
+
+          // Find only objects with at least one relevant value
+          const enrichmentCondition = {
+              'owners.id': user.sub,
+              $or: [
+                {'enrichmentResults.score': { $exists: true, $ne: null }},
+                {'enrichmentResults.knownDuplicates.0': { $exists: true, $ne: null }},
+                {'enrichmentResults.knownSubsets.0': { $exists: true, $ne: null }}
+              ]
+          };
+
+          if (!isAdmin(user)) {
+            enrichmentCondition["owners.id"] = user.sub;
+          }
+
+          const enrichmentCursor = await DataObject.find(enrichmentCondition).lean().cursor()
+
+          for (let doc = await enrichmentCursor.next(); doc !== null; doc = await enrichmentCursor.next()) {
+            const { score } = doc.enrichmentResults;
+            if (score || score === 0) {
+            if (!scores[String(score)]) scores[String(score)] = 0;
+            scores[String(score)]++;
+            }
+
+            if (doc.enrichmentResults.knownDuplicates) allDuplicates = allDuplicates.concat(doc.enrichmentResults.knownDuplicates);
+            if (doc.enrichmentResults.knownSubsets) allSubsets = allSubsets.concat(doc.enrichmentResults.knownSubsets);
+          }
+
+          allDuplicates = _.uniq(allDuplicates);
+          allSubsets = _.uniq(allSubsets);
+
+          // Find only objects without any duplicates or subsets
+          const uniqueCondition = {
+              'owners.id': user.sub,
+              'enrichmentResults.knownDuplicates.0': { $exists: false },
+              'enrichmentResults.knownSubsets': { $exists: false }
+          };
+          
+          if (!isAdmin(user)) {
+            enrichmentCondition["owners.id"] = user.sub;
+          }
+
+          const uniqueCount = await DataObject.count(uniqueCondition)
+
+          ctx.status = 200;
+          ctx.body = {
+            data: {
+              scores,
+              duplicateCount: allDuplicates.length,
+              subsetCount: allSubsets.length,
+              uniqueCount
+            }
+          };
+        }
 }
