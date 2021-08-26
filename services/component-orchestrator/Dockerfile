@@ -1,35 +1,38 @@
 FROM node:12-alpine AS base
-WORKDIR /usr/src/component-orchestrator
+LABEL NAME="oih-component-orchestrator"
+LABEL MAINTAINER Hans Eggert "hans.eggert@basaas.com"
+
+ARG local
+
+WORKDIR /usr/src/app
 
 RUN apk update && apk add --no-cache bash
 
-COPY package.json yarn.lock ./
-# COPY lib/backend-commons-lib lib/backend-commons-lib
-# COPY lib/component-orchestrator lib/component-orchestrator
-# COPY lib/event-bus lib/event-bus
-# COPY lib/iam-utils lib/iam-utils
-COPY services/component-orchestrator/package.json services/component-orchestrator/index.js ./services/component-orchestrator/
-COPY services/component-orchestrator/src ./services/component-orchestrator/src
-COPY services/component-orchestrator/config/default.json  services/component-orchestrator/config/default.json
+COPY yarn.lock ./
 
-# Image for building and installing dependencies
-# node-gyp is required as dependency by some npm package
-# but node-gyp requires in build time python, build-essential, ....
-# that's not required in runtime
+COPY services/component-orchestrator/index.js ./
+COPY services/component-orchestrator/package.json ./
+COPY services/component-orchestrator/src ./src
+
 FROM base AS dependencies
+
 RUN apk update && apk add --no-cache \
     make \
     gcc \
     g++ \
     python
-RUN yarn install --production
+
+RUN if [ "$local" == "true" ]; \
+    then yarn install --pure-lockfile ; \
+    else yarn install --pure-lockfile --production ; \
+    fi
 
 FROM base AS release
-COPY --from=dependencies /usr/src/component-orchestrator/node_modules ./node_modules
+
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
 RUN rm yarn.lock
 
 RUN chown -R node:node .
 USER node
 
-CMD ["yarn", "--cwd", "services/component-orchestrator", "start"]
-
+CMD ["yarn", "start"]
