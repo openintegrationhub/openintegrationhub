@@ -443,10 +443,12 @@ export default class DataController {
 
           ctx.status = 200;
           ctx.body = {
-            scores,
-            duplicateCount: allDuplicates.length,
-            subsetCount: allSubsets.length,
-            uniqueCount
+            data: {
+              scores,
+              duplicateCount: allDuplicates.length,
+              subsetCount: allSubsets.length,
+              uniqueCount
+            }
           };
         }
 }
