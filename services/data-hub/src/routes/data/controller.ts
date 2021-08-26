@@ -1,5 +1,6 @@
 import { RouterContext } from 'koa-router';
 import mongoose from 'mongoose';
+import _ from 'lodash';
 import { isAdmin, isTenantAdmin } from '@openintegrationhub/iam-utils'
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
@@ -304,6 +305,7 @@ export default class DataController {
         };
     }
 
+
     public async postMany(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
@@ -398,6 +400,54 @@ export default class DataController {
             data: dataObject,
             action,
         };
-
     }
+
+    public async getStatistics(ctx: RouterContext): Promise<void> {
+        const { user } = ctx.state;
+
+          const scores = {};
+          let allDuplicates = [];
+          let allSubsets = [];
+
+          // Find only objects with at least one relevant value
+          const enrichmentCondition = {
+              'owners.id': user.sub,
+              $or: [
+                {'enrichmentResults.score': { $exists: true, $ne: null }},
+                {'enrichmentResults.knownDuplicates.0': { $exists: true, $ne: null }},
+                {'enrichmentResults.knownSubsets.0': { $exists: true, $ne: null }}
+              ]
+          };
+
+          const enrichmentCursor = await DataObject.find(enrichmentCondition).lean().cursor()
+
+          for (let doc = await enrichmentCursor.next(); doc !== null; doc = await enrichmentCursor.next()) {
+            const { score } = doc.enrichmentResults;
+            if (score || score === 0) {
+            if (!scores[String(score)]) scores[String(score)] = 0;
+            scores[String(score)]++;
+            }
+
+            if (doc.enrichmentResults.knownDuplicates) allDuplicates = allDuplicates.concat(doc.enrichmentResults.knownDuplicates);
+            if (doc.enrichmentResults.knownSubsets) allSubsets = allSubsets.concat(doc.enrichmentResults.knownSubsets);
+          }
+
+          allDuplicates = _.uniq(allDuplicates);
+          allSubsets = _.uniq(allSubsets);
+
+          // Find only objects without any duplicates or subsets
+          const uniqueCount = await DataObject.count({
+              'owners.id': user.sub,
+              'enrichmentResults.knownDuplicates.0': { $exists: false },
+              'enrichmentResults.knownSubsets': { $exists: false }
+          })
+
+          ctx.status = 200;
+          ctx.body = {
+            scores,
+            duplicateCount: allDuplicates.length,
+            subsetCount: allSubsets.length,
+            uniqueCount
+          };
+        }
 }
