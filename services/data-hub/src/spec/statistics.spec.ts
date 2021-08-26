@@ -23,7 +23,7 @@ function nockIamIntrospection({
 }
 
 
-describe.only('Data Statistics', () => {
+describe('Data Statistics', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
@@ -107,8 +107,6 @@ describe.only('Data Statistics', () => {
       const { body, statusCode } = await this.request
           .get('/data/statistics')
           .set('Authorization', this.auth)
-
-          console.log(body)
 
       expect(statusCode).to.equal(200);
       expect(body.data).to.be.deep.equal({

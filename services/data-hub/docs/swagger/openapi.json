@@ -115,6 +115,38 @@
                   "schema":{
                      "type":"string"
                   }
+               },
+               {
+                  "in":"query",
+                  "name":"min_score",
+                  "description":"Used to retrieve only data records with a score of at least the one provided",
+                  "schema":{
+                     "type":"number"
+                  }
+               },
+               {
+                  "in":"query",
+                  "name":"has_duplicates",
+                  "description":"Used to retrieve only data records with known duplicates",
+                  "schema":{
+                     "type":"boolean"
+                  }
+               },
+               {
+                  "in":"query",
+                  "name":"has_subsets",
+                  "description":"Used to retrieve only data records with known subsets",
+                  "schema":{
+                     "type":"boolean"
+                  }
+               },
+               {
+                  "in":"query",
+                  "name":"is_unique",
+                  "description":"Used to retrieve only data records with no known subsets nor duplictates",
+                  "schema":{
+                     "type":"boolean"
+                  }
                }
             ],
             "responses":{
