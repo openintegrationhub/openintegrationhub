@@ -94,7 +94,7 @@ const configuration = {
       };
 
 
-describe.only('Data Enrichment and Cleansing', () => {
+describe('Data Enrichment and Cleansing', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });

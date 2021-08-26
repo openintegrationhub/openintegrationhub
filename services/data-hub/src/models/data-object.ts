@@ -24,6 +24,7 @@ export interface IDataObjectDocument extends Document {
     content: any;
     refs?: IDataObjectRefDocument[];
     owners?: IOwnerDocument[];
+    enrichmentResults?: any;
 }
 
 const modificationHistorySchema = new Schema({
