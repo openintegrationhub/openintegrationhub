@@ -111,7 +111,7 @@ describe.only('Data Statistics', () => {
           console.log(body)
 
       expect(statusCode).to.equal(200);
-      expect(body).to.be.deep.equal({
+      expect(body.data).to.be.deep.equal({
         scores: {
           '4': 1,
           '7': 2,

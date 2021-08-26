@@ -341,6 +341,32 @@
                }
             }
          }
+      },
+      "/data/statistics":{
+         "get":{
+            "tags":[
+               "data"
+            ],
+            "summary":"Fetch statistics about your data set.",
+            "description": "Statistics are largely based on the results of the enrichment endpoint.",
+            "responses":{
+               "200":{
+                  "description":"Enrichment started, will complete asynchronously",
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "properties":{
+                              "data":{
+                                 "$ref":"#/components/schemas/Statistics"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
       }
    },
    "components":{
@@ -411,6 +437,31 @@
                "updatedAt":{
                   "type":"string",
                   "format":"date-time"
+               }
+            }
+         },
+         "Statistics":{
+            "type":"object",
+            "properties":{
+               "scores":{
+                  "type":"object",
+                  "example": {
+                    "3": 1,
+                    "7": 5,
+                    "15": 3
+                  }
+               },
+               "duplicateCount": {
+                 "type": "number",
+                 "example": 2
+               },
+               "subsetCount": {
+                 "type": "number",
+                 "example": 1
+               },
+               "uniqueCount": {
+                 "type": "number",
+                 "example": 4
                }
             }
          },
