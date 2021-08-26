@@ -440,6 +440,10 @@ export default class DataController {
               ]
           };
 
+          if (!isAdmin(user)) {
+            enrichmentCondition["owners.id"] = user.sub;
+          }
+
           const enrichmentCursor = await DataObject.find(enrichmentCondition).lean().cursor()
 
           for (let doc = await enrichmentCursor.next(); doc !== null; doc = await enrichmentCursor.next()) {
@@ -457,11 +461,17 @@ export default class DataController {
           allSubsets = _.uniq(allSubsets);
 
           // Find only objects without any duplicates or subsets
-          const uniqueCount = await DataObject.count({
+          const uniqueCondition = {
               'owners.id': user.sub,
               'enrichmentResults.knownDuplicates.0': { $exists: false },
               'enrichmentResults.knownSubsets': { $exists: false }
-          })
+          };
+          
+          if (!isAdmin(user)) {
+            enrichmentCondition["owners.id"] = user.sub;
+          }
+
+          const uniqueCount = await DataObject.count(uniqueCondition)
 
           ctx.status = 200;
           ctx.body = {
