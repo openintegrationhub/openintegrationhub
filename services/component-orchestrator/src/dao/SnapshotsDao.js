@@ -40,8 +40,8 @@ module.exports = class OIHSnapshotsDao {
         throw new Error(`Failed to fetch the snapshot ${flowId}:${stepId}`);
     }
 
-    async deleteSnapshots(flowId, flowExecId) {
-        let url = new URL(`${this._config.get('SNAPSHOTS_SERVICE_BASE_URL')}/snapshots/flows/${flowId}/steps`)
+    async deleteSnapshots(flowExecId) {
+        let url = new URL(`${this._config.get('SNAPSHOTS_SERVICE_BASE_URL')}/snapshots`)
         url.search = new URLSearchParams({ flowExecId }).toString()
 
         return fetch(url, {
