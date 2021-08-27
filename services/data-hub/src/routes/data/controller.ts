@@ -34,7 +34,7 @@ export default class DataController {
         if (!isAdmin(user) && !isTenantAdmin(user)) {
             throw new Forbidden();
         }
-      
+
         if (tenant) {
             if (user.tenant !== tenant) {
                 if (!isAdmin(user)) {
@@ -329,7 +329,7 @@ export default class DataController {
     public async postMany(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
-        
+
         const createPromises = []
 
         if (!Array.isArray(body) || body.length === 0) {
@@ -463,9 +463,9 @@ export default class DataController {
         const uniqueCondition = {
             'owners.id': user.sub,
             'enrichmentResults.knownDuplicates.0': { $exists: false },
-            'enrichmentResults.knownSubsets': { $exists: false }
+            'enrichmentResults.knownSubsets.0': { $exists: false }
         };
-          
+
         if (!isAdmin(user)) {
             enrichmentCondition["owners.id"] = user.sub;
         }
