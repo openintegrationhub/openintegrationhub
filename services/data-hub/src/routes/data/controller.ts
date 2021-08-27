@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { isAdmin, isTenantAdmin } from '@openintegrationhub/iam-utils'
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
 import NotFound from '../../errors/api/NotFound';
-import Unauthorized from '../../errors/api/Unauthorized';
+import Forbidden from '../../errors/api/Forbidden';
 import BadRequest from '../../errors/api/BadRequest';
 import scoreObject from '../../handlers/scorer';
 import handlers from '../../handlers/'
@@ -33,13 +33,13 @@ export default class DataController {
         let condition: IGetManyCondition = {};
 
         if (!isAdmin(user) && !isTenantAdmin(user)) {
-            throw new Unauthorized();
+            throw new Forbidden();
         }
       
         if (tenant) {
             if (user.tenant !== tenant) {
                 if (!isAdmin(user)) {
-                    throw new Unauthorized();
+                    throw new Forbidden();
                 }
             }
         }
@@ -108,20 +108,20 @@ export default class DataController {
         }
 
         if (minScore) {
-          condition['enrichmentResults.score'] = { $gte: minScore }
+            condition['enrichmentResults.score'] = { $gte: minScore }
         }
 
         if (hasDuplicates) {
-          condition['enrichmentResults.knownDuplicates.0'] = { $exists: true }
+            condition['enrichmentResults.knownDuplicates.0'] = { $exists: true }
         }
 
         if (hasSubsets) {
-          condition['enrichmentResults.knownSubsets.0'] = { $exists: true }
+            condition['enrichmentResults.knownSubsets.0'] = { $exists: true }
         }
 
         if (isUnique) {
-          condition['enrichmentResults.knownDuplicates.0'] = { $exists: false };
-          condition['enrichmentResults.knownSubsets.0'] = { $exists: false };
+            condition['enrichmentResults.knownDuplicates.0'] = { $exists: false };
+            condition['enrichmentResults.knownSubsets.0'] = { $exists: false };
         }
 
         const [data, total] = await Promise.all([
@@ -148,58 +148,58 @@ export default class DataController {
         const { body } = ctx.request;
 
         if(!body.functions || !Array.isArray(body.functions)) {
-          ctx.status = 500;
-          ctx.body = 'No functions configured';
+            ctx.status = 500;
+            ctx.body = 'No functions configured';
         } else {
-          ctx.status = 200;
-          ctx.body = 'Preparing data';
+            ctx.status = 200;
+            ctx.body = 'Preparing data';
 
-          // Prepare DB query
-          const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
-          const condition: IGetManyCondition = {
-              'owners.id': user.sub
-          };
+            // Prepare DB query
+            const { created_since: createdSince, updated_since: updatedSince } = ctx.query;
+            const condition: IGetManyCondition = {
+                'owners.id': user.sub
+            };
 
-          if (createdSince) {
-              condition.createdAt = {
-                  $gte: createdSince
-              };
-          }
-
-          if (updatedSince) {
-              condition.updatedAt = {
-                  $gte: updatedSince
-              };
-          }
-
-
-          const handleDocument = (error, doc) => {
-            if(!error) {
-              console.debug('Error:', error);
-              return false;
+            if (createdSince) {
+                condition.createdAt = {
+                    $gte: createdSince
+                };
             }
 
-            let preparedDoc = doc;
+            if (updatedSince) {
+                condition.updatedAt = {
+                    $gte: updatedSince
+                };
+            }
 
-            // Apply configured functions one after another
-              for (let i = 0; i < body.functions.length; i++) {
-                if(body.functions[i].name && body.functions[i].name in handlers) {
-                  preparedDoc = handlers[body.functions[i].name](preparedDoc, body.functions[i].fields, condition);
-                } else {
-                  console.log('Function not found:', body.functions[i].name);
+
+            const handleDocument = (error, doc) => {
+                if(!error) {
+                    console.debug('Error:', error);
+                    return false;
                 }
-              }
-            if(preparedDoc !== false) {
-              // Update db
-              DataObject.update({_id: doc._id}, preparedDoc);
-            }
-          }
 
-          // Query DB
-          const rows = await DataObject.find(condition)
-            .skip(paging.offset)
-            .limit(paging.perPage)
-            .exec(handleDocument);
+                let preparedDoc = doc;
+
+                // Apply configured functions one after another
+                for (let i = 0; i < body.functions.length; i++) {
+                    if(body.functions[i].name && body.functions[i].name in handlers) {
+                        preparedDoc = handlers[body.functions[i].name](preparedDoc, body.functions[i].fields, condition);
+                    } else {
+                        console.log('Function not found:', body.functions[i].name);
+                    }
+                }
+                if(preparedDoc !== false) {
+                    // Update db
+                    DataObject.update({_id: doc._id}, preparedDoc);
+                }
+            }
+
+            // Query DB
+            const rows = await DataObject.find(condition)
+                .skip(paging.offset)
+                .limit(paging.perPage)
+                .exec(handleDocument);
 
 
         }
@@ -266,7 +266,7 @@ export default class DataController {
         }
 
         if (!dataObject.owners.find(o => o.id === user.sub)) {
-            throw new Unauthorized();
+            throw new Forbidden();
         }
 
         Object.keys(dataObject.toJSON()).forEach((key: keyof IDataObjectDocument) => {
@@ -296,7 +296,7 @@ export default class DataController {
         }
 
         if (!dataObject.owners.find(o => o.id === user.sub)) {
-            throw new Unauthorized();
+            throw new Forbidden();
         }
 
         Object.assign(dataObject, body);
@@ -426,61 +426,61 @@ export default class DataController {
     public async getStatistics(ctx: RouterContext): Promise<void> {
         const { user } = ctx.state;
 
-          const scores = {};
-          let allDuplicates = [];
-          let allSubsets = [];
+        const scores = {};
+        let allDuplicates = [];
+        let allSubsets = [];
 
-          // Find only objects with at least one relevant value
-          const enrichmentCondition = {
-              'owners.id': user.sub,
-              $or: [
+        // Find only objects with at least one relevant value
+        const enrichmentCondition = {
+            'owners.id': user.sub,
+            $or: [
                 {'enrichmentResults.score': { $exists: true, $ne: null }},
                 {'enrichmentResults.knownDuplicates.0': { $exists: true, $ne: null }},
                 {'enrichmentResults.knownSubsets.0': { $exists: true, $ne: null }}
-              ]
-          };
+            ]
+        };
 
-          if (!isAdmin(user)) {
+        if (!isAdmin(user)) {
             enrichmentCondition["owners.id"] = user.sub;
-          }
+        }
 
-          const enrichmentCursor = await DataObject.find(enrichmentCondition).lean().cursor()
+        const enrichmentCursor = await DataObject.find(enrichmentCondition).lean().cursor()
 
-          for (let doc = await enrichmentCursor.next(); doc !== null; doc = await enrichmentCursor.next()) {
+        for (let doc = await enrichmentCursor.next(); doc !== null; doc = await enrichmentCursor.next()) {
             const { score } = doc.enrichmentResults;
             if (score || score === 0) {
-            if (!scores[String(score)]) scores[String(score)] = 0;
-            scores[String(score)]++;
+                if (!scores[String(score)]) scores[String(score)] = 0;
+                scores[String(score)]++;
             }
 
             if (doc.enrichmentResults.knownDuplicates) allDuplicates = allDuplicates.concat(doc.enrichmentResults.knownDuplicates);
             if (doc.enrichmentResults.knownSubsets) allSubsets = allSubsets.concat(doc.enrichmentResults.knownSubsets);
-          }
-
-          allDuplicates = _.uniq(allDuplicates);
-          allSubsets = _.uniq(allSubsets);
-
-          // Find only objects without any duplicates or subsets
-          const uniqueCondition = {
-              'owners.id': user.sub,
-              'enrichmentResults.knownDuplicates.0': { $exists: false },
-              'enrichmentResults.knownSubsets': { $exists: false }
-          };
-          
-          if (!isAdmin(user)) {
-            enrichmentCondition["owners.id"] = user.sub;
-          }
-
-          const uniqueCount = await DataObject.count(uniqueCondition)
-
-          ctx.status = 200;
-          ctx.body = {
-            data: {
-              scores,
-              duplicateCount: allDuplicates.length,
-              subsetCount: allSubsets.length,
-              uniqueCount
-            }
-          };
         }
+
+        allDuplicates = _.uniq(allDuplicates);
+        allSubsets = _.uniq(allSubsets);
+
+        // Find only objects without any duplicates or subsets
+        const uniqueCondition = {
+            'owners.id': user.sub,
+            'enrichmentResults.knownDuplicates.0': { $exists: false },
+            'enrichmentResults.knownSubsets': { $exists: false }
+        };
+          
+        if (!isAdmin(user)) {
+            enrichmentCondition["owners.id"] = user.sub;
+        }
+
+        const uniqueCount = await DataObject.count(uniqueCondition)
+
+        ctx.status = 200;
+        ctx.body = {
+            data: {
+                scores,
+                duplicateCount: allDuplicates.length,
+                subsetCount: allSubsets.length,
+                uniqueCount
+            }
+        };
+    }
 }

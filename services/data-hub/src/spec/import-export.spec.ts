@@ -428,7 +428,7 @@ describe('Mass Data Handling', () => {
             body = (await this.request
                 .get('/data/status')
                 .set('Authorization', this.auth)
-                .expect(401)).body
+                .expect(403)).body
             
             nockIamIntrospection(admin2);
 
@@ -459,7 +459,7 @@ describe('Mass Data Handling', () => {
                     tenant: "tenant1",
                 })
                 .set('Authorization', this.auth)
-                .expect(401)
+                .expect(403)
 
         });
     });
