@@ -24,4 +24,12 @@ export default class DataController {
         ctx.status = 204;
         ctx.body = null;
     }
+
+    public async deleteMany(ctx: RouterContext): Promise<void> {
+        const { flowId } = ctx.params;
+        const { flowExecId } = ctx.query;
+        await Snapshot.deleteMany({flowId, flowExecId});
+        ctx.status = 204;
+        ctx.body = null;
+    }
 }
