@@ -7,8 +7,8 @@ WORKDIR /usr/src/app
 RUN apk update && apk add --no-cache bash
 
 COPY yarn.lock ./
-COPY services/governance-service/package.json ./
-COPY services/governance-service/app ./app
+COPY services/data-hub/package.json ./
+COPY services/data-hub/app ./app
 
 FROM base AS dependencies
 
