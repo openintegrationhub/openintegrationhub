@@ -1,5 +1,8 @@
 import { RouterContext } from 'koa-router';
 import Snapshot from '../../models/snapshot';
+import { isAdmin } from '@openintegrationhub/iam-utils'
+import Forbidden from '../../errors/api/Forbidden';
+import BadRequest from '../../errors/api/BadRequest';
 
 export default class DataController {
     public async getAll(ctx: RouterContext): Promise<void> {
@@ -26,9 +29,17 @@ export default class DataController {
     }
 
     public async deleteMany(ctx: RouterContext): Promise<void> {
-        const { flowId } = ctx.params;
+        const { user } = ctx.state;
         const { flowExecId } = ctx.query;
-        await Snapshot.deleteMany({flowId, flowExecId});
+
+        if (!isAdmin(user)) {
+            throw new Forbidden();
+        }
+
+        if (!flowExecId) {
+            throw new BadRequest();
+        }
+        await Snapshot.deleteMany({flowExecId});
         ctx.status = 204;
         ctx.body = null;
     }

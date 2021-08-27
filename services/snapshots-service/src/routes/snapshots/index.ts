@@ -9,9 +9,9 @@ export default () => {
     return new KoaRouter()
         .use(bodyParser())
         .use(koaMiddleware)
+        .delete('/', (ctx: RouterContext) => controller.deleteMany(ctx))
         .get('/flows/:flowId/steps', (ctx: RouterContext) => controller.getAll(ctx))
         .get('/flows/:flowId/steps/:stepId', (ctx: RouterContext) => controller.getOne(ctx))
-        .delete('/flows/:flowId/steps', (ctx: RouterContext) => controller.deleteMany(ctx))
         .delete('/flows/:flowId/steps/:stepId', (ctx: RouterContext) => controller.deleteOne(ctx))
         .routes();
 }
