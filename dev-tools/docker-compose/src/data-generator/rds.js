@@ -1,3 +1,6 @@
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../../', '.env') })
+
 const mongoose = require('mongoose')
 const fetch = require('node-fetch')
 const { v4 } = require('uuid')
@@ -8,13 +11,18 @@ const generateProduct = require('./generate-product')
 
 const RAW_RECORDS_SET_LENGTH = 10
 
-// use local setup as target for import
-const mongoUrl = 'mongodb://localhost:27017/rds'
-const iamBase = null // will take local iam api base
-const rdsBase = `http://localhost:${services.rds.externalPort}/api/v1`
+// use dev cluster setup
+const mongoUrl = process.env.DEV_CLUSTER_RDS_MONGO_URI
+const iamBase = 'https://iam.openintegrationhub.com'
+const rdsBase = 'https://rds.openintegrationhub.com/api/v1'
 
-const username = 't1_admin@local.dev'
-const password = 'password'
+// use local setup as target for import
+// const mongoUrl = 'mongodb://localhost:27017/rds'
+// const iamBase = null // will take local iam api base
+// const rdsBase = `http://localhost:${services.rds.externalPort}/api/v1`
+
+const username = process.env.DEV_CLUSTER_USERNAME || 't1_admin@local.dev'
+const password = process.env.DEV_CLUSTER_PASSWORD || 'password'
 
 let response = null
 let result = null
@@ -23,7 +31,7 @@ async function run() {
   // requires a full running oih setup
 
   const { token } = await login({
-    iamBase,
+    customIamBase: iamBase,
     username,
     password,
   })

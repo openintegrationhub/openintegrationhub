@@ -85,7 +85,7 @@ const dataObjectSchema = new Schema({
     refs: [refsSchema],
     owners: [ownerSchema],
     enrichmentResults: {
-      type: Schema.Types.Mixed
+        type: Schema.Types.Mixed
     }
 }, {
     timestamps: true

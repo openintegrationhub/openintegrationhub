@@ -12,6 +12,8 @@ const {
   waitForStatus,
   waitForMongo,
   login,
+  getUserInfo,
+  createPersistentToken,
   checkTools,
   getMinikubeClusterIp,
   getMinikubeInternalIp,
@@ -98,6 +100,14 @@ async function run() {
   )
 
   const { token } = await login({ username, password })
+  const userData = await getUserInfo(token)
+  console.log(userData)
+  // create a single persistent token used for every service
+
+  const tokenResp = await createPersistentToken({
+    token,
+    accountId: userData._id,
+  })
 
   // start proxy to kubernetes cluster
 
@@ -115,7 +125,7 @@ async function run() {
       env: {
         ...process.env,
         ...env,
-        DEV_IAM_TOKEN: token,
+        DEV_IAM_TOKEN: tokenResp.token,
         MINIKUBE_HOST_IP: minikubeHostIp,
       },
       stdio: 'inherit',
