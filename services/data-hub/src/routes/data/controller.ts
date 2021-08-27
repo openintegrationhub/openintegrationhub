@@ -6,7 +6,6 @@ import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/da
 import NotFound from '../../errors/api/NotFound';
 import Forbidden from '../../errors/api/Forbidden';
 import BadRequest from '../../errors/api/BadRequest';
-import scoreObject from '../../handlers/scorer';
 import handlers from '../../handlers/'
 
 interface IGteQuery {
