@@ -30,6 +30,7 @@
     "lodash": "4.17.21",
     "lru-cache": "6.0.0",
     "mongoose": "5.11.8",
+    "node-fetch": "2.6.1",
     "rabbitmq-stats": "1.2.3",
     "request": "2.88.2",
     "uuid": "8.3.0"
