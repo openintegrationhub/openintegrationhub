@@ -175,21 +175,22 @@ export default class DataController {
             const cursor = await DataObject.find(condition)
                 .skip(paging.offset)
                 .limit(paging.perPage)
+                .lean()
                 .cursor();
 
             for (let doc = await cursor.next(); doc !== null; doc = await cursor.next()) {
               // Apply configured functions one after another
-              let preparedDoc = doc
+              let preparedDoc = Object.assign({}, doc);
               for (let i = 0; i < body.functions.length; i++) {
                   if(body.functions[i].name && body.functions[i].name in handlers) {
-                      preparedDoc = handlers[body.functions[i].name](preparedDoc, body.functions[i].fields, condition);
+                      preparedDoc = await handlers[body.functions[i].name](preparedDoc, body.functions[i].fields, condition);
                   } else {
                       console.log('Function not found:', body.functions[i].name);
                   }
               }
               if(preparedDoc) {
-                // Update db
-                DataObject.update({_id: doc._id}, preparedDoc);
+                // Update db;
+                const result = await DataObject.findOneAndUpdate({_id: doc._id}, preparedDoc, {new: true, useFindAndModify:false});
           }
       }
     }

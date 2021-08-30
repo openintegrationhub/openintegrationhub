@@ -14,10 +14,10 @@ export default async function dedupeObject(object, fields, query) {
 
     for (let i = 0; i < fields.length; i += 1) {
       if (!fields[i].additive ||
-        !Array.isArray(returnObject.enrichtmentResults.knownDuplicates) ||
-        !Array.isArray(returnObject.enrichtmentResults.knownSubsets)){
-          returnObject.enrichtmentResults.knownDuplicates = [];
-          returnObject.enrichtmentResults.knownSubsets = [];
+        !Array.isArray(returnObject.enrichmentResults.knownDuplicates) ||
+        !Array.isArray(returnObject.enrichmentResults.knownSubsets)){
+          returnObject.enrichmentResults.knownDuplicates = [];
+          returnObject.enrichmentResults.knownSubsets = [];
         }
 
       const cursor = DataObject.find(query).lean().cursor();
@@ -34,7 +34,7 @@ export default async function dedupeObject(object, fields, query) {
             }
             await DataObject.findOneAndDelete({_id: doc._id});
           } else {
-            returnObject.enrichtmentResults.knownDuplicates.push(doc._id.toString());
+            returnObject.enrichmentResults.knownDuplicates.push(doc._id.toString());
           }
         }
 
@@ -45,7 +45,7 @@ export default async function dedupeObject(object, fields, query) {
             }
             await DataObject.findOneAndDelete({_id: doc._id});
           } else {
-            returnObject.enrichtmentResults.knownSubsets.push(doc._id.toString());
+            returnObject.enrichmentResults.knownSubsets.push(doc._id.toString());
           }
         }
       }
