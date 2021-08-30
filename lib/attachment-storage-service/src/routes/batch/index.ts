@@ -14,9 +14,9 @@ export default (objectsStorage: StorageDriver, auth: ServerAuth) => {
 
     return new koaRouter()
         .use(bodyParser())
-        .use((ctx: Context, next) => {
+        .use((ctx: Context, next: any) => {
             // handling jwt error according to https://github.com/koajs/jwt#example
-            return next().catch((err) => {
+            return next().catch((err: any) => {
                 if (err.status === 401) {
                     throw new Unauthorized();
                 } else {

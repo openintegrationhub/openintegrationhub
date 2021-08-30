@@ -10,9 +10,9 @@
     "start:container": "nodemon src/index.js",
     "test": "jest",
     "watch": "nodemon src/index.js",
-    "coverage": "yarn test --coverage",
+    "coverage": "npm test --coverage",
     "build:docker": "docker build -t openintegrationhub/meta-data-repository:${VERSION} -f Dockerfile .",
-    "start-dev-db": "yarn run-rs -v 4.0.12"
+    "start-dev-db": "npm run-rs -v 4.0.12"
   },
   "dependencies": {
     "@basaas/node-logger": "1.1.5",

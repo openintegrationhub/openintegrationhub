@@ -3,6 +3,7 @@
   "version": "0.0.7",
   "description": "Stores and retrieves audit logging data.",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "start": "node app/index.js",
     "start:container": "nodemon  app/index.js --watch ./app",

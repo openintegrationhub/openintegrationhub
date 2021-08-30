@@ -9,15 +9,15 @@ yarn
 
 Start local
 ```zsh 
-yarn start
+npm start
 ```
 
 Watch server and restart after code changes
 ```zsh 
-yarn watch
+npm watch
 ```
 
 Test lynx components
 ```zsh 
-yarn test
+npm test
 ```

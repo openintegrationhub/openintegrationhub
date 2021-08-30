@@ -21,7 +21,7 @@ RUN apk update && apk add --no-cache \
     g++ \
     python
 COPY services/data-hub ./services/data-hub
-RUN cd services/data-hub && yarn install && yarn run build:ts
+RUN cd services/data-hub && npm install && npm run build:ts
 
 FROM base AS release
 COPY --from=dependencies /usr/lib/app/services/data-hub/dist ./services/data-hub/dist

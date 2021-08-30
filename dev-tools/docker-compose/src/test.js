@@ -10,7 +10,7 @@ const {
 } = require('./config')
 
 const testEnvs = Object.entries({
-  // following envs will be applied to every "yarn test" command
+  // following envs will be applied to every "npm test" command
   MONGODB_URI: 'mongodb://mongodb/testing',
   CI: 'true',
   REDIS_CONFIG: `"${JSON.stringify({
@@ -25,7 +25,7 @@ const testEnvs = Object.entries({
 })
 
 const testCommand = (path, args) =>
-  `docker run --net=oih-dev --rm -it -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${path}; ${testEnvs} yarn test ${
+  `docker run --net=oih-dev --rm -it -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${path}; ${testEnvs} npm test ${
   args || '' // eslint-disable-line prettier/prettier
   }'`
 

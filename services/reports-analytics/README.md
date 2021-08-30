@@ -44,17 +44,17 @@ yarn
 Start local TBD
 
 ```zsh
-yarn start
+npm start
 ```
 
 Watch server and restart after code changes
 
 ```zsh
-yarn watch
+npm watch
 ```
 
 Test TBD components
 
 ```zsh
-yarn test
+npm test
 ```

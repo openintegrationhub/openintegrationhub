@@ -22,8 +22,8 @@ RUN apk update && apk add --no-cache \
     bash
 
 RUN if [ "$local" == "true" ]; \
-    then yarn install ; \
-    else yarn install --production ; \
+    then npm install ; \
+    else npm install --production ; \
     fi
 
 FROM base AS release

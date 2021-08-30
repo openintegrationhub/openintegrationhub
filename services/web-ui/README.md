@@ -9,27 +9,27 @@ yarn
 
 Start dev environment/ file watcher
 ```zsh 
-yarn start
+npm start
 ```
 
 Run tests
 ```zsh 
-yarn test
+npm test
 ```
 
 Run tests once
 ```zsh 
-CI=true yarn test
+CI=true npm test
 ```
 
 Create production build
 ```zsh 
-yarn build
+npm build
 ```
 
 Serve production build
 ```zsh 
-yarn serve
+npm serve
 ```
 
 For further instructions take a look at https://facebook.github.io/create-react-app/docs/getting-started

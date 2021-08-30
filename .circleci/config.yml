@@ -11,7 +11,7 @@ aliases:
     - image: rabbitmq:3.8.6-alpine
   - &run_npm_install
     name: Installing Dependencies
-    command: yarn --ignore-engines
+    command: npm --ignore-engines
   - &only_master_filter
     branches:
       only: master
@@ -19,7 +19,7 @@ aliases:
     - restore_cache:
         keys:
           - yarn-deps-{{ .Branch }}-{{ .Revision }}
-    - run: yarn test
+    - run: npm test
   - &build_steps
     - setup_remote_docker:
         version: 19.03.12

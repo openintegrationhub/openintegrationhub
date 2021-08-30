@@ -13,7 +13,7 @@
     "watch": "nodemon src/index.js",
     "start:container": "nodemon src/index.js --watch src/",
     "build:docker": "docker build -t openintegrationhub/app-directory:${VERSION} -f Dockerfile .",
-    "coverage": "yarn test --coverage"
+    "coverage": "npm test --coverage"
   },
   "dependencies": {
     "@basaas/node-logger": "1.1.5",

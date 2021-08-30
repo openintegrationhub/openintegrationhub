@@ -10,7 +10,7 @@
     "pretest": "eslint app test --ext .js --ext .json",
     "test": "jest --runInBand",
     "test-watch": "nodemon --exec \"npm test\"",
-    "coverage": "yarn test --coverage",
+    "coverage": "npm test --coverage",
     "lint_fix": "eslint app test --fix",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/ils:${VERSION} -f Dockerfile ."

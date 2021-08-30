@@ -17,7 +17,7 @@ RUN apk update && apk add --no-cache \
     g++ \
     python
 COPY services/attachment-storage-service ./services/attachment-storage-service
-RUN yarn install && cd services/attachment-storage-service && yarn run build:ts
+RUN npm install && cd services/attachment-storage-service && npm run build:ts
 
 FROM base AS release
 COPY --from=dependencies /usr/lib/attachment-storage-service/services/attachment-storage-service/dist ./services/attachment-storage-service/dist

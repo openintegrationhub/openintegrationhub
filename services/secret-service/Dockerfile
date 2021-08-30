@@ -9,8 +9,8 @@ RUN apk --no-cache add \
     g++ \
     libc6-compat
 RUN if [ "$local" == "true" ]; \
-    then cd /tmp && yarn ; \
-    else cd /tmp && yarn --production ; \
+    then cd /tmp && npm ; \
+    else cd /tmp && npm --production ; \
     fi 
 WORKDIR /usr/src/app
 ADD . /usr/src/app

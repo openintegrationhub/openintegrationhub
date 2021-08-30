@@ -17,7 +17,7 @@ COPY services/audit-log/app services/audit-log/app
 # that's not required in runtime
 FROM base AS dependencies
 RUN apk add --no-cache make gcc g++ python
-RUN yarn install --production
+RUN npm install --production
 
 FROM base AS release
 COPY --from=dependencies /usr/src/audit-log/node_modules ./node_modules

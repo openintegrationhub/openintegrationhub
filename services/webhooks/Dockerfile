@@ -21,7 +21,7 @@ RUN apk update && apk add --no-cache \
     gcc \
     g++ \
     python
-RUN yarn install --production
+RUN npm install --production
 
 FROM base AS release
 COPY --from=dependencies /usr/src/webhooks/node_modules ./node_modules

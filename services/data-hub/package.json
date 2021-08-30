@@ -9,6 +9,7 @@
   "engines": {
     "node": ">= 12"
   },
+  "private": true,
   "scripts": {
     "start": "node dist/app.js",
     "start:dev": "NODE_ENV=development ts-node-dev ./src/app.ts | bunyan",
