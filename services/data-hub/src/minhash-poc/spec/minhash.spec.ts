@@ -10,7 +10,7 @@ describe("minhash", function () {
     describe("hashValues", function () {
         it("should all be less than max hash", function () {
             m1.hashValues.forEach(function (v) {
-                ;(v <= m1.maxHash).should.equal(true)
+                (v <= m1.maxHash).should.equal(true)
             })
         })
 
@@ -32,7 +32,7 @@ describe("minhash", function () {
 
     describe("permutations", function () {
         it("aPerm.length should equal bPerm.length", function () {
-            ;(m1.permA.length === m1.permB.length).should.equal(true)
+            (m1.permA.length === m1.permB.length).should.equal(true)
         })
 
         it("should be larger than 0 and less than maxHash", function () {
@@ -52,7 +52,7 @@ describe("minhash", function () {
                     vals++
                 }
             }
-            ;(Object.keys(seen).length === vals).should.equal(true)
+            (Object.keys(seen).length === vals).should.equal(true)
         })
     })
 
