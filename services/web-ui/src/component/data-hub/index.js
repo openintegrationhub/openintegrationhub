@@ -1,28 +1,32 @@
 import React from 'react';
-import flow from 'lodash/flow';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import axios from 'axios';
+import DateFnsUtils from '@date-io/date-fns'; // choose your lib
+import {
+    // DatePicker,
+    // TimePicker,
+    DateTimePicker,
+    MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
+
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
-// import InputLabel from '@material-ui/core/InputLabel';
-// import MenuItem from '@material-ui/core/MenuItem';
-// import FormHelperText from '@material-ui/core/FormHelperText';
-// import FormControl from '@material-ui/core/FormControl';
-// import Select from '@material-ui/core/Select';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+// import { /* Bar, */ Doughnut } from 'react-chartjs-2';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
-import { Bar } from 'react-chartjs-2';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+// import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { Grid } from '@material-ui/core';
+import PieChart from './PieChart';
 import dataJSON from './data.json';
-// import DataTable from './DataTable';
-// actions
-import {
-    getTenants,
-} from '../../action/tenants';
 
 const useStyles = {
 
@@ -40,155 +44,100 @@ const useStyles = {
 class DataHub extends React.Component {
     constructor(props) {
         super(props);
-        props.getTenants();
         this.state = {
-            tenants: '',
-            schemas: '',
-            isLoading: true,
-            selectedTenant: '',
-            selectedSchema: '',
-            fields: '',
-            scores:
-                {
-                    1: 3,
-                    2: 8,
-                    4: 1,
-                    5: 2,
-                    6: 5,
-                    7: 2,
-                    8: 11,
-                    15: 1,
-                    21: 4,
-                },
-            duplicateCount: 2,
-            subsetCount: 2,
-            uniqueCount: 1,
-
+            checkedA: false,
+            filterDuplicates: false,
+            filterScore: false,
+            filterDateFrom: new Date(),
+            filterDateTo: new Date(),
+            sortBy: '',
+            selectedDate: null,
         };
     }
 
-    async componentDidMount() {
-        // get tenants
-        // try {
-        //     const result = await axios({
-        //         method: 'get',
-        //         url: 'https://localhost:3099/api/v1/tenants',
-        //         withCredentials: true,
-        //     });
-        //     this.setState({ tenants: result.data });
-        // } catch (err) {
-        //     console.log(err);
-        // }
-        // // // get schemas
-        // try {
-        //     const { data } = await axios({
-        //         method: 'get',
-        //         url: 'http://localhost:3001/api/v1/domains/6113a8d49744d2880a00ed0a/schemas',
-        //         withCredentials: true,
-        //     });
-        //     this.setState({ schemas: data });
-        // } catch (err) {
-        //     console.log(err);
-        // }
-        try {
-            const { data } = await axios({
-                method: 'get',
-                url: 'http://data-hub.openintegrationhub.com/data?min_score=1',
-                withCredentials: true,
-            });
-            console.log('Response', data);
-            this.setState({ schemas: data });
-        } catch (err) {
-            console.log(err);
-        }
-        this.setState({ isLoading: false });
-
-        // add functionality to allow tabs in text area
-        // document.getElementById('textbox').addEventListener('keydown', function (e) {
-        //     if (e.key === 'Tab') {
-        //         e.preventDefault();
-        //         const start = this.selectionStart;
-        //         const end = this.selectionEnd;
-        //         this.value = `${this.value.substring(0, start)
-        //         }\t${this.value.substring(end)}`;
-        //         this.selectionStart = +start + 1;
-        //     }
-        // });
-        return null;
-    }
-
-    handleChange = (event) => {
-        this.setState({ [event.target.name]: event.target.value });
+    handleFiltering = (event) => {
+        this.setState({ ...this.state, [event.target.name]: event.target.checked });
     };
 
-    handleFields = (event) => {
-        this.setState({ fields: event.target.value });
+    handleSorting = (event) => {
+        this.setState({ sortBy: event.target.value });
+    }
+
+    handleDateFrom = (date) => {
+        // setSelectedDate(date);
+        this.setState({ filterDateFrom: date });
     };
 
-    handleSubmit = () => {
-        console.log('Submit button clicked');
-    }
+    handleDateTo = (date) => {
+        // setSelectedDate(date);
+        this.setState({ filterDateTo: date });
+    };
+
 
     render() {
         const {
             classes,
         } = this.props;
 
-        const averageScore = dataJSON.data.reduce((a, b) => a + b.enrichmentResults.score, 0);
-
-        const averageNormalizedScore = dataJSON.data.reduce((a, b) => a + b.enrichmentResults.normalizedScore, 0);
-        console.log('data', dataJSON);
-
-        const xAxis = Object.keys(this.state.scores);
-        const yAxis = Object.values(this.state.scores);
-        xAxis.push('Scores');
-
-
-        const data = {
-            labels: xAxis,
-            datasets: [
-                {
-                    label: '#Datasets with this score ',
-                    data: yAxis,
-                    backgroundColor: [
-
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)',
-                    ],
-                    borderColor: [
-                        'grey',
-                        // 'rgba(54, 162, 235, 1)',
-                        // 'rgba(255, 206, 86, 1)',
-                        // 'rgba(75, 192, 192, 1)',
-                        // 'rgba(153, 102, 255, 1)',
-                        // 'rgba(255, 159, 64, 1)',
-                    ],
-                    borderWidth: 1,
-                },
-            ],
-        };
-
-        const options = {
-            scales: {
-                yAxes: [
-                    {
-                        ticks: {
-                            beginAtZero: false,
-                        },
-                    },
-                ],
-
-            },
-        };
-
-
+        console.log('FilteredDuplicates', this.state.filterDuplicates);
+        console.log('FilteredScore', this.state.filterScore);
+        console.log('Sort by', this.state.sortBy);
+        console.log('Date', this.state.selectedDate);
+        console.log(dataJSON);
         return (
+
+
             <Container className={classes.container}>
-                <Bar data={data} options={options} />
+                <div>
+                    <PieChart />
+                </div>
+                <Grid container>
+                    <Grid item md={9} style={{ background: '' }}>
+                        <div style={{ display: 'flex', marginTop: '50px' }}>
+                            <FormGroup row>
+                                <FormControlLabel
+                                    control={<Switch checked={this.state.filterDuplicates} onChange={this.handleFiltering} name="filterDuplicates" />}
+                                    label="duplicates"
+                                />
+                                <FormControlLabel
+                                    control={<Switch checked={this.state.filterScore} onChange={this.handleFiltering} name="filterScore" />}
+                                    label="score"
+                                />
+                            </FormGroup>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <span style={{ marginRight: '10px' }}>From</span>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <DateTimePicker value={this.state.filterDateFrom} onChange={this.handleDateFrom} />
+                                </MuiPickersUtilsProvider>
+                                <span style={{ marginRight: '10px', marginLeft: '10px' }}>To</span>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} />
+                                </MuiPickersUtilsProvider></div>
+
+
+                        </div>
+                    </Grid>
+
+                    <Grid item md={3} style={{ background: '', position: 'relative' }}>
+                        <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                            <FormControl className={classes.formControl}>
+                                <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={this.state.sortBy}
+                                    onChange={this.handleSorting}
+                                >
+                                    <MenuItem value='duplicates'>Duplicates</MenuItem>
+                                    <MenuItem value='score'>Score</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
+
+
+                    </Grid>
+
+                </Grid>
                 {dataJSON.data.map(item => <div key={item.id}>
                     <Accordion style={{ marginTop: 10 }}>
                         <AccordionSummary
@@ -196,7 +145,7 @@ class DataHub extends React.Component {
                             aria-controls="panel1a-content"
                             id="panel1a-header"
                         >
-                            <p>{item.content.firstName} {item.content.lastName}</p>
+                            <p>{item.content.firstName} {item.content.lastName}, has a score of: {item.enrichmentResults.score}{item.enrichmentResults.knownDuplicates.length > 0 && `, duplicates: ${item.enrichmentResults.knownDuplicates.length}`}</p>
                         </AccordionSummary>
                         <AccordionDetails style={{ display: 'block' }}>
                             <p>ID: {item.id}</p>
@@ -207,58 +156,11 @@ class DataHub extends React.Component {
                         </AccordionDetails>
                     </Accordion>
                 </div>)}
-
-                <div>
-                    <p>Average enrichments:</p>
-                    Score: {(averageScore / dataJSON.data.length).toFixed(1)}, normalized score: {(averageNormalizedScore / dataJSON.data.length).toFixed(1)}
-                    {/* {result} */}
-                </div>
-                {/* {!this.state.isLoading && <div style={{ display: 'flex' }}>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id="demo-simple-select-helper-label">Tenant</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-helper-label"
-                            id="demo-simple-select-helper"
-                            name="selectedTenant"
-                            value={this.state.selectedTenant}
-                            onChange={this.handleChange}
-                        >
-                            {this.state.tenants.map(tenant => (<MenuItem name="selectedTenant" key={tenant._id} value={tenant._id}>{tenant._id}</MenuItem>))}
-                        </Select>
-                        <FormHelperText>Some important helper text</FormHelperText>
-                    </FormControl>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id="demo-simple-select-helper-label">Schema</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-helper-label"
-                            id="demo-simple-select-helper"
-                            name="selectedSchema"
-                            value={this.state.selectedSchema}
-                            onChange={this.handleChange}
-                        >
-                            {this.state.schemas.data.map(schema => (<MenuItem key={schema.id} value={schema.id}>{schema.id}</MenuItem>))}
-                        </Select>
-                        <FormHelperText>Some important helper text</FormHelperText>
-                    </FormControl>
-                    <textarea id="textbox" placeholder="Fields" name="fields" value={this.state.fields} onChange={e => this.handleFields(e)} className={classes.input}></textarea>
-                    <div><button className={classes.submitBtn} onClick={this.handleSubmit}>Submit</button></div></div>}
-                {!this.state.isLoading && <div></div>} */}
             </Container>
+
         );
     }
 }
 
-const mapStateToProps = state => ({
-    tenants: state.tenants,
-});
-const mapDispatchToProps = dispatch => bindActionCreators({
-    getTenants,
-}, dispatch);
-
-export default flow(
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    ),
-    withStyles(useStyles),
-)(DataHub);
+export default
+withStyles(useStyles)(DataHub);
