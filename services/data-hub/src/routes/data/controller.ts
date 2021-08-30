@@ -173,7 +173,7 @@ export default class DataController {
 
 
             const handleDocument = (error, doc) => {
-                if(!error) {
+                if(error) {
                     console.debug('Error:', error);
                     return false;
                 }
