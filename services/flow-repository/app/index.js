@@ -18,7 +18,7 @@ const mainServer = new Server();
     mainServer.setupQueue();
 
     if (!module.parent) {
-      mainServer.listen(process.env.PORT || 3001);
+      mainServer.listen(process.env.PORT || 3002);
     } else {
       mainServer.listen();
     }

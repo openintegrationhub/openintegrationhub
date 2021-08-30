@@ -6,11 +6,13 @@
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
     "@material-ui/data-grid": "^4.0.0-alpha.35",
+    "chart.js": "^3.5.1",
     "compression": "1.7.4",
     "d3": "^5.11.0",
     "dotenv": "8.0.0",
     "express": "4.17.0",
     "moment": "^2.24.0",
+    "react-chartjs-2": "^3.0.4",
     "react-json-editor-ajrm": "^2.5.9"
   },
   "scripts": {
