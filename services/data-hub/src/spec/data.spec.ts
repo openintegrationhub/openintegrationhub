@@ -37,7 +37,7 @@ describe('Data Route', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
         await mongoose.connect(mongoUri, { useNewUrlParser: true });
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
@@ -262,7 +262,7 @@ describe('Data Route', () => {
 
             nockIamIntrospection();
 
-            let { body, statusCode } = await this.request
+            const { body, statusCode } = await this.request
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send(record);
@@ -330,7 +330,7 @@ describe('Data Route', () => {
 
             // Post same record again
             nockIamIntrospection();
-            let { body, statusCode } = await this.request
+            const { body, statusCode } = await this.request
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send(record);
@@ -392,7 +392,7 @@ describe('Data Route', () => {
             };
 
             nockIamIntrospection();
-            let { body, statusCode } = await this.request
+            const { body, statusCode } = await this.request
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send(record);
@@ -585,7 +585,7 @@ describe('GET /data/:id and /data/recordId/:id', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
         await mongoose.connect(mongoUri, { useNewUrlParser: true });
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);

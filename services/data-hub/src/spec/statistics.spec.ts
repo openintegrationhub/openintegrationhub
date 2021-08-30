@@ -27,7 +27,7 @@ describe('Data Statistics', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
         await mongoose.connect(mongoUri, { useNewUrlParser: true });
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
