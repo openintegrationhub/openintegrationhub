@@ -577,6 +577,163 @@ describe('Data Route', () => {
                 }
             });
         });
+
+        it('should return only elements with min score', async function f() {
+            nockIamIntrospection();
+            let res = await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send({
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
+                    "content": {
+                        "some": "data"
+                    },
+                    "enrichmentResults": {
+                      "score": 5
+                    }
+                });
+
+            expect(res.statusCode).to.equal(201);
+
+            nockIamIntrospection();
+            res = await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send({
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
+                    "content": {
+                        "some": "data"
+                    },
+                    "enrichmentResults": {
+                      "score": 10
+                    }
+                });
+            expect(res.statusCode).to.equal(201);
+            const id2 = res.body.data.id;
+
+            nockIamIntrospection();
+            res = await this.request
+                .get('/data?min_score=10')
+                .set('Authorization', this.auth);
+            expect(res.body).to.deep.equal({
+                data: [
+                    {
+                        "id": id2,
+                        "domainId": "my-domain",
+                        "schemaUri": "my-schema",
+                        "content": {
+                            "some": "data"
+                        },
+                        "refs": [],
+                        "owners": [{ "id": "user-id", "type": "user" }],
+                        "enrichmentResults": {
+                          "score": 10
+                        }
+                    }
+                ],
+                meta: {
+                    page: 1,
+                    perPage: 50,
+                    total: 1,
+                    totalPages: 1
+                }
+            });
+        });
+
+        it('should return only elements with duplicates or subsets', async function f() {
+            nockIamIntrospection();
+            let res = await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send({
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
+                    "content": {
+                        "some": "data"
+                    },
+                    "enrichmentResults": {
+                      "knownSubsets": ["abcdef"]
+                    }
+                });
+
+            expect(res.statusCode).to.equal(201);
+            const id1 = res.body.data.id;
+
+            nockIamIntrospection();
+            res = await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send({
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
+                    "content": {
+                        "some": "data"
+                    },
+                    "enrichmentResults": {
+                      "knownDuplicates": ["defgh"]
+                    }
+                });
+            expect(res.statusCode).to.equal(201);
+            const id2 = res.body.data.id;
+
+            nockIamIntrospection();
+            res = await this.request
+                .get('/data?has_duplicates=true')
+                .set('Authorization', this.auth);
+            expect(res.body).to.deep.equal({
+                data: [
+                    {
+                        "id": id2,
+                        "domainId": "my-domain",
+                        "schemaUri": "my-schema",
+                        "content": {
+                            "some": "data"
+                        },
+                        "refs": [],
+                        "owners": [{ "id": "user-id", "type": "user" }],
+                        "enrichmentResults": {
+                          "knownDuplicates": ["defgh"]
+                        }
+                    }
+                ],
+                meta: {
+                    page: 1,
+                    perPage: 50,
+                    total: 1,
+                    totalPages: 1
+                }
+            });
+
+            nockIamIntrospection();
+            res = await this.request
+                .get('/data?has_subsets=true')
+                .set('Authorization', this.auth);
+            expect(res.body).to.deep.equal({
+                data: [
+                    {
+                        "id": id1,
+                        "domainId": "my-domain",
+                        "schemaUri": "my-schema",
+                        "content": {
+                            "some": "data"
+                        },
+                        "refs": [],
+                        "owners": [{ "id": "user-id", "type": "user" }],
+                        "enrichmentResults": {
+                          "knownSubsets": ["abcdef"]
+                        }
+                    }
+                ],
+                meta: {
+                    page: 1,
+                    perPage: 50,
+                    total: 1,
+                    totalPages: 1
+                }
+            });
+        });
     });
 });
 
