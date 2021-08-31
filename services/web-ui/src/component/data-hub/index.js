@@ -96,7 +96,7 @@ class DataHub extends React.Component {
         console.log('Sort by', this.state.sortBy);
         console.log('Date', this.state.selectedDate);
         console.log(dataJSON);
-        console.log('filtered is:', dataJSON.data.filter(item => this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0));
+        console.log('filtered is:', dataJSON.data.filter(item => (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0)));
         return (
             <Container className={classes.container}>
                 <div>
@@ -108,11 +108,11 @@ class DataHub extends React.Component {
                             <FormGroup row>
                                 <FormControlLabel
                                     control={<Switch checked={this.state.filterDuplicates} onChange={this.handleFiltering} name="filterDuplicates" />}
-                                    label="with duplicates"
+                                    label="duplicates"
                                 />
                                 <FormControlLabel
                                     control={<Switch checked={this.state.filterScore} onChange={this.handleFiltering} name="filterScore" />}
-                                    label="with score"
+                                    label="score"
                                 />
                             </FormGroup>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -147,7 +147,9 @@ class DataHub extends React.Component {
                     </Grid>
 
                 </Grid>
-                {dataJSON.data.filter(item => (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0) || (this.state.filterScore && item.enrichmentResults.score)).map(el => <div key={el.id}>
+                {dataJSON.data.filter(item => (!this.state.filterDuplicates && !this.state.filterScore)
+                || (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0)
+                || (this.state.filterScore && item.enrichmentResults.score)).map(el => <div key={el.id}>
                     <Accordion style={{ marginTop: 10 }}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
@@ -166,25 +168,7 @@ class DataHub extends React.Component {
                         </AccordionDetails>
                     </Accordion>
                 </div>)}
-                {/* {!!this.state.filterScore && this.state.filterDuplicates ?} */}
-                {/* {dataJSON.data.map(item => <div key={item.id}>
-                    <Accordion style={{ marginTop: 10 }}>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1a-content"
-                            id="panel1a-header"
-                        >
-                            <p>{item.content.firstName} {item.content.lastName}, has a score of: {item.enrichmentResults.score}{item.enrichmentResults.knownDuplicates.length > 0 && `, duplicates: ${item.enrichmentResults.knownDuplicates.length}`}</p>
-                        </AccordionSummary>
-                        <AccordionDetails style={{ display: 'block' }}>
-                            <p>ID: {item.id}</p>
-                            <p>Enrichments results:</p>
-                            <div>Score: {item.enrichmentResults.score}, normalized score: {item.enrichmentResults.normalizedScore}</div><br/>
-                            <p>Duplications: {item.enrichmentResults.knownDuplicates.map(duplicate => <li key={duplicate}>{duplicate}</li>)}</p>
-                            <p>Tags: {item.enrichmentResults.tags.map(tag => <li key={tag}>{tag}</li>)}</p>
-                        </AccordionDetails>
-                    </Accordion>
-                </div>)} */}
+
             </Container>
         );
     }
