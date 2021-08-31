@@ -1,8 +1,6 @@
 import React from 'react';
 import DateFnsUtils from '@date-io/date-fns'; // choose your lib
 import {
-    // DatePicker,
-    // TimePicker,
     DateTimePicker,
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
@@ -45,7 +43,6 @@ class DataHub extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            checkedA: false,
             filterDuplicates: false,
             filterScore: false,
             filterDateFrom: new Date(),
@@ -64,12 +61,10 @@ class DataHub extends React.Component {
     }
 
     handleDateFrom = (date) => {
-        // setSelectedDate(date);
         this.setState({ filterDateFrom: date });
     };
 
     handleDateTo = (date) => {
-        // setSelectedDate(date);
         this.setState({ filterDateTo: date });
     };
 
@@ -79,29 +74,45 @@ class DataHub extends React.Component {
             classes,
         } = this.props;
 
+        switch (this.state.sortBy) {
+        case 'duplicatesDesc':
+            dataJSON.data.sort((a, b) => b.enrichmentResults.knownDuplicates.length - a.enrichmentResults.knownDuplicates.length);
+            break;
+        case 'duplicatesAsc':
+            dataJSON.data.sort((a, b) => a.enrichmentResults.knownDuplicates.length - b.enrichmentResults.knownDuplicates.length);
+            break;
+        case 'scoreDesc':
+            dataJSON.data.sort((a, b) => b.enrichmentResults.score - a.enrichmentResults.score);
+            break;
+        case 'scoreAsc':
+            dataJSON.data.sort((a, b) => a.enrichmentResults.score - b.enrichmentResults.score);
+            break;
+        default:
+            break;
+        }
+
         console.log('FilteredDuplicates', this.state.filterDuplicates);
         console.log('FilteredScore', this.state.filterScore);
         console.log('Sort by', this.state.sortBy);
         console.log('Date', this.state.selectedDate);
         console.log(dataJSON);
+        console.log('filtered is:', dataJSON.data.filter(item => this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0));
         return (
-
-
             <Container className={classes.container}>
                 <div>
                     <PieChart />
                 </div>
                 <Grid container>
-                    <Grid item md={9} style={{ background: '' }}>
+                    <Grid item md={10} style={{ background: '' }}>
                         <div style={{ display: 'flex', marginTop: '50px' }}>
                             <FormGroup row>
                                 <FormControlLabel
                                     control={<Switch checked={this.state.filterDuplicates} onChange={this.handleFiltering} name="filterDuplicates" />}
-                                    label="duplicates"
+                                    label="with duplicates"
                                 />
                                 <FormControlLabel
                                     control={<Switch checked={this.state.filterScore} onChange={this.handleFiltering} name="filterScore" />}
-                                    label="score"
+                                    label="with score"
                                 />
                             </FormGroup>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -113,12 +124,10 @@ class DataHub extends React.Component {
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} />
                                 </MuiPickersUtilsProvider></div>
-
-
                         </div>
                     </Grid>
 
-                    <Grid item md={3} style={{ background: '', position: 'relative' }}>
+                    <Grid item md={2} style={{ background: '', position: 'relative' }}>
                         <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
                             <FormControl className={classes.formControl}>
                                 <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
@@ -128,17 +137,37 @@ class DataHub extends React.Component {
                                     value={this.state.sortBy}
                                     onChange={this.handleSorting}
                                 >
-                                    <MenuItem value='duplicates'>Duplicates</MenuItem>
-                                    <MenuItem value='score'>Score</MenuItem>
+                                    <MenuItem value='duplicatesDesc'>Duplicates descending</MenuItem>
+                                    <MenuItem value='duplicatesAsc'>Duplicates ascending</MenuItem>
+                                    <MenuItem value='scoreDesc'>Score descending</MenuItem>
+                                    <MenuItem value='scoreAsc'>Score ascending</MenuItem>
                                 </Select>
                             </FormControl>
                         </div>
-
-
                     </Grid>
 
                 </Grid>
-                {dataJSON.data.map(item => <div key={item.id}>
+                {dataJSON.data.filter(item => (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0) || (this.state.filterScore && item.enrichmentResults.score)).map(el => <div key={el.id}>
+                    <Accordion style={{ marginTop: 10 }}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="panel1a-content"
+                            id="panel1a-header"
+                        >
+                            <p>{el.content.firstName} {el.content.lastName}, has a score of: {el.enrichmentResults.score}{el.enrichmentResults.knownDuplicates.length > 0 && `, duplicates: ${el.enrichmentResults.knownDuplicates.length}`}</p>
+                        </AccordionSummary>
+                        <AccordionDetails style={{ display: 'block' }}>
+                            <p>ID: {el.id}</p>
+                            <p>Enrichments results:</p>
+                            <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/>
+                            <p>Duplications: {el.enrichmentResults.knownDuplicates.map(duplicate => <li key={duplicate}>{duplicate}</li>)}</p>
+                            <p>Tags: {el.enrichmentResults.tags.map(tag => <li key={tag}>{tag}</li>)}</p>
+                            <p>Created: {el.createdAt}</p>
+                        </AccordionDetails>
+                    </Accordion>
+                </div>)}
+                {/* {!!this.state.filterScore && this.state.filterDuplicates ?} */}
+                {/* {dataJSON.data.map(item => <div key={item.id}>
                     <Accordion style={{ marginTop: 10 }}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
@@ -155,9 +184,8 @@ class DataHub extends React.Component {
                             <p>Tags: {item.enrichmentResults.tags.map(tag => <li key={tag}>{tag}</li>)}</p>
                         </AccordionDetails>
                     </Accordion>
-                </div>)}
+                </div>)} */}
             </Container>
-
         );
     }
 }

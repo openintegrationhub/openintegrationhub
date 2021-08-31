@@ -1,5 +1,47 @@
 {
    "data":[
+    {
+      "domainId":"string",
+      "schemaUri":"string",
+      "content":{
+         "firstName":"Tim",
+         "lastName":"Tower"
+      },
+      "enrichmentResults":{
+         "score":null,
+         "normalizedScore":null,
+         "tags":[
+            "marketing",
+            "whatever"
+         ],
+         "knownDuplicates":[],
+         "knownSubsets":[
+            
+         ]
+      },
+      "refs":[
+         {
+            "applicationUid":"string",
+            "recordUid":"string",
+            "modificationHistory":[
+               {
+                  "user":"string",
+                  "operation":"string",
+                  "timestamp":"2021-08-25T11:29:49.028Z"
+               }
+            ]
+         }
+      ],
+      "owners":[
+         {
+            "id":"345",
+            "type":"user"
+         }
+      ],
+      "id":"fhkslhd7fsfghdkslb2",
+      "createdAt":"2021-08-25T11:29:49.028Z",
+      "updatedAt":"2021-08-25T11:29:49.028Z"
+   },
       {
          "domainId":"string",
          "schemaUri":"string",
@@ -59,7 +101,7 @@
                "whatever"
             ],
             "knownDuplicates":[
-               "130987zvbssd71"
+               "130987zvbssd71", "asdadasfafa", "safa5f4asfsa8fas"
             ],
             "knownSubsets":[
                
