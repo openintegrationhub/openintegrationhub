@@ -6,13 +6,18 @@ import { Redirect } from 'react-router-dom';
 
 class LoginCheck extends React.Component {
     render() {
+        const redirectUrl = `/auth?redirect=${window.location.pathname}`;
         if (this.props.auth && this.props.auth.isLoggedIn) {
+            const redirectMatch = window.location.search.match(/redirect=([a-z/0-9]*)/);
+            if (redirectMatch) {
+                return <Redirect to={redirectMatch} />;
+            }
             return <React.Fragment>
                 {this.props.children}
             </React.Fragment>;
         }
         return (
-            <Redirect to="/auth"></Redirect>
+            <Redirect to={redirectUrl} />
         );
     }
 }
