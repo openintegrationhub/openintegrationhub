@@ -107,7 +107,7 @@ export default class DataController {
         }
 
         if (minScore) {
-            condition['enrichmentResults.score'] = { $gte: minScore }
+            condition['enrichmentResults.score'] = { $gte: Number(minScore) }
         }
 
         if (hasDuplicates) {
