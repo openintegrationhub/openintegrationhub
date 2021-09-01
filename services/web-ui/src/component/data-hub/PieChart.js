@@ -35,7 +35,7 @@ class PieChart extends React.Component {
 
         return (
             <Container className={classes.container}>
-                <div style={{ width: '50%', margin: '0 auto', marginTop: '20px' }}>
+                <div style={{ width: '33%', margin: '0 auto', marginTop: '20px' }}>
                     <Doughnut data={{
                         labels: ['0.7+', '0.2 - 0.7', '0 - 0.2'],
                         datasets: [{

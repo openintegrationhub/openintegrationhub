@@ -45,10 +45,9 @@ class DataHub extends React.Component {
         this.state = {
             filterDuplicates: false,
             filterScore: false,
-            filterDateFrom: new Date(),
-            filterDateTo: new Date(),
+            filterDateFrom: null,
+            filterDateTo: null,
             sortBy: '',
-            selectedDate: null,
         };
     }
 
@@ -91,12 +90,16 @@ class DataHub extends React.Component {
             break;
         }
 
-        console.log('FilteredDuplicates', this.state.filterDuplicates);
-        console.log('FilteredScore', this.state.filterScore);
-        console.log('Sort by', this.state.sortBy);
-        console.log('Date', this.state.selectedDate);
+        // console.log('FilteredDuplicates', this.state.filterDuplicates);
+        // console.log('FilteredScore', this.state.filterScore);
+        // console.log('Sort by', this.state.sortBy);
+        // console.log('Date from: ', this.state.filterDateFrom);
+        // console.log('Date to: ', this.state.filterDateTo);
         console.log(dataJSON);
-        console.log('filtered is:', dataJSON.data.filter(item => (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0)));
+        // console.log('filtered is:', dataJSON.data.filter(item => (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0)));
+        console.log(dataJSON.data[0].createdAt);
+        console.log('True?', new Date(this.state.filterDateFrom) < new Date(dataJSON.data[1].createdAt));
+        console.log('True too?', new Date(this.state.filterDateTo) > new Date(dataJSON.data[1].createdAt));
         return (
             <Container className={classes.container}>
                 <div>
@@ -118,11 +121,11 @@ class DataHub extends React.Component {
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <span style={{ marginRight: '10px' }}>From</span>
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DateTimePicker value={this.state.filterDateFrom} onChange={this.handleDateFrom} />
+                                    <DateTimePicker value={this.state.filterDateFrom} onChange={this.handleDateFrom} clearable/>
                                 </MuiPickersUtilsProvider>
                                 <span style={{ marginRight: '10px', marginLeft: '10px' }}>To</span>
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} />
+                                    <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} clearable/>
                                 </MuiPickersUtilsProvider></div>
                         </div>
                     </Grid>
@@ -149,25 +152,27 @@ class DataHub extends React.Component {
                 </Grid>
                 {dataJSON.data.filter(item => (!this.state.filterDuplicates && !this.state.filterScore)
                 || (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0)
-                || (this.state.filterScore && item.enrichmentResults.score)).map(el => <div key={el.id}>
-                    <Accordion style={{ marginTop: 10 }}>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1a-content"
-                            id="panel1a-header"
-                        >
-                            <p>{el.content.firstName} {el.content.lastName}, has a score of: {el.enrichmentResults.score}{el.enrichmentResults.knownDuplicates.length > 0 && `, duplicates: ${el.enrichmentResults.knownDuplicates.length}`}</p>
-                        </AccordionSummary>
-                        <AccordionDetails style={{ display: 'block' }}>
-                            <p>ID: {el.id}</p>
-                            <p>Enrichments results:</p>
-                            <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/>
-                            <p>Duplications: {el.enrichmentResults.knownDuplicates.map(duplicate => <li key={duplicate}>{duplicate}</li>)}</p>
-                            <p>Tags: {el.enrichmentResults.tags.map(tag => <li key={tag}>{tag}</li>)}</p>
-                            <p>Created: {el.createdAt}</p>
-                        </AccordionDetails>
-                    </Accordion>
-                </div>)}
+                || (this.state.filterScore && item.enrichmentResults.score)
+                || (new Date(this.state.filterDateFrom) < new Date(item.createdAt) && ((new Date(this.state.filterDateTo) > new Date(item.createdAt)))))
+                    .map(el => <div key={el.id}>
+                        <Accordion style={{ marginTop: 10 }}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <p>{el.content.firstName} {el.content.lastName}, has a score of: {el.enrichmentResults.score}{el.enrichmentResults.knownDuplicates.length > 0 && `, duplicates: ${el.enrichmentResults.knownDuplicates.length}`}, createdAt: {el.createdAt}</p>
+                            </AccordionSummary>
+                            <AccordionDetails style={{ display: 'block' }}>
+                                <p>ID: {el.id}</p>
+                                <p>Enrichments results:</p>
+                                <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/>
+                                <p>Duplications: {el.enrichmentResults.knownDuplicates.map(duplicate => <li key={duplicate}>{duplicate}</li>)}</p>
+                                <p>Tags: {el.enrichmentResults.tags.map(tag => <li key={tag}>{tag}</li>)}</p>
+                                <p>Created: {el.createdAt}</p>
+                            </AccordionDetails>
+                        </Accordion>
+                    </div>)}
 
             </Container>
         );
