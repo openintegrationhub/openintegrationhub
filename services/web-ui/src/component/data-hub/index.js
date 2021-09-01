@@ -12,17 +12,15 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-// import { /* Bar, */ Doughnut } from 'react-chartjs-2';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-// import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { Grid } from '@material-ui/core';
+
 import PieChart from './PieChart';
 import dataJSON from './data.json';
 
@@ -67,7 +65,6 @@ class DataHub extends React.Component {
         this.setState({ filterDateTo: date });
     };
 
-
     render() {
         const {
             classes,
@@ -90,16 +87,7 @@ class DataHub extends React.Component {
             break;
         }
 
-        // console.log('FilteredDuplicates', this.state.filterDuplicates);
-        // console.log('FilteredScore', this.state.filterScore);
-        // console.log('Sort by', this.state.sortBy);
-        // console.log('Date from: ', this.state.filterDateFrom);
-        // console.log('Date to: ', this.state.filterDateTo);
         console.log(dataJSON);
-        // console.log('filtered is:', dataJSON.data.filter(item => (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0)));
-        console.log(dataJSON.data[0].createdAt);
-        console.log('True?', new Date(this.state.filterDateFrom) < new Date(dataJSON.data[1].createdAt));
-        console.log('True too?', new Date(this.state.filterDateTo) > new Date(dataJSON.data[1].createdAt));
         return (
             <Container className={classes.container}>
                 <div>
@@ -161,7 +149,7 @@ class DataHub extends React.Component {
                                 aria-controls="panel1a-content"
                                 id="panel1a-header"
                             >
-                                <p>{el.content.firstName} {el.content.lastName}, has a score of: {el.enrichmentResults.score}{el.enrichmentResults.knownDuplicates.length > 0 && `, duplicates: ${el.enrichmentResults.knownDuplicates.length}`}, createdAt: {el.createdAt}</p>
+                                <p>{el.content.firstName} {el.content.lastName}</p>
                             </AccordionSummary>
                             <AccordionDetails style={{ display: 'block' }}>
                                 <p>ID: {el.id}</p>
