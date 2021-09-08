@@ -1,5 +1,6 @@
 const { execSync } = require("child_process")
-const { repositoryRoot } = require("../config")
+const path = require("path")
+const repositoryRoot = path.resolve(__dirname, '../../../../')
 
 execSync(
   `cd ${repositoryRoot} && sudo find . -name "node_modules" -type d -prune -exec rm -rf '{}' +`,

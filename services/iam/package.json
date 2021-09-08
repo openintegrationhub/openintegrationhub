@@ -9,7 +9,7 @@
     "watch-scss": "npm build --watch",
     "watch-test": "jest --watch --runInBand",
     "start": "node src/index.js",
-    "build": "echo 1",
+    "build": "sass ./src/views/style/basic.scss:./src/views/style/basic.css",
     "lint": "eslint --fix src/ test/",
     "task": "node",
     "generate-keystore": "node -e 'require(\"./src/oidc/util/generate-keystore\").generateFile()'",
@@ -67,6 +67,7 @@
     "mongodb-memory-server": "6.7.6",
     "node-forge": "0.10.0",
     "nodemon": "2.0.4",
+    "sass": "1.39.0",
     "supertest": "4.0.2"
   },
   "xxjest": {

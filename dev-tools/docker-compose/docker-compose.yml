@@ -27,7 +27,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   secret-service:
@@ -55,7 +55,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   component-repository:
@@ -80,7 +80,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   snapshots-service:
@@ -105,7 +105,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   component-orchestrator:
@@ -161,7 +161,7 @@ services:
     - -c
     - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" |
       tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator
-      && npm start:container
+      && npm run start:container
     networks:
     - oih-dev
   app-directory:
@@ -188,7 +188,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   attachment-storage-service:
@@ -206,7 +206,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   audit-log:
@@ -230,7 +230,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   data-hub:
@@ -252,7 +252,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   dispatcher-service:
@@ -277,7 +277,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   flow-repository:
@@ -301,7 +301,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   ils:
@@ -322,7 +322,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   meta-data-repository:
@@ -348,7 +348,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   scheduler:
@@ -371,7 +371,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
   webhooks:
@@ -395,7 +395,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
 
@@ -419,7 +419,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
 
@@ -444,7 +444,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
 
@@ -469,7 +469,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
     
@@ -493,7 +493,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
 
@@ -518,7 +518,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: npm start:container
+    command: npm run start:container
     networks:
     - oih-dev
 networks:

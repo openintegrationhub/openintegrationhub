@@ -1,7 +1,7 @@
 const { execSync } = require('child_process')
 const path = require("path")
 const repositoryRoot = path.resolve(__dirname, '../../../')
-const nodeImage = 'node:16-bullseye'
+const nodeImage = 'node:16.8.0-bullseye'
 
 const args = process.argv[2] ? process.argv.splice(2).join(" ") : ""
 
