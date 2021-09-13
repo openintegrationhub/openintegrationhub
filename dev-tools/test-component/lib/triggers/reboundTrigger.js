@@ -32,27 +32,7 @@ const log = require('../logger')
 
 async function processTrigger() {
   try {
-    log.info('About to emit data')
-
-    const message = {
-      data: {
-        username: 'Bert Müller',
-      },
-    }
-
-    log.info('Created message:', message)
-    this.emit('data', message)
     this.emit('rebound', new Error('error -> rebound'))
-
-    log.info('Finished emitting data')
-
-    // snapshot.testSnapshot = new Date()
-
-    log.info('About to emit snapshot:', message.data)
-
-    this.emit('snapshot', message.data)
-
-    console.log('Finished execution')
     this.emit('end')
   } catch (e) {
     log.error(e)
