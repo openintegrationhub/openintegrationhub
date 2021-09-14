@@ -1,5 +1,5 @@
 const Logger = require('@basaas/node-logger');
-const conf = require('./../conf');
+const conf = require('../conf');
 
 const log = Logger.getLogger(`${conf.general.loggingNameSpace}/httpAccess`, {
     level: 'info',

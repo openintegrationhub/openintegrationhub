@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
-const CONSTANTS = require('./../../constants');
+const CONSTANTS = require('../../constants');
 
 const TenantSchema = new Schema({
     name: { type: String, index: true },

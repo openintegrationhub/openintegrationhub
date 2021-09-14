@@ -1,9 +1,9 @@
 const Logger = require('@basaas/node-logger');
 const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
-const Account = require('./../models/account');
-const Role = require('./../models/role');
-const Permission = require('./../models/permission');
-const CONF = require('./../conf');
+const Account = require('../models/account');
+const Role = require('../models/role');
+const Permission = require('../models/permission');
+const CONF = require('../conf');
 const AccountDAO = require('./accounts');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/roleDao`);
@@ -38,7 +38,7 @@ const RolesDAO = {
             data.tenant = data.tenant.toString();
         }
 
-        log.debug('created.role', Object.assign({}, data));
+        log.debug('created.role', { ...data });
         const event = new Event({
             headers: {
                 name: 'iam.role.created',
