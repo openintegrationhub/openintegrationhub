@@ -12,6 +12,7 @@ const {
 const testEnvs = Object.entries({
   // following envs will be applied to every "npm test" command
   MONGODB_URI: 'mongodb://mongodb/testing',
+  BINARY_DOWNLOAD_DIR: '/usr/src/app/.mongo-binaries',
   CI: 'true',
   REDIS_CONFIG: `"${JSON.stringify({
     host: 'redis',
@@ -25,7 +26,7 @@ const testEnvs = Object.entries({
 })
 
 const testCommand = (path, args) =>
-  `docker run --net=oih-dev --rm -it -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${path}; ${testEnvs} npm test ${
+  `docker run --name oih-testing --user=node --net=oih-dev --rm -it -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${path}; ${testEnvs} npm test ${
   args || '' // eslint-disable-line prettier/prettier
   }'`
 
