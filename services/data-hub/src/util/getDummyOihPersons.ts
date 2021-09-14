@@ -39,7 +39,7 @@ export interface Person {
     data: Data; 
 } 
 
-export default (amount: number = 1): Person[] => {
+export default (amount = 1): Person[] => {
     const persons: Person[] = []
     for (let i = 0; i < amount; i++) {
         const person: Person = {

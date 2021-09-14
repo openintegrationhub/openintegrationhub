@@ -29,7 +29,7 @@ export default class DataController {
             tenant: tenant
         } = ctx.query;
 
-        let condition: IGetManyCondition = {};
+        const condition: IGetManyCondition = {};
 
         if (!isAdmin(user) && !isTenantAdmin(user)) {
             throw new Forbidden();
@@ -74,7 +74,7 @@ export default class DataController {
             is_unique: isUnique
         } = ctx.query;
 
-        let condition: IGetManyCondition = {};
+        const condition: IGetManyCondition = {};
 
         if (!isAdmin(user)) {
             condition["owners.id"] = user.sub
@@ -107,7 +107,7 @@ export default class DataController {
         }
 
         if (minScore) {
-            condition['enrichmentResults.score'] = { $gte: minScore }
+            condition['enrichmentResults.score'] = { $gte: Number(minScore) }
         }
 
         if (hasDuplicates) {
@@ -171,38 +171,30 @@ export default class DataController {
                 };
             }
 
-
-            const handleDocument = (error, doc) => {
-                if(!error) {
-                    console.debug('Error:', error);
-                    return false;
-                }
-
-                let preparedDoc = doc;
-
-                // Apply configured functions one after another
-                for (let i = 0; i < body.functions.length; i++) {
-                    if(body.functions[i].name && body.functions[i].name in handlers) {
-                        preparedDoc = handlers[body.functions[i].name](preparedDoc, body.functions[i].fields, condition);
-                    } else {
-                        console.log('Function not found:', body.functions[i].name);
-                    }
-                }
-                if(preparedDoc !== false) {
-                    // Update db
-                    DataObject.update({_id: doc._id}, preparedDoc);
-                }
-            }
-
             // Query DB
-            const rows = await DataObject.find(condition)
+            const cursor = await DataObject.find(condition)
                 .skip(paging.offset)
                 .limit(paging.perPage)
-                .exec(handleDocument);
+                .lean()
+                .cursor();
 
-
-        }
+            for (let doc = await cursor.next(); doc !== null; doc = await cursor.next()) {
+              // Apply configured functions one after another
+              let preparedDoc = Object.assign({}, doc);
+              for (let i = 0; i < body.functions.length; i++) {
+                  if(body.functions[i].name && body.functions[i].name in handlers) {
+                      preparedDoc = await handlers[body.functions[i].name](preparedDoc, body.functions[i].fields, condition);
+                  } else {
+                      console.log('Function not found:', body.functions[i].name);
+                  }
+              }
+              if(preparedDoc) {
+                // Update db;
+                const result = await DataObject.findOneAndUpdate({_id: doc._id}, preparedDoc, {new: true, useFindAndModify:false});
+          }
+      }
     }
+  }
 
     public async getOne(ctx: RouterContext): Promise<void> {
         const { id } = ctx.params;
@@ -387,7 +379,7 @@ export default class DataController {
 
             if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
                 // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
-                let newIOwner = {} as IOwnerDocument;
+                const newIOwner = {} as IOwnerDocument;
                 newIOwner.id = user.sub;
                 newIOwner.type = 'user';
                 dataObject.owners.push(newIOwner);
