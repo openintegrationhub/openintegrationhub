@@ -21,7 +21,7 @@
     "express-xml-bodyparser": "0.3.0",
     "lodash": "4.17.21",
     "mime-types": "2.1.13",
-    "multiparty": "4.1.2",
+    "multiparty": "4.2.2",
     "on-finished": "2.3.0",
     "qs": "6.10.1",
     "request": "2.88.2",
