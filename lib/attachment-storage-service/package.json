@@ -12,11 +12,9 @@
     },
     "scripts": {
         "test": "exit 0",
-        "eslint": "eslint -c ./.eslintrc.js --no-eslintrc --ext .ts .",
         "build": "tsc",
         "prepare": "npm run build",
-        "prepublishOnly": "npm run test",
-        "pretest": "npm run eslint"
+        "prepublishOnly": "npm run test"
     },
     "license": "UNLICENSED",
     "devDependencies": {
@@ -27,9 +25,9 @@
         "@types/lodash": "4.14.169",
         "@types/node": "13.7.7",
         "@types/uuid-validate": "0.0.1",
-        "@typescript-eslint/eslint-plugin": "2.21.0",
-        "@typescript-eslint/parser": "2.21.0",
-        "eslint": "6.8.0",
+        "@typescript-eslint/eslint-plugin": "4.31.1",
+        "@typescript-eslint/parser": "4.31.1",
+        "eslint": "7.32.0",
         "typescript": "3.8.3"
     },
     "dependencies": {
