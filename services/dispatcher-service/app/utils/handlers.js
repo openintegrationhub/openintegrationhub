@@ -5,6 +5,7 @@ const request = require('request-promise').defaults({
   simple: false,
   resolveWithFullResponse: true,
 });
+
 const storage = require('./mongo');
 const log = require('./logger'); // eslint-disable-line
 const config = require('../config');
@@ -54,7 +55,7 @@ async function getTargets(sourceFlow, operation) {
   // Find source, get its schema, then discard it for further processing
   for (let i = 0; i < applications.length; i += 1) {
     const app = applications[i];
-    const found = app.outbound.flows.find(flow => flow.flowId === sourceFlow);
+    const found = app.outbound.flows.find((flow) => flow.flowId === sourceFlow);
     if (found) {
       schemaUri = found.schemaUri;  //eslint-disable-line
       applications.splice(i, 1);
@@ -94,7 +95,7 @@ async function createDispatches(targets, payload) {
     targetPayload.meta.applicationUid = targets[i].applicationUid;
 
     if (refs) {
-      const ref = refs.find(element => element.applicationUid === targets[i].applicationUid);
+      const ref = refs.find((element) => element.applicationUid === targets[i].applicationUid);
 
       if (ref) {
         targetPayload.meta.recordUid = ref.recordUid;
