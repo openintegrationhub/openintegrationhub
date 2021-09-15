@@ -8,4 +8,4 @@ gitchanges.txt
 lerna-debug.log
 
 .npm_cache/
-.mongo-binaries/
+.mongo_binaries/

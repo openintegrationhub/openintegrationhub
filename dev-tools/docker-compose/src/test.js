@@ -12,7 +12,7 @@ const {
 const testEnvs = Object.entries({
   // following envs will be applied to every "npm test" command
   MONGODB_URI: 'mongodb://mongodb/testing',
-  BINARY_DOWNLOAD_DIR: '/usr/src/app/.mongo-binaries',
+  BINARY_DOWNLOAD_DIR: '/usr/src/app/.mongo_binaries',
   CI: 'true',
   REDIS_CONFIG: `"${JSON.stringify({
     host: 'redis',
