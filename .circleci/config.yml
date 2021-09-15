@@ -2,13 +2,13 @@ version: 2.1
 
 aliases:
   - &node_env
-    - image: circleci/node:12-stretch
+    - image: circleci/node:16-bullseye
   - &node_mongo_env
-    - image: circleci/node:12-stretch
+    - image: circleci/node:16-bullseye
     - image: circleci/mongo:4.4
   - &node_amqp_env
-    - image: circleci/node:12-stretch
-    - image: rabbitmq:3.8.6-alpine
+    - image: circleci/node:16-bullseye
+    - image: rabbitmq:3.8.9-alpine
   - &run_npm_install
     name: Installing Dependencies
     command: npm --ignore-engines
@@ -22,7 +22,7 @@ aliases:
     - run: npm test
   - &build_steps
     - setup_remote_docker:
-        version: 19.03.12
+        version: 20.10.6
     - restore_cache:
         keys:
           - yarn-deps-{{ .Branch }}-{{ .Revision }}
