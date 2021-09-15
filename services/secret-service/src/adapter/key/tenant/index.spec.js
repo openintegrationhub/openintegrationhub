@@ -19,7 +19,7 @@ describe('key adapter', () => {
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         conf.crypto.isDisabled = false;
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-getKey`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'key-tenant'),
             port,
             adapter: {
                 key: require('.'),
