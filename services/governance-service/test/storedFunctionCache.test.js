@@ -10,7 +10,7 @@ process.env.MONGODB_URL = global.__MONGO_URI__;
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3009;
 const request = require('supertest')(`${hostUrl}:${port}`);
-const iamMock = require('./utils/iamMock.js');
+const iamMock = require('./utils/iamMock');
 const token = require('./utils/tokens');
 const { addStoredFunction } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
@@ -137,7 +137,6 @@ describe('StoredFunctionCache Operations', () => {
 
     expect(storedFunctionCache.storedFunctions.MyStoredFunction2[0].oihUser).toEqual('admin@example.com');
   });
-
 
   test('should add another stored function to the cache', async () => {
     const testCode = `
