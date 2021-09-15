@@ -7,7 +7,7 @@
     "start": "node app/index.js",
     "start-dev": "nodemon app/index.js",
     "start:container": "nodemon app/index.js",
-    "pretest": "eslint app test --fix --ext .js",
+    "pretest": "eslint app test --ext .js",
     "test": "jest --runInBand",
     "test-watch": "nodemon --exec \"npm test\"",
     "coverage": "npm test --coverage",

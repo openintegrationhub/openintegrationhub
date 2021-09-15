@@ -10,7 +10,7 @@
     "watch-test": "jest --watch --runInBand",
     "start": "node src/index.js",
     "build": "sass ./src/views/style/basic.scss:./src/views/style/basic.css",
-    "lint": "eslint --fix src/ test/",
+    "lint": "eslint src/ test/",
     "task": "node",
     "generate-keystore": "node -e 'require(\"./src/oidc/util/generate-keystore\").generateFile()'",
     "generate-nodemon-env": "node -e 'require(\"./src/util/nodemon-env\").saveToFile()'",

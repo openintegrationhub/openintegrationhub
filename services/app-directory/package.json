@@ -9,7 +9,7 @@
   "scripts": {
     "start": "NODE_ENV='production' node src/index.js",
     "test": "jest --silent=false --runInBand --forceExit",
-    "lint": "eslint --fix src/",
+    "lint": "eslint src/",
     "watch": "nodemon src/index.js",
     "start:container": "nodemon src/index.js --watch src/",
     "build:docker": "docker build -t openintegrationhub/app-directory:${VERSION} -f Dockerfile .",
