@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app/index.js",
     "start:container": "nodemon app/index.js",
-    "pretest": "eslint app test --ext .js --ext .json",
+    "pretest": "eslint app test --fix --ext .js --ext .json",
     "test": "jest --runInBand",
     "lint_fix": "eslint app test --fix",
     "build": "echo \"No Build defined\"",
@@ -24,8 +24,8 @@
     "express": "^4.16.3",
     "lodash": "4.17.21",
     "mongoose": "5.11.8",
-    "request": "^2.87.0",
-    "request-promise": "^4.2.2",
+    "request": "2.88.2",
+    "request-promise": "4.2.6",
     "swagger-ui-express": "^3.0.8"
   },
   "devDependencies": {
@@ -38,10 +38,10 @@
     "fs": "0.0.1-security",
     "jest": "26.6.0",
     "jest-environment-node": "^24.7.1",
-    "mongodb-memory-server": "^6.6.1",
+    "mongodb-memory-server": "7.4.0",
     "nock": "11.3.3",
     "nodemon": "2.0.4",
-    "supertest": "^3.1.0"
+    "supertest": "6.1.6"
   },
   "author": "Wice GmbH",
   "license": "Apache-2.0"
