@@ -8,7 +8,7 @@
     "node": ">=12"
   },
   "scripts": {
-    "lint": "eslint index.js src spec",
+    "lint": "eslint index.js src",
     "pretest": "npm run lint",
     "test": "echo \"No test specified\" && exit 0",
     "coverage": "nyc mocha spec --recursive",
