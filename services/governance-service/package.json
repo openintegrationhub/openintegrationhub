@@ -7,7 +7,7 @@
     "start": "node app/index.js",
     "start:nodemon": "NODE_ENV=development nodemon -r dotenv/config app/index.js --watch app/ | bunyan",
     "start:container": "nodemon -r dotenv/config app/index.js --watch app/ | bunyan",
-    "start:nodemon:minikube": ". ../../minikube/.env && npm start:nodemon",
+    "start:nodemon:minikube": ". ../../minikube/.env && npm run start:nodemon",
     "pretest": "eslint app test --ext .js",
     "test": "jest --runInBand",
     "lint_fix": "eslint app test --fix",
@@ -15,7 +15,7 @@
     "build:docker": "docker build -t openintegrationhub/governance-service:${VERSION} -f Dockerfile ../../"
   },
   "dependencies": {
-    "@openintegrationhub/event-bus": "^1.2.5",
+    "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/iam-utils": "*",
     "body-parser": "^1.19",
     "bunyan": "^1.8.14",
