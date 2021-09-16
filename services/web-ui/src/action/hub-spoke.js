@@ -38,7 +38,7 @@ export const getDispatcherConfig = async (id) => {
     }
 };
 
-export const createDispatcherConfig = data => async (dispatch) => {
+export const createDispatcherConfig = (data) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -106,7 +106,7 @@ export const deleteAppFromDispatcherConfig = async (id, appId) => {
     }
 };
 
-export const deleteDispatcherConfig = id => async (dispatch) => {
+export const deleteDispatcherConfig = (id) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',
