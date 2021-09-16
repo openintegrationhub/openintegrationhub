@@ -1,5 +1,5 @@
-
-node_modules
-*/*/node_modules
+**/node_modules
+**/dist
+**/.env
 .*.sw?
 dev-tools/docker-compose/db/data/*
