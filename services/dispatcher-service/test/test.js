@@ -41,9 +41,9 @@ afterAll(async () => {
 describe('Documentation', () => {
   test('should display the swagger-generated HTML page', async () => {
     const res = await request.get('/api-docs/');
-    expect(true).toBe(true);
+
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toMatch(/HTML for static distribution bundle build/);
+    expect(res.text).toMatch(/HTML\sfor\sstatic\sdistribution\sbundle\sbuild/);
   });
 });
 
