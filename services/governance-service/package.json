@@ -17,7 +17,7 @@
   "dependencies": {
     "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/iam-utils": "*",
-    "body-parser": "^1.19",
+    "body-parser": "^1.19.0",
     "bunyan": "^1.8.14",
     "bunyan-format": "^0.2.1",
     "cors": "^2.8.5",
