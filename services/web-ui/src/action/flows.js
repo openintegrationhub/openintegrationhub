@@ -3,6 +3,7 @@ import axios from 'axios';
 import { getConfig } from '../conf';
 
 const conf = getConfig();
+console.log('conf is: ', conf);
 export const GET_FLOWS = 'GET_FLOWS';
 export const GET_FLOWS_PAGE = 'GET_FLOWS_PAGE';
 export const START_FLOW = 'START_FLOW';
@@ -22,6 +23,7 @@ export const getFlows = () => async (dispatch) => {
             url: `${conf.endpoints.flow}/flows`,
             withCredentials: true,
         });
+        console.log('RESULT IS: ', result.data);
 
         dispatch({
             type: GET_FLOWS,

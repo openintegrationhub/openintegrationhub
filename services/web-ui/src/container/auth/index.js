@@ -49,106 +49,113 @@ class Auth extends React.Component {
             },
             pending: false,
         };
-        if (this.props.auth.isLoggedIn) this.props.history.push('/');
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.auth !== prevProps.auth && this.props.auth.isLoggedIn) {
-            this.props.history.push('/');
+        if (this.props.auth.isLoggedIn) {
+            this.redirectAfterLogin();
         }
     }
 
-  setVal = (fieldName, e) => {
-      this.setState({
-          userData: update(this.state.userData, {
-              [fieldName]: {
-                  $set: e.target.value,
-              },
-          }),
-      });
-  };
+    componentDidUpdate(prevProps) {
+        if (this.props.auth.isLoggedIn && !prevProps.auth.isLoggedIn && this.props.auth.token) {
+            this.redirectAfterLogin();
+        }
+    }
 
-  login = async (e) => {
-      e.preventDefault();
-      this.setState({
-          pending: true,
-      });
-      await this.props.login(this.state.userData);
-  };
+    redirectAfterLogin() {
+        const redirectMatch = window.location.search.match(/redirect=([a-z/0-9]*)/);
+        this.props.history.push((redirectMatch && redirectMatch[1]) || '/');
+    }
 
-  render() {
-      const { classes } = this.props;
-      if (this.state.pending) {
-          return (
-              <Loader />
-          );
-      }
+    setVal = (fieldName, e) => {
+        this.setState({
+            userData: update(this.state.userData, {
+                [fieldName]: {
+                    $set: e.target.value,
+                },
+            }),
+        });
+    };
 
-      return (
-          <div style={{
-              height: '95%',
-              backgroundSize: 'cover',
-              backgroundImage: 'url(https://www.openintegrationhub.org/wp-content/uploads/2018/06/headergrafik-1440-x-684-px.jpg)',
-          }}>
-              <Grid
-                  container
-                  direction="column"
-                  alignItems="center"
-                  justify="center"
-                  style={{ minHeight: '100vh' }}
-              >
+    login = async (e) => {
+        e.preventDefault();
+        this.setState({
+            pending: true,
+        });
+        await this.props.login(this.state.userData);
+    };
 
-                  <Grid container item xs={3} justify='center' spacing={10}>
-                      <Grid item>
-                          <img
-                              className={classes.logo}
-                              src={Logo}
-                              alt="Open Integration Hub"
-                              id="logo"
-                          />
-                      </Grid>
+    render() {
+        const { classes } = this.props;
+        if (this.state.pending) {
+            return (
+                <Loader />
+            );
+        }
 
-                      <Grid item>
-                          <form onSubmit={this.login} className={classes.form}>
+        return (
+            <div style={{
+                height: '95%',
+                backgroundSize: 'cover',
+                backgroundImage: 'url(https://www.openintegrationhub.org/wp-content/uploads/2018/06/headergrafik-1440-x-684-px.jpg)',
+            }}>
+                <Grid
+                    container
+                    direction="column"
+                    alignItems="center"
+                    justify="center"
+                    style={{ minHeight: '100vh' }}
+                >
 
-                              <FormControl className={classes.formControl} fullWidth required>
-                                  <InputLabel
-                                      classes={{
-                                          root: classes.root,
-                                          focused: 'focused',
-                                      }}
-                                      htmlFor="username">
-                                      username
-                                  </InputLabel>
-                                  <Input id="username"
-                                      classes={{
-                                          root: classes.root,
-                                          focused: 'focused',
-                                      }}
-                                      name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
-                              </FormControl>
-                              <FormControl className={classes.formControl} fullWidth required>
-                                  <InputLabel classes={{
-                                      root: classes.root,
-                                      focused: 'focused',
-                                  }} htmlFor="password">
-                                      password
-                                  </InputLabel>
-                                  <Input id="password" classes={{
-                                      root: classes.root,
-                                      focused: 'focused',
-                                  }} type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
-                              </FormControl>
-                              <FormControl className={classes.formControl} fullWidth>
-                                  <Button type='submit' variant="contained" color="secondary">Login</Button>
-                              </FormControl>
-                          </form>
-                      </Grid>
-                  </Grid>
-              </Grid>
-          </div>
-      );
-  }
+                    <Grid container item xs={3} justify='center' spacing={10}>
+                        <Grid item>
+                            <img
+                                className={classes.logo}
+                                src={Logo}
+                                alt="Open Integration Hub"
+                                id="logo"
+                            />
+                        </Grid>
+
+                        <Grid item>
+                            <form onSubmit={this.login} className={classes.form}>
+
+                                <FormControl className={classes.formControl} fullWidth required>
+                                    <InputLabel
+                                        classes={{
+                                            root: classes.root,
+                                            focused: 'focused',
+                                        }}
+                                        htmlFor="username">
+                                        username
+                                    </InputLabel>
+                                    <Input id="username"
+                                        classes={{
+                                            root: classes.root,
+                                            focused: 'focused',
+                                        }}
+                                        name="username" onChange={this.setVal.bind(this, 'username')} value={this.state.userData.username}/>
+                                </FormControl>
+                                <FormControl className={classes.formControl} fullWidth required>
+                                    <InputLabel classes={{
+                                        root: classes.root,
+                                        focused: 'focused',
+                                    }} htmlFor="password">
+                                        password
+                                    </InputLabel>
+                                    <Input id="password" classes={{
+                                        root: classes.root,
+                                        focused: 'focused',
+                                    }} type="password" name="password" onChange={this.setVal.bind(this, 'password')} value={this.state.userData.password}/>
+                                </FormControl>
+                                <FormControl className={classes.formControl} fullWidth>
+                                    <Button type='submit' variant="contained" color="secondary">Login</Button>
+                                </FormControl>
+                            </form>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </div>
+        );
+    }
 }
 
 Auth.propTypes = {

@@ -1,0 +1,16 @@
+/* custom-tree.css */
+
+
+.node__leaf > circle{
+  fill: silver;
+  r: 12;
+}
+.rd3t-node > circle {
+  fill: white;
+}
+
+
+.rd3t-node > circle:hover {
+  fill:white;
+  stroke: green;
+}
