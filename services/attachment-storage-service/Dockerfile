@@ -29,10 +29,10 @@ RUN apk update && apk add --no-cache \
     g++ \
     python3
 
-RUN NODE_ENV=development npm ci
-RUN cd lib/attachment-storage-service && npm run build
+RUN npm ci --workspace=$serviceName
+RUN npm run build --workspace=lib/attachment-storage-service
 RUN npm run build:ts --workspace=$serviceName
-RUN npm ci --production
+RUN npm ci --production --workspace=$serviceName
 
 FROM base AS release
 

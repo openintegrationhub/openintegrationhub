@@ -19,13 +19,13 @@ Please note that the core framework is located under [lib/secret-service](../../
 Install packages
 
 ```zsh
-yarn
+npm i
 ```
 
 Start local lynx
 
 ```zsh
-npm start
+npm run start
 ```
 
 Test lynx core framwework components

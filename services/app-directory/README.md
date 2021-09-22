@@ -4,20 +4,20 @@
 
 Install packages
 ```zsh 
-yarn
+npm i
 ```
 
 Start local
 ```zsh 
-npm start
+npm run start
 ```
 
 Watch server and restart after code changes
 ```zsh 
-npm watch
+npm run watch
 ```
 
 Test lynx components
 ```zsh 
-npm test
+npm run test
 ```

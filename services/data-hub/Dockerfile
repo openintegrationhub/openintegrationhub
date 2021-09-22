@@ -1,4 +1,4 @@
-FROM node:16-alpine AS base
+FROM node:16-bullseye AS base
 LABEL NAME="oih-data-hub"
 
 ENV serviceName=data-hub
@@ -16,7 +16,7 @@ COPY lib/cfm lib/cfm
 
 COPY services/$serviceName services/$serviceName
 
-RUN apk update && apk add --no-cache bash
+# RUN apk update && apk add --no-cache bash
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package
@@ -25,15 +25,16 @@ RUN apk update && apk add --no-cache bash
 
 FROM base AS dependencies
 
-RUN apk update && apk add --no-cache \
-    make \
-    gcc \
-    g++ \
-    python3
+# RUN apk update && apk add --no-cache \
+#     make \
+#     gcc \
+#     g++ \
+#     python3
 
-RUN NODE_ENV=development npm ci
+RUN npm i --workspaces
+
 RUN npm run build:ts --workspace=$serviceName
-RUN npm ci --production
+RUN npm ci --production --workspace=$serviceName
 
 FROM base AS release
 

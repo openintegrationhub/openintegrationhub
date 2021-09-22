@@ -60,8 +60,8 @@ docker build -t openintegrationhub/component-orchestrator:latest -f Dockerfile .
 
 or
 
-```yarn
-VERSION=latest npm build:docker
+```npm
+VERSION=latest npm run build:docker
 ```
 
 ## How to deploy

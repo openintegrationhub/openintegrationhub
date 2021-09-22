@@ -9,3 +9,5 @@ lerna-debug.log
 
 .npm_cache/
 .mongo_binaries/
+
+yarn.lock
