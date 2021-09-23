@@ -17,7 +17,7 @@ describe('SecretDAO', () => {
         conf.crypto.isDisabled = false;
         port = 5103;
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-secret-dao`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'secret-dao'),
             port,
         });
         await server.start();

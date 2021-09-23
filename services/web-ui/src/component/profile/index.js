@@ -18,7 +18,6 @@ import { getConfig } from '../../conf';
 // actions
 import { updateUser } from '../../action/users';
 
-
 const conf = getConfig();
 
 const useStyles = {
@@ -53,8 +52,8 @@ class Profile extends React.Component {
     }
 
     componentDidMount() {
-        const currentUser = this.props.users.all.find(user => user._id === this.props.auth._id);
-        const currentTenantOfUser = currentUser.tenant && this.props.tenants.all.find(tenant => tenant._id === currentUser.tenant);
+        const currentUser = this.props.users.all.find((user) => user._id === this.props.auth._id);
+        const currentTenantOfUser = currentUser.tenant && this.props.tenants.all.find((tenant) => tenant._id === currentUser.tenant);
         this.props.setFormData({
             _id: currentUser._id,
             username: currentUser.username,
@@ -87,7 +86,7 @@ class Profile extends React.Component {
                 const arrSelectable = [];
                 // eslint-disable-next-line no-restricted-syntax
                 for (const role of this.props.roles.all) {
-                    if (!this.state.roles.find(item => item._id === role._id)) arrSelectable.push(role);
+                    if (!this.state.roles.find((item) => item._id === role._id)) arrSelectable.push(role);
                 }
                 this.setState({
                     selectableroles: arrSelectable,
@@ -164,7 +163,7 @@ class Profile extends React.Component {
                                         value={tenant || ''}
                                         onChange={this.props.setVal.bind(this, 'tenant')}
                                     >
-                                        {this.props.tenants.all.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                                        {this.props.tenants.all.map((item) => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
                                     </Select>
                                 </FormControl>
                     }
@@ -181,7 +180,7 @@ class Profile extends React.Component {
                             }
                             }
                         >
-                            {this.state.selectableroles && this.state.selectableroles.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                            {this.state.selectableroles && this.state.selectableroles.map((item) => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
                         </Select>
                         <Button
                             type='button'
@@ -202,7 +201,7 @@ class Profile extends React.Component {
                     {
                         this.state.roles.length
                             ? <List dense={true}>
-                                {this.state.roles.map(item => <ListItem key={item._id}>
+                                {this.state.roles.map((item) => <ListItem key={item._id}>
                                     <ListItemText
                                         primary={item.name}
                                     />
@@ -212,7 +211,7 @@ class Profile extends React.Component {
                                         onClick={ () => {
                                             const tempArr = [...this.state.roles];
                                             this.setState({
-                                                roles: tempArr.filter(tempArrItem => tempArrItem._id !== item._id),
+                                                roles: tempArr.filter((tempArrItem) => tempArrItem._id !== item._id),
                                             });
                                         }}>
                                         <Remove/>
@@ -223,14 +222,13 @@ class Profile extends React.Component {
                             : null
                     }
 
-
                     <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="status">status</InputLabel>
                         <Select
                             value={status || conf.account.status.ACTIVE}
                             onChange={this.props.setVal.bind(this, 'status')}
                         >
-                            {Object.keys(conf.account.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                            {Object.keys(conf.account.status).map((key_) => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
                         </Select>
                     </FormControl>
 
@@ -267,14 +265,13 @@ Profile.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     users: state.users,
     roles: state.roles,
     tenants: state.tenants,
     auth: state.auth,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     updateUser,
 }, dispatch);
 

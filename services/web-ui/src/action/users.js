@@ -10,7 +10,6 @@ export const DELETE_USER = 'DELETE_USER';
 export const USERS_ERROR = 'USERS_ERROR';
 export const USERS_ERROR_CLEAR = 'USERS_ERROR_CLEAR';
 
-
 export const getUsers = () => async (dispatch) => {
     try {
         const result = await axios({
@@ -31,7 +30,7 @@ export const getUsers = () => async (dispatch) => {
     }
 };
 
-export const updateUser = user => async (dispatch) => {
+export const updateUser = (user) => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
@@ -52,7 +51,7 @@ export const updateUser = user => async (dispatch) => {
     }
 };
 
-export const createUser = user => async (dispatch) => {
+export const createUser = (user) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -75,7 +74,7 @@ export const createUser = user => async (dispatch) => {
     }
 };
 
-export const deleteUser = userId => async (dispatch) => {
+export const deleteUser = (userId) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',

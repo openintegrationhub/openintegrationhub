@@ -38,7 +38,7 @@ describe('Data Route', () => {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
         const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { useNewUrlParser: true });
+        await mongoose.connect(mongoUri);
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
         this.auth = 'Bearer blablabla';
@@ -743,7 +743,7 @@ describe('GET /data/:id and /data/recordId/:id', () => {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
         const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { useNewUrlParser: true });
+        await mongoose.connect(mongoUri);
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
         this.auth = 'Bearer blablabla';

@@ -58,8 +58,8 @@ class EditUser extends React.Component {
 
     componentDidMount() {
         if (this.props.userId) {
-            const currentUser = this.props.users.all.find(user => user._id === this.props.userId);
-            const currentTenantOfUser = currentUser.tenant && this.props.tenants.all.find(tenant => tenant._id === currentUser.tenant);
+            const currentUser = this.props.users.all.find((user) => user._id === this.props.userId);
+            const currentTenantOfUser = currentUser.tenant && this.props.tenants.all.find((tenant) => tenant._id === currentUser.tenant);
             this.props.setFormData({
                 _id: this.props.userId,
                 username: currentUser.username,
@@ -95,7 +95,7 @@ class EditUser extends React.Component {
                 });
             }
         } else {
-            let adminTenant = this.props.tenants.all.find(tenant => tenant._id === this.props.auth.tenant);
+            let adminTenant = this.props.tenants.all.find((tenant) => tenant._id === this.props.auth.tenant);
             if (this.props.auth.isAdmin) {
                 adminTenant = '';
             }
@@ -124,8 +124,8 @@ class EditUser extends React.Component {
         }
         if (this.state.pending) {
             if (this.props.userId) {
-                const prevUser = prevProps.users.all.find(user => user._id === prevProps.userId);
-                const currentUser = this.props.users.all.find(user => user._id === this.props.userId);
+                const prevUser = prevProps.users.all.find((user) => user._id === prevProps.userId);
+                const currentUser = this.props.users.all.find((user) => user._id === this.props.userId);
                 if (prevUser.updatedAt !== currentUser.updatedAt) {
                     this.setState({
                         pending: false,
@@ -145,7 +145,7 @@ class EditUser extends React.Component {
                 const arrSelectable = [];
                 // eslint-disable-next-line no-restricted-syntax
                 for (const role of this.props.roles.all) {
-                    if (!this.state.roles.find(item => item._id === role._id)) arrSelectable.push(role);
+                    if (!this.state.roles.find((item) => item._id === role._id)) arrSelectable.push(role);
                 }
                 this.setState({
                     selectableroles: arrSelectable,
@@ -250,7 +250,7 @@ class EditUser extends React.Component {
                                         value={tenant || ''}
                                         onChange={this.props.setVal.bind(this, 'tenant')}
                                     >
-                                        {this.props.tenants.all.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                                        {this.props.tenants.all.map((item) => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
                                     </Select>
                                 </FormControl>
                     }
@@ -267,7 +267,7 @@ class EditUser extends React.Component {
                             }
                             }
                         >
-                            {this.state.selectableroles && this.state.selectableroles.map(item => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
+                            {this.state.selectableroles && this.state.selectableroles.map((item) => <MenuItem key={item._id} value={item}>{item.name}</MenuItem>)}
                         </Select>
                         <Button
                             type='button'
@@ -286,11 +286,10 @@ class EditUser extends React.Component {
                         </Button>
                     </FormControl>
 
-
                     {
                         this.state.roles.length
                             ? <List dense={true}>
-                                {this.state.roles.map(item => <ListItem key={item._id}>
+                                {this.state.roles.map((item) => <ListItem key={item._id}>
                                     <ListItemText
                                         primary={item.name}
                                     />
@@ -300,7 +299,7 @@ class EditUser extends React.Component {
                                         onClick={ () => {
                                             const tempArr = [...this.state.roles];
                                             this.setState({
-                                                roles: tempArr.filter(tempArrItem => tempArrItem._id !== item._id),
+                                                roles: tempArr.filter((tempArrItem) => tempArrItem._id !== item._id),
                                             });
                                         }}>
                                         <Remove/>
@@ -311,14 +310,13 @@ class EditUser extends React.Component {
                             : null
                     }
 
-
                     <FormControl className={classes.formControl}>
                         <InputLabel htmlFor="status">status</InputLabel>
                         <Select
                             value={status || conf.account.status.ACTIVE}
                             onChange={this.props.setVal.bind(this, 'status')}
                         >
-                            {Object.keys(conf.account.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                            {Object.keys(conf.account.status).map((key_) => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
                         </Select>
                     </FormControl>
 
@@ -335,7 +333,6 @@ class EditUser extends React.Component {
                                     value={password || ''}
                                 />
                             </React.Fragment>
-
 
                         )}
                     </FormControl>
@@ -355,13 +352,13 @@ class EditUser extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     users: state.users,
     roles: state.roles,
     tenants: state.tenants,
     auth: state.auth,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     ...usersActions,
 }, dispatch);
 

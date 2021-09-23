@@ -14,17 +14,14 @@ import {
 
 import Modal from '@material-ui/core/Modal';
 
-
 // Domains
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 
 import MetadataTeaser from './metadata-teaser';
 
-
 // actions
 import { getDomains, createDomain, getMetadataPage } from '../../action/metadata';
-
 
 const useStyles = {
     wrapper: {
@@ -137,11 +134,10 @@ class MetaData extends React.Component {
                         </Grid>
                     </Grid>}
 
-
                 </Grid>
                 <Grid container justify="center" spacing={2}>
                     {
-                        this.props.metadata.domains.length && this.props.metadata.domains.map(item => <MetadataTeaser key={`metadataTeaser-${item.id}`} data={item}/>)
+                        this.props.metadata.domains.length && this.props.metadata.domains.map((item) => <MetadataTeaser key={`metadataTeaser-${item.id}`} data={item}/>)
                     }
                 </Grid>
 
@@ -176,11 +172,11 @@ class MetaData extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     metadata: state.metadata,
     auth: state.auth,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getDomains,
     createDomain,
     getMetadataPage,

@@ -1,5 +1,5 @@
 
-const { ROLES, MEMBERSHIP_ROLES } = require('./../constants');
+const { ROLES, MEMBERSHIP_ROLES } = require('../constants');
 
 const PERMISSIONS = {
 
@@ -98,7 +98,7 @@ const DEFAULT_ROLES = {
 
 };
 
-const permissionIsCommon = permission => PERMISSIONS.common[permission];
+const permissionIsCommon = (permission) => PERMISSIONS.common[permission];
 
 const permissionsAreCommon = (permissions) => {
 
@@ -114,9 +114,9 @@ const permissionsAreCommon = (permissions) => {
 
 };
 
-const roleNameIsRestricted = name => Object.keys(ROLES).map(elem => elem.toLowerCase())
+const roleNameIsRestricted = (name) => Object.keys(ROLES).map((elem) => elem.toLowerCase())
     .indexOf(name.toLowerCase()) >= 0
-    || Object.keys(MEMBERSHIP_ROLES).map(elem => elem.toLowerCase())
+    || Object.keys(MEMBERSHIP_ROLES).map((elem) => elem.toLowerCase())
         .indexOf(name.toLowerCase()) >= 0;
 
 module.exports = {

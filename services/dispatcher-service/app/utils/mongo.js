@@ -22,7 +22,7 @@ const format = (configuration) => {
   return newConfig;
 };
 
-const getConfigs = tenant => new Promise(async (resolve) => {
+const getConfigs = (tenant) => new Promise(async (resolve) => {
   const configurations = await Configuration.find({ tenant }).lean();
   if (!configurations || configurations.length === 0) {
     resolve(false);
@@ -35,7 +35,7 @@ const getOneConfig = (tenant, id) => new Promise(async (resolve) => {
   resolve(format(configuration));
 });
 
-const updateConfig = data => new Promise(async (resolve) => {
+const updateConfig = (data) => new Promise(async (resolve) => {
   const { id } = data;
   const config = data;
   delete config.id;
@@ -49,7 +49,7 @@ const updateConfig = data => new Promise(async (resolve) => {
   resolve(format(response));
 });
 
-const createConfig = data => new Promise(async (resolve) => {
+const createConfig = (data) => new Promise(async (resolve) => {
   const saveConfig = new Configuration(data);
   const response = await saveConfig.save();
   resolve(format(response));
@@ -64,7 +64,7 @@ const deleteConfig = (tenant, id) => new Promise(async (resolve) => {
   resolve(format(configuration));
 });
 
-const getConfigBySource = flowId => new Promise(async (resolve) => {
+const getConfigBySource = (flowId) => new Promise(async (resolve) => {
   const configuration = await Configuration.findOne({ 'applications.outbound.flows.flowId': flowId }).lean();
   resolve(format(configuration));
 });

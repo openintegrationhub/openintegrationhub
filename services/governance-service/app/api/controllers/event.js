@@ -9,7 +9,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 

@@ -160,7 +160,7 @@ async function createFlows(applications, token) {
               'GET',
             );
 
-            const initialFlow = Object.assign({}, flow);
+            const initialFlow = { ...flow };
             initialFlow.graph = { nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }], edges: [] };
 
             const initialOptions = {
@@ -174,7 +174,6 @@ async function createFlows(applications, token) {
             };
 
             const createResponse = await request(initialOptions);
-
 
             const flowId = createResponse.body.data.id;
 
@@ -195,7 +194,6 @@ async function createFlows(applications, token) {
                 Authorization: token,
               },
             };
-
 
             const response = await request(options);
 
@@ -220,7 +218,7 @@ async function createFlows(applications, token) {
               current,
             );
 
-            const initialFlow = Object.assign({}, flow);
+            const initialFlow = { ...flow };
             initialFlow.graph = { nodes: [{ id: 'empty', componentId: '5f895922926f72cf78353272', function: 'empty' }], edges: [] };
 
             const initialOptions = {
@@ -234,7 +232,6 @@ async function createFlows(applications, token) {
             };
 
             const createResponse = await request(initialOptions);
-
 
             const flowId = createResponse.body.data.id;
 
@@ -328,7 +325,7 @@ async function updateConfigFlows(original, incoming, token) {
   const oldFlowIds = getFlowIds(original.applications);
   const newFlowIds = getFlowIds(incoming.applications);
 
-  const deletedFlows = oldFlowIds.filter(uid => !newFlowIds.includes(uid));
+  const deletedFlows = oldFlowIds.filter((uid) => !newFlowIds.includes(uid));
 
   newConfig.applications = await createFlows(newConfig.applications, token);
   await deleteFlowsById(deletedFlows);

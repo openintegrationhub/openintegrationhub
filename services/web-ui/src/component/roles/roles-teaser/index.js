@@ -18,7 +18,6 @@ import {
     Delete, Edit, Add, Remove,
 } from '@material-ui/icons';
 
-
 // Actions
 import {
     deleteRole, updateRole,
@@ -157,7 +156,6 @@ class RolesTeaser extends React.PureComponent {
                                 margin="normal"
                                 value={this.state.name}/>
 
-
                         </Grid>
                         <Grid item xs={8}>
                             <InputLabel shrink={true}>Permissions</InputLabel>
@@ -202,7 +200,7 @@ class RolesTeaser extends React.PureComponent {
                                                     onClick={ () => {
                                                         const tempArr = [...this.state.selectedPermissions];
                                                         this.setState({
-                                                            selectedPermissions: tempArr.filter(tempArrItem => tempArrItem !== item),
+                                                            selectedPermissions: tempArr.filter((tempArrItem) => tempArrItem !== item),
                                                         });
                                                     }}>
                                                     <Remove/>
@@ -233,10 +231,10 @@ class RolesTeaser extends React.PureComponent {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     roles: state.roles,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     deleteRole,
     updateRole,
 }, dispatch);

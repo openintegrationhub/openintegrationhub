@@ -14,7 +14,6 @@ export const DELETE_FLOW = 'DELETE_FLOW';
 export const FLOW_ADD_STATE = 'FLOW_ADD_STATE';
 export const EXECUTE_FLOW = 'EXECUTE_FLOW';
 
-
 export const getFlows = () => async (dispatch) => {
     try {
         const result = await axios({
@@ -33,7 +32,7 @@ export const getFlows = () => async (dispatch) => {
     }
 };
 
-export const getFlowsPage = page => async (dispatch) => {
+export const getFlowsPage = (page) => async (dispatch) => {
     try {
         const result = await axios({
             method: 'get',
@@ -51,7 +50,7 @@ export const getFlowsPage = page => async (dispatch) => {
     }
 };
 
-export const updateFlow = flow => async (dispatch) => {
+export const updateFlow = (flow) => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
@@ -73,7 +72,7 @@ export const updateFlow = flow => async (dispatch) => {
     }
 };
 
-export const createFlow = data => async (dispatch) => {
+export const createFlow = (data) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -92,7 +91,7 @@ export const createFlow = data => async (dispatch) => {
     }
 };
 
-export const startFlow = flowId => async (dispatch) => {
+export const startFlow = (flowId) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -109,7 +108,7 @@ export const startFlow = flowId => async (dispatch) => {
     }
 };
 
-export const stopFlow = flowId => async (dispatch) => {
+export const stopFlow = (flowId) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -126,7 +125,7 @@ export const stopFlow = flowId => async (dispatch) => {
     }
 };
 
-export const deleteFlow = flowId => async (dispatch) => {
+export const deleteFlow = (flowId) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',

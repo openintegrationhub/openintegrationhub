@@ -12,13 +12,11 @@ import {
 } from '@material-ui/icons';
 import Modal from '@material-ui/core/Modal';
 
-
 // components
 import RolesTeaser from './roles-teaser';
 
 // actions
 import { getRoles, createRole, getPermissions } from '../../action/roles';
-
 
 const useStyles = {
     wrapper: {
@@ -133,7 +131,6 @@ class Roles extends React.Component {
                                 onChange={this.setName.bind(this)}
                                 margin="normal"/>
 
-
                         </Grid>
                         {
                             this.props.auth.isAdmin
@@ -186,7 +183,7 @@ class Roles extends React.Component {
                                                     onClick={ () => {
                                                         const tempArr = [...this.state.selectedPermissions];
                                                         this.setState({
-                                                            selectedPermissions: tempArr.filter(tempArrItem => tempArrItem !== item),
+                                                            selectedPermissions: tempArr.filter((tempArrItem) => tempArrItem !== item),
                                                         });
                                                     }}>
                                                     <Remove/>
@@ -212,18 +209,17 @@ class Roles extends React.Component {
                         </Grid>
                     </form>
 
-
                 </Modal>
             </Container>
         );
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     roles: state.roles,
     auth: state.auth,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getRoles,
     createRole,
     getPermissions,

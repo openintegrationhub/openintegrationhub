@@ -10,8 +10,8 @@ RUN apk --no-cache add \
     g++ \
     libc6-compat
 RUN if [ "$local" == "true" ]; \
-    then cd /tmp && yarn ; \
-    else cd /tmp && yarn --production ; \
+    then cd /tmp && npm ; \
+    else cd /tmp && npm --production ; \
     fi 
 WORKDIR /usr/src/app
 ADD . /usr/src/app
@@ -19,4 +19,4 @@ RUN ln -s /tmp/node_modules /usr/src/app/ && chown -R 1000:1000 /usr/src/app
 # just for start
 USER node
 
-CMD yarn -s start
+CMD npm -s start

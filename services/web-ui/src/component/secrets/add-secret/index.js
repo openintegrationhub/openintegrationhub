@@ -55,7 +55,7 @@ class AddSecret extends React.Component {
                 return (
                     < React.Fragment >
                         {
-                            this.props.authClients.available.map(client => (
+                            this.props.authClients.available.map((client) => (
                                 <Button
                                     key={client._id}
                                     variant="contained"
@@ -157,7 +157,7 @@ AddSecret.propTypes = {
 const mapStateToProps = () => ({
 
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
 
 }, dispatch);
 

@@ -13,7 +13,6 @@ export const DELETE_DOMAIN = 'DELETE_DOMAIN';
 export const DELETE_DOMAIN_SCHEMA = 'DELETE_DOMAIN_SCHEMA';
 export const CREATE_DOMAIN_SCHEMA = 'CREATE_DOMAIN_SCHEMA';
 
-
 export const getDomains = () => async (dispatch) => {
     try {
         const result = await axios({
@@ -31,7 +30,7 @@ export const getDomains = () => async (dispatch) => {
         console.log(err);
     }
 };
-export const getDomainSchemas = domainId => async (dispatch) => {
+export const getDomainSchemas = (domainId) => async (dispatch) => {
     try {
         const result = await axios({
             method: 'get',
@@ -50,7 +49,7 @@ export const getDomainSchemas = domainId => async (dispatch) => {
     }
 };
 
-export const getMetadataPage = page => async (dispatch) => {
+export const getMetadataPage = (page) => async (dispatch) => {
     try {
         const result = await axios({
             method: 'get',
@@ -68,7 +67,7 @@ export const getMetadataPage = page => async (dispatch) => {
     }
 };
 
-export const updateDomain = domainData => async (dispatch) => {
+export const updateDomain = (domainData) => async (dispatch) => {
     try {
         await axios({
             method: 'put',
@@ -90,7 +89,7 @@ export const updateDomain = domainData => async (dispatch) => {
     }
 };
 
-export const createDomain = data => async (dispatch) => {
+export const createDomain = (data) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -109,7 +108,7 @@ export const createDomain = data => async (dispatch) => {
     }
 };
 
-export const deleteDomain = domainId => async (dispatch) => {
+export const deleteDomain = (domainId) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',
@@ -146,7 +145,7 @@ export const createDomainSchema = (domainId, data) => async (dispatch) => {
     }
 };
 
-export const uploadDomainSchemas = data => async (dispatch) => {
+export const uploadDomainSchemas = (data) => async (dispatch) => {
     try {
         const response = await axios({
             method: 'post',
@@ -166,7 +165,7 @@ export const uploadDomainSchemas = data => async (dispatch) => {
     }
 };
 
-export const updateDomainSchema = data => async (dispatch) => {
+export const updateDomainSchema = (data) => async (dispatch) => {
     try {
         const response = await axios({
             method: 'put',
@@ -186,7 +185,6 @@ export const updateDomainSchema = data => async (dispatch) => {
         return err;
     }
 };
-
 
 export const deleteDomainSchema = (domainId, uri) => async (dispatch) => {
     try {

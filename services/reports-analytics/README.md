@@ -38,23 +38,23 @@ This service is listening to all events.
 Install packages
 
 ```zsh
-yarn
+npm i
 ```
 
 Start local TBD
 
 ```zsh
-yarn start
+npm run start
 ```
 
 Watch server and restart after code changes
 
 ```zsh
-yarn watch
+npm run watch
 ```
 
 Test TBD components
 
 ```zsh
-yarn test
+npm test
 ```

@@ -13,7 +13,6 @@ import {
 } from '@material-ui/icons';
 import Modal from '@material-ui/core/Modal';
 
-
 // components
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
@@ -21,7 +20,6 @@ import ComponentsTeaser from './components-teaser';
 
 // actions
 import { getComponents, createComponent, getComponentsPage } from '../../action/components';
-
 
 const useStyles = {
     wrapper: {
@@ -142,11 +140,10 @@ class Components extends React.Component {
                         </Grid>
                     </Grid>}
 
-
                 </Grid>
                 <Grid container justify="center" spacing={2}>
                     {
-                        this.props.components.all.length && this.props.components.all.map(item => <ComponentsTeaser key={`componentTeaser-${item.id}`} data={item}/>)
+                        this.props.components.all.length && this.props.components.all.map((item) => <ComponentsTeaser key={`componentTeaser-${item.id}`} data={item}/>)
                     }
                 </Grid>
 
@@ -181,11 +178,11 @@ class Components extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     components: state.components,
     auth: state.auth,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getComponents,
     createComponent,
     getComponentsPage,

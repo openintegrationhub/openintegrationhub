@@ -3,7 +3,7 @@ const pkg = require('../../package.json');
 const serviceClient = require('../oidc/util/clients/service-client');
 const { optional, getPassword } = require('../util/check-env');
 
-const CONSTANTS = require('./../constants');
+const CONSTANTS = require('../constants');
 
 const port = optional('IAM_PORT', 3099);
 const baseurl = optional('IAM_BASEURL', 'https://127.0.0.1:3099');

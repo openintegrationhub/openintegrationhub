@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-const { ROLE_TYPE } = require('./../../constants');
-const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../../access-control/permissions');
+const { ROLE_TYPE } = require('../../constants');
+const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('../../access-control/permissions');
 
 const { Schema } = mongoose;
 

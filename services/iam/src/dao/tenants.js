@@ -1,7 +1,7 @@
 const Logger = require('@basaas/node-logger');
 const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
-const Tenant = require('./../models/tenant');
-const CONF = require('./../conf');
+const Tenant = require('../models/tenant');
+const CONF = require('../conf');
 const AccountDAO = require('./accounts');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/tenantDao`);

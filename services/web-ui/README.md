@@ -4,32 +4,32 @@
 
 Install packages
 ```zsh 
-yarn
+npm i
 ```
 
 Start dev environment/ file watcher
 ```zsh 
-yarn start
+npm run start
 ```
 
 Run tests
 ```zsh 
-yarn test
+npm test
 ```
 
 Run tests once
 ```zsh 
-CI=true yarn test
+CI=true npm test
 ```
 
 Create production build
 ```zsh 
-yarn build
+npm run build
 ```
 
 Serve production build
 ```zsh 
-yarn serve
+npm run serve
 ```
 
 For further instructions take a look at https://facebook.github.io/create-react-app/docs/getting-started

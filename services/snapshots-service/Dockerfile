@@ -20,7 +20,7 @@ RUN apk update && apk add --no-cache \
     g++ \
     python
 COPY services/snapshots-service ./services/snapshots-service
-RUN cd services/snapshots-service && yarn install && yarn run build:ts
+RUN cd services/snapshots-service && npm install && npm run build:ts
 
 FROM base AS release
 COPY --from=dependencies /usr/lib/app/services/snapshots-service/dist ./services/snapshots-service/dist

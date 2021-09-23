@@ -10,7 +10,6 @@ export const DELETE_TENANT = 'DELETE_USER';
 export const TENANTS_ERROR = 'TENANTS_ERROR';
 export const TENANTS_ERROR_CLEAR = 'TENANTS_ERROR_CLEAR';
 
-
 export const getTenants = () => async (dispatch) => {
     try {
         const result = await axios({
@@ -31,7 +30,7 @@ export const getTenants = () => async (dispatch) => {
     }
 };
 
-export const updateTenant = tenant => async (dispatch) => {
+export const updateTenant = (tenant) => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
@@ -52,7 +51,7 @@ export const updateTenant = tenant => async (dispatch) => {
     }
 };
 
-export const createTenant = tenant => async (dispatch) => {
+export const createTenant = (tenant) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -75,7 +74,7 @@ export const createTenant = tenant => async (dispatch) => {
     }
 };
 
-export const deleteTenant = tenantId => async (dispatch) => {
+export const deleteTenant = (tenantId) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',

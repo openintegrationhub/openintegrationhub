@@ -17,7 +17,7 @@ RUN apk update && apk add --no-cache \
     python \
     bash
 
-RUN yarn install --production
+RUN npm install --production
 
 FROM base AS release
 

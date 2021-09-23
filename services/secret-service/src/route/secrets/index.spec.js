@@ -27,7 +27,7 @@ describe('secrets', () => {
         port = 5111;
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'secrets'),
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'route-secrets'),
             port,
         });
         await server.start();

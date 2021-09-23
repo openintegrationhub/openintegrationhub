@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 const { MongoClient } = require('mongodb'); // eslint-disable-line import/no-unresolved
 const { snakeCase } = require('lodash');
 const conf = require('../../conf');

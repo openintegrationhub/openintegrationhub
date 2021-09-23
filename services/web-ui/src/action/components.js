@@ -30,7 +30,7 @@ export const getComponents = () => async (dispatch) => {
     }
 };
 
-export const getComponentsPage = page => async (dispatch) => {
+export const getComponentsPage = (page) => async (dispatch) => {
     try {
         const result = await axios({
             method: 'get',
@@ -48,7 +48,7 @@ export const getComponentsPage = page => async (dispatch) => {
     }
 };
 
-export const updateComponent = component => async (dispatch) => {
+export const updateComponent = (component) => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
@@ -70,7 +70,7 @@ export const updateComponent = component => async (dispatch) => {
     }
 };
 
-export const startComponent = component => async (dispatch) => {
+export const startComponent = (component) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -88,7 +88,7 @@ export const startComponent = component => async (dispatch) => {
     }
 };
 
-export const stopComponent = component => async (dispatch) => {
+export const stopComponent = (component) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -106,7 +106,7 @@ export const stopComponent = component => async (dispatch) => {
     }
 };
 
-export const createComponent = data => async (dispatch) => {
+export const createComponent = (data) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -125,7 +125,7 @@ export const createComponent = data => async (dispatch) => {
     }
 };
 
-export const deleteComponent = componentId => async (dispatch) => {
+export const deleteComponent = (componentId) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',

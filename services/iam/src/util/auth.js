@@ -2,14 +2,14 @@ const Logger = require('@basaas/node-logger');
 const passport = require('passport');
 const rp = require('request-promise');
 const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
-const TokenUtils = require('./../util/tokens');
+const TokenUtils = require('./tokens');
 
 const Account = require('../models/account');
 
 const basic = require('../oidc/helper/basic-auth-header');
 const CONSTANTS = require('../constants');
 const conf = require('../conf');
-const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
+const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('../access-control/permissions');
 
 const { oidc } = conf;
 
@@ -27,7 +27,7 @@ const removeEmptyProps = (obj) => {
     return obj;
 };
 
-const isAdminRole = user => user.isAdmin;
+const isAdminRole = (user) => user.isAdmin;
 
 const allRequiredElemsExistsInArray = (array, requiredElems) => {
 
@@ -53,7 +53,7 @@ module.exports = {
         const { roles, permissions, tenant } = user;
         /* requester is either admin, or a service account with correct permissions or a user in context of a tenant with her permissions */
 
-        if (permissions.find(permission => permission === RESTRICTED_PERMISSIONS.all)) {
+        if (permissions.find((permission) => permission === RESTRICTED_PERMISSIONS.all)) {
             return true;
         }
 
@@ -67,7 +67,7 @@ module.exports = {
     /**
      * @param {Array} requiredPermissions
      * */
-    can: requiredPermissions => async (req, res, next) => {
+    can: (requiredPermissions) => async (req, res, next) => {
         const userHasPermissions = module.exports.hasPermissions({
             requiredPermissions,
             user: req.user,
@@ -87,9 +87,9 @@ module.exports = {
     /**
      * @param {Array} requiredPermissions
      * */
-    hasTenantPermissions: requiredPermissions => async (req, res, next) => {
+    hasTenantPermissions: (requiredPermissions) => async (req, res, next) => {
 
-        if (req.user.permissions.find(perm => perm === PERMISSIONS['tenant.all'])) {
+        if (req.user.permissions.find((perm) => perm === PERMISSIONS['tenant.all'])) {
             return next();
         }
 
@@ -361,7 +361,7 @@ module.exports = {
         //     return (found && found.tenant) ? next() : next({ status: 403 });
         // }
         if (req.user.currentContext && req.user.currentContext.tenant.toString() === tenantId && req.user.currentContext.permissions.length) {
-            const found = req.user.currentContext.permissions.find(element => element === PERMISSIONS['tenant.all']);
+            const found = req.user.currentContext.permissions.find((element) => element === PERMISSIONS['tenant.all']);
             return found ? next() : next({ status: 403 });
         }
 
@@ -369,16 +369,16 @@ module.exports = {
 
     },
 
-    userIsAdmin: user => isAdminRole(user.role),
+    userIsAdmin: (user) => isAdminRole(user.role),
 
-    removeCriticalAccountFields: account => removeEmptyProps({
+    removeCriticalAccountFields: (account) => removeEmptyProps({
         firstname: account.firstname,
         lastname: account.lastname,
         avatar: account.avatar,
         phone: account.phone,
     }),
 
-    removeCriticalTenantFields: tenant => removeEmptyProps({
+    removeCriticalTenantFields: (tenant) => removeEmptyProps({
         name: tenant.name,
     }),
 

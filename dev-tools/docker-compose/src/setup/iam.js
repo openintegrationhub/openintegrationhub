@@ -1,7 +1,7 @@
 const { execSync } = require('child_process')
 const fetch = require('node-fetch')
 const { dbRoot, devToolsRoot, env, services } = require('../config')
-const { checkTools, waitForMongo, waitForStatus, login } = require('../helper')
+const { checkTools, waitForMongo, waitForStatus, login, runNpm } = require('../helper')
 const serviceAccounts = require('../data/service-accounts')
 const tenants = require('../data/tenants')
 
@@ -29,6 +29,8 @@ async function run() {
   execSync(`mongo ${services.iam.db} --eval "db.dropDatabase()"`, {
     stdio: 'inherit',
   })
+
+  runNpm("services/iam", "build")
 
   execSync(`cd ${devToolsRoot} && docker-compose up -d iam`, {
     env: {

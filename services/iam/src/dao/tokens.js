@@ -1,8 +1,8 @@
 const Logger = require('@basaas/node-logger');
 const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
-const Token = require('./../models/token');
-const CONF = require('./../conf');
-const CONSTANTS = require('./../constants');
+const Token = require('../models/token');
+const CONF = require('../conf');
+const CONSTANTS = require('../constants');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/tokenDao`);
 const auditLog = Logger.getAuditLogger('token');
@@ -28,7 +28,7 @@ const TokenDAO = {
 
         await token.save();
 
-        log.debug('created.token', Object.assign({}, tokenData));
+        log.debug('created.token', { ...tokenData });
         const event = new Event({
             headers: {
                 name: 'iam.token.created',

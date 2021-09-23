@@ -16,7 +16,7 @@ COPY services/dispatcher-service/app services/dispatcher-service/app
 # that's not required in runtime
 FROM base AS dependencies
 RUN apk add --no-cache make gcc g++ python
-RUN yarn install --production
+RUN npm install --production
 
 FROM base AS release
 COPY --from=dependencies /usr/src/dispatcher-service/node_modules ./node_modules

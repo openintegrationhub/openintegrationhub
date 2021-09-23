@@ -10,7 +10,7 @@ process.env.MONGODB_URL = global.__MONGO_URI__;
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3009;
 const request = require('supertest')(`${hostUrl}:${port}`);
-const iamMock = require('./utils/iamMock.js');
+const iamMock = require('./utils/iamMock');
 const token = require('./utils/tokens');
 const { addStoredFunction } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
@@ -40,7 +40,6 @@ afterAll(async () => {
   mongoose.connection.close();
   app.close();
 });
-
 
 describe('applyPolicy Operations', () => {
   test('should apply a simple anonymize duty', async () => {
@@ -217,7 +216,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
 
-
   test('should apply a simple constraint with equals', async () => {
     const body = {
       data: {
@@ -266,7 +264,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
 
-
   test('should verify a simple constraint with notEquals', async () => {
     const body = {
       data: {
@@ -314,7 +311,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
-
 
   test('should apply a simple constraint with notEquals', async () => {
     const body = {
@@ -404,7 +400,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.timestamp).toEqual(1234);
   });
 
-
   test('should apply a simple constraint with smallerThan', async () => {
     const body = {
       data: {
@@ -486,7 +481,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.timestamp).toEqual(12345);
   });
-
 
   test('should apply a simple constraint with biggerThan', async () => {
     const body = {
@@ -570,7 +564,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.timestamp).toEqual('12345');
   });
 
-
   test('should apply a simple constraint with smallerOrEqual', async () => {
     const body = {
       data: {
@@ -652,7 +645,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.timestamp).toEqual('12345');
   });
-
 
   test('should apply a simple constraint with biggerOrEqual', async () => {
     const body = {
@@ -736,7 +728,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.comment).toEqual('Awful customer service');
   });
 
-
   test('should apply a simple constraint with contains', async () => {
     const body = {
       data: {
@@ -819,7 +810,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.comment).toEqual('Awful food');
   });
 
-
   test('should apply a simple constraint with notContains', async () => {
     const body = {
       data: {
@@ -859,7 +849,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.comment).toEqual('Awful service');
   });
-
 
   test('should verify a constraint with logical operator or', async () => {
     const body = {
@@ -921,7 +910,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
 
-
   test('should verify a constraint with logical operator xone', async () => {
     const body = {
       data: {
@@ -981,7 +969,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
-
 
   test('should apply a constraint with logical operator xone', async () => {
     const body = {
@@ -1043,7 +1030,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
 
-
   test('should verify a constraint with logical operator and', async () => {
     const body = {
       data: {
@@ -1104,7 +1090,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
 
-
   test('should apply a constraint with logical operator and', async () => {
     const body = {
       data: {
@@ -1164,7 +1149,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
-
 
   test('should verify a constraint with logical operator and', async () => {
     const body = {
@@ -1234,7 +1218,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
-
 
   test('should apply a constraint with nested logical operators', async () => {
     const body = {
@@ -1362,7 +1345,6 @@ describe('applyPolicy Operations', () => {
     expect(res.body.data.lastName).toEqual('Doe');
     expect(res.body.data.birthday).toEqual('01.01.1970');
   });
-
 
   test('should apply a constraint with implicit and', async () => {
     const body = {

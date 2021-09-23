@@ -3,9 +3,9 @@ const Logger = require('@basaas/node-logger');
 
 const router = express.Router();
 
-const CONF = require('./../conf');
-const CONSTANTS = require('./../constants');
-const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
+const CONF = require('../conf');
+const CONSTANTS = require('../constants');
+const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('../access-control/permissions');
 // const auth = require('./../util/auth');
 // const PermissionsDAO = require('./../dao/tokens');
 

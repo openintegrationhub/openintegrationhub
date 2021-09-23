@@ -9,7 +9,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-
 const config = require('../../config/index');
 
 const defaultFunctions = require('../../config/defaultFunctions');
@@ -24,12 +23,11 @@ const router = express.Router();
 
 const log = require('../../config/logger'); // eslint-disable-line
 
-
 function evaluateSingleConstraint(data, currentPermission) {
   let result = {
     passes: false,
   };
-  const handler = defaultFunctions.find(el => el.name === currentPermission.operator);
+  const handler = defaultFunctions.find((el) => el.name === currentPermission.operator);
   if (handler) {
     result = handler.code(data, { constraint: currentPermission });
   } else {
@@ -125,12 +123,11 @@ router.post('/', jsonParser, async (req, res) => {
   // Might be better to only load them when changed and keep stored
   // const storedFunctionCache = await storage.getStoredFunctions(req.user, 1000);
 
-
   // First, apply any duties if present
   if (metadata.policy.duty && metadata.policy.duty.length) {
     for (let i = 0; i < metadata.policy.duty.length; i += 1) {
       const currentDuty = metadata.policy.duty[i];
-      const handler = defaultFunctions.find(el => el.name === currentDuty.action);
+      const handler = defaultFunctions.find((el) => el.name === currentDuty.action);
       if (handler) {
         result = handler.code(result.data, currentDuty);
       } else if (currentDuty.action in storedFunctionCache.storedFunctions) {
@@ -170,6 +167,5 @@ router.post('/', jsonParser, async (req, res) => {
 
   return res.status(200).send(result);
 });
-
 
 module.exports = router;

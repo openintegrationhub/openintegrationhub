@@ -9,16 +9,16 @@ import BadRequest from '../../errors/api/BadRequest';
 import handlers from '../../handlers/'
 
 interface IGteQuery {
-    $gte: string;
+    $gte: string | string[];
 }
 
 interface IGetManyCondition {
-    'owners.id'?: string;
-    domainId?: string;
-    schemaUri?: string;
+    'owners.id'?: string | string[];
+    domainId?: string | string[];
+    schemaUri?: string | string[];
     createdAt?: IGteQuery;
     updatedAt?: IGteQuery;
-    tenant?: IGteQuery;
+    tenant?: string | string[];
 }
 
 export default class DataController {
@@ -378,7 +378,6 @@ export default class DataController {
             }
 
             if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-                // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
                 const newIOwner = {} as IOwnerDocument;
                 newIOwner.id = user.sub;
                 newIOwner.type = 'user';

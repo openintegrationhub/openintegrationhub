@@ -17,7 +17,6 @@ import { getUsers } from '../../action/users';
 import { getTenants } from '../../action/tenants';
 import { getRoles } from '../../action/roles';
 
-
 class App extends React.Component {
     state = {
         initialLoginCheckDone: false,
@@ -25,7 +24,7 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        axios.interceptors.response.use(response => response, async (error) => {
+        axios.interceptors.response.use((response) => response, async (error) => {
             if (error.response.status === 401) {
                 console.log('REDIRECT TO LOGIN SCREEN', error);
                 props.resetLogin(); // TODO: do not logout user if the 401 came from one of the services and not IAM
@@ -70,7 +69,7 @@ class App extends React.Component {
 }
 
 const mapStateToProps = () => ({});
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     resetLogin,
     getUsers,
     getTenants,

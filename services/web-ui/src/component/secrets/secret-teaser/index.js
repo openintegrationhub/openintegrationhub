@@ -28,7 +28,6 @@ const useStyles = {
     },
 };
 
-
 const TYPE_MAP = {
     OA2_AUTHORIZATION_CODE: 'oAuth2',
     MIXED: 'Mixed',

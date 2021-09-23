@@ -28,7 +28,6 @@ import {
 import { getDomains } from '../../action/metadata';
 import DispatcherConfigTeaser from './teaser';
 
-
 const useStyles = {
     wrapper: {
         padding: '20px 0',
@@ -115,11 +114,11 @@ class HubAndSpoke extends React.Component {
                 </Grid>
                 <div style={{ marginTop: '24px' }}>
                     {
-                        this.props.hubAndSpoke.list.map(item => <DispatcherConfigTeaser
+                        this.props.hubAndSpoke.list.map((item) => <DispatcherConfigTeaser
                             key={`teaser-${item.id}`}
                             {...item}
-                            apps={item.applications.map(app => this.props.apps.list.find(_app => app.applicationUid === _app.artifactId))}
-                            domain={this.props.dataModels.find(dm => dm.id === item.dataModel)}
+                            apps={item.applications.map((app) => this.props.apps.list.find((_app) => app.applicationUid === _app.artifactId))}
+                            domain={this.props.dataModels.find((dm) => dm.id === item.dataModel)}
                             onEdit={() => {}}
                             onDelete={async () => {
                                 await this.props.deleteDispatcherConfig(item.id);
@@ -153,7 +152,7 @@ class HubAndSpoke extends React.Component {
                                 <FormControl fullWidth component="fieldset" className={classes.formControl}>
                                     <FormLabel component="legend">Data model</FormLabel>
                                     <RadioGroup required aria-label="dataModel" name="dataModel" value={this.state.entity.dataModel} onChange={this.setEntityVal.bind(this, 'dataModel')}>
-                                        {this.props.dataModels.map(dataModel => <FormControlLabel key={dataModel.id} value={dataModel.id} control={<Radio />} label={dataModel.name} />)}
+                                        {this.props.dataModels.map((dataModel) => <FormControlLabel key={dataModel.id} value={dataModel.id} control={<Radio />} label={dataModel.name} />)}
                                     </RadioGroup>
                                 </FormControl>
 
@@ -176,13 +175,13 @@ class HubAndSpoke extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     apps: state.apps,
     dataModels: state.metadata.domains,
     auth: state.auth,
     hubAndSpoke: state.hubAndSpoke,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getApps,
     getDomains,
     getDispatcherConfigs,

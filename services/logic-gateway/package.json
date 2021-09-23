@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node index.js",
     "start:nodemon": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
-    "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
+    "start:nodemon:minikube": ". ../../minikube/.env && npm start:nodemon",
     "start:container": "nodemon index.js --watch ./ --watch ../../lib/secret-service",
     "test": "echo \"noop\"",
     "build": "echo \"No Build defined\"",
@@ -26,10 +26,10 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "eslint": "5.10.0",
-    "eslint-config-airbnb-base": "13.1.0",
-    "eslint-plugin-import": "2.14.0",
-    "eslint-plugin-jest": "22.1.2",
+    "eslint": "7.32.0",
+    "eslint-config-airbnb-base": "14.2.1",
+    "eslint-plugin-import": "2.24.2",
+    "eslint-plugin-jest": "24.4.0",
     "jest": "26.6.0",
     "nock": "10.0.4",
     "nodemon": "2.0.4",

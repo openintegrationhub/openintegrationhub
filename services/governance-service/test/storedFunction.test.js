@@ -10,7 +10,7 @@ process.env.MONGODB_URL = global.__MONGO_URI__;
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3009;
 const request = require('supertest')(`${hostUrl}:${port}`);
-const iamMock = require('./utils/iamMock.js');
+const iamMock = require('./utils/iamMock');
 const token = require('./utils/tokens');
 const { addStoredFunction } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
@@ -43,7 +43,6 @@ afterAll(async () => {
   app.close();
 });
 
-
 describe('Login Security', () => {
   test('should not be able to get StoredFunctions without login', async () => {
     const res = await request.get('/storedFunction');
@@ -66,7 +65,6 @@ describe('Login Security', () => {
     expect(res.body.errors[0].message).toEqual('Missing authorization header.');
   });
 });
-
 
 describe('StoredFunction Operations', () => {
   test('should add a StoredFunction', async () => {
@@ -95,7 +93,6 @@ describe('StoredFunction Operations', () => {
     expect(res.body).toHaveProperty('createdAt');
     expect(res.body).toHaveProperty('updatedAt');
   });
-
 
   test('should show the stored function in list', async () => {
     const res = await request

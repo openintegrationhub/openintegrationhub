@@ -14,11 +14,9 @@ import { Container } from '@material-ui/core';
 import { getTenants } from '../../action/tenants';
 // import EditTenant from '../edit-tenant';
 
-
 // components
 import Table from '../table';
 import EditTenant from '../edit-tenant';
-
 
 const useStyles = {
     wrapper: {
@@ -85,10 +83,10 @@ class Tenants extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     tenants: state.tenants,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getTenants,
 }, dispatch);
 

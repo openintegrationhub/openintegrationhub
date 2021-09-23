@@ -1,7 +1,19 @@
-const cp = require("child_process")
-const { repositoryRoot } = require("../config")
+const { execSync } = require('child_process')
+const path = require('path')
 
-cp.execSync(
+const repositoryRoot = path.resolve(__dirname, '../../../../')
+
+execSync(
   `cd ${repositoryRoot} && sudo find . -name "node_modules" -type d -prune -exec rm -rf '{}' +`,
-  { stdio: "inherit" }
+  { stdio: 'inherit' }
+)
+
+execSync(
+  `cd ${repositoryRoot} && sudo find . -name ".yarn_cache" -type d -prune -exec rm -rf '{}' +`,
+  { stdio: 'inherit' }
+)
+
+execSync(
+  `cd ${repositoryRoot} && sudo find . -name ".npm_cache" -type d -prune -exec rm -rf '{}' +`,
+  { stdio: 'inherit' }
 )
