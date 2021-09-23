@@ -25,9 +25,16 @@ const testEnvs = Object.entries({
   return `${a} ${b[0]}=${b[1]}`
 })
 
-const testCommand = (path, args) =>
-  `docker run --name oih-testing --user=node --net=oih-dev --rm -it -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${path}; ${testEnvs} npm test ${
-  args || '' // eslint-disable-line prettier/prettier
+const testCommand = (workspace, args) =>
+  `docker run \
+  --name oih-testing \
+  --net=oih-dev \
+  --rm \
+  -it \
+  -v ${repositoryRoot}:/usr/src/app \
+  ${nodeImage} \
+  sh -ci 'cd /usr/src/app; ${testEnvs} npm --workspace=${workspace} test ${
+    args || ''
   }'`
 
 // ensure dbs
