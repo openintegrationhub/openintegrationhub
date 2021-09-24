@@ -1,7 +1,7 @@
 {
   "servers": [
     {
-      "url": "https://api.example.com"
+      "url": "https://iam.example.com"
     }
   ],
   "openapi": "3.0.0",
@@ -153,9 +153,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Tenant"
+                  "type":"object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Tenant"
+                      }
+                    }  
                   }
                 }
               }
@@ -183,7 +188,19 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -888,9 +905,9 @@
       "Status": {
         "type": "string",
         "enum": [
-          "active",
-          "pending",
-          "disabled"
+          "ACTIVE",
+          "PENDING",
+          "DISABLED"
         ]
       },
       "GlobalRole": {
@@ -1072,7 +1089,7 @@
         "title": "Tenant Schema",
         "type": "object",
         "properties": {
-          "id": {
+          "_id": {
             "type": "string",
             "description": "id of tenant organization"
           },
