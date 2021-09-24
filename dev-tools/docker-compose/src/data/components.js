@@ -311,4 +311,64 @@ module.exports = [
       },
     ],
   },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: false,
+    access: 'public',
+    name: 'rebound-component-local',
+    description: 'Just emits a rebound message',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: true,
+    access: 'public',
+    name: 'rebound-component-global',
+    description: 'Just emits a rebound message',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
 ]

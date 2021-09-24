@@ -1685,6 +1685,17 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@openintegrationhub/iam-utils@1.6.4":
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/@openintegrationhub/iam-utils/-/iam-utils-1.6.4.tgz#42e61f723bf98afeceae80ca7274796181fd8160"
+  integrity sha512-hWDOkyYSUR23loVUyaZOmBiDnnDE2lz4n6jO7x9XwPVbqRHXN/JQXLPwp8qBsbKcjOOtV50h93fZv6gkoAxWMw==
+  dependencies:
+    "@basaas/node-logger" "1.1.5"
+    base64url "3.0.1"
+    node-cache "4.2.0"
+    request "2.88.0"
+    request-promise "4.2.4"
+
 "@panva/asn1.js@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@panva/asn1.js/-/asn1.js-1.0.0.tgz#dd55ae7b8129e02049f009408b97c61ccf9032f6"
