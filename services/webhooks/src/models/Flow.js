@@ -3,7 +3,15 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
     graph: Schema.Types.Mixed,
-    status: String
+    status: String,
+    flowSettings: {
+        webhooks: {
+            hmacAuthSecret: Schema.Types.ObjectId,
+            requireWebhookAuth: Boolean,
+            hmacHeaderKey: String,
+            hmacAlgorithm: String,
+        },
+    },
 });
 
 class Flow {
@@ -34,6 +42,10 @@ class Flow {
 
     getEdges() {
         return this.graph.edges || [];
+    }
+
+    getFlowSettings() {
+        return this.flowSettings?.webhooks || null;
     }
 }
 

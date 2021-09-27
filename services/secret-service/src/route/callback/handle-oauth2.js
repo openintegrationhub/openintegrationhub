@@ -20,6 +20,13 @@ module.exports = async function handleOAuth2({
 
     const stateObject = JSON.parse(base64url.decode(queryObject.state));
 
+    return {
+        data: {
+            successUrl: 'https://app.openintegrationhub.com/templates/61425a486e74e0001dfa719d',
+            secretId: '313131313',
+        },
+    };
+
     const flow = await AuthFlowDAO.findById(stateObject.flowId);
 
     const authClient = await AuthClientDAO.findById(flow.authClientId);
