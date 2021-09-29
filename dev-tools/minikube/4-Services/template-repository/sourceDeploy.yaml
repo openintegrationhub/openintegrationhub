@@ -16,7 +16,7 @@ spec:
       containers:
         - name: template-repository
           imagePullPolicy: IfNotPresent
-          image: node:12-alpine
+          image: node:16-alpine
           workingDir: /usr/src/app/
           command: ["/bin/sh"]
           args:
