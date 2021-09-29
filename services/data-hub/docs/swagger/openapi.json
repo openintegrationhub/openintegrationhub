@@ -115,6 +115,38 @@
                   "schema":{
                      "type":"string"
                   }
+               },
+               {
+                  "in":"query",
+                  "name":"min_score",
+                  "description":"Used to retrieve only data records with a score of at least the one provided",
+                  "schema":{
+                     "type":"number"
+                  }
+               },
+               {
+                  "in":"query",
+                  "name":"has_duplicates",
+                  "description":"Used to retrieve only data records with known duplicates",
+                  "schema":{
+                     "type":"boolean"
+                  }
+               },
+               {
+                  "in":"query",
+                  "name":"has_subsets",
+                  "description":"Used to retrieve only data records with known subsets",
+                  "schema":{
+                     "type":"boolean"
+                  }
+               },
+               {
+                  "in":"query",
+                  "name":"is_unique",
+                  "description":"Used to retrieve only data records with no known subsets nor duplictates",
+                  "schema":{
+                     "type":"boolean"
+                  }
                }
             ],
             "responses":{
@@ -139,7 +171,7 @@
                      }
                   }
                },
-               "401":{
+               "403":{
                   "description":"Required permissions missing."
                }
             }
@@ -313,7 +345,7 @@
                      }
                   }
                },
-               "401":{
+               "403":{
                   "description":"Required permissions missing."
                }
             }
@@ -338,6 +370,32 @@
             "responses":{
                "200":{
                   "description":"Enrichment started, will complete asynchronously"
+               }
+            }
+         }
+      },
+      "/data/statistics":{
+         "get":{
+            "tags":[
+               "data"
+            ],
+            "summary":"Fetch statistics about your data set.",
+            "description": "Statistics are largely based on the results of the enrichment endpoint.",
+            "responses":{
+               "200":{
+                  "description":"Enrichment started, will complete asynchronously",
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "properties":{
+                              "data":{
+                                 "$ref":"#/components/schemas/Statistics"
+                              }
+                           }
+                        }
+                     }
+                  }
                }
             }
          }
@@ -411,6 +469,31 @@
                "updatedAt":{
                   "type":"string",
                   "format":"date-time"
+               }
+            }
+         },
+         "Statistics":{
+            "type":"object",
+            "properties":{
+               "scores":{
+                  "type":"object",
+                  "example": {
+                    "3": 1,
+                    "7": 5,
+                    "15": 3
+                  }
+               },
+               "duplicateCount": {
+                 "type": "number",
+                 "example": 2
+               },
+               "subsetCount": {
+                 "type": "number",
+                 "example": 1
+               },
+               "uniqueCount": {
+                 "type": "number",
+                 "example": 4
                }
             }
          },
