@@ -12,6 +12,7 @@ const schema = new Schema({
             hmacAlgorithm: String,
         },
     },
+    startedBy: Schema.Types.ObjectId,
 });
 
 class Flow {
@@ -45,7 +46,11 @@ class Flow {
     }
 
     getFlowSettings() {
-        return this.flowSettings?.webhooks || null;
+        return this.flowSettings.webhooks || null;
+    }
+
+    getFlowUser() {
+        return this.startedBy || null;
     }
 }
 

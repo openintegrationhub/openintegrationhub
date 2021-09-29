@@ -1,6 +1,7 @@
 const { RequestHandlers } = require('@openintegrationhub/webhooks');
 const { DEFAULT_HMAC_HEADER_KEY = 'x-hmac', DEFAULT_HMAC_ALGORITHM = 'sha265', WEBHOOK_EXECUTE_PERMISSION = 'webhooks.execute' } = process.env;
 const { authenticateHmac } = require('../utils/secrets');
+const { login } = require('../utils/iam');
 const { getUserData, hasAll } = require('@openintegrationhub/iam-utils');
 
 class PostRequestHandler extends RequestHandlers.Post {
@@ -19,6 +20,7 @@ class PostRequestHandler extends RequestHandlers.Post {
         // Has the first node of the flow been configured to enforce authentication?
         const flow = this.getFlow();
         const flowSettings = flow.getFlowSettings();
+        const flowUser = flow.getFlowUser();
         // Default to false if field doesn't exist
         const { requireWebhookAuth = false, hmacHeaderKey = DEFAULT_HMAC_HEADER_KEY, hmacAuthSecret, hmacAlgorithm = DEFAULT_HMAC_ALGORITHM } = flowSettings;
         if (!requireWebhookAuth) {
@@ -28,7 +30,7 @@ class PostRequestHandler extends RequestHandlers.Post {
 
         const hmacHeaderValue = this._req.header(hmacHeaderKey);
         if  (hmacHeaderValue) {
-          const success = await authenticateHmac(hmacAuthSecret,hmacHeaderValue,hmacAlgorithm,this._req.rawBody);
+          const success = await authenticateHmac(hmacAuthSecret,hmacHeaderValue,hmacAlgorithm,flowUser,this._req.rawBody);
           if (success) {
             return;
           } else {
@@ -41,15 +43,17 @@ class PostRequestHandler extends RequestHandlers.Post {
           const headerArray = authHeader.split(' ');
           switch (headerArray[0]) {
             case 'Bearer': {
-              const user = getUserData({ token: headerArray[1], introspectType: this._req.headers['x-auth-type'] });
-              if (!hasAll({ user, requiredPermissions:WEBHOOK_EXECUTE_PERMISSION })) {
-                this.sendPermissionsError();
-              }
+              await this.checkPermissions(headerArray[1]);
               break;
             }
             case 'Basic': {
-              //var [user,pass] = new Buffer.from(headerArray[1], 'base64').toString().split(':');
-              this.sendPermissionsError();
+              // Decode the user/pass combination and login to the system to check user permissions
+              const authString = new Buffer.from(headerArray[1], 'base64').toString();
+              const splitIndex = authString.indexOf(':');
+              const user = authString.substring(0,splitIndex);
+              const pass = authString.substring(splitIndex+1);
+              const token = await login(user,pass);
+              await this.checkPermissions(token);
               break;
             }
             default:
@@ -57,6 +61,14 @@ class PostRequestHandler extends RequestHandlers.Post {
           }
           return;
         }
+    }
+
+    async checkPermissions(token) {
+      const user = await getUserData({ token, introspectType: this._req.headers['x-auth-type'] });
+      if (!hasAll({ user, requiredPermissions:WEBHOOK_EXECUTE_PERMISSION })) {
+        this.sendPermissionsError();
+      }
+
     }
 
     sendPermissionsError() {

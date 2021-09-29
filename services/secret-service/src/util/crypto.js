@@ -18,6 +18,9 @@ module.exports = {
         const expectedHmac = crypto.createHmac(hmacAlgo, hmacSecret)
             .update(JSON.stringify(rawBody))
             .digest('base64');
+        if (expectedHmac.length !== hmacValue.length) {
+            return false;
+        }
         if (crypto.timingSafeEqual(hmacValue, expectedHmac)) {
             return true;
         }
