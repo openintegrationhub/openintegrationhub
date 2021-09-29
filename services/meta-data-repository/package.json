@@ -11,7 +11,7 @@
     "test": "jest",
     "watch": "nodemon src/index.js",
     "coverage": "npm test --coverage",
-    "build:docker": "docker build -t openintegrationhub/meta-data-repository:${VERSION} -f Dockerfile .",
+    "build:docker": "docker build -t openintegrationhub/meta-data-repository:${VERSION} -f Dockerfile ../../",
     "start-dev-db": "npm run-rs -v 4.0.12"
   },
   "dependencies": {
@@ -47,7 +47,7 @@
     "get-port": "5.1.1",
     "jest": "26.6.0",
     "mongodb": "3.6.3",
-    "mongodb-memory-server": "6.9.2",
+    "mongodb-memory-server": "7.4.1",
     "nock": "11.6.0",
     "nodemon": "1.19.4",
     "run-rs": "0.6.2",

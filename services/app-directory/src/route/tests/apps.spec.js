@@ -1,4 +1,4 @@
-const getPort = require('get-port');
+
 const supertest = require('supertest');
 const iamMock = require('../../../test/iamMock');
 const conf = require('../../conf');

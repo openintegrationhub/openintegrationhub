@@ -33,8 +33,8 @@ RUN apk update && apk add --no-cache \
     python3
 
 RUN if [ "$local" == "true" ]; \
-    then npm ci --workspace=$serviceName ; \
-    else npm ci --production --workspace=$serviceName ; \
+    then npm ci ; \
+    else npm ci --production ; \
     fi
 
 FROM base AS release

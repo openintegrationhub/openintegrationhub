@@ -48,7 +48,14 @@ describe('Mass Data Handling', () => {
         it('should import many items', async function () {
             this.timeout(5000);
 
-            let records = []
+            type Record = {
+                domainId: string;
+                schemaUri: string;
+                content: any;
+                refs: any[];
+              };
+
+            let records: Record[] = []
 
             getDummyOihPersons(PERSONS_SET_LENGTH).forEach(person => records.push(
                 {

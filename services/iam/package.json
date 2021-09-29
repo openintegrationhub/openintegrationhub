@@ -1,5 +1,5 @@
 {
-  "name": "iam-service",
+  "name": "iam",
   "version": "1.0.5",
   "description": "Identity and Access Management Service",
   "main": "index.js",
@@ -17,7 +17,7 @@
     "test": "npm run build && npm run lint && jest --silent=false --runInBand --forceExit",
     "coverage": "jest --runInBand --coverage --forceExit",
     "postinstall": "node ./src/app/dev/generateKeys.js",
-    "build:docker": "docker build -t openintegrationhub/iam:${VERSION} -f Dockerfile ."
+    "build:docker": "docker build -t openintegrationhub/iam:${VERSION} -f Dockerfile ../../"
   },
   "keywords": [
     "OIDC",

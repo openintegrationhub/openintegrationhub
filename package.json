@@ -1,37 +1,11 @@
 {
 	"private": true,
 	"workspaces": [
-		"lib/attachment-storage-service",
-		"lib/backend-commons-lib",
-		"lib/cfm",
-		"lib/component-orchestrator",
-		"lib/component-repository",
-		"lib/event-bus",
-		"lib/ferryman",
-		"lib/iam-utils",
-		"lib/scheduler",
-		"lib/webhooks",
-		"services/app-directory",
-		"services/attachment-storage-service",
-		"services/audit-log",
-		"services/component-orchestrator",
-		"services/component-repository",
-		"services/data-hub",
-		"services/dispatcher-service",
-		"services/flow-repository",
-		"services/governance-service",
-		"services/iam",
-		"services/ils",
-		"services/logic-gateway",
-		"services/meta-data-repository",
-		"services/rds",
-		"services/reports-analytics",
-		"services/scheduler",
-		"services/secret-service",
-		"services/snapshots-service",
-		"services/template-repository",
-		"services/webhooks",
-		"services/web-ui",
-		"dev-tools/*"
-	]
+		"./lib/*",
+		"./services/*",
+		"./dev-tools/*"
+	],
+	"scripts": {
+		"build": "tsc --build"
+	}
 }

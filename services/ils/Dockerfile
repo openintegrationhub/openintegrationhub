@@ -27,8 +27,8 @@ RUN apk update && apk add --no-cache \
     python3
 
 RUN if [ "$local" == "true" ]; \
-    then npm ci --workspaces ; \
-    else npm ci --production --workspaces ; \
+    then npm ci ; \
+    else npm ci --production ; \
     fi
 
 FROM base AS release

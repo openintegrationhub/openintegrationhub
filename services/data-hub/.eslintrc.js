@@ -11,7 +11,7 @@ module.exports = {
     "@typescript-eslint/ban-types": 1,
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/interface-name-prefix": 0,
-    "@typescript-eslint/ban-ts-comment": 0
-    // "@typescript-eslint/no-empty-function": 1,
+    "@typescript-eslint/ban-ts-comment": 0,
+    "@typescript-eslint/no-empty-function": 1,
   },
 };
