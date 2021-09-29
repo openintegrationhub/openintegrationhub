@@ -19,7 +19,7 @@
     "test": "react-scripts test -w 3",
     "serve": "node server/",
     "eject": "react-scripts eject",
-    "build:docker": "docker build -t openintegrationhub/web-ui:${VERSION} -f Dockerfile ."
+    "build:docker": "docker build -t openintegrationhub/web-ui:${VERSION} -f Dockerfile ../../"
   },
   "browserslist": {
     "production": [
