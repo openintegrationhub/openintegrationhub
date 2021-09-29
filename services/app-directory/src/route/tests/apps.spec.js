@@ -1,4 +1,3 @@
-
 const supertest = require('supertest');
 const iamMock = require('../../../test/iamMock');
 const conf = require('../../conf');
@@ -10,7 +9,7 @@ let server;
 
 describe('connectors', () => {
     beforeAll(async (done) => {
-        port = await getPort();
+        port = 3020;
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
             mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'apps'),
