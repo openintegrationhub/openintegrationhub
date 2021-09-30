@@ -16,6 +16,12 @@
     }
   },
   "triggers": {
+    "reboundTrigger": {
+      "title": "Rebound trigger",
+      "description": "Sends a message to rebound",
+      "type": "foo",
+      "main": "./lib/triggers/reboundTrigger.js"
+    },
     "testTrigger": {
       "title": "Development Test Trigger",
       "description": "Returns a simple minimal object, logging the process",
