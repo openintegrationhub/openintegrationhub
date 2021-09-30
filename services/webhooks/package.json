@@ -1,6 +1,6 @@
 {
   "name": "webhooks",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Standalone version of elastic.io platform",
   "main": "index.js",
   "scripts": {
