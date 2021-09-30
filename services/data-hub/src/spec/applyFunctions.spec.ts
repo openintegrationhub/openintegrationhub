@@ -11,6 +11,12 @@ import tagObject from '../handlers/tagger';
 import transformObject from '../handlers/transformer';
 import dedupeObject from '../handlers/deduplicator';
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 function nockIamIntrospection({
     status = 200,
     body = { sub: 'user-id', role: 'ADMIN', permissions: ['all'] },
@@ -43,7 +49,7 @@ let uid: any;
 const testEntry : any = {
   domainId: '',
   schemaUri: '',
-  enrichtmentResults: {},
+  enrichmentResults: {},
   content: {
       firstName: 'James',
       lastName: 'Blond',
@@ -94,11 +100,11 @@ const configuration = {
       };
 
 
-describe.only('Data Enrichment and Cleansing', () => {
+describe('Data Enrichment and Cleansing', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
         await mongoose.connect(mongoUri, { useNewUrlParser: true });
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
@@ -118,10 +124,10 @@ describe.only('Data Enrichment and Cleansing', () => {
             expect(result.domainId).to.exist;
             expect(result.schemaUri).to.exist;
 
-            expect(result.enrichtmentResults).to.be.an('object');
+            expect(result.enrichmentResults).to.be.an('object');
 
-            expect(result.enrichtmentResults.score).to.be.equal(2);
-            expect(result.enrichtmentResults.normalizedScore).to.be.equal(1);
+            expect(result.enrichmentResults.score).to.be.equal(2);
+            expect(result.enrichmentResults.normalizedScore).to.be.equal(1);
 
             expect(result.content).to.be.an('object');
 
@@ -137,9 +143,9 @@ describe.only('Data Enrichment and Cleansing', () => {
             expect(result.domainId).to.exist;
             expect(result.schemaUri).to.exist;
 
-            expect(result.enrichtmentResults).to.be.an('object');
+            expect(result.enrichmentResults).to.be.an('object');
 
-            expect(result.enrichtmentResults.tags).to.deep.equal(['Has a Name']);
+            expect(result.enrichmentResults.tags).to.deep.equal(['Has a Name']);
 
             expect(result.content).to.be.an('object');
 
@@ -153,9 +159,9 @@ describe.only('Data Enrichment and Cleansing', () => {
             expect(result.domainId).to.exist;
             expect(result.schemaUri).to.exist;
 
-            expect(result.enrichtmentResults).to.be.an('object');
+            expect(result.enrichmentResults).to.be.an('object');
 
-            expect(result.enrichtmentResults.tags).to.deep.equal(['Is a James']);
+            expect(result.enrichmentResults.tags).to.deep.equal(['Is a James']);
 
             expect(result.content).to.be.an('object');
 
@@ -272,7 +278,7 @@ describe.only('Data Enrichment and Cleansing', () => {
                 ]
               },
               refs: [],
-              enrichtmentResults: {
+              enrichmentResults: {
                 knownDuplicates: [],
                 knownSubsets: []
               }
@@ -297,10 +303,10 @@ describe.only('Data Enrichment and Cleansing', () => {
             ]
           })
 
-          expect(result.enrichtmentResults.knownDuplicates.length).to.be.equal(1);
-          expect(result.enrichtmentResults.knownDuplicates[0]).to.be.equal(dupeUid);
-          expect(result.enrichtmentResults.knownSubsets.length).to.be.equal(1);
-          expect(result.enrichtmentResults.knownSubsets[0]).to.be.equal(subsetUid);
+          expect(result.enrichmentResults.knownDuplicates.length).to.be.equal(1);
+          expect(result.enrichmentResults.knownDuplicates[0]).to.be.equal(dupeUid);
+          expect(result.enrichmentResults.knownSubsets.length).to.be.equal(1);
+          expect(result.enrichmentResults.knownSubsets[0]).to.be.equal(subsetUid);
         });
 
         it('should automatically delete duplicates and subsets', async function () {
@@ -322,7 +328,7 @@ describe.only('Data Enrichment and Cleansing', () => {
                 ]
               },
               refs: [],
-              enrichtmentResults: {
+              enrichmentResults: {
                 knownDuplicates: [],
                 knownSubsets: []
               }
@@ -360,8 +366,8 @@ describe.only('Data Enrichment and Cleansing', () => {
             }
           ])
 
-          expect(result.enrichtmentResults.knownDuplicates.length).to.be.equal(0);
-          expect(result.enrichtmentResults.knownSubsets.length).to.be.equal(0);
+          expect(result.enrichmentResults.knownDuplicates.length).to.be.equal(0);
+          expect(result.enrichmentResults.knownSubsets.length).to.be.equal(0);
 
           const allObjects = await DataObject.find().lean();
           expect(allObjects.length).to.be.equal(1);
@@ -371,6 +377,32 @@ describe.only('Data Enrichment and Cleansing', () => {
     });
 
     describe('POST /data/enrich', () => {
+      before(async function () {
+        await DataObject.deleteMany({});
+        const testObject = new DataObject({
+          domainId: '',
+          schemaUri: '',
+          refs: [
+            {
+              applicationUid: 'google',
+              recordUid: 'moogle'
+            }
+          ],
+          content: {
+            firstName: 'James',
+            lastName: 'Jameson',
+          },
+          owners: [{id: 'user-id', type: 'user'}],
+        })
+
+        await testObject.save();
+      })
+
+      after(async function () {
+        await DataObject.deleteMany({});
+      })
+
+
         it('should start scorer', async function () {
             const scope = nockIamIntrospection();
             const { text, statusCode } = await this.request
@@ -381,6 +413,15 @@ describe.only('Data Enrichment and Cleansing', () => {
             expect(statusCode).to.equal(200);
 
             expect(text).to.be.equal('Preparing data');
+
+            await sleep(100);
+            const allObjects = await DataObject.find().lean();
+            expect(allObjects.length).to.be.equal(1);
+            expect(allObjects[0].enrichmentResults).to.not.be.empty;
+            expect(allObjects[0].enrichmentResults.score).to.be.equal(2);
+            expect(allObjects[0].enrichmentResults.normalizedScore).to.be.equal(1);
+            expect(allObjects[0].enrichmentResults.tags.length).to.be.equal(1);
+            expect(allObjects[0].enrichmentResults.tags[0]).to.be.equal('Is a James');
         });
 
         it('should correctly fail if configuration is missing', async function () {

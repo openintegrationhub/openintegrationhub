@@ -491,6 +491,10 @@ describe('Template Operations', () => {
                 username: 'TestName',
                 password: 'TestPass',
               },
+              authorization: {
+                authType: 'OA2_AUTHORIZATION_CODE',
+                authClientId: '5ca5c44c187c040010a9bb8b',
+              },
             },
             {
               id: 'NodeTwo',
@@ -511,6 +515,10 @@ describe('Template Operations', () => {
     const j = res.body;
     expect(j).not.toBeNull();
     expect(j.data).toHaveProperty('id');
+
+    // check authorization fields
+    expect(j.data.graph.nodes[0].authorization).toHaveProperty('authType');
+    expect(j.data.graph.nodes[0].authorization).toHaveProperty('authClientId');
 
     template1 = j.data.id;
   });

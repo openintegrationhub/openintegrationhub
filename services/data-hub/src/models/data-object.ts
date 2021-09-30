@@ -24,6 +24,7 @@ export interface IDataObjectDocument extends Document {
     content: any;
     refs?: IDataObjectRefDocument[];
     owners?: IOwnerDocument[];
+    enrichmentResults?: any;
 }
 
 const modificationHistorySchema = new Schema({
@@ -84,7 +85,7 @@ const dataObjectSchema = new Schema({
     refs: [refsSchema],
     owners: [ownerSchema],
     enrichmentResults: {
-      type: Schema.Types.Mixed
+        type: Schema.Types.Mixed
     }
 }, {
     timestamps: true

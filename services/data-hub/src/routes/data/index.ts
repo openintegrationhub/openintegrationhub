@@ -18,6 +18,7 @@ export default () => {
         .post('/', (ctx: RouterContext) => controller.postOne(ctx))
         .post('/import', (ctx: RouterContext) => controller.postMany(ctx))
         .get('/status', (ctx: RouterContext) => controller.getRecordCount(ctx))
+        .get('/statistics', (ctx: RouterContext) => controller.getStatistics(ctx))
         .get('/:id', (ctx: RouterContext) => controller.getOne(ctx))
         .get('/recordId/:id', (ctx: RouterContext) => controller.getOneByRecordId(ctx))
         .post('/recordId', (ctx: RouterContext) => controller.postByRecordId(ctx))

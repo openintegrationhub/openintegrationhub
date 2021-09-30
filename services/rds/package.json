@@ -1,7 +1,7 @@
 {
   "name": "rds",
   "description": "Raw Data Storage",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "author": "Basaas GmbH",
   "license": "Apache-2.0",

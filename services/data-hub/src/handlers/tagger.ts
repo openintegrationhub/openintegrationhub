@@ -1,5 +1,5 @@
 const { Notation } = require('notation');
-const { comparators } = require('./comparators.ts');
+const { comparators } = require('./comparators');
 
 export default function tagObject(object, fields) {
   const notate = Notation.create;
@@ -10,7 +10,7 @@ export default function tagObject(object, fields) {
 
   const { content } = object;
 
-  let tags = object.enrichtmentResults.tags || [];
+  let tags = object.enrichmentResults.tags || [];
 
   for (let i = 0; i < fields.length; i += 1) {
     if (!fields[i].additive) {
@@ -28,8 +28,8 @@ export default function tagObject(object, fields) {
   }
 
   const returnObject = Object.assign({}, object);
-  if (!returnObject.enrichtmentResults) returnObject.enrichtmentResults = {};
-  returnObject.enrichtmentResults.tags = tags;
+  if (!returnObject.enrichmentResults) returnObject.enrichmentResults = {};
+  returnObject.enrichmentResults.tags = tags;
 
   return returnObject;
 }
