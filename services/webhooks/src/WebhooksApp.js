@@ -59,7 +59,7 @@ class WebhooksApp extends App {
         httpApi.setLogger(logger);
         httpApi.setHeadHandler((req, res) => new RequestHandlers.Head(req, res).handle());
         httpApi.setGetHandler((req, res) => new RequestHandlers.Get(req, res, messagePublisher).handle());
-        httpApi.setPostHandler((req, res) => new PostRequestHandler(req, res, messagePublisher).handle());
+        httpApi.setPostHandler((req, res) => new PostRequestHandler(req, res, messagePublisher, config).handle());
         httpApi.listen(config.get('LISTEN_PORT'));
     }
 

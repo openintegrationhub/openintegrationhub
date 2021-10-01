@@ -1,17 +1,16 @@
 const { RequestHandlers } = require('@openintegrationhub/webhooks');
 const { DEFAULT_HMAC_HEADER_KEY = 'x-hmac', DEFAULT_HMAC_ALGORITHM = 'sha265', WEBHOOK_EXECUTE_PERMISSION = 'webhooks.execute' } = process.env;
-const { authenticateHmac } = require('../utils/secrets');
-const { login } = require('../utils/iam');
-const { getUserData, hasAll } = require('@openintegrationhub/iam-utils');
+const { fetch } = require('node-fetch');
+const iamUtils = require('@openintegrationhub/iam-utils');
 
 class PostRequestHandler extends RequestHandlers.Post {
-    /* constructor(req, res, messagePublisher) {
+    constructor(req, res, messagePublisher, config) {
         super(req, res, messagePublisher);
         this.logger = this.getLogger();
-
+        this._config = config;
     }
 
-    async handle() {
+    /* async handle() {
         await this.authorize();
         super.handle();
     } */
@@ -30,7 +29,7 @@ class PostRequestHandler extends RequestHandlers.Post {
 
         const hmacHeaderValue = this._req.header(hmacHeaderKey);
         if  (hmacHeaderValue) {
-          const success = await authenticateHmac(hmacAuthSecret,hmacHeaderValue,hmacAlgorithm,flowUser,this._req.rawBody);
+          const success = await this.authenticateHmac(hmacAuthSecret,hmacHeaderValue,hmacAlgorithm,flowUser,this._req.rawBody);
           if (success) {
             return;
           } else {
@@ -52,7 +51,7 @@ class PostRequestHandler extends RequestHandlers.Post {
               const splitIndex = authString.indexOf(':');
               const user = authString.substring(0,splitIndex);
               const pass = authString.substring(splitIndex+1);
-              const token = await login(user,pass);
+              const token = await this.login(user,pass);
               await this.checkPermissions(token);
               break;
             }
@@ -64,8 +63,8 @@ class PostRequestHandler extends RequestHandlers.Post {
     }
 
     async checkPermissions(token) {
-      const user = await getUserData({ token, introspectType: this._req.headers['x-auth-type'] });
-      if (!hasAll({ user, requiredPermissions:WEBHOOK_EXECUTE_PERMISSION })) {
+      const user = await iamUtils.getUserData({ token, introspectType: this._req.headers['x-auth-type'] });
+      if (!iamUtils.hasAll({ user, requiredPermissions:WEBHOOK_EXECUTE_PERMISSION })) {
         this.sendPermissionsError();
       }
 
@@ -75,6 +74,60 @@ class PostRequestHandler extends RequestHandlers.Post {
       const err = new Error('Unauthorized');
       err.statusCode = 403;
       throw err;
+    }
+
+    async login( username, password) {
+      const body = {
+        username,
+        password,
+      };
+      const response = await fetch(
+        `${this._config.get('IAM_BASE_URL')}/login`,
+        {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: {'Content-Type': 'application/json'},
+        },
+      );
+
+      const data = await response.json();
+      return data.token;
+    }
+
+    async authenticateHmac(secretId, hmacHeader, hmacAlgo, userId, rawBody) {
+
+      const iamClient = iamUtils.createClient({
+        iamToken: this._config.get('IAM_TOKEN'),
+        baseUrl: this._config.get('IAM_BASE_URL')
+      });
+
+      const { id: tokenId, token } = await iamClient.createToken({
+        accountId: userId,
+        expiresIn: '5m',
+        description: 'Created to test HMAC for webhook',
+        forceNew: true,
+      });
+      // get user token, then use that token in the fetch
+      const response = await fetch(
+        `${this._config.get('SECRET_SERVICE_URL')}/secrets/${secretId}/validateHmac`,
+        {
+            headers: {
+                'x-auth-type': 'basic',
+                authorization: `Bearer ${token}`,
+            },
+            body: {
+              hmacHeader,
+              hmacAlgo,
+              rawBody,
+            }
+        },
+      );
+
+      // This *should* be an await statement, but we don't care about the return
+      iamClient.deleteTokenById(tokenId);
+
+      const body = await response.json();
+      return body.data;
     }
 }
 module.exports.PostRequestHandler = PostRequestHandler;

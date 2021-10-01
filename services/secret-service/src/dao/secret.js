@@ -386,5 +386,15 @@ module.exports = {
         return modifiedSecret;
     },
 
+    async authenticateHmac({ secret, key, hmacValue, hmacAlgo, rawBody }) {
+        // Don't refresh tokens, as that would break HMAC for a refreshable token
+        let _secret = secret;
+        // exclude extra sensitive values
+        _secret = _secret.encryptedFields && _secret.encryptedFields.length > 0
+            ? cryptoSecret(_secret, key, DECRYPT, _secret.encryptedFields
+                .filter((e) => !(['refreshToken', 'inputFields'].includes(e)))) : _secret;
+        return crypto.authenticateHmac(_secret, hmacValue, hmacAlgo, rawBody);
+    },
+
     cryptoSecret,
 };
