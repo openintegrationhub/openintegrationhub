@@ -34,7 +34,6 @@ router.get('/', async (req, res, next) => {
                 redirectUrl = `${oAuth2Result.data.successUrl}&secretId=${oAuth2Result.data.secretId}`;
             }
 
-            // res.writeHead(302, { Location: `${redirectUrl}` }).end();
             return res.redirect(redirectUrl);
         }
 
