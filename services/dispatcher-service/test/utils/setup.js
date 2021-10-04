@@ -39,10 +39,6 @@ module.exports = async () => {
     mongoUri: uri,
   };
 
-  // Write global config to disk because all tests run in different contexts.
-  fs.writeFileSync(globalConfigPath, JSON.stringify(mongoConfig));
-  console.log('Config is written');
-
   global.__MONGOD__ = replSet;
   process.env.MONGO_URL = mongoConfig.mongoUri;
 
