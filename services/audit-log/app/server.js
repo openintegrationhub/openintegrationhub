@@ -21,92 +21,92 @@ const log = require('./config/logger');
 const eventBus = require('./api/utils/eventBus.js');
 
 class Server {
-  constructor() {
-    this.app = express();
-    this.app.disable('x-powered-by');
-    this.app.use(cors());
-    this.app.options('*', cors());
-    global.queueHealth = false;
-  }
+    constructor() {
+        this.app = express();
+        this.app.disable('x-powered-by');
+        this.app.use(cors());
+        this.app.options('*', cors());
+        global.queueHealth = false;
+    }
 
-  setupMiddleware() {
-    log.info('Setting up middleware...');
+    setupMiddleware() {
+        log.info('Setting up middleware...');
 
-    this.app.use('/logs', iamMiddleware.middleware);
-    this.app.use('/logs', async (req, res, next) => {
-      if (this.mongoose.connection.readyState !== 1) {
-        return res.status(500).send({ errors: [{ message: `NO DB. Please try again later ${this.mongoose.connection.readyState}`, code: 500 }] });
-      }
-      next();
-    });
-    log.info('Middleware set up');
-  }
+        this.app.use('/logs', iamMiddleware.middleware);
+        this.app.use('/logs', async (req, res, next) => {
+            if (this.mongoose.connection.readyState !== 1) {
+                return res.status(500).send({ errors: [{ message: `NO DB. Please try again later ${this.mongoose.connection.readyState}`, code: 500 }] });
+            }
+            next();
+        });
+        log.info('Middleware set up');
+    }
 
-  setupRoutes() {
-    log.info('Setting routes...');
+    setupRoutes() {
+        log.info('Setting routes...');
 
-    // configure routes
-    this.app.use('/logs', logs);
-    this.app.use('/logs', push);
+        // configure routes
+        this.app.use('/logs', logs);
+        this.app.use('/logs', push);
 
-    this.app.use('/healthcheck', healthcheck);
+        this.app.use('/healthcheck', healthcheck);
 
-    // Reroute to docs
-    this.app.use('/docs', (req, res) => {
-      res.redirect('/api-docs');
-    });
+        // Reroute to docs
+        this.app.use('/docs', (req, res) => {
+            res.redirect('/api-docs');
+        });
 
-    // Error handling
+        // Error handling
       this.app.use(function (err, req, res, next) { // eslint-disable-line
-      return res.status(err.status || 500).send({ errors: [{ message: err.message, code: err.status }] });
-    });
+            return res.status(err.status || 500).send({ errors: [{ message: err.message, code: err.status }] });
+        });
 
-    log.info('Routes set');
-  }
+        log.info('Routes set');
+    }
 
-  async setup(mongoose) {
-    log.info('Connecting to MongoDB...');
-    // Configure MongoDB
-    // Use the container_name, bec containers in the same network can communicate using their service name
-    try {
-      this.mongoose = mongoose;
+    async setup(mongoose) {
+        log.info('Connecting to MongoDB...');
+        // Configure MongoDB
+        // Use the container_name, bec containers in the same network can communicate using their service name
+        try {
+            this.mongoose = mongoose;
 
-      const options = {
-        keepAlive: 1, connectTimeoutMS: 30000, reconnectInterval: 1000, reconnectTries: Number.MAX_VALUE, useNewUrlParser: true,
-      }; //
+            const options = {
+                keepAlive: 1, connectTimeoutMS: 30000, reconnectInterval: 1000, reconnectTries: Number.MAX_VALUE, useNewUrlParser: true,
+            }; //
 
-      // Will connect to the mongo container by default, but to localhost if testing is active
-      mongoose.connect(config.mongoUrl, options);
+            // Will connect to the mongo container by default, but to localhost if testing is active
+            mongoose.connect(config.mongoUrl, options);
 
-      // Get Mongoose to use the global promise library
+            // Get Mongoose to use the global promise library
     mongoose.Promise = global.Promise;  // eslint-disable-line
-      // Get the default connection
-      this.db = mongoose.connection;
-      // Bind connection to error event (to get notification of connection errors)
-      this.db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-      log.info('Successfully connected to MongoDB');
-    } catch (e) {
-      log.error(e);
+            // Get the default connection
+            this.db = mongoose.connection;
+            // Bind connection to error event (to get notification of connection errors)
+            this.db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+            log.info('Successfully connected to MongoDB');
+        } catch (e) {
+            log.error(e);
+        }
     }
-  }
 
-  startListening() {
-    log.info('Establishing connection to queue...');
+    startListening() {
+        log.info('Establishing connection to queue...');
 
-    try {
-      // receiver.connect();
-      eventBus.connectQueue();
-    } catch (error) {
-      log.error(error);
+        try {
+            // receiver.connect();
+            eventBus.connectQueue();
+        } catch (error) {
+            log.error(error);
+        }
+        global.queueHealth = true;
+        log.info('Connected to queue');
     }
-    global.queueHealth = true;
-    log.info('Connected to queue');
-  }
 
-  setupSwagger() {
-    log.info('Generating Swagger documentation');
-    // Configure the Swagger-API
-    /*eslint-disable */
+    setupSwagger() {
+        log.info('Generating Swagger documentation');
+        // Configure the Swagger-API
+        /*eslint-disable */
         var config = {
           appRoot: __dirname, // required config
 
@@ -124,14 +124,14 @@ class Server {
         };
         /* eslint-enable */
 
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
-  }
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
+    }
 
-  listen(port) {
-    const cport = typeof port !== 'undefined' ? port : 3007;
-    log.info(`Opening port ${cport}`);
-    return this.app.listen(cport);
-  }
+    listen(port) {
+        const cport = typeof port !== 'undefined' ? port : 3007;
+        log.info(`Opening port ${cport}`);
+        return this.app.listen(cport);
+    }
 }
 
 module.exports = Server;

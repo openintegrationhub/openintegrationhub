@@ -30,7 +30,7 @@ export const getUser = () => async (dispatch) => {
     }
 };
 
-export const login = data => async (dispatch) => {
+export const login = (data) => async (dispatch) => {
     const result = await axios({
         method: 'post',
         url: `${conf.endpoints.iam}/login`,

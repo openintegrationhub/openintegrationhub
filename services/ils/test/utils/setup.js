@@ -1,39 +1,48 @@
-/* eslint no-underscore-dangle: "off" */
-/* eslint new-cap: "off" */
-
 const path = require('path');
-const fs = require('fs');
 require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') });
-const MongodbMemoryServer = require('mongodb-memory-server');
+
+const fs = require('fs');
+const { MongoMemoryReplSet } = require("mongodb-memory-server") // eslint-disable-line
 
 const globalConfigPath = path.join(__dirname, 'globalConfig.json');
 
-const mongod = new MongodbMemoryServer.default({
-  instance: {
-    dbName: 'jest',
-  },
-  binary: {
-    version: '4.0.5',
-    ssl: true,
-  },
-  autoStart: false,
-});
+const downloadDir = process.env.BINARY_DOWNLOAD_DIR;
+
+const dbName = 'changeme';
 
 module.exports = async () => {
-  if (!mongod.isRunning) {
-    await mongod.start();
-  }
+  const replSet = await MongoMemoryReplSet.create(
+    {
+      binary: {
+        version: '4.4.8',
+        ...(downloadDir ? {
+          downloadDir,
+        }
+          : {}
+        ),
+      },
+      // unless otherwise noted below these values will be in common with all instances spawned:
+      replSet: {
+        count: 3,
+        dbName, // default database for db URI strings. (default: uuid.v4())
+        storageEngine: 'wiredTiger',
+      },
+    },
+  );
+
+  // await replSet.waitUntilRunning();
+
+  const uri = `${await replSet.getUri(dbName)}&retryWrites=true&w=majority`;
 
   const mongoConfig = {
-    mongoDBName: 'jest',
-    mongoUri: await mongod.getConnectionString(),
+    mongoDBName: dbName,
+    mongoUri: uri,
   };
+
+  global.__MONGOD__ = replSet;
+  process.env.MONGO_URL = mongoConfig.mongoUri;
 
   // Write global config to disk because all tests run in different contexts.
   fs.writeFileSync(globalConfigPath, JSON.stringify(mongoConfig));
   console.log('Config is written');
-
-  // Set reference to mongod in order to close the server during teardown.
-  global.__MONGOD__ = mongod;
-  process.env.MONGO_URL = mongoConfig.mongoUri;
 };

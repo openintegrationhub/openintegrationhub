@@ -11,6 +11,8 @@ const {
   clusterName,
   env,
   dbRoot,
+  nodeImage,
+  repositoryRoot,
   devToolsRoot,
 } = require('./config')
 
@@ -197,4 +199,11 @@ module.exports = {
       break
     }
   },
+
+  runNpm(relPath, args) {
+    execSync(
+      `docker run --rm --name npmRunner -it -e npm_config_cache=/usr/src/app/.npm_cache -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${relPath}; npm run ${args}'`,
+      { stdio: 'inherit' }
+    )
+  }
 }

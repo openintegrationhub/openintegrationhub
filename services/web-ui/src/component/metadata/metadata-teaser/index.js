@@ -20,7 +20,6 @@ import {
     Delete, Edit, Add, CloudUpload,
 } from '@material-ui/icons';
 
-
 // Domain
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
@@ -88,9 +87,8 @@ class MetaDataTeaser extends React.PureComponent {
         };
     }
 
-
     getSchemas() {
-        return this.state.schemas.map(schema => <Grid item xs={12} key={schema.id}>
+        return this.state.schemas.map((schema) => <Grid item xs={12} key={schema.id}>
             <Grid container spacing={2}>
                 <Grid item xs={2}><InputLabel>Name:</InputLabel><Typography>{schema.name}</Typography></Grid>
                 <Grid item xs={8}><InputLabel>Uri:</InputLabel><Typography>{schema.uri}</Typography></Grid>
@@ -414,10 +412,10 @@ class MetaDataTeaser extends React.PureComponent {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     metadata: state.metadata,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     deleteDomain,
     updateDomain,
     createDomainSchema,

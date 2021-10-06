@@ -63,6 +63,7 @@ describe("minhash", function () {
             try {
                 m1.jaccard(m2)
             } catch (err) {
+                // @ts-ignore: TS2532
                 err.should.be.an("error")
             }
         })
@@ -73,6 +74,7 @@ describe("minhash", function () {
             try {
                 m1.jaccard(m2)
             } catch (err) {
+                // @ts-ignore: TS2532
                 err.should.be.an("error")
             }
         })

@@ -5,12 +5,12 @@ const crypto = require('crypto');
 const ms = require('ms');
 const Logger = require('@basaas/node-logger');
 
-const CONF = require('./../conf');
-const CONSTANTS = require('./../constants');
-const { RESTRICTED_PERMISSIONS } = require('./../access-control/permissions');
+const CONF = require('../conf');
+const CONSTANTS = require('../constants');
+const { RESTRICTED_PERMISSIONS } = require('../access-control/permissions');
 
-const AccountsDAO = require('./../dao/accounts');
-const TokensDAO = require('./../dao/tokens');
+const AccountsDAO = require('../dao/accounts');
+const TokensDAO = require('../dao/tokens');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/util-token`);
 
@@ -109,7 +109,7 @@ module.exports = {
         populatedRoles.forEach((role) => {
             user.permissions = user.permissions.concat(role.permissions);
         });
-        user.isAdmin = !!user.permissions.find(permission => permission === RESTRICTED_PERMISSIONS.all);
+        user.isAdmin = !!user.permissions.find((permission) => permission === RESTRICTED_PERMISSIONS.all);
 
         return user;
     },

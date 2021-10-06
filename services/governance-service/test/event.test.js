@@ -10,7 +10,7 @@ process.env.MONGODB_URL = global.__MONGO_URI__;
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3009;
 const request = require('supertest')(`${hostUrl}:${port}`);
-const iamMock = require('./utils/iamMock.js');
+const iamMock = require('./utils/iamMock');
 const token = require('./utils/tokens');
 const { addProvenanceEvent } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
@@ -174,7 +174,6 @@ describe('ProvenanceEvent Operations', () => {
     expect(res.body.errors[0].message).toEqual('MISSING_PERMISSION');
   });
 
-
   test('should add a second ProvenanceEvent', async () => {
     const res = await addProvenanceEvent({
       entity: {
@@ -227,7 +226,6 @@ describe('ProvenanceEvent Operations', () => {
       })
       .set('Authorization', 'Bearer adminToken');
 
-
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
     const j = JSON.parse(res.text);
@@ -250,7 +248,6 @@ describe('ProvenanceEvent Operations', () => {
       })
       .set('Authorization', 'Bearer adminToken');
 
-
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();
     const j = JSON.parse(res.text);
@@ -269,7 +266,6 @@ describe('ProvenanceEvent Operations', () => {
         until: '2020-10-19T09:48:15.000Z',
       })
       .set('Authorization', 'Bearer adminToken');
-
 
     expect(res.status).toEqual(200);
     expect(res.text).not.toBeNull();

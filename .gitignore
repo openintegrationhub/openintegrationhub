@@ -6,3 +6,8 @@ node_modules
 scripts/toBuild.json
 gitchanges.txt
 lerna-debug.log
+
+.npm_cache/
+.mongo_binaries/
+
+yarn.lock

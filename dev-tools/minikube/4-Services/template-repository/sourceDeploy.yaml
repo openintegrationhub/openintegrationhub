@@ -16,10 +16,14 @@ spec:
       containers:
         - name: template-repository
           imagePullPolicy: IfNotPresent
-          image: node:12-alpine
+          image: node:16-alpine
           workingDir: /usr/src/app/
           command: ["/bin/sh"]
-          args: ["-c","apk update && apk add --no-cache python && yarn install --network-timeout 9000000 --verbose --non-interactive && yarn start:container"]
+          args:
+            [
+              "-c",
+              "apk update && apk add --no-cache python && npm install --network-timeout 9000000 --verbose --non-interactive && npm start:container",
+            ]
           ports:
             - containerPort: 3001
           env:

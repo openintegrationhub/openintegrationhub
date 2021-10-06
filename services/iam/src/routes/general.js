@@ -6,10 +6,10 @@ const Logger = require('@basaas/node-logger');
 const router = express.Router();
 
 const authMiddleware = require('../util/auth');
-const CONF = require('./../conf');
-const CONSTANTS = require('./../constants/index');
-const TokenUtils = require('./../util/tokens');
-const keystore = require('./../util/keystore');
+const CONF = require('../conf');
+const CONSTANTS = require('../constants/index');
+const TokenUtils = require('../util/tokens');
+const keystore = require('../util/keystore');
 const AccountDAO = require('../dao/accounts');
 
 const logger = Logger.getLogger(`${CONF.general.loggingNameSpace}/general`, {

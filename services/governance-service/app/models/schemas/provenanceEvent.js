@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-
 const associationObject = {
   wasAssociatedWith: String,
 };
@@ -18,12 +17,10 @@ const endObject = {
   wasEndedBy: String,
 };
 
-
 const usageObject = {
   entity: String,
   hadRole: String,
 };
-
 
 // Define schema
 const provenanceEvent = new Schema({

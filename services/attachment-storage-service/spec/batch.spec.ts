@@ -96,7 +96,7 @@ describe('/batch', () => {
         });
     });
 
-    describe('GET /batch/delete/:id', () => {
+    xdescribe('GET /batch/delete/:id', () => {
         it('should properly delete objects according conditions', async function () {
             const firstId = uuid.v4();
 
