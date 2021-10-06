@@ -1,5 +1,6 @@
 module.exports = {
   AUTH_TYPE: {
+    NO_AUTH: 'NO_AUTH',
     API_KEY: 'API_KEY',
     OA1_TWO_LEGGED: 'OA1_TWO_LEGGED',
     OA1_THREE_LEGGED: 'OA1_THREE_LEGGED',
