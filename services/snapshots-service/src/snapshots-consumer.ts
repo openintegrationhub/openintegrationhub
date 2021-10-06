@@ -33,10 +33,13 @@ export default class SnapshotsConsumer {
         );
 
         await ch.consume(queueName, msg => {
+            // @ts-ignore
             this.onMessage(msg)
+                // @ts-ignore
                 .then(() => ch.ack(msg))
                 .catch(err => {
                     this.logger.warn({err, msg}, 'Failed to process the message');
+                    // @ts-ignore
                     ch.nack(msg, false, true);
                 });
         });

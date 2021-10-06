@@ -3,12 +3,12 @@ const Logger = require('@basaas/node-logger');
 
 const router = express.Router();
 
-const CONF = require('./../conf');
-const CONSTANTS = require('./../constants');
-const auth = require('./../util/auth');
-const CommonUtils = require('./../util/common');
-const RolesDAO = require('./../dao/roles');
-const { PERMISSIONS, permissionsAreCommon, roleNameIsRestricted } = require('./../access-control/permissions');
+const CONF = require('../conf');
+const CONSTANTS = require('../constants');
+const auth = require('../util/auth');
+const CommonUtils = require('../util/common');
+const RolesDAO = require('../dao/roles');
+const { PERMISSIONS, permissionsAreCommon, roleNameIsRestricted } = require('../access-control/permissions');
 
 const logger = Logger.getLogger(`${CONF.general.loggingNameSpace}/role`, {
     level: 'debug',

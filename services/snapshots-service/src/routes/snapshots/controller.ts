@@ -8,6 +8,7 @@ export default class DataController {
     public async getAll(ctx: RouterContext): Promise<void> {
         const { flowId } = ctx.params;
         const { flowExecId } = ctx.query;
+        // @ts-ignore
         const doc = await Snapshot.find({flowId, flowExecId});
         ctx.body = {
             data: doc

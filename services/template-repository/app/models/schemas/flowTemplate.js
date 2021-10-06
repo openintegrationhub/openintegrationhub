@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { AUTH_TYPE } = require('../../constants');
 
 const Schema = mongoose.Schema;
 
@@ -13,6 +14,15 @@ const node = new Schema({
   credentials_id: { type: mongoose.Types.ObjectId, maxlength: 30 },
   description: { type: String, maxlength: 100 },
   fields: {},
+  authorization: {
+    authType: {
+      type: String,
+      enum: Object.keys(AUTH_TYPE),
+    },
+    authClientId: {
+      type: mongoose.Types.ObjectId,
+    },
+  },
   _id: false,
 });
 

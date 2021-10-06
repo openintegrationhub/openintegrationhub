@@ -10,49 +10,49 @@ const logger = bunyan.createLogger({ name: 'auditlogs' });
 let eventBus;
 
 async function connectQueue() {
-  const { eventNames, gdprEventName } = config;
-  const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
-  eventBus = new EventBus({ transport, logger, serviceName: 'audit-log' });
+    const { eventNames, gdprEventName } = config;
+    const transport = new RabbitMqTransport({ rabbitmqUri: config.amqpUrl, logger });
+    eventBus = new EventBus({ transport, logger, serviceName: 'audit-log' });
 
-  const promises = [];
+    const promises = [];
 
-  for (let i = 0; i < eventNames.length; i += 1) {
-    promises.push(eventBus.subscribe(eventNames[i], async (event) => {
-      log.info(`Received event: ${JSON.stringify(event.headers)}`);
+    for (let i = 0; i < eventNames.length; i += 1) {
+        promises.push(eventBus.subscribe(eventNames[i], async (event) => {
+            log.info(`Received event: ${JSON.stringify(event.headers)}`);
 
-      if (!mongoose.connection || mongoose.connection.readyState !== 1) {
-        log.error('Received event while DB was unready. Retrying...');
-        await event.nack();
-      } else {
-        await saveLog(event.toJSON());
-        await event.ack();
-      }
-    }));
-  }
-
-  await Promise.all(promises);
-
-  await eventBus.subscribe(gdprEventName, async (event) => {
-    log.info('Anonymising user data...');
-
-    if (!mongoose.connection || mongoose.connection.readyState !== 1) {
-      log.error('Received event while DB was unready. Retrying...');
-      await event.nack();
-    } else {
-      if (!event.payload || !event.payload.id) {
-        log.warn('Anonymisation event did not contain ID!');
-      } else {
-        await gdprAnonymise(event.payload.id);
-      }
-      await event.ack();
+            if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+                log.error('Received event while DB was unready. Retrying...');
+                await event.nack();
+            } else {
+                await saveLog(event.toJSON());
+                await event.ack();
+            }
+        }));
     }
-  });
 
-  await eventBus.connect();
+    await Promise.all(promises);
+
+    await eventBus.subscribe(gdprEventName, async (event) => {
+        log.info('Anonymising user data...');
+
+        if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+            log.error('Received event while DB was unready. Retrying...');
+            await event.nack();
+        } else {
+            if (!event.payload || !event.payload.id) {
+                log.warn('Anonymisation event did not contain ID!');
+            } else {
+                await gdprAnonymise(event.payload.id);
+            }
+            await event.ack();
+        }
+    });
+
+    await eventBus.connect();
 }
 
 async function disconnectQueue() {
-  await eventBus.disconnect();
+    await eventBus.disconnect();
 }
 
 async function reportHealth() {
@@ -60,5 +60,5 @@ async function reportHealth() {
 }
 
 module.exports = {
-  connectQueue, disconnectQueue, reportHealth,
+    connectQueue, disconnectQueue, reportHealth,
 };

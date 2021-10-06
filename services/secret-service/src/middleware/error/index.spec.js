@@ -5,11 +5,10 @@ let port;
 let request;
 
 describe('error', () => {
-    beforeAll(async (done) => {
+    beforeAll(async () => {
         port = 5104;
         const host = `http://localhost:${port}`;
         request = supertest(host);
-        done();
     });
     test('status and message', async () => {
         const server = new Server({

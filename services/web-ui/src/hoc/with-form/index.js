@@ -49,7 +49,7 @@ export default function withForm(Component) {
                         ...this.state.validity,
                         [fieldName]: validity,
                     },
-                    allValid: Object.values(validities).reduce(val => val),
+                    allValid: Object.values(validities).reduce((val) => val),
                 });
             }
         }

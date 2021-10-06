@@ -22,7 +22,7 @@ export const getSecrets = () => async (dispatch) => {
     }
 };
 
-export const getSecretsPage = page => async (dispatch) => {
+export const getSecretsPage = (page) => async (dispatch) => {
     try {
         const result = await axios({
             method: 'get',
@@ -40,7 +40,7 @@ export const getSecretsPage = page => async (dispatch) => {
     }
 };
 
-export const deleteSecret = secretId => async (dispatch) => {
+export const deleteSecret = (secretId) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',

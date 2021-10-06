@@ -1,25 +1,15 @@
 {
+    "extends": "@tsconfig/node14/tsconfig.json",
     "compilerOptions": {
-        "skipLibCheck": true,
-        "module": "commonjs",
-        "esModuleInterop": true,
-        "target": "es2017",
-        "noImplicitAny": true,
-        "moduleResolution": "node",
-        "resolveJsonModule": true,
+        "noImplicitAny": false,
         "sourceMap": true,
         "declaration": true,
+        "rootDir": "./src",
         "outDir": "dist",
         "baseUrl": ".",
-        "paths": {
-            "*": [
-                "node_modules/*",
-                "src/@types/*"
-            ]
-        }
     },
     "include": [
         "src/**/*",
         "src/**/*.json"
-    ]
+    ],
 }

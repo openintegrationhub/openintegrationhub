@@ -26,7 +26,7 @@ export const getClients = () => async (dispatch) => {
     }
 };
 
-export const processCallback = query => async (dispatch) => {
+export const processCallback = (query) => async (dispatch) => {
     try {
         const { data } = await axios({
             method: 'get',

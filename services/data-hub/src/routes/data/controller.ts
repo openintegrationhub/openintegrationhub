@@ -18,7 +18,7 @@ interface IGetManyCondition {
     schemaUri?: string;
     createdAt?: IGteQuery;
     updatedAt?: IGteQuery;
-    tenant?: IGteQuery;
+    tenant?: string;
 }
 
 export default class DataController {
@@ -44,7 +44,7 @@ export default class DataController {
         }
 
         if (tenant) {
-            condition.tenant = tenant
+            condition.tenant = tenant?.toString()
         } else if (isTenantAdmin(user)) {
             condition.tenant = user.tenant
         }
@@ -82,28 +82,28 @@ export default class DataController {
 
         if (isAdmin(user)) {
             if (tenant) {
-                condition.tenant = tenant
+                condition.tenant = tenant?.toString()
             }
         }
 
         if (createdSince) {
             condition.createdAt = {
-                $gte: createdSince
+                $gte: createdSince?.toString()
             };
         }
 
         if (updatedSince) {
             condition.updatedAt = {
-                $gte: updatedSince
+                $gte: updatedSince?.toString()
             };
         }
 
         if (domainId) {
-            condition.domainId = domainId;
+            condition.domainId = domainId?.toString();
         }
 
         if (schemaUri) {
-            condition.schemaUri = schemaUri
+            condition.schemaUri = schemaUri?.toString()
         }
 
         if (minScore) {
@@ -161,13 +161,13 @@ export default class DataController {
 
             if (createdSince) {
                 condition.createdAt = {
-                    $gte: createdSince
+                    $gte: createdSince?.toString()
                 };
             }
 
             if (updatedSince) {
                 condition.updatedAt = {
-                    $gte: updatedSince
+                    $gte: updatedSince?.toString()
                 };
             }
 
@@ -256,10 +256,12 @@ export default class DataController {
             throw new NotFound();
         }
 
-        if (!dataObject.owners.find(o => o.id === user.sub)) {
+        // @ts-ignore: TS2532
+        if (!dataObject.owners.find(o => o.id === user.sub)) { 
             throw new Forbidden();
         }
 
+        // @ts-ignore: TS2345
         Object.keys(dataObject.toJSON()).forEach((key: keyof IDataObjectDocument) => {
             if (key === '_id') {
                 return;
@@ -286,6 +288,7 @@ export default class DataController {
             throw new NotFound();
         }
 
+        // @ts-ignore: TS2532
         if (!dataObject.owners.find(o => o.id === user.sub)) {
             throw new Forbidden();
         }
@@ -338,6 +341,7 @@ export default class DataController {
                 });
             }
 
+            // @ts-ignore: TS2345
             createPromises.push(DataObject.create({
                 ...record,
                 tenant: user.tenant,
@@ -369,19 +373,20 @@ export default class DataController {
         let action;
         if (dataObject) {
             action = 'update';
-
+            // @ts-ignore: TS2532
             if (!dataObject.refs.find((ref => ref.recordUid === body.recordUid))) {
+                // @ts-ignore: TS2532
                 dataObject.refs.push({
                     recordUid: body.recordUid,
                     applicationUid: body.applicationUid
                 })
             }
-
+            // @ts-ignore: TS2532
             if (!dataObject.owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-                // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
                 const newIOwner = {} as IOwnerDocument;
                 newIOwner.id = user.sub;
                 newIOwner.type = 'user';
+                // @ts-ignore: TS2532
                 dataObject.owners.push(newIOwner);
             }
 

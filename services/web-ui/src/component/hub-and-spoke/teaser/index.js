@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -34,7 +33,7 @@ const useStyles = {
     },
 };
 
-const DispatcherConfigTeaser = props => <React.Fragment>
+const DispatcherConfigTeaser = (props) => <React.Fragment>
     <Grid container xs={12} justify="center" alignItems="center" style={{ padding: '16px' }}>
         <Grid item xs={1}>
             <div className={props.classes.placeholderImg}>
@@ -48,7 +47,7 @@ const DispatcherConfigTeaser = props => <React.Fragment>
         <Grid item xs={4}>
             <div style={{ height: '50px', display: 'flex', alignItems: 'center' }}>
                 <small>Connected apps: </small>
-                {props.apps.map(app => <img
+                {props.apps.map((app) => <img
                     key={app._id}
                     src={app.img}
                     alt={app.name}

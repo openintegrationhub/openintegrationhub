@@ -42,6 +42,7 @@ async function processTrigger() {
 
     log.info('Created message:', message)
     this.emit('data', message)
+    this.emit('rebound', new Error('error -> rebound'))
 
     log.info('Finished emitting data')
 

@@ -1,16 +1,27 @@
-FROM node:12-alpine AS base
+FROM node:16-alpine AS base
 LABEL NAME="oih-governance-service"
 LABEL MAINTAINER Hansjörg Schmidt "hschmidt@wice.de"
 
+ENV serviceName=governance-service
 ARG local
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/
+
+COPY package-lock.json ./
+COPY package.json ./
+
+# copy used libs
+COPY lib/event-bus lib/event-bus
+COPY lib/iam-utils lib/iam-utils
+
+COPY services/$serviceName services/$serviceName
 
 RUN apk update && apk add --no-cache bash
 
-COPY yarn.lock ./
-COPY services/governance-service/package.json ./
-COPY services/governance-service/app ./app
+# Image for building and installing dependencies
+# node-gyp is required as dependency by some npm package
+# but node-gyp requires in build time python, build-essential, ....
+# that's not required in runtime
 
 FROM base AS dependencies
 
@@ -18,20 +29,23 @@ RUN apk update && apk add --no-cache \
     make \
     gcc \
     g++ \
-    python \
-    bash
+    python3
 
 RUN if [ "$local" == "true" ]; \
-    then yarn install ; \
-    else yarn install --production ; \
+    then npm ci ; \
+    else npm ci --production ; \
     fi
 
 FROM base AS release
 
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-RUN rm yarn.lock
+# copy folders to keep node_modules
+COPY --from=dependencies /usr/src/node_modules /usr/src/node_modules
+COPY --from=dependencies /usr/src/services /usr/src/services
+COPY --from=dependencies /usr/src/lib /usr/src/lib
+
+RUN rm package-lock.json
 
 RUN chown -R node:node .
 USER node
 
-CMD ["yarn", "start"]
+CMD npm start --workspace=$serviceName

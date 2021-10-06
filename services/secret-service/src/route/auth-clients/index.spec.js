@@ -30,8 +30,9 @@ describe('auth-clients', () => {
     beforeAll(async (done) => {
         port = 5105;
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
+
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'auth-clients'),
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'route-auth-clients'),
             port,
             // iam: dummyIam,
         });
