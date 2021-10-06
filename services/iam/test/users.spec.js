@@ -1,7 +1,7 @@
 process.env.AUTH_TYPE = 'basic';
 const request = require('supertest')('http://localhost:3099');
 
-const CONSTANTS = require('./../src/constants');
+const CONSTANTS = require('../src/constants');
 
 let conf = null;
 
@@ -19,7 +19,7 @@ describe('User Routes', () => {
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_AUTH_TYPE = 'basic';
-        conf = require('./../src/conf/index');
+        conf = require('../src/conf/index');
         const App = require('../src/app');
         app = new App({
             mongoConnection: global.__MONGO_URI__.replace('changeme', 'users'),

@@ -29,11 +29,11 @@ class Hook extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     authClients: state.authClients,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     ...authClientsActions,
 }, dispatch);
 

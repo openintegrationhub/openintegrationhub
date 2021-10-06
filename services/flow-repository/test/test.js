@@ -10,7 +10,7 @@ process.env.MONGODB_URL = global.__MONGO_URI__;
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3001;
 const request = require('supertest')(`${hostUrl}:${port}`);
-const iamMock = require('./utils/iamMock.js');
+const iamMock = require('./utils/iamMock');
 const token = require('./utils/tokens');
 const { getOrphanedFlows } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
@@ -860,7 +860,7 @@ describe('Flow Operations', () => {
 
     const flow = await Flow.findOne({ _id: flowId1 }).lean();
     expect(flow.owners).toHaveLength(1);
-    expect(flow.owners.find(owner => (owner.id === 'dude'))).toEqual(undefined);
+    expect(flow.owners.find((owner) => (owner.id === 'dude'))).toEqual(undefined);
   });
 
   test('should return 400 when attempting to update an invalid id', async () => {

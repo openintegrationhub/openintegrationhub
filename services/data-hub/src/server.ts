@@ -18,6 +18,7 @@ export interface IServerOptions {
 export default class ObjectServer {
     private readonly koa: Koa;
     private readonly api: KoaRouter;
+    // @ts-ignore
     private server: Server;
     private logger: Logger;
 

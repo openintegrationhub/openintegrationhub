@@ -2,8 +2,8 @@ process.env.AUTH_TYPE = 'basic';
 const mongoose = require('mongoose');
 const request = require('supertest')('http://localhost:3099');
 
-const CONSTANTS = require('./../src/constants');
-const { PERMISSIONS, RESTRICTED_PERMISSIONS, DEFAULT_ROLES } = require('./../src/access-control/permissions');
+const CONSTANTS = require('../src/constants');
+const { PERMISSIONS, RESTRICTED_PERMISSIONS, DEFAULT_ROLES } = require('../src/access-control/permissions');
 
 let conf = null;
 
@@ -23,7 +23,7 @@ describe('Role Routes', () => {
     beforeAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_AUTH_TYPE = 'basic';
-        conf = require('./../src/conf/index');
+        conf = require('../src/conf/index');
         const App = require('../src/app'); 
         app = new App({
             mongoConnection: global.__MONGO_URI__.replace('changeme', 'accessControll'),
@@ -665,16 +665,16 @@ describe('Role Routes', () => {
         const restrictedRole = (await request.get('/api/v1/roles')
             .set('Authorization', tokenAdmin)
             .set('Accept', /application\/json/)
-            .expect(200)).body.filter(role => role.permissions.indexOf('all') >= 0);
+            .expect(200)).body.filter((role) => role.permissions.indexOf('all') >= 0);
 
         await request.post('/api/v1/users')
-            .send(Object.assign({}, dummyUser, { roles: [restrictedRole._id] }))
+            .send({ ...dummyUser, roles: [restrictedRole._id] })
             .set('Authorization', tenantAdminToken)
             .set('Accept', /application\/json/)
             .expect(403);
 
         await request.post('/api/v1/users')
-            .send(Object.assign({}, dummyUser, { permissions: [RESTRICTED_PERMISSIONS.all] }))
+            .send({ ...dummyUser, permissions: [RESTRICTED_PERMISSIONS.all] })
             .set('Authorization', tenantAdminToken)
             .set('Accept', /application\/json/)
             .expect(403);

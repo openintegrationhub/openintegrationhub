@@ -1,29 +1,48 @@
-FROM node:12-alpine AS base
+FROM node:16-alpine AS base
 LABEL NAME="oih-template-repository"
-LABEL MAINTAINER James Weber "james.weber@cloudecosystem.org"
 
-WORKDIR /usr/src/template-repository
+ENV serviceName=template-repository
+ARG local
 
-RUN apk add --no-cache bash
+WORKDIR /usr/src/
 
-COPY package.json yarn.lock ./
+COPY package-lock.json ./
+COPY package.json ./
+
+# copy used libs
 COPY lib/event-bus lib/event-bus
-COPY services/template-repository/package.json ./services/template-repository/
-COPY services/template-repository/app services/template-repository/app
+COPY lib/iam-utils lib/iam-utils
+
+COPY services/$serviceName services/$serviceName
+
+RUN apk update && apk add --no-cache bash
 
 # Image for building and installing dependencies
 # node-gyp is required as dependency by some npm package
 # but node-gyp requires in build time python, build-essential, ....
 # that's not required in runtime
+
 FROM base AS dependencies
-RUN apk add --no-cache make gcc g++ python
-RUN yarn install --production
+
+RUN apk update && apk add --no-cache \
+    make \
+    gcc \
+    g++ \
+    python3
+
+RUN npm ci
+RUN npm prune --production
 
 FROM base AS release
-COPY --from=dependencies /usr/src/template-repository/node_modules ./node_modules
-RUN rm yarn.lock
+
+# copy folders to keep node_modules
+COPY --from=dependencies /usr/src/node_modules /usr/src/node_modules
+COPY --from=dependencies /usr/src/services /usr/src/services
+COPY --from=dependencies /usr/src/lib /usr/src/lib
+
+RUN rm package-lock.json
 
 RUN chown -R node:node .
 USER node
 
-CMD ["yarn", "--cwd", "services/template-repository", "start"]
+CMD npm start --workspace=$serviceName

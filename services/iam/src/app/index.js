@@ -17,18 +17,18 @@ const LocalStrategy = require('passport-local').Strategy;
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const Logger = require('@basaas/node-logger');
-const swaggerDocument = require('./../../doc/openapi.json');
+const swaggerDocument = require('../../doc/openapi.json');
 
 const jsonParser = bodyParser.json();
 
 const CONSTANTS = require('../constants');
 const conf = require('../conf');
-const { createOIDCProvider, addOIDCRoutes } = require('./../oidc');
-const registerModels = require('./../models/registerModels');
-const Account = require('./../models/account');
-const Roles = require('./../models/role');
-const auth = require('./../util/auth');
-const { DEFAULT_ROLES } = require('./../access-control/permissions');
+const { createOIDCProvider, addOIDCRoutes } = require('../oidc');
+const registerModels = require('../models/registerModels');
+const Account = require('../models/account');
+const Roles = require('../models/role');
+const auth = require('../util/auth');
+const { DEFAULT_ROLES } = require('../access-control/permissions');
 
 const FORCE_SSL = conf.general.useHttps === 'true';
 
@@ -95,7 +95,7 @@ class App {
         this.corsOptions = {
             credentials: true,
             origin(origin, callback) {
-                if (conf.general.originWhitelist.find(elem => origin.indexOf(elem) >= 0)) {
+                if (conf.general.originWhitelist.find((elem) => origin.indexOf(elem) >= 0)) {
                     callback(null, true);
                 } else {
                     log.info('Blocked by CORS');
@@ -157,25 +157,25 @@ class App {
         this.app.use(jsonParser);
 
         // access log
-        this.app.use(require('./../log/access')); // eslint-disable-line global-require
+        this.app.use(require('../log/access')); // eslint-disable-line global-require
 
         this.app.get('/healthcheck', (req, res) => {
             res.sendStatus(200);
         });
 
         this.app.use(checkProto);
-        this.app.use('/', cors(this.corsOptions), require('./../routes/general')); // eslint-disable-line global-require
+        this.app.use('/', cors(this.corsOptions), require('../routes/general')); // eslint-disable-line global-require
 
         // setup SwaggerUI
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
 
         const apiBase = express.Router();
         apiBase.use(auth.validateAuthentication);
-        apiBase.use('/users', require('./../routes/users')); // eslint-disable-line global-require
-        apiBase.use('/tenants', require('./../routes/tenants')); // eslint-disable-line global-require
-        apiBase.use('/tokens', require('./../routes/tokens')); // eslint-disable-line global-require
-        apiBase.use('/roles', require('./../routes/roles')); // eslint-disable-line global-require
-        apiBase.use('/permissions', require('./../routes/permissions')); // eslint-disable-line global-require
+        apiBase.use('/users', require('../routes/users')); // eslint-disable-line global-require
+        apiBase.use('/tenants', require('../routes/tenants')); // eslint-disable-line global-require
+        apiBase.use('/tokens', require('../routes/tokens')); // eslint-disable-line global-require
+        apiBase.use('/roles', require('../routes/roles')); // eslint-disable-line global-require
+        apiBase.use('/permissions', require('../routes/permissions')); // eslint-disable-line global-require
 
         // TODO: if the client is not a browser, no origin or host will be provided
         this.app.use(`/${conf.general.apiBase}`, cors(this.corsOptions), apiBase);
@@ -184,13 +184,13 @@ class App {
         this.app.use('/static', express.static(path.join(__dirname, '../../static')));
 
         // 404 log
-        this.app.use(require('./../log/404')); // eslint-disable-line global-require
+        this.app.use(require('../log/404')); // eslint-disable-line global-require
 
         // error log
-        this.app.use(require('./../log/error')); // eslint-disable-line global-require
+        this.app.use(require('../log/error')); // eslint-disable-line global-require
 
         // error handling
-        this.app.use(require('./../routes/error').default); // eslint-disable-line global-require
+        this.app.use(require('../routes/error').default); // eslint-disable-line global-require
 
     }
 
@@ -203,7 +203,7 @@ class App {
                 lastname: conf.accounts.admin.lastname,
                 // accountType: CONSTANTS.ROLES.ADMIN,
                 roles: [{
-                    _id: roles.find(role => role.name === CONSTANTS.ROLES.ADMIN)._id,
+                    _id: roles.find((role) => role.name === CONSTANTS.ROLES.ADMIN)._id,
                 }],
                 status: CONSTANTS.STATUS.ACTIVE,
             });
