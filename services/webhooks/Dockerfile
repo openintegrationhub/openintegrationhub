@@ -11,7 +11,7 @@ COPY package.json ./
 
 # copy used libs
 COPY lib/event-bus lib/event-bus
-COPY lib/scheduler lib/webhooks
+COPY lib/webhooks lib/webhooks
 COPY lib/backend-commons-lib lib/backend-commons-lib
 
 COPY services/$serviceName services/$serviceName

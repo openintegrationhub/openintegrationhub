@@ -1,6 +1,6 @@
 {
   "name": "secret-service",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "Service to manage Keys/Tokens of external services",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -33,7 +33,8 @@
     "node-fetch": "2.6.1",
     "oauth": "0.9.15",
     "qs": "6.10.1",
-    "swagger-ui-express": "4.1.5"
+    "swagger-ui-express": "4.1.5",
+    "uuid": "8.3.2"
   },
   "devDependencies": {
     "nodemon": "2.0.4",

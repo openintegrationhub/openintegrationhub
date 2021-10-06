@@ -9,6 +9,10 @@ WORKDIR /usr/src/
 COPY package-lock.json ./
 COPY package.json ./
 
+# copy used libs
+COPY lib/event-bus lib/event-bus
+COPY lib/iam-utils lib/iam-utils
+
 COPY services/$serviceName services/$serviceName
 
 RUN apk update && apk add --no-cache bash
@@ -34,6 +38,7 @@ FROM base AS release
 # copy folders to keep node_modules
 COPY --from=dependencies /usr/src/node_modules /usr/src/node_modules
 COPY --from=dependencies /usr/src/services /usr/src/services
+COPY --from=dependencies /usr/src/lib /usr/src/lib
 
 RUN rm package-lock.json
 
