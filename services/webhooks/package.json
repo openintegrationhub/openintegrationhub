@@ -23,9 +23,11 @@
     "@openintegrationhub/iam-utils": "*",
     "backend-commons-lib": "*",
     "body-parser": "1.19.0",
+    "bunyan": "^1.8.14",
+    "bunyan-format": "^0.2.1",
     "express": "4.17.1",
     "mongoose": "5.11.8",
-    "node-fetch": "3.0.0"
+    "node-fetch": "2.6.5"
   },
   "devDependencies": {
     "chai": "4.2.0",

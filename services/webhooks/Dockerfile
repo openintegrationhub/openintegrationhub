@@ -13,6 +13,7 @@ COPY package.json ./
 COPY lib/event-bus lib/event-bus
 COPY lib/webhooks lib/webhooks
 COPY lib/backend-commons-lib lib/backend-commons-lib
+COPY lib/iam-utils lib/iam-utils
 
 COPY services/$serviceName services/$serviceName
 
