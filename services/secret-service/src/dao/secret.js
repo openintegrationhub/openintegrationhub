@@ -393,7 +393,7 @@ module.exports = {
         _secret = _secret.encryptedFields && _secret.encryptedFields.length > 0
             ? cryptoSecret(_secret, key, DECRYPT, _secret.encryptedFields
                 .filter((e) => !(['refreshToken', 'inputFields'].includes(e)))) : _secret;
-        return crypto.authenticateHmac(_secret, hmacValue, hmacAlgo, rawBody);
+        return crypto.authenticateHmac(_secret.value?.key, hmacValue, hmacAlgo, rawBody);
     },
 
     cryptoSecret,

@@ -1,6 +1,6 @@
 const { RequestHandlers } = require('@openintegrationhub/webhooks');
 const { DEFAULT_HMAC_HEADER_KEY = 'x-hmac', DEFAULT_HMAC_ALGORITHM = 'sha265', WEBHOOK_EXECUTE_PERMISSION = 'webhooks.execute' } = process.env;
-const { fetch } = require('node-fetch');
+const fetch = require('node-fetch');
 const iamUtils = require('@openintegrationhub/iam-utils');
 
 class PostRequestHandler extends RequestHandlers.Post {
@@ -40,9 +40,10 @@ class PostRequestHandler extends RequestHandlers.Post {
         const authHeader = this._req.header('authorization');
         if (authHeader) {
           const headerArray = authHeader.split(' ');
+          let hasPermissions = false;
           switch (headerArray[0]) {
             case 'Bearer': {
-              await this.checkPermissions(headerArray[1]);
+              hasPermissions = await this.checkPermissions(headerArray[1]);
               break;
             }
             case 'Basic': {
@@ -52,22 +53,30 @@ class PostRequestHandler extends RequestHandlers.Post {
               const user = authString.substring(0,splitIndex);
               const pass = authString.substring(splitIndex+1);
               const token = await this.login(user,pass);
-              await this.checkPermissions(token);
+              hasPermissions = await this.checkPermissions(token);
               break;
             }
             default:
               return false;
           }
-          return;
+          if (!hasPermissions) {
+            this.sendPermissionsError();
+          } else {
+            return true;
+          }
         }
+        this.sendPermissionsError();
     }
 
     async checkPermissions(token) {
-      const user = await iamUtils.getUserData({ token, introspectType: this._req.headers['x-auth-type'] });
-      if (!iamUtils.hasAll({ user, requiredPermissions:WEBHOOK_EXECUTE_PERMISSION })) {
-        this.sendPermissionsError();
+      try {
+        const user = await iamUtils.getUserData({ token, introspectType: this._req.headers['x-auth-type'] });
+        return iamUtils.hasAll({ user, requiredPermissions:WEBHOOK_EXECUTE_PERMISSION });
       }
-
+      catch (e) {
+        this.logger.info('Error authorizing webhook: ',e)
+        return false;
+      }
     }
 
     sendPermissionsError() {
