@@ -240,8 +240,7 @@ module.exports = {
             'value.authClientId': authClientId,
             'owners.id': id,
         },
-        'name type value.authClientId value.scope value.expires value.externalId owners currentError',
-        );
+        'name type value.authClientId value.scope value.expires value.externalId owners currentError');
     },
 
     async findByExternalId(externalId, authClientId) {
