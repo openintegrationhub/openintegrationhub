@@ -51,6 +51,7 @@ describe('AuthClientDAO', () => {
 
     test('update auth client', async () => {
         const update = {
+            name: 'foobar',
             type: OA2_AUTHORIZATION_CODE,
             clientId: 'string2',
             clientSecret: 'string2',
@@ -60,5 +61,6 @@ describe('AuthClientDAO', () => {
 
         expect(authClient.clientId).toEqual('string2');
         expect(authClient.clientSecret).toEqual('string2');
+        expect(authClient.name).toEqual('foobar');
     });
 });
