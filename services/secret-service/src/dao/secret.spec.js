@@ -471,56 +471,42 @@ describe('SecretDAO', () => {
         const key = 'sshhhh';
         const accessToken = 'my access_token';
         const refreshToken = 'my refresh_token';
+        const secretData = {
+            name: 'secret',
+            type: OA2_AUTHORIZATION_CODE,
+            owners: [
+                {
+                    id: tokens.userToken1.value.sub,
+                    type: ENTITY_TYPE.USER,
+                },
+                {
+                    id: tokens.userToken1.value.tenant,
+                    type: ENTITY_TYPE.TENANT,
+                },
+            ],
+            value: {
+                authClientId: authClient._id,
+                accessToken,
+                refreshToken,
+                scope: 'asd',
+                externalId: 'asd',
+                expires: '2019-01-28T14:01:21.808Z',
+            },
+        };
 
         await SecretDAO.create({
+            ...secretData,
             name: 'secret1',
-            type: OA2_AUTHORIZATION_CODE,
-            owners: [
-                {
-                    id: tokens.userToken1.value.sub,
-                    type: ENTITY_TYPE.USER,
-                },
-                {
-                    id: tokens.userToken1.value.tenant,
-                    type: ENTITY_TYPE.TENANT,
-                },
-            ],
-            value: {
-                authClientId: authClient._id,
-                accessToken,
-                refreshToken,
-                scope: 'asd',
-                externalId: 'asd',
-                expires: '2019-01-28T14:01:21.808Z',
-            },
         }, key);
 
         await SecretDAO.create({
+            ...secretData,
             name: 'secret2',
-            type: OA2_AUTHORIZATION_CODE,
-            owners: [
-                {
-                    id: tokens.userToken1.value.sub,
-                    type: ENTITY_TYPE.USER,
-                },
-                {
-                    id: tokens.userToken1.value.tenant,
-                    type: ENTITY_TYPE.TENANT,
-                },
-            ],
-            value: {
-                authClientId: authClient._id,
-                accessToken,
-                refreshToken,
-                scope: 'asd',
-                externalId: 'asd',
-                expires: '2019-01-28T14:01:21.808Z',
-            },
         }, key);
 
         await SecretDAO.create({
+            ...secretData,
             name: 'secret3',
-            type: OA2_AUTHORIZATION_CODE,
             owners: [
                 {
                     id: tokens.userToken2.value.sub,
@@ -531,14 +517,6 @@ describe('SecretDAO', () => {
                     type: ENTITY_TYPE.TENANT,
                 },
             ],
-            value: {
-                authClientId: authClient._id,
-                accessToken,
-                refreshToken,
-                scope: 'asd',
-                externalId: 'asd',
-                expires: '2019-01-28T14:01:21.808Z',
-            },
         }, key);
 
         let secrets = await SecretDAO.findByAuthClient(tokens.userToken1.value.sub, authClient._id);
