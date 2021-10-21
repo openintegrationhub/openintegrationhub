@@ -1,5 +1,6 @@
 const Logger = require('@basaas/node-logger');
 const moment = require('moment');
+const mongoose = require('mongoose');
 const pull = require('lodash/pull');
 const { Event, EventBusManager, events } = require('@openintegrationhub/event-bus');
 const crypto = require('../util/crypto');
@@ -236,12 +237,15 @@ module.exports = {
         id,
         authClientId,
     ) {
+        if (typeof authClientId === 'string') {
+            authClientId = mongoose.Types.ObjectId(authClientId);
+        }
+
         return await Secret.full.find({
             'value.authClientId': authClientId,
             'owners.id': id,
         },
-        'name type value.authClientId value.scope value.expires value.externalId owners currentError',
-        );
+        'name type value.authClientId value.scope value.expires value.externalId owners currentError');
     },
 
     async findByExternalId(externalId, authClientId) {
