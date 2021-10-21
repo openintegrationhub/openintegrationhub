@@ -21,7 +21,7 @@ class PostRequestHandler extends RequestHandlers.Post {
         const flowSettings = flow.getFlowSettings();
         const flowUser = flow.getFlowUser();
         // Default to false if field doesn't exist
-        const { requireWebhookAuth = false, hmacHeaderKey = DEFAULT_HMAC_HEADER_KEY, hmacAuthSecret, hmacAlgorithm = DEFAULT_HMAC_ALGORITHM } = flowSettings;
+        const { requireWebhookAuth = false, hmacHeaderKey = DEFAULT_HMAC_HEADER_KEY, hmacAuthSecret, hmacAlgorithm = DEFAULT_HMAC_ALGORITHM, allTenantUsers=false } = flowSettings;
         if (!requireWebhookAuth) {
             this.logger.debug('Not authenticating the flow. requireAuthorization is not enabled');
             return;
@@ -43,7 +43,7 @@ class PostRequestHandler extends RequestHandlers.Post {
           let hasPermissions = false;
           switch (headerArray[0]) {
             case 'Bearer': {
-              hasPermissions = await this.checkPermissions(headerArray[1]);
+              hasPermissions = await this.checkPermissions({ token:headerArray[1], flow, allTenantUsers });
               break;
             }
             case 'Basic': {
@@ -53,11 +53,11 @@ class PostRequestHandler extends RequestHandlers.Post {
               const user = authString.substring(0,splitIndex);
               const pass = authString.substring(splitIndex+1);
               const token = await this.login(user,pass);
-              hasPermissions = await this.checkPermissions(token);
+              hasPermissions = await this.checkPermissions({ token, flow, allTenantUsers });
               break;
             }
             default:
-              return false;
+              break;
           }
           if (!hasPermissions) {
             this.sendPermissionsError();
@@ -68,10 +68,11 @@ class PostRequestHandler extends RequestHandlers.Post {
         this.sendPermissionsError();
     }
 
-    async checkPermissions(token) {
+    async checkPermissions({ token, flow, allTenantUsers }) {
       try {
         const user = await iamUtils.getUserData({ token, introspectType: this._req.headers['x-auth-type'] });
-        return iamUtils.hasAll({ user, requiredPermissions:WEBHOOK_EXECUTE_PERMISSION });
+        return (iamUtils.hasAll({ user, requiredPermissions:WEBHOOK_EXECUTE_PERMISSION }) &&
+          iamUtils.isOwnerOf({entity: flow, user, allTenantUsers }));
       }
       catch (e) {
         this.logger.info('Error authorizing webhook: ',e)
