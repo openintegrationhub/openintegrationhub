@@ -27,6 +27,11 @@
       "description" : "Miscellaneous operations not related to the service business logic"
     } ]
   ,
+  "security": [
+    {
+      "BearerToken": []
+    }
+  ],
   "paths" : {
     "/auth-clients/" : {
       "get" : {
@@ -70,10 +75,7 @@
           "500": {
             "$ref": "#/components/responses/500ServerError"
           }
-        },
-        "security" : [ {
-          "api_key" : [ ]
-        } ]
+        }
       },
       "post" : {
         "tags" : [ "Auth clients" ],
@@ -109,10 +111,7 @@
           "500": {
             "$ref": "#/components/responses/500ServerError"
           }
-        },
-        "security" : [ {
-          "api_key" : [ ]
-        } ]
+        }
       }
     },
     "/auth-clients/{clientId}" : {
@@ -199,10 +198,7 @@
           "405" : {
             "description" : "Invalid input"
           }
-        },
-        "security" : [ {
-          "api_key" : [ ]
-        } ]
+        }
       }
     },
     "/auth-clients/{clientId}/start-flow" : {
@@ -331,10 +327,7 @@
           "500": {
             "$ref": "#/components/responses/500ServerError"
           }
-        },
-        "security" : [ {
-          "api_key" : [ ]
-        } ]
+        }
       },
       "post" : {
         "tags" : [ "Secrets" ],
@@ -370,10 +363,7 @@
           "500": {
             "$ref": "#/components/responses/500ServerError"
           }
-        },
-        "security" : [ {
-          "api_key" : [ ]
-        } ]
+        }
       }
     },
     "/secrets/{secretId}" : {
@@ -414,10 +404,7 @@
           "404" : {
             "description" : "Secret with given ID not found"
           }
-        },
-        "security" : [ {
-          "api_key" : [ ]
-        } ]
+        }
       },
       "delete" : {
         "tags" : [ "Secrets" ],
@@ -443,10 +430,7 @@
           "404" : {
             "$ref": "#/components/responses/404NotFound"
           }
-        },
-        "security" : [ {
-          "api_key" : [ ]
-        } ]
+        }
       },
       "patch" : {
         "tags" : [ "Secrets" ],
@@ -493,10 +477,7 @@
           "400" : {
             "$ref": "#/components/responses/400BadRequest"
           }
-        },
-        "security" : [ {
-          "api_key" : [ ]
-        } ]
+        }
       }
     },
     "/healthcheck" : {
@@ -521,7 +502,6 @@
   },
   "components" : {
     "schemas" : {
-
       "Owner" : {
         "required" : [ "id", "type" ],
         "type" : "object",
@@ -537,7 +517,6 @@
           }
         }
       },
-
       "MutableAuthClient" : {
         "required" : [ "name", "owners", "type" ],
         "properties" : {
@@ -933,9 +912,6 @@
           }
         }
       },
-
-
-
       "Secret" : {
         "allOf" : [ {
           "$ref" : "#/components/schemas/MutableSecret"
@@ -1029,7 +1005,6 @@
           }
         }
       },
-
       "OA2AuthorizationCodeSecret" : {
         "required" : ["authClientId", "accessToken", "expires"],
         "type" : "object",
@@ -1121,31 +1096,6 @@
             "type": "string"
           }
         }
-      },
-      "HttpResponseMultipleItems": {
-        "type": "object",
-        "required": ["data", "meta"],
-        "properties": {
-          "data": {
-            "oneOf": [
-              {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/SecretEntry"
-                }
-              },
-              {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/AuthClientEntry"
-                }
-              }
-            ]
-          },
-          "meta": {
-            "$ref": "#/components/schemas/Meta"
-          }
-        }
       }
     },
     "parameters": {
@@ -1172,7 +1122,8 @@
         "name": "page[size]",
         "in": "query",
         "schema": {
-          "type": "integer"
+          "type": "integer",
+          "default": 10
         },
         "description": "The number of results to return per page",
         "required": false,
@@ -1182,7 +1133,8 @@
         "name": "page[number]",
         "in": "query",
         "schema": {
-          "type": "integer"
+          "type": "integer",
+          "default": 1
         },
         "description": "The page number to return (not zero indexed)",
         "required": false
@@ -1241,10 +1193,9 @@
       }
     },
     "securitySchemes" : {
-      "api_key" : {
-        "type" : "apiKey",
-        "name" : "api_key",
-        "in" : "header"
+      "BearerToken": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }
