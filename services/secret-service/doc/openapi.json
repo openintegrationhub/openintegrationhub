@@ -548,7 +548,16 @@
           "$ref": "#/components/schemas/MutableOA2AuthorizationCodeClient"
         }, {
           "$ref": "#/components/schemas/MutableSessionAuthClient"
-        } ]
+        } ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "OA1_TWO_LEGGED": "#/components/schemas/MutableOA1TwoLeggedClient",
+            "OA1_THREE_LEGGED": "#/components/schemas/MutableOA1ThreeLeggedClient",
+            "OA2_AUTHORIZATION_CODE": "#/components/schemas/MutableOA2AuthorizationCodeClient",
+            "SESSION_AUTH": "#/components/schemas/MutableSessionAuthClient"
+          }
+        }
       },
       "MutableOA1TwoLeggedClient" : {
         "required" : [ "consumerKey", "consumerSecret", "nonce", "signature", "signatureMethod" ],
@@ -693,7 +702,16 @@
           "$ref" : "#/components/schemas/OA2AuthorizationCodeClient"
         }, {
           "$ref": "#/components/schemas/SessionAuthClient"
-        } ]
+        } ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "OA1_TWO_LEGGED": "#/components/schemas/MutableOA1TwoLeggedClient",
+            "OA1_THREE_LEGGED": "#/components/schemas/MutableOA1ThreeLeggedClient",
+            "OA2_AUTHORIZATION_CODE": "#/components/schemas/MutableOA2AuthorizationCodeClient",
+            "SESSION_AUTH": "#/components/schemas/MutableSessionAuthClient"
+          }
+        }
       },
       "OA1TwoLeggedClient" : {
         "allOf" : [{
@@ -870,18 +888,31 @@
           },
           "value" : {
             "discriminator" : {
-              "propertyName" : "type"
+              "propertyName" : "type",
+              "mapping": {
+                "SIMPLE": "#/components/schemas/SimpleSecret",
+                "MIXED": "#/components/schemas/MixedSecret",
+                "API_KEY": "#/components/schemas/Api_Key",
+                "SESSION": "#/components/schemas/SessionSecret",
+                "OA1_TWO_LEGGED": "#/components/schemas/OA1TwoLeggedSecret",
+                "OA1_THREE_LEGGED": "#/components/schemas/OA1ThreeLeggedSecret",
+                "OA2_AUTHORIZATION_CODE": "#/components/schemas/OA2AuthorizationCodeSecret"
+              }
             },
             "oneOf" : [ {
-              "$ref" : "#/components/schemas/MixedSecret"
+              "$ref": "#/components/schemas/SimpleSecret"
             }, {
-              "$ref" : "#/components/schemas/OA1TwoLeggedSecret"
+              "$ref": "#/components/schemas/MixedSecret"
+            }, {
+              "$ref": "#/components/schemas/Api_Key"
+            }, {
+              "$ref": "#/components/schemas/SessionSecret"
+            }, {
+              "$ref": "#/components/schemas/OA1TwoLeggedSecret"
             }, {
               "$ref": "#/components/schemas/OA1ThreeLeggedSecret"
             }, {
-              "$ref" : "#/components/schemas/OA2AuthorizationCodeSecret"
-            }, {
-              "$ref" : "#/components/schemas/SimpleSecret"
+              "$ref": "#/components/schemas/OA2AuthorizationCodeSecret"
             } ]
           },
           "owners" : {
@@ -970,6 +1001,19 @@
           "headerName": {
             "type": "string"
           }
+        }
+      },
+      "SessionSecret": {
+        "required": ["authClientId"],
+        "type": "object",
+        "properties": {
+          "authClientId": {
+            "type": "string"
+          },
+          "accessToken": {
+            "type": "string"
+          },
+          "inputFields": {}
         }
       },
       "OA1TwoLeggedSecret": {
