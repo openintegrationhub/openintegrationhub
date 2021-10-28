@@ -724,10 +724,10 @@
       },
       "OA1TwoLeggedClient" : {
         "allOf" : [{
-          "required" : [ "createdAt", "id" ],
+          "required" : [ "createdAt", "_id" ],
           "type" : "object",
           "properties" : {
-            "id" : {
+            "_id" : {
               "type" : "string"
             },
             "createdAt" : {
@@ -749,10 +749,10 @@
         "allOf" : [ {
           "$ref" : "#/components/schemas/MutableOA1ThreeLeggedClient"
         }, {
-          "required" : [ "createdAt", "id" ],
+          "required" : [ "createdAt", "_id" ],
           "type" : "object",
           "properties" : {
-            "id" : {
+            "_id" : {
               "type" : "string"
             },
             "createdAt" : {
@@ -772,10 +772,10 @@
         "allOf" : [ {
           "$ref" : "#/components/schemas/MutableOA2AuthorizationCodeClient"
         }, {
-          "required" : [ "createdAt", "id" ],
+          "required" : [ "createdAt", "_id" ],
           "type" : "object",
           "properties" : {
-            "id" : {
+            "_id" : {
               "type" : "string",
               "example": ""
             },
@@ -796,10 +796,10 @@
         "allOf": [ {
           "$ref": "#/components/schemas/MutableSessionAuthClient"
         }, {
-          "required" : [ "createdAt", "id" ],
+          "required" : [ "createdAt", "_id" ],
           "type" : "object",
           "properties" : {
-            "id" : {
+            "_id" : {
               "type" : "string"
             },
             "createdAt" : {
@@ -956,10 +956,10 @@
         "allOf" : [ {
           "$ref" : "#/components/schemas/MutableSecret"
         }, {
-          "required" : [ "createdAt", "id" ],
+          "required" : [ "createdAt", "_id" ],
           "type" : "object",
           "properties" : {
-            "id" : {
+            "_id" : {
               "type" : "string"
             },
             "createdAt" : {
