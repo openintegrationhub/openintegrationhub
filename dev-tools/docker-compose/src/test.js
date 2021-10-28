@@ -25,6 +25,8 @@ const testEnvs = Object.entries({
   return `${a} ${b[0]}=${b[1]}`
 })
 
+const prepareFullTest = () => `docker pull ${nodeImage}`
+
 const testCommand = (workspace, args) =>
   `docker run \
   --name oih-testing \
@@ -55,6 +57,12 @@ if (process.argv[2]) {
   })
   process.exit(0)
 }
+
+// prepare testing
+
+execSync(prepareFullTest(), {
+  stdio: 'inherit',
+})
 
 // test libs
 Object.entries(libs).forEach((entry) => {
