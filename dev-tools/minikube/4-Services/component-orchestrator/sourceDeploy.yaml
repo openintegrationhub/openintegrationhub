@@ -23,7 +23,7 @@ spec:
         - name: component-orchestrator
           image: node:16-alpine #openintegrationhub/iam:latest #
           command: ["/bin/sh"]
-          args: ["-c", "npm install --non-interactive && npm start:container"]
+          args: ["-c", "npm run start:container -w services/component-orchestrator"]
           workingDir: /usr/src/app/
           env:
             - name: COMPONENT_REPOSITORY_BASE_URL
@@ -62,7 +62,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/component-orchestrator
               #readOnly: true
           livenessProbe:
             httpGet:

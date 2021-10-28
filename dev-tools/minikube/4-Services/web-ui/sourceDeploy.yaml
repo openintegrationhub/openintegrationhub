@@ -17,7 +17,7 @@ spec:
         - name: web-ui
           image: node:16-alpine #openintegrationhub/iam:latest #
           command: ["/bin/sh"]
-          args: ["-c", "npm install --non-interactive && npm start:container"]
+          args: ["-c", "npm run start:container -w services/web-ui"]
           workingDir: /usr/src/app/
           ports:
             - containerPort: 3000
@@ -49,7 +49,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/web-ui
           livenessProbe:
             httpGet:
               port: 3000

@@ -65,7 +65,7 @@ clear_minikube="false"
 
 # script cache and settings
 os=""
-cluster_ip=""
+cluster_ip="" 
 admin_token=""
 
 tenant_1_id=""
@@ -372,6 +372,15 @@ function deployServices {
         then
             kubectl apply -f "$dir/service.yaml"
         fi
+    done
+}
+
+function sourceInstall {
+    rootdir="$(dirname $(dirname $(pwd)))" 
+    for service in "${from_source[@]}"
+    do
+        colorEcho 34 "Installing deps for $service"
+        npm install --prefix $rootdir -w "services/$service" 
     done
 }
 
@@ -861,11 +870,11 @@ fi
 #minikube addons enable ingress
 minikube addons enable dashboard
 minikube addons enable metrics-server
-if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.47.0/deploy/static/provider/cloud/deploy.yaml
-else
+#if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
+#    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/cloud/deploy.yaml
+#else
     minikube addons enable ingress
-fi
+#fi
 
 # remove oih resources
 kubectl -n oih-dev-ns delete pods,services,deployments --all
@@ -903,6 +912,9 @@ kubectl apply -f ./1.2-CodeClaim
 waitForPodStatus mongodb.*1/1
 waitForPodStatus rabbitmq.*1/1
 waitForPodStatus redis.*1/1
+
+###run npm install on any local code services
+sourceInstall
 
 ###
 ### 5. deploy IAM

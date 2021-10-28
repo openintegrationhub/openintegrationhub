@@ -17,7 +17,7 @@ spec:
         - name: app-directory
           image: node:16-alpine
           command: ["/bin/sh"]
-          args: ["-c", "npm install --non-interactive && npm start:container"]
+          args: ["-c", "npm run start:container -w services/app-directory"]
           workingDir: /usr/src/app/
           ports:
             - containerPort: 3000
@@ -51,8 +51,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/app-directory
-              #readOnly: true
             - name: RABBITMQ_URI
               value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
           livenessProbe:

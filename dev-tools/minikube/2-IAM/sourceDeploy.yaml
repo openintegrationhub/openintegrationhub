@@ -17,7 +17,7 @@ spec:
         - name: iam
           image: node:16-alpine #openintegrationhub/iam:latest #
           command: ["/bin/sh"]
-          args: ["-c", "npm install --non-interactive && npm start:container"]
+          args: ["-c", "npm run start:container -w services/iam"]
           workingDir: /usr/src/app/
           ports:
             - containerPort: 3099
@@ -79,8 +79,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/iam
-              #readOnly: true
           livenessProbe:
             httpGet:
               port: 3099

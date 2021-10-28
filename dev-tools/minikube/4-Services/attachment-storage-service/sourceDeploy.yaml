@@ -22,7 +22,7 @@ spec:
         - name: attachment-storage-service
           image: node:16-alpine #openintegrationhub/iam:latest #
           command: ["/bin/sh"]
-          args: ["-c", "npm install --non-interactive && npm start:container"]
+          args: ["-c", "npm run start:container -w services/attachment-storage-service"]
           workingDir: /usr/src/app/
           env:
             - name: REDIS_CONFIG
@@ -44,7 +44,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/attachment-storage-service
           livenessProbe:
             httpGet:
               port: 3002
