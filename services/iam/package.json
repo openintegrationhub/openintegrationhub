@@ -1,11 +1,11 @@
 {
   "name": "iam",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Identity and Access Management Service",
   "main": "index.js",
   "scripts": {
     "watch": "npm run watch-scss & nodemon src/index.js --watch ./src",
-    "start:container": "npm watch-scss & nodemon -L src/index.js --watch ./src",
+    "start:container": "npm run watch-scss & nodemon -L src/index.js --watch ./src",
     "watch-scss": "npm run build --watch",
     "watch-test": "jest --watch --runInBand",
     "start": "node src/index.js",

@@ -380,7 +380,7 @@ function sourceInstall {
     for service in "${from_source[@]}"
     do
         colorEcho 34 "Installing deps for $service"
-        npm ci --prefix $rootdir -w "services/$service" 
+        npm install --prefix $rootdir -w "services/$service" 
     done
 }
 

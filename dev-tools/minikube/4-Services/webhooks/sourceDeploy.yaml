@@ -23,7 +23,7 @@ spec:
         - name: webhooks
           image: node:16-alpine
           command: ["/bin/sh"]
-          args: ["-c", "npm config set fetch-timeout 9000000 && npm config set fetch-retry-maxtimeout 9000000 && npm run start:container -w services/webhooks"]
+          args: ["-c", "npm run start:container -w services/webhooks"]
           #npm ci --verbose --non-interactive -w services/webhooks &&
           workingDir: /usr/src/app/
           env:

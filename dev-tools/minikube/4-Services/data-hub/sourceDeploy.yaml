@@ -22,7 +22,7 @@ spec:
         - name: data-hub
           image: node:16-alpine
           command: ["/bin/sh"]
-          args: ["-c", "npm install --non-interactive && npm start:container"]
+          args: ["-c", "npm run start:container -w services/data-hub"]
           workingDir: /usr/src/app/
           env:
             - name: MONGODB_URI
@@ -44,7 +44,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/data-hub
           livenessProbe:
             httpGet:
               port: 1234
