@@ -97,7 +97,12 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/AuthClient"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AuthClient"
+                    }
+                  }
                 }
               }
             }
@@ -349,7 +354,12 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Secret"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Secret"
+                    }
+                  }
                 }
               }
             }
@@ -390,7 +400,12 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Secret"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Secret"
+                    }
+                  }
                 }
               }
             }
