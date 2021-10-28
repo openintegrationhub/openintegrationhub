@@ -74,6 +74,7 @@ const flowTemplate = new Schema({
   owners: { type: [owner] },
   status: { type: String, default: 'draft' },
   cron: { type: String, maxlength: 20 },
+  flowSettings: {},
 }, { collection: 'flowTemplates', timestamps: true });
 
 module.exports.flowTemplate = flowTemplate;
