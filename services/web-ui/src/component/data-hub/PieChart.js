@@ -5,7 +5,6 @@ import Container from '@material-ui/core/Container';
 
 import { /* Bar, */ Doughnut } from 'react-chartjs-2';
 
-
 const useStyles = {
 
     formControl: {
@@ -27,7 +26,6 @@ class PieChart extends React.Component {
         };
     }
 
-
     render() {
         const {
             classes,
@@ -44,10 +42,7 @@ class PieChart extends React.Component {
                         }],
                     }}
                     options= {{
-                        plugins: {
-
-
-                        },
+                        plugins: {},
                     }}
                     />
                 </div>

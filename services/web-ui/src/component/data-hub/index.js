@@ -138,11 +138,11 @@ class DataHub extends React.Component {
                     </Grid>
 
                 </Grid>
-                {dataJSON.data.filter(item => (!this.state.filterDuplicates && !this.state.filterScore && !(this.state.filterDateFrom) && !(this.state.filterDateTo))
+                {dataJSON.data.filter((item) => (!this.state.filterDuplicates && !this.state.filterScore && !(this.state.filterDateFrom) && !(this.state.filterDateTo))
                 || (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0)
                 || (this.state.filterScore && item.enrichmentResults.score)
                 || (new Date(this.state.filterDateFrom) < new Date(item.createdAt) && ((new Date(this.state.filterDateTo) > new Date(item.createdAt)))))
-                    .map(el => <div key={el.id}>
+                    .map((el) => <div key={el.id}>
                         <Accordion style={{ marginTop: 10 }}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
@@ -155,8 +155,8 @@ class DataHub extends React.Component {
                                 <p>ID: {el.id}</p>
                                 <p>Enrichments results:</p>
                                 <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/>
-                                <p>Duplications: {el.enrichmentResults.knownDuplicates.map(duplicate => <li key={duplicate}>{duplicate}</li>)}</p>
-                                <p>Tags: {el.enrichmentResults.tags.map(tag => <li key={tag}>{tag}</li>)}</p>
+                                <p>Duplications: {el.enrichmentResults.knownDuplicates.map((duplicate) => <li key={duplicate}>{duplicate}</li>)}</p>
+                                <p>Tags: {el.enrichmentResults.tags.map((tag) => <li key={tag}>{tag}</li>)}</p>
                                 <p>Created: {el.createdAt}</p>
                             </AccordionDetails>
                         </Accordion>
