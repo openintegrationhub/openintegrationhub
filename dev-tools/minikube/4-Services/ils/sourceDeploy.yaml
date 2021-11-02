@@ -17,7 +17,7 @@ spec:
         - name: ils
           image: node:16-alpine
           command: ["/bin/sh"]
-          args: ["-c", "npm install --non-interactive && npm start:container"]
+          args: ["-c", "npm run start:container -w services/ils"]
           workingDir: /usr/src/app/
           ports:
             - containerPort: 3003
@@ -38,7 +38,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/ils
           livenessProbe:
             httpGet:
               port: 3003

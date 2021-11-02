@@ -20,7 +20,7 @@ spec:
           args:
             [
               "-c",
-              "apk update && apk add --no-cache python && npm install --network-timeout 9000000 --verbose --non-interactive && npm start:container",
+              "npm run start:container -w services/secret-service",
             ]
           workingDir: /usr/src/app
           ports:
@@ -71,18 +71,18 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/secret-service
+              #subPath: services/secret-service
           livenessProbe:
             httpGet:
               port: 3000
               path: /healthcheck
-            initialDelaySeconds: 2400
+            initialDelaySeconds: 120
             timeoutSeconds: 1
           readinessProbe:
             httpGet:
               port: 3000
               path: /healthcheck
-            initialDelaySeconds: 2400
+            initialDelaySeconds: 120
             timeoutSeconds: 1
           imagePullPolicy: IfNotPresent
       volumes:

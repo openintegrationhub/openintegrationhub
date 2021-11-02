@@ -22,7 +22,7 @@ spec:
         - name: scheduler
           image: node:16-alpine
           command: ["/bin/sh"]
-          args: ["-c", "npm install --non-interactive && npm start:container"]
+          args: ["-c", "npm run start:container -w services/scheduler"]
           workingDir: /usr/src/app/
           env:
             - name: LOG_LEVEL
@@ -44,7 +44,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/scheduler
           livenessProbe:
             httpGet:
               port: 1234

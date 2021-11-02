@@ -22,7 +22,7 @@ spec:
           args:
             [
               "-c",
-              "apk update && apk add --no-cache python && npm install --network-timeout 9000000 --verbose --non-interactive && npm start:container",
+              "npm run start:container -w services/template-repository"
             ]
           ports:
             - containerPort: 3001
@@ -56,7 +56,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/template-repository
           livenessProbe:
             httpGet:
               path: /healthcheck
