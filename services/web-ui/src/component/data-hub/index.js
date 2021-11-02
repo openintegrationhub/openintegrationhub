@@ -1,5 +1,5 @@
 import React from 'react';
-import DateFnsUtils from '@date-io/date-fns'; // choose your lib
+import DateFnsUtils from '@date-io/moment'; // choose your lib
 import {
     DateTimePicker,
     MuiPickersUtilsProvider,
@@ -58,18 +58,17 @@ class DataHub extends React.Component {
     }
 
     handleDateFrom = (date) => {
-        this.setState({ filterDateFrom: date });
+        this.setState({ filterDateFrom: date._d });
     };
 
     handleDateTo = (date) => {
-        this.setState({ filterDateTo: date });
+        this.setState({ filterDateTo: date._d });
     };
 
     render() {
         const {
             classes,
         } = this.props;
-
         switch (this.state.sortBy) {
         case 'duplicatesDesc':
             dataJSON.data.sort((a, b) => b.enrichmentResults.knownDuplicates.length - a.enrichmentResults.knownDuplicates.length);
@@ -87,7 +86,6 @@ class DataHub extends React.Component {
             break;
         }
 
-        console.log(dataJSON);
         return (
             <Container className={classes.container}>
                 <div>
