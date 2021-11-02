@@ -10,12 +10,18 @@
         "out": {}
       }
     },
-    "processStep": {
+    "exec": {
       "title": "Execute a predefined logic for a step",
       "main": "./lib/actions/exec.js"
     }
   },
   "triggers": {
+    "reboundTrigger": {
+      "title": "Rebound trigger",
+      "description": "Sends a message to rebound",
+      "type": "foo",
+      "main": "./lib/triggers/reboundTrigger.js"
+    },
     "testTrigger": {
       "title": "Development Test Trigger",
       "description": "Returns a simple minimal object, logging the process",

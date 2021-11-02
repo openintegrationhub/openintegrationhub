@@ -34,7 +34,7 @@ export default function withSideSheet(Component) {
             this.setState({ [this.props.side]: open });
         };
 
-        toggleDrawerEventHandler = open => (event) => {
+        toggleDrawerEventHandler = (open) => (event) => {
             if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
                 return;
             }

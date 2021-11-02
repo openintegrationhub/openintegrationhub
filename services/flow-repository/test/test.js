@@ -10,7 +10,7 @@ process.env.MONGODB_URL = global.__MONGO_URI__;
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3001;
 const request = require('supertest')(`${hostUrl}:${port}`);
-const iamMock = require('./utils/iamMock.js');
+const iamMock = require('./utils/iamMock');
 const token = require('./utils/tokens');
 const { getOrphanedFlows } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
@@ -567,9 +567,8 @@ describe('Flow Operations', () => {
       .get('/flows/')
       .set('Authorization', 'Bearer guestToken');
 
-    expect(res.status).toEqual(404);
-    expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No flows found');
+    expect(res.status).toEqual(200);
+    expect(res.body.data).toHaveLength(0);
   });
 
   test('should not show the flow to another users get', async () => {
@@ -861,7 +860,7 @@ describe('Flow Operations', () => {
 
     const flow = await Flow.findOne({ _id: flowId1 }).lean();
     expect(flow.owners).toHaveLength(1);
-    expect(flow.owners.find(owner => (owner.id === 'dude'))).toEqual(undefined);
+    expect(flow.owners.find((owner) => (owner.id === 'dude'))).toEqual(undefined);
   });
 
   test('should return 400 when attempting to update an invalid id', async () => {

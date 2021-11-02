@@ -14,60 +14,59 @@ spec:
         app: audit-log
     spec:
       containers:
-      - name: audit-log
-        image: node:12-alpine
-        command: ["/bin/sh"]
-        args: ["-c", "yarn install --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/
-        ports:
-        - containerPort: 3007
-        env:
-        - name: MONGODB_URL
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: "auditLogMongourl"
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: "iamtoken"
-        - name: "INTROSPECT_TYPE"
-          value: "basic"
-        - name: "INTROSPECT_ENDPOINT_BASIC"
-          value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
-        - name: "QUEUE_URL"
-          value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
-        - name: "EXCHANGE_NAME"
-          value: "audit-logs"
-        - name: "EXCHANGE_TOPIC"
-          value: "logs"
-        - name: NODE_ENV
-          value: development
-        - name: LOG_LEVEL
-          value: info
-        resources:
-          limits:
-            cpu: "0.1"
-            memory: 1000Mi
-        volumeMounts:
-        - name: code
-          mountPath: /usr/src/app
-          subPath: services/audit-log
-        livenessProbe:
-          httpGet:
-            port: 3007
-            path: /healthcheck
-          initialDelaySeconds: 300
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            port: 3007
-            path: /healthcheck
-          initialDelaySeconds: 120
-          timeoutSeconds: 1
-        imagePullPolicy: IfNotPresent
+        - name: audit-log
+          image: node:16-alpine
+          command: ["/bin/sh"]
+          args: ["-c", "npm run start:container -w services/audit-log"]
+          workingDir: /usr/src/app/
+          ports:
+            - containerPort: 3007
+          env:
+            - name: MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: "auditLogMongourl"
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: "iamtoken"
+            - name: "INTROSPECT_TYPE"
+              value: "basic"
+            - name: "INTROSPECT_ENDPOINT_BASIC"
+              value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+            - name: "QUEUE_URL"
+              value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+            - name: "EXCHANGE_NAME"
+              value: "audit-logs"
+            - name: "EXCHANGE_TOPIC"
+              value: "logs"
+            - name: NODE_ENV
+              value: development
+            - name: LOG_LEVEL
+              value: info
+          resources:
+            limits:
+              cpu: "0.1"
+              memory: 1000Mi
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+          livenessProbe:
+            httpGet:
+              port: 3007
+              path: /healthcheck
+            initialDelaySeconds: 300
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              port: 3007
+              path: /healthcheck
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+          imagePullPolicy: IfNotPresent
       volumes:
-      - name: code
-        persistentVolumeClaim:
-          claimName: source-volume-claim
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim

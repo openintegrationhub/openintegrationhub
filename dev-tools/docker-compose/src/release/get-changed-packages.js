@@ -39,12 +39,24 @@ function getDependentPackages(available = {}, changedLib = '', type = '') {
   return dependent
 }
 
-function bumpMinor(available = {}, pkg = '', shouldPerformBump = false) {
+function bumpMinor(
+  available = {},
+  pkg = '',
+  shouldPerformBump = false,
+  bumpType = 'minor'
+) {
   const found = available.find((p) => p.name === pkg)
   if (found) {
-    const [major, minor] = found.version.split('.').map((v) => parseInt(v, 10))
+    const [major, minor, patch] = found.version
+      .split('.')
+      .map((v) => parseInt(v, 10))
 
-    const newVersion = `${major}.${minor + 1}.${0}`
+    let newVersion = ''
+    if (bumpType === 'minor') {
+      newVersion = `${major}.${minor + 1}.${0}`
+    } else {
+      newVersion = `${major}.${minor}.${patch + 1}`
+    }
 
     console.log(
       `${found.path.match(/(service|lib).+/)[0]}: ${
@@ -67,8 +79,9 @@ function bumpMinor(available = {}, pkg = '', shouldPerformBump = false) {
 checkTools(['git'])
 
 async function run() {
-  const tag = process.argv[2]
+  const diffTarget = process.argv[2]
   const shouldPerformBump = !!(process.argv[3] && process.argv[3] === 'bump')
+  const bumpType = process.argv[4] || 'minor'
 
   const available = {
     services: getAvailablePackages('services'),
@@ -95,10 +108,11 @@ async function run() {
     lib: [],
   }
 
-  if (!tag) throw new Error('Please provide a tag')
+  if (!diffTarget)
+    throw new Error('Please provide a target for diff (tag, commit, etc.)')
 
   const result = execSync(
-    `git diff tags/${tag} --name-only | grep -E -i -w '^services|^lib' || true`
+    `git diff ${diffTarget} --name-only | grep -E -i -w '^services|^lib' || true`
   ).toString()
 
   // create list of services / lib
@@ -130,9 +144,11 @@ async function run() {
   console.log('lib', total.lib.length, total.lib)
   console.log('services', total.services.length, total.services)
 
-  total.lib.forEach((lib) => bumpMinor(available.lib, lib, shouldPerformBump))
+  total.lib.forEach((lib) =>
+    bumpMinor(available.lib, lib, shouldPerformBump, bumpType)
+  )
   total.services.forEach((service) =>
-    bumpMinor(available.services, service, shouldPerformBump)
+    bumpMinor(available.services, service, shouldPerformBump, bumpType)
   )
 }
 

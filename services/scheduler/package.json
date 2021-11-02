@@ -2,7 +2,7 @@
   "name": "scheduler",
   "description": "Scheduler",
   "private": true,
-  "version": "0.1.5",
+  "version": "0.2.0",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"
@@ -15,7 +15,7 @@
     "start:dev": "LOG_LEVEL=trace NODE_ENV=development npm start | bunyan",
     "start:nodemon": "NODE_ENV=development nodemon -r dotenv/config index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/scheduler/src | bunyan",
     "start:container": "nodemon -r dotenv/config index.js --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/scheduler/src | bunyan",
-    "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
+    "start:nodemon:minikube": ". ../../minikube/.env && npm start:nodemon",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/scheduler:${VERSION} -f Dockerfile ../../"
   },
@@ -30,11 +30,11 @@
     "uuid": "3.3.2"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "eslint": "4.18.2",
-    "eslint-plugin-mocha": "4.12.1",
-    "eslint-plugin-node": "6.0.1",
-    "mocha": "^6.0.0",
+    "chai": "4.2.0",
+    "eslint": "7.32.0",
+    "eslint-plugin-mocha": "9.0.0",
+    "eslint-plugin-node": "11.1.0",
+    "mocha": "9.1.1",
     "nodemon": "^2.0.4",
     "sinon": "^7.2.4",
     "sinon-chai": "^3.3.0"

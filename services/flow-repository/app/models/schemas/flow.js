@@ -62,10 +62,18 @@ const flow = new Schema({
   description: { type: String, maxlength: 100 },
   graph: { type: graph, required: [true, 'Flows require a graph.'] },
   type: { type: String, maxlength: 30 },
+  tenant: String,
   owners: { type: [owner] },
   status: { type: String, default: 'inactive' },
   cron: { type: String, maxlength: 20 },
   fromTemplate: { type: mongoose.Types.ObjectId, ref: 'FlowTemplate' },
+  flowSettings: {
+    /* webhooks: {
+      hmacAuthSecret: Schema.Types.ObjectId,
+      requireWebhookAuth: Boolean,
+      hmacHeaderKey: String,
+    }, */
+  },
 }, { collection: 'flows', timestamps: true });
 
 module.exports.flow = flow;

@@ -1,4 +1,7 @@
 {
   "LISTEN_PORT": 1234,
-  "PAYLOAD_SIZE_LIMIT": "10mb"
+  "PAYLOAD_SIZE_LIMIT": "10mb",
+  "IAM_TOKEN": "abc123e",
+  "IAM_BASE_URL": "http://iam.openintegrationhub.com",
+  "SECRET_SERVICE_URL":"http://skm.openintegrationhub.com"
 }

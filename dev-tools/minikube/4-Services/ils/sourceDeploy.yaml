@@ -14,45 +14,44 @@ spec:
         app: ils
     spec:
       containers:
-      - name: ils
-        image: node:12-alpine
-        command: ["/bin/sh"]
-        args: ["-c", "yarn install --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/
-        ports:
-        - containerPort: 3003
-        env:
-        - name: MONGODB_URL
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: "ilsMongourl"
-        - name: NODE_ENV
-          value: development
-        - name: LOG_LEVEL
-          value: info
-        resources:
-          limits:
-            cpu: "0.1"
-            memory: 200Mi
-        volumeMounts:
-        - name: code
-          mountPath: /usr/src/app
-          subPath: services/ils
-        livenessProbe:
-          httpGet:
-            port: 3003
-            path: /healthcheck
-          initialDelaySeconds: 300
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            port: 3003
-            path: /healthcheck
-          initialDelaySeconds: 120
-          timeoutSeconds: 1
-        imagePullPolicy: IfNotPresent
+        - name: ils
+          image: node:16-alpine
+          command: ["/bin/sh"]
+          args: ["-c", "npm run start:container -w services/ils"]
+          workingDir: /usr/src/app/
+          ports:
+            - containerPort: 3003
+          env:
+            - name: MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: "ilsMongourl"
+            - name: NODE_ENV
+              value: development
+            - name: LOG_LEVEL
+              value: info
+          resources:
+            limits:
+              cpu: "0.1"
+              memory: 200Mi
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+          livenessProbe:
+            httpGet:
+              port: 3003
+              path: /healthcheck
+            initialDelaySeconds: 300
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              port: 3003
+              path: /healthcheck
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+          imagePullPolicy: IfNotPresent
       volumes:
-      - name: code
-        persistentVolumeClaim:
-          claimName: source-volume-claim
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim

@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/scheduler",
   "description": "Scheduler framework",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"
@@ -16,10 +16,10 @@
   },
   "devDependencies": {
     "chai": "4.2.0",
-    "eslint": "4.18.2",
-    "eslint-plugin-mocha": "4.12.1",
+    "eslint": "7.32.0",
+    "eslint-plugin-mocha": "9.0.0",
     "eslint-plugin-node": "6.0.1",
-    "mocha": "5.2.0",
+    "mocha": "9.1.1",
     "sinon": "7.1.1"
   },
   "main": "src/index.js"

@@ -47,7 +47,7 @@ class LshIndex {
     }
 
     public getHashBands(minhash: Minhash): string[] {
-        if (minhash.hashBands) return minhash.hashBands
+        if (minhash.hashBands && minhash.hashBands.length !== 0) return minhash.hashBands
         minhash.hashBands = []
         for (let i = 0; i < minhash.hashValues.length / this.bandSize; i++) {
             const start = i * this.bandSize

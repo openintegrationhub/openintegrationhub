@@ -14,65 +14,64 @@ spec:
         app: dispatcher-service
     spec:
       containers:
-      - name: dispatcher-service
-        image: node:12-alpine
-        command: ["/bin/sh"]
-        args: ["-c", "yarn install --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/
-        ports:
-        - containerPort: 3013
-        env:
-        - name: MONGODB_URL
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: "dispatcherMongoUrl"
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: "iamtoken"
-        - name: "INTROSPECT_TYPE"
-          value: "basic"
-        - name: "INTROSPECT_ENDPOINT_BASIC"
-          value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
-        - name: "QUEUE_URL"
-          value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
-        - name: "FLOWREPO_URL"
-          value: "http://flow-repository.oih-dev-ns.svc.cluster.local:3001"
-        - name: FLOW_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: "iamtoken"
-        - name: "SDF_ID"
-          value: "ReplaceMe"
-        - name: NODE_ENV
-          value: development
-        - name: LOG_LEVEL
-          value: info
-        resources:
-          limits:
-            cpu: "0.1"
-            memory: 1000Mi
-        volumeMounts:
-        - name: code
-          mountPath: /usr/src/app
-          subPath: services/dispatcher-service
-        livenessProbe:
-          httpGet:
-            port: 3013
-            path: /healthcheck
-          initialDelaySeconds: 300
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            port: 3013
-            path: /healthcheck
-          initialDelaySeconds: 120
-          timeoutSeconds: 1
-        imagePullPolicy: IfNotPresent
+        - name: dispatcher-service
+          image: node:16-alpine
+          command: ["/bin/sh"]
+          args: ["-c", "npm run start:container -w services/dispatcher-service"]
+          workingDir: /usr/src/app/
+          ports:
+            - containerPort: 3013
+          env:
+            - name: MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: "dispatcherMongoUrl"
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: "iamtoken"
+            - name: "INTROSPECT_TYPE"
+              value: "basic"
+            - name: "INTROSPECT_ENDPOINT_BASIC"
+              value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+            - name: "QUEUE_URL"
+              value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+            - name: "FLOWREPO_URL"
+              value: "http://flow-repository.oih-dev-ns.svc.cluster.local:3001"
+            - name: FLOW_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: "iamtoken"
+            - name: "SDF_ID"
+              value: "ReplaceMe"
+            - name: NODE_ENV
+              value: development
+            - name: LOG_LEVEL
+              value: info
+          resources:
+            limits:
+              cpu: "0.1"
+              memory: 1000Mi
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+          livenessProbe:
+            httpGet:
+              port: 3013
+              path: /healthcheck
+            initialDelaySeconds: 300
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              port: 3013
+              path: /healthcheck
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+          imagePullPolicy: IfNotPresent
       volumes:
-      - name: code
-        persistentVolumeClaim:
-          claimName: source-volume-claim
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim

@@ -1,4 +1,4 @@
-const { ERROR_CODES } = require('./');
+const { ERROR_CODES } = require('.');
 
 module.exports = {
     [ERROR_CODES.USER_NOT_FOUND]: ERROR_CODES.USER_NOT_FOUND,

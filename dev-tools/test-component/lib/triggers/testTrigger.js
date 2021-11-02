@@ -32,18 +32,9 @@ const log = require('../logger')
 
 async function processTrigger() {
   try {
-    // log.info('processTrigger called!')
-    // log.info('Received msg:', msg)
-    // log.info('Received cfg:', cfg)
-    // log.info('Received snapshot:', snapshot)
-
     log.info('About to emit data')
 
     const message = {
-      metadata: {
-        testMeta: 'some meta',
-        foo: 'bar',
-      },
       data: {
         username: 'Bert Müller',
       },
@@ -51,6 +42,7 @@ async function processTrigger() {
 
     log.info('Created message:', message)
     this.emit('data', message)
+    this.emit('rebound', new Error('error -> rebound'))
 
     log.info('Finished emitting data')
 

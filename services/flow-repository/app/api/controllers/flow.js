@@ -117,10 +117,6 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
 
   const response = await storage.getFlows(req.user, pageSize, pageNumber, searchString, filters, sortField, sortOrder);
 
-  if (response.data.length === 0 && !res.headersSent) {
-    return res.status(404).send({ errors: [{ message: 'No flows found', code: 404 }] });
-  }
-
   response.meta.page = pageNumber;
   response.meta.perPage = pageSize;
   response.meta.totalPages = Math.ceil(response.meta.total / pageSize);
@@ -135,7 +131,7 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
   if (!newFlow.owners) {
     newFlow.owners = [];
   }
-  if (newFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+  if (newFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     newFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 
@@ -196,7 +192,7 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
   if (!updateFlow.owners) {
     updateFlow.owners = [];
   }
-  if (updateFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+  if (updateFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     updateFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 

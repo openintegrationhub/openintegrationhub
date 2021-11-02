@@ -19,49 +19,48 @@ spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       containers:
-      - name: attachment-storage-service
-        image: node:12-alpine #openintegrationhub/iam:latest #
-        command: ["/bin/sh"]
-        args: ["-c", "yarn install --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/
-        env:
-        - name: REDIS_CONFIG
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: REDIS_CONFIG
-        - name: PORT
-          value: "3002"
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: iamtoken
-        - name: LOG_LEVEL
-          value: trace
-        - name: NODE_ENV
-          value: development
-        volumeMounts:
-        - name: code
-          mountPath: /usr/src/app
-          subPath: services/attachment-storage-service
-        livenessProbe:
-          httpGet:
-            port: 3002
-            path: /healthcheck
-        readinessProbe:
-          httpGet:
-            port: 3002
-            path: /healthcheck
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        imagePullPolicy: IfNotPresent
-        securityContext:
-          privileged: false
+        - name: attachment-storage-service
+          image: node:16-alpine #openintegrationhub/iam:latest #
+          command: ["/bin/sh"]
+          args: ["-c", "npm run start:container -w services/attachment-storage-service"]
+          workingDir: /usr/src/app/
+          env:
+            - name: REDIS_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: REDIS_CONFIG
+            - name: PORT
+              value: "3002"
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: iamtoken
+            - name: LOG_LEVEL
+              value: trace
+            - name: NODE_ENV
+              value: development
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+          livenessProbe:
+            httpGet:
+              port: 3002
+              path: /healthcheck
+          readinessProbe:
+            httpGet:
+              port: 3002
+              path: /healthcheck
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
       volumes:
-      - name: code
-        persistentVolumeClaim:
-          claimName: source-volume-claim
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim
   strategy:
     type: RollingUpdate
     rollingUpdate:

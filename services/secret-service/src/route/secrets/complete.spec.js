@@ -21,10 +21,9 @@ describe('key adapter', () => {
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         conf.crypto.isDisabled = false;
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'complete'),
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'complete-encrypted'),
             port,
         });
-        console.log(`${global.__MONGO_URI__}-complete`);
         await server.start();
         iamMock.setup();
     });

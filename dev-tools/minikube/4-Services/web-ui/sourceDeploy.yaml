@@ -14,58 +14,57 @@ spec:
         app: web-ui
     spec:
       containers:
-      - name: web-ui
-        image: node:12-alpine #openintegrationhub/iam:latest #
-        command: ["/bin/sh"]
-        args: ["-c", "yarn install --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/
-        ports:
-        - containerPort: 3000
-        env:
-        - name: PORT
-          value: "3000"
-        - name: ENDPOINT_IAM
-          value: "http://iam.example.com"
-        - name: ENDPOINT_FLOW
-          value: "http://flow-repository.example.com"
-        - name: ENDPOINT_COMPONENT
-          value: "http://component-repository.example.com"
-        - name: ENDPOINT_SECRETS
-          value: "http://skm.example.com/api/v1"
-        - name: ENDPOINT_DISPATCHER
-          value: "http://dispatcher-service.example.com"
-        - name: ENDPOINT_METADATA
-          value: "http://metadata.example.com/api/v1"
-        - name: ENDPOINT_APP_DIRECTORY
-          value: "http://app-directory.example.com/api/v1"
-        - name: NODE_ENV
-          value: development
-        - name: LOG_LEVEL
-          value: debug
-        resources:
-          limits:
-            cpu: "0.1"
-            memory: 500Mi
-        volumeMounts:
-        - name: code
-          mountPath: /usr/src/app
-          subPath: services/web-ui
-        livenessProbe:
-          httpGet:
-            port: 3000
-            path: /healthcheck
-          initialDelaySeconds: 300
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            port: 3000
-            path: /healthcheck
-          initialDelaySeconds: 120
-          timeoutSeconds: 1
-        imagePullPolicy: IfNotPresent
+        - name: web-ui
+          image: node:16-alpine #openintegrationhub/iam:latest #
+          command: ["/bin/sh"]
+          args: ["-c", "npm run start:container -w services/web-ui"]
+          workingDir: /usr/src/app/
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: ENDPOINT_IAM
+              value: "http://iam.example.com"
+            - name: ENDPOINT_FLOW
+              value: "http://flow-repository.example.com"
+            - name: ENDPOINT_COMPONENT
+              value: "http://component-repository.example.com"
+            - name: ENDPOINT_SECRETS
+              value: "http://skm.example.com/api/v1"
+            - name: ENDPOINT_DISPATCHER
+              value: "http://dispatcher-service.example.com"
+            - name: ENDPOINT_METADATA
+              value: "http://metadata.example.com/api/v1"
+            - name: ENDPOINT_APP_DIRECTORY
+              value: "http://app-directory.example.com/api/v1"
+            - name: NODE_ENV
+              value: development
+            - name: LOG_LEVEL
+              value: debug
+          resources:
+            limits:
+              cpu: "0.1"
+              memory: 500Mi
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+          livenessProbe:
+            httpGet:
+              port: 3000
+              path: /healthcheck
+            initialDelaySeconds: 300
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /healthcheck
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+          imagePullPolicy: IfNotPresent
       volumes:
-      - name: code
-        persistentVolumeClaim:
-          claimName: source-volume-claim
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim
   minReadySeconds: 10
   revisionHistoryLimit: 2

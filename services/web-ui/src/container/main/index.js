@@ -242,7 +242,7 @@ class Main extends React.Component {
       }
       return <div>
           {
-              menuCopy.map(menuItem => <ListItem id={menuItem.id} button key={menuItem.label} onClick={() => { this.props.history.push(menuItem.path); }}>
+              menuCopy.map(menuItem => <ListItem button key={menuItem.label} onClick={() => { this.props.history.push(menuItem.path); }}>
                   <ListItemIcon>{menuItem.icon}</ListItemIcon>
                   <ListItemText primary={menuItem.label} />
               </ListItem>)

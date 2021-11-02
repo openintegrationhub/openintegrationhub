@@ -20,69 +20,68 @@ spec:
       terminationGracePeriodSeconds: 30
       serviceAccountName: component-orchestrator-account
       containers:
-      - name: component-orchestrator
-        image: node:12-alpine #openintegrationhub/iam:latest #
-        command: ["/bin/sh"]
-        args: ["-c", "yarn install --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/
-        env:
-        - name: COMPONENT_REPOSITORY_BASE_URL
-          value: "http://component-repository.oih-dev-ns.svc.cluster.local:1234"
-        - name: SECRETS_SERVICE_BASE_URL
-          value: "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1"
-        - name: "INTROSPECT_ENDPOINT_BASIC"
-          value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: iamtoken
-        - name: LISTEN_PORT
-          value: "1234"
-        - name: LOG_LEVEL
-          value: trace
-        - name: NODE_ENV
-          value: development
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: componentOrchestratorMongourl
-        - name: RABBITMQ_URI
-          value: >-
-            amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local
-        - name: RABBITMQ_URI_FLOWS
-          value: >-
-            amqp://rabbitmq-service.oih-dev-ns.svc.cluster.local
-        - name: RABBITMQ_MANAGEMENT_URI
-          value: >-
-            http://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:15672/
-        - name: SELF_URL
-          value: "http://api-service.oih-dev-ns.svc.cluster.local"
-        volumeMounts:
-        - name: code
-          mountPath: /usr/src/app
-          subPath: services/component-orchestrator
-          #readOnly: true
-        livenessProbe:
-          httpGet:
-            port: 1234
-            path: /healthcheck
-          initialDelaySeconds: 300
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            port: 1234
-            path: /healthcheck
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        imagePullPolicy: IfNotPresent
-        securityContext:
-          privileged: false
+        - name: component-orchestrator
+          image: node:16-alpine #openintegrationhub/iam:latest #
+          command: ["/bin/sh"]
+          args: ["-c", "npm run start:container -w services/component-orchestrator"]
+          workingDir: /usr/src/app/
+          env:
+            - name: COMPONENT_REPOSITORY_BASE_URL
+              value: "http://component-repository.oih-dev-ns.svc.cluster.local:1234"
+            - name: SECRETS_SERVICE_BASE_URL
+              value: "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1"
+            - name: "INTROSPECT_ENDPOINT_BASIC"
+              value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: iamtoken
+            - name: LISTEN_PORT
+              value: "1234"
+            - name: LOG_LEVEL
+              value: trace
+            - name: NODE_ENV
+              value: development
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: componentOrchestratorMongourl
+            - name: RABBITMQ_URI
+              value: >-
+                amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local
+            - name: RABBITMQ_URI_FLOWS
+              value: >-
+                amqp://rabbitmq-service.oih-dev-ns.svc.cluster.local
+            - name: RABBITMQ_MANAGEMENT_URI
+              value: >-
+                http://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:15672/
+            - name: SELF_URL
+              value: "http://api-service.oih-dev-ns.svc.cluster.local"
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+              #readOnly: true
+          livenessProbe:
+            httpGet:
+              port: 1234
+              path: /healthcheck
+            initialDelaySeconds: 300
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              port: 1234
+              path: /healthcheck
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
       volumes:
-      - name: code
-        persistentVolumeClaim:
-          claimName: source-volume-claim
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim
   strategy:
     type: RollingUpdate
     rollingUpdate:

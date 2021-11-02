@@ -19,7 +19,6 @@ import SecretTeaser from './secret-teaser';
 import * as secretsActions from '../../action/secrets';
 import * as authClientsActions from '../../action/auth-clients';
 
-
 const useStyles = {
 
     wrapper: {
@@ -131,14 +130,13 @@ class Secrets extends React.Component {
                         </Grid>
                     </Grid>}
 
-
                 </Grid>
                 <Grid container justify="center" spacing={2}>
                     {
-                        this.props.secrets.secrets.length && this.props.secrets.secrets.map(item => <SecretTeaser
+                        this.props.secrets.secrets.length && this.props.secrets.secrets.map((item) => <SecretTeaser
                             key={`secretTeaser-${item._id}`}
                             data={item}
-                            provider={item.value && item.value.authClientId ? (this.props.authClients.available.find(client => client._id === item.value.authClientId) || {}) : {}}
+                            provider={item.value && item.value.authClientId ? (this.props.authClients.available.find((client) => client._id === item.value.authClientId) || {}) : {}}
                             deleteSecret={() => { this.props.deleteSecret(item._id); }}
                         />)
                     }
@@ -165,12 +163,12 @@ class Secrets extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     secrets: state.secrets,
     authClients: state.authClients,
     auth: state.auth,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     ...secretsActions,
     ...authClientsActions,
 }, dispatch);

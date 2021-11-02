@@ -198,7 +198,7 @@ rules:
         - ","
   wrap-regex: 0
 overrides:
-- files:
-  - "*.js"
-  rules:
-    prefer-destructuring: "off"
+  - files:
+      - "*.js"
+    rules:
+      prefer-destructuring: "off"

@@ -18,7 +18,7 @@ describe('session auth', () => {
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         conf.crypto.isDisabled = false;
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-session-auth`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'session-auth'),
             port,
         });
         await server.start();

@@ -14,58 +14,61 @@ spec:
         app: flow-repository
     spec:
       containers:
-      - name: flow-repository
-        image: node:12-alpine
-        command: ["/bin/sh"]
-        args: ["-c", "apk update && apk add --no-cache python && yarn install --network-timeout 9000000 --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/
-        ports:
-        - containerPort: 3001
-        env:
-        - name: MONGODB_URL
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: "flowRepoMongourl"
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: "iamtoken"
-        - name: QUEUE_URL
-          value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
-        - name: "INTROSPECT_TYPE"
-          value: "basic"
-        - name: "INTROSPECT_ENDPOINT_BASIC"
-          value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
-        - name: ORIGINWHITELIST
-          value: "example.com,http://web-ui.example.com,http://localhost:3000"
-        - name: NODE_ENV
-          value: development
-        - name: LOG_LEVEL
-          value: info
-        resources:
-          limits:
-            cpu: "0.1"
-            memory: 1000Mi
-        volumeMounts:
-        - name: code
-          mountPath: /usr/src/app
-          subPath: services/flow-repository
-        livenessProbe:
-          httpGet:
-            port: 3001
-            path: /healthcheck
-          initialDelaySeconds: 1200
-          timeoutSeconds: 1
-        readinessProbe:
-          httpGet:
-            port: 3001
-            path: /healthcheck
-          initialDelaySeconds: 240
-          timeoutSeconds: 1
-        imagePullPolicy: IfNotPresent
+        - name: flow-repository
+          image: node:16-alpine
+          command: ["/bin/sh"]
+          args:
+            [
+              "-c",
+              "npm run start:container -w services/flow-repository",
+            ]
+          workingDir: /usr/src/app/
+          ports:
+            - containerPort: 3001
+          env:
+            - name: MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: "flowRepoMongourl"
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: "iamtoken"
+            - name: QUEUE_URL
+              value: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+            - name: "INTROSPECT_TYPE"
+              value: "basic"
+            - name: "INTROSPECT_ENDPOINT_BASIC"
+              value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+            - name: ORIGINWHITELIST
+              value: "example.com,http://web-ui.example.com,http://localhost:3000"
+            - name: NODE_ENV
+              value: development
+            - name: LOG_LEVEL
+              value: info
+          resources:
+            limits:
+              cpu: "0.1"
+              memory: 1000Mi
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+          livenessProbe:
+            httpGet:
+              port: 3001
+              path: /healthcheck
+            initialDelaySeconds: 1200
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              port: 3001
+              path: /healthcheck
+            initialDelaySeconds: 240
+            timeoutSeconds: 1
+          imagePullPolicy: IfNotPresent
       volumes:
-      - name: code
-        persistentVolumeClaim:
-          claimName: source-volume-claim
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim

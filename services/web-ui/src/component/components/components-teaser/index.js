@@ -17,7 +17,6 @@ import {
     AddBox,
 } from '@material-ui/icons';
 
-
 import GlobalIcon from '@material-ui/icons/Language';
 
 // Componente
@@ -88,7 +87,6 @@ class ComponentTeaser extends React.PureComponent {
 
         );
     }
-
 
     getActions(data) {
         return (
@@ -191,7 +189,6 @@ class ComponentTeaser extends React.PureComponent {
                                 )
                             }
 
-
                             {
                                 this.props.data.descriptor && Object.prototype.hasOwnProperty.call(this.props.data.descriptor, 'actions')
                                 && (
@@ -260,10 +257,10 @@ class ComponentTeaser extends React.PureComponent {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     components: state.components,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     deleteComponent,
     updateComponent,
     startComponent,
