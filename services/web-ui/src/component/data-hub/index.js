@@ -1,9 +1,13 @@
 import React from 'react';
 import DateFnsUtils from '@date-io/moment'; // choose your lib
+import flow from 'lodash/flow';
 import {
     DateTimePicker,
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
+
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 // Ui
 import { withStyles } from '@material-ui/styles';
@@ -23,6 +27,11 @@ import { Grid } from '@material-ui/core';
 
 import PieChart from './PieChart';
 import dataJSON from './data.json';
+
+// actions
+import {
+    getDataObjects,
+} from '../../action/data-hub';
 
 const useStyles = {
 
@@ -47,6 +56,8 @@ class DataHub extends React.Component {
             filterDateTo: null,
             sortBy: '',
         };
+
+        props.getDataObjects();
     }
 
     handleFiltering = (event) => {
@@ -165,5 +176,17 @@ class DataHub extends React.Component {
     }
 }
 
-export default
-withStyles(useStyles)(DataHub);
+const mapStateToProps = (state) => ({
+    dataHub: state.dataHub,
+});
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+    getDataObjects,
+}, dispatch);
+
+export default flow(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    ),
+    withStyles(useStyles),
+)(DataHub);
