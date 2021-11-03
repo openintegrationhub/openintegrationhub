@@ -1,5 +1,6 @@
 import React from 'react';
 import DateFnsUtils from '@date-io/moment'; // choose your lib
+import flow from 'lodash/flow';
 import {
     DateTimePicker,
     MuiPickersUtilsProvider,
@@ -13,6 +14,9 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
@@ -33,6 +37,10 @@ import PieChart from './PieChart';
 import MultiAxisLineChart from './MultiAxisLineChart';
 
 import dataJSON from './data.json';
+// actions
+import {
+    getDataObjects,
+} from '../../action/data-hub';
 
 function TabPanel(props) {
     const {
@@ -86,6 +94,8 @@ class DataHub extends React.Component {
             sortBy: '',
             openTab: 0,
         };
+
+        props.getDataObjects();
     }
 
     handleChange = (event, newValue) => {
@@ -247,5 +257,17 @@ class DataHub extends React.Component {
     }
 }
 
-export default
-withStyles(useStyles)(DataHub);
+const mapStateToProps = (state) => ({
+    dataHub: state.dataHub,
+});
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+    getDataObjects,
+}, dispatch);
+
+export default flow(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    ),
+    withStyles(useStyles),
+)(DataHub);

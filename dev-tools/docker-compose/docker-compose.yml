@@ -250,6 +250,7 @@ services:
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
+      ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       PORT: ${DEV_DATA_HUB_PORT}
     ports:
     - ${DEV_DATA_HUB_EXTERNAL_PORT}:${DEV_DATA_HUB_PORT}
@@ -527,6 +528,8 @@ services:
       ENDPOINT_METADATA: http://localhost:${DEV_META_DATA_REPOSITORY_EXTERNAL_PORT}/api/v1
       ENDPOINT_APP_DIRECTORY: http://localhost:${DEV_APP_DIRECTORY_EXTERNAL_PORT}/api/v1
       ENDPOINT_WEBHOOKS: http://localhost:${DEV_WEBHOOKS_EXTERNAL_PORT}
+      ENDPOINT_DATA_HUB: http://localhost:${DEV_DATA_HUB_EXTERNAL_PORT}
+      ENDPOINT_RDS: http://localhost:${DEV_RDS_EXTERNAL_PORT}/api/v1
       PORT: ${DEV_WEB_UI_PORT}
     ports:
     - ${DEV_WEB_UI_EXTERNAL_PORT}:${DEV_WEB_UI_PORT}
