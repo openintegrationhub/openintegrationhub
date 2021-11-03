@@ -16,7 +16,8 @@
     "express": "4.17.0",
     "moment": "2.26.0",
     "react-chartjs-2": "^3.3.0",
-    "react-json-editor-ajrm": "^2.5.9"
+    "react-json-editor-ajrm": "^2.5.9",
+    "react-swipeable-views": "^0.14.0"
   },
   "scripts": {
     "start": "react-scripts start",
