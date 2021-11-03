@@ -5,6 +5,14 @@ import {
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 
+import PropTypes from 'prop-types';
+import SwipeableViews from 'react-swipeable-views';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import TextField from '@material-ui/core/TextField';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
@@ -22,7 +30,37 @@ import Select from '@material-ui/core/Select';
 import { Grid } from '@material-ui/core';
 
 import PieChart from './PieChart';
+import MultiAxisLineChart from './MultiAxisLineChart';
+
 import dataJSON from './data.json';
+
+function TabPanel(props) {
+    const {
+        children, value, index, ...other
+        } = props;
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`full-width-tabpanel-${index}`}
+        aria-labelledby={`full-width-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box p={3}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
+
+  TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+  };
 
 const useStyles = {
 
@@ -46,8 +84,17 @@ class DataHub extends React.Component {
             filterDateFrom: null,
             filterDateTo: null,
             sortBy: '',
+            openTab: 0,
         };
     }
+
+    handleChange = (event, newValue) => {
+        this.setState({ openTab: newValue });
+    };
+
+     handleChangeIndex = (index) => {
+        this.setState({ openTab: index });
+    };
 
     handleFiltering = (event) => {
         this.setState({ ...this.state, [event.target.name]: event.target.checked });
@@ -88,77 +135,112 @@ class DataHub extends React.Component {
 
         return (
             <Container className={classes.container}>
-                <div>
-                    <PieChart />
+
+                <div className={classes.root}>
+                    <AppBar position="static" color="default">
+                        <Tabs
+                        value={this.state.openTab}
+                        onChange={this.handleChange}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        variant="fullWidth"
+                        aria-label="full width tabs example"
+                        >
+                        <Tab label="RDS" />
+                        <Tab label="Data-Quality" />
+                        <Tab label="Search" />
+                        </Tabs>
+                    </AppBar>
+                    <SwipeableViews
+                        axis='x'
+                        index={this.state.openTab}
+                        onChangeIndex={this.handleChangeIndex}
+                    >
+                        {/** RDS */}
+                        <TabPanel value={this.state.openTab} index={0} dir='x'>
+                                <PieChart />
+                                <MultiAxisLineChart/>
+                        </TabPanel>
+                        {/** Data quality */}
+                        <TabPanel value={this.state.openTab} index={1} dir='x'>
+                            <Grid container>
+                                <Grid item md={10} style={{ background: '' }}>
+                                    <div style={{ display: 'flex', marginTop: '50px' }}>
+                                        <FormGroup row>
+                                            <FormControlLabel
+                                                control={<Switch checked={this.state.filterDuplicates} onChange={this.handleFiltering} name="filterDuplicates" />}
+                                                label="duplicates"
+                                            />
+                                            <FormControlLabel
+                                                control={<Switch checked={this.state.filterScore} onChange={this.handleFiltering} name="filterScore" />}
+                                                label="score"
+                                            />
+                                        </FormGroup>
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <span style={{ marginRight: '10px' }}>From</span>
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <DateTimePicker value={this.state.filterDateFrom} onChange={this.handleDateFrom} clearable/>
+                                            </MuiPickersUtilsProvider>
+                                            <span style={{ marginRight: '10px', marginLeft: '10px' }}>To</span>
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} clearable/>
+                                            </MuiPickersUtilsProvider></div>
+                                    </div>
+                                </Grid>
+                                <Grid item md={2} style={{ background: '', position: 'relative' }}>
+                                    <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                                        <FormControl className={classes.formControl}>
+                                            <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={this.state.sortBy}
+                                                onChange={this.handleSorting}
+                                            >
+                                                <MenuItem value='duplicatesDesc'>Duplicates descending</MenuItem>
+                                                <MenuItem value='duplicatesAsc'>Duplicates ascending</MenuItem>
+                                                <MenuItem value='scoreDesc'>Score descending</MenuItem>
+                                                <MenuItem value='scoreAsc'>Score ascending</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+                                </Grid>
+                            </Grid>
+                        {dataJSON.data.filter((item) => (!this.state.filterDuplicates && !this.state.filterScore && !(this.state.filterDateFrom) && !(this.state.filterDateTo))
+                        || (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0)
+                        || (this.state.filterScore && item.enrichmentResults.score)
+                        || (new Date(this.state.filterDateFrom) < new Date(item.createdAt) && ((new Date(this.state.filterDateTo) > new Date(item.createdAt)))))
+                            .map((el) => <div key={el.id}>
+                                <Accordion style={{ marginTop: 10 }}>
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel1a-content"
+                                        id="panel1a-header"
+                                    >
+                                        <p>{el.content.firstName} {el.content.lastName}</p> <p style={{ marginLeft: '20px' }}>Score: {el.enrichmentResults.score} </p>
+                                        <p style={{ marginLeft: '20px' }}> Duplicates: {el.enrichmentResults.knownDuplicates.length}</p>
+                                        <p style={{ marginLeft: '20px' }}>Date: {new Date(el.createdAt).toLocaleDateString('de-DE')}</p>
+                                    </AccordionSummary>
+                                    <AccordionDetails style={{ display: 'block' }}>
+                                        <p>ID: {el.id}</p>
+                                        <p>Enrichments results:</p>
+                                        <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/>
+                                        <p>Duplications: {el.enrichmentResults.knownDuplicates.map((duplicate) => <li key={duplicate}>{duplicate}</li>)}</p>
+                                        <p>Tags: {el.enrichmentResults.tags.map((tag) => <li key={tag}>{tag}</li>)}</p>
+                                        <p>Created: {el.createdAt}</p>
+                                    </AccordionDetails>
+                                </Accordion>
+                            </div>)}
+                        </TabPanel>
+                        {/** search query */}
+                        <TabPanel value={this.state.openTab} index={2} dir='x'>
+                        {/* <form className={classes.root} noValidate autoComplete="off"> */}
+                            <TextField id="outlined-basic" label="Search" variant="outlined" />
+                        {/* </form> */}
+                        </TabPanel>
+                    </SwipeableViews>
                 </div>
-                <Grid container>
-                    <Grid item md={10} style={{ background: '' }}>
-                        <div style={{ display: 'flex', marginTop: '50px' }}>
-                            <FormGroup row>
-                                <FormControlLabel
-                                    control={<Switch checked={this.state.filterDuplicates} onChange={this.handleFiltering} name="filterDuplicates" />}
-                                    label="duplicates"
-                                />
-                                <FormControlLabel
-                                    control={<Switch checked={this.state.filterScore} onChange={this.handleFiltering} name="filterScore" />}
-                                    label="score"
-                                />
-                            </FormGroup>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <span style={{ marginRight: '10px' }}>From</span>
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DateTimePicker value={this.state.filterDateFrom} onChange={this.handleDateFrom} clearable/>
-                                </MuiPickersUtilsProvider>
-                                <span style={{ marginRight: '10px', marginLeft: '10px' }}>To</span>
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} clearable/>
-                                </MuiPickersUtilsProvider></div>
-                        </div>
-                    </Grid>
-
-                    <Grid item md={2} style={{ background: '', position: 'relative' }}>
-                        <div style={{ position: 'absolute', right: 0, bottom: 0 }}>
-                            <FormControl className={classes.formControl}>
-                                <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={this.state.sortBy}
-                                    onChange={this.handleSorting}
-                                >
-                                    <MenuItem value='duplicatesDesc'>Duplicates descending</MenuItem>
-                                    <MenuItem value='duplicatesAsc'>Duplicates ascending</MenuItem>
-                                    <MenuItem value='scoreDesc'>Score descending</MenuItem>
-                                    <MenuItem value='scoreAsc'>Score ascending</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </div>
-                    </Grid>
-
-                </Grid>
-                {dataJSON.data.filter((item) => (!this.state.filterDuplicates && !this.state.filterScore && !(this.state.filterDateFrom) && !(this.state.filterDateTo))
-                || (this.state.filterDuplicates && item.enrichmentResults.knownDuplicates.length > 0)
-                || (this.state.filterScore && item.enrichmentResults.score)
-                || (new Date(this.state.filterDateFrom) < new Date(item.createdAt) && ((new Date(this.state.filterDateTo) > new Date(item.createdAt)))))
-                    .map((el) => <div key={el.id}>
-                        <Accordion style={{ marginTop: 10 }}>
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-controls="panel1a-content"
-                                id="panel1a-header"
-                            >
-                                <p>{el.content.firstName} {el.content.lastName}</p>
-                            </AccordionSummary>
-                            <AccordionDetails style={{ display: 'block' }}>
-                                <p>ID: {el.id}</p>
-                                <p>Enrichments results:</p>
-                                <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/>
-                                <p>Duplications: {el.enrichmentResults.knownDuplicates.map((duplicate) => <li key={duplicate}>{duplicate}</li>)}</p>
-                                <p>Tags: {el.enrichmentResults.tags.map((tag) => <li key={tag}>{tag}</li>)}</p>
-                                <p>Created: {el.createdAt}</p>
-                            </AccordionDetails>
-                        </Accordion>
-                    </div>)}
+                <Tab/>
 
             </Container>
         );
