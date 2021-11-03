@@ -31,6 +31,8 @@ import dataJSON from './data.json';
 // actions
 import {
     getDataObjects,
+    // plain
+    enrichData,
 } from '../../action/data-hub';
 
 const useStyles = {
@@ -58,6 +60,10 @@ class DataHub extends React.Component {
         };
 
         props.getDataObjects();
+    }
+
+    async componentDidMount() {
+        await enrichData();
     }
 
     handleFiltering = (event) => {
