@@ -1,9 +1,8 @@
 import React from 'react';
-// Ui
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
 
-import { /* Bar, */ Doughnut } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 
 const useStyles = {
 

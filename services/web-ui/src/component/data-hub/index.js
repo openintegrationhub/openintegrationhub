@@ -1,6 +1,5 @@
 import React from 'react';
 import flow from 'lodash/flow';
-
 import PropTypes from 'prop-types';
 import SwipeableViews from 'react-swipeable-views';
 import AppBar from '@material-ui/core/AppBar';
@@ -11,11 +10,8 @@ import Box from '@material-ui/core/Box';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Grid } from '@material-ui/core';
-// Ui
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
-// import PieChart from './PieChart';
-// import MultiAxisLineChart from './MultiAxisLineChart';
 import GroupedBar from './GroupedBarChart';
 import DataQuality from './DataQuality';
 import dataJSON from './data.json';
@@ -115,7 +111,6 @@ class DataHub extends React.Component {
 
         return (
             <Container className={classes.container}>
-
                 <div className={classes.root}>
                     <AppBar position="static" color="default">
                         <Tabs
@@ -136,7 +131,6 @@ class DataHub extends React.Component {
                         index={this.state.openTab}
                         onChangeIndex={this.handleChangeIndex}
                     >
-                        {/** RDS */}
                         <TabPanel value={this.state.openTab} index={0} dir='x'>
                                 <GroupedBar/>
                                 <Grid container>
@@ -151,17 +145,11 @@ class DataHub extends React.Component {
                                         </Grid>
                                 </Grid>
                         </TabPanel>
-                        {/** Data quality */}
                         <TabPanel value={this.state.openTab} index={1} dir='x'>
-                            {/* <PieChart /> */}
                             <DataQuality/>
                         </TabPanel>
-                        {/** search query */}
                         <TabPanel value={this.state.openTab} index={2} dir='x'>
-                        {/* <form className={classes.root} noValidate autoComplete="off"> */}
-                            {/* <MultiAxisLineChart/> */}
                             <RDS/>
-                        {/* </form> */}
                         </TabPanel>
                     </SwipeableViews>
                 </div>

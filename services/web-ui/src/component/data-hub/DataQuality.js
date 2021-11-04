@@ -1,11 +1,9 @@
 import React from 'react';
-import DateFnsUtils from '@date-io/moment'; // choose your lib
-// Ui
+import DateFnsUtils from '@date-io/moment';
 import {
   DateTimePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
-
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
 import Accordion from '@material-ui/core/Accordion';
@@ -49,7 +47,7 @@ class DataQuality extends React.Component {
         };
     }
 
-    handleFiltering = (event) => {
+  handleFiltering = (event) => {
       this.setState({ ...this.state, [event.target.name]: event.target.checked });
   };
 

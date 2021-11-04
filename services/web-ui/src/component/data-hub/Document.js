@@ -1,5 +1,4 @@
 import React from 'react';
-// Ui
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
 import { Paper } from '@material-ui/core';
