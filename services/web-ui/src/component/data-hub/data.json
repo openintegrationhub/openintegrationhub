@@ -46,19 +46,17 @@
          "domainId":"string",
          "schemaUri":"string",
          "content":{
-            "firstName":"John",
+            "firstName":"Mark",
             "lastName":"Doe"
          },
          "enrichmentResults":{
-            "score":7,
+            "score": 60,
             "normalizedScore":0.6,
             "tags":[
-               "marketing",
-               "whatever"
+               "private",
+               "company"
             ],
-            "knownDuplicates":[
-               "130987zvbssd71", "14sadada8789"
-            ],
+            "knownDuplicates":[ 0 ],
             "knownSubsets":[
                
             ]
@@ -94,7 +92,7 @@
             "lastName":"Bosch"
          },
          "enrichmentResults":{
-            "score":2,
+            "score": 75,
             "normalizedScore":0.1,
             "tags":[
                "operations",
@@ -134,11 +132,11 @@
         "domainId":"string",
         "schemaUri":"string",
         "content":{
-           "firstName":"Tom",
+           "firstName":"Mark",
            "lastName":"Gang"
         },
         "enrichmentResults":{
-           "score":8,
+           "score": 54,
            "normalizedScore":0.9,
            "tags":[
               "tech",

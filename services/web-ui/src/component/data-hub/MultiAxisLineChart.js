@@ -50,20 +50,29 @@ const data = {
   datasets: [
     {
       label: 'Products',
-      data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 30)),
+      data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 2)),
       fill: false,
-      backgroundColor: 'rgb(255, 99, 132)',
-      borderColor: 'rgba(255, 99, 132, 0.5)',
+      backgroundColor: 'rgb(54, 162, 235)',
+      borderColor: 'rgba(54, 162, 235, 0.8)',
       borderWidth: 3,
       yAxisID: 'y-axis-1',
     },
     {
       label: 'Contacts',
-      data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 5)),
+      data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 4)),
       fill: false,
       borderWidth: 3,
-      backgroundColor: 'rgb(54, 162, 235)',
-      borderColor: 'rgba(54, 162, 235, 0.5)',
+      backgroundColor: 'rgb(255, 99, 132)',
+      borderColor: 'rgba(255, 99, 132, 0.8)',
+      yAxisID: 'y-axis-1',
+    },
+    {
+      label: 'Documents',
+      data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 8)),
+      fill: false,
+      borderWidth: 3,
+      backgroundColor: 'rgb(11, 174, 110)',
+      borderColor: 'rgba(75, 192, 192, 0.8)',
       yAxisID: 'y-axis-1',
     },
   ],
@@ -94,7 +103,6 @@ const options = {
 const MultiAxisLineChart = () => (
   <>
     <div className='header'>
-      <h1 className='title'>Multi Axis Line Chart</h1>
     </div>
     <Line data={data} options={options} />
   </>

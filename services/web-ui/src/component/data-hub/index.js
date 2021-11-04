@@ -8,21 +8,25 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
+import { Grid } from '@material-ui/core';
 // Ui
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
-import PieChart from './PieChart';
-import MultiAxisLineChart from './MultiAxisLineChart';
+// import PieChart from './PieChart';
+// import MultiAxisLineChart from './MultiAxisLineChart';
+import GroupedBar from './GroupedBarChart';
 import DataQuality from './DataQuality';
 import dataJSON from './data.json';
+import Contact from './Contact';
+import Product from './Product';
+import Document from './Document';
 // actions
 import {
     getDataObjects,
 } from '../../action/data-hub';
+import RDS from './RDS';
 
 function TabPanel(props) {
     const {
@@ -116,9 +120,9 @@ class DataHub extends React.Component {
                         variant="fullWidth"
                         aria-label="full width tabs example"
                         >
-                        <Tab label="RDS" />
                         <Tab label="Data-Quality" />
                         <Tab label="Search" />
+                        <Tab label="RDS" />
                         </Tabs>
                     </AppBar>
                     <SwipeableViews
@@ -128,18 +132,29 @@ class DataHub extends React.Component {
                     >
                         {/** RDS */}
                         <TabPanel value={this.state.openTab} index={0} dir='x'>
-                                <PieChart />
-                                <MultiAxisLineChart/>
+                                <GroupedBar/>
+                                <Grid container>
+                                    <Grid item lg={4} md={4} xs={12}>
+                                        <Contact/>
+                                            </Grid>
+                                        <Grid item lg={4} md={4} xs={12}>
+                                            <Product/>
+                                        </Grid>
+                                        <Grid item lg={4} md={4} xs={12}>
+                                            <Document/>
+                                        </Grid>
+                                </Grid>
                         </TabPanel>
                         {/** Data quality */}
                         <TabPanel value={this.state.openTab} index={1} dir='x'>
-                            <button>Enrich Data</button>
+                            {/* <PieChart /> */}
                             <DataQuality/>
                         </TabPanel>
                         {/** search query */}
                         <TabPanel value={this.state.openTab} index={2} dir='x'>
                         {/* <form className={classes.root} noValidate autoComplete="off"> */}
-                            <TextField id="outlined-basic" label="Search" variant="outlined" />
+                            {/* <MultiAxisLineChart/> */}
+                            <RDS/>
                         {/* </form> */}
                         </TabPanel>
                     </SwipeableViews>

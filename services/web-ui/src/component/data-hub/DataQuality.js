@@ -20,7 +20,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { Grid } from '@material-ui/core';
-
+import TextField from '@material-ui/core/TextField';
+import Chip from './Chip';
 import dataJSON from './data.json';
 
 const useStyles = {
@@ -71,8 +72,11 @@ class DataQuality extends React.Component {
 
         return (
             <Container className={classes.container}>
+              <TextField id="outlined-basic" label="Search" variant="outlined" style={{ width: '100%' }}/>
                 <Grid container>
                   <Grid item md={10} style={{ background: '' }}>
+                    <Chip label="DataHub element"/>
+                    <Chip label="RDS entry"/>
                       <div style={{ display: 'flex', marginTop: '50px' }}>
                           <FormGroup row>
                               <FormControlLabel
@@ -92,7 +96,8 @@ class DataQuality extends React.Component {
                               <span style={{ marginRight: '10px', marginLeft: '10px' }}>To</span>
                               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                   <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} clearable/>
-                              </MuiPickersUtilsProvider></div>
+                              </MuiPickersUtilsProvider>
+                            </div>
                       </div>
                   </Grid>
                   <Grid item md={2} style={{ background: '', position: 'relative' }}>
@@ -126,7 +131,6 @@ class DataQuality extends React.Component {
                           id="panel1a-header"
                       >
                           <p>{el.content.firstName} {el.content.lastName}</p> <p style={{ marginLeft: '20px' }}>Score: {el.enrichmentResults.score} </p>
-                          <p style={{ marginLeft: '20px' }}> Duplicates: {el.enrichmentResults.knownDuplicates.length}</p>
                           <p style={{ marginLeft: '20px' }}>Date: {new Date(el.createdAt).toLocaleDateString('de-DE')}</p>
                       </AccordionSummary>
                       <AccordionDetails style={{ display: 'block' }}>
