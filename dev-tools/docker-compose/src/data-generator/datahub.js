@@ -12,16 +12,16 @@ const PRODUCTS_SET_LENGTH = 10
 
 // use dev cluster setup
 
-const iamBase = 'https://iam.openintegrationhub.com'
-const metaDataBase = 'https://metadata.openintegrationhub.com/api/v1'
-const dataHubBase = 'https://data-hub.openintegrationhub.com'
-const domainId = '5db82cdb0e1048001a39711a'
+// const iamBase = 'https://iam.openintegrationhub.com'
+// const metaDataBase = 'https://metadata.openintegrationhub.com/api/v1'
+// const dataHubBase = 'https://data-hub.openintegrationhub.com'
+// const domainId = '5db82cdb0e1048001a39711a'
 
 // use local setup as target for import
-// const iamBase = null // will take local iam api base
-// const metaDataBase = `http://localhost:${services.metaDataRepository.externalPort}/api/v1`
-// const dataHubBase = `http://localhost:${services.dataHub.externalPort}`
-// const domainId = '61168848e8c7c7002bd91861'
+const iamBase = null // will take local iam api base
+const metaDataBase = `http://localhost:${services.metaDataRepository.externalPort}/api/v1`
+const dataHubBase = `http://localhost:${services.dataHub.externalPort}`
+const domainId = '61828b4c72bc3600212714ac'
 
 const username = process.env.DEV_CLUSTER_USERNAME || 't1_admin@local.dev'
 const password = process.env.DEV_CLUSTER_PASSWORD || 'password'
@@ -34,7 +34,11 @@ let result = null
 
 async function run() {
   // requires a full running oih setup
-
+  console.log({
+    customIamBase: iamBase,
+    username,
+    password,
+  })
   // login as owner
   const { token } = await login({
     customIamBase: iamBase,

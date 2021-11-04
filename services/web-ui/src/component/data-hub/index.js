@@ -25,36 +25,38 @@ import Document from './Document';
 // actions
 import {
     getDataObjects,
+    // plain
+    enrichData,
 } from '../../action/data-hub';
 import RDS from './RDS';
 
 function TabPanel(props) {
     const {
         children, value, index, ...other
-        } = props;
+    } = props;
 
     return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`full-width-tabpanel-${index}`}
-        aria-labelledby={`full-width-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-          <Box p={3}>
-            <Typography>{children}</Typography>
-          </Box>
-        )}
-      </div>
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`full-width-tabpanel-${index}`}
+            aria-labelledby={`full-width-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box p={3}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
     );
-  }
+}
 
-  TabPanel.propTypes = {
+TabPanel.propTypes = {
     children: PropTypes.node,
     index: PropTypes.any.isRequired,
     value: PropTypes.any.isRequired,
-  };
+};
 
 const useStyles = {
 
@@ -76,6 +78,10 @@ class DataHub extends React.Component {
             openTab: 0,
         };
         props.getDataObjects();
+    }
+
+    async componentDidMount() {
+        await enrichData();
     }
 
     handleChange = (event, newValue) => {
