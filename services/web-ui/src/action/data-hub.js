@@ -51,8 +51,10 @@ export const enrichData = async () => {
                             {
                                 comparator: 'hasField',
                                 tag: 'Has a Name',
+                                additive: true,
                                 arguments: {
                                     field: 'firstName',
+
                                 },
                             },
                         ],
@@ -64,6 +66,7 @@ export const enrichData = async () => {
                             {
                                 comparator: 'fieldEquals',
                                 tag: 'Is a James',
+                                additive: true,
                                 arguments: {
                                     field: 'firstName',
                                     targetValue: 'James',
