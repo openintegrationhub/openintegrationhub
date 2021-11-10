@@ -1101,8 +1101,11 @@
             "type": "string",
             "example": "SIMPLE"
           },
-          "owner": {
-            "$ref": "#/components/schemas/Owner"
+          "owners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Owner"
+            }
           }
         }
       },
