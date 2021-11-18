@@ -15,7 +15,7 @@ const node = new Schema({
   description: { type: String, maxlength: 100 },
   fields: {},
   nodeSettings: {},
-  tenant:{ type: mongoose.Types.ObjectId, maxlength: 30 },
+  tenant:{ type: String, maxlength: 30 },
   authorization: {
     authType: {
       type: String,
