@@ -8,15 +8,25 @@ export default class DataController {
     public async getAll(ctx: RouterContext): Promise<void> {
         const { flowId } = ctx.params;
         const { flowExecId } = ctx.query;
+        const { query } = ctx.state;
         // @ts-ignore
-        const doc = await Snapshot.find({flowId, flowExecId});
+        const doc = await Snapshot.find({
+            ...query, 
+            flowId,
+            flowExecId
+        });
         ctx.body = {
             data: doc
         };
     }
     public async getOne(ctx: RouterContext): Promise<void> {
         const { flowId, stepId } = ctx.params;
-        const doc = await Snapshot.findOne({flowId, stepId});
+        const { query } = ctx.state;
+        const doc = await Snapshot.findOne({
+            ...query, 
+            flowId,
+            stepId
+        });
         ctx.body = {
             data: doc ? doc.snapshot : {}
         };
@@ -24,7 +34,12 @@ export default class DataController {
 
     public async deleteOne(ctx: RouterContext): Promise<void> {
         const { flowId, stepId } = ctx.params;
-        await Snapshot.findOneAndDelete({flowId, stepId});
+        const { query } = ctx.state;
+        await Snapshot.findOneAndDelete({
+            ...query, 
+            flowId,
+            stepId
+        });
         ctx.status = 204;
         ctx.body = null;
     }

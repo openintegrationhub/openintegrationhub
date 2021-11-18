@@ -43,7 +43,10 @@ const snapshotSchema = new Schema({
         type: Schema.Types.Mixed,
         default: {}
     },
-    owners: [ownerSchema]
+    owners: [ownerSchema],
+    tenant: {
+        type: Schema.Types.ObjectId,
+    },
 }, {
     timestamps: true
 });
