@@ -127,7 +127,9 @@ router.post('/', jsonParser, can(config.flowTemplateWritePermission), async (req
   if (newTemplate.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     newTemplate.owners.push({ id: req.user.sub, type: 'user' });
   }
-
+  if (req.user.tenant) {
+    newTemplate.tenant = req.user.tenant;
+  }
   const storeTemplate = new FlowTemplate(newTemplate);
   const errors = validate(storeTemplate);
 
