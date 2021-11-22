@@ -10,7 +10,7 @@
     "version" : "0.1.0"
   },
   "servers" : [ {
-    "url" : "https://skm.example.com"
+    "url" : "https://skm.example.com/api/v1"
   } ],
   "tags" : [
     {
@@ -33,7 +33,7 @@
     }
   ],
   "paths" : {
-    "/api/v1/auth-clients/" : {
+    "/auth-clients/" : {
       "get" : {
         "tags" : [ "Auth clients" ],
         "summary" : "Retrieve all clients",
@@ -119,7 +119,7 @@
         }
       }
     },
-    "/api/v1/auth-clients/{clientId}" : {
+    "/auth-clients/{clientId}" : {
       "get" : {
         "tags" : [ "Auth clients" ],
         "summary" : "Find client by ID",
@@ -206,7 +206,7 @@
         }
       }
     },
-    "/api/v1/auth-clients/{clientId}/start-flow" : {
+    "/auth-clients/{clientId}/start-flow" : {
       "post" : {
         "tags" : [ "Auth clients" ],
         "summary" : "Start an authorization flow",
@@ -262,7 +262,7 @@
         }
       }
     },
-    "/api/v1/callback" : {
+    "/callback" : {
       "get" : {
         "tags" : [ "Callback" ],
         "summary" : "Invoked by Provider (redirect uri) or other services",
@@ -290,7 +290,7 @@
         }
       }
     },
-    "/api/v1/secrets/" : {
+    "/secrets/" : {
       "get" : {
         "tags" : [ "Secrets" ],
         "summary" : "Retrieve all secrets",
@@ -376,7 +376,7 @@
         }
       }
     },
-    "/api/v1/secrets/{secretId}" : {
+    "/secrets/{secretId}" : {
       "get" : {
         "tags" : [ "Secrets" ],
         "summary" : "Find secret by ID",
@@ -497,6 +497,12 @@
     },
     "/healthcheck" : {
       "get" : {
+        "servers": [
+          {
+            "url": "https://skm.example.com",
+            "description": "The /healthcheck endpoint is the only one that doesn't have /api/v1"
+          }
+        ],
         "tags" : [ "Misc" ],
         "summary" : "Retrieve health status",
         "description" : "Retrieve health status of the API.",
