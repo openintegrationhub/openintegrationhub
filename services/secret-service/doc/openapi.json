@@ -10,7 +10,7 @@
     "version" : "0.1.0"
   },
   "servers" : [ {
-    "url" : "https://skm.example.com/api/v1"
+    "url" : "/api/v1"
   } ],
   "tags" : [
     {
