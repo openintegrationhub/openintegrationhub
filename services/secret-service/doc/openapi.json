@@ -1161,25 +1161,6 @@
       }
     },
     "parameters": {
-      "page": {
-        "name": "page",
-        "in": "query",
-        "schema": {
-          "type": "object",
-          "properties": {
-            "size": {
-              "type": "integer",
-              "example": 5
-            },
-            "number": {
-              "type": "integer",
-              "example": 1
-            }
-          }
-        },
-        "style": "deepObject",
-        "explode": true
-      },
       "pageSize": {
         "name": "page[size]",
         "in": "query",
