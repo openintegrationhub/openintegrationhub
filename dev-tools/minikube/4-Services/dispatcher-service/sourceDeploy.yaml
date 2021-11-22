@@ -17,7 +17,7 @@ spec:
         - name: dispatcher-service
           image: node:16-alpine
           command: ["/bin/sh"]
-          args: ["-c", "npm install --non-interactive && npm start:container"]
+          args: ["-c", "npm run start:container -w services/dispatcher-service"]
           workingDir: /usr/src/app/
           ports:
             - containerPort: 3013
@@ -58,7 +58,6 @@ spec:
           volumeMounts:
             - name: code
               mountPath: /usr/src/app
-              subPath: services/dispatcher-service
           livenessProbe:
             httpGet:
               port: 3013

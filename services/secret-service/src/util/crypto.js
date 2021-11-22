@@ -13,4 +13,17 @@ module.exports = {
         return decipher.update(value, conf.crypto.outputEncoding, 'utf8')
             + decipher.final('utf8');
     },
+
+    authenticateHmac(hmacSecret, hmacValue, hmacAlgo, rawBody) {
+        const expectedHmac = crypto.createHmac(hmacAlgo, hmacSecret)
+            .update(JSON.stringify(rawBody))
+            .digest('base64');
+        if (expectedHmac.length !== hmacValue.length) {
+            return false;
+        }
+        if (crypto.timingSafeEqual(hmacValue, expectedHmac)) {
+            return true;
+        }
+        return false;
+    },
 };
