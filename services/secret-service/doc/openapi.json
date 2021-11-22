@@ -683,7 +683,7 @@
         }
       },
       "MutableSessionAuthClient": {
-        "required": ["fields"],
+        "required": ["fields", "endpoints"],
         "properties": {
           "fields": {
             "type": "array",
@@ -899,7 +899,7 @@
           },
           "type" : {
             "type" : "string",
-            "enum" : ["API_KEY", "OA1_TWO_LEGGED", "OA1_THREE_LEGGED", "OA2_AUTHORIZATION_CODE", "SIMPLE", "MIXED", "SESSION"]
+            "enum" : ["API_KEY", "OA1_TWO_LEGGED", "OA1_THREE_LEGGED", "OA2_AUTHORIZATION_CODE", "SIMPLE", "MIXED", "SESSION_AUTH"]
           },
           "value" : {
             "discriminator" : {
@@ -908,7 +908,7 @@
                 "SIMPLE": "#/components/schemas/SimpleSecret",
                 "MIXED": "#/components/schemas/MixedSecret",
                 "API_KEY": "#/components/schemas/ApiKeySecret",
-                "SESSION": "#/components/schemas/SessionSecret",
+                "SESSION_AUTH": "#/components/schemas/SessionAuthSecret",
                 "OA1_TWO_LEGGED": "#/components/schemas/OA1TwoLeggedSecret",
                 "OA1_THREE_LEGGED": "#/components/schemas/OA1ThreeLeggedSecret",
                 "OA2_AUTHORIZATION_CODE": "#/components/schemas/OA2AuthorizationCodeSecret"
@@ -921,7 +921,7 @@
             }, {
               "$ref": "#/components/schemas/ApiKeySecret"
             }, {
-              "$ref": "#/components/schemas/SessionSecret"
+              "$ref": "#/components/schemas/SessionAuthSecret"
             }, {
               "$ref": "#/components/schemas/OA1TwoLeggedSecret"
             }, {
@@ -1018,7 +1018,7 @@
           }
         }
       },
-      "SessionSecret": {
+      "SessionAuthSecret": {
         "required": ["authClientId"],
         "type": "object",
         "properties": {
