@@ -907,7 +907,7 @@
               "mapping": {
                 "SIMPLE": "#/components/schemas/SimpleSecret",
                 "MIXED": "#/components/schemas/MixedSecret",
-                "API_KEY": "#/components/schemas/Api_Key",
+                "API_KEY": "#/components/schemas/ApiKeySecret",
                 "SESSION": "#/components/schemas/SessionSecret",
                 "OA1_TWO_LEGGED": "#/components/schemas/OA1TwoLeggedSecret",
                 "OA1_THREE_LEGGED": "#/components/schemas/OA1ThreeLeggedSecret",
@@ -919,7 +919,7 @@
             }, {
               "$ref": "#/components/schemas/MixedSecret"
             }, {
-              "$ref": "#/components/schemas/Api_Key"
+              "$ref": "#/components/schemas/ApiKeySecret"
             }, {
               "$ref": "#/components/schemas/SessionSecret"
             }, {
@@ -1006,7 +1006,7 @@
           }
         }
       },
-      "Api_Key": {
+      "ApiKeySecret": {
         "required": ["key"],
         "type": "object",
         "properties": {
