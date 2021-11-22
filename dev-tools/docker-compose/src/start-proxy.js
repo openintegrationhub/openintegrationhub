@@ -1,5 +1,9 @@
 const { spawn } = require('child_process')
-const { checkTools, getMinikubeClusterIp } = require('./helper')
+const {
+  checkTools,
+  getMinikubeClusterIp,
+  getMinikubeInternalIp,
+} = require('./helper')
 
 checkTools(['minikube', 'simpleproxy'])
 
@@ -34,6 +38,8 @@ async function run() {
   console.log('Starting proxy')
   proxy = spawn('simpleproxy', ['-L', '9090', '-R', clusterIpPort])
   console.log('Proxy started')
+  console.log(`Minikube: External Cluster IP ${getMinikubeClusterIp()}`)
+  console.log(`Minikube: Internal Host IP ${getMinikubeInternalIp()}`)
 }
 
 ;(async () => {
