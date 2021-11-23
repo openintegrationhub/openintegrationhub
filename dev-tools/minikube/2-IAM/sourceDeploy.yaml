@@ -81,13 +81,13 @@ spec:
               mountPath: /usr/src/app
           livenessProbe:
             httpGet:
-              port: 3099
+              port: "3099"
               path: /healthcheck
             initialDelaySeconds: 300
             timeoutSeconds: 1
           readinessProbe:
             httpGet:
-              port: 3099
+              port: "3099"
               path: /healthcheck
             initialDelaySeconds: 120
             timeoutSeconds: 1

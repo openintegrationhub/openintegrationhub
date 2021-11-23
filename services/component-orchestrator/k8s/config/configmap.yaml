@@ -6,12 +6,13 @@ metadata:
 data:
   ATTACHMENT_STORAGE_SERVICE_BASE_URL: "http://attachment-storage-service.oih-dev-ns.svc.cluster.local:3002"
   COMPONENT_REPOSITORY_BASE_URL: "http://component-repository-service.oih-dev-ns.svc.cluster.local:1234"
+  IAM_BASE_URL: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/"
   LISTEN_PORT: "1234"
   LOG_LEVEL: trace
   RABBITMQ_MANAGEMENT_URI: "http://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:15672/"
   RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local"
   RABBITMQ_URI_FLOWS: "amqp://rabbitmq-service.oih-dev-ns.svc.cluster.local"
-  SECRET_SERVICE_URL: "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1"
+  SECRET_SERVICE_BASE_URL: "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1"
   SELF_URL: "http://api-service.oih-dev-ns.svc.cluster.local"
   SNAPSHOTS_SERVICE_BASE_URL: "http://snapshots-service.oih-dev-ns.svc.cluster.local:1234"
   DATAHUB_BASE_URL: "http://snapshots-service.oih-dev-ns.svc.cluster.local:1234"

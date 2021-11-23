@@ -28,7 +28,9 @@ spec:
           env:
             - name: COMPONENT_REPOSITORY_BASE_URL
               value: "http://component-repository.oih-dev-ns.svc.cluster.local:1234"
-            - name: SECRETS_SERVICE_BASE_URL
+            - name: IAM_BASE_URL
+              value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1"
+            - name: SECRET_SERVICE_BASE_URL
               value: "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1"
             - name: "INTROSPECT_ENDPOINT_BASIC"
               value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
@@ -65,13 +67,13 @@ spec:
               #readOnly: true
           livenessProbe:
             httpGet:
-              port: 1234
+              port: "1234"
               path: /healthcheck
             initialDelaySeconds: 300
             timeoutSeconds: 1
           readinessProbe:
             httpGet:
-              port: 1234
+              port: "1234"
               path: /healthcheck
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
@@ -85,5 +87,5 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: "1"
+      maxUnavailable: "1"
