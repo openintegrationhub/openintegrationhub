@@ -19,14 +19,7 @@ const {
   getMinikubeInternalIp,
 } = require('./helper')
 
-checkTools([
-  'docker',
-  'docker-compose',
-  'minikube',
-  'mongo',
-  'minikube',
-  'simpleproxy',
-])
+checkTools(['docker', 'docker-compose', 'minikube', 'mongo', 'simpleproxy'])
 
 let proxy = null
 
