@@ -59,13 +59,13 @@ spec:
             httpGet:
               port: 3001
               path: /healthcheck
-            initialDelaySeconds: 1200
+            initialDelaySeconds: 5
             timeoutSeconds: 1
           readinessProbe:
             httpGet:
               port: 3001
               path: /healthcheck
-            initialDelaySeconds: 240
+            initialDelaySeconds: 5
             timeoutSeconds: 1
           imagePullPolicy: IfNotPresent
       volumes:

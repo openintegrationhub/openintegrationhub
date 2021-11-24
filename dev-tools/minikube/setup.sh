@@ -848,10 +848,10 @@ if [ "$os" == "Darwin" ]; then
     if [ "$machine" == "ARM" ]; then
         minikube start --driver=docker --memory $MK_MEMORY --cpus $MK_CPUS --mount=true --mount-string="${HOST_OIH_DIRECTORY}:/openintegrationhub"
     else 
-        minikube start --driver=hyperkit --vm=true --memory $MK_MEMORY --cpus $MK_CPUS
+        minikube start --driver=hyperkit --vm=true --memory $MK_MEMORY --cpus $MK_CPUS  --mount=true --mount-string="${HOST_OIH_DIRECTORY}:/openintegrationhub"
     fi
 else
-    minikube start --memory $MK_MEMORY --cpus $MK_CPUS
+    minikube start --memory $MK_MEMORY --cpus $MK_CPUS --mount=true --mount-string="${HOST_OIH_DIRECTORY}:/openintegrationhub"
 fi
 
 ###
