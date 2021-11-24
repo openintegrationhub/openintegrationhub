@@ -377,8 +377,6 @@ class KubernetesDriver extends BaseDriver {
             return env;
         }, {});
 
-        envVars.LOG_LEVEL = 'trace';
-
         return envVars;
     }
 }
