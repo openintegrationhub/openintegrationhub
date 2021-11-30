@@ -2,13 +2,13 @@ version: 2.1
 
 aliases:
   - &node_env
-    - image: cimg/node:16
+    - image: cimg/node:16.13.0
   - &node_mongo_env
-    - image: cimg/node:16
+    - image: cimg/node:16.13.0
     - image: cimg/mongo:4.4
   - &node_amqp_env
-    - image: cimg/node:16
-    - image: rabbitmq:3.8.9-alpine
+    - image: cimg/node:16.13.0
+    - image: rabbitmq:3.9.9-alpine
   - &run_npm_install
     name: Installing Dependencies
     command: npm i
