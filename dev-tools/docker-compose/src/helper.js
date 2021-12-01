@@ -187,6 +187,22 @@ module.exports = {
       break
     }
   },
+  waitForElasticsearch() {
+    console.log('Waiting for Elasticsearch')
+    while (true) {
+      try {
+        execSync(
+          `docker exec -ti elasticsearch sh -c "curl -u elastic:elastic -s -f localhost:9200/_cat/health >/dev/null || exit 1"`,
+          {
+            stdio: 'inherit',
+          }
+        )
+      } catch (err) {
+        continue
+      }
+      break
+    }
+  },
   async waitForStatus({ url, status }) {
     console.log(`Waiting for ${status} on ${url}`)
     while (true) {
@@ -205,5 +221,5 @@ module.exports = {
       `docker run --rm --name npmRunner -it -e npm_config_cache=/usr/src/app/.npm_cache -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${relPath}; npm run ${args}'`,
       { stdio: 'inherit' }
     )
-  }
+  },
 }

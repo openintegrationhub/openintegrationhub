@@ -83,6 +83,24 @@ services:
       - oih-dev
     volumes:
       - ./data/grafana:/var/lib/grafana
+  elasticsearch:
+    image: elasticsearch:7.14.2
+    container_name: elasticsearch
+    env_file:
+    - "env.elasticsearch"
+    networks:
+    - oih-dev
+    volumes:
+    - ./data/elasticsearch:/usr/share/elasticsearch/data
+    ports:
+    - "9200:9200"
+    - "9300:9300"
+    healthcheck:
+      test: curl -u elastic:elastic -s -f elasticsearch:9200/_cat/health >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 networks:
   oih-dev:
     driver: bridge
