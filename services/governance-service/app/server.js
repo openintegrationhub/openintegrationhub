@@ -13,7 +13,6 @@ const event = require('./api/controllers/event');
 const storedFunction = require('./api/controllers/storedFunction');
 const applyPolicy = require('./api/controllers/applyPolicy');
 const dashboard = require('./api/controllers/dashboard');
-const graph = require('./api/controllers/graph');
 
 const { connectQueue, disconnectQueue } = require('./utils/eventBus');
 
@@ -102,7 +101,6 @@ class Server {
     this.app.use('/storedFunction', storedFunction);
     this.app.use('/applyPolicy', applyPolicy);
     this.app.use('/dashboard', dashboard);
-    this.app.use('/graph', graph);
 
     this.app.use('/healthcheck', healthcheck);
 
