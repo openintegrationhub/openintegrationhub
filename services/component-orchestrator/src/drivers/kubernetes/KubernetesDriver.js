@@ -72,7 +72,6 @@ class KubernetesDriver extends BaseDriver {
             options,
         });
 
-        console.log(JSON.stringify(descriptor))
         this._logger.trace(descriptor);
         const result = await this._appsClient.deployments.post({
             body: descriptor,
@@ -258,8 +257,6 @@ class KubernetesDriver extends BaseDriver {
 
         const image = _.get(component, 'distribution.image');
 
-        console.log(this._generateVolumes())
-        console.log(this._generateVolumeMounts())
         return {
             apiVersion: 'apps/v1',
             kind: 'Deployment',
