@@ -5,6 +5,8 @@ const _ = require('lodash');
 const KubernetesRunningComponent = require('./KubernetesRunningComponent');
 const Secret = require('./Secret');
 
+const { getEnvByNamespace } = require('../../utils')
+
 const ENV_PREFIX = 'ELASTICIO_';
 
 const GLOBAL = 'global';
@@ -344,6 +346,9 @@ class KubernetesDriver extends BaseDriver {
 
     _prepareEnvVars(vars, component) {
         let envVars = Object.assign({}, vars);
+
+        // assign all provided "COMPONENT_FEATURE_" process env vars
+        envVars = Object.assign(envVars, getEnvByNamespace(/^COMPONENT_FEATURE_/));
 
         // Will be removed from ferryman so we set some dummy data
         envVars.COMP_ID = component.id;
