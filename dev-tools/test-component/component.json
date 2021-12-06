@@ -10,6 +10,11 @@
         "out": {}
       }
     },
+    "exampleRESTAction": {
+      "title": "exampleRESTAction",
+      "description": "Sends different responses suitable for different requests",
+      "main": "./lib/actions/exampleRESTAction.js"
+    },
     "exec": {
       "title": "Execute a predefined logic for a step",
       "main": "./lib/actions/exec.js"
