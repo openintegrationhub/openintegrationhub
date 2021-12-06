@@ -24,7 +24,7 @@ const { getProvenanceEvents } = require('./mongo');
 
 // Gets overview of data distribution
 router.get('/distribution', jsonParser, can('tenant.all'), async (req, res) => {
-  const distribution = await getObjectDistribution(req.user.sub);
+  const distribution = await getObjectDistribution(req.user);
 
   if (!distribution) return res.status(404).send({ error: [{ message: 'Could not gather distribution' }] });
 

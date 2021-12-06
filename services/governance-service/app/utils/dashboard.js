@@ -35,16 +35,16 @@ async function getRefs(id, recordUid, token) {
 // Calculates object distribution by refs
 async function getObjectDistribution(user) {
   try {
-    const allEvents = await getProvenanceEvents(user);
+    const allEvents = await getProvenanceEvents(user, 100, 1, false, false, false, false, false);
 
     const serviceCounts = {};
 
-    for (let i = 0; i < allEvents.length; i += 1) {
-      const currentEvent = allEvents[i];
+    for (let i = 0; i < allEvents.data.length; i += 1) {
+      const currentEvent = allEvents.data[i];
       const serviceEntry = currentEvent.actedOnBehalfOf.find((el) => el.agentType === 'Application');
       if (!serviceEntry) continue;
 
-      const serviceName = serviceEntry.actedOnbehalfOf;
+      const serviceName = serviceEntry.actedOnBehalfOf || 'unkownService';
 
       if (!(serviceName in serviceCounts)) {
         serviceCounts[serviceName] = {
