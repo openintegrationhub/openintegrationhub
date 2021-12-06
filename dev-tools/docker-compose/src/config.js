@@ -2,7 +2,9 @@ require('dotenv').config()
 const path = require('path')
 const { homedir } = require('os')
 
-const dockerUserGroup = 'node:node'
+const dockerUserGroup = process.env.DOCKER_USER_GROUP
+  ? process.env.DOCKER_USER_GROUP
+  : 'node:node'
 
 const orchestratorReplica = 1
 const nodeImage = 'node:16-bullseye'
