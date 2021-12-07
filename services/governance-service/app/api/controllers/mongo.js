@@ -104,7 +104,7 @@ const getProvenanceEvents = async ( // eslint-disable-line
     });
 });
 
-const addProvenanceEvent = (newProvenanceEvent) => new Promise((resolve) => {
+const addProvenanceEvent = newProvenanceEvent => new Promise((resolve) => {
   const storeProvenanceEvent = new ProvenanceEvent(newProvenanceEvent);
 
   return storeProvenanceEvent.save()
