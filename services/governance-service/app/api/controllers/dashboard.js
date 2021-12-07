@@ -19,7 +19,9 @@ const jsonParser = bodyParser.json();
 const router = express.Router();
 
 const log = require('../../config/logger'); // eslint-disable-line
-const { getObjectDistribution, checkFlows, getRefs } = require('../../utils/dashboard');
+const {
+  getObjectDistribution, checkFlows, getRefs,
+} = require('../../utils/dashboard');
 const { getProvenanceEvents } = require('./mongo');
 
 // Gets overview of data distribution
@@ -52,6 +54,9 @@ router.get('/objectStatus/:id', jsonParser, can('tenant.all'), async (req, res) 
 // Gets a list of current warnings and advisories
 router.get('/warnings', jsonParser, can('tenant.all'), async (req, res) => {
   const flowWarnings = await checkFlows(req.headers.authorization);
+
+  // Check for flows without governance activated
+
 
   // TODO: Check for failed delete warnings
 
