@@ -5,6 +5,7 @@ export default async function errorResponder(ctx: Context, next: Function): Prom
     try {
         await next();
     } catch (err) {
+        console.log(err)
         // @ts-ignore
         if (!(err instanceof ApiError) && !err.status) {
             ctx.log.error(err);

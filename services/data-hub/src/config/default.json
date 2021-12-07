@@ -1,3 +1,5 @@
 {
-    "PORT": 1234
+    "PORT": 1234,
+    "ELASTICSEARCH_INDEX": "oih-data-hub",
+    "ELASTICSEARCH_URL": "http://localhost:9200"
 }

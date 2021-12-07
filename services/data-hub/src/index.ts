@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 import { EventBus, IEvent, Event } from '@openintegrationhub/event-bus';
 import DataObject from './models/data-object';
 import resolveConflict from './cfm/conflict-manager'
+import { contactMapping } from './elasticsearch/mapping'
+import { createClient, setCurrentIndex, indexExists, createIndex, putMapping } from "./elasticsearch"
 
 interface IDataRecordEventPayloadMeta {
     domainId: string;
@@ -52,6 +54,20 @@ export default class DataHubApp extends App {
             serviceName: 'data-hub',
             rabbitmqUri: config.get('RABBITMQ_URI')
         });
+
+        // elasticsearch setup
+        createClient(config.get('ELASTICSEARCH_URL'))
+        setCurrentIndex(config.get('ELASTICSEARCH_INDEX'))
+
+        // ensure index
+        const result = await indexExists()
+    
+        if (!result.body) {
+            await createIndex();
+        }
+
+        // create mappings
+        await putMapping(contactMapping)
 
         const NEW_RECORD_EVENT_NAME = 'validation.success';
         eventBus.subscribe(NEW_RECORD_EVENT_NAME, async (evt: IDataRecordEvent) => {

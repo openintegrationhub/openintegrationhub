@@ -1,8 +1,10 @@
 import { RouterContext } from 'koa-router';
 import mongoose from 'mongoose';
 import _ from 'lodash';
+import util from "util"
 import { isAdmin, isTenantAdmin } from '@openintegrationhub/iam-utils'
 import DataObject, { IDataObjectDocument, IOwnerDocument } from '../../models/data-object';
+import { searchContact, createContact, refreshIndex } from '../../elasticsearch' 
 import NotFound from '../../errors/api/NotFound';
 import Forbidden from '../../errors/api/Forbidden';
 import BadRequest from '../../errors/api/BadRequest';
@@ -331,26 +333,67 @@ export default class DataController {
             throw new BadRequest()
         }
 
-        body.forEach(record => {
-            const owners = record.owners || []
+        for (const record of body) {
+            const { firstName, lastName, birthday } = record.content
+            const { body } = await searchContact(user.tenant, firstName, lastName, birthday)
+            const { hits } = body
 
-            if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-                owners.push({
-                    id: user.sub,
-                    type: 'user'
+            if (hits.total.value === 0) {
+                const owners = record.owners || []
+
+                if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+                    owners.push({
+                        id: user.sub,
+                        type: 'user'
+                    });
+                }
+
+                // @ts-ignore: TS2345
+                const dataHubRecord = await DataObject.create({
+                    ...record,
+                    tenant: user.tenant,
+                    owners,
                 });
+
+                // create elasticsearch entry
+                await createContact({
+                    dataHubId: dataHubRecord._id.toString(),
+                    tenant: user.tenant,
+                    firstName,
+                    lastName,
+                    birthday
+                })
+
+                // refresh index
+                await refreshIndex()
+            } else {
+                console.log('#### found duplicate')
+                console.log(firstName, lastName, birthday)
+                console.log(util.inspect(hits, false, null, true))
             }
 
-            // @ts-ignore: TS2345
-            createPromises.push(DataObject.create({
-                ...record,
-                tenant: user.tenant,
-                owners,
-            }))
+        }
 
-        })
+        // body.forEach(record => {
+        //     const owners = record.owners || []
 
-        await Promise.all(createPromises)
+        //     if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+        //         owners.push({
+        //             id: user.sub,
+        //             type: 'user'
+        //         });
+        //     }
+
+        //     // @ts-ignore: TS2345
+        //     createPromises.push(DataObject.create({
+        //         ...record,
+        //         tenant: user.tenant,
+        //         owners,
+        //     }))
+
+        // })
+
+        // await Promise.all(createPromises)
 
         ctx.status = 201;
     }
