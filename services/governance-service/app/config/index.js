@@ -13,6 +13,7 @@ const general = {
   storage: 'mongo',
 
   loggingServiceBaseUrl: process.env.LOGGING_SERVICE_BASE_URL || 'http://logging-service.oih-dev-ns.svc.cluster.local:1234',
+  flowRepoUrl: process.env.FLOW_REPO_BASE_URL || 'http://flow-repository.oih-dev-ns.svc.cluster.local:3001',
 };
 
 module.exports = general;

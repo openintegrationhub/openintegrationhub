@@ -41,7 +41,7 @@ async function getObjectDistribution(user) {
 
     for (let i = 0; i < allEvents.data.length; i += 1) {
       const currentEvent = allEvents.data[i];
-      const serviceEntry = currentEvent.actedOnBehalfOf.find(el => el.agentType === 'Application');
+      const serviceEntry = currentEvent.actedOnBehalfOf.find((el) => el.agentType === 'Application');
       if (!serviceEntry) continue;
 
       const serviceName = serviceEntry.actedOnBehalfOf || 'unkownService';
@@ -85,7 +85,7 @@ async function getFlows(token, page) {
   try {
     const currentPage = (page && page > 0) ? page : 1;
     const response = await fetch(
-      `${config.flowRepoUrl}?page=${currentPage}`,
+      `${config.flowRepoUrl}/flows?page=${currentPage}`,
       {
         method: 'GET',
         headers: {
@@ -111,6 +111,7 @@ function getFlowsWithProblematicSettings(flows) {
       affectedFlows.push({
         flowId: flows[i].id,
         reason: 'No graph or nodes',
+        flowData: flows[i],
       });
     } else {
       for (let j = 0; j < flows[i].graph.nodes.length; j += 1) {
@@ -118,19 +119,25 @@ function getFlowsWithProblematicSettings(flows) {
           affectedFlows.push({
             flowId: flows[i].id,
             reason: 'No node settings',
+            flowData: flows[i],
           });
+          break;
         } else if ('governance' in flows[i].graph.nodes[j].nodeSettings) {
           if (flows[i].graph.nodes[j].nodeSettings.governance !== true) {
             affectedFlows.push({
               flowId: flows[i].id,
               reason: 'Governance is not set to true',
+              flowData: flows[i],
             });
+            break;
           }
         } else {
           affectedFlows.push({
             flowId: flows[i].id,
             reason: 'No governance settings',
+            flowData: flows[i],
           });
+          break;
         }
       }
     }
@@ -150,7 +157,7 @@ async function checkFlows(token) {
     totalPages = flowReproResult.meta.totalPages;
   }
 
-  let affectedFlows = getFlowsWithProblematicSettings(flowReproResult);
+  let affectedFlows = getFlowsWithProblematicSettings(flowReproResult.data);
 
   let page = 2;
   while (page <= totalPages) {

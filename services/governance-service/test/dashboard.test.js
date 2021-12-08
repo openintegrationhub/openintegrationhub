@@ -4,6 +4,7 @@
 /* eslint no-unused-vars: "off" */
 
 const mongoose = require('mongoose');
+const nock = require('nock');
 
 process.env.MONGODB_URL = global.__MONGO_URI__;
 
@@ -22,11 +23,89 @@ const Server = require('../app/server');
 const mainServer = new Server();
 
 const log = require('../app/config/logger'); // eslint-disable-line
+const config = require('../app/config/index'); // eslint-disable-line
 
 const adminId = token.adminToken.value.sub;
 const guestId = token.guestToken.value.sub;
 
 let app;
+
+const testFlows = {
+  data: [
+    {
+      id: '1',
+      name: 'SnazzyToWice',
+      description: 'Flow from Snazzy to WiceCRM',
+      status: 'starting',
+      graph: {
+        nodes: [
+          {
+            id: 'NodeOne',
+            componentId: '5ca5c44c187c040010a9bb8b',
+            function: 'upsertPerson',
+            fields: {
+              username: 'TestName',
+              password: 'TestPass',
+            },
+          },
+          {
+            id: 'NodeTwo',
+            componentId: '5ca5c44c187c040010a9bb8c',
+            function: 'transformTestFromOih',
+          },
+        ],
+        edges: [
+          {
+            source: 'NodeTwo',
+            target: 'NodeOne',
+          },
+        ],
+      },
+    },
+    {
+      id: '2',
+      name: 'SnazzyToWice with Governance',
+      description: 'Flow from Snazzy to WiceCRM with Governance activated',
+      status: 'active',
+      graph: {
+        nodes: [
+          {
+            id: 'NodeOne',
+            componentId: '5ca5c44c187c040010a9bb8b',
+            function: 'upsertPerson',
+            fields: {
+              username: 'TestName',
+              password: 'TestPass',
+            },
+            nodeSettings: {
+              governance: true,
+            },
+          },
+          {
+            id: 'NodeTwo',
+            componentId: '5ca5c44c187c040010a9bb8c',
+            function: 'transformTestFromOih',
+            nodeSettings: {
+              governance: true,
+            },
+          },
+        ],
+        edges: [
+          {
+            source: 'NodeTwo',
+            target: 'NodeOne',
+          },
+        ],
+      },
+    },
+  ],
+  meta: {
+    total: 2,
+    page: 1,
+    perPage: 10,
+    totalPages: 1,
+  },
+};
 
 beforeAll(async () => {
   iamMock.setup();
@@ -35,6 +114,12 @@ beforeAll(async () => {
   mainServer.setupSwagger();
   mainServer.setup(mongoose);
   app = mainServer.listen();
+
+  nock(config.flowRepoUrl)
+    .get('/flows')
+    .query({ page: 1 })
+    .reply(200, testFlows)
+    .persist();
 
   await new ProvenanceEvent({
     entity: {
@@ -191,5 +276,20 @@ describe('Dashboard Operations', () => {
         deleted: 0,
       },
     });
+  });
+
+  test('should get the flows with warnings', async () => {
+    const res = await request
+      .get('/dashboard/warnings')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    expect(Array.isArray(res.body.flowWarnings)).toEqual(true);
+    expect(res.body.flowWarnings.length).toEqual(1);
+    expect(res.body.flowWarnings[0].flowId).toEqual('1');
+    expect(res.body.flowWarnings[0].reason).toEqual('No node settings');
+    expect(res.body.flowWarnings[0].flowData).toEqual(testFlows.data[0]);
   });
 });

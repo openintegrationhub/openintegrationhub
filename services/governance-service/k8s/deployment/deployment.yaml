@@ -24,6 +24,8 @@ spec:
         - configMapRef:
             name: governance-service
         env:
+        - name: FLOW_REPO_BASE_URL
+          value: 'http://flow-repository.oih-dev-ns.svc.cluster.local:3001'
         - name: MONGODB_URL
           valueFrom:
             secretKeyRef:
