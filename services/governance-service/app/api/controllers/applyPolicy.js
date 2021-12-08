@@ -27,7 +27,7 @@ function evaluateSingleConstraint(data, currentPermission) {
   let result = {
     passes: false,
   };
-  const handler = defaultFunctions.find(el => el.name === currentPermission.operator);
+  const handler = defaultFunctions.find((el) => el.name === currentPermission.operator);
   if (handler) {
     result = handler.code(data, { constraint: currentPermission });
   } else {
@@ -127,7 +127,7 @@ router.post('/', jsonParser, async (req, res) => {
   if (metadata.policy.duty && metadata.policy.duty.length) {
     for (let i = 0; i < metadata.policy.duty.length; i += 1) {
       const currentDuty = metadata.policy.duty[i];
-      const handler = defaultFunctions.find(el => el.name === currentDuty.action);
+      const handler = defaultFunctions.find((el) => el.name === currentDuty.action);
       if (handler) {
         result = handler.code(result.data, currentDuty);
       } else if (currentDuty.action in storedFunctionCache.storedFunctions) {
