@@ -10,7 +10,7 @@ export default () => {
     return new KoaRouter()
         .use(bodyParser({
             // TODO: Add process.env to set jsonLimit
-            jsonLimit: "10mb"
+            jsonLimit: "1000mb"
         }))
         .use(koaMiddleware)
         .get('/', parsePagedQuery(), (ctx: RouterContext) => controller.getMany(ctx))

@@ -17,7 +17,7 @@ function nockIamIntrospection(user = {}) {
   return;
 }
 
-const PERSONS_SET_LENGTH = 1000
+const PERSONS_SET_LENGTH = 200
 
 const user1 = { sub: 'user1', role: 'USER', permissions: [], tenant: "tenant1" }
 
@@ -32,7 +32,7 @@ describe('Import & Merge', () => {
     this.auth = 'Bearer justSomeToken';
 
     // reset elasticsearch data
-    createClient("http://elasticsearch:9200")
+    createClient("http://localhost:9200")
     setCurrentIndex("oih-data-hub")
 
     // reset index
@@ -89,6 +89,53 @@ describe('Import & Merge', () => {
           }
       ))
       
+      // manually add duplicates
+      records[0] = {
+          domainId: "my-domain",
+          schemaUri: "my-schema",
+          content: {
+              firstName: "Bert",
+              lastName: "Meier Foo",
+              contactData: [{ type: "email", value: "bmeier@gmx.net" }]
+          },
+          refs: [
+            {
+              applicationUid: "app-id",
+              recordUid: "1234",
+              modificationHistory: [
+                {
+                  user: user1.sub,
+                  operation: "import",
+                  timestamp: (new Date()).toISOString()
+                }
+              ]
+            }
+          ]
+        }
+
+      records[1] = {
+          domainId: "my-domain",
+          schemaUri: "my-schema",
+          content: {
+              firstName: "Bert",
+              lastName: "Meier Foo",
+              contactData: [{ type: "email", value: "blub@asdasdasd.com" }]
+          },
+          refs: [
+            {
+              applicationUid: "app-id",
+              recordUid: "1234",
+              modificationHistory: [
+                {
+                  user: user1.sub,
+                  operation: "import",
+                  timestamp: (new Date()).toISOString()
+                }
+              ]
+            }
+          ]
+        }
+
       nockIamIntrospection(user1);
 
       await this.request

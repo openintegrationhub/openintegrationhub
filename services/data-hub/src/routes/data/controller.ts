@@ -327,18 +327,36 @@ export default class DataController {
         const { body } = ctx.request;
         const { user } = ctx.state;
 
-        const createPromises = []
+        const duplicateHits: any[] = []
+        let counter = 0
+        let maxScore = 0
+        let bestHit;
 
         if (!Array.isArray(body) || body.length === 0) {
             throw new BadRequest()
         }
 
         for (const record of body) {
-            const { firstName, lastName, birthday } = record.content
-            const { body } = await searchContact(user.tenant, firstName, lastName, birthday)
+            const { firstName, lastName, contactData } = record.content
+            let email;
+
+            if (contactData.length !== 0) {
+                contactData.forEach(data => {
+                    if (data.type === "email") {
+                        email = data.value
+                        return
+                    }
+                })
+            }
+
+            const { body } = await searchContact(user.tenant, firstName, lastName, email)
             const { hits } = body
 
-            if (hits.total.value === 0) {
+            if (firstName === "Bert") {
+                console.log(await searchContact(user.tenant, "Bert", "Meier Foo", "blub@asdasdasd.com"))
+            }
+
+            if (hits.max_score < 4) {
                 const owners = record.owners || []
 
                 if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
@@ -348,32 +366,57 @@ export default class DataController {
                     });
                 }
 
-                // @ts-ignore: TS2345
-                const dataHubRecord = await DataObject.create({
-                    ...record,
-                    tenant: user.tenant,
-                    owners,
-                });
+                // // @ts-ignore: TS2345
+                // const dataHubRecord = await DataObject.create({
+                //     ...record,
+                //     tenant: user.tenant,
+                //     owners,
+                // });
 
                 // create elasticsearch entry
                 await createContact({
-                    dataHubId: dataHubRecord._id.toString(),
+                    dataHubId: "asd",
                     tenant: user.tenant,
                     firstName,
                     lastName,
-                    birthday
+                    email
                 })
 
-                // refresh index
-                await refreshIndex()
+                // if (counter % 50 === 0) {
+                    // refresh index
+                    await refreshIndex()
+                // }
+
             } else {
-                console.log('#### found duplicate')
-                console.log(firstName, lastName, birthday)
-                console.log(util.inspect(hits, false, null, true))
+                if (hits.hits[0]._score > maxScore) {
+                    bestHit =  {
+                        firstName, 
+                        lastName, 
+                        email,
+                        hit: hits.hits[0]
+                    }
+                    maxScore = hits.hits[0]._score
+                }
+
+                duplicateHits.push({
+                    firstName, 
+                    lastName, 
+                    email,
+                    hit: hits.hits[0]
+                })
             }
+
+            console.log(counter++)
 
         }
 
+
+        console.log(util.inspect(duplicateHits, false, null, true))
+        console.log("Total ", counter)
+        console.log("Hits length", duplicateHits.length)
+        console.log(util.inspect(bestHit, false, null, true))
+
+        console.log(await searchContact(user.tenant, "Bert", "Meier Foo", "blub@asdasdasd.com"))
         // body.forEach(record => {
         //     const owners = record.owners || []
 

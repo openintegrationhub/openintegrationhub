@@ -63,7 +63,7 @@ export async function searchContact(
   tenant: string,
   firstName: string,
   lastName: string,
-  birthday: string
+  email: string
 ): Promise<ApiResponse> {
   return client.search({
     index,
@@ -86,6 +86,7 @@ export async function searchContact(
                       query: firstName,
                       fields: ['firstName'],
                       fuzziness: 1,
+                      boost: 1
                     },
                   },
                   {
@@ -93,15 +94,16 @@ export async function searchContact(
                       query: lastName,
                       fields: ['lastName'],
                       fuzziness: 1,
+                      boost: 1
                     },
                   },
-                  // {
-                  //   multi_match: {
-                  //     query: 'Sat May 25 1974',
-                  //     fields: ['birthday'],
-                  //     fuzziness: 1,
-                  //   },
-                  // },
+                  {
+                    multi_match: {
+                      query: email,
+                      fields: ['email'],
+                      fuzziness: 1,
+                    },
+                  },
                 ],
               },
             },

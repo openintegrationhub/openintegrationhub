@@ -9,7 +9,7 @@ export interface ContactMapping {
     tenant: Type,
     firstName: Type,
     lastName: Type,
-    birthday: Type
+    email: Type
   }
 }
 
@@ -18,7 +18,7 @@ export interface ContactValue {
   tenant: string,
   firstName: string,
   lastName: string,
-  birthday: string
+  email: string
 }
 
 export const contactMapping: ContactMapping = {
@@ -28,6 +28,6 @@ export const contactMapping: ContactMapping = {
     dataHubId: { type: 'text' },
     firstName: { type: 'text' },
     lastName: { type: 'text' },
-    birthday: { type: 'text' },
+    email: { type: 'text' },
   }
 }
