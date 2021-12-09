@@ -2,10 +2,6 @@ require('dotenv').config()
 const path = require('path')
 const { homedir } = require('os')
 
-const dockerUserGroup = process.env.DOCKER_USER_GROUP
-  ? process.env.DOCKER_USER_GROUP
-  : 'node:node'
-
 const orchestratorReplica = 1
 const nodeImage = 'node:16-bullseye'
 const kubernetesVersion = 'v1.22.4'
@@ -223,7 +219,6 @@ function generateEnvs(collection) {
 module.exports = {
   env: {
     // general
-    DOCKER_USER_GROUP: dockerUserGroup,
     ORIGIN_WHITELIST: originWhitelist,
     NODE_IMAGE: nodeImage,
     HOST_REPOSITORY_ROOT: repositoryRoot,
