@@ -15,6 +15,7 @@ const iamMock = require('./utils/iamMock');
 const token = require('./utils/tokens');
 const { addProvenanceEvent } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
+const { getObjectDistributionAsGraph } = require('../app/utils/dashboard');
 
 const ProvenanceEvent = require('../app/models/provenanceEvent');
 
@@ -153,6 +154,11 @@ beforeAll(async () => {
         actedOnBehalfOf: 'Google',
       },
       {
+        id: 'j460ge49qh3rusfuos',
+        agentType: 'Flow',
+        actedOnBehalfOf: 'Flow1',
+      },
+      {
         id: 't35fdhtz57586',
         agentType: 'Tenant',
       },
@@ -191,6 +197,11 @@ beforeAll(async () => {
         actedOnBehalfOf: 'Office365',
       },
       {
+        id: 'j460ge49qh3rusfuox',
+        agentType: 'Flow',
+        actedOnBehalfOf: 'Flow2',
+      },
+      {
         id: 't35fdhtz57586',
         agentType: 'Tenant',
       },
@@ -227,6 +238,11 @@ beforeAll(async () => {
         id: 'j460ge49qh3rusfuox',
         agentType: 'Application',
         actedOnBehalfOf: 'Snazzy',
+      },
+      {
+        id: 'j460ge49qh3rusfuoz',
+        agentType: 'Flow',
+        actedOnBehalfOf: 'Flow1',
       },
       {
         id: 't35fdhtz57586',
@@ -273,6 +289,74 @@ describe('Dashboard Operations', () => {
         created: 0,
         updated: 0,
         received: 1,
+        deleted: 0,
+      },
+    });
+  });
+
+  test.only('should get the data distribution as graph', async () => {
+    const graph = await getObjectDistributionAsGraph({
+      sub: 'TestAdmin',
+      username: 'admin@example.com',
+      role: 'ADMIN',
+      permissions: ['all'],
+      isAdmin: true,
+      iat: 1337,
+    });
+
+    expect(graph.nodes).toHaveLength(3);
+    expect(graph.edges).toHaveLength(2);
+
+    expect(graph.nodes).toContainEqual({
+      data: {
+        id: 'Google',
+        created: 0,
+        updated: 0,
+        received: 1,
+        deleted: 0,
+      },
+    });
+
+    expect(graph.nodes).toContainEqual({
+      data: {
+        id: 'Snazzy',
+        created: 0,
+        updated: 1,
+        received: 0,
+        deleted: 0,
+      },
+    });
+
+    expect(graph.nodes).toContainEqual({
+      data: {
+        id: 'Office365',
+        created: 1,
+        updated: 0,
+        received: 0,
+        deleted: 0,
+      },
+    });
+
+    expect(graph.edges).toContainEqual({
+      data: {
+        id: 'Flow1',
+        source: 'Google',
+        target: 'Snazzy',
+        created: 0,
+        updated: 1,
+        received: 1,
+        deleted: 0,
+      },
+    });
+
+    expect(graph.edges).toContainEqual({
+      data: {
+        id: 'Flow2',
+        source: false,
+        target: 'Office365',
+        created: 1,
+        updated: 0,
+        received: 0,
         deleted: 0,
       },
     });
