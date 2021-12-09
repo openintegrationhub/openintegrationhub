@@ -15,7 +15,6 @@ const iamMock = require('./utils/iamMock');
 const token = require('./utils/tokens');
 const { addProvenanceEvent } = require('../app/api/controllers/mongo');
 const { reportHealth } = require('../app/utils/eventBus');
-const { getObjectDistributionAsGraph } = require('../app/utils/dashboard');
 
 const ProvenanceEvent = require('../app/models/provenanceEvent');
 
@@ -295,14 +294,14 @@ describe('Dashboard Operations', () => {
   });
 
   test.only('should get the data distribution as graph', async () => {
-    const graph = await getObjectDistributionAsGraph({
-      sub: 'TestAdmin',
-      username: 'admin@example.com',
-      role: 'ADMIN',
-      permissions: ['all'],
-      isAdmin: true,
-      iat: 1337,
-    });
+    const res = await request
+      .get('/dashboard/distribution/graph')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    const graph = res.body;
 
     expect(graph.nodes).toHaveLength(3);
     expect(graph.edges).toHaveLength(2);
