@@ -64,9 +64,9 @@ router.get('/objectStatus/:id', jsonParser, can('tenant.all'), async (req, res) 
 
   if (!id) return res.status(400).send({ errors: [{ message: 'Could not find object oihUid' }] });
 
-  const events = await getProvenanceEvents(req.user, 100, 1, { 'entity.id': id });
+  const events = await getProvenanceEvents(req.user, 100, 1, { 'entity.id': id }, false, false, false, false);
 
-  res.status(200).send({ events, refs: referenceData ? referenceData.refs : false });
+  res.status(200).send({ events: events.data, refs: referenceData ? referenceData.refs : false, oihUid: id });
 });
 
 // Gets a list of current warnings and advisories
