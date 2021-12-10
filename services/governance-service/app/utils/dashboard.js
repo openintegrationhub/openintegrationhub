@@ -23,12 +23,13 @@ async function getRefs(id, recordUid, token) {
 
   if (response.status !== 200) return false;
 
-  const object = response.json();
-  if (!object || !object.refs) return false;
+  const object = await response.json();
+
+  if (!object || !object.data || !object.data.refs) return false;
 
   return {
-    refs: object.refs,
-    id: object.id,
+    refs: object.data.refs,
+    id: object.data.id,
   };
 }
 
