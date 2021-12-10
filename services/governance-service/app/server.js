@@ -106,7 +106,7 @@ class Server {
 
     this.app.use('/healthcheck', healthcheck);
 
-    this.app.use('/static', express.static(__dirname + '/public'));
+    this.app.use('/static', express.static(`${__dirname}/public`));
 
     // Reroute to docs
     this.app.use('/docs', (req, res) => {

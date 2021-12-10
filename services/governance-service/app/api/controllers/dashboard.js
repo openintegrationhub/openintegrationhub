@@ -20,7 +20,7 @@ const router = express.Router();
 
 const log = require('../../config/logger'); // eslint-disable-line
 const {
-  getObjectDistribution, getObjectDistributionAsGraph, checkFlows, getRefs,
+  getObjectDistribution, getObjectDistributionAsGraph, checkFlows, getRefs, drawGraph,
 } = require('../../utils/dashboard');
 const { getProvenanceEvents } = require('./mongo');
 
@@ -36,10 +36,19 @@ router.get('/distribution', jsonParser, can('tenant.all'), async (req, res) => {
 // Gets overview of data distribution
 router.get('/distribution/graph', jsonParser, can('tenant.all'), async (req, res) => {
   const graph = await getObjectDistributionAsGraph(req.user);
-
   if (!graph) return res.status(404).send({ error: [{ message: 'Could not gather distribution graph' }] });
 
   res.status(200).send(graph);
+});
+
+// Gets overview of data distribution
+router.get('/distribution/graph/html', jsonParser, can('tenant.all'), async (req, res) => {
+  const graph = await getObjectDistributionAsGraph(req.user);
+  if (!graph) return res.status(404).send({ error: [{ message: 'Could not gather distribution graph' }] });
+
+  const html = drawGraph(graph);
+
+  res.status(200).send(html);
 });
 
 // Gets detailed information about a single object

@@ -2,6 +2,7 @@
 /* eslint max-len: "off" */
 /* eslint func-names: "off" */
 /* eslint consistent-return: "off" */
+/* eslint no-tabs: "off" */
 
 // const path = require('path');
 // const _ = require('lodash');
@@ -9,7 +10,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const { can } = require('@openintegrationhub/iam-utils');
+// const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 
 const jsonParser = bodyParser.json();
@@ -21,7 +22,6 @@ const log = require('../../config/logger'); // eslint-disable-line
 // Gets overview of data distribution
 // , can('tenant.all')
 router.get('/', jsonParser, async (req, res) => {
-
   const percentageIn = 55;
   const percentageInLeft = 100 - percentageIn;
 
@@ -36,9 +36,8 @@ router.get('/', jsonParser, async (req, res) => {
     <circle class="donutSegment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#24AEA2" stroke-width="3" stroke-dasharray="${percentageOut} ${percentageOutLeft}" stroke-dashoffset="-25"></circle>
   </svg>`;
 
-  const image1 = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg1);
+  const image1 = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg1)}`;
   // console.log(image1);
-
 
   const html = `<html>
   <head>
@@ -261,6 +260,5 @@ router.get('/', jsonParser, async (req, res) => {
 
   res.status(200).send(html);
 });
-
 
 module.exports = router;
