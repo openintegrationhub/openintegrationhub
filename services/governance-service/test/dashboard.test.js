@@ -107,6 +107,26 @@ const testFlows = {
   },
 };
 
+const testRefs = {
+  data: {
+    id: 'aoveu03dv921dvo',
+    refs: [
+      {
+        applicationUid: 'Office365',
+        recordUid: 'abc',
+      },
+      {
+        applicationUid: 'Google',
+        recordUid: 'def',
+      },
+      {
+        applicationUid: 'Snazzy',
+        recordUid: 'ghi',
+      },
+    ],
+  },
+};
+
 beforeAll(async () => {
   iamMock.setup();
   mainServer.setupMiddleware();
@@ -120,6 +140,10 @@ beforeAll(async () => {
     .query({ page: 1 })
     .reply(200, testFlows)
     .persist();
+
+  nock(config.dataHubUrl)
+    .get('/aoveu03dv921dvo')
+    .reply(200, testRefs);
 
   await new ProvenanceEvent({
     entity: {
@@ -166,7 +190,7 @@ beforeAll(async () => {
 
   await new ProvenanceEvent({
     entity: {
-      id: 'aoveu03dv921dva',
+      id: 'aoveu03dv921dvo',
       entityType: 'oihUid',
     },
     activity: {
@@ -209,7 +233,7 @@ beforeAll(async () => {
 
   await new ProvenanceEvent({
     entity: {
-      id: 'aoveu03dv921dvx',
+      id: 'aoveu03dv921dvo',
       entityType: 'oihUid',
     },
     activity: {
@@ -361,7 +385,7 @@ describe('Dashboard Operations', () => {
     });
   });
 
-  test.only('should get the data graph drawn as html', async () => {
+  test('should get the data graph drawn as html', async () => {
     const res = await request
       .get('/dashboard/distribution/graph/html')
       .set('Authorization', 'Bearer adminToken')
@@ -376,6 +400,33 @@ describe('Dashboard Operations', () => {
     expect(html).toMatch(/.*Snazzy/);
     expect(html).toMatch(/.*Google/);
     expect(html).toMatch(/<\/html>$/);
+  });
+
+  test('should detialed information about one data object', async () => {
+    const res = await request
+      .get('/dashboard/objectStatus/aoveu03dv921dvo')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    const { body } = res;
+
+    expect(body.events).toHaveLength(3);
+    expect(body.oihUid).toEqual('aoveu03dv921dvo');
+    expect(body.refs).toHaveLength(3);
+    expect(body.refs).toContainEqual({
+      applicationUid: 'Office365',
+      recordUid: 'abc',
+    });
+    expect(body.refs).toContainEqual({
+      applicationUid: 'Snazzy',
+      recordUid: 'ghi',
+    });
+    expect(body.refs).toContainEqual({
+      applicationUid: 'Google',
+      recordUid: 'def',
+    });
   });
 
   test('should get the flows with warnings', async () => {
