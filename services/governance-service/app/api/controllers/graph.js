@@ -2,6 +2,7 @@
 /* eslint max-len: "off" */
 /* eslint func-names: "off" */
 /* eslint consistent-return: "off" */
+/* eslint no-tabs: "off" */
 
 // const path = require('path');
 // const _ = require('lodash');
@@ -9,7 +10,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const { can } = require('@openintegrationhub/iam-utils');
+// const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 
 const jsonParser = bodyParser.json();

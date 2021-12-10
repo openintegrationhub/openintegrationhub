@@ -293,7 +293,7 @@ describe('Dashboard Operations', () => {
     });
   });
 
-  test.only('should get the data distribution as graph', async () => {
+  test('should get the data distribution as graph', async () => {
     const res = await request
       .get('/dashboard/distribution/graph')
       .set('Authorization', 'Bearer adminToken')
@@ -359,6 +359,23 @@ describe('Dashboard Operations', () => {
         deleted: 0,
       },
     });
+  });
+
+  test.only('should get the data graph drawn as html', async () => {
+    const res = await request
+      .get('/dashboard/distribution/graph/html')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    const html = res.text;
+
+    expect(html).toMatch(/^<html>/);
+    expect(html).toMatch(/.*Office365/);
+    expect(html).toMatch(/.*Snazzy/);
+    expect(html).toMatch(/.*Google/);
+    expect(html).toMatch(/<\/html>$/);
   });
 
   test('should get the flows with warnings', async () => {
