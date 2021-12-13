@@ -258,42 +258,106 @@ async function checkFlows(token) {
   return affectedFlows;
 }
 
+function drawRingChart(maxIn, maxOut, nodeData) {
+  const percentageIn = (nodeData.received)? Math.ceil((nodeData.received / maxIn) * 100) : 0;
+  const percentageInLeft = 100 - percentageIn;
+
+  const percentageOut = (nodeData.sent)? Math.ceil((nodeData.sent / maxOut) * 100) : 0;
+  const percentageOutLeft = 100 - percentageOut;
+
+  const svg = `<svg width="120px" height="120px" viewBox="0 0 42 42" class="donut" xmlns="http://www.w3.org/2000/svg">
+    <circle class="donutHole" cx="21" cy="21" r="15.91549430918954" fill="#ffffff"></circle>
+    <circle class="donutRing" cx="21" cy="21" r="12.91549430918954" fill="transparent" stroke="#dddddd" stroke-width="3"></circle>
+    <circle class="donutSegment" cx="21" cy="21" r="12.91549430918954" fill="transparent" stroke="#62C5C6" stroke-width="3" stroke-dasharray="${percentageIn} ${percentageInLeft}" stroke-dashoffset="-25"></circle>
+    <circle class="donutRing" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#dddddd" stroke-width="3"></circle>
+    <circle class="donutSegment" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#24AEA2" stroke-width="3" stroke-dasharray="${percentageOut} ${percentageOutLeft}" stroke-dashoffset="-25"></circle>
+  </svg>`;
+
+  const image = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+
+  return image;
+}
+
 function drawGraph(graph) {
-  const elements = graph.nodes.concat(graph.edges);
+  console.log(JSON.stringify(graph));
+
+  //Group edges for display
+  const edges = [];
+  const flowsIndex = {};
+
+  for(let i=0; i<graph.edges.length; i+=1){
+    const key = `${graph.edges[i].data.source}_${graph.edges[i].data.target}`;
+    if(key in flowsIndex) {
+      edges[flowsIndex[key]].data.created += graph.edges[i].data.created;
+      edges[flowsIndex[key]].data.updated += graph.edges[i].data.updated;
+      edges[flowsIndex[key]].data.deleted += graph.edges[i].data.deleted;
+      edges[flowsIndex[key]].data.received += graph.edges[i].data.received;
+      edges[flowsIndex[key]].data.numFlows += 1;
+    } else {
+      const length = edges.length;
+      flowsIndex[key] = length;
+      edges.push(graph.edges[i]);
+      edges[length].data.numFlows = 1;
+    }
+  }
+
+  for(let i=0; i<edges.length; i+=1){
+    if(edges[i].data.numFlows === 0) {
+      edges[i].data.width = 1;
+    } else if(edges[i].data.numFlows < 10) {
+      edges[i].data.width = edges[i].data.numFlows;
+    } else {
+      edges[i].data.width = 12;
+    }
+  }
+
+  log.info('Edges:');
+  log.info(edges);
+
+
+  const elements = graph.nodes.concat(edges); // graph.edges
+
+  // Collect flows of node
+  nodeFlows = {};
+
+  for(let i=0; i<graph.edges.length; i+=1){
+    if(!(graph.edges[i].data.source in nodeFlows)) {
+      nodeFlows[graph.edges[i].data.source] = { in: [], out: [], flowsIn: 0, flowsOut: 0 };
+    }
+
+    if(!(graph.edges[i].data.target in nodeFlows)) {
+      nodeFlows[graph.edges[i].data.target] = { in: [], out: [], flowsIn: 0, flowsOut: 0 };
+    }
+
+    nodeFlows[graph.edges[i].data.source].out.push(`<div class="single-flow" title="${graph.edges[i].data.id}">${graph.edges[i].data.target}</div>`);
+    nodeFlows[graph.edges[i].data.target].in.push(`<div class="single-flow" title="${graph.edges[i].data.id}">${graph.edges[i].data.source}</div>`);
+
+    nodeFlows[graph.edges[i].data.source].flowsOut += 1;
+    nodeFlows[graph.edges[i].data.target].flowsIn += 1;
+  }
+
+  // Calculate in / out ratio
+  let maxIn = 0;
+  let maxOut = 0;
+  for(let i=0; i<graph.nodes.length; i+=1){
+    if (graph.nodes[i].data.sent > maxOut) maxOut = graph.nodes[i].data.sent;
+    if (graph.nodes[i].data.received > maxIn) maxIn = graph.nodes[i].data.received;
+  }
+
+  // Adding calculated data and charts to nodes
+  for(let i=0; i<graph.nodes.length; i+=1){
+    elements[i].data.image = drawRingChart(maxIn, maxOut, elements[i].data);
+    if(elements[i].data.id in nodeFlows) {
+      elements[i].data.nodeFlows = nodeFlows[elements[i].data.id];
+    }
+  }
 
   const html = `<html>
   <head>
     <title>Graph of flows</title>
+    <link rel="stylesheet" href="${config.governanceServiceBaseUrl}/static/graph.css">
+    <script type="text/javascript" src="${config.governanceServiceBaseUrl}/static/graph.js"></script>
     <style>
-        #graph {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            z-index: 999;
-        }
-        #overlay {
-          width: 100px;
-          height: 200px;
-          max-width: 0px;
-          max-height: 0px;
-          background-color: #fff;
-          box-shadow: 0 18px 38px rgba(0,0,0,0.30), 0 14px 12px rgba(0,0,0,0.20);
-          border-radius: 2px;
-          padding: 0px;
-          overflow: hidden;
-          position: absolute;
-          z-index: 100000;
-          transition: 0.25s ease-in;
-        }
-
-        #overlay.show {
-          max-width: 100px;
-          max-height: 200px;
-          padding: 15px;
-          transition: 0.25s ease-in;
-        }
     </style>
     <script src="${config.governanceServiceBaseUrl}/static/cytoscape.min.js"></script>
   </head>
@@ -303,104 +367,8 @@ function drawGraph(graph) {
   </div>
   <div id="graph"></div>
     <script>
-      // @todo: get graph data from api
-      var apiUrl = '${config.governanceServiceBaseUrl}/dashboard/graph';
-
-      var graph = cytoscape({
-        container: document.getElementById('graph'),
-        elements: ${JSON.stringify(elements)},
-          style: [
-            {
-              selector: 'node',
-              css: {
-                // shape: 'round-rectangle',
-                shape: 'circle',
-                width: 100,
-                height: 100,
-                //'background-color':'#61bffc',
-                'background-color':'#fffff',
-                'background-image': 'data(image)',
-                //'background-fit': 'cover',
-                //'background-width': 50,
-                //'background-height': 10,
-                //'background-position-x': 5,
-                content: 'data(name)',
-                'text-valign': 'center',
-                'text-halign': 'center',
-                'border-width': 1,
-                'border-opacity': 0.0,
-                //'border-width': 4,
-                //'border-style': 'solid',
-                //'border-color': '#51afec',
-                //'border-opacity': 0.9,
-
-              },
-            },
-            {
-              selector: 'edge',
-              css: {
-                'line-color':'#ddd',
-                'line-style': 'dashed',
-                'line-dash-offset': 0,
-                'line-dash-pattern': [4, 4],
-                'curve-style': 'bezier', // 'taxi',
-              }
-            },
-            {
-              selector: 'label',
-              css: {
-                // color: '#fff',
-                color: '#666',
-                'font-size': '10',
-              }
-            }
-          ],
-          layout: {
-            name: 'cose', // grid
-            directed: false,
-            padding: 10,
-            fit: true
-        }
-      });
-
-
-      // Add extra info
-
-
-      // Handle clicks
-      graph.on('click', '*', function(event){
-        var overlay = document.getElementById('overlay');
-        overlay.classList.remove('show');
-      });
-
-      graph.on('click', 'node', function(event){
-        var overlay = document.getElementById('overlay');
-        overlay.classList.remove('show');
-        console.log(event);
-        console.log("Click on:" + event.target.data("name"));
-        console.log('x:', event.renderedPosition.x);
-        console.log('y:', event.renderedPosition.y);
-
-        //overlay
-        overlay.style.left = event.renderedPosition.x;
-        overlay.style.top = event.renderedPosition.y;
-        overlay.classList.add('show');
-      });
-
-      // Animation
-      var offset = 0;
-      function animate() {
-        offset += 0.2
-        graph.edges().animate({
-          style: {'line-dash-offset': -offset}
-        });
-        requestAnimationFrame(animate);
-      }
-
-      graph.ready(() => {
-        animate()
-      });
-
+      window.initGraph('graph', ${JSON.stringify(elements)});
+      window.animateGraph();
     </script>
   </body>
 </html>`;
