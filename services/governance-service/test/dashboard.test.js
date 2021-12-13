@@ -402,7 +402,7 @@ describe('Dashboard Operations', () => {
     expect(html).toMatch(/<\/html>$/);
   });
 
-  test('should detialed information about one data object', async () => {
+  test('should detailed information about one data object', async () => {
     const res = await request
       .get('/dashboard/objectStatus/aoveu03dv921dvo')
       .set('Authorization', 'Bearer adminToken')
