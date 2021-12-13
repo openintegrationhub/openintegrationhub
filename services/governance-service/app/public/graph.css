@@ -6,20 +6,9 @@
     left: 0px;
     z-index: 999;
 }
-
 #overlay {
   width: 140px;
-  height: 300px;
-}
-
-#edgeOverlay {
-  width: 200px;
-  height: 200px;
-}
-
-.overlay {
-  width: 140px;
-  height: 300px;
+  height: 340px;
   max-width: 0px;
   max-height: 0px;
   background-color: #fff;
@@ -34,77 +23,30 @@
 
 #overlay.show {
   max-width: 140px;
-  max-height: 500px;
-}
-
-#edgeOverlay.show {
-  max-width: 200px;
-  max-height: 300px;
-}
-
-.overlay.show {
+  max-height: 340px;
   padding: 15px;
   transition: 0.25s ease-in;
 }
 
-
-.overlay div {
-  margin-bottom: 5px;
-}
-
-.overlay .flowLine {
-  border-bottom: 1px solid #eee;
-}
-
-.overlay .flowLine img{
-  height: 18px;
-  display: inline-block;
-  margin-bottom: -4px;
-  opacity: 0.5;
-}
-
-.overlay .flowStats{
-  font-size: 12px;
-  color: #999;
-  margin-top: 5px;
+#overlay div {
   margin-bottom: 5px;
 }
 
 #overlay div span {
-  width: 100px;
+  width: 80px;
   display: inline-block;
-}
-
-#overlay div b {
-  display: block;
-  float: right;
-  text-align: right;
 }
 
 #overlay div.flowList span {
   width: auto;
-  display: block;
-  float: left;
-  clear: both;
+  font-size: 16px;
 }
 
 #overlay div.flowList b{
-  width: 110px;
+  width: auto;
   font-size: 12px;
-  float: left;
-  margin-top: 5px;
-  margin-left: 5px;
-  text-align: left;
 }
 
 #overlay .single-flow{
   display: inline-block;
-}
-
-b.deleted {
-  color:red;
-}
-
-h3 {
-  margin: 0;
 }
