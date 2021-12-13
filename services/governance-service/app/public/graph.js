@@ -113,19 +113,19 @@ window.initGraph = function(id, elements) {
     var nodeFlows = event.target.data("nodeFlows");
 
     overlay.innerHTML = `
-      <div><span>Received:</span> <b>\${event.target.data("received")}</b></div>
-      <div><span>Sent:</span> <b>\${event.target.data("sent")}</b></div>
+      <div><span>Received:</span> <b>${event.target.data("received")}</b></div>
+      <div><span>Sent:</span> <b>${event.target.data("sent")}</b></div>
 
-      <div><span>Created:</span> <b>\${event.target.data("created")}</b></div>
-      <div><span>Updated:</span> <b>\${event.target.data("updated")}</b></div>
-      <div><span>Deleted:</span> <b>\${event.target.data("deleted")}</b></div>
+      <div><span>Created:</span> <b>${event.target.data("created")}</b></div>
+      <div><span>Updated:</span> <b>${event.target.data("updated")}</b></div>
+      <div><span>Deleted:</span> <b>${event.target.data("deleted")}</b></div>
 
       <div><h3>Flows</h3></div>
-      <div><span>In:</span> <b>\${nodeFlows.flowsIn}</b></div>
-      <div><span>Out:</span> <b>\${nodeFlows.flowsOut}</b></div>
+      <div><span>In:</span> <b>${nodeFlows.flowsIn}</b></div>
+      <div><span>Out:</span> <b>${nodeFlows.flowsOut}</b></div>
 
-      <div class="flowList"><span>⇤</span> <b>\${nodeFlows.in.join(', ')}</b></div>
-      <div class="flowList"><span>⇥</span> <b>\${nodeFlows.out.join(', ')}</b></div>
+      <div class="flowList"><span>⇤</span> <b>${nodeFlows.in.join(', ')}</b></div>
+      <div class="flowList"><span>⇥</span> <b>${nodeFlows.out.join(', ')}</b></div>
     `;
 
     //overlay
