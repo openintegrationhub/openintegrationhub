@@ -28,10 +28,10 @@ const {
 router.get('/', jsonParser, async (req, res) => {
   const graph = {
     "nodes":[
-      {"data":{"id":"Google","created":10,"updated":1,"received":3, "sent": 4, "deleted":0}},
-      {"data":{"id":"Office365","created":11,"updated":3,"received":1, "sent": 0,"deleted":0}},
-      {"data":{"id":"Snazzy","created":6,"updated":1,"received":7, "sent": 14,"deleted":0}},
-      {"data":{"id":"Gmail","created":10,"updated":1,"received":13, "sent": 3,"deleted":0}},
+      {"data":{"id":"Google","created":10,"updated":1,"received":4, "deleted":0}},
+      {"data":{"id":"Office365","created":11,"updated":3,"received":0, "deleted":0}},
+      {"data":{"id":"Snazzy","created":6,"updated":1,"received":14, "deleted":0}},
+      {"data":{"id":"Gmail","created":10,"updated":1,"received":3, "deleted":0}},
     ],
     "edges":[
       {"data":{"id":"Flow1","created":5,"updated":1,"received":4,"deleted":0,"source":"Google","target":"Snazzy"}},

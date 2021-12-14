@@ -9,7 +9,7 @@ const { getProvenanceEvents } = require('../api/controllers/mongo');
 async function getRefs(id, recordUid, token) {
   if (!id && !recordUid) return false;
 
-  const url = id ? `${config.dataHubUrl}/${id}` : `${config.dataHubUrl}/recordId/${id}`;
+  const url = id ? `${config.dataHubUrl}/${id}` : `${config.dataHubUrl}/recordId/${recordUid}`;
 
   const response = await fetch(
     url,
@@ -259,10 +259,10 @@ async function checkFlows(token) {
 }
 
 function drawRingChart(maxIn, maxOut, nodeData) {
-  const percentageIn = (nodeData.received)? Math.ceil((nodeData.received / maxIn) * 100) : 0;
+  const percentageIn = (nodeData.created)? Math.ceil((nodeData.created / maxIn) * 100) : 0;
   const percentageInLeft = 100 - percentageIn;
 
-  const percentageOut = (nodeData.sent)? Math.ceil((nodeData.sent / maxOut) * 100) : 0;
+  const percentageOut = (nodeData.received)? Math.ceil((nodeData.received / maxOut) * 100) : 0;
   const percentageOutLeft = 100 - percentageOut;
 
   const svg = `<svg width="120px" height="120px" viewBox="0 0 42 42" class="donut" xmlns="http://www.w3.org/2000/svg">
@@ -340,8 +340,8 @@ function drawGraph(graph) {
   let maxIn = 0;
   let maxOut = 0;
   for(let i=0; i<graph.nodes.length; i+=1){
-    if (graph.nodes[i].data.sent > maxOut) maxOut = graph.nodes[i].data.sent;
-    if (graph.nodes[i].data.received > maxIn) maxIn = graph.nodes[i].data.received;
+    if (graph.nodes[i].data.received > maxOut) maxOut = graph.nodes[i].data.received;
+    if (graph.nodes[i].data.created > maxIn) maxIn = graph.nodes[i].data.created;
   }
 
   // Adding calculated data and charts to nodes
@@ -363,7 +363,6 @@ function drawGraph(graph) {
   </head>
   <body>
   <div id="overlay">
-    Gimme some data
   </div>
   <div id="graph"></div>
     <script>
