@@ -293,10 +293,13 @@ function drawGraph(graph) {
       edges[flowsIndex[key]].data.deleted += graph.edges[i].data.deleted;
       edges[flowsIndex[key]].data.retrieved += graph.edges[i].data.retrieved;
       edges[flowsIndex[key]].data.numFlows += 1;
+      edges[flowsIndex[key]].data.flows.push(graph.edges[i].data);
     } else {
       const length = edges.length;
       flowsIndex[key] = length;
-      edges.push(graph.edges[i]);
+      const edge = Object.assign({}, graph.edges[i]);
+      edge.data.flows = [Object.assign({}, graph.edges[i].data)];
+      edges.push(edge);
       edges[length].data.numFlows = 1;
     }
   }
@@ -365,8 +368,8 @@ function drawGraph(graph) {
     <script src="${config.governanceServiceBaseUrl}/static/cytoscape.min.js"></script>
   </head>
   <body>
-  <div id="overlay">
-  </div>
+  <div id="overlay" class="overlay"></div>
+  <div id="edgeOverlay" class="overlay"></div>
   <div id="graph"></div>
     <script>
       window.initGraph('graph', ${JSON.stringify(elements)});
