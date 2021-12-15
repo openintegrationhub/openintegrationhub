@@ -111,7 +111,7 @@ window.initGraph = function(id, elements) {
 
     overlay.innerHTML = `
       <div><h3>Connector</h3></div>
-      <div><span>Out:</span> <b>${event.target.data("received")}</b></div>
+      <div><span>Out:</span> <b>${event.target.data("retrieved")}</b></div>
 
       <div><span>In</span></div>
       <div><span>Created:</span> <b>${event.target.data("created")}</b></div>
