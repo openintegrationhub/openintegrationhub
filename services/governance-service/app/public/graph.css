@@ -6,7 +6,18 @@
     left: 0px;
     z-index: 999;
 }
+
 #overlay {
+  width: 140px;
+  height: 300px;
+}
+
+#edgeOverlay {
+  width: 200px;
+  height: 200px;
+}
+
+.overlay {
   width: 140px;
   height: 300px;
   max-width: 0px;
@@ -24,11 +35,38 @@
 #overlay.show {
   max-width: 140px;
   max-height: 500px;
+}
+
+#edgeOverlay.show {
+  max-width: 200px;
+  max-height: 300px;
+}
+
+.overlay.show {
   padding: 15px;
   transition: 0.25s ease-in;
 }
 
-#overlay div {
+
+.overlay div {
+  margin-bottom: 5px;
+}
+
+.overlay .flowLine {
+  border-bottom: 1px solid #eee;
+}
+
+.overlay .flowLine img{
+  height: 18px;
+  display: inline-block;
+  margin-bottom: -4px;
+  opacity: 0.5;
+}
+
+.overlay .flowStats{
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
   margin-bottom: 5px;
 }
 
