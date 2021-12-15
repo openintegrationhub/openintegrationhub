@@ -297,8 +297,8 @@ function drawGraph(graph) {
     } else {
       const length = edges.length;
       flowsIndex[key] = length;
-      const edge = Object.assign({}, graph.edges[i]);
-      edge.data.flows = [Object.assign({}, graph.edges[i].data)];
+      const edge = { ...graph.edges[i] };
+      edge.data.flows = [{ ...graph.edges[i].data }];
       edges.push(edge);
       edges[length].data.numFlows = 1;
     }
