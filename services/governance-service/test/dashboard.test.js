@@ -152,7 +152,7 @@ beforeAll(async () => {
     },
     activity: {
       id: '30j0hew9kwbnkksfb09',
-      activityType: 'ObjectReceived',
+      activityType: 'ObjectRetrieved',
       used: 'getPersons',
     },
     agent: {
