@@ -259,10 +259,10 @@ async function checkFlows(token) {
 }
 
 function drawRingChart(maxIn, maxOut, nodeData) {
-  const percentageIn = (nodeData.created)? Math.ceil((nodeData.created / maxIn) * 100) : 0;
+  const percentageIn = (nodeData.created) ? Math.ceil((nodeData.created / maxIn) * 100) : 0;
   const percentageInLeft = 100 - percentageIn;
 
-  const percentageOut = (nodeData.retrieved)? Math.ceil((nodeData.retrieved / maxOut) * 100) : 0;
+  const percentageOut = (nodeData.retrieved) ? Math.ceil((nodeData.retrieved / maxOut) * 100) : 0;
   const percentageOutLeft = 100 - percentageOut;
 
   const svg = `<svg width="120px" height="120px" viewBox="0 0 42 42" class="donut" xmlns="http://www.w3.org/2000/svg">
@@ -281,13 +281,13 @@ function drawRingChart(maxIn, maxOut, nodeData) {
 function drawGraph(graph) {
   console.log(JSON.stringify(graph));
 
-  //Group edges for display
+  // Group edges for display
   const edges = [];
   const flowsIndex = {};
 
-  for(let i=0; i<graph.edges.length; i+=1){
+  for (let i = 0; i < graph.edges.length; i += 1) {
     const key = `${graph.edges[i].data.source}_${graph.edges[i].data.target}`;
-    if(key in flowsIndex) {
+    if (key in flowsIndex) {
       edges[flowsIndex[key]].data.created += graph.edges[i].data.created;
       edges[flowsIndex[key]].data.updated += graph.edges[i].data.updated;
       edges[flowsIndex[key]].data.deleted += graph.edges[i].data.deleted;
@@ -301,10 +301,10 @@ function drawGraph(graph) {
     }
   }
 
-  for(let i=0; i<edges.length; i+=1){
-    if(edges[i].data.numFlows === 0) {
+  for (let i = 0; i < edges.length; i += 1) {
+    if (edges[i].data.numFlows === 0) {
       edges[i].data.width = 1;
-    } else if(edges[i].data.numFlows < 10) {
+    } else if (edges[i].data.numFlows < 10) {
       edges[i].data.width = edges[i].data.numFlows;
     } else {
       edges[i].data.width = 12;
@@ -314,19 +314,22 @@ function drawGraph(graph) {
   log.info('Edges:');
   log.info(edges);
 
-
   const elements = graph.nodes.concat(edges); // graph.edges
 
   // Collect flows of node
-  nodeFlows = {};
+  const nodeFlows = {};
 
-  for(let i=0; i<graph.edges.length; i+=1){
-    if(!(graph.edges[i].data.source in nodeFlows)) {
-      nodeFlows[graph.edges[i].data.source] = { in: [], out: [], flowsIn: 0, flowsOut: 0 };
+  for (let i = 0; i < graph.edges.length; i += 1) {
+    if (!(graph.edges[i].data.source in nodeFlows)) {
+      nodeFlows[graph.edges[i].data.source] = {
+        in: [], out: [], flowsIn: 0, flowsOut: 0,
+      };
     }
 
-    if(!(graph.edges[i].data.target in nodeFlows)) {
-      nodeFlows[graph.edges[i].data.target] = { in: [], out: [], flowsIn: 0, flowsOut: 0 };
+    if (!(graph.edges[i].data.target in nodeFlows)) {
+      nodeFlows[graph.edges[i].data.target] = {
+        in: [], out: [], flowsIn: 0, flowsOut: 0,
+      };
     }
 
     nodeFlows[graph.edges[i].data.source].out.push(`<div class="single-flow" title="${graph.edges[i].data.id}">${graph.edges[i].data.target}</div>`);
@@ -339,15 +342,15 @@ function drawGraph(graph) {
   // Calculate in / out ratio
   let maxIn = 0;
   let maxOut = 0;
-  for(let i=0; i<graph.nodes.length; i+=1){
+  for (let i = 0; i < graph.nodes.length; i += 1) {
     if (graph.nodes[i].data.retrieved > maxOut) maxOut = graph.nodes[i].data.retrieved;
     if (graph.nodes[i].data.created > maxIn) maxIn = graph.nodes[i].data.created;
   }
 
   // Adding calculated data and charts to nodes
-  for(let i=0; i<graph.nodes.length; i+=1){
+  for (let i = 0; i < graph.nodes.length; i += 1) {
     elements[i].data.image = drawRingChart(maxIn, maxOut, elements[i].data);
-    if(elements[i].data.id in nodeFlows) {
+    if (elements[i].data.id in nodeFlows) {
       elements[i].data.nodeFlows = nodeFlows[elements[i].data.id];
     }
   }
