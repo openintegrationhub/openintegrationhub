@@ -299,19 +299,19 @@ describe('Dashboard Operations', () => {
       Snazzy: {
         created: 0,
         updated: 1,
-        received: 0,
+        retrieved: 0,
         deleted: 0,
       },
       Office365: {
         created: 1,
         updated: 0,
-        received: 0,
+        retrieved: 0,
         deleted: 0,
       },
       Google: {
         created: 0,
         updated: 0,
-        received: 1,
+        retrieved: 1,
         deleted: 0,
       },
     });
@@ -335,7 +335,7 @@ describe('Dashboard Operations', () => {
         id: 'Google',
         created: 0,
         updated: 0,
-        received: 1,
+        retrieved: 1,
         deleted: 0,
       },
     });
@@ -345,7 +345,7 @@ describe('Dashboard Operations', () => {
         id: 'Snazzy',
         created: 0,
         updated: 1,
-        received: 0,
+        retrieved: 0,
         deleted: 0,
       },
     });
@@ -355,7 +355,7 @@ describe('Dashboard Operations', () => {
         id: 'Office365',
         created: 1,
         updated: 0,
-        received: 0,
+        retrieved: 0,
         deleted: 0,
       },
     });
@@ -367,7 +367,7 @@ describe('Dashboard Operations', () => {
         target: 'Snazzy',
         created: 0,
         updated: 1,
-        received: 1,
+        retrieved: 1,
         deleted: 0,
       },
     });
@@ -379,7 +379,7 @@ describe('Dashboard Operations', () => {
         target: 'Office365',
         created: 1,
         updated: 0,
-        received: 0,
+        retrieved: 0,
         deleted: 0,
       },
     });
