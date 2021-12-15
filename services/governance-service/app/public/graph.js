@@ -78,21 +78,25 @@ window.initGraph = function (id, elements) {
 
   // Add extra info
 
+  function hideOverlays() {
+    var overlay = document.getElementById('overlay');
+    overlay.classList.remove('show');
+    var edgeOverlay = document.getElementById('edgeOverlay');
+    edgeOverlay.classList.remove('show');
+  }
+
   // Handle clicks
-  window.graph.on('click', 'graph', (event) => {
-    const overlay = document.getElementById('overlay');
-    overlay.classList.remove('show');
+  window.graph.on('click', 'graph', function(event){
+    hideOverlays();
   });
 
-  document.getElementById('graph').addEventListener('wheel', () => {
-    const overlay = document.getElementById('overlay');
-    overlay.classList.remove('show');
+  document.getElementById("graph").addEventListener("wheel", function(){
+    hideOverlays();
   });
 
-  window.graph.on('tap', (event) => {
-    if (event.target === graph) {
-      const overlay = document.getElementById('overlay');
-      overlay.classList.remove('show');
+  window.graph.on('tap', function(event){
+    if(event.target === graph){
+      hideOverlays();
     }
   });
 
@@ -141,7 +145,46 @@ window.initGraph = function (id, elements) {
     overlay.style.top = h;
     overlay.classList.add('show');
   });
-};
+
+  window.graph.on('click', 'edge', function(event){
+    event.stopPropagation();
+    var overlay = document.getElementById('edgeOverlay');
+    overlay.classList.remove('show');
+    console.log(event);
+    console.log("Click on:" + event.target.data("id"));
+    console.log('x:', event.renderedPosition.x);
+    console.log('y:', event.renderedPosition.y);
+
+    var flows = event.target.data("flows");
+    var source = event.target.data("source");
+    var target = event.target.data("target");
+
+    var html = [`<div><h3>${source} → ${target}</h3></div>`];
+
+    for(let i=0; i<flows.length; i+=1) {
+      html.push(`<div class="flowLine">${flows[i].id} <div class="flowStats"><img src="/static/icons/add_circle_outline_black_24dp.svg"> <b>${flows[i].created}</b> <img src="/static/icons/change_circle_black_24dp.svg"> <b>${flows[i].updated}</b> <img src="/static/icons/remove_circle_outline_black_24dp.svg"> <b class="deleted">${flows[i].deleted}</b></div></div>`);
+    }
+    overlay.innerHTML = html.join('\n');
+
+    //⇤⇥
+
+    //overlay
+    var h = event.renderedPosition.y
+    var w = event.renderedPosition.x;
+    var height = document.getElementById('edgeOverlay').offsetHeight;
+    var width = document.getElementById('edgeOverlay').offsetWidth;
+
+    var hDiff = (h + height) - window.innerHeight;
+    var wDiff = (w + width) - window.innerWidth;
+
+    if (hDiff > 0) h = h - hDiff;
+    if (wDiff > 0) w = w - wDiff;
+
+    overlay.style.left = w;
+    overlay.style.top = h;
+    overlay.classList.add('show');
+  });
+}
 
 window.animateGraph = function () {
   // Animation
