@@ -49,7 +49,7 @@ async function getObjectDistribution(user) {
 
       if (!(serviceName in serviceCounts)) {
         serviceCounts[serviceName] = {
-          received: 0,
+          retrieved: 0,
           updated: 0,
           created: 0,
           deleted: 0,
@@ -57,8 +57,8 @@ async function getObjectDistribution(user) {
       }
 
       switch (currentEvent.activity.activityType) {
-      case 'ObjectReceived':
-        serviceCounts[serviceName].received += 1;
+      case 'ObjectRetrieved':
+        serviceCounts[serviceName].retrieved += 1;
         break;
       case 'ObjectUpdated':
         serviceCounts[serviceName].updated += 1;
@@ -106,7 +106,7 @@ async function getObjectDistributionAsGraph(user) {
             id: serviceName,
             created: 0,
             updated: 0,
-            received: 0,
+            retrieved: 0,
             deleted: 0,
           },
         });
@@ -122,7 +122,7 @@ async function getObjectDistributionAsGraph(user) {
             id: flowId,
             created: 0,
             updated: 0,
-            received: 0,
+            retrieved: 0,
             deleted: 0,
             source: false,
             target: false,
@@ -132,18 +132,18 @@ async function getObjectDistributionAsGraph(user) {
         edgeIndex = edges.length - 1;
       }
 
-      if (!edges[edgeIndex].data.source && currentEvent.activity.activityType === 'ObjectReceived') {
+      if (!edges[edgeIndex].data.source && currentEvent.activity.activityType === 'ObjectRetrieved') {
         edges[edgeIndex].data.source = serviceName;
       }
 
-      if (!edges[edgeIndex].data.target && currentEvent.activity.activityType !== 'ObjectReceived') {
+      if (!edges[edgeIndex].data.target && currentEvent.activity.activityType !== 'ObjectRetrieved') {
         edges[edgeIndex].data.target = serviceName;
       }
 
       switch (currentEvent.activity.activityType) {
-      case 'ObjectReceived':
-        nodes[nodeIndex].data.received += 1;
-        edges[edgeIndex].data.received += 1;
+      case 'ObjectRetrieved':
+        nodes[nodeIndex].data.retrieved += 1;
+        edges[edgeIndex].data.retrieved += 1;
         break;
       case 'ObjectUpdated':
         nodes[nodeIndex].data.updated += 1;
@@ -262,7 +262,7 @@ function drawRingChart(maxIn, maxOut, nodeData) {
   const percentageIn = (nodeData.created)? Math.ceil((nodeData.created / maxIn) * 100) : 0;
   const percentageInLeft = 100 - percentageIn;
 
-  const percentageOut = (nodeData.received)? Math.ceil((nodeData.received / maxOut) * 100) : 0;
+  const percentageOut = (nodeData.retrieved)? Math.ceil((nodeData.retrieved / maxOut) * 100) : 0;
   const percentageOutLeft = 100 - percentageOut;
 
   const svg = `<svg width="120px" height="120px" viewBox="0 0 42 42" class="donut" xmlns="http://www.w3.org/2000/svg">
@@ -291,7 +291,7 @@ function drawGraph(graph) {
       edges[flowsIndex[key]].data.created += graph.edges[i].data.created;
       edges[flowsIndex[key]].data.updated += graph.edges[i].data.updated;
       edges[flowsIndex[key]].data.deleted += graph.edges[i].data.deleted;
-      edges[flowsIndex[key]].data.received += graph.edges[i].data.received;
+      edges[flowsIndex[key]].data.retrieved += graph.edges[i].data.retrieved;
       edges[flowsIndex[key]].data.numFlows += 1;
     } else {
       const length = edges.length;
@@ -340,7 +340,7 @@ function drawGraph(graph) {
   let maxIn = 0;
   let maxOut = 0;
   for(let i=0; i<graph.nodes.length; i+=1){
-    if (graph.nodes[i].data.received > maxOut) maxOut = graph.nodes[i].data.received;
+    if (graph.nodes[i].data.retrieved > maxOut) maxOut = graph.nodes[i].data.retrieved;
     if (graph.nodes[i].data.created > maxIn) maxIn = graph.nodes[i].data.created;
   }
 

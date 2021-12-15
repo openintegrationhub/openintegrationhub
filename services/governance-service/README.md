@@ -33,7 +33,7 @@ Example provenance object:
     "entityType": "oihUid"
   },
   "activity": {
-    "activityType": "ObjectReceived",
+    "activityType": "ObjectRetrieved",
     "used": "getPersons",
     "startedAtTime": "2020-10-19T09:47:11+00:00",
     "endedAtTime": "2020-10-19T09:47:15+00:00"
