@@ -86,7 +86,6 @@ export async function searchContact(
                       query: firstName,
                       fields: ['firstName'],
                       fuzziness: 1,
-                      boost: 1
                     },
                   },
                   {
@@ -94,7 +93,7 @@ export async function searchContact(
                       query: lastName,
                       fields: ['lastName'],
                       fuzziness: 1,
-                      boost: 1
+                      boost: 2,
                     },
                   },
                   {
@@ -102,6 +101,7 @@ export async function searchContact(
                       query: email,
                       fields: ['email'],
                       fuzziness: 1,
+                      boost: 3,
                     },
                   },
                 ],

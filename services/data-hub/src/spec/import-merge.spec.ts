@@ -17,7 +17,7 @@ function nockIamIntrospection(user = {}) {
   return;
 }
 
-const PERSONS_SET_LENGTH = 200
+const PERSONS_SET_LENGTH = 100000
 
 const user1 = { sub: 'user1', role: 'USER', permissions: [], tenant: "tenant1" }
 
@@ -135,6 +135,144 @@ describe('Import & Merge', () => {
             }
           ]
         }
+
+        records.push({
+          domainId: "my-domain",
+          schemaUri: "my-schema",
+          content: {
+              firstName: "B",
+              lastName: "Meier Foo",
+              contactData: [{ type: "email", value: "bmeier@gmx.net" }]
+          },
+          refs: [
+            {
+              applicationUid: "app-id",
+              recordUid: "1234",
+              modificationHistory: [
+                {
+                  user: user1.sub,
+                  operation: "import",
+                  timestamp: (new Date()).toISOString()
+                }
+              ]
+            }
+          ]
+        })
+
+        records.push({
+          domainId: "my-domain",
+          schemaUri: "my-schema",
+          content: {
+              firstName: "B",
+              lastName: "Meier Foo",
+              contactData: [{ type: "email", value: "blub@asdasdasd.com" }]
+          },
+          refs: [
+            {
+              applicationUid: "app-id",
+              recordUid: "1234",
+              modificationHistory: [
+                {
+                  user: user1.sub,
+                  operation: "import",
+                  timestamp: (new Date()).toISOString()
+                }
+              ]
+            }
+          ]
+        })
+       
+        records.push({
+          domainId: "my-domain",
+          schemaUri: "my-schema",
+          content: {
+              firstName: "Bert",
+              lastName: "Meier F",
+              contactData: [{ type: "email", value: "bmeier@gmx.net" }]
+          },
+          refs: [
+            {
+              applicationUid: "app-id",
+              recordUid: "1234",
+              modificationHistory: [
+                {
+                  user: user1.sub,
+                  operation: "import",
+                  timestamp: (new Date()).toISOString()
+                }
+              ]
+            }
+          ]
+        })
+
+        records.push({
+          domainId: "my-domain",
+          schemaUri: "my-schema",
+          content: {
+              firstName: "Bert",
+              lastName: "Meier Foo",
+              contactData: [{ type: "email", value: "bertmeierfoo@gmail.com" }]
+          },
+          refs: [
+            {
+              applicationUid: "app-id",
+              recordUid: "1234",
+              modificationHistory: [
+                {
+                  user: user1.sub,
+                  operation: "import",
+                  timestamp: (new Date()).toISOString()
+                }
+              ]
+            }
+          ]
+        })
+
+        records.push({
+          domainId: "my-domain",
+          schemaUri: "my-schema",
+          content: {
+              firstName: "Caterina",
+              lastName: "Corkery",
+              contactData: [{ type: "email", value: "Remington_Gleichner@hotmail.com" }]
+          },
+          refs: [
+            {
+              applicationUid: "app-id",
+              recordUid: "1234",
+              modificationHistory: [
+                {
+                  user: user1.sub,
+                  operation: "import",
+                  timestamp: (new Date()).toISOString()
+                }
+              ]
+            }
+          ]
+        })
+
+        records.push({
+          domainId: "my-domain",
+          schemaUri: "my-schema",
+          content: {
+              firstName: "Lisa",
+              lastName: "Johnston",
+              contactData: [{ type: "email", value: "Ana_Gleichner@hotmail.com" }]
+          },
+          refs: [
+            {
+              applicationUid: "app-id",
+              recordUid: "1234",
+              modificationHistory: [
+                {
+                  user: user1.sub,
+                  operation: "import",
+                  timestamp: (new Date()).toISOString()
+                }
+              ]
+            }
+          ]
+        })
 
       nockIamIntrospection(user1);
 

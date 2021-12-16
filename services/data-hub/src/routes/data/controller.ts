@@ -9,7 +9,14 @@ import NotFound from '../../errors/api/NotFound';
 import Forbidden from '../../errors/api/Forbidden';
 import BadRequest from '../../errors/api/BadRequest';
 import handlers from '../../handlers/'
+import Minhash from "../../minhash/lib/Minhash"
+import LshIndex from "../../minhash/lib/LshIndex"
+import getShingles from "../../minhash/lib/get-shingles"
 
+const PERMS = 64
+const SEED = 1
+const SHINGLES = 3
+const BANDSIZE = 6
 interface IGteQuery {
     $gte: string;
 }
@@ -329,8 +336,7 @@ export default class DataController {
 
         const duplicateHits: any[] = []
         let counter = 0
-        let maxScore = 0
-        let bestHit;
+        // let bestHit;
 
         if (!Array.isArray(body) || body.length === 0) {
             throw new BadRequest()
@@ -352,11 +358,75 @@ export default class DataController {
             const { body } = await searchContact(user.tenant, firstName, lastName, email)
             const { hits } = body
 
-            if (firstName === "Bert") {
-                console.log(await searchContact(user.tenant, "Bert", "Meier Foo", "blub@asdasdasd.com"))
-            }
+            if (hits.hits.length) {
+                // console.log(util.inspect(hits.hits, false, null, true))
+                // console.log("Hits length", hits.hits.length)
+                const bestHit = hits.hits[0]
+                const index = new LshIndex({ bandSize: BANDSIZE })
+                const newHashed = new Minhash({ numPerm: PERMS, seed: SEED })
+                const bestHitHashed = new Minhash({ numPerm: PERMS, seed: SEED })
 
-            if (hits.max_score < 4) {
+                // console.log(bestHit)
+                // console.log([
+                //     firstName,
+                //     lastName,
+                //     email
+                // ])
+
+                // console.log([
+                //     bestHit._source.firstName,
+                //     bestHit._source.lastName,
+                //     bestHit._source.email
+                // ])
+
+                getShingles([
+                    firstName,
+                    lastName,
+                    email
+                ], SHINGLES).forEach((shingle) =>
+                    newHashed.update(shingle)
+                )
+
+                getShingles([
+                    bestHit._source.firstName,
+                    bestHit._source.lastName,
+                    bestHit._source.email
+                ], SHINGLES).forEach((shingle) =>
+                    bestHitHashed.update(shingle)
+                )
+
+                index.insert("new", newHashed)
+                index.insert("old", bestHitHashed)
+
+                if (index.query(newHashed).includes("old")) {
+                    console.log("Hit")
+                    console.log({
+                        new: {
+                            firstName,
+                            lastName,
+                            email
+                        },
+                        bestHit: {
+                            firstName: bestHit._source.firstName,
+                            lastName: bestHit._source.lastName,
+                            email: bestHit._source.email
+                        }
+                    })
+                    duplicateHits.push({
+                        new: {
+                            firstName,
+                            lastName,
+                            email
+                        },
+                        bestHit: {
+                            firstName: bestHit._source.firstName,
+                            lastName: bestHit._source.lastName,
+                            email: bestHit._source.email
+                        }
+                    })
+                }
+
+            } else {
                 const owners = record.owners || []
 
                 if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
@@ -384,39 +454,71 @@ export default class DataController {
 
                 // if (counter % 50 === 0) {
                     // refresh index
-                    await refreshIndex()
-                // }
-
-            } else {
-                if (hits.hits[0]._score > maxScore) {
-                    bestHit =  {
-                        firstName, 
-                        lastName, 
-                        email,
-                        hit: hits.hits[0]
-                    }
-                    maxScore = hits.hits[0]._score
-                }
-
-                duplicateHits.push({
-                    firstName, 
-                    lastName, 
-                    email,
-                    hit: hits.hits[0]
-                })
+                await refreshIndex()
             }
-
+     
             console.log(counter++)
+            // if (hits.max_score < 2) {
+            //     const owners = record.owners || []
+
+            //     if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
+            //         owners.push({
+            //             id: user.sub,
+            //             type: 'user'
+            //         });
+            //     }
+
+            //     // // @ts-ignore: TS2345
+            //     // const dataHubRecord = await DataObject.create({
+            //     //     ...record,
+            //     //     tenant: user.tenant,
+            //     //     owners,
+            //     // });
+
+            //     // create elasticsearch entry
+            //     await createContact({
+            //         dataHubId: "asd",
+            //         tenant: user.tenant,
+            //         firstName,
+            //         lastName,
+            //         email
+            //     })
+
+            //     // if (counter % 50 === 0) {
+            //         // refresh index
+            //         await refreshIndex()
+            //     // }
+
+            // } else {
+            //     if (hits.hits[0]._score > maxScore) {
+            //         bestHit =  {
+            //             firstName, 
+            //             lastName, 
+            //             email,
+            //             hit: hits.hits[0]
+            //         }
+            //         maxScore = hits.hits[0]._score
+            //     }
+
+            //     duplicateHits.push({
+            //         firstName, 
+            //         lastName, 
+            //         email,
+            //         hit: hits.hits[0]
+            //     })
+            // }
+
+            // console.log(counter++)
 
         }
 
 
-        console.log(util.inspect(duplicateHits, false, null, true))
-        console.log("Total ", counter)
-        console.log("Hits length", duplicateHits.length)
-        console.log(util.inspect(bestHit, false, null, true))
+        // console.log(util.inspect(duplicateHits, false, null, true))
+        // console.log("Total ", counter)
+        // console.log("Hits length", duplicateHits.length)
+        // // console.log(util.inspect(bestHit, false, null, true))
 
-        console.log(await searchContact(user.tenant, "Bert", "Meier Foo", "blub@asdasdasd.com"))
+        // console.log(await searchContact(user.tenant, "Bert", "Meier Foo", "blub@asdasdasd.com"))
         // body.forEach(record => {
         //     const owners = record.owners || []
 
@@ -437,7 +539,8 @@ export default class DataController {
         // })
 
         // await Promise.all(createPromises)
-
+        console.log(util.inspect(duplicateHits, false, null, true))
+        console.log("Hits length", duplicateHits.length)
         ctx.status = 201;
     }
 
