@@ -164,9 +164,8 @@ describe('basic OIDC test Suite', () => {
         const pathToKeystore = path.join(__dirname, '../keystore/keystore.json');
         const { generateFile } = require('../src/util/keystore');
 
-        await fs.unlinkSync(pathToKeystore);
+        fs.unlinkSync(pathToKeystore);
         await generateFile();
-
     });
 });
 
