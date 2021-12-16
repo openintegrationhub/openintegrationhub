@@ -33,7 +33,7 @@ router.get('/distribution', jsonParser, can('tenant.all'), async (req, res) => {
   res.status(200).send(distribution);
 });
 
-// Gets overview of data distribution
+// Gets data distribution in form of a graph
 router.get('/distribution/graph', jsonParser, can('tenant.all'), async (req, res) => {
   const graph = await getObjectDistributionAsGraph(req.user);
   if (!graph) return res.status(404).send({ error: [{ message: 'Could not gather distribution graph' }] });
@@ -41,7 +41,7 @@ router.get('/distribution/graph', jsonParser, can('tenant.all'), async (req, res
   res.status(200).send(graph);
 });
 
-// Gets overview of data distribution
+// Delivers a html page which is rendering the graph of the data distribution and dynamically is showing additional data
 router.get('/distribution/graph/html', jsonParser, can('tenant.all'), async (req, res) => {
   const graph = await getObjectDistributionAsGraph(req.user);
   if (!graph) return res.status(404).send({ error: [{ message: 'Could not gather distribution graph' }] });
@@ -51,7 +51,7 @@ router.get('/distribution/graph/html', jsonParser, can('tenant.all'), async (req
   res.status(200).send(html);
 });
 
-// Gets detailed information about a single object
+// Gets oihUid and all references of a single object
 router.get('/objectStatus/:id', jsonParser, can('tenant.all'), async (req, res) => {
   let referenceData;
   if (req.query.recordId) {
