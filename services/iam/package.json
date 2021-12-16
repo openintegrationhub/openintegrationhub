@@ -45,7 +45,7 @@
     "mongodb": "3.6.2",
     "mongoose": "5.13.13",
     "ms": "2.1.2",
-    "node-jose": "1.1.4",
+    "node-jose": "2.0.0",
     "oidc-provider": "5.5.3",
     "passport": "0.4.1",
     "passport-jwt": "4.0.0",
