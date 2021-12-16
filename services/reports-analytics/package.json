@@ -27,7 +27,7 @@
     "dotenv": "8.2.0",
     "express": "4.17.1",
     "influx": "5.6.3",
-    "mongoose": "5.11.8",
+    "mongoose": "5.13.13",
     "request": "2.88.2"
   },
   "devDependencies": {
