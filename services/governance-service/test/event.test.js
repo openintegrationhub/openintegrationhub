@@ -90,7 +90,7 @@ describe('ProvenanceEvent Operations', () => {
       },
       activity: {
         id: '30j0hew9kwbnkksfb09',
-        activityType: 'ObjectReceived',
+        activityType: 'ObjectRetrieved',
         used: 'getPersons',
         startedAtTime: '2020-10-19T09:47:11.000Z',
         endedAtTime: '2020-10-19T09:47:15.000Z',
@@ -244,7 +244,7 @@ describe('ProvenanceEvent Operations', () => {
       .query({
         'page[size]': 5,
         'page[number]': 1,
-        'filter[activityType]': 'ObjectReceived',
+        'filter[activityType]': 'ObjectRetrieved',
       })
       .set('Authorization', 'Bearer adminToken');
 
