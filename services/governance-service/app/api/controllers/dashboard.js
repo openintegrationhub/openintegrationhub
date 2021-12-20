@@ -54,13 +54,13 @@ router.get('/distribution/graph/html', jsonParser, can('tenant.all'), async (req
 // Gets oihUid and all references of a single object
 router.get('/objectStatus/:id', jsonParser, can('tenant.all'), async (req, res) => {
   let referenceData;
-  if (req.query.recordId) {
+  if (req.query.externalId) {
     referenceData = await getRefs(false, req.params.id, req.headers.authorization);
   } else {
     referenceData = await getRefs(req.params.id, false, req.headers.authorization);
   }
 
-  const id = req.query.recordId ? referenceData.id : req.params.id;
+  const id = req.query.externalId ? referenceData.id : req.params.id;
 
   if (!id) return res.status(400).send({ errors: [{ message: 'Could not find object oihUid' }] });
 
