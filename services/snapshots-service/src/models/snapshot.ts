@@ -48,7 +48,9 @@ const snapshotSchema = new Schema({
 }, {
     timestamps: true
 });
-snapshotSchema.index({flowId: 1, stepId: 1, flowExecId: 1}, {unique: true});
+
+// @ts-ignore
+snapshotSchema.index({flowId: 1, stepId: 1, flowExecId: 1}, {unique: true}); 
 
 function snapshotTransform (doc: ISnapshotDocument, ret: ISnapshotDocument) {
     const safeFields = ['id', 'snapshot', 'flowId', 'stepId', 'flowExecId'];
