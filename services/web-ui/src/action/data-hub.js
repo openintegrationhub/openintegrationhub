@@ -40,6 +40,21 @@ export const enrichData = async () => {
                             {
                                 key: 'firstName',
                                 minLength: 5,
+                                weight: 1,
+                            },
+                            {
+                                key: 'lastName',
+                                minLength: 5,
+                                weight: 1,
+                            },
+                            {
+                                key: 'jobTitle',
+                                minLength: 5,
+                                weight: 2,
+                            },
+                            {
+                                key: 'description',
+                                minLength: 5,
                                 weight: 2,
                             },
                         ],
@@ -54,6 +69,15 @@ export const enrichData = async () => {
                                 additive: true,
                                 arguments: {
                                     field: 'firstName',
+
+                                },
+                            },
+                            {
+                                comparator: 'hasField',
+                                tag: 'Has a LastName',
+                                additive: true,
+                                arguments: {
+                                    field: 'lastName',
 
                                 },
                             },

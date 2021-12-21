@@ -18,23 +18,24 @@ class DataHubDocument extends React.Component {
     render() {
         const {
             classes,
+            documents,
         } = this.props;
 
         return (
             <Container className={classes.container}>
-              <Paper style={{
-                paddingLeft: 20,
-                paddingRight: 10,
-                paddingTop: 5,
-                paddingBottom: 5,
-              }}
-              >
-                <h3>Documents</h3>
-                <p>Total: 1049 </p>
-                <p>Average score: 48 / 100</p>
-                <p>Tags: project, contract, organization, system </p>
-                <p>duplicates: 29 </p>
-              </Paper>
+                <Paper style={{
+                    paddingLeft: 20,
+                    paddingRight: 10,
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                }}
+                >
+                    <h3>Documents</h3>
+                    <p>Total: {documents.length}</p>
+                    <p>Average score: 48 / 100</p>
+                    <p>Tags: project, contract, organization, system </p>
+                    <p>duplicates: 29 </p>
+                </Paper>
             </Container>
         );
     }

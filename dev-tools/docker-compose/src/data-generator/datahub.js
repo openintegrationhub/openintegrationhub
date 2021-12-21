@@ -6,9 +6,11 @@ const { services } = require('../config')
 const { login, getUserInfo } = require('../helper')
 const generatePerson = require('./generate-person')
 const generateProduct = require('./generate-product')
+const generateDocument = require('./generate-document')
 
 const PERSONS_SET_LENGTH = 10
 const PRODUCTS_SET_LENGTH = 10
+const DOCUMENTS_SET_LENGTH = 10
 
 // use dev cluster setup
 
@@ -99,6 +101,37 @@ async function run() {
       {
         applicationUid: 'product-app-id',
         recordUid: product.metadata.recordUid,
+        modificationHistory: [
+          {
+            user: token,
+            operation: 'import',
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      },
+    ],
+  }))
+
+  response = await fetch(`${dataHubBase}/data/import`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  })
+
+  data = generateDocument(DOCUMENTS_SET_LENGTH).map((document) => ({
+    domainId,
+    schemaUri: productSchemaUri,
+    content: {
+      ...document.data,
+    },
+    refs: [
+      {
+        applicationUid: 'document-app-id',
+        recordUid: document.metadata.recordUid,
         modificationHistory: [
           {
             user: token,

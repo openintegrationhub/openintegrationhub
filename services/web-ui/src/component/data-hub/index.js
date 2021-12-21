@@ -9,12 +9,12 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Grid } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
 import GroupedBar from './GroupedBarChart';
 import DataQuality from './DataQuality';
-import dataJSON from './data.json';
+// import dataJSON from './data.json';
 import Contact from './Contact';
 import Product from './Product';
 import Document from './Document';
@@ -65,6 +65,10 @@ const useStyles = {
     submitBtn: {
         height: '48px',
     },
+    enrich: {
+        width: '100%',
+        background: 'lightgray',
+    },
 };
 
 class DataHub extends React.Component {
@@ -85,79 +89,93 @@ class DataHub extends React.Component {
     };
 
      handleChangeIndex = (index) => {
-        this.setState({ openTab: index });
-    };
+         this.setState({ openTab: index });
+     };
 
-    render() {
-        const {
-            classes,
-        } = this.props;
-        switch (this.state.sortBy) {
-        case 'duplicatesDesc':
-            dataJSON.data.sort((a, b) => b.enrichmentResults.knownDuplicates.length - a.enrichmentResults.knownDuplicates.length);
-            break;
-        case 'duplicatesAsc':
-            dataJSON.data.sort((a, b) => a.enrichmentResults.knownDuplicates.length - b.enrichmentResults.knownDuplicates.length);
-            break;
-        case 'scoreDesc':
-            dataJSON.data.sort((a, b) => b.enrichmentResults.score - a.enrichmentResults.score);
-            break;
-        case 'scoreAsc':
-            dataJSON.data.sort((a, b) => a.enrichmentResults.score - b.enrichmentResults.score);
-            break;
-        default:
-            break;
-        }
+     render() {
+         const dataHubObjects = this.props.dataHub.dataObjects;
+         console.log('data is', dataHubObjects);
+         const dataHubProducts = dataHubObjects.filter((item) => item.content.articleNo);
+         const dataHubContacts = dataHubObjects.filter((item) => item.content.firstName);
+         const dataHubDocuments = dataHubObjects.filter((item) => item.content.documentId);
 
-        return (
-            <Container className={classes.container}>
-                <div className={classes.root}>
-                    <AppBar position="static" color="default">
-                        <Tabs
-                        value={this.state.openTab}
-                        onChange={this.handleChange}
-                        indicatorColor="primary"
-                        textColor="primary"
-                        variant="fullWidth"
-                        aria-label="full width tabs example"
-                        >
-                        <Tab label="Data-Quality" />
-                        <Tab label="Search" />
-                        <Tab label="RDS" />
-                        </Tabs>
-                    </AppBar>
-                    <SwipeableViews
-                        axis='x'
-                        index={this.state.openTab}
-                        onChangeIndex={this.handleChangeIndex}
-                    >
-                        <TabPanel value={this.state.openTab} index={0} dir='x'>
-                                <GroupedBar/>
-                                <Grid container>
-                                    <Grid item lg={4} md={4} xs={12}>
-                                        <Contact/>
-                                            </Grid>
-                                        <Grid item lg={4} md={4} xs={12}>
-                                            <Product/>
-                                        </Grid>
-                                        <Grid item lg={4} md={4} xs={12}>
-                                            <Document/>
-                                        </Grid>
-                                </Grid>
-                        </TabPanel>
-                        <TabPanel value={this.state.openTab} index={1} dir='x'>
-                            <DataQuality/>
-                        </TabPanel>
-                        <TabPanel value={this.state.openTab} index={2} dir='x'>
-                            <RDS/>
-                        </TabPanel>
-                    </SwipeableViews>
-                </div>
-                <Tab/>
+         //  var marvelHeroes =  dataHubObjects.filter(function(item) {
+         //     return item.id == “Marvel”;
+         // });
+         console.log('contacts are: ', dataHubContacts);
+         console.log('products are: ', dataHubProducts);
+         const {
+             classes,
+         } = this.props;
+         //  switch (this.state.sortBy) {
+         //  case 'duplicatesDesc':
+         //      dataJSON.data.sort((a, b) => b.enrichmentResults.knownDuplicates.length - a.enrichmentResults.knownDuplicates.length);
+         //      break;
+         //  case 'duplicatesAsc':
+         //      dataJSON.data.sort((a, b) => a.enrichmentResults.knownDuplicates.length - b.enrichmentResults.knownDuplicates.length);
+         //      break;
+         //  case 'scoreDesc':
+         //      dataJSON.data.sort((a, b) => b.enrichmentResults.score - a.enrichmentResults.score);
+         //      break;
+         //  case 'scoreAsc':
+         //      dataJSON.data.sort((a, b) => a.enrichmentResults.score - b.enrichmentResults.score);
+         //      break;
+         //  default:
+         //      break;
+         //  }
 
-            </Container>
-        );
-    }
+         return (
+             <Container className={classes.container}>
+                 <div className={classes.root}>
+                     <AppBar position="static" color="default">
+                         <Tabs
+                             value={this.state.openTab}
+                             onChange={this.handleChange}
+                             indicatorColor="primary"
+                             textColor="primary"
+                             variant="fullWidth"
+                             aria-label="full width tabs example"
+                         >
+                             <Tab label="Data-Quality" />
+                             <Tab label="Search" />
+                             <Tab label="RDS" />
+                         </Tabs>
+                     </AppBar>
+                     <SwipeableViews
+                         axis='x'
+                         index={this.state.openTab}
+                         onChangeIndex={this.handleChangeIndex}
+                     >
+                         <TabPanel value={this.state.openTab} index={0} dir='x'>
+                             <GroupedBar/>
+                             <Grid container>
+                                 <Grid item lg={12} md={12} xs={12}>
+                                     <Button className={classes.enrich} onClick={() => enrichData()}>Enrich</Button>
+                                 </Grid>
+                                 <Grid item lg={4} md={4} xs={12}>
+                                     <Contact contacts={dataHubContacts}/>
+                                 </Grid>
+                                 <Grid item lg={4} md={4} xs={12}>
+                                     <Product products={dataHubProducts}/>
+                                 </Grid>
+                                 <Grid item lg={4} md={4} xs={12}>
+                                     <Document documents={dataHubDocuments}/>
+                                 </Grid>
+                             </Grid>
+                         </TabPanel>
+                         <TabPanel value={this.state.openTab} index={1} dir='x'>
+                             <DataQuality data={dataHubObjects}/>
+                         </TabPanel>
+                         <TabPanel value={this.state.openTab} index={2} dir='x'>
+                             <RDS/>
+                         </TabPanel>
+                     </SwipeableViews>
+                 </div>
+                 <Tab/>
+
+             </Container>
+         );
+     }
 }
 
 const mapStateToProps = (state) => ({

@@ -17,23 +17,24 @@ class DataHubProduct extends React.Component {
     render() {
         const {
             classes,
+            products,
         } = this.props;
 
         return (
             <Container className={classes.container}>
-              <Paper style={{
-                paddingLeft: 20,
-                paddingRight: 10,
-                paddingTop: 5,
-                paddingBottom: 5,
-              }}
-              >
-                <h3>Products</h3>
-                <p>Total: 225</p>
-                <p>Average score: 72 / 100</p>
-                <p>Tags: furniture, web, toys, cars </p>
-                <p>duplicates: 2 </p>
-              </Paper>
+                <Paper style={{
+                    paddingLeft: 20,
+                    paddingRight: 10,
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                }}
+                >
+                    <h3>Products</h3>
+                    <p>Total: {products.length}</p>
+                    <p>Average score: 72 / 100</p>
+                    <p>Tags: furniture, web, toys, cars </p>
+                    <p>duplicates: 2 </p>
+                </Paper>
             </Container>
         );
     }
