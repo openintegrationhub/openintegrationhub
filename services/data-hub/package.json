@@ -16,7 +16,7 @@
     "start:container": "ts-node-dev ./src/app.ts | bunyan",
     "test": "NODE_ENV=test mocha --exit --require ts-node/register src/**/*.spec.ts src/minhash-poc/**/*.spec.ts",
     "test-elastic-merge": "NODE_ENV=test mocha --exit --require ts-node/register src/**/import-merge.spec.ts",
-    "test-minhash": "NODE_ENV=test mocha --exit --require ts-node/register src/minhash-poc/**/data.spec.ts",
+    "test-minhash": "NODE_ENV=test mocha --exit --require ts-node/register src/minhash/**/data.spec.ts",
     "build:ts": "tsc --version && tsc --showConfig && tsc -p ./tsconfig.json",
     "build:docker": "docker build -t openintegrationhub/data-hub:${VERSION} -f Dockerfile ../../"
   },

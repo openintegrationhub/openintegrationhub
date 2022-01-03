@@ -23,6 +23,7 @@ const user1 = { sub: 'user1', role: 'USER', permissions: [], tenant: "tenant1" }
 
 describe('Import & Merge', () => {
   before(async function () {
+    this.timeout(500000000);
     const config = {};
     const logger = createLogger({ name: 'test', level: 'fatal' });
     const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
@@ -55,7 +56,7 @@ describe('Import & Merge', () => {
 
   describe('POST /data/import', () => {
     it('should merge duplicates', async function () {
-      this.timeout(5000000);
+      this.timeout(500000000);
 
       type Record = {
           domainId: string;
@@ -119,12 +120,12 @@ describe('Import & Merge', () => {
           content: {
               firstName: "Bert",
               lastName: "Meier Foo",
-              contactData: [{ type: "email", value: "blub@asdasdasd.com" }]
+              contactData: [{ type: "email", value: "blub@asdas.com" }]
           },
           refs: [
             {
               applicationUid: "app-id",
-              recordUid: "1234",
+              recordUid: "1235",
               modificationHistory: [
                 {
                   user: user1.sub,
@@ -147,7 +148,7 @@ describe('Import & Merge', () => {
           refs: [
             {
               applicationUid: "app-id",
-              recordUid: "1234",
+              recordUid: "1236",
               modificationHistory: [
                 {
                   user: user1.sub,
@@ -170,7 +171,7 @@ describe('Import & Merge', () => {
           refs: [
             {
               applicationUid: "app-id",
-              recordUid: "1234",
+              recordUid: "1237",
               modificationHistory: [
                 {
                   user: user1.sub,
@@ -193,7 +194,7 @@ describe('Import & Merge', () => {
           refs: [
             {
               applicationUid: "app-id",
-              recordUid: "1234",
+              recordUid: "1238",
               modificationHistory: [
                 {
                   user: user1.sub,
@@ -216,7 +217,7 @@ describe('Import & Merge', () => {
           refs: [
             {
               applicationUid: "app-id",
-              recordUid: "1234",
+              recordUid: "1239",
               modificationHistory: [
                 {
                   user: user1.sub,
@@ -234,12 +235,12 @@ describe('Import & Merge', () => {
           content: {
               firstName: "Caterina",
               lastName: "Corkery",
-              contactData: [{ type: "email", value: "Remington_Gleichner@hotmail.com" }]
+              contactData: [{ type: "email", value: "Gleichner@company.com" }]
           },
           refs: [
             {
               applicationUid: "app-id",
-              recordUid: "1234",
+              recordUid: "1240",
               modificationHistory: [
                 {
                   user: user1.sub,
@@ -255,14 +256,14 @@ describe('Import & Merge', () => {
           domainId: "my-domain",
           schemaUri: "my-schema",
           content: {
-              firstName: "Lisa",
-              lastName: "Johnston",
-              contactData: [{ type: "email", value: "Ana_Gleichner@hotmail.com" }]
+              firstName: "Caterina",
+              lastName: "Corkery",
+              contactData: [{ type: "email", value: "Gleichner@company.com" }]
           },
           refs: [
             {
               applicationUid: "app-id",
-              recordUid: "1234",
+              recordUid: "1241",
               modificationHistory: [
                 {
                   user: user1.sub,

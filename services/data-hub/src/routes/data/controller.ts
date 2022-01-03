@@ -13,10 +13,11 @@ import Minhash from "../../minhash/lib/Minhash"
 import LshIndex from "../../minhash/lib/LshIndex"
 import getShingles from "../../minhash/lib/get-shingles"
 
-const PERMS = 64
+const PERMS = 256
 const SEED = 1
 const SHINGLES = 3
-const BANDSIZE = 6
+const MIN_HIT_JACCARD = 0.5
+const REFRESH_INDEX = 1
 interface IGteQuery {
     $gte: string;
 }
@@ -343,6 +344,13 @@ export default class DataController {
         }
 
         for (const record of body) {
+            counter++
+            let shouldMergeRecord = false
+
+            if (counter % 10 === 0) {
+                console.log(counter)
+            }
+
             const { firstName, lastName, contactData } = record.content
             let email;
 
@@ -359,25 +367,10 @@ export default class DataController {
             const { hits } = body
 
             if (hits.hits.length) {
-                // console.log(util.inspect(hits.hits, false, null, true))
-                // console.log("Hits length", hits.hits.length)
+
                 const bestHit = hits.hits[0]
-                const index = new LshIndex({ bandSize: BANDSIZE })
                 const newHashed = new Minhash({ numPerm: PERMS, seed: SEED })
                 const bestHitHashed = new Minhash({ numPerm: PERMS, seed: SEED })
-
-                // console.log(bestHit)
-                // console.log([
-                //     firstName,
-                //     lastName,
-                //     email
-                // ])
-
-                // console.log([
-                //     bestHit._source.firstName,
-                //     bestHit._source.lastName,
-                //     bestHit._source.email
-                // ])
 
                 getShingles([
                     firstName,
@@ -395,10 +388,9 @@ export default class DataController {
                     bestHitHashed.update(shingle)
                 )
 
-                index.insert("new", newHashed)
-                index.insert("old", bestHitHashed)
+                const jaccard = newHashed.jaccard(bestHitHashed)
 
-                if (index.query(newHashed).includes("old")) {
+                if (jaccard > MIN_HIT_JACCARD) {
                     console.log("Hit")
                     console.log({
                         new: {
@@ -412,6 +404,7 @@ export default class DataController {
                             email: bestHit._source.email
                         }
                     })
+                    console.log("jaccard ", jaccard)
                     duplicateHits.push({
                         new: {
                             firstName,
@@ -422,11 +415,14 @@ export default class DataController {
                             firstName: bestHit._source.firstName,
                             lastName: bestHit._source.lastName,
                             email: bestHit._source.email
-                        }
+                        },
+                        jaccard
                     })
+                    shouldMergeRecord = true
                 }
+            }
 
-            } else {
+            if (!shouldMergeRecord) {
                 const owners = record.owners || []
 
                 if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
@@ -436,28 +432,27 @@ export default class DataController {
                     });
                 }
 
-                // // @ts-ignore: TS2345
-                // const dataHubRecord = await DataObject.create({
-                //     ...record,
-                //     tenant: user.tenant,
-                //     owners,
-                // });
+                const dataHubRecord = await DataObject.create({
+                    ...record,
+                    tenant: user.tenant,
+                    owners,
+                });
 
                 // create elasticsearch entry
                 await createContact({
-                    dataHubId: "asd",
+                    dataHubId: dataHubRecord._id,
                     tenant: user.tenant,
                     firstName,
                     lastName,
                     email
                 })
+    
+                if (counter % REFRESH_INDEX === 0) {
+                    await refreshIndex()
+                }
 
-                // if (counter % 50 === 0) {
-                    // refresh index
-                await refreshIndex()
             }
-     
-            console.log(counter++)
+
             // if (hits.max_score < 2) {
             //     const owners = record.owners || []
 
