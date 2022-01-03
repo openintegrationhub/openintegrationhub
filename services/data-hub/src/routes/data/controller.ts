@@ -423,6 +423,7 @@ export default class DataController {
             }
 
             if (shouldMergeRecord) {
+                const hitDataHubId = hits.hits[0].
                 console.log('Merge')
                 console.log(hits.hits[0])
                 console.log('with')
