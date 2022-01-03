@@ -17,7 +17,7 @@ function nockIamIntrospection(user = {}) {
   return;
 }
 
-const PERSONS_SET_LENGTH = 100000
+const PERSONS_SET_LENGTH = 100
 
 const user1 = { sub: 'user1', role: 'USER', permissions: [], tenant: "tenant1" }
 
@@ -256,9 +256,9 @@ describe('Import & Merge', () => {
           domainId: "my-domain",
           schemaUri: "my-schema",
           content: {
-              firstName: "Caterina",
+              firstName: "Cate",
               lastName: "Corkery",
-              contactData: [{ type: "email", value: "Gleichner@company.com" }]
+              contactData: [{ type: "email", value: "gleichner@gmail.com" }]
           },
           refs: [
             {

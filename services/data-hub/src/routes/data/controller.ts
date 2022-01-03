@@ -10,14 +10,13 @@ import Forbidden from '../../errors/api/Forbidden';
 import BadRequest from '../../errors/api/BadRequest';
 import handlers from '../../handlers/'
 import Minhash from "../../minhash/lib/Minhash"
-import LshIndex from "../../minhash/lib/LshIndex"
 import getShingles from "../../minhash/lib/get-shingles"
 
-const PERMS = 256
-const SEED = 1
-const SHINGLES = 3
-const MIN_HIT_JACCARD = 0.5
-const REFRESH_INDEX = 1
+const PERMS = 256 // number of permutations for minhash
+const SEED = 1 // minhash random seed
+const SHINGLES = 3 // shingles length
+const MIN_HIT_JACCARD = 0.61 // min jaccard similarity for valid hit
+const REFRESH_INDEX = 1 // refresh elasticsearch index after number of inserts
 interface IGteQuery {
     $gte: string;
 }
@@ -334,6 +333,7 @@ export default class DataController {
     public async postMany(ctx: RouterContext): Promise<void> {
         const { body } = ctx.request;
         const { user } = ctx.state;
+        const recordLength = body.length
 
         const duplicateHits: any[] = []
         let counter = 0
@@ -347,8 +347,8 @@ export default class DataController {
             counter++
             let shouldMergeRecord = false
 
-            if (counter % 10 === 0) {
-                console.log(counter)
+            if (counter % 100 === 0) {
+                console.log((counter / recordLength * 100).toFixed(2))
             }
 
             const { firstName, lastName, contactData } = record.content
@@ -422,7 +422,12 @@ export default class DataController {
                 }
             }
 
-            if (!shouldMergeRecord) {
+            if (shouldMergeRecord) {
+                console.log('Merge')
+                console.log(hits.hits[0])
+                console.log('with')
+                console.log()
+            } else {
                 const owners = record.owners || []
 
                 if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
@@ -450,7 +455,6 @@ export default class DataController {
                 if (counter % REFRESH_INDEX === 0) {
                     await refreshIndex()
                 }
-
             }
 
             // if (hits.max_score < 2) {
