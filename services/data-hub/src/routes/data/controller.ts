@@ -348,7 +348,7 @@ export default class DataController {
             let shouldMergeRecord = false
 
             if (counter % 100 === 0) {
-                console.log((counter / recordLength * 100).toFixed(2))
+                console.log((counter / recordLength * 100).toFixed(2) + "%")
             }
 
             const { firstName, lastName, contactData } = record.content
@@ -391,20 +391,20 @@ export default class DataController {
                 const jaccard = newHashed.jaccard(bestHitHashed)
 
                 if (jaccard > MIN_HIT_JACCARD) {
-                    console.log("Hit")
-                    console.log({
-                        new: {
-                            firstName,
-                            lastName,
-                            email
-                        },
-                        bestHit: {
-                            firstName: bestHit._source.firstName,
-                            lastName: bestHit._source.lastName,
-                            email: bestHit._source.email
-                        }
-                    })
-                    console.log("jaccard ", jaccard)
+                    // console.log("Hit")
+                    // console.log({
+                    //     new: {
+                    //         firstName,
+                    //         lastName,
+                    //         email
+                    //     },
+                    //     bestHit: {
+                    //         firstName: bestHit._source.firstName,
+                    //         lastName: bestHit._source.lastName,
+                    //         email: bestHit._source.email
+                    //     }
+                    // })
+                    // console.log("jaccard ", jaccard)
                     duplicateHits.push({
                         new: {
                             firstName,
@@ -423,11 +423,14 @@ export default class DataController {
             }
 
             if (shouldMergeRecord) {
-                const hitDataHubId = hits.hits[0].
+                const hitDataHubId = hits.hits[0]._source.dataHubId
                 console.log('Merge')
-                console.log(hits.hits[0])
+                console.log(record)
                 console.log('with')
-                console.log()
+                const dataObject = await DataObject.findOne({
+                    _id: hitDataHubId
+                });
+                console.log(dataObject)
             } else {
                 const owners = record.owners || []
 
