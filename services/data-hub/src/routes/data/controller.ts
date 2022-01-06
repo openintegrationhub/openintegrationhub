@@ -225,22 +225,34 @@ export default class DataController {
             throw new NotFound();
         }
 
-        // if (!dataObject.owners.find((o: any) => o.id === user.sub) && !user.permissions.includes('all')) {
-        //     throw new Unauthorized();
-        // }
-
-        // @ts-ignore: TS2339
-        dataObject.id = dataObject._id;
-        // @ts-ignore: TS2339
-        delete dataObject._id;
-        // @ts-ignore: TS2339
-        delete dataObject.createdAt;
-        // @ts-ignore: TS2339
-        delete dataObject.updatedAt;
-        // @ts-ignore: TS2339
-        delete dataObject.__v;
-
         ctx.status = 200;
+        ctx.body = {
+            data: dataObject
+        };
+    }
+
+    public async getOneByIdAndDeleteRecordId(ctx: RouterContext): Promise<void> {
+        const { id, recordId } = ctx.params;
+        const { user } = ctx.state;
+
+        const dataObject = await DataObject.findById(id);
+
+        if (!dataObject) {
+            throw new NotFound();
+        } else {
+            // @ts-ignore: TS2532
+            const index = dataObject.refs.indexOf(recordId);
+            if (index > -1) {
+              // @ts-ignore: TS2532
+              ctx.status = 200;
+              dataObject.refs.splice(index, 1);
+              await dataObject.save();
+            } else {
+              ctx.status = 404;
+            }
+
+        }
+  
         ctx.body = {
             data: dataObject
         };
@@ -257,7 +269,7 @@ export default class DataController {
         }
 
         // @ts-ignore: TS2532
-        if (!dataObject.owners.find(o => o.id === user.sub)) { 
+        if (!dataObject.owners.find(o => o.id === user.sub)) {
             throw new Forbidden();
         }
 
