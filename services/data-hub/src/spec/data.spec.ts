@@ -85,6 +85,7 @@ describe('Data Route', () => {
             expect(body).to.haveOwnProperty('data');
             expect(body.data.id).to.be.a('string');
             objectId = body.data.id;
+
             delete body.data.id;
             expect(body.data).to.deep.equal(Object.assign(record, {
                 owners: [{ id: 'user-id', type: 'user' }]
@@ -869,6 +870,39 @@ describe('GET /data/:id and /data/recordId/:id', () => {
                         "recordUid": "record-id",
                     },
                 ],
+                "schemaUri": "my-schema",
+            },
+        });
+        expect(statusCode).to.equal(200);
+    });
+
+
+    it('should delete recordId from entry', async function () {
+        nockIamIntrospection();
+        const { body, statusCode } = await this.request
+            .delete(`/data/${objectId}/record-id`)
+            .set('Authorization', this.auth);
+
+        expect(body.data.id).to.not.be.empty;
+
+        delete body.data.id;
+
+        console.log(JSON.stringify(body));
+
+
+        expect(body).to.deep.equal({
+            "data": {
+                "content": {
+                    "some": "data",
+                },
+                "domainId": "my-domain",
+                "owners": [
+                    {
+                        "id": "user-id",
+                        "type": "user"
+                    }
+                ],
+                "refs": [],
                 "schemaUri": "my-schema",
             },
         });
