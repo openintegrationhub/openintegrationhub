@@ -246,13 +246,19 @@ export default class DataController {
               // @ts-ignore: TS2532
               ctx.status = 200;
               dataObject.refs.splice(index, 1);
-              await dataObject.save();
+
+              if (dataObject.refs.length > 0) {
+                await dataObject.save();
+              } else {
+                // Delete orphan entry if no more recordIds are left
+                dataObject.remove();
+              }
             } else {
               ctx.status = 404;
             }
 
         }
-  
+
         ctx.body = {
             data: dataObject
         };
