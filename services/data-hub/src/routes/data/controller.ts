@@ -262,7 +262,7 @@ export default class DataController {
               if (dataObject.refs[i].recordUid === recordId) {
                 found = true;
                 // @ts-ignore: TS2532
-                dataObject.refs.splice(index, 1);
+                dataObject.refs.splice(i, 1);
                 break;
               }
             }
