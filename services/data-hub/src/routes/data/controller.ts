@@ -216,19 +216,34 @@ export default class DataController {
     }
 
     public async getOneByRecordId(ctx: RouterContext): Promise<void> {
-        const { id } = ctx.params;
-        const { user } = ctx.state;
+       const { id } = ctx.params;
+       const { user } = ctx.state;
 
-        const dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
+       const dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
 
-        if (!dataObject) {
-            throw new NotFound();
-        }
+       if (!dataObject) {
+           throw new NotFound();
+       }
 
-        ctx.status = 200;
-        ctx.body = {
-            data: dataObject
-        };
+       // if (!dataObject.owners.find((o: any) => o.id === user.sub) && !user.permissions.includes('all')) {
+       //     throw new Unauthorized();
+       // }
+
+       // @ts-ignore: TS2339
+       dataObject.id = dataObject._id;
+       // @ts-ignore: TS2339
+       delete dataObject._id;
+       // @ts-ignore: TS2339
+       delete dataObject.createdAt;
+       // @ts-ignore: TS2339
+       delete dataObject.updatedAt;
+       // @ts-ignore: TS2339
+       delete dataObject.__v;
+
+       ctx.status = 200;
+       ctx.body = {
+           data: dataObject
+       };
     }
 
     public async getOneByIdAndDeleteRecordId(ctx: RouterContext): Promise<void> {
