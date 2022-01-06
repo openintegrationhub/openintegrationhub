@@ -241,7 +241,7 @@ export default class DataController {
             throw new NotFound();
         } else {
             // @ts-ignore: TS2532
-            const index = dataObject.refs.indexOf(recordId);
+            const index = (dataObject.refs)? dataObject.refs.indexOf(recordId) : -1;
             if (index > -1) {
               // @ts-ignore: TS2532
               ctx.status = 200;
