@@ -883,11 +883,12 @@ describe('GET /data/:id and /data/recordId/:id', () => {
             .delete(`/data/${objectId}/record-id`)
             .set('Authorization', this.auth);
 
+        console.log(JSON.stringify(body));
+
         expect(body.data.id).to.not.be.empty;
 
         delete body.data.id;
 
-        console.log(JSON.stringify(body));
 
 
         expect(body).to.deep.equal({
