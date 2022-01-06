@@ -258,6 +258,7 @@ export default class DataController {
             let found = false;
             // @ts-ignore: TS2532
             for (let i=0; i<dataObject.refs.length; i+=1) {
+              // @ts-ignore: TS2532
               if (dataObject.refs[i].recordUid === recordId) {
                 found = true;
                 // @ts-ignore: TS2532
