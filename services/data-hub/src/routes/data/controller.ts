@@ -255,12 +255,19 @@ export default class DataController {
         if (!dataObject) {
             throw new NotFound();
         } else {
+            let found = false;
             // @ts-ignore: TS2532
-            const index = (dataObject.refs)? dataObject.refs.indexOf(recordId) : -1;
-            if (index > -1) {
+            for (let i=0; i<dataObject.refs.length; i+=1) {
+              if (dataObject.refs[i].recordUid === recordId) {
+                found = true;
+                // @ts-ignore: TS2532
+                dataObject.refs.splice(index, 1);
+                break;
+              }
+            }
+            if (found) {
               ctx.status = 200;
-              // @ts-ignore: TS2532
-              dataObject.refs.splice(index, 1);
+
               // @ts-ignore: TS2532
               if (dataObject.refs.length > 0) {
                 await dataObject.save();
