@@ -367,6 +367,10 @@ class KubernetesDriver extends BaseDriver {
             .get('DATAHUB_BASE_URL')
             .replace(/\/$/, '');
 
+        envVars.LOG_LEVEL = this._config
+            .get('COMPONENT_LOG_LEVEL')
+            .replace(/\/$/, '');
+
         // // if running from host use cluster internal references instead
         // if (this._config.get('RUNNING_ON_HOST') === 'true') {
         //     envVars.SNAPSHOTS_SERVICE_BASE_URL = 'http://snapshots-service.oih-dev-ns.svc.cluster.local:1234';
@@ -376,8 +380,6 @@ class KubernetesDriver extends BaseDriver {
             env[`${ENV_PREFIX}${k}`] = v;
             return env;
         }, {});
-
-        envVars.LOG_LEVEL = 'trace';
 
         return envVars;
     }

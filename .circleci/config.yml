@@ -2,13 +2,13 @@ version: 2.1
 
 aliases:
   - &node_env
-    - image: circleci/node:16-bullseye
+    - image: cimg/node:16.13.0
   - &node_mongo_env
-    - image: circleci/node:16-bullseye
-    - image: circleci/mongo:4.4
+    - image: cimg/node:16.13.0
+    - image: mongo:4.4
   - &node_amqp_env
-    - image: circleci/node:16-bullseye
-    - image: rabbitmq:3.8.9-alpine
+    - image: cimg/node:16.13.0
+    - image: rabbitmq:3.9.9-alpine
   - &run_npm_install
     name: Installing Dependencies
     command: npm i
