@@ -276,6 +276,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  if (mongoose.connection && mongoose.connection.db) await mongoose.connection.db.dropDatabase();
   mongoose.connection.close();
   app.close();
 });
