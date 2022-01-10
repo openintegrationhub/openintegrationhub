@@ -880,7 +880,7 @@ describe('GET /data/:id and /data/recordId/:id', () => {
     it('should delete recordId from entry', async function () {
         nockIamIntrospection();
         const { body, statusCode } = await this.request
-            .delete(`/data/${objectId}/app-id/record-id`)
+            .delete(`/data/${objectId}/record-id`)
             .set('Authorization', this.auth);
 
         console.log(JSON.stringify(body));
