@@ -22,12 +22,10 @@ const jsonParser = bodyParser.json();
 module.exports = class Server {
     constructor({ port, mongoDbConnection }) {
         this.port = port || conf.port;
+        this.mongoDbConnection = mongoDbConnection;
         this.eventBus = new EventBus({ serviceName: conf.logging.namespace, rabbitmqUri: process.env.RABBITMQ_URI });
         this.app = express();
         this.app.disable('x-powered-by');
-
-        // setup database
-        Server.setupDatabase(mongoDbConnection);
 
         this.setupCors();
 
@@ -58,16 +56,17 @@ module.exports = class Server {
         this.app.use(require('../middleware/error').default);
     }
 
-    static setupDatabase(mongoDbConnection) {
+    static async setupDatabase(mongoDbConnection) {
         const connectionString = mongoDbConnection
         || global.__MONGO_URI__
         || conf.mongoDbConnection;
 
-        mongoose.connect(connectionString, {
+        await mongoose.connect(connectionString, {
             poolSize: conf.mongoDbPoolSize,
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
             keepAlive: 120,
+            autoCreate: process.env.NODE_ENV === 'test',
             useCreateIndex: true,
             useNewUrlParser: true,
         });
@@ -92,6 +91,8 @@ module.exports = class Server {
     }
 
     async start() {
+        // setup database
+        await Server.setupDatabase(this.mongoDbConnection);
         this.server = await this.app.listen(this.port);
         EventBusManager.init({ eventBus: this.eventBus, serviceName: conf.loggingNameSpace });
         this.eventsModule = new EventsModule();

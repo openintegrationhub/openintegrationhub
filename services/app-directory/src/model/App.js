@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const component = new Schema({
-    type: { type: String, index: true, required: true },
-    componentId: { type: String },
-}, { _id: false });
+// const component = new Schema({
+//     type: { type: String, index: true, required: true },
+//     componentId: { type: String },
+// }, { _id: false });
 
 const Operation = new Schema({
     adapterOperation: { type: String },
@@ -28,13 +28,22 @@ const Operation = new Schema({
         ],
     }],
     dataModels: [String],
-}, { _id: false });
+}, {
+    _id: false,
+});
 
 const app = new Schema({
     artifactId: {
-        type: String, lowercase: true, index: { unique: true }, required: true,
+        type: String,
+        lowercase: true,
+        unique: true,
+        required: true,
     },
-    name: { type: String, index: { unique: true }, required: true },
+    name: {
+        type: String,
+        unique: true,
+        required: true,
+    },
     description: String,
     img: String,
     credentials: {
