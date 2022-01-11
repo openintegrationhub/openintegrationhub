@@ -247,7 +247,7 @@ export default class DataController {
     }
 
     public async getOneByIdAndDeleteRecordId(ctx: RouterContext): Promise<void> {
-        const { id, recordId } = ctx.params;
+        const { id, applicationUid, recordId } = ctx.params;
         const { user } = ctx.state;
 
         const dataObject = await DataObject.findById(id);
@@ -258,8 +258,12 @@ export default class DataController {
             let found = false;
             // @ts-ignore: TS2532
             for (let i=0; i<dataObject.refs.length; i+=1) {
-              // @ts-ignore: TS2532
-              if (dataObject.refs[i].recordUid === recordId) {
+              if (
+                // @ts-ignore: TS2532
+                dataObject.refs[i].recordUid === recordId
+                // @ts-ignore: TS2532
+                && dataObject.refs[i].applicationUid === applicationUid
+              ) {
                 found = true;
                 // @ts-ignore: TS2532
                 dataObject.refs.splice(i, 1);
