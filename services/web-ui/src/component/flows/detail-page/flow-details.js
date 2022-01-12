@@ -17,7 +17,6 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import { getComponents } from '../../../action/components';
 import { getConfig } from '../../../conf';
 import withForm from '../../../hoc/with-form';
 import EditAddNode from './add-edit-node';
@@ -38,6 +37,55 @@ const defaultdata = {
         { from: 'n3', to: 'n3' },
     ],
 };
+
+// const defaultFlow = {
+//     status: 'inactive',
+//     name: 'Placetel Connector to code component',
+//     description: 'Testing placetel',
+//     graph: {
+//         nodes: [
+//             {
+//                 id: 'step_1',
+//                 componentId: '5f72fb80bea665001b8d7ffd',
+//                 name: 'Placetel Connector',
+//                 function: 'getContacts',
+//                 credentials_id: '5f73286353966a0011861cea',
+//             },
+//             {
+//                 id: 'step_2',
+//                 componentId: '5cdaba4d6474a5001a8b2588',
+//                 name: 'Code Component',
+//                 function: 'execute',
+//                 description: 'Exemplary flow node',
+//                 fields: {
+//                     code: 'function* run() {console.log(\'Calling external URL\');yield request.post({uri: \'https://webhook.site/4bbd1546-1522-4609-bc49-66aee2e37e35\', body: msg.body, json: true});}',
+//                 },
+//             },
+//         ],
+//         edges: [
+//             {
+//                 source: 'step_1',
+//                 target: 'step_2',
+//             },
+//         ],
+//     },
+//     type: 'ordinary',
+//     cron: '* * * * *',
+//     owners: [
+//         {
+//             id: '5d1b60df3236130011ff3094',
+//             type: 'user',
+//         },
+//     ],
+//     createdAt: '2020-09-29T12:32:54.946Z',
+//     updatedAt: '2021-03-15T09:10:31.600Z',
+//     id: '5f7329760694fc001bc34774',
+// };
+
+// const transformedFlow = {
+//     nodes: defaultFlow.graph.nodes.map(node => ({ ...node, label: node.name, title: `${node.componentId}<br /><span style="color: red">${node.function}</span>` })),
+//     edges: defaultFlow.graph.edges.map(edge => ({ from: edge.source, to: edge.target })),
+// };
 
 const useStyles = {
     componentNode: {
@@ -156,14 +204,17 @@ class EditFlowDetails extends React.PureComponent {
 
     async componentDidMount() {
         try {
-            await this.props.getComponents();
-
             console.log('Props', this.props);
             const result = await axios({
                 method: 'get',
-                url: `${getConfig().endpoints.flow}/flows/${this.props.flowId || this.props.match.params.flowID}`,
+                url: `${getConfig().endpoints.flow}/flows/${this.props.flowId}`,
                 withCredentials: true,
             });
+
+            // const transformedFlow = {
+            //     nodes: result.data.data.graph.nodes.map(node => ({ ...node, label: node.name, title: `${node.componentId}<br /><span style="color: red">${node.function}</span>` })),
+            //     edges: result.data.data.graph.edges.map(edge => ({ from: edge.source, to: edge.target })),
+            // };
 
             this.setState({ flow: result.data.data, isLoading: false });
         } catch (err) {
@@ -174,11 +225,16 @@ class EditFlowDetails extends React.PureComponent {
     handleAddNode = () => {
         const id = uuid.v4();
         this.setState({
+            // transformedFlow: {
+            //     ...this.state.transformedFlow,
+            //     nodes: [...this.state.transformedFlow.nodes, { id, label: `Node ${id}` }],
+            //     edges: this.state.selectedNodeId ? [...this.state.transformedFlow.edges, { from: this.state.selectedNodeId, to: id }] : this.state.transformedFlow.edges,
+            // },
             flow: {
                 ...this.state.flow,
                 graph: {
                     ...this.state.flow.graph,
-                    nodes: [...this.state.flow.graph.nodes, { id, name: 'New node' }],
+                    nodes: [...this.state.flow.graph.nodes, { id, name: `Node ${this.state.data.nodes.length + 1}` }],
                     edges: this.state.selectedNodeId ? [...this.state.flow.graph.edges, { source: this.state.selectedNodeId, target: id }] : this.state.flow.graph.edges,
                 },
             },
@@ -279,7 +335,6 @@ class EditFlowDetails extends React.PureComponent {
                     nodes: modifiedNodes,
                 },
             },
-            editMode: false,
         });
     }
 
@@ -413,15 +468,6 @@ class EditFlowDetails extends React.PureComponent {
                                     maximum: 150,
                                     minimum: 150,
                                 },
-                                color: {
-                                    background: '#ff8200',
-                                    highlight: {
-                                        background: '#ff2473',
-                                    },
-                                },
-                                font: {
-                                    color: '#fff',
-                                },
                             },
                         }}
                         events={{
@@ -452,10 +498,9 @@ class EditFlowDetails extends React.PureComponent {
 
 const mapStateToProps = state => ({
     tenants: state.tenants,
-    components: state.components.all,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
-    getComponents,
+
 }, dispatch);
 
 export default flow(

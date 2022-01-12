@@ -4,10 +4,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import flow from 'lodash/flow';
 import { withStyles } from '@material-ui/styles';
-// import * as tenantsActions from '../../../action/tenants';
-// import axios from 'axios';
-// import Grid from '@material-ui/core/Grid';
-// import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -30,7 +26,6 @@ import FormControl from '@material-ui/core/FormControl';
 import locale from 'react-json-editor-ajrm/locale/en';
 import JSONInput from 'react-json-editor-ajrm';
 import withForm from '../../../hoc/with-form';
-// import { getComponents } from '../../../action/components';
 import Loader from '../../loader';
 import { getSecrets } from '../../../action/secrets';
 
@@ -38,7 +33,8 @@ const useStyles = {
     wrapper: {
         background: 'rgb(243, 243, 243)',
         width: '100%',
-        height: '500px',
+        height: '80vh',
+        maxHeight: '1800px',
         margin: 20,
     },
     container: {
@@ -307,7 +303,10 @@ class EditAddNode extends React.PureComponent {
                                     <Paper variant="outlined" className={classes.paper}>
                                         <FormControl component="fieldset">
                                             <FormLabel component="legend">Apply transform</FormLabel>
-                                            <RadioGroup aria-label="gender" name="gender1" value={this.state.data.nodeSettings && this.state.data.nodeSettings.applyTransform} onChange={this.setNodeSetting.bind(this, 'applyTransform')}>
+                                            <RadioGroup aria-label="gender" name="gender1"
+                                                value={this.state.data.nodeSettings && this.state.data.nodeSettings.applyTransform}
+                                                onChange={this.setNodeSetting.bind(this, 'applyTransform')}
+                                            >
                                                 <FormControlLabel value="null" control={<Radio />} label="none" />
                                                 <FormControlLabel value="before" control={<Radio />} label="before" />
                                                 <FormControlLabel value="both" control={<Radio />} label="both" />
@@ -315,7 +314,7 @@ class EditAddNode extends React.PureComponent {
                                         </FormControl>
 
                                         <div>
-                                            {this.state.data.nodeSettings && this.state.data.nodeSettings.applyTransform !== 'null' ? <FormControl fullWidth className={classes.margin}>
+                                            {this.state.data.nodeSettings && this.state.data.nodeSettings.applyTransform && this.state.data.nodeSettings.applyTransform !== 'null' ? <FormControl fullWidth className={classes.margin}>
                                                 <InputLabel htmlFor="description">transformFunction</InputLabel>
                                                 <Input
                                                     id="transformFunction"
@@ -451,7 +450,6 @@ const mapStateToProps = state => ({
     secrets: state.secrets,
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
-    // getComponents,
     getSecrets,
 }, dispatch);
 
