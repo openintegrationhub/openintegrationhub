@@ -1,4 +1,5 @@
 {
+	"name": "openintegrationhub",
 	"private": true,
 	"workspaces": [
 		"./lib/*",

@@ -18,7 +18,7 @@ const swaggerDocument = require('./api/swagger/swagger.json');
 const log = require('./config/logger');
 
 // const receiver = require('./api/utils/receive.module.js');
-const eventBus = require('./api/utils/eventBus.js');
+const eventBus = require('./api/utils/eventBus');
 
 class Server {
     constructor() {

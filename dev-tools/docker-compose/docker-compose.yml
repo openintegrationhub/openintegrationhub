@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   iam:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_IAM_FOLDER}
     working_dir: /usr/src/app/services/iam
@@ -32,7 +32,7 @@ services:
     networks:
     - oih-dev
   secret-service:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_SECRET_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/secret-service
@@ -61,7 +61,7 @@ services:
     networks:
     - oih-dev
   component-repository:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_COMPONENT_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/component-repository
@@ -87,7 +87,7 @@ services:
     networks:
     - oih-dev
   snapshots-service:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_SNAPSHOTS_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/snapshots-service
@@ -168,7 +168,7 @@ services:
     networks:
     - oih-dev
   app-directory:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_APP_DIRECTORY_FOLDER}
     working_dir: /usr/src/app/services/app-directory
@@ -196,7 +196,7 @@ services:
     networks:
     - oih-dev
   attachment-storage-service:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_ATTACHMENT_STORAGE_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/attachment-storage-service
@@ -215,7 +215,7 @@ services:
     networks:
     - oih-dev
   audit-log:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_AUDIT_LOG_FOLDER}
     working_dir: /usr/src/app/services/audit-log
@@ -240,7 +240,7 @@ services:
     networks:
     - oih-dev
   data-hub:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_DATA_HUB_FOLDER}
     working_dir: /usr/src/app/services/data-hub
@@ -263,7 +263,7 @@ services:
     networks:
     - oih-dev
   dispatcher-service:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_DISPATCHER_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/dispatcher-service
@@ -289,7 +289,7 @@ services:
     networks:
     - oih-dev
   flow-repository:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_FLOW_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/flow-repository
@@ -314,7 +314,7 @@ services:
     networks:
     - oih-dev
   ils:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_ILS_FOLDER}
     working_dir: /usr/src/app/services/ils
@@ -336,7 +336,7 @@ services:
     networks:
     - oih-dev
   meta-data-repository:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_META_DATA_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/meta-data-repository
@@ -363,7 +363,7 @@ services:
     networks:
     - oih-dev
   scheduler:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_SCHEDULER_FOLDER}
     working_dir: /usr/src/app/services/scheduler
@@ -387,7 +387,7 @@ services:
     networks:
     - oih-dev
   webhooks:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_WEBHOOKS_FOLDER}
     working_dir: /usr/src/app/services/webhooks
@@ -413,7 +413,7 @@ services:
     - oih-dev
 
   template-repository:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_TEMPLATE_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/${DEV_TEMPLATE_REPOSITORY_FOLDER}
@@ -438,7 +438,7 @@ services:
     - oih-dev
 
   rds:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_RDS_FOLDER}
     working_dir: /usr/src/app/services/${DEV_RDS_FOLDER}
@@ -464,7 +464,7 @@ services:
     - oih-dev
 
   governance-service:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_GOVERNANCE_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/${DEV_GOVERNANCE_SERVICE_FOLDER}
@@ -490,7 +490,7 @@ services:
     - oih-dev
     
   reports-analytics:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_REPORTS_ANALYTICS_FOLDER}
     working_dir: /usr/src/app/services/${DEV_REPORTS_ANALYTICS_FOLDER}
@@ -515,7 +515,7 @@ services:
     - oih-dev
 
   web-ui:
-    user: ${DOCKER_USER_GROUP}
+    
     image: ${NODE_IMAGE}
     container_name: ${DEV_WEB_UI_FOLDER}
     working_dir: /usr/src/app/services/web-ui

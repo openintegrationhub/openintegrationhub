@@ -1,6 +1,6 @@
 {
   "name": "data-hub",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Data hub",
   "main": "dist/index.js",
   "directories": {
@@ -59,7 +59,7 @@
     "koa-router": "10.0.0",
     "koa2-swagger-ui": "5.1.0",
     "lodash": "4.17.21",
-    "mongoose": "5.13.9",
+    "mongoose": "5.13.13",
     "notation": "2.0.0"
   }
 }
