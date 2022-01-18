@@ -256,6 +256,17 @@ const getOrphanedFlows = () => new Promise((resolve) => {
     });
 });
 
+const getSimilarFlows = () => new Promise((resolve) => {
+  Flow.find()
+    .lean()
+    .then((response) => {
+      resolve(response);
+    })
+    .catch((err) => {
+      log.error(err);
+    });
+});
+
 module.exports = {
   getFlows,
   addFlow,
@@ -268,5 +279,6 @@ module.exports = {
   deleteFlow,
   anonymise,
   getOrphanedFlows,
+  getSimilarFlows,
   format,
 };
