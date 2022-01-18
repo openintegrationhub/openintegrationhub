@@ -13,7 +13,7 @@ const general = {
 
   // Designates which storage system (Mongo, Kubernetes, MySQL, etc.) is used
   storage: 'mongo',
-
+  minSimilarityScore: process.env.SMART_ASSISTANCE_MIN_SIMILARITY_SCORE || 0.4,
   loggingServiceBaseUrl: process.env.LOGGING_SERVICE_BASE_URL || 'http://logging-service.oih-dev-ns.svc.cluster.local:1234',
 };
 

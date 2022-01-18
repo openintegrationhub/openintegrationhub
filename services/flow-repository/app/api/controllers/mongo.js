@@ -7,6 +7,8 @@ const mongoose = require('mongoose');
 const config = require('../../config/index');
 const log = require('../../config/logger');
 const Flow = require('../../models/flow');
+const calculateGraphSimilarity = require('../../utils/calculate-similarity');
+const anonymizeGraph = require('../../utils/anonymize-graph');
 
 const format = (flow) => {
   const newFlow = flow;
@@ -256,16 +258,28 @@ const getOrphanedFlows = () => new Promise((resolve) => {
     });
 });
 
-const getSimilarFlows = () => new Promise((resolve) => {
-  Flow.find()
-    .lean()
-    .then((response) => {
-      resolve(response);
-    })
-    .catch((err) => {
-      log.error(err);
-    });
-});
+const getSimilarFlows = async (flowId) => {
+  const flows = await Flow.find().lean();
+  const baseIndex = flows.findIndex((flow) => flow._id.toString() === flowId.toString());
+  const baseFlow = flows[baseIndex];
+  flows.splice(baseIndex, 1);
+
+  const similarFlows = [];
+  for (const flow of flows) {
+    const score = calculateGraphSimilarity(baseFlow.graph, flow.graph);
+
+    if (score >= config.minSimilarityScore) {
+      similarFlows.push(
+        {
+          graph: anonymizeGraph(flow.graph),
+          score,
+        },
+      );
+    }
+  }
+
+  return similarFlows.sort((a, b) => (a.score > b.score ? -1 : 1));
+};
 
 module.exports = {
   getFlows,
