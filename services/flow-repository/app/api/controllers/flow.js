@@ -284,6 +284,23 @@ router.delete('/:id', can(config.flowWritePermission), jsonParser, async (req, r
   }
 });
 
+// smart assistance
+// Get similar flows by flowId
+router.get('/recommend/:id', jsonParser, can(config.flowReadPermission), async (req, res) => {
+  const flowId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(flowId)) {
+    return res.status(400).send({ errors: [{ message: 'Invalid id', code: 400 }] });
+  }
+
+  const flows = await storage.getSimilarFlows(flowId);
+
+  res.send({
+    data: flows,
+    meta: {},
+  });
+});
+
 // Get step logs
 router.get('/:id/steps/:stepId/logs', async (req, res) => {
   const flow = await storage.getFlowById(req.params.id, req.user);

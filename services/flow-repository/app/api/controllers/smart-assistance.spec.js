@@ -2,9 +2,10 @@ process.env.SMART_ASSISTANCE_MIN_SIMILARITY_SCORE = 0.1;
 process.env.MONGODB_URL = global.__MONGO_URI__;
 
 const mongoose = require('mongoose');
+
+const request = require('supertest')('http://localhost:3002');
 const iamMock = require('../../../test/utils/iamMock');
 const Flow = require('../../models/flow');
-const { getSimilarFlows } = require('./mongo');
 const Server = require('../../server');
 const generateGraph = require('../../utils/generate-graph');
 
@@ -90,11 +91,15 @@ describe('Smart Assistance', () => {
       step2.c5.action -> step3.c1.action
     `);
 
-    const similarFlows = await getSimilarFlows(baseFlow._id);
+    const { data } = (await request
+      .get(`/flows/recommend/${baseFlow._id}`)
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')).body;
 
-    expect(similarFlows.length).toBe(3);
-    expect(similarFlows[0].score).toBe(1);
-    expect(similarFlows[1].score).toBe(0.5);
-    expect(similarFlows[2].score).toBeCloseTo(0.166);
+    expect(data.length).toBe(3);
+    expect(data[0].score).toBe(1);
+    expect(data[1].score).toBe(0.5);
+    expect(data[2].score).toBeCloseTo(0.166);
   });
 });
