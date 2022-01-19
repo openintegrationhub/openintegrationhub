@@ -2,7 +2,7 @@ const path = require('path');
 const request = require('supertest')('http://127.0.0.1:3099');
 const { encode } = require('base64-url');
 const fs = require('fs');
-const CONSTANTS = require('./../src/constants');
+const CONSTANTS = require('../src/constants');
 
 let conf = null;
 
@@ -35,7 +35,7 @@ describe('basic OIDC test Suite', () => {
         // }
 
         await generateFile();
-        conf = require('./../src/conf/index');
+        conf = require('../src/conf/index');
 
         const App = require('../src/app');
         app = new App({
@@ -164,9 +164,8 @@ describe('basic OIDC test Suite', () => {
         const pathToKeystore = path.join(__dirname, '../keystore/keystore.json');
         const { generateFile } = require('../src/util/keystore');
 
-        await fs.unlinkSync(pathToKeystore);
+        fs.unlinkSync(pathToKeystore);
         await generateFile();
-
     });
 });
 

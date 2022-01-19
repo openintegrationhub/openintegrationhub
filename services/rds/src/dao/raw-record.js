@@ -1,10 +1,9 @@
 const RawRecord = require('../model/raw-record')
 
 module.exports = {
-  async create(userId, rawRecordId, payload) {
+  async create(userId, tenant, rawRecordId, payload) {
     const rawRecord = new RawRecord({
       rawRecordId,
-      payload,
       ...(userId
         ? {
             owners: [
@@ -15,8 +14,42 @@ module.exports = {
             ],
           }
         : {}),
+      ...(tenant
+        ? {
+            tenant,
+          }
+        : {}),
+      payload,
     })
     return rawRecord.save()
+  },
+
+  async findByOwner(user, perPage = 50, page = 1) {
+    const condition = {
+      'owners.id': user.sub,
+    }
+
+    return Promise.all([
+      RawRecord.find(condition)
+        .skip(perPage * page)
+        .limit(perPage)
+        .lean(),
+      RawRecord.countDocuments(condition),
+    ])
+  },
+
+  async findByTenant(tenant, perPage = 50, page = 1) {
+    const condition = {
+      tenant,
+    }
+
+    return Promise.all([
+      RawRecord.find(condition)
+        .skip(perPage * page)
+        .limit(perPage)
+        .lean(),
+      RawRecord.countDocuments(condition),
+    ])
   },
 
   async findByOwnerAndId(user, rawRecordId) {
@@ -36,5 +69,24 @@ module.exports = {
     }
 
     return record
+  },
+
+  async countByOwner(user) {
+    const condition = {
+      'owners.id': user.sub,
+    }
+
+    return RawRecord.countDocuments(condition)
+  },
+
+  async countByTenant(tenant) {
+    const condition = {
+      tenant,
+    }
+    return RawRecord.countDocuments(condition)
+  },
+
+  async count() {
+    return RawRecord.countDocuments()
   },
 }

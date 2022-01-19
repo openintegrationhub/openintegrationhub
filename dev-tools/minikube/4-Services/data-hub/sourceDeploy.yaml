@@ -19,49 +19,48 @@ spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       containers:
-      - name: data-hub
-        image: node:12-alpine
-        command: ["/bin/sh"]
-        args: ["-c", "yarn install --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/
-        env:
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: dataHubMongourl
-        - name: PORT
-          value: "1234"
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: iamtoken
-        - name: LOG_LEVEL
-          value: trace
-        - name: NODE_ENV
-          value: development
-        volumeMounts:
-        - name: code
-          mountPath: /usr/src/app
-          subPath: services/data-hub
-        livenessProbe:
-          httpGet:
-            port: 1234
-            path: /healthcheck
-        readinessProbe:
-          httpGet:
-            port: 1234
-            path: /healthcheck
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        imagePullPolicy: IfNotPresent
-        securityContext:
-          privileged: false
+        - name: data-hub
+          image: node:16-alpine
+          command: ["/bin/sh"]
+          args: ["-c", "npm run start:container -w services/data-hub"]
+          workingDir: /usr/src/app/
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: dataHubMongourl
+            - name: PORT
+              value: "1234"
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: iamtoken
+            - name: LOG_LEVEL
+              value: trace
+            - name: NODE_ENV
+              value: development
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+          livenessProbe:
+            httpGet:
+              port: 1234
+              path: /healthcheck
+          readinessProbe:
+            httpGet:
+              port: 1234
+              path: /healthcheck
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
       volumes:
-      - name: code
-        persistentVolumeClaim:
-          claimName: source-volume-claim
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim
   strategy:
     type: RollingUpdate
     rollingUpdate:

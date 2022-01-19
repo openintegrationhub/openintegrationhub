@@ -259,8 +259,8 @@ describe('Template Validation', () => {
       });
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(3);
-    expect(res.body.errors[1].message).toEqual('Cast to ObjectId failed for value "abc" at path "componentId"');
-    expect(res.body.errors[0].message).toEqual('Cast to ObjectId failed for value "IncorrectSecret" at path "credentials_id"');
+    expect(res.body.errors[0].message).toEqual('Cast to ObjectId failed for value "IncorrectSecret" (type string) at path "credentials_id"');
+    expect(res.body.errors[1].message).toEqual('Cast to ObjectId failed for value "abc" (type string) at path "componentId"');
     expect(res.body.errors[2].message).toEqual('Flow Templates with more than one node require edges.');
   });
 
@@ -491,6 +491,10 @@ describe('Template Operations', () => {
                 username: 'TestName',
                 password: 'TestPass',
               },
+              authorization: {
+                authType: 'OA2_AUTHORIZATION_CODE',
+                authClientId: '5ca5c44c187c040010a9bb8b',
+              },
             },
             {
               id: 'NodeTwo',
@@ -511,6 +515,10 @@ describe('Template Operations', () => {
     const j = res.body;
     expect(j).not.toBeNull();
     expect(j.data).toHaveProperty('id');
+
+    // check authorization fields
+    expect(j.data.graph.nodes[0].authorization).toHaveProperty('authType');
+    expect(j.data.graph.nodes[0].authorization).toHaveProperty('authClientId');
 
     template1 = j.data.id;
   });
@@ -551,9 +559,8 @@ describe('Template Operations', () => {
       .get('/templates/')
       .set('Authorization', 'Bearer guestToken');
 
-    expect(res.status).toEqual(404);
+    expect(res.status).toEqual(200);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No templates found');
   });
 
   test('should not show the template to another users get', async () => {
@@ -563,7 +570,7 @@ describe('Template Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No template found');
+    expect(res.body.errors[0].message).toEqual('Template not found');
   });
 
   test('should return 400 when attempting to get an invalid id', async () => {
@@ -582,7 +589,7 @@ describe('Template Operations', () => {
 
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No template found');
+    expect(res.body.errors[0].message).toEqual('Template not found');
   });
 
   test('should add a second template', async () => {
@@ -843,7 +850,7 @@ describe('Cleanup', () => {
       .set('Authorization', 'Bearer adminToken');
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
-    expect(res.body.errors[0].message).toEqual('No template found');
+    expect(res.body.errors[0].message).toEqual('Template not found');
   });
 });
 

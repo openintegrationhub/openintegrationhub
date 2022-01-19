@@ -8,7 +8,7 @@ let server;
 
 describe('validation', () => {
     beforeAll(async () => {
-        conf.mongoDbConnection = global.__MONGO_URI__.replace('_replace_me_', 'dao');
+        conf.mongoDbConnection = global.__MONGO_URI__.replace('changeme', 'dao');
         conf.port = 3000;
 
         server = new Server();

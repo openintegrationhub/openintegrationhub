@@ -7,6 +7,7 @@ module.exports = {
       username: 'admin@example.com',
       role: 'ADMIN',
       permissions: ['all'],
+      isAdmin: true,
       iat: 1337,
     },
   },

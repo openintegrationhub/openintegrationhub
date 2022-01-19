@@ -144,7 +144,7 @@ class AppDetails extends React.Component {
     setComponentsData = (components = this.state.app.components) => {
         const componentData = { ...this.state.componentData };
         Object.keys(components).forEach((key) => {
-            const component = this.props.components.all.find(comp => comp.id === components[key]);
+            const component = this.props.components.all.find((comp) => comp.id === components[key]);
             componentData[component.id] = {
                 ...component,
                 actions: component.descriptor.actions,
@@ -161,7 +161,7 @@ class AppDetails extends React.Component {
         e.preventDefault();
 
         const components = { ...this.state.app.components };
-        const component = this.props.components.all.find(comp => comp.id === e.target.value);
+        const component = this.props.components.all.find((comp) => comp.id === e.target.value);
 
         components[type] = e.target.value;
 
@@ -214,7 +214,7 @@ class AppDetails extends React.Component {
         let dataModels = [...this.state.app.dataModels];
 
         if (!e.target.checked) {
-            dataModels = dataModels.filter(modelId => modelId !== dataModel.id);
+            dataModels = dataModels.filter((modelId) => modelId !== dataModel.id);
         } else if (!dataModels.includes(dataModel.id)) {
             dataModels.push(dataModel.id);
         }
@@ -312,7 +312,6 @@ class AppDetails extends React.Component {
             hasChanges: true,
         });
     }
-
 
     getCredentialsBlock() {
         const {
@@ -436,7 +435,7 @@ class AppDetails extends React.Component {
 
         const domainModelsSelect = [];
         Object.keys(this.props.domainSchemas).forEach((domainsKey) => {
-            domainModelsSelect.push(<ListSubheader>{this.props.dataModels.find(domain => domain.id === domainsKey).name}</ListSubheader>);
+            domainModelsSelect.push(<ListSubheader>{this.props.dataModels.find((domain) => domain.id === domainsKey).name}</ListSubheader>);
             this.props.domainSchemas[domainsKey].forEach((schema) => {
                 domainModelsSelect.push(<MenuItem key={schema.id} value={schema.id}>
                     {schema.name}
@@ -546,7 +545,7 @@ class AppDetails extends React.Component {
                                     id: 'credentials',
                                 }}
                             >
-                                {this.props.authClients.available.map(authClient => <MenuItem key={authClient._id} value={authClient._id}>{authClient.name}</MenuItem>)}
+                                {this.props.authClients.available.map((authClient) => <MenuItem key={authClient._id} value={authClient._id}>{authClient.name}</MenuItem>)}
 
                             </Select>
 
@@ -582,7 +581,6 @@ class AppDetails extends React.Component {
                         {/*    />)} */}
                         {/* </div>)} */}
 
-
                         <Grid xs={12} className={classes.headlineContainer} container>
                             <h2 className={classes.h2}>Connectors</h2>
                         </Grid>
@@ -598,7 +596,7 @@ class AppDetails extends React.Component {
                                     id: 'adapter',
                                 }}
                             >
-                                {this.props.components.all.map(comp => <MenuItem key={comp.id} value={comp.id}>{comp.name}</MenuItem>)}
+                                {this.props.components.all.map((comp) => <MenuItem key={comp.id} value={comp.id}>{comp.name}</MenuItem>)}
 
                             </Select>
                         </FormControl>
@@ -614,11 +612,10 @@ class AppDetails extends React.Component {
                                     id: 'transformer',
                                 }}
                             >
-                                {this.props.components.all.map(comp => <MenuItem key={comp.id} value={comp.id}>{comp.name}</MenuItem>)}
+                                {this.props.components.all.map((comp) => <MenuItem key={comp.id} value={comp.id}>{comp.name}</MenuItem>)}
 
                             </Select>
                         </FormControl>
-
 
                         {this.state.app.components.adapter && this.state.app.components.transformer ? <React.Fragment>
                             <Grid xs={12} className={classes.headlineContainer} container style={{ marginBottom: '24px' }}>
@@ -665,9 +662,9 @@ class AppDetails extends React.Component {
                                                             <em>Select one</em>
                                                         </MenuItem>
                                                         <ListSubheader>Actions</ListSubheader>
-                                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].actions || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].actions || {} : {}).map((key) => <MenuItem key={key} value={key}>{key}</MenuItem>)}
                                                         <ListSubheader>Triggers</ListSubheader>
-                                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                        {Object.keys(this.state.componentData[this.state.app.components.adapter] ? this.state.componentData[this.state.app.components.adapter].triggers || {} : {}).map((key) => <MenuItem key={key} value={key}>{key}</MenuItem>)}
                                                     </Select>
                                                 </TableCell>
                                                 <TableCell>
@@ -679,13 +676,13 @@ class AppDetails extends React.Component {
                                                             <em>Select one</em>
                                                         </MenuItem>
                                                         <ListSubheader>Actions</ListSubheader>
-                                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].actions || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].actions || {} : {}).map((key) => <MenuItem key={key} value={key}>{key}</MenuItem>)}
                                                         <ListSubheader>Triggers</ListSubheader>
-                                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].triggers || {} : {}).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>)}
+                                                        {Object.keys(this.state.componentData[this.state.app.components.transformer] ? this.state.componentData[this.state.app.components.transformer].triggers || {} : {}).map((key) => <MenuItem key={key} value={key}>{key}</MenuItem>)}
                                                     </Select>
                                                 </TableCell>
                                                 <TableCell>
-                                                    {['CREATE', 'UPDATE', 'DELETE'].map(op => <FormControlLabel
+                                                    {['CREATE', 'UPDATE', 'DELETE'].map((op) => <FormControlLabel
                                                         key={op}
                                                         control={
                                                             <Checkbox
@@ -729,7 +726,6 @@ class AppDetails extends React.Component {
                                 </Table>
                             </Grid>
 
-
                         </React.Fragment> : 'Please select an adapter and a transformer first' }
 
                         <Grid xs={12} container className={classes.headlineContainer} style={{ marginBottom: '60px', flexDirection: 'row-reverse' }}>
@@ -746,7 +742,7 @@ class AppDetails extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     apps: state.components,
     components: state.components,
     auth: state.auth,
@@ -754,7 +750,7 @@ const mapStateToProps = state => ({
     dataModels: state.metadata.domains,
     domainSchemas: state.metadata.domainSchemas,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getComponents,
     getClients,
     getDomains,

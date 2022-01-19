@@ -1,86 +1,76 @@
 const assert = require('assert').strict;
 
 const COMMANDS = {
-    ABORT_FLOW: 'ABORT_FLOW',
-    FINISH_FLOW: 'FINISH_FLOW',
-    START_FLOW: 'START_FLOW',
-    EXECUTE_NODE: 'EXECUTE_NODE',
-    GOTO_NEXT: 'GOTO_NEXT',
-    EXECUTE_NODES: 'EXECUTE_NODES',
-}
+    ABORT_FLOW: 'abort',
+    FINISH_FLOW: 'finish',
+    START_FLOW: 'start-flow',
+    EXECUTE_NEXT: 'run-next',
+    EXECUTE_NODES: 'run-next-steps',
+};
 
 const BRANCH_LOGIC = {
     SWITCH: 'SWITCH',
     SPLIT: 'SPLIT',
     JOIN_ONE_OF: 'JOIN_ONE_OF',
     JOIN: 'JOIN',
-}
+};
 
 const CONDITIONALS = {
     AND: 'AND',
     OR: 'OR',
-}
+};
 
 const OPERATIONS = {
     CONTAINS: 'CONTAINS',
     EQUALS: 'EQUALS',
     IS_TRUTHY: 'IS_TRUTHY',
-}
+};
 
 const TYPES = {
     CONDITION: 'CONDITION',
     BRANCHING: 'BRANCHING',
-}
+};
 
 
-class Tester {
+const Asserter = {
+    assertEquals: (a, b) => assert.equal(a, b),
 
-    assertEquals(a, b) {
-        return assert.equal(a, b);
-    }
-
-    assertContains(a, b) {
-        return assert.match(a, b);
-    }
-
-}
+    assertContains: (a, b) => assert.match(a, b),
+};
 
 
-class EngineGoBroom {
-
-    data = null;
-    rule = null;
-
-    constructor(rule, data) {
-
-        this.data = data;
+class LogicGateway {
+    constructor({ rule, snapshotData }) {
+        this.data = snapshotData;
         this.rule = rule;
 
-        this.asserter = new Tester();
+        this.asserter = Asserter;
 
-        this.validateSchema(this.rule);
+        LogicGateway.validateSchema(this.rule);
     }
 
-    validateSchema(rule) {
-
+    static validateSchema(rule) {
         if (!rule.type || !TYPES[rule.type]) {
             throw new Error(`${rule.type} is not a valid type`);
         }
 
-        const subtype = this.getSubTypeMapFromType(rule.type)[rule.subtype];
+        const subtype = LogicGateway.getSubTypeMapFromType(rule.type)[rule.subtype];
         if (!rule.subtype || !subtype) {
             throw new Error(`${rule.subtype} is not a valid subtype`);
         }
 
-        if (!rule.actions) {
+        if (TYPES[rule.type] === TYPES.BRANCHING) {
+            if (!rule.default || !rule.default.action) {
+                throw new Error('Branch default action is missing');
+            }
+
+        } else if (!rule.actions) {
             throw new Error('Actions are missing');
         }
-
     }
 
-    getSubTypeMapFromType(type) {
-        switch(type) {
-
+    static getSubTypeMapFromType(type) {
+        switch (type) {
             case TYPES.CONDITION:
                 return CONDITIONALS;
             case TYPES.BRANCHING:
@@ -90,28 +80,50 @@ class EngineGoBroom {
         }
     }
 
-    process() {
+    processBranching(subtype, options) {
 
+        let actionResponse = null;
+
+        if (subtype === BRANCH_LOGIC.SWITCH) {
+            for (const subBranch of options) {
+                const result = this.processConditional(subBranch.subtype, subBranch.operands);
+                if (result) {
+                    actionResponse = subBranch.action;
+                    break;
+                }
+            }
+        }
+
+        if (!actionResponse) {
+            actionResponse = this.rule.default.action;
+        }
+
+        return actionResponse;
+
+    }
+
+    process() {
         let result;
+        let actionResult;
 
         try {
-
-            switch(this.rule.type) {
-
+            switch (this.rule.type) {
                 case TYPES.CONDITION:
                     result = this.processConditional(this.rule.subtype, this.rule.operands);
+                    break;
+                case TYPES.BRANCHING:
+                    actionResult = this.processBranching(this.rule.subtype, this.rule.options);
                     break;
 
                 default:
                     // TODO
-                    throw new Error('Nothing to process');
+                    return new Error('Nothing to process');
             }
         } catch (e) {
-            console.error('FAAAAIL', e);
+            console.error('Failed to process logic', e);
         }
 
-        return this.generateResponse(result);
-
+        return actionResult || this.generateResponse(result);
     }
 
     generateResponse(outcomePositive) {
@@ -121,43 +133,54 @@ class EngineGoBroom {
         return this.rule.actions.negative;
     }
 
-    /** Kudos to https://stackoverflow.com/a/43849204 */
-    resolvePath(object, path, defaultValue) {
-        return path
-            .split(/[\.\[\]\'\"]/)
+    static resolvePath(snapshotData, pathData, defaultValue) {
+        const step = snapshotData.find(entry => entry.stepId === pathData.stepId);
+        if (!step || !step.snapshot) {
+            console.error('Step data', step, pathData.stepId);
+            return new Error(`Step not found or snapshot data missing:${pathData.stepId}`);
+        }
+
+        /** Kudos to https://stackoverflow.com/a/43849204 */
+        return pathData.field
+            // eslint-disable-next-line no-useless-escape
+            .split(/[.\[\]'"]/)
             .filter(p => p)
-            .reduce((o, p) => o ? o[p] : defaultValue, object);
+            .reduce((o, p) => (o ? o[p] : defaultValue), step.snapshot);
     }
 
     getInputObj(obj) {
-
         if (obj.type === 'ref') {
-            return this.resolvePath(this.data, obj.data);
+            return LogicGateway.resolvePath(this.data, obj.data);
+        }
+        if (obj.type === 'regex') {
+            return new RegExp(obj.data.value, obj.data.flags || '');
         }
 
         return obj.data;
-
     }
 
 
     applyOperation(operation, obj) {
+        try {
+            if (operation === OPERATIONS.EQUALS) {
+                this.asserter.assertEquals(this.getInputObj(obj.key), this.getInputObj(obj.value));
+            }
 
-        if (operation === OPERATIONS.EQUALS) {
-            this.asserter.assertEquals(this.getInputObj(obj.key), this.getInputObj(obj.value));
+            if (operation === OPERATIONS.CONTAINS) {
+                this.asserter.assertContains(this.getInputObj(obj.key), this.getInputObj(obj.value));
+            }
+        } catch (e) {
+            return false;
         }
 
-        if (operation === OPERATIONS.CONTAINS) {
-            this.asserter.assertContains(this.getInputObj(obj.key), this.getInputObj(obj.value));
-        }
 
         return true;
-
     }
 
     processConditionalAND(operands) {
-
         let processed = 0;
 
+        // eslint-disable-next-line no-restricted-syntax
         for (const operand of operands) {
             if (!this.applyOperation(operand.operation, operand)) {
                 return false;
@@ -166,11 +189,10 @@ class EngineGoBroom {
         }
 
         return operands.length === processed;
-
     }
 
     processConditionalOR(operands) {
-
+        // eslint-disable-next-line no-restricted-syntax
         for (const operand of operands) {
             if (this.applyOperation(operand.operation, operand)) {
                 return true;
@@ -181,22 +203,21 @@ class EngineGoBroom {
     }
 
     processConditional(subtype, operands) {
-
         if (subtype === CONDITIONALS.AND) {
             return this.processConditionalAND(operands);
         }
         if (subtype === CONDITIONALS.OR) {
             return this.processConditionalOR(operands);
         }
-
+        return new Error(`Unknown conditional operation ${subtype}`);
     }
 }
 
 module.exports = {
-    EngineGoBroom,
+    LogicGateway,
     COMMANDS,
     TYPES,
     OPERATIONS,
     CONDITIONALS,
     BRANCH_LOGIC,
-}
+};

@@ -293,6 +293,44 @@
           }
         }
       }
+    },
+    "/components/enrich/{id}": {
+      "patch": {
+        "tags": ["components"],
+        "summary": "Automatically enrich component metadata",
+        "description": "Fetches component data from its repository, if available",
+        "operationId": "enrichComponent",
+        "parameters": [{
+          "name": "id",
+          "in": "path",
+          "description": "ID of global component to stop",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+          {
+            "name": "repository",
+            "in": "query",
+            "description": "Absolute url of component repository. Will use component's saved repository if none is provided",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Operation"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "Component with given ID not found"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -321,6 +359,10 @@
             "type": "string",
             "example": "My Component"
           },
+          "id": {
+            "type": "string",
+            "description": "Unique component ID"
+          },
           "access": {
             "type": "string",
             "enum": ["private", "public"],
@@ -343,6 +385,12 @@
           },
           "distribution": {
             "$ref": "#/components/schemas/ComponentDistribution"
+          },
+          "isGlobal": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
           },
           "owners": {
             "type": "array",

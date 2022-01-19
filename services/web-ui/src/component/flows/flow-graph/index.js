@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
     tree, hierarchy, select,
@@ -50,7 +49,7 @@ class FlowGraph extends React.Component {
             .size([height, width]);
 
         //  assigns the data to a hierarchy using parent-child relationships
-        let nodes = hierarchy(treeData, d => d.children);
+        let nodes = hierarchy(treeData, (d) => d.children);
 
         // maps the node data to the tree layout
         nodes = treemap(nodes);
@@ -68,7 +67,7 @@ class FlowGraph extends React.Component {
             .data(nodes.descendants().slice(1))
             .enter().append('path')
             .attr('class', 'link')
-            .attr('d', d => `M${d.y},${d.x
+            .attr('d', (d) => `M${d.y},${d.x
             }C${(d.y + d.parent.y) / 2},${d.x
             } ${(d.y + d.parent.y) / 2},${d.parent.x
             } ${d.parent.y},${d.parent.x}`);
@@ -77,9 +76,9 @@ class FlowGraph extends React.Component {
         const node = g.selectAll('.node')
             .data(nodes.descendants())
             .enter().append('g')
-            .attr('class', d => `node${
+            .attr('class', (d) => `node${
                 d.children ? ' node--internal' : ' node--leaf'}`)
-            .attr('transform', d => `translate(${d.y},${d.x})`)
+            .attr('transform', (d) => `translate(${d.y},${d.x})`)
             .on('click', this.onClickHandle.bind(this));
 
         // adds the circle to the node
@@ -89,15 +88,15 @@ class FlowGraph extends React.Component {
         // adds the text to the node
         node.append('text')
             .attr('dy', '.35em')
-            .attr('x', d => (d.children ? -13 : 13))
+            .attr('x', (d) => (d.children ? -13 : 13))
             .attr('y', () => (13))
-            .style('text-anchor', d => (d.children ? 'end' : 'start'))
-            .text(d => d.data.name)
+            .style('text-anchor', (d) => (d.children ? 'end' : 'start'))
+            .text((d) => d.data.name)
             .on('click', this.onClickHandle.bind(this));
     }
 
     onClickHandle(d) {
-        const data = this.props.data.nodes.find(node => node.id === d.data.id);
+        const data = this.props.data.nodes.find((node) => node.id === d.data.id);
         if (data) {
             this.setState({
                 openInfo: true,

@@ -191,11 +191,10 @@ class AuthClientRouter {
         });
 
         this.router.get('/:id/secrets', /* userIsOwnerOfAuthClient, */ async (req, res, next) => {
-            const authClient = await AuthClientDAO.findOne({ _id: req.params.id });
             try {
-                const secrets = findByAuthClient(
+                const secrets = await findByAuthClient(
                     req.user.sub,
-                    authClient._id,
+                    req.params.id,
                 );
                 res.send({
                     data: secrets,

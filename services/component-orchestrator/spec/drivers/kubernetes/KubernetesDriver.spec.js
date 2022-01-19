@@ -31,7 +31,9 @@ describe('KubernetesDriver', () => {
         };
 
         coreClient = {
-
+            services: {
+                post: () => { }
+            }
         };
 
         appsClient = {
@@ -46,6 +48,7 @@ describe('KubernetesDriver', () => {
         };
 
         sinon.stub(appsClient.deployments, 'post').resolves();
+        sinon.stub(coreClient.services, 'post').resolves();
 
         driver = new KubernetesDriver({ config, logger, k8s });
     });
@@ -90,12 +93,21 @@ describe('KubernetesDriver', () => {
 
     describe('#_createRunningFlowNode', () => {
         it('should create RunningFlowNode instance', async () => {
-            sinon.stub(driver, '_generateDefinition').returns({ kind: 'Deployment' });
+            sinon.stub(driver, '_generateDeploymentDefinition').returns({ kind: 'Deployment' });
+            sinon.stub(driver, '_generateServiceDefinition').returns({ kind: 'Service' });
             appsClient.deployments.post.resolves({
                 body: {
                     kind: 'Deployment',
                     metadata: {
                         name: 'new-deployment'
+                    }
+                }
+            });
+            coreClient.services.post.resolves({
+                body: {
+                    kind: 'Service',
+                    metadata: {
+                        name: 'new-service'
                     }
                 }
             });
@@ -105,7 +117,9 @@ describe('KubernetesDriver', () => {
             const secret = { id: 'secret' };
 
             const localComponent = { isGlobal: false }
-            const globalComponent = { isGlobal: true, id: 'fooo' }
+            const globalComponent = { isGlobal: true, id: 'fooo', descriptor: {
+                restAPI: true
+            } }
 
             let result = await driver._createRunningComponent({ flow, node, secret, component: localComponent, options: {} });
             expect(result instanceof KubernetesRunningComponent).to.be.true;
@@ -147,10 +161,13 @@ describe('KubernetesDriver', () => {
                 distribution: {
                     type: 'docker',
                     image: 'openintegrationhub/email'
+                },
+                descriptor: {
+                    restAPI: true
                 }
             };
 
-            let result = await driver._generateDefinition({
+            let result = await driver._generateDeploymentDefinition({
                 flow, node, secret, component: localComponent, options: {
                     replicas: 3
                 }
@@ -212,15 +229,17 @@ describe('KubernetesDriver', () => {
                                             'cpu': '0.1',
                                             'memory': '256'
                                         }
-                                    }
+                                    },
+                                    'volumeMounts': []
                                 }
                             ],
+                            'volumes': []
                         }
                     }
                 }
             });
 
-            result = await driver._generateDefinition({
+            result = await driver._generateDeploymentDefinition({
                 flow, node, secret, component: globalComponent
             });
 
@@ -274,11 +293,43 @@ describe('KubernetesDriver', () => {
                                             'cpu': '0.1',
                                             'memory': '256'
                                         }
-                                    }
+                                    },
+                                    'volumeMounts': []
                                 }
                             ],
+                            'volumes': []
                         }
                     }
+                }
+            });
+
+            result = await driver._generateServiceDefinition({
+                flow, node, component: globalComponent
+            });
+
+            expect(result).to.deep.equal({
+                'apiVersion': 'v1',
+                'kind': 'Service',
+                'metadata': {
+                    'labels': {
+                        'app': 'global-comp2-service',
+                    },
+                    'name': 'global-comp2-service',
+                    'namespace': 'flows-ns'
+                    },
+                    'spec': {
+                    'ports': [
+                        {
+                        'name': '3001',
+                        'port': 3001,
+                        'protocol': 'TCP',
+                        'targetPort': 3001
+                        }
+                    ],
+                    'selector': {
+                        'componentId': 'comp2',
+                    },
+                    'type': 'ClusterIP',
                 }
             });
         });

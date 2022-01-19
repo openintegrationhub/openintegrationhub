@@ -217,8 +217,8 @@ class DispatcherConfigDetails extends React.Component {
     getAppFlowsForDirection = (app, direction) => {
         if (direction === 'inbound') {
             let inboundConnections = [];
-            app.syncMappings.filter(map => map.direction === 'inbound').forEach((entry) => {
-                inboundConnections = inboundConnections.concat(entry.actionTypes.map(singleEntry => ({
+            app.syncMappings.filter((map) => map.direction === 'inbound').forEach((entry) => {
+                inboundConnections = inboundConnections.concat(entry.actionTypes.map((singleEntry) => ({
                     transformerAction: entry.transformerOperation,
                     adapterAction: entry.adapterOperation,
                     schemaUri: entry.dataModels[0],
@@ -232,7 +232,7 @@ class DispatcherConfigDetails extends React.Component {
         }
         return {
             active: true,
-            flows: app.syncMappings.filter(map => map.direction === 'outbound').map(entry => ({
+            flows: app.syncMappings.filter((map) => map.direction === 'outbound').map((entry) => ({
                 transformerAction: entry.transformerOperation,
                 adapterAction: entry.adapterOperation,
                 schemaUri: entry.dataModels[0],
@@ -241,7 +241,7 @@ class DispatcherConfigDetails extends React.Component {
     }
 
     addApp = async (appId) => {
-        const app = this.props.apps.list.find(_app => _app._id === appId);
+        const app = this.props.apps.list.find((_app) => _app._id === appId);
         const applications = [...this.state.entity.applications];
         const newApp = {
             applicationName: app.name,
@@ -315,7 +315,7 @@ class DispatcherConfigDetails extends React.Component {
                     >
                         <div className={classes.modal}>
                             <Grid container justify="center" spacing={2}>
-                                {this.props.apps.list.map(app => <AppTeaser key={app._id} {...app} hideControls={true} onClick={this.addApp.bind(this)} />)}
+                                {this.props.apps.list.map((app) => <AppTeaser key={app._id} {...app} hideControls={true} onClick={this.addApp.bind(this)} />)}
                             </Grid>
 
                         </div>
@@ -343,7 +343,7 @@ class DispatcherConfigDetails extends React.Component {
                             </Paper>
                             <div className={classes.connectedApps}>
                                 {this.state.entity.applications.map((connectedApp, index) => {
-                                    const appData = this.props.apps.list.find(app => app.artifactId === connectedApp.applicationUid);
+                                    const appData = this.props.apps.list.find((app) => app.artifactId === connectedApp.applicationUid);
                                     return <div key={appData._id} className={classes.connectedAppContainer}>
                                         <div className={classes.directionContainer}>
                                             {connectedApp.inbound.flows.length ? <button type={'button'} onClick={this.toggleDirectionForApp.bind(this, index, 'inbound')} className={`${classes.direction} ${connectedApp.inbound.active ? classes.directionActive : ''}`}><ArrowForward style={{ marginRight: '4px' }}/><span>Inbound</span></button> : null}
@@ -367,7 +367,7 @@ class DispatcherConfigDetails extends React.Component {
                                                                 }}
                                                             >
                                                                 <MenuItem key={'null'} value={null}>No value</MenuItem>
-                                                                {this.props.secrets.map(secret => <MenuItem key={secret._id} value={secret._id}>{secret.name}</MenuItem>)}
+                                                                {this.props.secrets.map((secret) => <MenuItem key={secret._id} value={secret._id}>{secret.name}</MenuItem>)}
 
                                                             </Select>
 
@@ -401,7 +401,7 @@ class DispatcherConfigDetails extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     apps: state.apps,
     hubAndSpoke: state.hubAndSpoke,
     auth: state.auth,
@@ -410,7 +410,7 @@ const mapStateToProps = state => ({
     dataModels: state.metadata.domains,
     domainSchemas: state.metadata.domainSchemas,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getDomains,
     getApps,
     getSecrets,

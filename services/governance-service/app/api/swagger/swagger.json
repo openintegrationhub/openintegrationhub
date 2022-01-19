@@ -1,266 +1,441 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "description": "This is the API for the Open Integration Hub Microservice \"Governance Service\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
-    "version": "0.0.1",
-    "title": "Governance Service",
-    "termsOfService": "https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
-    "contact": {
-      "email": "hschmidt@wice.de"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    }
-  },
-  "tags": [
-    {
-      "name": "events",
-      "description": "Provenance",
-      "externalDocs": {
-        "description": "Find out more",
-        "url": "https://openintegrationhub.org"
-      }
-    }
-  ],
-  "paths": {
-    "/event": {
-      "get": {
-        "x-swagger-router-controller": "events",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "tags": ["events"],
-        "summary": "Retrieve a provenance events.",
-        "description": "Currently requires admin permissions.",
-        "operationId": "getEvents",
-        "parameters": [
-          {
-            "name": "page[size]",
-            "in": "query",
-            "description": "Amount of flows per page returned. Default is 10.",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "page[number]",
-            "in": "query",
-            "description": "Number of the page to be returned. Default is 1.",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "from",
-            "in": "query",
-            "description": "Limits results to events occurred after this time.",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "example": "2020-10-18T09:30:15+00:00"
-            }
-          },
-          {
-            "name": "until",
-            "in": "query",
-            "description": "Limits results to events occurred before this time.",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "example": "2020-10-19T15:47:15+00:00"
-            }
-          },
-          {
-            "name": "filter",
-            "in": "query",
-            "description": "Filter for the values of certain fields.",
-            "required": false,
-            "schema": {
-              "type": "object",
-              "example": {
-                "filter[agent.id]": "q38fjv8dsv0jsac02",
-                "filter[activity.function]": "getPersons"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of provenance events.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/ProvenanceEvent"
-                      }
-                    },
-                    "meta": { "$ref": "#/components/schemas/Meta" }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No Events could be found."
-          }
-        }
-      }
-    },
-    "/healthcheck": {
-      "get": {
-        "x-swagger-router-controller": "healthcheck",
-        "security": [],
-        "tags": ["healthcheck"],
-        "summary": "Performs a healthcheck",
-        "description": "This will return 200 and a JSON object with relevant status information when the service is running and healthy.",
-        "responses": {
-          "200": {
-            "description": "An object detailing the status of the service and the involved components.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "pass"
-                    },
-                    "details": {
-                      "type": "object",
-                      "properties": {
-                        "MongoDB": {
-                          "type": "object",
-                          "properties": {
-                            "status": {
-                              "type": "string",
-                              "example": "pass"
-                            }
-                          }
-                        },
-                        "queue": {
-                          "type": "object",
-                          "properties": {
-                            "status": {
-                              "type": "string",
-                              "example": "pass"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "At least one component is unhealthy",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "fail"
-                    },
-                    "details": {
-                      "type": "object",
-                      "properties": {
-                        "MongoDB": {
-                          "type": "object",
-                          "properties": {
-                            "status": {
-                              "type": "string",
-                              "example": "fail"
-                            }
-                          }
-                        },
-                        "queue": {
-                          "type": "object",
-                          "properties": {
-                            "status": {
-                              "type": "string",
-                              "example": "pass"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "externalDocs": {
-    "description": "Find out more about the Governance Service",
-    "url": "https://github.com/openintegrationhub"
-  },
-  "servers": [
-    {
-      "url": "http://governance-service.openintegrationhub.com/"
-    },
-    {
-      "url": "http://localhost:3009/"
-    }
-  ],
-  "components": {
-    "securitySchemes": {
-      "Bearer": {
-        "type": "http",
-        "scheme": "bearer",
-        "description": "Enter the bearer token received by IAM"
-      }
-    },
-    "schemas": {
-      "ProvenanceEvent": {
-        "type": "object",
-        "properties": {
-          "entity": {
-            "type": "object"
-          },
-          "activity": {
-            "type": "object"
-          },
-          "agent": {
-            "type": "object"
-          }
-        }
+   "openapi":"3.0.0",
+   "info":{
+      "description":"This is the API for the Open Integration Hub Microservice \"Governance Service\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
+      "version":"0.0.1",
+      "title":"Governance Service",
+      "termsOfService":"https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
+      "contact":{
+         "email":"hschmidt@wice.de"
       },
-      "Meta": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "description": "Current page (1-based numbering)"
-          },
-          "perPage": {
-            "type": "integer",
-            "description": "Number of objects per page"
-          },
-          "total": {
-            "type": "integer",
-            "description": "Total number of objects"
-          },
-          "totalPages": {
-            "type": "integer",
-            "description": "Total number of pages"
-          }
-        }
+      "license":{
+         "name":"Apache 2.0",
+         "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
       }
-    }
-  }
+   },
+   "tags":[
+      {
+         "name":"events",
+         "description":"Provenance",
+         "externalDocs":{
+            "description":"Find out more",
+            "url":"https://openintegrationhub.org"
+         }
+      },
+      {
+         "name":"dashboard",
+         "description":"Presenting governance data in a centralized manner",
+         "externalDocs":{
+            "description":"Find out more",
+            "url":"https://openintegrationhub.org"
+         }
+      }
+   ],
+   "paths":{
+      "/event":{
+         "get":{
+            "x-swagger-router-controller":"events",
+            "security":[
+               {
+                  "Bearer":[
+
+                  ]
+               }
+            ],
+            "tags":[
+               "events"
+            ],
+            "summary":"Retrieve a provenance events.",
+            "description":"Currently requires admin permissions.",
+            "operationId":"getEvents",
+            "parameters":[
+               {
+                  "name":"page[size]",
+                  "in":"query",
+                  "description":"Amount of flows per page returned. Default is 10.",
+                  "required":false,
+                  "schema":{
+                     "type":"integer"
+                  }
+               },
+               {
+                  "name":"page[number]",
+                  "in":"query",
+                  "description":"Number of the page to be returned. Default is 1.",
+                  "required":false,
+                  "schema":{
+                     "type":"integer"
+                  }
+               },
+               {
+                  "name":"from",
+                  "in":"query",
+                  "description":"Limits results to events occurred after this time.",
+                  "required":false,
+                  "schema":{
+                     "type":"string",
+                     "example":"2020-10-18T09:30:15+00:00"
+                  }
+               },
+               {
+                  "name":"until",
+                  "in":"query",
+                  "description":"Limits results to events occurred before this time.",
+                  "required":false,
+                  "schema":{
+                     "type":"string",
+                     "example":"2020-10-19T15:47:15+00:00"
+                  }
+               },
+               {
+                  "name":"filter",
+                  "in":"query",
+                  "description":"Filter for the values of certain fields.",
+                  "required":false,
+                  "schema":{
+                     "type":"object",
+                     "example":{
+                        "filter[agent.id]":"q38fjv8dsv0jsac02",
+                        "filter[activity.function]":"getPersons"
+                     }
+                  }
+               }
+            ],
+            "responses":{
+               "200":{
+                  "description":"A list of provenance events.",
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "properties":{
+                              "data":{
+                                 "type":"array",
+                                 "items":{
+                                    "$ref":"#/components/schemas/ProvenanceEvent"
+                                 }
+                              },
+                              "meta":{
+                                 "$ref":"#/components/schemas/Meta"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/dashboard/distribution":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security":[
+               {
+                  "Bearer":[
+
+                  ]
+               }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve information about your data distribution.",
+            "description":"Shows data distribution by application.",
+            "operationId":"getDistribution",
+            "responses":{
+               "200":{
+                  "description":"A list of applications with the number of associated events"
+               }
+            }
+         }
+      },
+      "/dashboard/distribution/graph":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security":[
+               {
+                  "Bearer":[
+
+                  ]
+               }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve information about your data distribution as a graph.",
+            "description":"Using the same data as in getDistribution, but formatted as a graph.",
+            "operationId":"getDistributionGraph",
+            "responses":{
+               "200":{
+                  "description":"A graph formatted to be compatible with Cytoscape"
+               }
+            }
+         }
+      },
+      "/dashboard/distribution/graph/html":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security":[
+               {
+                  "Bearer":[
+
+                  ]
+               }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve visualized version of your distribution graph",
+            "description":"Returns an iframe-capable block of html displaying your graph.",
+            "operationId":"getDistributionHtml",
+            "responses":{
+               "200":{
+                  "description":"An html document"
+               }
+            }
+         }
+      },
+      "/dashboard/objectStatus/{id}":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security":[
+               {
+                  "Bearer":[
+
+                  ]
+               }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "parameters":[
+               {
+                  "name":"id",
+                  "in":"path",
+                  "description":"ID of object to query",
+                  "required":true,
+                  "schema":{
+                     "type":"string",
+                     "format":"string"
+                  }
+               },
+               {
+                  "name":"externalId",
+                  "in":"query",
+                  "description":"Set true if you're supplying an external id from a connected application",
+                  "required":"false",
+                  "schema":{
+                     "type":"boolean",
+                     "format":"boolean"
+                  }
+               }
+            ],
+            "summary":"Retrieve detailed information about a single data object",
+            "description":"Returns all events associated with the object, as well as all known aliases.",
+            "operationId":"getObjectStatus",
+            "responses":{
+               "200":{
+                  "description":"A list each of events and reference ids"
+               }
+            }
+         }
+      },
+      "/dashboard/warnings":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security":[
+               {
+                  "Bearer":[
+
+                  ]
+               }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve a list of warnings about your configuration",
+            "description":"Notifies you about potential governance risks, such as active flows without governance functions enabled",
+            "operationId":"getWarnings",
+            "responses":{
+               "200":{
+                  "description":"A list of warnings"
+               }
+            }
+         }
+      },
+      "/dashboard/dashboard":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security":[
+               {
+                  "Bearer":[
+
+                  ]
+               }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve a combined set of governance informations.",
+            "description":"Includes data distribution information as well as current warnings.",
+            "operationId":"getDashboard",
+            "responses":{
+               "200":{
+                  "description":"A combination of formatted dashboard information"
+               }
+            }
+         }
+      },
+      "/healthcheck":{
+         "get":{
+            "x-swagger-router-controller":"healthcheck",
+            "security":[
+
+            ],
+            "tags":[
+               "healthcheck"
+            ],
+            "summary":"Performs a healthcheck",
+            "description":"This will return 200 and a JSON object with relevant status information when the service is running and healthy.",
+            "responses":{
+               "200":{
+                  "description":"An object detailing the status of the service and the involved components.",
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "properties":{
+                              "status":{
+                                 "type":"string",
+                                 "example":"pass"
+                              },
+                              "details":{
+                                 "type":"object",
+                                 "properties":{
+                                    "MongoDB":{
+                                       "type":"object",
+                                       "properties":{
+                                          "status":{
+                                             "type":"string",
+                                             "example":"pass"
+                                          }
+                                       }
+                                    },
+                                    "queue":{
+                                       "type":"object",
+                                       "properties":{
+                                          "status":{
+                                             "type":"string",
+                                             "example":"pass"
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               },
+               "500":{
+                  "description":"At least one component is unhealthy",
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "properties":{
+                              "status":{
+                                 "type":"string",
+                                 "example":"fail"
+                              },
+                              "details":{
+                                 "type":"object",
+                                 "properties":{
+                                    "MongoDB":{
+                                       "type":"object",
+                                       "properties":{
+                                          "status":{
+                                             "type":"string",
+                                             "example":"fail"
+                                          }
+                                       }
+                                    },
+                                    "queue":{
+                                       "type":"object",
+                                       "properties":{
+                                          "status":{
+                                             "type":"string",
+                                             "example":"pass"
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   },
+   "externalDocs":{
+      "description":"Find out more about the Governance Service",
+      "url":"https://github.com/openintegrationhub"
+   },
+   "servers":[
+      {
+         "url":"http://governance-service.openintegrationhub.com/"
+      },
+      {
+         "url":"http://localhost:3009/"
+      }
+   ],
+   "components":{
+      "securitySchemes":{
+         "Bearer":{
+            "type":"http",
+            "scheme":"bearer",
+            "description":"Enter the bearer token received by IAM"
+         }
+      },
+      "schemas":{
+         "ProvenanceEvent":{
+            "type":"object",
+            "properties":{
+               "entity":{
+                  "type":"object"
+               },
+               "activity":{
+                  "type":"object"
+               },
+               "agent":{
+                  "type":"object"
+               }
+            }
+         },
+         "Meta":{
+            "type":"object",
+            "properties":{
+               "page":{
+                  "type":"integer",
+                  "description":"Current page (1-based numbering)"
+               },
+               "perPage":{
+                  "type":"integer",
+                  "description":"Number of objects per page"
+               },
+               "total":{
+                  "type":"integer",
+                  "description":"Total number of objects"
+               },
+               "totalPages":{
+                  "type":"integer",
+                  "description":"Total number of pages"
+               }
+            }
+         }
+      }
+   }
 }

@@ -137,12 +137,14 @@ export default class DataHubApp extends App {
 
             const dataRecord = await DataObject.findById(oihUid);
             if (dataRecord) {
+                // @ts-ignore
                 if (dataRecord.refs.find(
                     ref => ref.applicationUid === applicationUid.toString() && ref.recordUid === recordUid.toString()
                 )) {
                     log.warn('The same ref already exists');
                 } else {
                     log.debug('Creating a new ref');
+                    // @ts-ignore
                     dataRecord.refs.push({
                         applicationUid,
                         recordUid

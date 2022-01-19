@@ -9,6 +9,6 @@ module.exports =  {
     },
     rules:  {
         '@typescript-eslint/no-angle-bracket-type-assertion': 'off',
-        '@typescript-eslint/interface-name-prefix': ['error', 'always']
+        '@typescript-eslint/ban-ts-comment': 0
     },
 };

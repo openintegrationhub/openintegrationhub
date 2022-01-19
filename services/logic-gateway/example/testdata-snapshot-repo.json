@@ -1,0 +1,38 @@
+{
+  "data": [
+    {
+      "flowId": 123,
+      "flowExecId": 7,
+      "stepId": 0,
+      "snapshot": {
+        "username": "hello@example.com",
+        "firstname": "HellO"
+      }
+    },
+    {
+      "flowId": 123,
+      "flowExecId": 7,
+      "stepId": 1,
+      "snapshot": {
+        "username": "hello@example.com",
+        "firstname": "HellO",
+        "tenant": {
+          "name": "Example Inc."
+        }
+      }
+    },
+    {
+      "flowId": 123,
+      "flowExecId": 7,
+      "stepId": 2,
+      "snapshot": {
+        "username": "hello@example.com",
+        "firstname": "HellO",
+        "tenant": {
+          "name": "Example Inc.",
+          "zip": 55779
+        }
+      }
+    }
+  ]
+}

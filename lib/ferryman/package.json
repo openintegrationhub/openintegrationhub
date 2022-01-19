@@ -1,14 +1,14 @@
 {
   "name": "@openintegrationhub/ferryman",
   "description": "Wrapper utility for Open Integration Hub connectors",
-  "version": "1.5.6",
+  "version": "2.1.0",
   "main": "run.js",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint lib mocha_spec lib runGlobal.js runService.js --fix",
+    "lint": "eslint lib mocha_spec lib runGlobal.js runService.js",
     "pretest": "npm run lint",
     "test": "NODE_ENV=test npm run test:jasmine && npm run test:mocha",
     "test:jasmine": "NODE_ENV=test jasmine-node spec",
-    "test:mocha": "NODE_ENV=test node_modules/.bin/mocha --recursive mocha_spec --exit"
+    "test:mocha": "NODE_ENV=test mocha --recursive mocha_spec --exit"
   },
   "engines": {
     "node": ">=12.13.0"
@@ -18,6 +18,7 @@
     "bunyan": "1.8.10",
     "co": "4.6.0",
     "debug": "3.1.0",
+    "express": "4.17.1",
     "jsonata": "^1.8.3",
     "jsonwebtoken": "^8.5.1",
     "lodash": "4.17.21",
@@ -33,14 +34,10 @@
   "devDependencies": {
     "chai": "4.2.0",
     "del": "2.2.2",
-    "eslint": "4.19.1",
-    "eslint-plugin-mocha": "4.12.1",
-    "express": "4.16.4",
-    "gulp": "^4.0.2",
-    "gulp-istanbul": "^1.1.3",
-    "gulp-jasmine": "0.2.0",
+    "eslint": "7.32.0",
+    "eslint-plugin-mocha": "9.0.0",
     "jasmine-node": "3.0.0",
-    "mocha": "7.1.2",
+    "mocha": "9.1.1",
     "nock": "^10.0.6",
     "sinon": "7.4.2",
     "sinon-chai": "3.5.0"

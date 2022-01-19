@@ -21,7 +21,7 @@ const {
   chunk1, chunk2, chunk3, chunk4, chunk5, chunk6,
   chunk7, chunk8, chunk9, chunk10, chunk11, chunk12,
   chunk13, chunk14, chunk15,
-} = require('./seed/chunk.seed.js');
+} = require('./seed/chunk.seed');
 const log = require('../app/config/logger');
 
 beforeAll(async () => {

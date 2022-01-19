@@ -26,6 +26,7 @@ const rawRecord = new Schema(
       type: String,
       required: true,
     },
+    tenant: String,
     owners: { type: [owner] },
     createdAt: { type: Date, default: Date.now },
   },

@@ -32,9 +32,7 @@ function authenticate(provider, ctx) {
     
                     const accessToken = await at.save();
 
-                    const token = new IdToken(Object.assign({}, await account.claims(), {
-                        auth_time: epochTime(),
-                    }), ctx.oidc.client);
+                    const token = new IdToken(({ ...await account.claims(), auth_time: epochTime() }), ctx.oidc.client);
 
                     token.scope = ctx.oidc.params.scope || 'global';
                     token.set('sub', account.data._id);
@@ -65,7 +63,7 @@ function authenticate(provider, ctx) {
 
 module.exports.parameters = ['username', 'password'];
 
-module.exports.handler = providerInstance => async function passwordGrantType(ctx, next) {
+module.exports.handler = (providerInstance) => async function passwordGrantType(ctx, next) {
     ctx.req.body = ctx.oidc.body;
 
     await authenticate(providerInstance, ctx);

@@ -7,11 +7,12 @@ const RabbitMqManagementService = require('./RabbitMqManagementService');
 
 const BACKCHANNEL_EXCHANGE = 'orchestrator_backchannel'
 const BACKCHANNEL_MESSAGES_QUEUE = `${BACKCHANNEL_EXCHANGE}:messages`
-const BACKCHANNEL_REBOUNDS_QUEUE = `${BACKCHANNEL_EXCHANGE}:rebounds`
+const BACKCHANNEL_ERROR_QUEUE = `${BACKCHANNEL_EXCHANGE}:error`
+
 
 const BACKCHANNEL_INPUT_KEY = `${BACKCHANNEL_EXCHANGE}.input`
-const BACKCHANNEL_REQUEUE_KEY = `${BACKCHANNEL_EXCHANGE}.requeue`
-const BACKCHANNEL_REBOUND_KEY = `${BACKCHANNEL_EXCHANGE}.rebound`
+const BACKCHANNEL_ERROR_KEY = `${BACKCHANNEL_EXCHANGE}.error`
+
 const BACKCHANNEL_DEAD_LETTER_KEY = `${BACKCHANNEL_EXCHANGE}.deadletter`
 
 class RabbitMqQueuesManager extends QueuesManager {
@@ -33,10 +34,9 @@ class RabbitMqQueuesManager extends QueuesManager {
     async setupBackchannel() {
         await this._queueCreator.prepareExchange(BACKCHANNEL_EXCHANGE)
         await this._queueCreator.assertMessagesQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_DEAD_LETTER_KEY);
-        await this._queueCreator.assertReboundsQueue(BACKCHANNEL_REBOUNDS_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_REQUEUE_KEY);
+        await this._queueCreator.assertMessagesQueue(BACKCHANNEL_ERROR_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_DEAD_LETTER_KEY);
         await this._queueCreator.bindQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_INPUT_KEY);
-        await this._queueCreator.bindQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_REQUEUE_KEY);
-        await this._queueCreator.bindQueue(BACKCHANNEL_REBOUNDS_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_REBOUND_KEY);
+        await this._queueCreator.bindQueue(BACKCHANNEL_ERROR_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_ERROR_KEY);
     }
 
     async subscribeBackchannel(callback) {
@@ -45,6 +45,14 @@ class RabbitMqQueuesManager extends QueuesManager {
             await this._queuePubSub.ack(message)
         }
         return this._queuePubSub.subscribe(BACKCHANNEL_MESSAGES_QUEUE, processCallback.bind(this))
+    }
+
+    async subscribeErrorQueue(callback) {
+        const processCallback = async (message) => {
+            await callback(message)
+            await this._queuePubSub.ack(message)
+        }
+        return this._queuePubSub.subscribe(BACKCHANNEL_ERROR_QUEUE, processCallback.bind(this))
     }
 
     async deleteForFlow(flow) {
@@ -108,13 +116,13 @@ class RabbitMqQueuesManager extends QueuesManager {
     }
 
     async _ensureRabbitMqCredentials(globalComponent, flow, node, forcePut = false) {
-        const type = globalComponent ? 'globalComponent' : 'flowNode'
+        const type = globalComponent ? 'global' : 'local'
 
         let creds = null
         let username = null
         let password = null
 
-        if (type === 'flowNode') {
+        if (type === 'local') {
             creds = await this._getRabbitMqCredential(flow, node);
         } else {
             creds = await this._getRabbitMqCredentialForGlobalComponent(globalComponent);
@@ -123,7 +131,7 @@ class RabbitMqQueuesManager extends QueuesManager {
         if (!creds || forcePut) {
             password = creds ? creds.password : v4()
 
-            if (type === 'flowNode') {
+            if (type === 'local') {
                 username = creds ? creds.username : `flow-${flow.id}-${node.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '')
                 await this._rabbitmqManagement.createFlowUser({
                     username,
@@ -147,7 +155,7 @@ class RabbitMqQueuesManager extends QueuesManager {
 
         const newCreds = { username, password };
 
-        if (type === 'flowNode') {
+        if (type === 'local') {
             await this._saveRabbitMqCredential(flow, node, newCreds);
         } else {
             await this._saveRabbitMqCredentialForGlobalComponent(globalComponent, newCreds);

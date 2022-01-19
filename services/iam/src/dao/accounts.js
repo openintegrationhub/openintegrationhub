@@ -1,7 +1,7 @@
 const Logger = require('@basaas/node-logger');
 const { Event, EventBusManager } = require('@openintegrationhub/event-bus');
-const Account = require('./../models/account');
-const CONF = require('./../conf');
+const Account = require('../models/account');
+const CONF = require('../conf');
 
 const logger = Logger.getLogger(`${CONF.general.loggingNameSpace}/accountDao`);
 const auditLog = Logger.getAuditLogger('account');
@@ -34,7 +34,7 @@ const AccountDAO = {
 
         await account.save();
 
-        logger.debug('created.account', Object.assign({}, userObj, { password: '***' }));
+        logger.debug('created.account', { ...userObj, password: '***' });
 
         auditLog.info('create.account', { data: { username: userObj.username } });
 
@@ -57,12 +57,12 @@ const AccountDAO = {
             _id: query._id,
         }, updateOperation);
 
-        logger.debug('updated.account', Object.assign({}, payload, { password: '***' }));
+        logger.debug('updated.account', { ...payload, password: '***' });
 
         auditLog.info('update.account', {
             data: {
                 userId: query._id,
-                props: Object.assign({}, payload, { password: '***' }),
+                props: { ...payload, password: '***' },
                 partialUpdate: opts.partialUpdate,
             },
         });
@@ -135,7 +135,7 @@ const AccountDAO = {
         const userAccount = await Account.findOne({
             _id: userId,
         });
-        userAccount.memberships = userAccount.memberships.filter(elem => elem.tenant.toString() !== tenantId);
+        userAccount.memberships = userAccount.memberships.filter((elem) => elem.tenant.toString() !== tenantId);
         await userAccount.save();
         const event = new Event({
             headers: {

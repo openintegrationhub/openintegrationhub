@@ -7,5 +7,6 @@ app/error.log
 .DS_Store
 /test/utils/globalConfig.json
 /.env
+/app/config/functionsCache/*.js
 
 yarn-error.log*

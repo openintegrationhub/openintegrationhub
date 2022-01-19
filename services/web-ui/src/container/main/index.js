@@ -46,7 +46,7 @@ import Profile from '../../component/profile';
 
 const drawerWidth = 240;
 
-const styles = theme => ({
+const styles = (theme) => ({
     root: {
         display: 'flex',
     },
@@ -223,7 +223,7 @@ class Main extends React.Component {
       }
       return <div>
           {
-              menuCopy.map(menuItem => <ListItem button key={menuItem.label} onClick={() => { this.props.history.push(menuItem.path); }}>
+              menuCopy.map((menuItem) => <ListItem button key={menuItem.label} onClick={() => { this.props.history.push(menuItem.path); }}>
                   <ListItemIcon>{menuItem.icon}</ListItemIcon>
                   <ListItemText primary={menuItem.label} />
               </ListItem>)
@@ -363,10 +363,10 @@ Main.propTypes = {
     theme: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     auth: state.auth,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getUsers,
     logout,
 }, dispatch);

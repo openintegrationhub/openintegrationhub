@@ -10,8 +10,9 @@ const {
 } = require('./config')
 
 const testEnvs = Object.entries({
-  // following envs will be applied to every "yarn test" command
+  // following envs will be applied to every "npm test" command
   MONGODB_URI: 'mongodb://mongodb/testing',
+  BINARY_DOWNLOAD_DIR: '/usr/src/app/.mongo_binaries',
   CI: 'true',
   REDIS_CONFIG: `"${JSON.stringify({
     host: 'redis',
@@ -24,9 +25,18 @@ const testEnvs = Object.entries({
   return `${a} ${b[0]}=${b[1]}`
 })
 
-const testCommand = (path, args) =>
-  `docker run --net=oih-dev --rm -it -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${path}; ${testEnvs} yarn test ${
-  args || '' // eslint-disable-line prettier/prettier
+const prepareFullTest = () => `docker pull ${nodeImage}`
+
+const testCommand = (workspace, args) =>
+  `docker run \
+  --name oih-testing \
+  --net=oih-dev \
+  --rm \
+  -it \
+  -v ${repositoryRoot}:/usr/src/app \
+  ${nodeImage} \
+  sh -ci 'cd /usr/src/app; ${testEnvs} npm --workspace=${workspace} test ${
+    args || ''
   }'`
 
 // ensure dbs
@@ -47,6 +57,12 @@ if (process.argv[2]) {
   })
   process.exit(0)
 }
+
+// prepare testing
+
+execSync(prepareFullTest(), {
+  stdio: 'inherit',
+})
 
 // test libs
 Object.entries(libs).forEach((entry) => {

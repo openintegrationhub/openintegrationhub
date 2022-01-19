@@ -1,0 +1,40 @@
+{
+  "title": "Test Component",
+  "description": "Generic Data Transformation Component",
+  "actions": {
+    "testAction": {
+      "title": "Development Test Action",
+      "description": "Simply returns the data given, logging the process.",
+      "main": "./lib/actions/testAction.js",
+      "metadata": {
+        "out": {}
+      }
+    },
+    "exampleRESTAction": {
+      "title": "exampleRESTAction",
+      "description": "Sends different responses suitable for different requests",
+      "main": "./lib/actions/exampleRESTAction.js"
+    },
+    "exec": {
+      "title": "Execute a predefined logic for a step",
+      "main": "./lib/actions/exec.js"
+    }
+  },
+  "triggers": {
+    "reboundTrigger": {
+      "title": "Rebound trigger",
+      "description": "Sends a message to rebound",
+      "type": "foo",
+      "main": "./lib/triggers/reboundTrigger.js"
+    },
+    "testTrigger": {
+      "title": "Development Test Trigger",
+      "description": "Returns a simple minimal object, logging the process",
+      "type": "polling",
+      "main": "./lib/triggers/testTrigger.js",
+      "metadata": {
+        "out": {}
+      }
+    }
+  }
+}

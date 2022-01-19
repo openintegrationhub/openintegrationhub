@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/component-repository",
   "description": "Component repository",
-  "version": "0.1.4",
+  "version": "0.3.2",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"
@@ -18,16 +18,17 @@
     "express": "4.17.1",
     "express-async-handler": "1.1.4",
     "lodash": "4.17.21",
-    "mongoose": "5.11.8",
+    "mongoose": "5.13.13",
+    "node-fetch": "2.6.1",
     "swagger-ui-express": "4.0.2"
   },
   "devDependencies": {
     "bunyan": "1.8.14",
-    "chai": "4.2.0",
-    "eslint": "7.4.0",
-    "eslint-plugin-mocha": "4.12.1",
-    "eslint-plugin-node": "6.0.1",
-    "mocha": "^8.3.1",
+    "chai": "4.3.4",
+    "eslint": "7.32.0",
+    "eslint-plugin-mocha": "9.0.0",
+    "eslint-plugin-node": "11.1.0",
+    "mocha": "9.1.1",
     "nock": "13.0.2",
     "sinon": "9.0.2",
     "sinon-chai": "3.3.0",

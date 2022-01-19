@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { AUTH_TYPE } = require('../../constants');
 
 const Schema = mongoose.Schema;
 
@@ -13,6 +14,17 @@ const node = new Schema({
   credentials_id: { type: mongoose.Types.ObjectId, maxlength: 30 },
   description: { type: String, maxlength: 100 },
   fields: {},
+  nodeSettings: {},
+  tenant: { type: String, maxlength: 30 },
+  authorization: {
+    authType: {
+      type: String,
+      enum: Object.keys(AUTH_TYPE),
+    },
+    authClientId: {
+      type: mongoose.Types.ObjectId,
+    },
+  },
   _id: false,
 });
 
@@ -64,6 +76,7 @@ const flowTemplate = new Schema({
   owners: { type: [owner] },
   status: { type: String, default: 'draft' },
   cron: { type: String, maxlength: 20 },
+  flowSettings: {},
 }, { collection: 'flowTemplates', timestamps: true });
 
 module.exports.flowTemplate = flowTemplate;

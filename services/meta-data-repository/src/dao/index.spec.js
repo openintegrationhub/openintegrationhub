@@ -1,4 +1,4 @@
-const getPort = require('get-port');
+
 const supertest = require('supertest');
 const conf = require('../conf');
 const iamMock = require('../../test/iamMock');
@@ -13,7 +13,7 @@ describe('DAO adapter', () => {
         port = 5101;
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'dao'),
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'dao'),
             port,
             dao: {
                 DomainDAO: {

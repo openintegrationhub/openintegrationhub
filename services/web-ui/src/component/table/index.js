@@ -70,7 +70,7 @@ class OihTable extends React.Component {
         const tempArr = JSON.parse(JSON.stringify(this.props.data));
         for (const user of tempArr) {
             if (user.roles && user.roles.length && this.props.roles && this.props.roles.all.length) {
-                const test = user.roles.map(userRole => this.props.roles.all.find(role => role._id === userRole).name);
+                const test = user.roles.map((userRole) => this.props.roles.all.find((role) => role._id === userRole).name);
 
                 user.roles = test.map((role, index) => <span
                     key={`role-${index}`}
@@ -101,7 +101,7 @@ class OihTable extends React.Component {
             if (order !== 0) return order;
             return a[1] - b[1];
         });
-        return stabilizedThis.map(el => el[0]);
+        return stabilizedThis.map((el) => el[0]);
     };
 
     handleRequestSort = (property) => {
@@ -117,7 +117,7 @@ class OihTable extends React.Component {
     handleSelectAllClick = (isChecked) => {
         if (isChecked) {
             this.setState({
-                selected: this.props.data.filter(n => n._id !== this.props.auth._id).map(n => n._id),
+                selected: this.props.data.filter((n) => n._id !== this.props.auth._id).map((n) => n._id),
             });
             return;
         }
@@ -153,7 +153,7 @@ class OihTable extends React.Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    isSelected = id => this.state.selected.indexOf(id) !== -1;
+    isSelected = (id) => this.state.selected.indexOf(id) !== -1;
 
     onDelete = (result) => {
         if (result && this.state.selected.length !== 0) {
@@ -211,7 +211,7 @@ class OihTable extends React.Component {
                                 <TableBody>
                                     {this.stableSort(data)
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map(n => (<TableRowData
+                                        .map((n) => (<TableRowData
                                             key={`rowData-${n._id}`}
                                             data={n}
                                             type={this.props.type}
@@ -259,13 +259,13 @@ OihTable.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     users: state.users,
     tenants: state.tenants,
     auth: state.auth,
     roles: state.roles,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     deleteUser,
     deleteTenant,
 }, dispatch);

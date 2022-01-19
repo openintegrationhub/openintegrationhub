@@ -23,6 +23,11 @@ spec:
       - name: webhooks
         image: "openintegrationhub/webhooks:latest"
         env:
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: shared-secret
+              key: iamtoken
         - name: MONGODB_URI
           valueFrom:
             secretKeyRef:

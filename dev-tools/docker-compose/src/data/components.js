@@ -44,12 +44,12 @@ module.exports = [
     },
     resources: {
       requests: {
-        memory: '128Mi',
-        cpu: '250m',
+        memory: '64Mi',
+        cpu: '125m',
       },
       limits: {
-        memory: '256Mi',
-        cpu: '500m',
+        memory: '128Mi',
+        cpu: '250m',
       },
     },
     owners: [
@@ -172,6 +172,197 @@ module.exports = [
       limits: {
         memory: '256Mi',
         cpu: '500m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+
+  /// / Logic Gateway Testing
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: false,
+    specialFlags: {
+      privilegedComponent: true,
+    },
+    access: 'public',
+    name: 'logicGateway',
+    description: 'This is an example logic gateway component',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: true,
+    specialFlags: {
+      privilegedComponent: true,
+    },
+    access: 'public',
+    name: 'logicGateway-global',
+    description: 'This is an example logic gateway component',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: true,
+    access: 'public',
+    name: 'test-component',
+    description:
+      "This is a special component. It's source lives in dev-tools/test-component. In comparison to a regular component you can NOT use the docker image without mounting in this repository.",
+    descriptor: {
+      replicas: 3,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: false,
+    access: 'public',
+    name: 'test-component-local',
+    description:
+      "This is a special component. It's source lives in dev-tools/test-component. In comparison to a regular component you can NOT use the docker image without mounting in this repository.",
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: false,
+    access: 'public',
+    name: 'rebound-component-local',
+    description: 'Just emits a rebound message',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+      restAPI: true,
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
+      image: 'oih/test-component:latest',
+    },
+    isGlobal: true,
+    access: 'public',
+    name: 'rebound-component-global',
+    description: 'Just emits a rebound message',
+    descriptor: {
+      replicas: 1,
+      imagePullPolicy: 'Never',
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
       },
     },
     owners: [

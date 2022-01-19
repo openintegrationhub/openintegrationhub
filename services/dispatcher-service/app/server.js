@@ -16,7 +16,7 @@ const dispatches = require('./api/controllers/dispatches');
 
 const log = require('./utils/logger');
 
-const eventBus = require('./utils/eventBus.js');
+const eventBus = require('./utils/eventBus');
 
 class Server {
   constructor() {

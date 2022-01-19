@@ -10,21 +10,21 @@ function nockIamIntrospection({
     status = 200,
     body = { sub: 'user-id', role: 'ADMIN', permissions: ['all'] },
     body2 = { sub: 'user-id2', role: 'ADMIN', permissions: ['all'] }
-    } = {}
-  ) {
+} = {}
+) {
     // return nock('http://iam.openintegrationhub.com')
     //     .post('/api/v1/tokens/introspect')
     //     .reply(status, body);
 
     nock('http://iam.openintegrationhub.com')
         .post('/api/v1/tokens/introspect', {
-          token: 'someOtherUser',
+            token: 'someOtherUser',
         })
         .reply(status, body2);
 
     nock('http://iam.openintegrationhub.com')
         .post('/api/v1/tokens/introspect', {
-          token: 'blablabla',
+            token: 'blablabla',
         })
         .reply(status, body);
 
@@ -37,14 +37,14 @@ describe('Data Route', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { useNewUrlParser: true });
+        const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri);
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
         this.auth = 'Bearer blablabla';
     });
 
-    after(async function () {
+    after(async ()  => {
         await mongoose.connection.close();
     });
 
@@ -85,6 +85,7 @@ describe('Data Route', () => {
             expect(body).to.haveOwnProperty('data');
             expect(body.data.id).to.be.a('string');
             objectId = body.data.id;
+
             delete body.data.id;
             expect(body.data).to.deep.equal(Object.assign(record, {
                 owners: [{ id: 'user-id', type: 'user' }]
@@ -262,7 +263,7 @@ describe('Data Route', () => {
 
             nockIamIntrospection();
 
-            let { body, statusCode } = await this.request
+            const { body, statusCode } = await this.request
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send(record);
@@ -330,7 +331,7 @@ describe('Data Route', () => {
 
             // Post same record again
             nockIamIntrospection();
-            let { body, statusCode } = await this.request
+            const { body, statusCode } = await this.request
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send(record);
@@ -392,7 +393,7 @@ describe('Data Route', () => {
             };
 
             nockIamIntrospection();
-            let { body, statusCode } = await this.request
+            const { body, statusCode } = await this.request
                 .post('/data')
                 .set('Authorization', this.auth)
                 .send(record);
@@ -577,6 +578,163 @@ describe('Data Route', () => {
                 }
             });
         });
+
+        it('should return only elements with min score', async function f() {
+            nockIamIntrospection();
+            let res = await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send({
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
+                    "content": {
+                        "some": "data"
+                    },
+                    "enrichmentResults": {
+                      "score": 5
+                    }
+                });
+
+            expect(res.statusCode).to.equal(201);
+
+            nockIamIntrospection();
+            res = await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send({
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
+                    "content": {
+                        "some": "data"
+                    },
+                    "enrichmentResults": {
+                      "score": 10
+                    }
+                });
+            expect(res.statusCode).to.equal(201);
+            const id2 = res.body.data.id;
+
+            nockIamIntrospection();
+            res = await this.request
+                .get('/data?min_score=10')
+                .set('Authorization', this.auth);
+            expect(res.body).to.deep.equal({
+                data: [
+                    {
+                        "id": id2,
+                        "domainId": "my-domain",
+                        "schemaUri": "my-schema",
+                        "content": {
+                            "some": "data"
+                        },
+                        "refs": [],
+                        "owners": [{ "id": "user-id", "type": "user" }],
+                        "enrichmentResults": {
+                          "score": 10
+                        }
+                    }
+                ],
+                meta: {
+                    page: 1,
+                    perPage: 50,
+                    total: 1,
+                    totalPages: 1
+                }
+            });
+        });
+
+        it('should return only elements with duplicates or subsets', async function f() {
+            nockIamIntrospection();
+            let res = await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send({
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
+                    "content": {
+                        "some": "data"
+                    },
+                    "enrichmentResults": {
+                      "knownSubsets": ["abcdef"]
+                    }
+                });
+
+            expect(res.statusCode).to.equal(201);
+            const id1 = res.body.data.id;
+
+            nockIamIntrospection();
+            res = await this.request
+                .post('/data')
+                .set('Authorization', this.auth)
+                .send({
+                    "domainId": "my-domain",
+                    "schemaUri": "my-schema",
+                    "content": {
+                        "some": "data"
+                    },
+                    "enrichmentResults": {
+                      "knownDuplicates": ["defgh"]
+                    }
+                });
+            expect(res.statusCode).to.equal(201);
+            const id2 = res.body.data.id;
+
+            nockIamIntrospection();
+            res = await this.request
+                .get('/data?has_duplicates=true')
+                .set('Authorization', this.auth);
+            expect(res.body).to.deep.equal({
+                data: [
+                    {
+                        "id": id2,
+                        "domainId": "my-domain",
+                        "schemaUri": "my-schema",
+                        "content": {
+                            "some": "data"
+                        },
+                        "refs": [],
+                        "owners": [{ "id": "user-id", "type": "user" }],
+                        "enrichmentResults": {
+                          "knownDuplicates": ["defgh"]
+                        }
+                    }
+                ],
+                meta: {
+                    page: 1,
+                    perPage: 50,
+                    total: 1,
+                    totalPages: 1
+                }
+            });
+
+            nockIamIntrospection();
+            res = await this.request
+                .get('/data?has_subsets=true')
+                .set('Authorization', this.auth);
+            expect(res.body).to.deep.equal({
+                data: [
+                    {
+                        "id": id1,
+                        "domainId": "my-domain",
+                        "schemaUri": "my-schema",
+                        "content": {
+                            "some": "data"
+                        },
+                        "refs": [],
+                        "owners": [{ "id": "user-id", "type": "user" }],
+                        "enrichmentResults": {
+                          "knownSubsets": ["abcdef"]
+                        }
+                    }
+                ],
+                meta: {
+                    page: 1,
+                    perPage: 50,
+                    total: 1,
+                    totalPages: 1
+                }
+            });
+        });
     });
 });
 
@@ -585,11 +743,15 @@ describe('GET /data/:id and /data/recordId/:id', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { useNewUrlParser: true });
+        const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri);
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
         this.auth = 'Bearer blablabla';
+    });
+
+    after(async ()  => {
+        await mongoose.connection.close();
     });
 
     it('should create new item', async function () {
@@ -708,6 +870,40 @@ describe('GET /data/:id and /data/recordId/:id', () => {
                         "recordUid": "record-id",
                     },
                 ],
+                "schemaUri": "my-schema",
+            },
+        });
+        expect(statusCode).to.equal(200);
+    });
+
+
+    it('should delete recordId from entry', async function () {
+        nockIamIntrospection();
+        const { body, statusCode } = await this.request
+            .delete(`/data/${objectId}/app-id/record-id`)
+            .set('Authorization', this.auth);
+
+        console.log(JSON.stringify(body));
+
+        expect(body.data.id).to.not.be.empty;
+
+        delete body.data.id;
+
+
+
+        expect(body).to.deep.equal({
+            "data": {
+                "content": {
+                    "some": "data",
+                },
+                "domainId": "my-domain",
+                "owners": [
+                    {
+                        "id": "user-id",
+                        "type": "user"
+                    }
+                ],
+                "refs": [],
                 "schemaUri": "my-schema",
             },
         });

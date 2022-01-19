@@ -2,13 +2,15 @@ const request = require('request');
 const { URL } = require('url');
 const path = require('path');
 const _ = require('lodash');
+const fetch = require('node-fetch')
 const { promisify } = require('util');
 const getAsync = promisify(request.get);
 
 module.exports = class OIHSnapshotsDao {
-    constructor({config, logger}) {
+    constructor({config, logger, iamClient}) {
         this._config = config;
         this._logger = logger;
+        this._iamClient = iamClient
     }
 
     async findOne({flowId, stepId, auth}) {
@@ -36,6 +38,20 @@ module.exports = class OIHSnapshotsDao {
 
         logger.trace({statusCode, body}, 'Failed to get the snapshot');
         throw new Error(`Failed to fetch the snapshot ${flowId}:${stepId}`);
+    }
+
+    async deleteSnapshots(flowExecId) {
+        let url = new URL(`${this._config.get('SNAPSHOTS_SERVICE_BASE_URL')}/snapshots`)
+        url.search = new URLSearchParams({ flowExecId }).toString()
+
+        return fetch(url, {
+            method: 'DELETE',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${this._iamClient.getToken()}`,
+            },
+          })
     }
 
     _getSnapshotsServiceUrl(p) {

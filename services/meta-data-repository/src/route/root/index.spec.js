@@ -1,4 +1,4 @@
-const getPort = require('get-port');
+
 const supertest = require('supertest');
 const conf = require('../../conf');
 const Server = require('../../server');
@@ -12,7 +12,7 @@ describe('root', () => {
         port = 5102;
         request = supertest(`http://localhost:${port}`);
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'root'),
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'root'),
             port,
         });
         await server.start();

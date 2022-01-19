@@ -6,6 +6,7 @@ const fs = require('fs')
 const {
   adminToken1,
   userToken1,
+  tenantAdminToken1,
   adminToken2,
   userToken2,
   userToken3,
@@ -24,6 +25,10 @@ module.exports = class MongoEnvironment extends NodeEnvironment {
     // setup auth header
     this.global.adminAuth1 = ['Authorization', `Bearer ${adminToken1.token}`]
     this.global.userAuth1 = ['Authorization', `Bearer ${userToken1.token}`]
+    this.global.tenantAdmin1 = [
+      'Authorization',
+      `Bearer ${tenantAdminToken1.token}`,
+    ]
 
     this.global.adminAuth2 = ['Authorization', `Bearer ${adminToken2.token}`]
     this.global.userAuth2 = ['Authorization', `Bearer ${userToken2.token}`]

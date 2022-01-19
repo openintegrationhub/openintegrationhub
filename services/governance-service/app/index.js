@@ -1,6 +1,7 @@
 // const conf = require('config');
 const mongoose = require('mongoose');
 const log = require('./config/logger');
+const storedFunctionCache = require('./config/storedFunctionCache');
 
 const Server = require('./server');
 
@@ -16,6 +17,8 @@ const mainServer = new Server();
     mainServer.setupRoutes();
     mainServer.setupSwagger();
     mainServer.setupQueue();
+
+    storedFunctionCache.loadAll();
 
     if (!module.parent) {
       mainServer.listen(process.env.PORT || 3009);

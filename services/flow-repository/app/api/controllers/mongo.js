@@ -4,7 +4,7 @@
 
 // require our MongoDB-Model
 const mongoose = require('mongoose');
-const config = require('../../config/index.js');
+const config = require('../../config/index');
 const log = require('../../config/logger');
 const Flow = require('../../models/flow');
 
@@ -119,7 +119,7 @@ const getFlowById = (flowId, user) => new Promise((resolve) => {
     });
 });
 
-const addFlow = storeFlow => new Promise((resolve) => {
+const addFlow = (storeFlow) => new Promise((resolve) => {
   storeFlow.save()
     .then((doc) => {
       const flow = format(doc._doc);
@@ -179,7 +179,7 @@ const stoppingFlow = (user, flowId) => new Promise((resolve) => {
     });
 });
 
-const startedFlow = flowId => new Promise((resolve) => {
+const startedFlow = (flowId) => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
 
   const qry = { '_id': findId };
@@ -197,7 +197,7 @@ const startedFlow = flowId => new Promise((resolve) => {
     });
 });
 
-const stoppedFlow = flowId => new Promise((resolve) => {
+const stoppedFlow = (flowId) => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
 
   const qry = { '_id': findId };
@@ -226,7 +226,7 @@ const deleteFlow = (flowId, user) => new Promise((resolve) => {
     });
 });
 
-const anonymise = userId => new Promise((resolve) => {
+const anonymise = (userId) => new Promise((resolve) => {
   Flow.update(
     { 'owners.id': userId },
     { $pull: { owners: { id: userId } } },

@@ -13,5 +13,9 @@
     "SNAPSHOTS_SERVICE_BASE_URL": "http://snapshots-service.oih-dev-ns.svc.cluster.local:1234",
     "TICK_INTERVAL": 10000,
     "KUBERNETES_IMAGE_PULL_POLICY": "Always",
-    "DATAHUB_BASE_URL": "http://data-hub-service.oih-dev-ns.svc.cluster.local:1234"
+    "KUBERNETES_VOLUME_HOSTPATH_ENABLED": "false",
+    "KUBERNETES_VOLUME_HOSTPATH": "",
+    "KUBERNETES_VOLUME_HOSTPATH_MOUNTPATH": "",
+    "DATAHUB_BASE_URL": "http://data-hub-service.oih-dev-ns.svc.cluster.local:1234",
+    "COMPONENT_LOG_LEVEL":"info"
 }

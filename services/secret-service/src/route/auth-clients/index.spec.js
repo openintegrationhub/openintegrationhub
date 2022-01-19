@@ -5,6 +5,10 @@ const conf = require('../../conf');
 const { ENTITY_TYPE } = require('../../constant');
 const Server = require('../../server');
 const token = require('../../test/tokens');
+const AuthClientDAO = require('../../dao/auth-client');
+const SecretDAO = require('../../dao/secret');
+const tokens = require('../../test/tokens');
+
 const {
     OA1_TWO_LEGGED, OA2_AUTHORIZATION_CODE, SESSION_AUTH,
 } = require('../../constant').AUTH_TYPE;
@@ -30,8 +34,9 @@ describe('auth-clients', () => {
     beforeAll(async (done) => {
         port = 5105;
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
+
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'auth-clients'),
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'route-auth-clients'),
             port,
             // iam: dummyIam,
         });
@@ -335,5 +340,77 @@ describe('auth-clients', () => {
             .expect(200)).body.meta;
 
         expect(meta.total).toBe(0);
+    });
+
+    test('Get all secrets by auth client', async () => {
+        const key = 'sshhhh';
+        const accessToken = 'my access_token';
+        const refreshToken = 'my refresh_token';
+
+        const data = {
+            type: OA2_AUTHORIZATION_CODE,
+            name: 'oAuth2',
+            clientId: 'string',
+            clientSecret: 'string',
+            redirectUri: '/dev/null',
+            endpoints: {
+                auth: 'http://',
+                token: 'http://',
+                userinfo: 'http://',
+            },
+            mappings: {
+                externalId: {
+                    source: 'id_token',
+                    key: 'sub',
+                },
+            },
+        };
+
+        const authClient = await AuthClientDAO.create(data);
+
+        const secretData = {
+            name: 'secret',
+            type: OA2_AUTHORIZATION_CODE,
+            owners: [
+                {
+                    id: tokens.userToken1.value.sub,
+                    type: ENTITY_TYPE.USER,
+                },
+                {
+                    id: tokens.userToken1.value.tenant,
+                    type: ENTITY_TYPE.TENANT,
+                },
+            ],
+            value: {
+                authClientId: authClient._id,
+                accessToken,
+                refreshToken,
+                scope: 'asd',
+                externalId: 'asd',
+                expires: '2019-01-28T14:01:21.808Z',
+            },
+        };
+
+        await SecretDAO.create({
+            ...secretData,
+            name: 'secret1',
+        }, key);
+
+        await SecretDAO.create({
+            ...secretData,
+            name: 'secret2',
+        }, key);
+
+        let secrets = (await request.get(`/auth-clients/${authClient._id}/secrets`)
+            .set(...global.userAuth1)
+            .expect(200)).body.data;
+
+        expect(secrets.length).toEqual(2);
+
+        secrets = (await request.get(`/auth-clients/${authClient._id}/secrets`)
+            .set(...global.userAuth2)
+            .expect(200)).body.data;
+
+        expect(secrets.length).toEqual(0);
     });
 });

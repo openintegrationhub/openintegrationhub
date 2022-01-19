@@ -18,7 +18,6 @@ import { getRoles } from '../../action/roles';
 import Table from '../table';
 import EditUser from '../edit-user';
 
-
 const useStyles = {
     wrapper: {
         width: '100%',
@@ -88,10 +87,10 @@ class Users extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     users: state.users,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getUsers,
     getTenants,
     getRoles,

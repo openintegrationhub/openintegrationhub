@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const CONSTANTS = require('./../../constants');
+const CONSTANTS = require('../../constants');
 
 const { Schema } = mongoose;
 

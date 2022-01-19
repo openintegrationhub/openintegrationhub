@@ -8,3 +8,5 @@ data:
   LISTEN_PORT: "1234"
   LOG_LEVEL: trace
   RABBITMQ_URI: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local"
+  IAM_BASE_URL: "https://iam.openintegrationhub.com"
+  SECRET_SERVICE_URL:  "https://skm.openintegrationhub.com/api/v1"

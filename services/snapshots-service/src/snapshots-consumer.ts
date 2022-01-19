@@ -33,10 +33,13 @@ export default class SnapshotsConsumer {
         );
 
         await ch.consume(queueName, msg => {
+            // @ts-ignore
             this.onMessage(msg)
+                // @ts-ignore
                 .then(() => ch.ack(msg))
                 .catch(err => {
                     this.logger.warn({err, msg}, 'Failed to process the message');
+                    // @ts-ignore
                     ch.nack(msg, false, true);
                 });
         });
@@ -44,12 +47,14 @@ export default class SnapshotsConsumer {
 
     private async onMessage(msg: AMQPLib.Message): Promise<void> {
         const snapshot = JSON.parse(msg.content.toString());
-        const { taskId: flowId, stepId } = msg.properties.headers;
-        this.logger.trace({flowId, stepId, snapshot}, 'Received snapshot');
+        const { taskId: flowId, stepId, flowExecId, tenant } = msg.properties.headers;
+        this.logger.trace({flowId, stepId, flowExecId, snapshot}, 'Received snapshot');
 
         await Snapshot.findOneAndUpdate({
             flowId,
-            stepId
+            stepId,
+            flowExecId,
+            tenant
         }, {
             snapshot
         }, {

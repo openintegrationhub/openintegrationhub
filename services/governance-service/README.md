@@ -33,7 +33,7 @@ Example provenance object:
     "entityType": "oihUid"
   },
   "activity": {
-    "activityType": "ObjectReceived",
+    "activityType": "ObjectRetrieved",
     "used": "getPersons",
     "startedAtTime": "2020-10-19T09:47:11+00:00",
     "endedAtTime": "2020-10-19T09:47:15+00:00"
@@ -62,6 +62,42 @@ Example provenance object:
   ]
 }
 ```
+
+
+### Smart Rules
+
+The Smart Rules framework allows objects to be checked against predefined policies. The governance service will then return a response indicating whether the object fulfills this policy for a given purpose. Additionally, it may return a modified version of the object in order to ensure policy adherence. This allows a user to configure flows that will only synchronise objects that pass certain conditions, or that should be automatically modified in some fashion before being passed on.
+
+#### Policy Data model
+
+The data model used to represent policies is based on a simplified version of the [ODRL-model](https://www.w3.org/TR/odrl-model/). This allows it to model a large variety of possible use-cases, and to easily be transformed to and from other policy models. A user can define both permissions and duties, each of which can be further clarified with constraints. A permission must be present and its constraints fulfilled in order for the governance-service to allow the flow to proceed. A duty indicates an automated function that the governance service is expected to execute before returning a response.
+
+A minimal example:
+
+```json
+ {
+   "permission": [{
+     "action": "distribute",
+     "constraint": {
+       "leftOperand": "categories.label",
+       "operator": "equals",
+       "rightOperand": "Customer"
+       },
+     }]
+ {
+```
+
+The meaning of the keys are: 
+
+- `action`: A string referring to which action this permission allows. When checking a policy, the user can determine in which action this policy should be checked against. If no permission matching the selected action can be found, a negative response is returned.
+
+- `constraint`: Constraints are used to more precisely specify a permission or duty. Each constraint consists of a left and right operand, which are compared against each other based on a specified operator.
+
+- `leftOperand`, `rightOperand`: Specifies the values that should be compared against each other. The specific format of the operands depends on the chosen operator. They may specify a certain value, or refer to a key within the flow object.
+
+- `operator`: Refers to a particular predefined comparator function stored within the governance service. Upon checking the constraint, this function will be called with both operands as arguments, and return either `true` or `false` depending on whether the constraint is fulfilled.
+
+As such, the example above expresses this: The flow object may only be distributed if it has a property called `categories`, and within that property there is a property `label` that exactly equals "Customer".
 
 ## Technical description
 

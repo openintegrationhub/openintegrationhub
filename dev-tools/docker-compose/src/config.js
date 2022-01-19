@@ -1,14 +1,16 @@
+require('dotenv').config()
 const path = require('path')
 const { homedir } = require('os')
 
-const nodeImage = 'node:12-stretch'
-const kubernetesVersion = 'v1.21.0'
+const orchestratorReplica = 1
+const nodeImage = 'node:16-bullseye'
+const kubernetesVersion = 'v1.22.4'
 
 const adminUsername = 'admin@openintegrationhub.com'
 const adminPassword = 'somestring'
 
-const minikubeArgs = `--kubernetes-version=${kubernetesVersion}`
-const fullComposeArgs = '-V --remove-orphans --scale component-orchestrator=1'
+const minikubeArgs = `--kubernetes-version=${kubernetesVersion} --mount`
+const fullComposeArgs = `-V --remove-orphans --scale component-orchestrator=${orchestratorReplica}`
 
 const clusterName = 'minikube'
 
@@ -52,9 +54,6 @@ const libs = {
   },
   scheduler: {
     folder: 'scheduler',
-  },
-  secretService: {
-    folder: 'secret-service',
   },
   webhooks: {
     folder: 'webhooks',
@@ -225,6 +224,10 @@ module.exports = {
     HOST_REPOSITORY_ROOT: repositoryRoot,
     MINIKUBE_HOST_IP: '',
     DEV_IAM_TOKEN: '',
+    KUBERNETES_VOLUME_HOSTPATH_ENABLED:
+      process.env.KUBERNETES_VOLUME_HOSTPATH_ENABLED,
+    KUBERNETES_VOLUME_HOSTPATH_PATH:
+      process.env.KUBERNETES_VOLUME_HOSTPATH_PATH,
     ...generateEnvs(services),
   },
   clusterName,

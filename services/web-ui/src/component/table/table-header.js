@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 
 const CONF = require('../../conf').getConfig();
 
-
 class TableHeader extends React.Component {
     rows = [];
 
@@ -32,7 +31,7 @@ class TableHeader extends React.Component {
         }
     }
 
-    createSortHandler = property => () => {
+    createSortHandler = (property) => () => {
         this.props.onRequestSort(property);
     };
 
@@ -57,7 +56,7 @@ class TableHeader extends React.Component {
                         />
                     </TableCell>
                     {this.rows.map(
-                        row => (
+                        (row) => (
                             <TableCell
                                 key={row.id}
                                 align={row.numeric ? 'right' : 'left'}

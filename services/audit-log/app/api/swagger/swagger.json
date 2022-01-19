@@ -94,9 +94,6 @@
           },
           "401": {
             "description": "Missing authorization header. Login via the IAM to receive a token."
-          },
-          "404": {
-            "description": "No logs associated with the current tenant could be found in the repository."
           }
         }
       },

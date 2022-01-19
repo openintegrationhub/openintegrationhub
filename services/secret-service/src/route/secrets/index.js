@@ -183,7 +183,7 @@ class SecretsRouter {
                     data: await SecretDAO.update({
                         id: req.params.id,
                         data,
-                    }),
+                    }, req.key),
                 });
             } catch (err) {
                 log.error(err);
@@ -279,6 +279,32 @@ class SecretsRouter {
                 res.sendStatus(200);
             } catch (err) {
                 log.error(err);
+                next({
+                    err,
+                    status: 500,
+                    message: err.message,
+                });
+            }
+        });
+
+        this.router.get('/:id/validateHmac', userIsOwnerOfSecret, getKeyParameter, getKey, async (req, res, next) => {
+            try {
+                const secret = req.obj;
+                const data = req.body.data ? req.body.data : req.body;
+                const { hmacValue, hmacAlgo, rawBody } = data;
+                if (secret) {
+                    const isValid = await SecretDAO.authenticateHmac({
+                        secret, key: req.key, hmacValue, hmacAlgo, rawBody,
+                    });
+                    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+                    res.send({
+                        data: isValid,
+                    });
+                } else {
+                    res.sendStatus(403);
+                }
+            } catch (err) {
+                log.error(err, { 'x-request-id': req.headers['x-request-id'] });
                 next({
                     err,
                     status: 500,

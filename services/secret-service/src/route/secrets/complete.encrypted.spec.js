@@ -22,7 +22,7 @@ describe('key adapter', () => {
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         conf.crypto.isDisabled = false;
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-complete-encrypted`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'complete'),
             port,
         });
         await server.start();

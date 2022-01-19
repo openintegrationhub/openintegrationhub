@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -34,7 +33,7 @@ const useStyles = {
     },
 };
 
-const AppTeaser = props => <React.Fragment><Grid className={props.classes.appTeaser} xs={12} container justify="center"
+const AppTeaser = (props) => <React.Fragment><Grid className={props.classes.appTeaser} xs={12} container justify="center"
     alignItems="center" onClick={() => { props.onClick && props.onClick(props._id); }}>
 
     <Grid item xs={!props.hideControls ? 1 : 3}>

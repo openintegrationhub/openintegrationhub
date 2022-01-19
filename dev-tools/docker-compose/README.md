@@ -1,7 +1,5 @@
 # Docker Compose (Linux)
 
-In theory, this approach could also be used on macOS.
-
 Every service will be configured via NodeJS, managed by docker-compose, and finally runs inside a docker container. In addition, a Kubernetes cluster is created to host all deployments of flow nodes.
 
 **Simpleproxy** proxies tcp traffic from docker host to the kubernetes cluster, so a connection **_cluster server -> docker-host -> component orchestrator_** will be ensured.
@@ -13,7 +11,7 @@ Following software needs to be installed
 1. Docker
 2. Docker Compose
 3. Minikube
-4. NodeJS >= 12
+4. NodeJS >= 16
 5. [MongoDB Shell](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/#install-the-mongodb-packages)
 6. [Simpleproxy](https://github.com/vzaliva/simpleproxy)
 
@@ -45,7 +43,7 @@ node packages/install
 Start with initial state
 
 ```bash
-node setup/minikube && node setup/kubernetes && node setup/reset-rabbit.js && node setup/iam && node setup/flows && node start
+node setup/minikube && node setup/kubernetes && node setup/reset-rabbit && node setup/reset-mongo && node setup/iam && node setup/flows && node setup/build-test-component.js && node start
 ```
 
 If everything started up successfully you can visit the frontend with

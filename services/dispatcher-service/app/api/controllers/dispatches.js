@@ -153,7 +153,7 @@ router.delete('/:id/app/:appId', jsonParser, async (req, res) => {  //eslint-dis
       return res.status(404).send({ errors: [{ code: 404, message: 'No config found' }] });
     }
 
-    const index = config.applications.findIndex(app => app._id.toString() === req.params.appId);
+    const index = config.applications.findIndex((app) => app._id.toString() === req.params.appId);
 
     if (index === -1) {
       return res.status(404).send({ errors: [{ code: 404, message: 'No app found' }] });

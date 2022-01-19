@@ -8,12 +8,6 @@ const log = bunyan.createLogger({
   streams: [
     {
       level: 'trace',
-      type: 'file',
-      path: 'error.log', // log ERROR and above to a file
-
-    },
-    {
-      level: 'trace',
       // stream: process.stdout            // log INFO and above to stdout
       stream: formatOut,
     },
