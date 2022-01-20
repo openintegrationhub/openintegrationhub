@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Modal from '@material-ui/core/Modal';
 import {
-    Delete, Edit, PlayArrow, Stop, Send,
+    Delete, Edit, PlayArrow, Stop, Send, Launch
 } from '@material-ui/icons';
 
 // Componente
@@ -131,8 +131,8 @@ class FlowTeaser extends React.PureComponent {
                             {this.props.data.status
                                 && <Grid item xs={2}><InputLabel>Status:</InputLabel><Typography >{this.getStatus(classes)} {this.props.data.status}</Typography></Grid>}
                             <Grid item xs={4}>
-                                <Link to={`/flows/${this.props.data.id}`}><Button aria-label="next" onClick={() => this.openDetailPage(this.props.data.id)}>
-                                    <Edit />
+                                <Link to={`/flows/${this.props.data.id}`}><Button aria-label="next">
+                                    <Launch />
                                 </Button></Link>
 
                                 <Button aria-label="next" onClick={this.editOpen}>
