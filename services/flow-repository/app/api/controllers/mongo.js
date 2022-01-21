@@ -281,6 +281,22 @@ const getSimilarFlows = async (flowId) => {
   return similarFlows.sort((a, b) => (a.score > b.score ? -1 : 1));
 };
 
+const getFlowsByComponents = async (componentIds) => {
+  const flows = await Flow.find({
+    $and: componentIds.map((id) => (
+      {
+        'graph.nodes': {
+          $elemMatch: { componentId: id },
+        },
+      }
+    )),
+  }).lean();
+
+  return flows.map((flow) => ({
+    graph: anonymizeGraph(flow.graph),
+  }));
+};
+
 module.exports = {
   getFlows,
   addFlow,
@@ -294,5 +310,6 @@ module.exports = {
   anonymise,
   getOrphanedFlows,
   getSimilarFlows,
+  getFlowsByComponents,
   format,
 };

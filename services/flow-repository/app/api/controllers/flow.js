@@ -225,6 +225,47 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
   }
 });
 
+// smart assistance
+
+// Get example flows by set of component ids
+router.get('/recommend', jsonParser, can(config.flowReadPermission), async (req, res) => {
+  const { componentIds } = req.query;
+
+  if (!componentIds || componentIds.length === 0) {
+    return res.status(400).send({ errors: [{ message: 'Provide "componentIds" with at least one element', code: 400 }] });
+  }
+
+  // validate id format
+  for (const componentId of componentIds) {
+    if (!mongoose.Types.ObjectId.isValid(componentId)) {
+      return res.status(400).send({ errors: 'Invalid id' });
+    }
+  }
+
+  const flows = await storage.getFlowsByComponents(componentIds);
+
+  res.send({
+    data: flows,
+    meta: {},
+  });
+});
+
+// Get similar flows by flowId
+router.get('/recommend/:id', jsonParser, can(config.flowReadPermission), async (req, res) => {
+  const flowId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(flowId)) {
+    return res.status(400).send({ errors: [{ message: 'Invalid id', code: 400 }] });
+  }
+
+  const flows = await storage.getSimilarFlows(flowId);
+
+  res.send({
+    data: flows,
+    meta: {},
+  });
+});
+
 // Gets a flow by id
 router.get('/:id', jsonParser, can(config.flowReadPermission), async (req, res) => {
   const flowId = req.params.id;
@@ -282,23 +323,6 @@ router.delete('/:id', can(config.flowWritePermission), jsonParser, async (req, r
     await publishQueue(ev);
     res.status(200).send({ msg: 'Flow was successfully deleted' });
   }
-});
-
-// smart assistance
-// Get similar flows by flowId
-router.get('/recommend/:id', jsonParser, can(config.flowReadPermission), async (req, res) => {
-  const flowId = req.params.id;
-
-  if (!mongoose.Types.ObjectId.isValid(flowId)) {
-    return res.status(400).send({ errors: [{ message: 'Invalid id', code: 400 }] });
-  }
-
-  const flows = await storage.getSimilarFlows(flowId);
-
-  res.send({
-    data: flows,
-    meta: {},
-  });
 });
 
 // Get step logs

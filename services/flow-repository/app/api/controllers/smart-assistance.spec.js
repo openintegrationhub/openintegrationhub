@@ -95,11 +95,115 @@ describe('Smart Assistance', () => {
       .get(`/flows/recommend/${baseFlow._id}`)
       .set('Authorization', 'Bearer guestToken')
       .set('accept', 'application/json')
-      .set('Content-Type', 'application/json')).body;
+      .expect(200)).body;
 
     expect(data.length).toBe(3);
     expect(data[0].score).toBe(1);
     expect(data[1].score).toBe(0.5);
     expect(data[2].score).toBeCloseTo(0.166);
+  });
+
+  test('find flow examples by componentIds', async () => {
+    const {
+      c1, c2, c3, c4, c5, c6, c7,
+    } = dummyConnectors;
+
+    function generateQueryString(componentIds) {
+      let counter = 0;
+      return componentIds.reduce((a, b) => `${a}componentIds[${counter++}]=${b}&`, '?');
+    }
+
+    await request
+      .get('/flows/recommend?components[0]=c1')
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .expect(400);
+
+    await request
+      .get('/flows/recommend?componentIds')
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .expect(400);
+
+    await request
+      .get('/flows/recommend?componentIds[0]=c1')
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .expect(400);
+
+    await request
+      .get(`/flows/recommend?componentIds[0]=${mongoose.Types.ObjectId()}`)
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .expect(200);
+
+    let data = (await request
+      .get(`/flows/recommend${generateQueryString([c1.componentId, c2.componentId])}`)
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .expect(200)).body.data;
+
+    expect(data.length).toBe(2);
+
+    for (const flow of data) {
+      expect(flow.graph.nodes.find((n) => n.componentId === c1.componentId.toString())).toBeDefined();
+      expect(flow.graph.nodes.find((n) => n.componentId === c2.componentId.toString())).toBeDefined();
+    }
+
+    data = (await request
+      .get(`/flows/recommend${generateQueryString([c1.componentId, c2.componentId, c2.componentId])}`)
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .expect(200)).body.data;
+
+    expect(data.length).toBe(2);
+
+    for (const flow of data) {
+      expect(flow.graph.nodes.find((n) => n.componentId === c1.componentId.toString())).toBeDefined();
+      expect(flow.graph.nodes.find((n) => n.componentId === c2.componentId.toString())).toBeDefined();
+    }
+
+    data = (await request
+      .get(`/flows/recommend${generateQueryString([c7.componentId])}`)
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .expect(200)).body.data;
+
+    expect(data.length).toBe(1);
+
+    for (const flow of data) {
+      expect(flow.graph.nodes.find((n) => n.componentId === c7.componentId.toString())).toBeDefined();
+    }
+
+    data = (await request
+      .get(`/flows/recommend${generateQueryString([c1.componentId, c2.componentId, c3.componentId, c4.componentId])}`)
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .expect(200)).body.data;
+
+    expect(data.length).toBe(2);
+
+    for (const flow of data) {
+      expect(flow.graph.nodes.find((n) => n.componentId === c1.componentId.toString())).toBeDefined();
+      expect(flow.graph.nodes.find((n) => n.componentId === c2.componentId.toString())).toBeDefined();
+      expect(flow.graph.nodes.find((n) => n.componentId === c3.componentId.toString())).toBeDefined();
+      expect(flow.graph.nodes.find((n) => n.componentId === c4.componentId.toString())).toBeDefined();
+    }
+
+    data = (await request
+      .get(`/flows/recommend${generateQueryString([
+        c1.componentId,
+        c2.componentId,
+        c3.componentId,
+        c4.componentId,
+        c5.componentId,
+        c6.componentId,
+        c7.componentId,
+      ])}`)
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .expect(200)).body.data;
+
+    expect(data.length).toBe(0);
   });
 });
