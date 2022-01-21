@@ -7,7 +7,7 @@
     "node": ">=12"
   },
   "scripts": {
-    "lint": "eslint index.js src spec",
+    "lint": "eslint  ./src/**/*.js",
     "pretest": "npm run lint",
     "test": "mocha spec --recursive"
   },
