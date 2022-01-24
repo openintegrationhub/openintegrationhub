@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "description": "This is the API for the Open Integration Hub Microservice \"Flow Repository\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "title": "Flow Repository",
     "termsOfService": "https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
     "contact": {
@@ -21,6 +21,10 @@
         "description": "Find out more",
         "url": "https://openintegrationhub.org"
       }
+    },
+    {
+      "name": "smart-assistance",
+      "description": "Smart Assistance"
     }
   ],
   "paths": {
@@ -588,6 +592,112 @@
         }
       }
     },
+    "/flows/recommend": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "smart-assistance"
+        ],
+        "summary": "Get flow recommendations by componentIds.",
+        "description": "Returns anonymized graphs of existing flows containing the requested subset of components.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "componentId",
+            "description": "### You must supply at least one {componentId} for the request to succeed. E.g. \n_recommend?componentId[0]=idFoo&componentId[1]=idBar& ... componentId[n]=idLast_\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of anonymized flow graphs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AnonFlowGraph"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter format."
+          },
+          "403": {
+            "description": "User is not authorised to get logs."
+          }
+        }
+      }
+    },
+    "/flows/recommend/{flow_id}": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "smart-assistance"
+        ],
+        "summary": "Get flow recommendations + scorings by flowId.",
+        "description": "Returns anonymized graphs of existing flows matching the structure of a provided flow. All hits are sorted by similarity score.",
+        "parameters": [
+          {
+            "name": "flow_id",
+            "in": "path",
+            "description": "ID of flow, must be a valid MongoDB ID.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of anonymized flow graphs + scoring",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AnonFlowGraphWithScoring"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id."
+          },
+          "403": {
+            "description": "User is not authorised to get logs."
+          }
+        }
+      }
+    },
     "/healthcheck": {
       "get": {
         "x-swagger-router-controller": "healthcheck",
@@ -851,6 +961,147 @@
             }
           }
         ]
+      },
+      "AnonFlowGraph": {
+        "type": "object",
+        "description": "An anonymized version of a flow graph",
+        "properties": {
+          "nodes": {
+            "type": "array",
+            "description": "An array of all components involved in this flow",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "function",
+                "componentId"
+              ],
+              "example": [
+                {
+                  "id": "componentId1:function1:1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed",
+                  "componentId": "string",
+                  "function": "function1"
+                },
+                {
+                  "id": "componentId2:function2:1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bef",
+                  "componentId": "string",
+                  "function": "function1"
+                }
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of this node, which will be referenced by edges"
+                },
+                "componentId": {
+                  "type": "string",
+                  "description": "The component repository id of the component (e.g. adapter/transformer) to be used in this step."
+                },
+                "function": {
+                  "type": "string",
+                  "description": "The function that the component will be executing."
+                }
+              }
+            }
+          },
+          "edges": {
+            "type": "array",
+            "description": "An array of edges linking nodes together, determining the order in which nodes are activated",
+            "items": {
+              "type": "object",
+              "required": [
+                "source",
+                "target"
+              ],
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "description": "The source node of this edge, referring to the id field of a node",
+                  "example": "componentId1:function1:1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed"
+                },
+                "target": {
+                  "type": "string",
+                  "description": "The target node of this edge, referring to the id field of a node",
+                  "example": "componentId2:function2:1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bef"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AnonFlowGraphWithScoring": {
+        "type": "object",
+        "description": "An anonymized version of a flow graph",
+        "properties": {
+          "nodes": {
+            "type": "array",
+            "description": "An array of all components involved in this flow",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "function",
+                "componentId"
+              ],
+              "example": [
+                {
+                  "id": "componentId1:function1:1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed",
+                  "componentId": "string",
+                  "function": "function1"
+                },
+                {
+                  "id": "componentId2:function2:1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bef",
+                  "componentId": "string",
+                  "function": "function1"
+                }
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of this node, which will be referenced by edges"
+                },
+                "componentId": {
+                  "type": "string",
+                  "description": "The component repository id of the component (e.g. adapter/transformer) to be used in this step."
+                },
+                "function": {
+                  "type": "string",
+                  "description": "The function that the component will be executing."
+                }
+              }
+            }
+          },
+          "edges": {
+            "type": "array",
+            "description": "An array of edges linking nodes together, determining the order in which nodes are activated",
+            "items": {
+              "type": "object",
+              "required": [
+                "source",
+                "target"
+              ],
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "description": "The source node of this edge, referring to the id field of a node",
+                  "example": "componentId1:function1:1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed"
+                },
+                "target": {
+                  "type": "string",
+                  "description": "The target node of this edge, referring to the id field of a node",
+                  "example": "componentId2:function2:1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bef"
+                }
+              }
+            }
+          },
+          "score": {
+            "type": "number",
+            "description": "The similarity score indicates the degree to which the calculated flow matches the specified flow. \"1\" stands for a perfect match, \"0\" for no match at all.",
+            "minimum": 0,
+            "maximum": 1,
+            "example": 0.454
+          }
+        }
       },
       "FlowGraph": {
         "type": "object",
