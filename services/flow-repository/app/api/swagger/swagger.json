@@ -607,8 +607,8 @@
         "parameters": [
           {
             "in": "query",
-            "name": "componentId",
-            "description": "### You must supply at least one {componentId} for the request to succeed. E.g. \n_recommend?componentId[0]=idFoo&componentId[1]=idBar& ... componentId[n]=idLast_\n",
+            "name": "componentIds",
+            "description": "### You must supply at least one element in {componentIds} for the request to succeed. E.g. \n_recommend?componentIds[0]=idFoo&componentIds[1]=idBar& ... componentIds[n]=idLast_\n",
             "schema": {
               "type": "array",
               "items": {
