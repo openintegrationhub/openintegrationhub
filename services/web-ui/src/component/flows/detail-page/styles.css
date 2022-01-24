@@ -84,6 +84,7 @@
     height: 1px; }
 
 :local(.childrenWrapper) {
+  position: relative;
   display: flex;
   justify-content: center;
   width: 100%; }

@@ -42,12 +42,17 @@ const useStyles = {
         marginTop: 20,
     },
     flowNode: {
-        border: '1px solid blue',
+        // border: '1px solid blue',
+        display: 'flex',
+        justifyContent: 'center',
         margin: 20,
         padding: 20,
     },
     flowElement: {
         border: '1px solid red',
+        marginBottom: 10,
+        width: '120px',
+        borderRadius: '10px'
     },
 
 };
@@ -67,49 +72,49 @@ class FlowDetails extends React.PureComponent {
         this.props.onEditNode && this.props.onEditNode(element.id);
     }
 
-  addAfterNode = (parent) => {
-      const graph = { ...this.props.flows.all[0].graph };
-      const newNodeId = `step_${Math.round(Math.random() * 987654)}`;
-      graph.nodes.push({
-          id: newNodeId,
-          componentId: null,
-          function: null,
-          fields: {
-          },
-          nodeSettings: {
-              basaasFlows: {
-                  appRef: null,
-                  methodType: null,
-                  integratedApp: null,
-                  stepName: 'Please select app',
-                  inputDataMapping: {
+    addAfterNode = (parent) => {
+    //   const graph = { ...this.props.flows.all[0].graph };
+    //   const newNodeId = `step_${Math.round(Math.random() * 987654)}`;
+    //   graph.nodes.push({
+    //       id: newNodeId,
+    //       componentId: null,
+    //       function: null,
+    //       fields: {
+    //       },
+    //       nodeSettings: {
+    //           basaasFlows: {
+    //               appRef: null,
+    //               methodType: null,
+    //               integratedApp: null,
+    //               stepName: 'Please select app',
+    //               inputDataMapping: {
 
-                  },
-              },
-          },
-      });
-      const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === parent.id).length === 1;
+    //               },
+    //           },
+    //       },
+    //   });
+    //   const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === parent.id).length === 1;
 
-      if (parentHasOnlyOneChild) {
-          graph.edges = graph.edges.map((edge) => {
-              if (edge.source === parent.id) {
-                  edge.source = newNodeId;
-              }
-              return edge;
-          });
-      }
+    //   if (parentHasOnlyOneChild) {
+    //       graph.edges = graph.edges.map((edge) => {
+    //           if (edge.source === parent.id) {
+    //               edge.source = newNodeId;
+    //           }
+    //           return edge;
+    //       });
+    //   }
 
-      graph.edges.push({
-          source: parent.id,
-          target: newNodeId,
-      });
+    //   graph.edges.push({
+    //       source: parent.id,
+    //       target: newNodeId,
+    //   });
 
-      this.setState({
-          flow: {
-              ...this.props.flows.all[0],
-              graph,
-          },
-      });
+    //   this.setState({
+    //       flow: {
+    //           ...this.props.flows.all[0],
+    //           graph,
+    //       },
+    //   });
   }
 
   generateSubGraphLeveled = (arr, level) => {
@@ -127,6 +132,11 @@ class FlowDetails extends React.PureComponent {
   }
 
     generateGraphVisualization = (currentContent = [], parent, isRoot, nodeAlignment) => {
+
+        const {
+            classes,
+        } = this.props;
+
         const childrenContent = [];
         for (let i = 0; i < parent.children.length; i++) {
             const node = parent.children[i];
@@ -144,10 +154,15 @@ class FlowDetails extends React.PureComponent {
         }
 
         currentContent.push(<div key={parent.id} className={`${styles.nodeWrapper} ${nodeAlignment}`}>
+            
             {/* {!isRoot ? <button>+</button> : null} */}
-            <p onClick={this.onElementClick.bind(this, parent)}>{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
-            <button onClick={this.addAfterNode.bind(this, parent)}>+</button>
-            {parent.children.length ? <div className={styles.childrenWrapper}>{childrenContent}</div> : null}
+            <div className={classes.flowElement}>
+                <p onClick={this.onElementClick.bind(this, parent)}>{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
+            </div>
+            
+            {parent.children.length ? <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} <button style={{position: 'absolute', top: 20, left: 125}}>X</button></div> : null}
+            {parent.children.length ? <div className={styles.childrenWrapper}><button onClick={this.addAfterNode.bind(this, parent)}>Branch</button>
+            <button onClick={this.addAfterNode.bind(this, parent)}>Node</button></div> : null}
         </div>);
 
         return currentContent;
@@ -164,8 +179,9 @@ class FlowDetails extends React.PureComponent {
       }
 
       generateGraph = () => {
+          const flowCopy = this.props.flows.all[0]
           // const root = this.props.flows.all[0].graph.nodes.find((node) => !this.props.flows.all[0].graph.edges.find((edge) => edge.target === node.id));
-          const root = this.props.flows.all[0].graph.nodes.find((node) => !this.props.flows.all[0].graph.edges.find((edge) => edge.target === node.id));
+          const root = flowCopy.graph.nodes.find((node) => !flowCopy.graph.edges.find((edge) => edge.target === node.id));
           console.log('root is', root);
           if (root) {
               // const arr = [[root]];
@@ -184,50 +200,28 @@ class FlowDetails extends React.PureComponent {
               classes,
           } = this.props;
 
-          // const { id } = useParams();
-          console.log('props is', this.props);
-
           if (!this.props.flows.all[0]) {
               return <Loader />;
           }
 
           const graph = this.generateGraph();
 
-          console.log('Graph is', graph);
           if (!graph) {
               return <Loader />;
           }
-          console.log('Flow', this.props.flows.all[0]);
           const content = this.generateGraphVisualization([], graph, true);
 
           const { id } = this.props.match.params;
-          console.log('Id', id);
           return (
 
-              <div>
-                  <h2>{this.props.flows.all[0].name}</h2>
+              <div style={{textAlign: 'center'}}>
+                  <h2>Flow Name: {this.props.flows.all[0].name}</h2>
                   <div className={classes.flowContainer}>
-                      <p>{this.props.flows.all[0].id}</p>
+                      <p>Flow ID:{this.props.flows.all[0].id}</p>
                       <div className={classes.flowNode}>
-
-                          <div className={classes.flowElement}>
-                              <p>send Mail</p>
-                          </div>
+                            {content}
                       </div>
-
-                      <div className={classes.flowNode}>
-                          <p>Jira</p>
-                          <div className={classes.flowElement}>
-                              <p>create Todo</p>
-                          </div>
-                      </div>
-                      <div className={classes.flowNode}>
-                          <button> Add Branch</button>
-                          <button> Add Node</button>
-                      </div>
-
                   </div>
-                  {content}
               </div>
 
           );
