@@ -88,65 +88,58 @@ class FlowDetails extends React.PureComponent {
     }
 
     addAfterNode = (parent) => {
-        console.log('clicked')
-        this.setState({addNodeTriggered: true})
-        const graphCopy = this.props.flows.all[0].graph
-        console.log('test', graphCopy)
-        graphCopy.nodes.push({
-            "id": "step_3",
-            "componentId": "612e99ac5ef8bac00272ddf93",
-            "function": "testAction",
-            "nodeSettings": {
-                "storeRawRecord": true
-            },
-            "children": []
-        })
-        graphCopy.edges.push({ source: 'step_2', target: 'step_3'})
-        console.log('test', graphCopy)
-    //   const graph = { ...this.props.flows.all[0].graph };
-    //   console.log('Graph before', graph)
-    //   const newNodeId = `step_${Math.round(Math.random() * 987654)}`;
-    //   graph.nodes.push({
-    //       id: newNodeId,
-    //       componentId: null,
-    //       function: null,
-    //       fields: {
-    //       },
-    //       nodeSettings: {
-    //           basaasFlows: {
-    //               appRef: null,
-    //               methodType: null,
-    //               integratedApp: null,
-    //               stepName: 'Please select app',
-    //               inputDataMapping: {
+        // console.log('clicked')
+        // this.setState({addNodeTriggered: true})
+        // const graphCopy = this.props.flows.all[0].graph
+        // console.log('test', graphCopy)
+        // const newNodeId = `step_${Math.round(Math.random() * 100)}`;
+        // graphCopy.nodes.push({
+        //     "id": newNodeId,
+        //     "componentId": "612e99ac5ef8bac00272ddf93",
+        //     "function": "testAction",
+        //     "nodeSettings": {
+        //         "storeRawRecord": true
+        //     },
+        //     "children": []
+        // })
+        // graphCopy.edges.push({ source: 'step_2', target: newNodeId})
+        // console.log('test', graphCopy)
 
-    //               },
-    //           },
-    //       },
-    //   });
-    //   const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === parent.id).length === 1;
 
-    //   if (parentHasOnlyOneChild) {
-    //       graph.edges = graph.edges.map((edge) => {
-    //           if (edge.source === parent.id) {
-    //               edge.source = newNodeId;
-    //           }
-    //           return edge;
-    //       });
-    //   }
 
-    //   graph.edges.push({
-    //       source: parent.id,
-    //       target: newNodeId,
-    //   });
+      const graph = { ...this.props.flows.all[0].graph };
+      console.log('Graph before', graph)
+      const newNodeId = `step_${Math.round(Math.random() * 987654)}`;
+      graph.nodes.push({
+          id: newNodeId,
+          componentId: null,
+          function: null,
+          fields: {
+          }
+      });
+      const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === parent.id).length === 1;
 
-    //   console.log('Graph after', graph)
-    //   this.setState({
-    //       flow: {
-    //           ...this.props.flows.all[0],
-    //           graph,
-    //       },
-    //   });
+      if (parentHasOnlyOneChild) {
+          graph.edges = graph.edges.map((edge) => {
+              if (edge.source === parent.id) {
+                  edge.source = newNodeId;
+              }
+              return edge;
+          });
+      }
+
+      graph.edges.push({
+          source: parent.id,
+          target: newNodeId,
+      });
+
+      console.log('Graph after', graph)
+      this.setState({
+          flow: {
+              ...this.props.flows.all[0],
+              graph,
+          },
+      });
     
   }
 
@@ -195,7 +188,10 @@ class FlowDetails extends React.PureComponent {
             
             {parent.children.length ? <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} </div> : null}
             {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={this.addAfterNode.bind(this, parent)}>Branch</button>
-            <button onClick={this.addAfterNode.bind(this, parent)}>Node</button><button style={{position: 'absolute', top: 20, left: 125}}>X</button></div> : null}
+            <button onClick={this.addAfterNode.bind(this, parent)}>Node</button><button style={{position: 'absolute', top: 20, left: 125}}>X</button>
+            
+            </div> : null}
+            
         </div>);
         return currentContent;
     }
@@ -260,7 +256,7 @@ class FlowDetails extends React.PureComponent {
                       </div>
                   </div>
                   {this.state.selectedNode && <div>Selected Node is: {this.state.selectedNode.id}</div>}
-                  {this.state.addNodeTriggered && <div>Test</div>}
+                  
               </div>
 
           );
