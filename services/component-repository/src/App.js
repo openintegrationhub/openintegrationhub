@@ -12,7 +12,7 @@ class ComponentRepositoryApp extends App {
             eventBus: asClass(EventBus, {
                 injector: () => ({
                     serviceName: this.constructor.NAME,
-                    rabbitmqUri: config.get('CLOUDAMQP_URL'),
+                    rabbitmqUri: config.get('RABBITMQ_URI'),
                     transport: undefined,
                     onCloseCallback: undefined,
                 })
@@ -21,7 +21,6 @@ class ComponentRepositoryApp extends App {
                 .singleton()
                 .inject(() => ({iam: undefined, eventClass: Event})) //use default iam middleware
         });
-        console.log("container:",container)
         const server = container.resolve('server');
         await server.start();
     }
