@@ -64,8 +64,20 @@ class FlowDetails extends React.PureComponent {
         this.state = {
             position: '',
             loading: true,
+            flow: {
+                graph: {
+                    nodes: [],
+                    edges: [],
+                },
+            },
         };
     }
+
+    componentWillReceiveProps(props) {
+        const { id } = props.match.params
+        const flow = props.flows.all.filter(item => item.id === id);
+        this.setState({flow: flow[0]})
+      }
 
     onElementClick = (element) => {
         console.log('onElementClick', element);
@@ -73,7 +85,22 @@ class FlowDetails extends React.PureComponent {
     }
 
     addAfterNode = (parent) => {
+        console.log('clicked')
+        const graphCopy = this.props.flows.all[0].graph
+        console.log('test', graphCopy)
+        graphCopy.nodes.push({
+            "id": "step_3",
+            "componentId": "612e99ac5ef8bac00272ddf93",
+            "function": "testAction",
+            "nodeSettings": {
+                "storeRawRecord": true
+            },
+            "children": []
+        })
+        graphCopy.edges.push({ source: 'step_2', target: 'step_3'})
+        console.log('test', graphCopy)
     //   const graph = { ...this.props.flows.all[0].graph };
+    //   console.log('Graph before', graph)
     //   const newNodeId = `step_${Math.round(Math.random() * 987654)}`;
     //   graph.nodes.push({
     //       id: newNodeId,
@@ -109,12 +136,14 @@ class FlowDetails extends React.PureComponent {
     //       target: newNodeId,
     //   });
 
+    //   console.log('Graph after', graph)
     //   this.setState({
     //       flow: {
     //           ...this.props.flows.all[0],
     //           graph,
     //       },
     //   });
+    
   }
 
   generateSubGraphLeveled = (arr, level) => {
@@ -179,20 +208,24 @@ class FlowDetails extends React.PureComponent {
       }
 
       generateGraph = () => {
-          const flowCopy = this.props.flows.all[0]
-          // const root = this.props.flows.all[0].graph.nodes.find((node) => !this.props.flows.all[0].graph.edges.find((edge) => edge.target === node.id));
-          const root = flowCopy.graph.nodes.find((node) => !flowCopy.graph.edges.find((edge) => edge.target === node.id));
-          console.log('root is', root);
-          if (root) {
-              // const arr = [[root]];
-              const arr = [root];
-              // console.log('I am groot', root);
-              this.generateSubGraph(root);
-              // console.log('firstlevel', root, arr);
-              return root;
+          if(this.state.flow.graph.nodes.length > 0){
+            const flowCopy = this.state.flow
+            console.log('flowCopy', flowCopy)
+            // const root = this.props.flows.all[0].graph.nodes.find((node) => !this.props.flows.all[0].graph.edges.find((edge) => edge.target === node.id));
+            const root = flowCopy.graph.nodes.find((node) => !flowCopy.graph.edges.find((edge) => edge.target === node.id));
+           
+            if (root) {
+                // const arr = [[root]];
+                const arr = [root];
+                // console.log('I am groot', root);
+                this.generateSubGraph(root);
+                // console.log('firstlevel', root, arr);
+                return root;
+            }
+  
+            return null;
           }
-
-          return null;
+          
       }
 
       render() {
@@ -200,6 +233,7 @@ class FlowDetails extends React.PureComponent {
               classes,
           } = this.props;
 
+          console.log('Render flow', this.state.flow)
           if (!this.props.flows.all[0]) {
               return <Loader />;
           }
