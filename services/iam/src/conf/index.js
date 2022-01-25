@@ -27,7 +27,7 @@ const config = {
         port,
 
         mongodb_url: optional('IAM_MONGODB_CONNECTION', 'mongodb://localhost:27017/accounts'),
-        rabbitmqUrl: optional('RABBITMQ_URI', 'amqp://guest:guest@localhost:5672'),
+        rabbitmqUrl: optional('AMQP_RECEIVE_URL', 'amqp://guest:guest@localhost:5672'),
         originWhitelist: originwhitelist.concat(optional('NODE_ENV') !== 'production' ? [
             // development only
             '127.0.0.1', 
@@ -41,7 +41,7 @@ const config = {
     accounts: {
         admin: {
             username: optional('IAM_ACC_ADMIN_USERNAME', 'admin@example.com'),
-            password: getPassword('IAM_ACC_ADMIN_PASSWORD'),
+            password: getPassword('IAM_ACC_ADMIN_PASSWORD','1234'),
             firstname: 'admin',
             lastname: 'admin',
         },
@@ -207,6 +207,8 @@ const config = {
     },
 };
 
+console.log(config.accounts.admin)
+console.log(config.accounts.admin.password)
 if (config.general.useHttps) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
