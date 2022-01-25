@@ -91,8 +91,8 @@ class FlowDetails extends React.PureComponent {
         const { id } = this.props.match.params
         const graph = this.props.flows.all.filter(item => item.id === id)[0].graph;
     //   const graph = { ...this.props.flows.all[0].graph };
-      console.log('Graph before', graph)
-      const newNodeId = `step_${Math.round(Math.random() * 987654)}`;
+    //   console.log('Graph before', graph)
+      const newNodeId = `step_${Math.round(Math.random() * 100)}`;
       graph.nodes.push({
           id: newNodeId,
           componentId: null,
@@ -116,7 +116,7 @@ class FlowDetails extends React.PureComponent {
           target: newNodeId,
       });
 
-      console.log('Graph after', graph)
+    //   console.log('Graph after', graph)
       this.setState({
         //   flow: {
         //       ...this.props.flows.all[0],
@@ -128,29 +128,22 @@ class FlowDetails extends React.PureComponent {
   }
 
   deleteNode = (node) => {
-    console.log('delete', node)
-    console.log('stater', this.state.flow)
+    
     const { id } = this.props.match.params
     const flow = this.props.flows.all.filter(item => item.id === id)[0];
-    console.log('flow 131', flow)
     const edgeToAlter = flow.graph.edges.filter(item => item.target === node.id)
-    console.log('edgeToAlter', edgeToAlter)
     // const edgeToDelete = flow.graph.edges.filter(item => item.source === node.id)
     const nodeToDelete = flow.graph.nodes.filter(item => item.id === node.id)
-    console.log('nodeToDelete', nodeToDelete)
 
-const indexNode = flow.graph.nodes.indexOf(nodeToDelete[0]);
-const indexEdge = flow.graph.edges.indexOf(edgeToAlter[0])
-if (indexNode > -1 && indexEdge > -1) {
-    flow.graph.nodes.splice(indexNode, 1); // 2nd parameter means remove one item only
-    flow.graph.edges.splice(indexEdge, 1);
-    this.setState({flow: flow})
-}
-
-console.log('Check this out', flow.graph); 
-
-    
-  }
+    const indexNode = flow.graph.nodes.indexOf(nodeToDelete[0]);
+    const indexEdge = flow.graph.edges.indexOf(edgeToAlter[0])
+    if (indexNode > -1 && indexEdge > -1) {
+        flow.graph.nodes.splice(indexNode, 1);
+        flow.graph.edges.splice(indexEdge, 1);
+        this.setState({flow: flow})
+    }
+    console.log('Check this out', flow.graph);
+    }
 
   generateSubGraphLeveled = (arr, level) => {
       // console.log('generateSubGraph', arr, level);
