@@ -193,9 +193,9 @@ class FlowDetails extends React.PureComponent {
                 <p onClick={this.onElementClick.bind(this, parent)}>{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
             </div>
             
-            {parent.children.length ? <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} <button style={{position: 'absolute', top: 20, left: 125}}>X</button></div> : null}
+            {parent.children.length ? <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} </div> : null}
             {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={this.addAfterNode.bind(this, parent)}>Branch</button>
-            <button onClick={this.addAfterNode.bind(this, parent)}>Node</button></div> : null}
+            <button onClick={this.addAfterNode.bind(this, parent)}>Node</button><button style={{position: 'absolute', top: 20, left: 125}}>X</button></div> : null}
         </div>);
         return currentContent;
     }
