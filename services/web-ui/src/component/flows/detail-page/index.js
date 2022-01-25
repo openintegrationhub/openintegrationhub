@@ -64,6 +64,8 @@ class FlowDetails extends React.PureComponent {
         this.state = {
             position: '',
             loading: true,
+            selectedNode: '',
+            addNodeTriggered: false,
             flow: {
                 graph: {
                     nodes: [],
@@ -82,10 +84,12 @@ class FlowDetails extends React.PureComponent {
     onElementClick = (element) => {
         console.log('onElementClick', element);
         this.props.onEditNode && this.props.onEditNode(element.id);
+        this.setState({selectedNode: element})
     }
 
     addAfterNode = (parent) => {
         console.log('clicked')
+        this.setState({addNodeTriggered: true})
         const graphCopy = this.props.flows.all[0].graph
         console.log('test', graphCopy)
         graphCopy.nodes.push({
@@ -190,15 +194,14 @@ class FlowDetails extends React.PureComponent {
             </div>
             
             {parent.children.length ? <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} <button style={{position: 'absolute', top: 20, left: 125}}>X</button></div> : null}
-            {parent.children.length ? <div className={styles.childrenWrapper}><button onClick={this.addAfterNode.bind(this, parent)}>Branch</button>
+            {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={this.addAfterNode.bind(this, parent)}>Branch</button>
             <button onClick={this.addAfterNode.bind(this, parent)}>Node</button></div> : null}
         </div>);
-
         return currentContent;
     }
 
       generateSubGraph = (parent) => {
-          const children = this.props.flows.all[0].graph.nodes.filter((node) => this.props.flows.all[0].graph.edges.find((edge) => edge.source === parent.id && edge.target === node.id));
+          const children = this.state.flow.graph.nodes.filter((node) => this.state.flow.graph.edges.find((edge) => edge.source === parent.id && edge.target === node.id));
           parent.children = children || [];
           for (const childNode of parent.children) {
               this.generateSubGraph(childNode);
@@ -256,6 +259,8 @@ class FlowDetails extends React.PureComponent {
                             {content}
                       </div>
                   </div>
+                  {this.state.selectedNode && <div>Selected Node is: {this.state.selectedNode.id}</div>}
+                  {this.state.addNodeTriggered && <div>Test</div>}
               </div>
 
           );
