@@ -88,26 +88,9 @@ class FlowDetails extends React.PureComponent {
     }
 
     addAfterNode = (parent) => {
-        // console.log('clicked')
-        // this.setState({addNodeTriggered: true})
-        // const graphCopy = this.props.flows.all[0].graph
-        // console.log('test', graphCopy)
-        // const newNodeId = `step_${Math.round(Math.random() * 100)}`;
-        // graphCopy.nodes.push({
-        //     "id": newNodeId,
-        //     "componentId": "612e99ac5ef8bac00272ddf93",
-        //     "function": "testAction",
-        //     "nodeSettings": {
-        //         "storeRawRecord": true
-        //     },
-        //     "children": []
-        // })
-        // graphCopy.edges.push({ source: 'step_2', target: newNodeId})
-        // console.log('test', graphCopy)
-
-
-
-      const graph = { ...this.props.flows.all[0].graph };
+        const { id } = this.props.match.params
+        const graph = this.props.flows.all.filter(item => item.id === id)[0].graph;
+    //   const graph = { ...this.props.flows.all[0].graph };
       console.log('Graph before', graph)
       const newNodeId = `step_${Math.round(Math.random() * 987654)}`;
       graph.nodes.push({
@@ -135,11 +118,37 @@ class FlowDetails extends React.PureComponent {
 
       console.log('Graph after', graph)
       this.setState({
-          flow: {
-              ...this.props.flows.all[0],
-              graph,
-          },
+        //   flow: {
+        //       ...this.props.flows.all[0],
+        //       graph,
+        //   },
+        flow: {graph}
       });
+    
+  }
+
+  deleteNode = (node) => {
+    console.log('delete', node)
+    console.log('stater', this.state.flow)
+    const { id } = this.props.match.params
+    const flow = this.props.flows.all.filter(item => item.id === id)[0];
+    console.log('flow 131', flow)
+    const edgeToAlter = flow.graph.edges.filter(item => item.target === node.id)
+    console.log('edgeToAlter', edgeToAlter)
+    // const edgeToDelete = flow.graph.edges.filter(item => item.source === node.id)
+    const nodeToDelete = flow.graph.nodes.filter(item => item.id === node.id)
+    console.log('nodeToDelete', nodeToDelete)
+
+const indexNode = flow.graph.nodes.indexOf(nodeToDelete[0]);
+const indexEdge = flow.graph.edges.indexOf(edgeToAlter[0])
+if (indexNode > -1 && indexEdge > -1) {
+    flow.graph.nodes.splice(indexNode, 1); // 2nd parameter means remove one item only
+    flow.graph.edges.splice(indexEdge, 1);
+    this.setState({flow: flow})
+}
+
+console.log('Check this out', flow.graph); 
+
     
   }
 
@@ -188,7 +197,7 @@ class FlowDetails extends React.PureComponent {
             
             {parent.children.length ? <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} </div> : null}
             {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={this.addAfterNode.bind(this, parent)}>Branch</button>
-            <button onClick={this.addAfterNode.bind(this, parent)}>Node</button><button style={{position: 'absolute', top: 20, left: 125}}>X</button>
+            <button onClick={this.addAfterNode.bind(this, parent)}>Node</button><button onClick={this.deleteNode.bind(this, parent)} style={{position: 'absolute', top: 20, left: 125}}>X</button>
             
             </div> : null}
             
