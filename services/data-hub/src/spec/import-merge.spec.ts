@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { agent } from 'supertest';
 import { expect } from 'chai';
 import nock from 'nock';
-
+import mergeContacts from "../util/merge-contacts"
 import Server from '../server';
 import DataObject from '../models/data-object';
 import getDummyOihPersons from '../util/getDummyOihPersons';
@@ -17,7 +17,7 @@ function nockIamIntrospection(user = {}) {
   return;
 }
 
-const PERSONS_SET_LENGTH = 1000
+const PERSONS_SET_LENGTH = 100
 
 const user1 = { sub: 'user1', role: 'USER', permissions: [], tenant: "tenant1" }
 
@@ -286,5 +286,44 @@ describe('Import & Merge', () => {
       expect(true).to.equal(true);
       
     });
+    it("should merge objects", async () => {
+
+      const recordA  = {
+        content: {
+            firstName: "Bert1",
+            lastName: "Meier Foo1",
+            jobTitle: "blub",
+            photo: "url",
+            contactData: [{ type: "email", value: "bertmeierfoo@gmail.com" }],
+            addresses: [{
+              street: "foostreet", streetNumber: "3"
+            }]
+        }, 
+      }
+
+      const recordB  = {
+        content: {
+            firstName: "Bert",
+            lastName: "Meier Foo",
+            middleName: "foo",
+            jobTitle: "bla",
+            test: "test",
+            contactData: [{ type: "email", value: "bertmeierfoo@gmx.com" }],
+            addresses: [{
+              street: "barstreet", streetNumber: "123"
+            }, {
+              street: "foostreet", streetNumber: "2"
+            }]
+        }, 
+      }
+
+      const newContent = mergeContacts(recordB.content, recordA.content)
+
+      // @ts-ignore
+      expect(newContent.contactData.length).to.equal(2)
+      // @ts-ignore
+      expect(newContent.addresses.length).to.equal(2)
+
+    })
   });
 });

@@ -11,6 +11,8 @@ import BadRequest from '../../errors/api/BadRequest';
 import handlers from '../../handlers/'
 import Minhash from "../../minhash/lib/Minhash"
 import getShingles from "../../minhash/lib/get-shingles"
+import mergeContacts, { mergeArray } from "../../util/merge-contacts"
+
 
 const PERMS = 256 // number of permutations for minhash
 const SEED = 1 // minhash random seed
@@ -391,20 +393,6 @@ export default class DataController {
                 const jaccard = newHashed.jaccard(bestHitHashed)
 
                 if (jaccard > MIN_HIT_JACCARD) {
-                    // console.log("Hit")
-                    // console.log({
-                    //     new: {
-                    //         firstName,
-                    //         lastName,
-                    //         email
-                    //     },
-                    //     bestHit: {
-                    //         firstName: bestHit._source.firstName,
-                    //         lastName: bestHit._source.lastName,
-                    //         email: bestHit._source.email
-                    //     }
-                    // })
-                    // console.log("jaccard ", jaccard)
                     duplicateHits.push({
                         new: {
                             firstName,
@@ -424,13 +412,19 @@ export default class DataController {
 
             if (shouldMergeRecord) {
                 const hitDataHubId = hits.hits[0]._source.dataHubId
-                console.log('Merge')
-                console.log(record)
-                console.log('with')
+
                 const dataObject = await DataObject.findOne({
                     _id: hitDataHubId
                 });
-                console.log(dataObject)
+
+                // @ts-ignore
+                dataObject.content = mergeContacts(record.content, dataObject.content)
+                // @ts-ignore
+                dataObject.refs = mergeArray(record.refs, dataObject.refs)
+
+                // @ts-ignore
+                await dataObject.save();
+
             } else {
                 const owners = record.owners || []
 
@@ -461,87 +455,8 @@ export default class DataController {
                 }
             }
 
-            // if (hits.max_score < 2) {
-            //     const owners = record.owners || []
-
-            //     if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-            //         owners.push({
-            //             id: user.sub,
-            //             type: 'user'
-            //         });
-            //     }
-
-            //     // // @ts-ignore: TS2345
-            //     // const dataHubRecord = await DataObject.create({
-            //     //     ...record,
-            //     //     tenant: user.tenant,
-            //     //     owners,
-            //     // });
-
-            //     // create elasticsearch entry
-            //     await createContact({
-            //         dataHubId: "asd",
-            //         tenant: user.tenant,
-            //         firstName,
-            //         lastName,
-            //         email
-            //     })
-
-            //     // if (counter % 50 === 0) {
-            //         // refresh index
-            //         await refreshIndex()
-            //     // }
-
-            // } else {
-            //     if (hits.hits[0]._score > maxScore) {
-            //         bestHit =  {
-            //             firstName, 
-            //             lastName, 
-            //             email,
-            //             hit: hits.hits[0]
-            //         }
-            //         maxScore = hits.hits[0]._score
-            //     }
-
-            //     duplicateHits.push({
-            //         firstName, 
-            //         lastName, 
-            //         email,
-            //         hit: hits.hits[0]
-            //     })
-            // }
-
-            // console.log(counter++)
-
         }
 
-
-        // console.log(util.inspect(duplicateHits, false, null, true))
-        // console.log("Total ", counter)
-        // console.log("Hits length", duplicateHits.length)
-        // // console.log(util.inspect(bestHit, false, null, true))
-
-        // console.log(await searchContact(user.tenant, "Bert", "Meier Foo", "blub@asdasdasd.com"))
-        // body.forEach(record => {
-        //     const owners = record.owners || []
-
-        //     if (!owners.find((o: IOwnerDocument) => o.id === user.sub)) {
-        //         owners.push({
-        //             id: user.sub,
-        //             type: 'user'
-        //         });
-        //     }
-
-        //     // @ts-ignore: TS2345
-        //     createPromises.push(DataObject.create({
-        //         ...record,
-        //         tenant: user.tenant,
-        //         owners,
-        //     }))
-
-        // })
-
-        // await Promise.all(createPromises)
         console.log(util.inspect(duplicateHits, false, null, true))
         console.log("Hits length", duplicateHits.length)
         ctx.status = 201;
