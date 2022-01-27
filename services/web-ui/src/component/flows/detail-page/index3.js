@@ -65,13 +65,7 @@ class FlowDetails extends React.PureComponent {
             position: '',
             loading: true,
             selectedNode: '',
-            leftNodeName: '',
-            leftNodeAdded: false,
-            rightNodeName: '',
-            rightNodeAdded: false,
             addNodeTriggered: false,
-            addBranchEditor: false,
-            addBranchAtNode: '',
             flow: {
                 graph: {
                     nodes: [],
@@ -81,18 +75,13 @@ class FlowDetails extends React.PureComponent {
         };
     }
 
-    handleChange = (e) => {
-        const value = e.target.value;
-        this.setState({
-            ...this.state,
-            [e.target.name]: value
-        });
+    componentDidUpdate(){
+        
     }
 
     componentWillReceiveProps(props) {
         const { id } = props.match.params
         const flow = props.flows.all.filter(item => item.id === id);
-        console.log('FIRED')
         this.setState({flow: flow[0]})
       }
 
@@ -104,14 +93,10 @@ class FlowDetails extends React.PureComponent {
 
     addAfterNode = (parent) => {
         const { id } = this.props.match.params
-        // const graph = this.props.flows.all.filter(item => item.id === id)[0].graph;
-        const graph = this.state.flow.graph
-        // console.log('thing', graph)
-        // console.log('qweri', this.state.flow.graph)
-        // const graph = this.state.flow.filter(item => item.id === id)[0].graph;
+        const graph = this.state.flow.graph;
     //   const graph = { ...this.props.flows.all[0].graph };
     //   console.log('Graph before', graph)
-      const newNodeId = `step_${Math.round(Math.random() * 100)}`;
+      const newNodeId = `step_${Math.round(Math.random() * 987654)}`;
       graph.nodes.push({
           id: newNodeId,
           componentId: null,
@@ -138,101 +123,37 @@ class FlowDetails extends React.PureComponent {
     //   console.log('Graph after', graph)
       this.setState({
           flow: {
-              ...this.props.flows.all[0],
+              ...this.state.flow,
               graph,
           },
         // flow: {graph}
       });
+      console.log('state', this.state)
     
   }
 
   deleteNode = (node) => {
-    
     const { id } = this.props.match.params
-    // const flow = this.props.flows.all.filter(item => item.id === id)[0];
     const flow = this.state.flow
-    console.log('piff', flow)
-    console.log('siff', this.state.flow)
+    console.log('flow', flow)
+
     const edgeToAlter = flow.graph.edges.filter(item => item.target === node.id)
     // const edgeToDelete = flow.graph.edges.filter(item => item.source === node.id)
     const nodeToDelete = flow.graph.nodes.filter(item => item.id === node.id)
 
-    console.log('Edge to alter', edgeToAlter)
+
     const indexNode = flow.graph.nodes.indexOf(nodeToDelete[0]);
     const indexEdge = flow.graph.edges.indexOf(edgeToAlter[0])
-    if (indexNode > -1 && indexEdge > -1) {
-        flow.graph.nodes.splice(indexNode, 1);
-        flow.graph.edges.splice(indexEdge, 1);
-        // this.setState({flow: {...this.state.flow,
-        //     flow}})
-        this.setState({
-            flow: {
-                ...this.props.flows.all[0],
-                flow,
-            },
-          // flow: {graph}
-        });
-    }
-    console.log('Check this out', flow.graph);
-    }
+if (indexNode > -1 && indexEdge > -1) {
+    flow.graph.nodes.splice(indexNode, 1); // 2nd parameter means remove one item only
+    // flow.graph.edges.splice(indexEdge, 1);
+    this.setState({flow: flow})
+}
 
-    addBranchAfterNode = () => {
-        this.setState({addBranchEditor: false})
-        const graph = this.state.flow.graph;
-        console.log('Whiche node?', this.state.addBranchAtNode)
-        
-        graph.nodes.push({
-            id: this.state.leftNodeName,
-            componentId: null,
-            function: null,
-            fields: {
-            }
-        });
-        graph.nodes.push({
-            id: this.state.rightNodeName,
-            componentId: null,
-            function: null,
-            fields: {
-            }
-        });
-        const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === this.state.addBranchAtNode.id).length === 1;
-  
-        if (parentHasOnlyOneChild) {
-            graph.edges = graph.edges.map((edge) => {
-                if (edge.source === this.state.addBranchAtNode.id) {
-                    edge.source = this.state.leftNodeName
-                    ;
-                }
-                return edge;
-            });
-        }
-  
-        graph.edges.push({
-            source: this.state.addBranchAtNode.id,
-            target: this.state.leftNodeName,
-        });
-        this.setState({leftNodeAdded: true})
-        graph.edges.push({
-            source: this.state.addBranchAtNode.id,
-            target: this.state.rightNodeName,
-        });
-        this.setState({rightNodeAdded: true})
-  
-      //   console.log('Graph after', graph)
-        this.setState({
-          //   flow: {
-          //       ...this.props.flows.all[0],
-          //       graph,
-          //   },
-          flow: {graph}
-        });
-        this.setState({leftNodeAdded: false, rightNodeAdded: false})
-    }
+console.log('Check this out', flow.graph); 
 
-    openBranchEditor = (node) => {
-        
-        this.setState({addBranchEditor: true, addBranchAtNode: node})
-    }
+    
+  }
 
   generateSubGraphLeveled = (arr, level) => {
       // console.log('generateSubGraph', arr, level);
@@ -254,7 +175,6 @@ class FlowDetails extends React.PureComponent {
             classes,
         } = this.props;
 
-        console.log('Parent length', parent.children.length)
         const childrenContent = [];
         for (let i = 0; i < parent.children.length; i++) {
             const node = parent.children[i];
@@ -279,9 +199,7 @@ class FlowDetails extends React.PureComponent {
             </div>
             
             {parent.children.length ? <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} </div> : null}
-            {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={()=>this.openBranchEditor(parent)}>Branch</button>
-            {/* {this.state.leftNodeAdded ? <div>Testing</div>} */}
-            
+            {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={this.addAfterNode.bind(this, parent)}>Branch</button>
             <button onClick={this.addAfterNode.bind(this, parent)}>Node</button><button onClick={this.deleteNode.bind(this, parent)} style={{position: 'absolute', top: 20, left: 125}}>X</button>
             
             </div> : null}
@@ -303,7 +221,6 @@ class FlowDetails extends React.PureComponent {
       generateGraph = () => {
           if(this.state.flow.graph.nodes.length > 0){
             const flowCopy = this.state.flow
-            console.log('flowCopy', flowCopy)
             // const root = this.props.flows.all[0].graph.nodes.find((node) => !this.props.flows.all[0].graph.edges.find((edge) => edge.target === node.id));
             const root = flowCopy.graph.nodes.find((node) => !flowCopy.graph.edges.find((edge) => edge.target === node.id));
            
@@ -326,12 +243,10 @@ class FlowDetails extends React.PureComponent {
               classes,
           } = this.props;
 
-          console.log('Render flow', this.state.flow)
+          console.log('Render flow', this.state)
           if (!this.props.flows.all[0]) {
               return <Loader />;
           }
-
-          console.log('state is', this.state)
 
           const graph = this.generateGraph();
 
@@ -352,18 +267,7 @@ class FlowDetails extends React.PureComponent {
                       </div>
                   </div>
                   {this.state.selectedNode && <div>Selected Node is: {this.state.selectedNode.id}</div>}
-                  {this.state.addBranchEditor && 
-                    <div>Create Branch:
-                        <h3>Left node</h3>
-                        <p>Node name:</p>
-                        <input type="text" id="leftNodeName" name="leftNodeName" onChange={e=>this.handleChange(e)}/>
-
-                        <h3>Right node</h3>
-                        <p>Node name:</p>
-                        <input type="text" id="rightNodeName" name="rightNodeName" onChange={this.handleChange}/>
-                        <br/>
-                        <button style={{marginTop: 20}} onClick={()=>this.addBranchAfterNode()}>CREATE</button>
-                    </div>}
+                  
               </div>
 
           );
