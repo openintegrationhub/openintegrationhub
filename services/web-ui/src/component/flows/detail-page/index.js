@@ -270,6 +270,7 @@ class FlowDetails extends React.PureComponent {
             }
             childrenContent.push(this.generateGraphVisualization([], node, false, nodeAlignment));
         }
+        console.log('childContent', childrenContent)
 
         currentContent.push(<div key={parent.id} className={`${styles.nodeWrapper} ${nodeAlignment}`}>
             
@@ -277,8 +278,9 @@ class FlowDetails extends React.PureComponent {
             <div className={classes.flowElement}>
                 <p onClick={this.onElementClick.bind(this, parent)}>{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
             </div>
-            
-            {parent.children.length ? <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} </div> : null}
+
+            {(parent.children.length && childrenContent.length === 1) ?  <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} </div> : 
+            (parent.children.length && childrenContent.length > 1) ?  <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/><div style={{position: 'absolute', right: 300, top: -30, width: 120}}>{childrenContent[0]}<hr style={{position: 'absolute', left: '120px', top: 30, width: '240px', zIndex: -1}}/></div><div style={{position: 'absolute', left: 300, top: -30}}><hr style={{position: 'absolute', right: '120px', top: 30, width: '240px', zIndex: -1}}/>{childrenContent[1]}</div> </div> : null}
             {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={()=>this.openBranchEditor(parent)}>Branch</button>
             {/* {this.state.leftNodeAdded ? <div>Testing</div>} */}
             
