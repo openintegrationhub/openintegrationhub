@@ -2,40 +2,31 @@ import React from 'react';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-// import moment from 'moment';
 // Ui
 import { withStyles } from '@material-ui/styles';
-import Grid from '@material-ui/core/Grid';
-// import Accordion from '@material-ui/core/Accordion';
-// import AccordionSummary from '@material-ui/core/AccordionSummary';
-// import Button from '@material-ui/core/Button';
-// import InputLabel from '@material-ui/core/InputLabel';
-// import Typography from '@material-ui/core/Typography';
-// import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-// import Modal from '@material-ui/core/Modal';
-// import {
-//     Delete, Edit, PlayArrow, Stop, Send,
-// } from '@material-ui/icons';
-
-// // Componente
-// import JSONInput from 'react-json-editor-ajrm';
-// import locale from 'react-json-editor-ajrm/locale/en';
-// // Diagram
-// import FlowGraph from '../flow-graph';
-
 // Actions
+import Modal from '@material-ui/core/Modal';
+import Button from '@material-ui/core/Button';
+import locale from 'react-json-editor-ajrm/locale/en';
+import JSONInput from 'react-json-editor-ajrm';
 import { withRouter } from 'react-router';
 import {
     getFlows, deleteFlow, updateFlow, startFlow, stopFlow, executeFlow,
 } from '../../../action/flows';
-import OIHFlow from './oihFlowStructure.json';
+import { getComponents } from '../../../action/components';
+// import OIHFlow from './oihFlowStructure.json';
 import styles from './styles.css';
 import Loader from '../../loader';
+
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const useStyles = {
     flowContainer: {
         width: '98%',
-        height: '40vh',
+        height: 'auto',
         margin: '0 auto',
         border: '1px solid black',
         fontSize: 20,
@@ -54,6 +45,17 @@ const useStyles = {
         width: '120px',
         borderRadius: '10px'
     },
+    modal: {
+        background: 'white',
+        position: 'relative',
+        padding: 50,
+        height: '100%',
+        width: '100%'
+    },
+    formControl: {
+        marginTop: 10,
+        minWidth: 120,
+    },
 
 };
 
@@ -61,10 +63,15 @@ class FlowDetails extends React.PureComponent {
     constructor(props) {
         super(props);
         props.getFlows();
+        props.getComponents();
         this.state = {
             position: '',
             loading: true,
             selectedNode: '',
+            component: '',
+            openModal: false,
+            parent: '',
+            createNodeName: '',
             leftNodeName: '',
             leftNodeAdded: false,
             rightNodeName: '',
@@ -92,7 +99,6 @@ class FlowDetails extends React.PureComponent {
     componentWillReceiveProps(props) {
         const { id } = props.match.params
         const flow = props.flows.all.filter(item => item.id === id);
-        console.log('FIRED')
         this.setState({flow: flow[0]})
       }
 
@@ -102,62 +108,53 @@ class FlowDetails extends React.PureComponent {
         this.setState({selectedNode: element})
     }
 
+    displayModal = (parent) =>  {
+        this.setState({openModal: true, parent: parent})
+    }
+
     addAfterNode = (parent) => {
+        this.setState({openModal: true})
         const { id } = this.props.match.params
-        // const graph = this.props.flows.all.filter(item => item.id === id)[0].graph;
         const graph = this.state.flow.graph
-        // console.log('thing', graph)
-        // console.log('qweri', this.state.flow.graph)
-        // const graph = this.state.flow.filter(item => item.id === id)[0].graph;
-    //   const graph = { ...this.props.flows.all[0].graph };
-    //   console.log('Graph before', graph)
-      const newNodeId = `step_${Math.round(Math.random() * 100)}`;
-      graph.nodes.push({
-          id: newNodeId,
-          componentId: null,
-          function: null,
-          fields: {
-          }
-      });
-      const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === parent.id).length === 1;
+        const newNodeId = `step_${Math.round(Math.random() * 100)}`;
+        graph.nodes.push({
+            id: newNodeId,
+            componentId: null,
+            function: null,
+            fields: {
+            }
+        });
+        const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === parent.id).length === 1;
 
-      if (parentHasOnlyOneChild) {
-          graph.edges = graph.edges.map((edge) => {
-              if (edge.source === parent.id) {
-                  edge.source = newNodeId;
-              }
-              return edge;
-          });
-      }
+        if (parentHasOnlyOneChild) {
+            graph.edges = graph.edges.map((edge) => {
+                if (edge.source === parent.id) {
+                    edge.source = newNodeId;
+                }
+                return edge;
+            });
+        }
 
-      graph.edges.push({
-          source: parent.id,
-          target: newNodeId,
-      });
-
-    //   console.log('Graph after', graph)
-      this.setState({
-          flow: {
-              ...this.props.flows.all[0],
-              graph,
-          },
-        // flow: {graph}
-      });
-    
+        graph.edges.push({
+            source: parent.id,
+            target: newNodeId,
+        });
+        this.setState({
+            flow: {
+                ...this.props.flows.all[0],
+                graph,
+            },
+            // flow: {graph}
+        });
   }
 
   deleteNode = (node) => {
     
     const { id } = this.props.match.params
-    // const flow = this.props.flows.all.filter(item => item.id === id)[0];
     const flow = this.state.flow
-    console.log('piff', flow)
-    console.log('siff', this.state.flow)
     const edgeToAlter = flow.graph.edges.filter(item => item.target === node.id)
     // const edgeToDelete = flow.graph.edges.filter(item => item.source === node.id)
     const nodeToDelete = flow.graph.nodes.filter(item => item.id === node.id)
-
-    console.log('Edge to alter', edgeToAlter)
     const indexNode = flow.graph.nodes.indexOf(nodeToDelete[0]);
     const indexEdge = flow.graph.edges.indexOf(edgeToAlter[0])
     if (indexNode > -1 && indexEdge > -1) {
@@ -173,13 +170,11 @@ class FlowDetails extends React.PureComponent {
           // flow: {graph}
         });
     }
-    console.log('Check this out', flow.graph);
     }
 
     addBranchAfterNode = () => {
         this.setState({addBranchEditor: false})
         const graph = this.state.flow.graph;
-        console.log('Whiche node?', this.state.addBranchAtNode)
         
         graph.nodes.push({
             id: this.state.leftNodeName,
@@ -217,8 +212,6 @@ class FlowDetails extends React.PureComponent {
             target: this.state.rightNodeName,
         });
         this.setState({rightNodeAdded: true})
-  
-      //   console.log('Graph after', graph)
         this.setState({
           //   flow: {
           //       ...this.props.flows.all[0],
@@ -235,7 +228,6 @@ class FlowDetails extends React.PureComponent {
     }
 
   generateSubGraphLeveled = (arr, level) => {
-      // console.log('generateSubGraph', arr, level);
       for (const arrNode of arr[level]) {
           const children = this.props.flows.all[0].graph.nodes.filter((node) => this.props.flows.all[0].graph.edges.find((edge) => edge.source === arrNode.id && edge.target === node.id));
           if (children.length) {
@@ -254,7 +246,6 @@ class FlowDetails extends React.PureComponent {
             classes,
         } = this.props;
 
-        console.log('Parent length', parent.children.length)
         const childrenContent = [];
         for (let i = 0; i < parent.children.length; i++) {
             const node = parent.children[i];
@@ -270,7 +261,6 @@ class FlowDetails extends React.PureComponent {
             }
             childrenContent.push(this.generateGraphVisualization([], node, false, nodeAlignment));
         }
-        console.log('childContent', childrenContent)
 
         currentContent.push(<div key={parent.id} className={`${styles.nodeWrapper} ${nodeAlignment}`}>
             
@@ -278,12 +268,9 @@ class FlowDetails extends React.PureComponent {
             <div className={classes.flowElement}>
                 <p onClick={this.onElementClick.bind(this, parent)}>{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
             </div>
-
             {(parent.children.length && childrenContent.length === 1) ?  <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} </div> : 
             (parent.children.length && childrenContent.length > 1) ?  <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/><div style={{position: 'absolute', right: 300, top: -30, width: 120}}>{childrenContent[0]}<hr style={{position: 'absolute', left: '120px', top: 30, width: '240px', zIndex: -1}}/></div><div style={{position: 'absolute', left: 300, top: -30}}><hr style={{position: 'absolute', right: '120px', top: 30, width: '240px', zIndex: -1}}/>{childrenContent[1]}</div> </div> : null}
-            {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={()=>this.openBranchEditor(parent)}>Branch</button>
-            {/* {this.state.leftNodeAdded ? <div>Testing</div>} */}
-            
+            {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={()=>this.openBranchEditor(parent)}>Branch</button>   
             <button onClick={this.addAfterNode.bind(this, parent)}>Node</button><button onClick={this.deleteNode.bind(this, parent)} style={{position: 'absolute', top: 20, left: 125}}>X</button>
             
             </div> : null}
@@ -305,16 +292,11 @@ class FlowDetails extends React.PureComponent {
       generateGraph = () => {
           if(this.state.flow.graph.nodes.length > 0){
             const flowCopy = this.state.flow
-            console.log('flowCopy', flowCopy)
-            // const root = this.props.flows.all[0].graph.nodes.find((node) => !this.props.flows.all[0].graph.edges.find((edge) => edge.target === node.id));
             const root = flowCopy.graph.nodes.find((node) => !flowCopy.graph.edges.find((edge) => edge.target === node.id));
            
             if (root) {
-                // const arr = [[root]];
                 const arr = [root];
-                // console.log('I am groot', root);
                 this.generateSubGraph(root);
-                // console.log('firstlevel', root, arr);
                 return root;
             }
   
@@ -323,17 +305,18 @@ class FlowDetails extends React.PureComponent {
           
       }
 
+      handleComponentSelection = (event) => {
+        this.setState({component: event.target.value})
+      }
+
       render() {
           const {
               classes,
           } = this.props;
 
-          console.log('Render flow', this.state.flow)
           if (!this.props.flows.all[0]) {
               return <Loader />;
           }
-
-          console.log('state is', this.state)
 
           const graph = this.generateGraph();
 
@@ -342,6 +325,7 @@ class FlowDetails extends React.PureComponent {
           }
           const content = this.generateGraphVisualization([], graph, true);
 
+          console.log('components are', this.props.components)
           const { id } = this.props.match.params;
           return (
 
@@ -365,7 +349,59 @@ class FlowDetails extends React.PureComponent {
                         <input type="text" id="rightNodeName" name="rightNodeName" onChange={this.handleChange}/>
                         <br/>
                         <button style={{marginTop: 20}} onClick={()=>this.addBranchAfterNode()}>CREATE</button>
+                        <br/>
+                        <button style={{marginTop: 20}} onClick={()=>this.setState({addBranchEditor: false})}>Cancel</button>
                     </div>}
+
+                    <Modal
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                    open={this.state.openModal}
+                    onClose={()=> this.setState({openModal: false})}
+                    style={{ position: 'absolute', left: '25%', top: '10%', width: '50%', height: '50%' }}>
+                        <div className={classes.modal}>
+                        Node name: <input type="text" id="createNodeName" name="createNodeName" onChange={e=>this.handleChange(e)}/>
+                        <br/>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="demo-simple-select-label">Component</InputLabel>
+                            <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={this.state.component}
+                            onChange={this.handleComponentSelection}
+                            >
+                            <MenuItem value={'Component 1'}>Component 1</MenuItem>
+                            <MenuItem value={'Component 2'}>Component 2</MenuItem>
+                            <MenuItem value={'Component 3'}>Component 3</MenuItem>
+                            </Select>
+                        </FormControl>
+                        
+                        <p style={{marginTop: 30}}>Node Settings</p>
+                            <JSONInput
+                                id = 'jsonEdit'
+                                locale = {locale}
+                                theme = 'dark_vscode_tribute'
+                                height = '550px'
+                                width = '600px'
+                                placeholder = {this.dummyData}
+                                // onChange={this.editorChange.bind(this)}
+                            />
+                            <br/>
+                            <div style={{position: 'absolute', bottom: 0, right: 0}}>
+                                <Button variant="outlined" aria-label="Add" onClick={() => { this.props.switchAddState(); }}>
+                                    close
+                                </Button>
+                                <Button variant="outlined" aria-label="Add" onClick={() =>console.log('Create')}>
+                                    Create
+                                </Button>
+                                {/* <Button variant="outlined" aria-label="Add" onClick={this.saveFlow} disabled={!this.state.wasChanged}>
+                                    Save
+                                </Button> */}
+                            </div>
+                            
+                        </div>
+
+                </Modal>
               </div>
 
           );
@@ -374,6 +410,7 @@ class FlowDetails extends React.PureComponent {
 
 const mapStateToProps = (state) => ({
     flows: state.flows,
+    components: state.components
 });
 const mapDispatchToProps = (dispatch) => bindActionCreators({
     getFlows,
@@ -382,6 +419,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
     startFlow,
     stopFlow,
     executeFlow,
+    getComponents,
 }, dispatch);
 
 export default withRouter(flow(
