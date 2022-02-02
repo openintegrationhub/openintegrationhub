@@ -9,7 +9,8 @@
   "scripts": {
     "lint": "eslint  ./src/**/*.js",
     "pretest": "npm run lint",
-    "test": "mocha spec --recursive"  },
+    "test": "mocha spec --recursive"  
+  },
   "dependencies": {
     "@openintegrationhub/iam-utils": "*",
     "body-parser": "1.19.0",
