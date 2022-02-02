@@ -26,7 +26,7 @@ import Select from '@material-ui/core/Select';
 const useStyles = {
     flowContainer: {
         width: '98%',
-        height: 'auto',
+        height: '50vh',
         margin: '0 auto',
         border: '1px solid black',
         fontSize: 20,
@@ -69,9 +69,11 @@ class FlowDetails extends React.PureComponent {
             loading: true,
             selectedNode: '',
             component: '',
+            nodeSettings: '',
             openModal: false,
             parent: '',
             createNodeName: '',
+            editNodeName: '',
             leftNodeName: '',
             leftNodeAdded: false,
             rightNodeName: '',
@@ -112,11 +114,11 @@ class FlowDetails extends React.PureComponent {
         this.setState({openModal: true, parent: parent})
     }
 
-    addAfterNode = (parent) => {
-        this.setState({openModal: true})
+    addAfterNode = () => {
+        this.setState({openModal: false})
         const { id } = this.props.match.params
         const graph = this.state.flow.graph
-        const newNodeId = `step_${Math.round(Math.random() * 100)}`;
+        const newNodeId = this.state.createNodeName
         graph.nodes.push({
             id: newNodeId,
             componentId: null,
@@ -124,11 +126,11 @@ class FlowDetails extends React.PureComponent {
             fields: {
             }
         });
-        const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === parent.id).length === 1;
+        const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === this.state.parent.id).length === 1;
 
         if (parentHasOnlyOneChild) {
             graph.edges = graph.edges.map((edge) => {
-                if (edge.source === parent.id) {
+                if (edge.source === this.state.parent.id) {
                     edge.source = newNodeId;
                 }
                 return edge;
@@ -136,7 +138,7 @@ class FlowDetails extends React.PureComponent {
         }
 
         graph.edges.push({
-            source: parent.id,
+            source: this.state.parent.id,
             target: newNodeId,
         });
         this.setState({
@@ -144,6 +146,7 @@ class FlowDetails extends React.PureComponent {
                 ...this.props.flows.all[0],
                 graph,
             },
+            createNodeName: ''
             // flow: {graph}
         });
   }
@@ -271,7 +274,7 @@ class FlowDetails extends React.PureComponent {
             {(parent.children.length && childrenContent.length === 1) ?  <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/>{childrenContent} </div> : 
             (parent.children.length && childrenContent.length > 1) ?  <div className={styles.childrenWrapper} style={{position: 'relative'}}><hr style={{transform: 'rotate(90deg)', width: '20px'}}/><div style={{position: 'absolute', right: 300, top: -30, width: 120}}>{childrenContent[0]}<hr style={{position: 'absolute', left: '120px', top: 30, width: '240px', zIndex: -1}}/></div><div style={{position: 'absolute', left: 300, top: -30}}><hr style={{position: 'absolute', right: '120px', top: 30, width: '240px', zIndex: -1}}/>{childrenContent[1]}</div> </div> : null}
             {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={()=>this.openBranchEditor(parent)}>Branch</button>   
-            <button onClick={this.addAfterNode.bind(this, parent)}>Node</button><button onClick={this.deleteNode.bind(this, parent)} style={{position: 'absolute', top: 20, left: 125}}>X</button>
+            <button onClick={this.displayModal.bind(this, parent)}>Node</button><button onClick={this.deleteNode.bind(this, parent)} style={{position: 'absolute', top: 20, left: 125}}>X</button>
             
             </div> : null}
             
@@ -337,7 +340,7 @@ class FlowDetails extends React.PureComponent {
                             {content}
                       </div>
                   </div>
-                  {this.state.selectedNode && <div>Selected Node is: {this.state.selectedNode.id}</div>}
+                  
                   {this.state.addBranchEditor && 
                     <div>Create Branch:
                         <h3>Left node</h3>
@@ -360,6 +363,7 @@ class FlowDetails extends React.PureComponent {
                     onClose={()=> this.setState({openModal: false})}
                     style={{ position: 'absolute', left: '25%', top: '10%', width: '50%', height: '50%' }}>
                         <div className={classes.modal}>
+                            <h2 style={{textAlign: 'center', marginBottom: 50}}>CREATE NODE</h2>
                         Node name: <input type="text" id="createNodeName" name="createNodeName" onChange={e=>this.handleChange(e)}/>
                         <br/>
                         <FormControl className={classes.formControl}>
@@ -370,9 +374,7 @@ class FlowDetails extends React.PureComponent {
                             value={this.state.component}
                             onChange={this.handleComponentSelection}
                             >
-                            <MenuItem value={'Component 1'}>Component 1</MenuItem>
-                            <MenuItem value={'Component 2'}>Component 2</MenuItem>
-                            <MenuItem value={'Component 3'}>Component 3</MenuItem>
+                                {this.props.components.all.map(component=><div><MenuItem value={'Component 1'}>{component.name}</MenuItem></div>)}
                             </Select>
                         </FormControl>
                         
@@ -388,10 +390,10 @@ class FlowDetails extends React.PureComponent {
                             />
                             <br/>
                             <div style={{position: 'absolute', bottom: 0, right: 0}}>
-                                <Button variant="outlined" aria-label="Add" onClick={() => { this.props.switchAddState(); }}>
+                                <Button variant="outlined" aria-label="Add" onClick={() => this.setState({openModal: false})}>
                                     close
                                 </Button>
-                                <Button variant="outlined" aria-label="Add" onClick={() =>console.log('Create')}>
+                                <Button variant="outlined" aria-label="Add" onClick={()=> this.addAfterNode()} disabled={this.state.createNodeName === ''}>
                                     Create
                                 </Button>
                                 {/* <Button variant="outlined" aria-label="Add" onClick={this.saveFlow} disabled={!this.state.wasChanged}>
@@ -401,7 +403,35 @@ class FlowDetails extends React.PureComponent {
                             
                         </div>
 
-                </Modal>
+                    </Modal>
+                    {this.state.selectedNode && 
+                    <div style={{background: ''}}>
+                        <h3>EDITOR</h3>
+                        <p>Selected Node is: {this.state.selectedNode.id}</p>
+                        Node name: <input type="text" id="editNodeName" name="editNodeName" onChange={e=>this.handleChange(e)}/><br/>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="demo-simple-select-label">Component</InputLabel>
+                            <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={this.state.component}
+                            onChange={this.handleComponentSelection}
+                            >
+                                {this.props.components.all.map(component=><div><MenuItem value={'Component 1'}>{component.name}</MenuItem></div>)}
+                            </Select>
+                        </FormControl>
+                        <div style={{background: '', display: 'flex', justifyContent: 'center'}}>
+                         <JSONInput
+                                id = 'jsonEdit'
+                                locale = {locale}
+                                theme = 'dark_vscode_tribute'
+                                height = '550px'
+                                width = '600px'
+                                placeholder = {this.dummyData}
+                                // onChange={this.editorChange.bind(this)}
+                            />
+                        </div>
+                    </div>}
               </div>
 
           );
