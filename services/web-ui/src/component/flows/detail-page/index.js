@@ -99,15 +99,45 @@ class FlowDetails extends React.PureComponent {
 
     handleChange = (e) => {
         const { value } = e.target;
-        this.setState({
-            ...this.state,
-            [e.target.name]: value,
-        });
+        switch (e.target.name) {
+        case 'flowName':
+            this.setState((prevState) => ({
+                flow: {
+                    ...prevState.flow,
+                    name: value,
+                },
+            }));
+            break;
+        case 'flowDescription':
+            this.setState((prevState) => ({
+                flow: {
+                    ...prevState.flow,
+                    description: value,
+                },
+            }));
+            break;
+        case 'flowCron':
+            this.setState((prevState) => ({
+                flow: {
+                    ...prevState.flow,
+                    cron: value,
+                },
+            }));
+            break;
+        default:
+
+            this.setState({
+                ...this.state,
+                [e.target.name]: value,
+            });
+            break;
+        }
     }
 
     componentWillReceiveProps(props) {
         const { id } = props.match.params;
         const flow = props.flows.all.filter((item) => item.id === id);
+        console.log('flow is', props.flows.all);
         this.setState({ flow: flow[0] });
     }
 
@@ -131,6 +161,7 @@ class FlowDetails extends React.PureComponent {
             componentId: null,
             function: null,
             fields: this.state.fields,
+            privileged: this.state.component.hasOwnProperty('specialFlags') ? this.state.component.specialFlags.privilegedComponent : '',
         });
         const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === this.state.parent.id).length === 1;
 
@@ -271,7 +302,7 @@ class FlowDetails extends React.PureComponent {
         currentContent.push(<div key={parent.id} className={`${styles.nodeWrapper} ${nodeAlignment}`}>
 
             {/* {!isRoot ? <button>+</button> : null} */}
-            <div className={classes.flowElement}>
+            <div className={classes.flowElement} style={{ border: parent.privileged ? '1px solid green' : '1px solid red' }}>
                 <p onClick={this.onElementClick.bind(this, parent)}>{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
             </div>
             {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/>{childrenContent} </div>
@@ -288,6 +319,7 @@ class FlowDetails extends React.PureComponent {
             </div> : null}
 
         </div>);
+        console.log('parent', parent);
         return currentContent;
     }
 
@@ -331,6 +363,10 @@ class FlowDetails extends React.PureComponent {
           this.setState({ fields: event.jsObject });
       }
 
+      saveFlow = () => {
+          console.log('Saved', this.state);
+      }
+
       render() {
           const {
               classes,
@@ -354,12 +390,18 @@ class FlowDetails extends React.PureComponent {
           return (
 
               <div style={{ textAlign: 'center' }}>
-                  <h2>Flow Name: {this.props.flows.all[0].name}</h2>
+                  <p style={{ fontSize: 24 }}>Flow name: <input type="text" value={this.state.flow.name} name="flowName" onChange={this.handleChange}/></p>
+                  <p style={{ fontSize: 24 }}>Flow description: <input type="text" value={this.state.flow.description} name="flowDescription" onChange={this.handleChange}/></p>
+                  <p style={{ fontSize: 24 }}>Flow cron: <input type="text" value={this.state.flow.cron} name="flowCron" onChange={this.handleChange}/></p>
+                  <button style={{
+                      position: 'relative', right: 0, top: 0, width: '100px', height: '30px', background: 'green', color: 'white  ',
+                  }} onClick={() => this.saveFlow()}>Save</button>
                   <div className={classes.flowContainer}>
                       <p>Flow ID:{this.props.flows.all[0].id}</p>
                       <div className={classes.flowNode}>
                           {content}
                       </div>
+
                   </div>
 
                   {this.state.addBranchEditor
@@ -381,7 +423,7 @@ class FlowDetails extends React.PureComponent {
                       aria-labelledby="simple-modal-title"
                       aria-describedby="simple-modal-description"
                       open={this.state.openModal}
-                      onClose={() => this.setState({ openModal: false })}
+                      onClose={() => this.setState({ openModal: false, component: { name: '' } })}
                       style={{
                           position: 'absolute', left: '25%', top: '10%', width: '50%', height: '60%',
                       }}>
@@ -435,8 +477,8 @@ class FlowDetails extends React.PureComponent {
                           />
                           <br/>
                           <div style={{ position: 'absolute', bottom: 0, right: 0 }}>
-                              <Button variant="outlined" aria-label="Add" onClick={() => this.setState({ openModal: false })}>
-                                    close
+                              <Button variant="outlined" aria-label="Add" onClick={() => this.setState({ openModal: false, component: { name: '' } })}>
+                                    Close
                               </Button>
                               <Button variant="outlined" aria-label="Add" onClick={() => this.addAfterNode()} disabled={!this.state.createNodeName || !this.state.component}>
                                     Create
@@ -476,6 +518,7 @@ class FlowDetails extends React.PureComponent {
                                 // onChange={this.editorChange.bind(this)}
                             />
                         </div>
+                        <button>Cancel edit</button>
                     </div>}
               </div>
 
