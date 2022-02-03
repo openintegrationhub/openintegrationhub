@@ -252,7 +252,7 @@ module.exports = [
   {
     distribution: {
       type: 'docker',
-      image: 'oih/logic-gateway-component:latest',
+      image: 'openintegrationhub/logic-gateway-component',
     },
     isGlobal: true,
     specialFlags: {
@@ -263,7 +263,6 @@ module.exports = [
     description: 'This is an example logic gateway component',
     descriptor: {
       replicas: 1,
-      imagePullPolicy: 'Never',
     },
     resources: {
       requests: {
@@ -293,7 +292,7 @@ module.exports = [
     description:
       "This is a special component. It's source lives in dev-tools/test-component. In comparison to a regular component you can NOT use the docker image without mounting in this repository.",
     descriptor: {
-      replicas: 3,
+      replicas: 1,
       imagePullPolicy: 'Never',
     },
     resources: {
