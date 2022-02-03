@@ -9,7 +9,7 @@ const {
   getUserInfo,
 } = require('../helper')
 const components = require('../data/components')
-const flows = require('../data/flows/raw-data-test')
+const flows = require('../data/flows/logic-gateway-flows')
 const tenants = require('../data/tenants')
 
 const componentRepositoryBase = `http://localhost:${services.componentRepository.externalPort}`
