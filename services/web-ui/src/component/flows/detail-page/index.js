@@ -75,6 +75,7 @@ class FlowDetails extends React.PureComponent {
             loading: true,
             selectedNode: '',
             component: { name: '' },
+            function: '',
             nodeSettings: {},
             fields: {},
             openModal: false,
@@ -302,8 +303,8 @@ class FlowDetails extends React.PureComponent {
         currentContent.push(<div key={parent.id} className={`${styles.nodeWrapper} ${nodeAlignment}`}>
 
             {/* {!isRoot ? <button>+</button> : null} */}
-            <div className={classes.flowElement} style={{ border: parent.privileged ? '1px solid green' : '1px solid red' }}>
-                <p onClick={this.onElementClick.bind(this, parent)}>{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
+            <div className={classes.flowElement} style={{ border: parent.privileged ? '1px solid green' : '1px solid red' }} onClick={this.onElementClick.bind(this, parent)}>
+                <p >{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
             </div>
             {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/>{childrenContent} </div>
                 : (parent.children.length && childrenContent.length > 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/><div style={{
@@ -443,6 +444,9 @@ class FlowDetails extends React.PureComponent {
                               </Select>
                           </FormControl>
                           <br/>
+                          <br/>
+                          Function: <input type="text" id="function" name="function" onChange={(e) => this.handleChange(e)}/>
+                          <br/>
                           <FormControl className={classes.formControl}>
                               <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
                               <Select
@@ -492,7 +496,7 @@ class FlowDetails extends React.PureComponent {
 
                   </Modal>
                   {this.state.selectedNode
-                    && <div style={{ background: '' }}>
+                    && <div style={{ background: '', paddingBottom: 100, marginTop: 50 }}>
                         <h3>EDITOR</h3>
                         <p>Selected Node is: {this.state.selectedNode.id}</p>
                         Node name: <input type="text" id="editNodeName" name="editNodeName" onChange={(e) => this.handleChange(e)}/><br/>
@@ -507,18 +511,54 @@ class FlowDetails extends React.PureComponent {
                                 {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}>{component.name}</MenuItem>)}
                             </Select>
                         </FormControl>
-                        <div style={{ background: '', display: 'flex', justifyContent: 'center' }}>
+                        <br/>
+                        <br/>
+                        Function: <input type="text" id="function" name="function" onChange={(e) => this.handleChange(e)}/>
+                        <br/>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={this.state.component.name}
+                                onChange={(e) => this.handleSecretSelection(e)}
+                            >
+                                {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name} key={secret.name}>{secret.name}</MenuItem>)}
+                            </Select>
+                        </FormControl>
+
+                        <div style={{
+                            background: '   ', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'left',
+                        }}>
+                            <p style={{
+                                marginTop:
+                                10,
+                            }}>Node Settings (optional)</p>
+                            <br/>
                             <JSONInput
                                 id = 'jsonEdit'
                                 locale = {locale}
                                 theme = 'dark_vscode_tribute'
-                                height = '550px'
-                                width = '600px'
+                                height = '350px'
+                                width = '100%'
                                 placeholder = {this.dummyData}
                                 // onChange={this.editorChange.bind(this)}
                             />
+                            <p>Fields (optional)</p>
+                            <br/>
+                            <JSONInput
+                                id = 'jsonEdit'
+                                locale = {locale}
+                                theme = 'dark_vscode_tribute'
+                                height = '350px'
+                                width = '100%'
+                                placeholder = {this.dummyData}
+                                onChange={(e) => this.handleJSONInput(e)}
+                            />
                         </div>
-                        <button>Cancel edit</button>
+                        <div style={{ marginTop: 10 }}> <button onClick={() => this.setState({ selectedNode: '' })}>Cancel</button>
+                            <button>Save</button></div>
+
                     </div>}
               </div>
 
