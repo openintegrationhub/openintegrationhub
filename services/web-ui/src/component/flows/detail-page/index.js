@@ -4,6 +4,7 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-nested-ternary */
 import React from 'react';
+import axios from 'axios';
 import flow from 'lodash/flow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -27,6 +28,9 @@ import { getSecrets } from '../../../action/secrets';
 // import OIHFlow from './oihFlowStructure.json';
 import styles from './styles.css';
 import Loader from '../../loader';
+import { getConfig } from '../../../conf';
+
+const conf = getConfig();
 
 const useStyles = {
     flowContainer: {
@@ -75,13 +79,13 @@ class FlowDetails extends React.PureComponent {
             loading: true,
             selectedNode: '',
             component: { name: '' },
+            components: '',
             function: '',
             nodeSettings: {},
             fields: {},
             openModal: false,
             parent: '',
             createNodeName: '',
-            editNodeName: '',
             leftNodeName: '',
             leftNodeAdded: false,
             rightNodeName: '',
@@ -138,8 +142,7 @@ class FlowDetails extends React.PureComponent {
     componentWillReceiveProps(props) {
         const { id } = props.match.params;
         const flow = props.flows.all.filter((item) => item.id === id);
-        console.log('flow is', props.flows.all);
-        this.setState({ flow: flow[0] });
+        this.setState({ flow: flow[0], components: props.components });
     }
 
     onElementClick = (element) => {
@@ -159,8 +162,8 @@ class FlowDetails extends React.PureComponent {
         const newNodeId = this.state.createNodeName;
         graph.nodes.push({
             id: newNodeId,
-            componentId: null,
-            function: null,
+            componentId: this.state.component.id,
+            function: this.state.function,
             fields: this.state.fields,
             privileged: this.state.component.hasOwnProperty('specialFlags') ? this.state.component.specialFlags.privilegedComponent : '',
         });
@@ -364,8 +367,12 @@ class FlowDetails extends React.PureComponent {
           this.setState({ fields: event.jsObject });
       }
 
-      saveFlow = () => {
+      saveFlow = async () => {
           console.log('Saved', this.state);
+          for (let i = 0; this.state.flow.nodes.length; i++) {
+              delete this.state.flow.nodes[i].children;
+          }
+          this.props.updateFlow(this.state.flow);
       }
 
       render() {
@@ -383,10 +390,17 @@ class FlowDetails extends React.PureComponent {
               return <Loader />;
           }
           const content = this.generateGraphVisualization([], graph, true);
+          const selNode = this.state.selectedNode;
+          const compId = selNode.componentId;
+          const comp = this.state.components.all.filter((cp) => cp.id === compId)[0];
+          console.log('comp', comp);
+          //   const compName = this.state.flow.graph.nodes.componentId === compId;
+          //   console.log('compName', compName);
 
-          console.log('components are', this.props.components);
-          console.log('secrets are', this.props.secrets);
+          console.log('components are', this.state.components);
+          //   console.log('secrets are', this.props.secrets);
           console.log('state is', this.state);
+          console.log('selNode is', selNode);
           //   const { id } = this.props.match.params;
           return (
 
@@ -467,6 +481,7 @@ class FlowDetails extends React.PureComponent {
                               height = '350px'
                               width = '600px'
                               placeholder = {this.dummyData}
+                              onChange={(e) => this.handleNodeSettings(e)}
                               // onChange={this.editorChange.bind(this)}
                           />
                           <p>Fields (optional)</p>
@@ -477,7 +492,7 @@ class FlowDetails extends React.PureComponent {
                               height = '350px'
                               width = '600px'
                               placeholder = {this.dummyData}
-                              onChange={(e) => this.handleJSONInput(e)}
+                              onChange={(e) => this.handleFieldsInput(e)}
                           />
                           <br/>
                           <div style={{ position: 'absolute', bottom: 0, right: 0 }}>
@@ -499,7 +514,7 @@ class FlowDetails extends React.PureComponent {
                     && <div style={{ background: '', paddingBottom: 100, marginTop: 50 }}>
                         <h3>EDITOR</h3>
                         <p>Selected Node is: {this.state.selectedNode.id}</p>
-                        Node name: <input type="text" id="editNodeName" name="editNodeName" onChange={(e) => this.handleChange(e)}/><br/>
+                        Node name: <input type="text" id="selectedNode" name="selectedNode" value={selNode.id} onChange={(e) => this.handleChange(e)}/><br/>
                         <FormControl className={classes.formControl}>
                             <InputLabel id="demo-simple-select-label">Component</InputLabel>
                             <Select
