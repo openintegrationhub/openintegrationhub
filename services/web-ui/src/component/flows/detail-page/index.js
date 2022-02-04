@@ -139,10 +139,19 @@ class FlowDetails extends React.PureComponent {
         }
     }
 
-    componentWillReceiveProps(props) {
-        const { id } = props.match.params;
-        const flow = props.flows.all.filter((item) => item.id === id);
-        this.setState({ flow: flow[0], components: props.components });
+    async componentDidMount() {
+        const { id } = this.props.match.params;
+
+        try {
+            const { data } = await axios({
+                method: 'get',
+                url: `${conf.endpoints.flow}/flows/${id}`,
+                withCredentials: true,
+            });
+            this.setState({ flow: data.data, loading: false, components: this.props.components });
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     onElementClick = (element) => {
@@ -323,7 +332,7 @@ class FlowDetails extends React.PureComponent {
             </div> : null}
 
         </div>);
-        console.log('parent', parent);
+        // console.log('parent', parent);
         return currentContent;
     }
 
@@ -380,7 +389,7 @@ class FlowDetails extends React.PureComponent {
               classes,
           } = this.props;
 
-          if (!this.props.flows.all[0]) {
+          if (this.state.loading) {
               return <Loader />;
           }
 
