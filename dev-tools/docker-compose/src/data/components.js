@@ -252,7 +252,7 @@ module.exports = [
   {
     distribution: {
       type: 'docker',
-      image: 'openintegrationhub/logic-gateway-component',
+      image: 'openintegrationhub/logic-gateway-component:latest',
     },
     isGlobal: true,
     specialFlags: {
@@ -263,6 +263,12 @@ module.exports = [
     description: 'This is an example logic gateway component',
     descriptor: {
       replicas: 1,
+      actions: {
+        exec: {
+          title: 'exec',
+          description: 'Execute a predefined logic for a step',
+        },
+      },
     },
     resources: {
       requests: {
@@ -274,6 +280,8 @@ module.exports = [
         cpu: '250m',
       },
     },
+    logo:
+      'https://game-icons.net/icons/ffffff/000000/1x1/delapouite/logic-gate-or.png',
     owners: [
       {
         id: 't1_admin@local.dev',
