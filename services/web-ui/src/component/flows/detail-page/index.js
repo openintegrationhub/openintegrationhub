@@ -99,6 +99,12 @@ class FlowDetails extends React.PureComponent {
                     edges: [],
                 },
             },
+            editNodeName: '',
+            editComponent: '',
+            editFunction: '',
+            editSecret: '',
+            editNodeSettings: '',
+            editFields: '',
         };
     }
 
@@ -217,7 +223,7 @@ class FlowDetails extends React.PureComponent {
           //     flow}})
           this.setState({
               flow: {
-                  ...this.props.flows.all[0],
+                  ...this.state.flow,
                   flow,
               },
           // flow: {graph}
@@ -378,10 +384,52 @@ class FlowDetails extends React.PureComponent {
 
       saveFlow = async () => {
           console.log('Saved', this.state);
-          for (let i = 0; this.state.flow.nodes.length; i++) {
-              delete this.state.flow.nodes[i].children;
+
+          for (let i = 0; i < this.state.flow.graph.nodes.length; i++) {
+              console.log(this.state.flow.graph.nodes[i].children);
+              delete this.state.flow.graph.nodes[i].children;
           }
           this.props.updateFlow(this.state.flow);
+      }
+
+      handleEdit = () => {
+          const selNode = this.state.selectedNode;
+
+          console.log('selNode id', selNode.id);
+          const node = this.state.flow.graph.nodes.filter((nod) => nod.id === selNode.id)[0];
+          const edge = this.state.flow.graph.edges.filter((edge) => edge.target === selNode.id)[0];
+
+          const newEdge = { ...edge, target: this.state.editNodeName };
+
+          const { nodes } = this.state.flow.graph;
+          const { edges } = this.state.flow.graph;
+
+          const newEdges = edges.filter((item) => item.target !== selNode.id);
+          console.log('new edges', newEdges);
+          newEdges.push(newEdge);
+          const newNodes = nodes.filter((item) => item.id !== selNode.id);
+          newNodes.push(node);
+          const graphCopy = this.state.flow.graph;
+          graphCopy.nodes = newNodes;
+          graphCopy.edges = newEdges;
+          node.id = this.state.editNodeName;
+          console.log('edges', edges);
+          console.log('newEdge', newEdge);
+          console.log('new graph', graphCopy);
+
+          const newFlow = this.state.flow;
+          newFlow.graph = graphCopy;
+          //   this.setState({ flow: newFlow });
+          //     this.setState({
+          //       flow: {
+          //           ...flow.graph.nodes,
+          //           cron: value,
+          //       },
+          //   });
+          console.log('correct newNodes?', newNodes);
+          const someProperty = { ...this.state.someProperty };
+          someProperty.flag = true;
+          this.setState({ someProperty });
       }
 
       render() {
@@ -402,12 +450,8 @@ class FlowDetails extends React.PureComponent {
           const selNode = this.state.selectedNode;
           const compId = selNode.componentId;
           const comp = this.state.components.all.filter((cp) => cp.id === compId)[0];
-          console.log('comp', comp);
-          //   const compName = this.state.flow.graph.nodes.componentId === compId;
-          //   console.log('compName', compName);
-
-          console.log('components are', this.state.components);
-          //   console.log('secrets are', this.props.secrets);
+          //   console.log('comp', comp);
+          //   console.log('components are', this.state.components);
           console.log('state is', this.state);
           console.log('selNode is', selNode);
           //   const { id } = this.props.match.params;
@@ -523,7 +567,7 @@ class FlowDetails extends React.PureComponent {
                     && <div style={{ background: '', paddingBottom: 100, marginTop: 50 }}>
                         <h3>EDITOR</h3>
                         <p>Selected Node is: {this.state.selectedNode.id}</p>
-                        Node name: <input type="text" id="selectedNode" name="selectedNode" value={selNode.id} onChange={(e) => this.handleChange(e)}/><br/>
+                        Node name: <input type="text" id="editNodeName" name="editNodeName" value={this.state.editNodeName} onChange={(e) => this.handleChange(e)}/><br/>
                         <FormControl className={classes.formControl}>
                             <InputLabel id="demo-simple-select-label">Component</InputLabel>
                             <Select
@@ -577,11 +621,11 @@ class FlowDetails extends React.PureComponent {
                                 height = '350px'
                                 width = '100%'
                                 placeholder = {this.dummyData}
-                                onChange={(e) => this.handleJSONInput(e)}
+                                // onChange={(e) => this.handleJSONInput(e)}
                             />
                         </div>
                         <div style={{ marginTop: 10 }}> <button onClick={() => this.setState({ selectedNode: '' })}>Cancel</button>
-                            <button>Save</button></div>
+                            <button onClick={() => this.handleEdit()}>Save</button></div>
 
                     </div>}
               </div>
