@@ -18,8 +18,15 @@ import JSONInput from 'react-json-editor-ajrm';
 import { withRouter } from 'react-router';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
+import CallSplitIcon from '@material-ui/icons/CallSplit';
 import {
     getFlows, deleteFlow, updateFlow, startFlow, stopFlow, executeFlow,
 } from '../../../action/flows';
@@ -33,33 +40,68 @@ import { getConfig } from '../../../conf';
 const conf = getConfig();
 
 const useStyles = {
-    flowContainer: {
-        width: '98%',
-        height: '50vh',
-        margin: '0 auto',
-        border: '1px solid black',
-        fontSize: 20,
-        marginTop: 20,
+    flowDetailsContainer: {
+        display: 'flex',
+        height: 'calc(100vh - 64px)',
+        '& hr': {
+            border: '1px solid rgba(0,0,0,.8)',
+        },
     },
-    flowNode: {
-        // border: '1px solid blue',
+    detailsColumn: {
+        background: 'lightblue',
+        flex: '0 0 400px',
+        background: 'white',
+        borderLeft: '1px solid rgba(0,0,0, .12)',
+        padding: '24px 40px',
+        height: 'calc(100vh - 64px)',
+        overflowY: 'auto',
+    },
+    actionsContainer: {
+        display: 'flex',
+        marginTop: '24px',
+        '& .item': {
+            width: '100%',
+        },
+    },
+    graphActionsContainer: {
         display: 'flex',
         justifyContent: 'center',
+        '& button': {
+            margin: '0 4px',
+        },
+    },
+    flowContent: {
+        flexGrow: '1',
+        padding: '40px',
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    flowNode: {
+        border: '1px solid blue',
         margin: 20,
         padding: 20,
     },
     flowElement: {
-        border: '1px solid red',
+        // border: '1px solid rgba(0,0,0, .12)',
         marginBottom: 10,
         width: '120px',
-        borderRadius: '10px',
+        borderRadius: '4px',
+        background: 'white',
+        padding: '8px 16px',
+        cursor: 'pointer',
+        boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
+        '&.privileged': {
+            background: 'black',
+            color: 'white',
+        },
     },
     modal: {
         background: 'white',
         position: 'relative',
-        padding: 50,
-        height: '100%',
-        width: '100%',
+        padding: '40px',
+        height: '80vh',
+        width: '680px',
+        overflowY: 'scroll',
     },
     formControl: {
         marginTop: 10,
@@ -86,9 +128,9 @@ class FlowDetails extends React.PureComponent {
             openModal: false,
             parent: '',
             createNodeName: '',
-            leftNodeName: '',
+            leftNodeName: 'positive',
             leftNodeAdded: false,
-            rightNodeName: '',
+            rightNodeName: 'negative',
             rightNodeAdded: false,
             addNodeTriggered: false,
             addBranchEditor: false,
@@ -99,6 +141,7 @@ class FlowDetails extends React.PureComponent {
                     edges: [],
                 },
             },
+            contentShown: 'flow-settings',
         };
     }
 
@@ -157,7 +200,10 @@ class FlowDetails extends React.PureComponent {
     onElementClick = (element) => {
         console.log('onElementClick', element);
         this.props.onEditNode && this.props.onEditNode(element.id);
-        this.setState({ selectedNode: element });
+        this.setState({ 
+            selectedNode: element,
+            contentShown: 'selected-node'
+        });
     }
 
     displayModal = (parent) => {
@@ -220,6 +266,7 @@ class FlowDetails extends React.PureComponent {
                   ...this.props.flows.all[0],
                   flow,
               },
+              contentShown: 'flow-settings',
           // flow: {graph}
           });
       }
@@ -275,7 +322,11 @@ class FlowDetails extends React.PureComponent {
     }
 
     openBranchEditor = (node) => {
-        this.setState({ addBranchEditor: true, addBranchAtNode: node });
+        this.setState({ 
+            addBranchEditor: true,
+            addBranchAtNode: node,
+            contentShown: 'add-branch'
+        });
     }
 
   generateSubGraphLeveled = (arr, level) => {
@@ -315,20 +366,41 @@ class FlowDetails extends React.PureComponent {
         currentContent.push(<div key={parent.id} className={`${styles.nodeWrapper} ${nodeAlignment}`}>
 
             {/* {!isRoot ? <button>+</button> : null} */}
-            <div className={classes.flowElement} style={{ border: parent.privileged ? '1px solid green' : '1px solid red' }} onClick={this.onElementClick.bind(this, parent)}>
+            <div className={`${classes.flowElement} ${parent.privileged ? 'privileged' : ''} `} onClick={this.onElementClick.bind(this, parent)}>
                 <p >{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
             </div>
             {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/>{childrenContent} </div>
                 : (parent.children.length && childrenContent.length > 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/><div style={{
                     position: 'absolute', right: 300, top: -30, width: 120,
                 }}>{childrenContent[0]}<hr style={{
-                        position: 'absolute', left: '120px', top: 30, width: '240px', zIndex: -1,
-                    }}/></div><div style={{ position: 'absolute', left: 300, top: -30 }}><hr style={{
-                    position: 'absolute', right: '120px', top: 30, width: '240px', zIndex: -1,
-                }}/>{childrenContent[1]}</div> </div> : null}
-            {!parent.children.length ? <div className={styles.childrenWrapper}><button onClick={() => this.openBranchEditor(parent)}>Branch</button>
-                <button onClick={this.displayModal.bind(this, parent)}>Node</button><button onClick={this.deleteNode.bind(this, parent)} style={{ position: 'absolute', top: 20, left: 125 }}>X</button>
+                        position: 'absolute', left: '120px', top: 32, width: '240px', zIndex: 0,
+                    }}/></div><div style={{ position: 'absolute', left: 300, top: -30 }}>
+                        <hr style={{position: 'absolute', right: '120px', top: 32, width: '240px', zIndex: 0,}}/>{childrenContent[1]}</div> </div> : null}
+            {!parent.children.length ? <div className={classes.graphActionsContainer}>
 
+                <Tooltip title="Add branch">
+                    <IconButton color="primary" onClick={() => this.openBranchEditor(parent)}>
+                        <CallSplitIcon />
+                    </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Add Node">
+                    <IconButton color="primary" onClick={this.displayModal.bind(this, parent)}>
+                        <AddIcon />
+                    </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Delete Node">
+                    <IconButton
+                        onClick={this.deleteNode.bind(this, parent)}
+                        color="primary"
+                        size="small"
+                        style={{ position: 'absolute', top: '-5px', right: '-19px', zIndex: '1', background: '#ededed' }}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </Tooltip>
+                    
             </div> : null}
 
         </div>);
@@ -411,51 +483,34 @@ class FlowDetails extends React.PureComponent {
           console.log('state is', this.state);
           console.log('selNode is', selNode);
           //   const { id } = this.props.match.params;
-          return (
-
-              <div style={{ textAlign: 'center' }}>
-                  <p style={{ fontSize: 24 }}>Flow name: <input type="text" value={this.state.flow.name} name="flowName" onChange={this.handleChange}/></p>
-                  <p style={{ fontSize: 24 }}>Flow description: <input type="text" value={this.state.flow.description} name="flowDescription" onChange={this.handleChange}/></p>
-                  <p style={{ fontSize: 24 }}>Flow cron: <input type="text" value={this.state.flow.cron} name="flowCron" onChange={this.handleChange}/></p>
-                  <button style={{
-                      position: 'relative', right: 0, top: 0, width: '100px', height: '30px', background: 'green', color: 'white  ',
-                  }} onClick={() => this.saveFlow()}>Save</button>
-                  <div className={classes.flowContainer}>
-                      <p>Flow ID:{this.props.flows.all[0].id}</p>
-                      <div className={classes.flowNode}>
-                          {content}
-                      </div>
-
-                  </div>
-
-                  {this.state.addBranchEditor
-                    && <div>Create Branch:
-                        <h3>Left node</h3>
-                        <p>Node name:</p>
-                        <input type="text" id="leftNodeName" name="leftNodeName" onChange={(e) => this.handleChange(e)}/>
-
-                        <h3>Right node</h3>
-                        <p>Node name:</p>
-                        <input type="text" id="rightNodeName" name="rightNodeName" onChange={this.handleChange}/>
-                        <br/>
-                        <button style={{ marginTop: 20 }} onClick={() => this.addBranchAfterNode()}>CREATE</button>
-                        <br/>
-                        <button style={{ marginTop: 20 }} onClick={() => this.setState({ addBranchEditor: false })}>Cancel</button>
-                    </div>}
-
-                  <Modal
+          return (<React.Fragment>
+              {/* CREATE NODE MODAL */}
+                    <Modal
                       aria-labelledby="simple-modal-title"
                       aria-describedby="simple-modal-description"
                       open={this.state.openModal}
                       onClose={() => this.setState({ openModal: false, component: { name: '' } })}
                       style={{
-                          position: 'absolute', left: '25%', top: '10%', width: '50%', height: '60%',
-                      }}>
+                          position: 'absolute', left: '25%', top: '10%', width: '680px', height: '80vh',
+                      }}
+                    >
+
                       <div className={classes.modal}>
-                          <h2 style={{ textAlign: 'center', marginBottom: 50 }}>CREATE NODE</h2>
-                        Node name: <input type="text" id="createNodeName" name="createNodeName" onChange={(e) => this.handleChange(e)}/>
-                          <br/>
-                          <FormControl className={classes.formControl}>
+
+                        <Typography variant="h5" component="h2">CREATE NODE</Typography>
+                        
+                        <TextField 
+                            id="createNodeName" 
+                            name="createNodeName"
+                            label="Node name" 
+                            // value={this.state.flow.cron} 
+                            onChange={(e) => this.handleChange(e)}
+                            margin="normal"
+                            fullWidth
+                            autoFocus
+                        />
+
+                        <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
                               <InputLabel id="demo-simple-select-label">Component</InputLabel>
                               <Select
                                   labelId="demo-simple-select-label"
@@ -465,12 +520,19 @@ class FlowDetails extends React.PureComponent {
                               >
                                   {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}><img src={component.distribution.image} alt="comp_img"/>{component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null } {/* {!component.specialFlags.privilegedComponent ? '(Privileged)' : null} */}</MenuItem>)}
                               </Select>
-                          </FormControl>
-                          <br/>
-                          <br/>
-                          Function: <input type="text" id="function" name="function" onChange={(e) => this.handleChange(e)}/>
-                          <br/>
-                          <FormControl className={classes.formControl}>
+                        </FormControl>
+
+                        <TextField 
+                            id="function" 
+                            name="function"
+                            label="Function" 
+                            // value={this.state.flow.cron} 
+                            onChange={(e) => this.handleChange(e)}
+                            margin="normal"
+                            fullWidth
+                        />
+
+                        <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
                               <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
                               <Select
                                   labelId="demo-simple-select-label"
@@ -482,8 +544,8 @@ class FlowDetails extends React.PureComponent {
                               </Select>
                           </FormControl>
 
-                          <p style={{ marginTop: 30 }}>Node Settings</p>
-                          <JSONInput
+                        <Typography variant="subtitle2" component="body1" style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Node Settings (optional)</Typography>
+                        <JSONInput
                               id = 'jsonEdit'
                               locale = {locale}
                               theme = 'dark_vscode_tribute'
@@ -493,8 +555,9 @@ class FlowDetails extends React.PureComponent {
                               onChange={(e) => this.handleNodeSettings(e)}
                               // onChange={this.editorChange.bind(this)}
                           />
-                          <p>Fields (optional)</p>
-                          <JSONInput
+
+                        <Typography variant="subtitle2" component="body1" style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Fields (optional)</Typography>
+                        <JSONInput
                               id = 'jsonEdit'
                               locale = {locale}
                               theme = 'dark_vscode_tribute'
@@ -503,88 +566,236 @@ class FlowDetails extends React.PureComponent {
                               placeholder = {this.dummyData}
                               onChange={(e) => this.handleFieldsInput(e)}
                           />
-                          <br/>
-                          <div style={{ position: 'absolute', bottom: 0, right: 0 }}>
-                              <Button variant="outlined" aria-label="Add" onClick={() => this.setState({ openModal: false, component: { name: '' } })}>
-                                    Close
-                              </Button>
-                              <Button variant="outlined" aria-label="Add" onClick={() => this.addAfterNode()} disabled={!this.state.createNodeName || !this.state.component}>
-                                    Create
-                              </Button>
-                              {/* <Button variant="outlined" aria-label="Add" onClick={this.saveFlow} disabled={!this.state.wasChanged}>
-                                    Save
-                                </Button> */}
-                          </div>
 
-                      </div>
-
-                  </Modal>
-                  {this.state.selectedNode
-                    && <div style={{ background: '', paddingBottom: 100, marginTop: 50 }}>
-                        <h3>EDITOR</h3>
-                        <p>Selected Node is: {this.state.selectedNode.id}</p>
-                        Node name: <input type="text" id="selectedNode" name="selectedNode" value={selNode.id} onChange={(e) => this.handleChange(e)}/><br/>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel id="demo-simple-select-label">Component</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={this.state.component.name}
-                                onChange={this.handleComponentSelection}
-                            >
-                                {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}>{component.name}</MenuItem>)}
-                            </Select>
-                        </FormControl>
-                        <br/>
-                        <br/>
-                        Function: <input type="text" id="function" name="function" onChange={(e) => this.handleChange(e)}/>
-                        <br/>
-                        <FormControl className={classes.formControl}>
-                            <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={this.state.component.name}
-                                onChange={(e) => this.handleSecretSelection(e)}
-                            >
-                                {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name} key={secret.name}>{secret.name}</MenuItem>)}
-                            </Select>
-                        </FormControl>
-
-                        <div style={{
-                            background: '   ', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'left',
-                        }}>
-                            <p style={{
-                                marginTop:
-                                10,
-                            }}>Node Settings (optional)</p>
-                            <br/>
-                            <JSONInput
-                                id = 'jsonEdit'
-                                locale = {locale}
-                                theme = 'dark_vscode_tribute'
-                                height = '350px'
-                                width = '100%'
-                                placeholder = {this.dummyData}
-                                // onChange={this.editorChange.bind(this)}
-                            />
-                            <p>Fields (optional)</p>
-                            <br/>
-                            <JSONInput
-                                id = 'jsonEdit'
-                                locale = {locale}
-                                theme = 'dark_vscode_tribute'
-                                height = '350px'
-                                width = '100%'
-                                placeholder = {this.dummyData}
-                                onChange={(e) => this.handleJSONInput(e)}
-                            />
+                        <div className={classes.actionsContainer}>
+                            <div className="item">
+                                <Button variant="contained" aria-label="Add" onClick={() => this.setState({ openModal: false, component: { name: '' } })} disableElevation>
+                                        Close
+                                </Button>
+                            </div>
+                            <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                                <Button variant="contained" color="primary" aria-label="Add" onClick={() => this.addAfterNode()} disabled={!this.state.createNodeName || !this.state.component} disableElevation>
+                                        Create
+                                </Button>
+                            
+                            </div>
                         </div>
-                        <div style={{ marginTop: 10 }}> <button onClick={() => this.setState({ selectedNode: '' })}>Cancel</button>
-                            <button>Save</button></div>
 
-                    </div>}
-              </div>
+                    </div>
+                </Modal>
+                  
+    <div className={classes.flowDetailsContainer}>
+
+        <div className={classes.flowContent}>
+            {content}
+        </div>
+
+        <aside className={classes.detailsColumn}>
+
+{this.state.contentShown === 'flow-settings' && 
+            <div className="flow-settings">
+                <Typography variant="h5" component="h2">Flow Settings</Typography>
+                <TextField 
+                    id="flowID" 
+                    name="flowID"
+                    label="Flow ID" 
+                    value={this.props.flows.all[0].id}
+                    // onChange={this.handleChange}
+                    margin="normal"
+                    fullWidth
+                    disabled
+                />
+
+                <TextField 
+                    id="flowName" 
+                    name="flowName"
+                    label="Flow name" 
+                    value={this.state.flow.name}
+                    onChange={this.handleChange}
+                    margin="normal"
+                    fullWidth
+                />
+
+                <TextField 
+                    id="flowDescription"
+                    name="flowDescription"
+                    label="Flow description" 
+                    value={this.state.flow.description}
+                    onChange={this.handleChange}
+                    margin="normal"
+                    fullWidth
+                    multiline
+                />
+
+                <TextField 
+                    id="flowCron" 
+                    name="flowCron"
+                    label="Flow Cron" 
+                    value={this.state.flow.cron} 
+                    onChange={this.handleChange}
+                    margin="normal"
+                    fullWidth
+                />
+
+                <Button 
+                    variant="contained"
+                    color="primary"
+                    onClick={() => this.saveFlow()}
+                    disableElevation
+                    style={{ marginTop: '40px' }}
+                >Save Flow</Button>
+            </div>}
+
+
+            {this.state.contentShown === 'add-branch' && this.state.addBranchEditor
+                && <div className="node-create-branch">
+                    <Typography variant="h5" component="h2">Create Branch:</Typography>
+                    <TextField 
+                        id="leftNodeName" 
+                        name="leftNodeName"
+                        label="Left node: Name" 
+                        value={this.state.leftNodeName} 
+                        onChange={(e) => this.handleChange(e)}
+                        margin="normal"
+                        fullWidth
+                        defaultValue="Positive"
+                        autoFocus
+                    />
+
+                    <TextField 
+                        id="rightNodeName" 
+                        name="rightNodeName"
+                        label="Right node: Name" 
+                        value={this.state.rightNodeName} 
+                        onChange={(e) => this.handleChange(e)}
+                        margin="normal"
+                        fullWidth
+                        defaultValue="Negative"
+                    />
+
+                    <div className={classes.actionsContainer}>
+                        <div className="item">
+                            {/* <button style={{ marginTop: 20 }} onClick={() => this.setState({ addBranchEditor: false, contentShown: 'flow-settings' })}>Cancel</button> */}
+                            <Button 
+                                variant="contained"
+                                onClick={() => this.setState({ addBranchEditor: false, contentShown: 'flow-settings' })}
+                                disableElevation
+                            >Cancel</Button>
+                        </div>
+                        <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                            {/* <button style={{ marginTop: 20 }} onClick={() => this.addBranchAfterNode()}>CREATE</button> */}
+                            <Button 
+                                variant="contained"
+                                color="primary"
+                                onClick={() => this.addBranchAfterNode()}
+                                disableElevation
+                            >Create Node</Button>
+                        
+                        </div>
+                    </div>
+                </div>}
+
+
+            {this.state.contentShown === 'selected-node' && this.state.selectedNode
+                && <div className="node-selected">
+
+
+                        <Typography variant="h5" component="h2">Edit Node:</Typography>
+                        <Typography variant="body" component="span">Selected Node is: {this.state.selectedNode.id}</Typography>
+                        
+                        <TextField 
+                            id="selectedNode" 
+                            name="selectedNode"
+                            label="Node name" 
+                            value={selNode.id} 
+                            onChange={(e) => this.handleChange(e)}
+                            margin="normal"
+                            fullWidth
+                        />
+
+                        {/* <input type="text" id="selectedNode" name="selectedNode" value={selNode.id} onChange={(e) => this.handleChange(e)}/> */}
+
+
+
+                    
+                    <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                        <InputLabel id="demo-simple-select-label">Component</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={this.state.component.name}
+                            onChange={this.handleComponentSelection}
+                            fullWidth
+                        >
+                            {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}>{component.name}</MenuItem>)}
+                        </Select>
+                    </FormControl>
+
+
+                    <TextField 
+                            id="function" 
+                            name="function"
+                            label="Function" 
+                            // value={selNode.id} 
+                            onChange={(e) => this.handleChange(e)}
+                            margin="normal"
+                            fullWidth
+                        />
+
+
+                    {/* Function: <input type="text" id="function" name="function" onChange={(e) => this.handleChange(e)}/> */}
+
+                    <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                        <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={this.state.component.name}
+                            onChange={(e) => this.handleSecretSelection(e)}
+                            fullWidth
+                        >
+                            {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name} key={secret.name}>{secret.name}</MenuItem>)}
+                        </Select>
+                    </FormControl>
+
+
+                    <Typography variant="subtitle2" component="body1" style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Node Settings (optional)</Typography>
+                    <JSONInput
+                        id = 'jsonEdit'
+                        locale = {locale}
+                        theme = 'dark_vscode_tribute'
+                        height = '350px'
+                        width = '100%'
+                        placeholder = {this.dummyData}
+                        // onChange={this.editorChange.bind(this)}
+                        style={{ borderRadius: '4px' }}
+                    />
+
+                    <Typography variant="subtitle2" component="body1" style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Fields (optional)</Typography>
+                    <JSONInput
+                        id = 'jsonEdit'
+                        locale = {locale}
+                        theme = 'dark_vscode_tribute'
+                        height = '350px'
+                        width = '100%'
+                        placeholder = {this.dummyData}
+                        onChange={(e) => this.handleJSONInput(e)}
+                        style={{ borderRadius: '4px' }}
+                    />
+                    
+                    <div className={classes.actionsContainer}>
+                        <div className="item">
+                            <Button variant="contained" onClick={() => this.setState({ selectedNode: '', contentShown: 'flow-settings' })} disableElevation>Cancel</Button>
+                        </div>
+                        <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                            <Button variant="contained" color="primary" disableElevation>Save Node</Button>
+                        </div>
+                    </div>
+                </div>}
+        </aside>
+    </div>
+    </React.Fragment>
+
 
           );
       }
