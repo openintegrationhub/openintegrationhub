@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Modal from '@material-ui/core/Modal';
 import {
-    Delete, Edit, PlayArrow, Stop, Send, Launch
+    Delete, Edit, PlayArrow, Stop, Send, Launch,
 } from '@material-ui/icons';
 
 // Componente
