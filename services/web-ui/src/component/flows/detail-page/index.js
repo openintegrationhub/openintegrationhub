@@ -217,7 +217,7 @@ class FlowDetails extends React.PureComponent {
             contentShown: 'selected-node',
         });
         this.setState({
-            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: element.secret, component,
+            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: element.credential_id, component,
         });
         if (this.state.components.all.length === 0) {
             this.setState({ components: this.props.components });
@@ -238,6 +238,7 @@ class FlowDetails extends React.PureComponent {
             id: newNodeId,
             componentId: this.state.component.id,
             function: this.state.function,
+            credential_id: this.state.secret,
             nodeSettings: this.state.nodeSettings,
             fields: this.state.fields,
             privileged: this.state.component.hasOwnProperty('specialFlags') ? this.state.component.specialFlags.privilegedComponent : '',
