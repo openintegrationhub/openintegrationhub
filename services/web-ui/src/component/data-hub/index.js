@@ -128,70 +128,70 @@ class DataHub extends React.Component {
          return (
              <React.Fragment>
                  <AppBar position="static" color="default">
-                         <Tabs
-                             value={this.state.openTab}
-                             onChange={this.handleChange}
-                             indicatorColor="primary"
-                             textColor="primary"
-                             variant="fullWidth"
-                             aria-label="full width tabs example"
+                     <Tabs
+                         value={this.state.openTab}
+                         onChange={this.handleChange}
+                         indicatorColor="primary"
+                         textColor="primary"
+                         variant="fullWidth"
+                         aria-label="full width tabs example"
+                     >
+                         <Tab label="Data-Quality" />
+                         <Tab label="Search & Data Export" />
+                         <Tab label="Raw Data Storage" />
+                     </Tabs>
+                 </AppBar>
+                 <Container className={classes.container}>
+                     <div className={classes.root}>
+
+                         <SwipeableViews
+                             axis='x'
+                             index={this.state.openTab}
+                             onChangeIndex={this.handleChangeIndex}
                          >
-                             <Tab label="Data-Quality" />
-                             <Tab label="Search & Data Export" />
-                             <Tab label="Raw Data Storage" />
-                         </Tabs>
-                     </AppBar>
-                <Container className={classes.container}>
-                    <div className={classes.root}>
-                        
-                        <SwipeableViews
-                            axis='x'
-                            index={this.state.openTab}
-                            onChangeIndex={this.handleChangeIndex}
-                        >
-                            <TabPanel value={this.state.openTab} index={0} dir='x'>
-                                <Box style={{ margin: '24px 0 36px' }}>
-                                    <Grid container>
-                                        <Grid item xs>
-                                            <Typography variant="h4" component="h1">Data Quality</Typography>
-                                        </Grid>
-                                        <Grid item xs="auto">
-                                            <Button 
-                                                color="primary"
-                                                variant="contained"
-                                                className={classes.enrich}
-                                                onClick={() => enrichData()}
-                                                disableElevation
-                                                startIcon={<Autorenew />}>Enrich Data</Button>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
+                             <TabPanel value={this.state.openTab} index={0} dir='x'>
+                                 <Box style={{ margin: '24px 0 36px' }}>
+                                     <Grid container>
+                                         <Grid item xs>
+                                             <Typography variant="h4" component="h1">Data Quality</Typography>
+                                         </Grid>
+                                         <Grid item xs="auto">
+                                             <Button
+                                                 color="primary"
+                                                 variant="contained"
+                                                 className={classes.enrich}
+                                                 onClick={() => enrichData()}
+                                                 disableElevation
+                                                 startIcon={<Autorenew />}>Enrich Data</Button>
+                                         </Grid>
+                                     </Grid>
+                                 </Box>
 
-                                <GroupedBar products={dataHubProducts} contacts={dataHubContacts} documents={dataHubDocuments}/>
+                                 <GroupedBar products={dataHubProducts} contacts={dataHubContacts} documents={dataHubDocuments}/>
 
-                                <Grid container>
-                                    <Grid item lg={4} md={4} xs={12}>
-                                        <ObjectsOverview type="Contacts" objs={dataHubContacts} colorIndicator="#ff6383"/>
-                                    </Grid>
-                                    <Grid item lg={4} md={4} xs={12}>
-                                        <ObjectsOverview type="Products" objs={dataHubProducts} colorIndicator="#36a2eb"/>
-                                    </Grid>
-                                    <Grid item lg={4} md={4} xs={12}>
-                                        <ObjectsOverview type="Documents" objs={dataHubDocuments} colorIndicator="#4bc0c0"/>
-                                    </Grid>
-                                </Grid>
-                            </TabPanel>
-                            <TabPanel value={this.state.openTab} index={1} dir='x'>
-                                <DataQuality data={dataHubObjects}/>
-                            </TabPanel>
-                            <TabPanel value={this.state.openTab} index={2} dir='x'>
-                                <RDS/>
-                            </TabPanel>
-                        </SwipeableViews>
-                    </div>
-                    <Tab/>
+                                 <Grid container>
+                                     <Grid item lg={4} md={4} xs={12}>
+                                         <ObjectsOverview type="Contacts" objs={dataHubContacts} colorIndicator="#ff6383"/>
+                                     </Grid>
+                                     <Grid item lg={4} md={4} xs={12}>
+                                         <ObjectsOverview type="Products" objs={dataHubProducts} colorIndicator="#36a2eb"/>
+                                     </Grid>
+                                     <Grid item lg={4} md={4} xs={12}>
+                                         <ObjectsOverview type="Documents" objs={dataHubDocuments} colorIndicator="#4bc0c0"/>
+                                     </Grid>
+                                 </Grid>
+                             </TabPanel>
+                             <TabPanel value={this.state.openTab} index={1} dir='x'>
+                                 <DataQuality data={dataHubObjects}/>
+                             </TabPanel>
+                             <TabPanel value={this.state.openTab} index={2} dir='x'>
+                                 <RDS/>
+                             </TabPanel>
+                         </SwipeableViews>
+                     </div>
+                     <Tab/>
 
-                </Container>
+                 </Container>
              </React.Fragment>
          );
      }

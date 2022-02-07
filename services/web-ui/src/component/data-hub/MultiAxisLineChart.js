@@ -1,12 +1,17 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 
+const days = 31;
+
+const labels = Array.from(Array(days + 1).keys());
+labels.shift();
+
 const data = {
-    labels: Array.from(Array(30).keys()),
+    labels,
     datasets: [
         {
             label: 'Products',
-            data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 20)),
+            data: Array.from({ length: days }, () => Math.floor(Math.random() * 20)),
             fill: false,
             backgroundColor: 'rgb(54, 162, 235)',
             borderColor: 'rgba(54, 162, 235, 0.8)',
@@ -15,7 +20,7 @@ const data = {
         },
         {
             label: 'Contacts',
-            data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 44)),
+            data: Array.from({ length: days }, () => Math.floor(Math.random() * 44)),
             fill: false,
             borderWidth: 3,
             backgroundColor: 'rgb(255, 99, 132)',
@@ -24,7 +29,7 @@ const data = {
         },
         {
             label: 'Documents',
-            data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 80)),
+            data: Array.from({ length: days }, () => Math.floor(Math.random() * 80)),
             fill: false,
             borderWidth: 3,
             backgroundColor: 'rgb(11, 174, 110)',

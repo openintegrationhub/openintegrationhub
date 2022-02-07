@@ -34,6 +34,13 @@ const options = {
                 },
             },
         ],
+        xAxes: [
+            {
+                ticks: {
+                    beginAtZero: false,
+                },
+            },
+        ],
     },
 };
 

@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {
-    CloudDownload, Search
+    CloudDownload, Search,
 } from '@material-ui/icons';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -48,7 +48,7 @@ const useStyles = {
         '& .category-headline': {
             fontWeight: '500',
             color: 'rgba(0,0,0,.4)',
-        }
+        },
     },
 };
 
@@ -118,79 +118,78 @@ class DataQuality extends React.Component {
       return (
           <Container className={classes.container}>
 
-            <Box style={{ margin: '24px 0 36px' }}>    
-                <Typography variant="h4" component="h1" className="category-headline">Search & Data Export</Typography>
-            </Box>
+              <Box style={{ margin: '24px 0 36px' }}>
+                  <Typography variant="h4" component="h1" className="category-headline">Search & Data Export</Typography>
+              </Box>
 
               <TextField
-                id="outlined-basic"
-                label="Search"
-                variant="outlined"
-                style={{ width: '100%' }}
-                placeholder="Search"
-                autoFocus
-                InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search />
-                      </InputAdornment>
-                    ),
+                  id="outlined-basic"
+                  label="Search"
+                  variant="outlined"
+                  style={{ width: '100%' }}
+                  placeholder="Search"
+                  autoFocus
+                  InputProps={{
+                      startAdornment: (
+                          <InputAdornment position="start">
+                              <Search />
+                          </InputAdornment>
+                      ),
                   }}
-                />
+              />
 
-            <Grid container spacing={4} className={classes.filterContainer}>
-                <Grid item xs={4}>
-                    <Typography variant="body1" className="category-headline">Filter by Type</Typography>
-                    <div className={classes.chipContainer}>
-                        <Chip label="DataHub element" />
-                        <Chip label="RDS entry" />
-                    </div>
-                </Grid>
-                <Grid item xs={2}>
-                    <Typography variant="body1" className="category-headline">Filter by Score</Typography>
-                    <FormGroup row>
-                        {/* <FormControlLabel
+              <Grid container spacing={4} className={classes.filterContainer}>
+                  <Grid item xs={4}>
+                      <Typography variant="body1" className="category-headline">Filter by Type</Typography>
+                      <div className={classes.chipContainer}>
+                          <Chip label="DataHub element" />
+                          <Chip label="RDS entry" />
+                      </div>
+                  </Grid>
+                  <Grid item xs={2}>
+                      <Typography variant="body1" className="category-headline">Filter by Score</Typography>
+                      <FormGroup row>
+                          {/* <FormControlLabel
                             control={<Switch checked={this.state.filterDuplicates} onChange={this.handleFiltering} name="filterDuplicates" />}
                             label="duplicates"
                         /> */}
-                        <FormControlLabel
-                            control={<Switch checked={this.state.filterScore} onChange={this.handleFiltering} name="filterScore" />}
-                            label="score"
-                        />
-                    </FormGroup>
-                </Grid>
-                <Grid item xs={6}>
-                    <Typography variant="body1" className="category-headline">Filter by Time Range</Typography>
-                    <div>
-                        <span style={{ marginRight: '10px' }}>From</span>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DateTimePicker value={this.state.filterDateFrom} onChange={this.handleDateFrom} clearable/>
-                        </MuiPickersUtilsProvider>
-                        <span style={{ marginRight: '10px', marginLeft: '10px' }}>To</span>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} clearable/>
-                        </MuiPickersUtilsProvider>
-                    </div>
-                </Grid>
-            </Grid>
-            
+                          <FormControlLabel
+                              control={<Switch checked={this.state.filterScore} onChange={this.handleFiltering} name="filterScore" />}
+                              label="score"
+                          />
+                      </FormGroup>
+                  </Grid>
+                  <Grid item xs={6}>
+                      <Typography variant="body1" className="category-headline">Filter by Time Range</Typography>
+                      <div>
+                          <span style={{ marginRight: '10px' }}>From</span>
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DateTimePicker value={this.state.filterDateFrom} onChange={this.handleDateFrom} clearable/>
+                          </MuiPickersUtilsProvider>
+                          <span style={{ marginRight: '10px', marginLeft: '10px' }}>To</span>
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} clearable/>
+                          </MuiPickersUtilsProvider>
+                      </div>
+                  </Grid>
+              </Grid>
 
               <Box style={{ margin: '32px 0 36px', paddingTop: '32px', borderTop: '1px solid rgba(0,0,0, .12)' }}>
-                <Grid container alignItems="center" spacing={4  }>
-                    <Grid item xs>
-                        <Typography variant="h5" component="h2">Results</Typography>
-                    </Grid>
-                    <Grid item xs="auto">
-                        <Button 
-                            color="primary"
-                            variant="contained"
-                            // className={classes.enrich}
-                            // onClick={() => enrichData()}
-                            disableElevation
-                            startIcon={<CloudDownload />}>Export Results</Button>
-                    </Grid>
-                    <Grid item xs="auto">
-                    <FormControl className={classes.formControl}>
+                  <Grid container alignItems="center" spacing={4 }>
+                      <Grid item xs>
+                          <Typography variant="h5" component="h2">Results</Typography>
+                      </Grid>
+                      <Grid item xs="auto">
+                          <Button
+                              color="primary"
+                              variant="contained"
+                              // className={classes.enrich}
+                              // onClick={() => enrichData()}
+                              disableElevation
+                              startIcon={<CloudDownload />}>Export Results</Button>
+                      </Grid>
+                      <Grid item xs="auto">
+                          <FormControl className={classes.formControl}>
                               <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
                               <Select
                                   labelId="demo-simple-select-label"
@@ -204,100 +203,100 @@ class DataQuality extends React.Component {
                                   <MenuItem value='scoreAsc'>Score ascending</MenuItem>
                               </Select>
                           </FormControl>
-                    </Grid>
-                </Grid>
-            </Box>
+                      </Grid>
+                  </Grid>
+              </Box>
 
-            {!condition.length ? <Box style={{ color: 'rgba(0,0,0, .4)', textAlign: 'center', padding: '24px', margin: '24px', borderRadius: '16px', border: '1px solid rgba(0,0,0, .12)' }}>
-                    <Typography variant="h6" component="span">No entries found.</Typography>
-                    <Typography variant="body1">Please enrich the data again or redefine your search.</Typography>
-                </Box> : <React.Fragment>
-            
+              {!condition.length ? <Box style={{
+                  color: 'rgba(0,0,0, .4)', textAlign: 'center', padding: '24px', margin: '24px', borderRadius: '16px', border: '1px solid rgba(0,0,0, .12)',
+              }}>
+                  <Typography variant="h6" component="span">No entries found.</Typography>
+                  <Typography variant="body1">Please enrich the data again or redefine your search.</Typography>
+              </Box> : <React.Fragment>
 
+                  <Box style={{ margin: '32px 0 36px', paddingTop: '32px', borderTop: '1px dashed rgba(0,0,0, .12)' }}>
+                      <Typography variant="h6" component="h3">Contacts</Typography>
+                  </Box>
 
-            <Box style={{ margin: '32px 0 36px', paddingTop: '32px', borderTop: '1px dashed rgba(0,0,0, .12)' }}>
-                <Typography variant="h6" component="h3">Contacts</Typography>                    
-            </Box>
+                  {condition
+                      .map((el) => <div key={el.id}>
+                          {el.content.firstName && <Accordion style={{ marginTop: 10 }}>
+                              <AccordionSummary
+                                  expandIcon={<ExpandMoreIcon />}
+                                  aria-controls="panel1a-content"
+                                  id="panel1a-header"
+                              >
+                                  <div><p>{el.content.firstName} {el.content.lastName},  Score: {el.enrichmentResults && el.enrichmentResults.score}</p> </div>
+                              </AccordionSummary>
+                              <AccordionDetails style={{ display: 'block' }}>
+                                  <p>ID: {el.id}</p>
+                                  <p>Score: {el.enrichmentResults ? el.enrichmentResults.score : ''}</p>
+                                  {el.enrichmentResults && <p>Tags: {el.enrichmentResults.tags.map((tag, index) => <div key={index}>{tag}</div>)}</p>}
+                              </AccordionDetails>
+                          </Accordion>}
+                      </div>)}
 
-              {condition
-                  .map((el) => <div key={el.id}>
-                      {el.content.firstName && <Accordion style={{ marginTop: 10 }}>
-                          <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              aria-controls="panel1a-content"
-                              id="panel1a-header"
-                          >
-                              <div><p>{el.content.firstName} {el.content.lastName},  Score: {el.enrichmentResults && el.enrichmentResults.score}</p> </div>
-                          </AccordionSummary>
-                          <AccordionDetails style={{ display: 'block' }}>
-                              <p>ID: {el.id}</p>
-                              <p>Score: {el.enrichmentResults ? el.enrichmentResults.score : ''}</p>
-                              {el.enrichmentResults && <p>Tags: {el.enrichmentResults.tags.map((tag, index) => <div key={index}>{tag}</div>)}</p>}
-                          </AccordionDetails>
-                      </Accordion>}
-                  </div>)}
+                  <Box style={{ margin: '32px 0 36px', paddingTop: '32px', borderTop: '1px dashed rgba(0,0,0, .12)' }}>
+                      <Typography variant="h6" component="h3">Products</Typography>
+                  </Box>
 
-            <Box style={{ margin: '32px 0 36px', paddingTop: '32px', borderTop: '1px dashed rgba(0,0,0, .12)' }}>
-                <Typography variant="h6" component="h3">Products</Typography>                    
-            </Box>
+                  {condition
+                      .map((el) => <div key={el.id}>
+                          {el.content.articleNo && <Accordion style={{ marginTop: 10 }}>
+                              <AccordionSummary
+                                  expandIcon={<ExpandMoreIcon />}
+                                  aria-controls="panel1a-content"
+                                  id="panel1a-header"
+                              >
 
-              {condition
-                  .map((el, index) => <div key={el.id}>
-                      {el.content.articleNo && <Accordion style={{ marginTop: 10 }}>
-                          <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              aria-controls="panel1a-content"
-                              id="panel1a-header"
-                          >
+                                  <div>
+                                      <p>{el.content.articleNo}</p>
+                                      <p>{el.content.baseType},  Score: {el.enrichmentResults.score} </p>
+                                  </div>
 
-                              <div>
-                                  <p>{el.content.articleNo}</p>
-                                  <p>{el.content.baseType},  Score: {el.enrichmentResults.score} </p>
-                              </div>
+                                  {/* <p style={{ marginLeft: '20px' }}>Date: {new Date(el.createdAt).toLocaleDateString('de-DE')}</p> */}
+                              </AccordionSummary>
+                              <AccordionDetails style={{ display: 'block' }}>
+                                  <p>ID: {el.id}</p>
+                                  <p>Score: {el.enrichmentResults ? el.enrichmentResults.score : ''}</p>
+                                  {el.enrichmentResults && <p>Tags: {el.enrichmentResults.tags.map((tag, index) => <div key={index}>{tag}</div>)}</p>}
+                                  {/* <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/> */}
+                                  {/* <p>Duplications: {el.enrichmentResults.knownDuplicates.map((duplicate) => <li key={duplicate}>{duplicate}</li>)}</p> */}
+                                  {/* <p>Tags: {el.enrichmentResults.tags.map((tag) => <li key={tag}>{tag}</li>)}</p> */}
+                                  {/* <p>Created: {el.createdAt}</p> */}
+                              </AccordionDetails>
+                          </Accordion>}
+                      </div>)}
 
-                              {/* <p style={{ marginLeft: '20px' }}>Date: {new Date(el.createdAt).toLocaleDateString('de-DE')}</p> */}
-                          </AccordionSummary>
-                          <AccordionDetails style={{ display: 'block' }}>
-                              <p>ID: {el.id}</p>
-                              <p>Score: {el.enrichmentResults ? el.enrichmentResults.score : ''}</p>
-                              {el.enrichmentResults && <p>Tags: {el.enrichmentResults.tags.map((tag, index) => <div key={index}>{tag}</div>)}</p>}
-                              {/* <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/> */}
-                              {/* <p>Duplications: {el.enrichmentResults.knownDuplicates.map((duplicate) => <li key={duplicate}>{duplicate}</li>)}</p> */}
-                              {/* <p>Tags: {el.enrichmentResults.tags.map((tag) => <li key={tag}>{tag}</li>)}</p> */}
-                              {/* <p>Created: {el.createdAt}</p> */}
-                          </AccordionDetails>
-                      </Accordion>}
-                  </div>)}
+                  <Box style={{ margin: '32px 0 36px', paddingTop: '32px', borderTop: '1px dashed rgba(0,0,0, .12)' }}>
+                      <Typography variant="h6" component="h3">Documents</Typography>
+                  </Box>
 
-            <Box style={{ margin: '32px 0 36px', paddingTop: '32px', borderTop: '1px dashed rgba(0,0,0, .12)' }}>
-                <Typography variant="h6" component="h3">Documents</Typography>                    
-            </Box>
+                  {condition
+                      .map((el) => <div key={el.id}>
+                          {el.content.filesize && <Accordion style={{ marginTop: 10 }}>
+                              <AccordionSummary
+                                  expandIcon={<ExpandMoreIcon />}
+                                  aria-controls="panel1a-content"
+                                  id="panel1a-header"
+                              >
 
-              {condition
-                  .map((el) => <div key={el.id}>
-                      {el.content.filesize && <Accordion style={{ marginTop: 10 }}>
-                          <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              aria-controls="panel1a-content"
-                              id="panel1a-header"
-                          >
+                                  <div> <p>{el.content.name},  Score: {el.enrichmentResults.score} </p> </div>
 
-                              <div> <p>{el.content.name},  Score: {el.enrichmentResults.score} </p> </div>
-
-                              {/* <p style={{ marginLeft: '20px' }}>Date: {new Date(el.createdAt).toLocaleDateString('de-DE')}</p> */}
-                          </AccordionSummary>
-                          <AccordionDetails style={{ display: 'block' }}>
-                              <p>ID: {el.id}</p>
-                              <p>Score: {el.enrichmentResults ? el.enrichmentResults.score : ''}</p>
-                              {el.enrichmentResults && <p>Tags: {el.enrichmentResults.tags.map((tag, index) => <div key={index}>{tag}</div>)}</p>}
-                              {/* <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/> */}
-                              {/* <p>Duplications: {el.enrichmentResults.knownDuplicates.map((duplicate) => <li key={duplicate}>{duplicate}</li>)}</p> */}
-                              {/* <p>Tags: {el.enrichmentResults.tags.map((tag) => <li key={tag}>{tag}</li>)}</p> */}
-                              {/* <p>Created: {el.createdAt}</p> */}
-                          </AccordionDetails>
-                      </Accordion>}
-                  </div>)}
-                </React.Fragment>}
+                                  {/* <p style={{ marginLeft: '20px' }}>Date: {new Date(el.createdAt).toLocaleDateString('de-DE')}</p> */}
+                              </AccordionSummary>
+                              <AccordionDetails style={{ display: 'block' }}>
+                                  <p>ID: {el.id}</p>
+                                  <p>Score: {el.enrichmentResults ? el.enrichmentResults.score : ''}</p>
+                                  {el.enrichmentResults && <p>Tags: {el.enrichmentResults.tags.map((tag, index) => <div key={index}>{tag}</div>)}</p>}
+                                  {/* <div>Score: {el.enrichmentResults.score}, normalized score: {el.enrichmentResults.normalizedScore}</div><br/> */}
+                                  {/* <p>Duplications: {el.enrichmentResults.knownDuplicates.map((duplicate) => <li key={duplicate}>{duplicate}</li>)}</p> */}
+                                  {/* <p>Tags: {el.enrichmentResults.tags.map((tag) => <li key={tag}>{tag}</li>)}</p> */}
+                                  {/* <p>Created: {el.createdAt}</p> */}
+                              </AccordionDetails>
+                          </Accordion>}
+                      </div>)}
+              </React.Fragment>}
 
           </Container>
       //   <Container className={classes.container}>

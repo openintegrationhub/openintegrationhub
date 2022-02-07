@@ -60,51 +60,49 @@ class RDS extends React.Component {
           classes,
       } = this.props;
 
-        return (
-            <Container className={classes.container}>
+      return (
+          <Container className={classes.container}>
 
-                <Box style={{ margin: '24px 0 36px' }}>
-                    <Grid container>
-                        <Grid item xs>
-                            <Typography variant="h4" component="h1">Raw Data Storage</Typography>
-                        </Grid>
-                        <Grid item xs="auto">
+              <Box style={{ margin: '24px 0 36px' }}>
+                  <Grid container>
+                      <Grid item xs>
+                          <Typography variant="h4" component="h1">Raw Data Storage</Typography>
+                      </Grid>
+                      <Grid item xs="auto">
 
-                            <IconButton 
-                                //   onClick={this.removeSyncMapping.bind(this, index)}
-                                >
-                                <ArrowLeftIcon/>
-                            </IconButton>
+                          <IconButton
+                              //   onClick={this.removeSyncMapping.bind(this, index)}
+                          >
+                              <ArrowLeftIcon/>
+                          </IconButton>
 
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DateTimePicker value={this.state.filterDateFrom} onChange={this.handleDateFrom} clearable/>
-                            </MuiPickersUtilsProvider>
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DateTimePicker value={this.state.filterDateFrom} onChange={this.handleDateFrom} clearable/>
+                          </MuiPickersUtilsProvider>
 
-                            <span style={{ marginRight: '10px', marginLeft: '10px' }}>To</span>
+                          <span style={{ marginRight: '10px', marginLeft: '10px' }}>To</span>
 
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} clearable/>
-                            </MuiPickersUtilsProvider>
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DateTimePicker value={this.state.filterDateTo} onChange={this.handleDateTo} clearable/>
+                          </MuiPickersUtilsProvider>
 
-                            <IconButton 
-                            //   onClick={this.removeSyncMapping.bind(this, index)}
-                            >
-                                <ArrowRightIcon/>
-                        </IconButton>
+                          <IconButton
+                              //   onClick={this.removeSyncMapping.bind(this, index)}
+                          >
+                              <ArrowRightIcon/>
+                          </IconButton>
 
-                        </Grid>
-                    </Grid>
-                </Box>
+                      </Grid>
+                  </Grid>
+              </Box>
 
               <MultiAxisLineChart/>
 
-                {/* <Box style={{ margin: '32px 0 36px', paddingTop: '32px', borderTop: '1px solid rgba(0,0,0, .12)' }}>    
+              {/* <Box style={{ margin: '32px 0 36px', paddingTop: '32px', borderTop: '1px solid rgba(0,0,0, .12)' }}>
                     <Typography variant="h5" component="h2">Select Time Range</Typography>
                 </Box>
                 <Grid container justifyContent="center" style={{ margin: '40px 0'}}>
                   <Grid item xs style={{ background: 'lightyellow', display: 'flex' }}>
-
-                    
 
                     <button><ArrowLeftIcon/></button>
 
@@ -121,9 +119,9 @@ class RDS extends React.Component {
                       <button><ArrowRightIcon/></button>
                   </Grid>
               </Grid> */}
-            </Container>
-        );
-    }
+          </Container>
+      );
+  }
 }
 
 export default
