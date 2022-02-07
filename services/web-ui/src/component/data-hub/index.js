@@ -15,9 +15,7 @@ import Container from '@material-ui/core/Container';
 import GroupedBar from './GroupedBarChart';
 import DataQuality from './DataQuality';
 // import dataJSON from './data.json';
-import Contact from './Contact';
-import Product from './Product';
-import Document from './Document';
+import ObjectsOverview from './ObjectsOverview';
 // actions
 import {
     getDataObjects,
@@ -81,7 +79,7 @@ class DataHub extends React.Component {
     }
 
     async componentDidMount() {
-        await enrichData();
+        // await enrichData();
     }
 
     handleChange = (event, newValue) => {
@@ -147,19 +145,19 @@ class DataHub extends React.Component {
                          onChangeIndex={this.handleChangeIndex}
                      >
                          <TabPanel value={this.state.openTab} index={0} dir='x'>
-                             <GroupedBar/>
+                             <GroupedBar products={dataHubProducts} contacts={dataHubContacts} documents={dataHubDocuments}/>
                              <Grid container>
                                  <Grid item lg={12} md={12} xs={12}>
                                      <Button className={classes.enrich} onClick={() => enrichData()}>Enrich</Button>
                                  </Grid>
                                  <Grid item lg={4} md={4} xs={12}>
-                                     <Contact contacts={dataHubContacts}/>
+                                     <ObjectsOverview type="Contacts" objs={dataHubContacts}/>
                                  </Grid>
                                  <Grid item lg={4} md={4} xs={12}>
-                                     <Product products={dataHubProducts}/>
+                                     <ObjectsOverview type="Products" objs={dataHubProducts}/>
                                  </Grid>
                                  <Grid item lg={4} md={4} xs={12}>
-                                     <Document documents={dataHubDocuments}/>
+                                     <ObjectsOverview type="Documents" objs={dataHubDocuments}/>
                                  </Grid>
                              </Grid>
                          </TabPanel>
