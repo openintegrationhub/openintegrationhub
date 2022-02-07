@@ -84,7 +84,7 @@ async function getObjectDistribution(user) {
 // Calculates object distribution and formats as a graph
 async function getObjectDistributionAsGraph(user) {
   try {
-    const allEvents = await getProvenanceEvents(user, 100, 1, false, false, false, false, false);
+    const allEvents = await getProvenanceEvents(user, 5000, 1, false, false, false, false, false);
 
     const nodes = [];
     const edges = [];
