@@ -207,9 +207,7 @@ class FlowDetails extends React.PureComponent {
 
     onElementClick = (element) => {
         console.log('onElementClick', element);
-        console.log('comps is', this.props.components);
-        const component = this.props.components.all.filter((cp) => cp.id === element.componentId)[0];
-        console.log('which one is it?', component);
+        const selectedComponent = this.props.components.all.filter((cp) => cp.id === element.componentId)[0];
 
         this.props.onEditNode && this.props.onEditNode(element.id);
         this.setState({
@@ -217,12 +215,11 @@ class FlowDetails extends React.PureComponent {
             contentShown: 'selected-node',
         });
         this.setState({
-            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: element.credential_id, component,
+            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: element.credential_id, editComponent: selectedComponent,
         });
         if (this.state.components.all.length === 0) {
             this.setState({ components: this.props.components });
         }
-        console.log('new state', this.state.component);
     }
 
     displayModal = (parent) => {
@@ -363,6 +360,14 @@ class FlowDetails extends React.PureComponent {
       return arr;
   }
 
+  getImage = (node) => {
+      const component = this.state.components.all.filter((comp) => comp.id === node.componentId)[0];
+      if (component && component.hasOwnProperty('logo')) {
+          return component.logo;
+      }
+      return false;
+  }
+
     generateGraphVisualization = (currentContent = [], parent, /* isRoot, */ nodeAlignment) => {
         const {
             classes,
@@ -381,14 +386,15 @@ class FlowDetails extends React.PureComponent {
             if (i === parent.children.length - 1 && parent.children.length > 1) {
                 nodeAlignment = 'right';
             }
-            childrenContent.push(this.generateGraphVisualization([], node, false, nodeAlignment));
+            childrenContent.push(this.generateGraphVisualization([], node, nodeAlignment));
         }
 
+        // console.log('componentImg', image);
         currentContent.push(<div key={parent.id} className={`${styles.nodeWrapper} ${nodeAlignment}`}>
 
             {/* {!isRoot ? <button>+</button> : null} */}
             <div className={`${classes.flowElement} ${parent.privileged ? 'privileged' : ''} `} onClick={this.onElementClick.bind(this, parent)}>
-                <p >{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
+                <p style={{ background: '' }}>{this.getImage(parent) ? <img src={this.getImage(parent)} style={{ width: '50px', height: '50px' }} alt="test"/> : null}{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
             </div>
             {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/>{childrenContent} </div>
                 : (parent.children.length && childrenContent.length > 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/><div style={{
@@ -818,7 +824,7 @@ class FlowDetails extends React.PureComponent {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={this.state.component.name}
+                            value={this.state.editComponent.name}
                             onChange={this.handleComponentSelection}
                             fullWidth
                         >
