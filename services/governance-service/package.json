@@ -1,6 +1,6 @@
 {
   "name": "governance-service",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Stores provenance events and other governance related data.",
   "main": "index.js",
   "scripts": {
