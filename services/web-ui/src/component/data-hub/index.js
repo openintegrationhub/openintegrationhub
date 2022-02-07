@@ -12,6 +12,9 @@ import { connect } from 'react-redux';
 import { Button, Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
+import {
+    Autorenew,
+} from '@material-ui/icons';
 import GroupedBar from './GroupedBarChart';
 import DataQuality from './DataQuality';
 // import dataJSON from './data.json';
@@ -66,8 +69,8 @@ const useStyles = {
         height: '48px',
     },
     enrich: {
-        width: '100%',
-        background: 'lightgray',
+        // width: '100%',
+        // background: 'lightgray',
     },
 };
 
@@ -125,9 +128,8 @@ class DataHub extends React.Component {
          //  }
 
          return (
-             <Container className={classes.container}>
-                 <div className={classes.root}>
-                     <AppBar position="static" color="default">
+             <React.Fragment>
+                 <AppBar position="static" color="default">
                          <Tabs
                              value={this.state.openTab}
                              onChange={this.handleChange}
@@ -137,43 +139,62 @@ class DataHub extends React.Component {
                              aria-label="full width tabs example"
                          >
                              <Tab label="Data-Quality" />
-                             <Tab label="Search" />
-                             <Tab label="RDS" />
+                             <Tab label="Search & Data Export" />
+                             <Tab label="Raw Data Storage" />
                          </Tabs>
                      </AppBar>
-                     <SwipeableViews
-                         axis='x'
-                         index={this.state.openTab}
-                         onChangeIndex={this.handleChangeIndex}
-                     >
-                         <TabPanel value={this.state.openTab} index={0} dir='x'>
-                             <GroupedBar/>
-                             <Grid container>
-                                 <Grid item lg={12} md={12} xs={12}>
-                                     <Button className={classes.enrich} onClick={() => enrichData()}>Enrich</Button>
-                                 </Grid>
-                                 <Grid item lg={4} md={4} xs={12}>
-                                     <Contact contacts={dataHubContacts}/>
-                                 </Grid>
-                                 <Grid item lg={4} md={4} xs={12}>
-                                     <Product products={dataHubProducts}/>
-                                 </Grid>
-                                 <Grid item lg={4} md={4} xs={12}>
-                                     <Document documents={dataHubDocuments}/>
-                                 </Grid>
-                             </Grid>
-                         </TabPanel>
-                         <TabPanel value={this.state.openTab} index={1} dir='x'>
-                             <DataQuality data={dataHubObjects}/>
-                         </TabPanel>
-                         <TabPanel value={this.state.openTab} index={2} dir='x'>
-                             <RDS/>
-                         </TabPanel>
-                     </SwipeableViews>
-                 </div>
-                 <Tab/>
+                <Container className={classes.container}>
+                    <div className={classes.root}>
+                        
+                        <SwipeableViews
+                            axis='x'
+                            index={this.state.openTab}
+                            onChangeIndex={this.handleChangeIndex}
+                        >
+                            <TabPanel value={this.state.openTab} index={0} dir='x'>
+                                <Box style={{ margin: '24px 0 36px' }}>
+                                    <Grid container>
+                                        <Grid item xs>
+                                            <Typography variant="h4" component="h1">Data Quality</Typography>
+                                        </Grid>
+                                        <Grid item xs="auto">
+                                            <Button 
+                                                color="primary"
+                                                variant="contained"
+                                                className={classes.enrich}
+                                                onClick={() => enrichData()}
+                                                disableElevation
+                                                startIcon={<Autorenew />}>Enrich Data</Button>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
 
-             </Container>
+                                <GroupedBar/>
+
+                                <Grid container>
+                                    <Grid item lg={4} md={4} xs={12}>
+                                        <Contact contacts={dataHubContacts}/>
+                                    </Grid>
+                                    <Grid item lg={4} md={4} xs={12}>
+                                        <Product products={dataHubProducts}/>
+                                    </Grid>
+                                    <Grid item lg={4} md={4} xs={12}>
+                                        <Document documents={dataHubDocuments}/>
+                                    </Grid>
+                                </Grid>
+                            </TabPanel>
+                            <TabPanel value={this.state.openTab} index={1} dir='x'>
+                                <DataQuality data={dataHubObjects}/>
+                            </TabPanel>
+                            <TabPanel value={this.state.openTab} index={2} dir='x'>
+                                <RDS/>
+                            </TabPanel>
+                        </SwipeableViews>
+                    </div>
+                    <Tab/>
+
+                </Container>
+             </React.Fragment>
          );
      }
 }

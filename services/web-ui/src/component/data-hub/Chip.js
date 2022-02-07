@@ -5,8 +5,9 @@ import DoneIcon from '@material-ui/icons/Done';
 // import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles(() => ({
-  root: {
-    marginTop: 30,
+  filterItem: {
+    marginRight: '8px',
+    cursor: 'pointer',
   },
 }));
 
@@ -40,15 +41,13 @@ export default function SmallOutlinedChips({ label }) {
   return (
     <div className={classes.root}>
       <Chip
-        variant="outlined"
         size="small"
-        style={{
-          background: 'orange', color: 'black', padding: 3, fontSize: 12,
-        }}
         label={label}
+        // color="primary"
         onClick={handleClick}
         onDelete={handleDelete}
         deleteIcon={chipIcon}
+        className={classes.filterItem}
       />
     </div>
   );
