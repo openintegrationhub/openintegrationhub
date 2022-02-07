@@ -604,7 +604,15 @@ class FlowDetails extends React.PureComponent {
                               value={this.state.component.name}
                               onChange={(e) => this.handleComponentSelection(e)}
                           >
-                              {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id} >{component.logo ? <div style={{ display: 'flex', alignItems: 'center' }}><img src={component.logo} alt="comp_img" style={{ heigt: 24, width: 24 }}/>{component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }</div> : <div style={{ display: 'flex', alignItems: 'center' }}><AddBoxIcon style={{ height: 24, width: 24 }}/> {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }</div>} {/* {!component.specialFlags.privilegedComponent ? '(Privileged)' : null} */}</MenuItem>)}
+                              {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id} >
+                                  {component.logo ? <div style={{ display: 'flex', alignItems: 'center' }}>
+                                      <img src={component.logo} alt="comp_img" style={{ heigt: 24, width: 24 }}/>
+                                      {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                  </div> : <div style={{ display: 'flex', alignItems: 'center' }}>
+                                      <AddBoxIcon style={{ height: 24, width: 24 }}/>
+                                      {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                  </div>}
+                              </MenuItem>)}
                           </Select>
                       </FormControl>
 
@@ -807,7 +815,15 @@ class FlowDetails extends React.PureComponent {
                             onChange={this.handleComponentSelection}
                             fullWidth
                         >
-                            {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}>{component.name}</MenuItem>)}
+                            {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}>{component.logo
+                                ? <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <img src={component.logo} alt="comp_img" style={{ heigt: 24, width: 24 }}/>
+                                    {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                </div>
+                                : <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <AddBoxIcon style={{ height: 24, width: 24 }}/> {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                </div>}
+                            </MenuItem>)}
                         </Select>
                     </FormControl>
 
