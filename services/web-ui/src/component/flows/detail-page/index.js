@@ -27,6 +27,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
+import AddBoxIcon from '@material-ui/icons/AddBox';
 import {
     getFlows, deleteFlow, updateFlow, startFlow, stopFlow, executeFlow,
 } from '../../../action/flows';
@@ -122,6 +123,7 @@ class FlowDetails extends React.PureComponent {
             selectedNode: '',
             component: { name: '' },
             components: '',
+            secret: '',
             function: '',
             nodeSettings: {},
             fields: {},
@@ -446,12 +448,26 @@ class FlowDetails extends React.PureComponent {
           this.setState({ component });
       }
 
+      // test it on monday
+      handleSecretSelection = (event) => {
+          const selectedSecret = event.target.value;
+          this.setState({ secret: selectedSecret });
+      }
+
       handleNodeSettings = (event) => {
           this.setState({ nodeSettings: event.jsObject });
       }
 
       handleFieldsInput = (event) => {
           this.setState({ fields: event.jsObject });
+      }
+
+      handleEditNodeSettings = (event) => {
+          this.setState({ editNodeSettings: event.jsObject });
+      }
+
+      handleEditFieldsInput = (event) => {
+          this.setState({ editFields: event.jsObject });
       }
 
       saveFlow = async () => {
@@ -465,9 +481,9 @@ class FlowDetails extends React.PureComponent {
       }
 
       handleEdit = () => {
+          const newFlow = this.state.flow;
           const selNode = this.state.selectedNode;
 
-          console.log('selNode id', selNode.id);
           const node = this.state.flow.graph.nodes.filter((nod) => nod.id === selNode.id)[0];
           const edge = this.state.flow.graph.edges.filter((edge) => edge.target === selNode.id)[0];
 
@@ -477,31 +493,47 @@ class FlowDetails extends React.PureComponent {
           const { edges } = this.state.flow.graph;
 
           const newEdges = edges.filter((item) => item.target !== selNode.id);
-          console.log('new edges', newEdges);
           newEdges.push(newEdge);
+
           const newNodes = nodes.filter((item) => item.id !== selNode.id);
+
           newNodes.push(node);
+
           const graphCopy = this.state.flow.graph;
           graphCopy.nodes = newNodes;
           graphCopy.edges = newEdges;
           node.id = this.state.editNodeName;
-          console.log('edges', edges);
-          console.log('newEdge', newEdge);
-          console.log('new graph', graphCopy);
 
-          const newFlow = this.state.flow;
+          if (this.state.editComponent) {
+              node.componentId = this.state.editComponent.id;
+          }
+          if (this.state.editFunction) {
+              node.function = this.state.editFunction;
+          }
+          //   if(this.state.editSecret){
+          //     node.secret = this.state.editSecret
+          //   }
+          if (this.state.editNodeSettings) {
+              node.nodeSettings = this.state.editNodeSettings;
+          }
+          if (this.state.editFields) {
+              node.fields = this.state.editFields;
+          }
+
           newFlow.graph = graphCopy;
-          //   this.setState({ flow: newFlow });
+          console.log('newFlow', newFlow);
+          this.setState({ flow: newFlow });
           //     this.setState({
           //       flow: {
           //           ...flow.graph.nodes,
           //           cron: value,
           //       },
           //   });
-          console.log('correct newNodes?', newNodes);
-          const someProperty = { ...this.state.someProperty };
-          someProperty.flag = true;
-          this.setState({ someProperty });
+
+          //   console.log('correct newNodes?', newNodes);
+          //   const someProperty = { ...this.state.someProperty };
+          //   someProperty.flag = true;
+          //   this.setState({ someProperty });
       }
 
       render() {
@@ -562,7 +594,7 @@ class FlowDetails extends React.PureComponent {
                                   value={this.state.component.name}
                                   onChange={(e) => this.handleComponentSelection(e)}
                               >
-                                  {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}><img src={component.distribution.image} alt="comp_img"/>{component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null } {/* {!component.specialFlags.privilegedComponent ? '(Privileged)' : null} */}</MenuItem>)}
+                                  {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id} >{component.logo ? <div style={{ display: 'flex', alignItems: 'center' }}><img src={component.logo} alt="comp_img" style={{ heigt: 24, width: 24 }}/>{component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }</div> : <div style={{ display: 'flex', alignItems: 'center' }}><AddBoxIcon style={{ height: 24, width: 24 }}/> {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }</div>} {/* {!component.specialFlags.privilegedComponent ? '(Privileged)' : null} */}</MenuItem>)}
                               </Select>
                         </FormControl>
 
@@ -581,7 +613,7 @@ class FlowDetails extends React.PureComponent {
                               <Select
                                   labelId="demo-simple-select-label"
                                   id="demo-simple-select"
-                                  value={this.state.component.name}
+                                  value={this.state.secret}
                                   onChange={(e) => this.handleSecretSelection(e)}
                               >
                                   {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name} key={secret.name}>{secret.name}</MenuItem>)}
@@ -610,7 +642,7 @@ class FlowDetails extends React.PureComponent {
                               placeholder = {this.dummyData}
                               onChange={(e) => this.handleFieldsInput(e)}
                           />
-
+                          
                         <div className={classes.actionsContainer}>
                             <div className="item">
                                 <Button variant="contained" aria-label="Add" onClick={() => this.setState({ openModal: false, component: { name: '' } })} disableElevation>
@@ -778,8 +810,8 @@ class FlowDetails extends React.PureComponent {
 
 
                     <TextField 
-                            id="function" 
-                            name="function"
+                            id="editFunction" 
+                            name="editFunction"
                             label="Function" 
                             // value={selNode.id} 
                             onChange={(e) => this.handleChange(e)}
@@ -812,7 +844,7 @@ class FlowDetails extends React.PureComponent {
                         height = '350px'
                         width = '100%'
                         placeholder = {this.dummyData}
-                        // onChange={this.editorChange.bind(this)}
+                        onChange={(e) => this.handleEditNodeSettings(e)}
                         style={{ borderRadius: '4px' }}
                     />
 
@@ -824,7 +856,7 @@ class FlowDetails extends React.PureComponent {
                         height = '350px'
                         width = '100%'
                         placeholder = {this.dummyData}
-                        // onChange={(e) => this.handleJSONInput(e)}
+                        onChange={(e) => this.handleEditFieldsInput(e)}
                         style={{ borderRadius: '4px' }}
                     />
                     
