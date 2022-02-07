@@ -66,6 +66,8 @@ const flow = new Schema({
   owners: { type: [owner] },
   status: { type: String, default: 'inactive' },
   cron: { type: String, maxlength: 20 },
+  isTemplate: Boolean,
+  isGlobal: Boolean,
   fromTemplate: { type: mongoose.Types.ObjectId, ref: 'FlowTemplate' },
   flowSettings: {
     /* webhooks: {

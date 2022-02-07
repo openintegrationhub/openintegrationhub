@@ -2,12 +2,12 @@ const cronstrue = require('cronstrue');
 const log = require('../config/logger'); // eslint-disable-line
 
 function findNode(nodeId, flow) {
-  const wasFound = flow.graph.nodes.findIndex((n) => (n.id === nodeId));
+  const wasFound = flow.graph.nodes.findIndex(n => (n.id === nodeId));
   if (wasFound === -1) return false;
   return true;
 }
 
-function validate(flow) {
+function validate(flow, user) {
   const errors = [];
 
   // Check for missing required attributes and length using the mongoose validation
@@ -46,6 +46,10 @@ function validate(flow) {
     } catch (e) {
       errors.push({ message: 'Invalid cron expression.', code: 400 });
     }
+  }
+
+  if (flow.isGlobal && !user.isAdmin) {
+    errors.push({ message: 'Only admins allowed to create global templates', code: 403 });
   }
 
   return (errors);

@@ -123,6 +123,26 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   res.json(response);
 });
 
+router.get('/templates', can(config.flowReadPermission), async (req, res) => {
+  const pageNumber = req.query.page ? (parseInt(req.query.page.number, 10) || 1) : 1;
+  const pageSize = req.query.page ? (parseInt(req.query.page.size, 10) || 10) : 10;
+
+  const resp = await storage.getTemplates({
+    user: req.user,
+    pageNumber,
+    pageSize,
+  });
+
+  res.send({
+    data: resp.data,
+    meta: {
+      totalPages: Math.ceil(resp.meta.count / pageSize),
+      page: pageNumber,
+      perPage: pageSize,
+    },
+  });
+});
+
 // Adds a new flow to the repository
 router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) => {
   const newFlow = req.body;
@@ -131,12 +151,12 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
   if (!newFlow.owners) {
     newFlow.owners = [];
   }
-  if (newFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
+  if (newFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
     newFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 
   const storeFlow = new Flow(newFlow);
-  const errors = validate(storeFlow);
+  const errors = validate(storeFlow, req.user);
 
   if (errors && errors.length > 0) {
     return res.status(400).send({ errors });
@@ -192,13 +212,13 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
   if (!updateFlow.owners) {
     updateFlow.owners = [];
   }
-  if (updateFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
+  if (updateFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
     updateFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 
   const storeFlow = new Flow(updateFlow);
 
-  const errors = validate(storeFlow);
+  const errors = validate(storeFlow, req.user);
 
   if (errors && errors.length > 0) {
     return res.status(400).send({ errors });

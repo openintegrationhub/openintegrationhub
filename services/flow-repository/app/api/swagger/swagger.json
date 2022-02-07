@@ -173,6 +173,74 @@
         }
       }
     },
+    "/flows/templates": {
+      "get": {
+        "x-swagger-router-controller": "flow",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "flows"
+        ],
+        "summary": "Retrieve all flow templates associated with the current user from the repository",
+        "description": "This will only return Flows that are either global or defined as templates for users tenant.",
+        "operationId": "getFlowTemplates",
+        "parameters": [
+          {
+            "name": "page[size]",
+            "in": "query",
+            "description": "Amount of flows per page returned. Default is 10.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page[number]",
+            "in": "query",
+            "description": "Number of the page to be returned. Default is 1.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "filter[status]",
+            "in": "query",
+            "description": "Filter results by flow status. Active = 1. Inactive = 0",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of flows.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Flow"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/Meta"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/flows/{id}": {
       "get": {
         "x-swagger-router-controller": "flow",
@@ -806,6 +874,12 @@
             "items": {
               "$ref": "#/components/schemas/Owner"
             }
+          },
+          "isTemplate": {
+            "type": "boolean"
+          },
+          "isGlobal": {
+            "type": "boolean"
           }
         }
       },

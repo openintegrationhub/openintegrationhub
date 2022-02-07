@@ -37,6 +37,38 @@ const buildQuery = (user, permission, id) => {
   return qry;
 };
 
+const getTemplates = async ({ user, pageSize = 10, pageNumber = 0 }) => {
+  const query = {
+    isTemplate: true,
+    $or: [
+      {
+        isGlobal: true,
+      },
+      {
+        'owners.id': user.tenant,
+      },
+    ],
+  };
+  const data = await Promise.all([
+    Flow.find(query).skip((pageNumber - 1) * pageSize).limit(pageSize).lean(),
+    Flow.find(query).countDocuments(),
+  ]);
+
+  data[0].forEach((flow) => {
+    flow.graph.nodes.forEach((node) => {
+      delete node.credentials_id;
+    });
+    flow.owners = flow.owners.filter(owner => owner.id === user.sub || owner.id === user.tenant);
+  });
+
+  return {
+    data: data[0],
+    meta: {
+      count: data[1],
+    },
+  };
+};
+
 // Retrieves all flows for authorized owner or for admin irrespective of ownership.
 const getFlows = async ( // eslint-disable-line
   user,
@@ -119,7 +151,7 @@ const getFlowById = (flowId, user) => new Promise((resolve) => {
     });
 });
 
-const addFlow = (storeFlow) => new Promise((resolve) => {
+const addFlow = storeFlow => new Promise((resolve) => {
   storeFlow.save()
     .then((doc) => {
       const flow = format(doc._doc);
@@ -179,7 +211,7 @@ const stoppingFlow = (user, flowId) => new Promise((resolve) => {
     });
 });
 
-const startedFlow = (flowId) => new Promise((resolve) => {
+const startedFlow = flowId => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
 
   const qry = { '_id': findId };
@@ -197,7 +229,7 @@ const startedFlow = (flowId) => new Promise((resolve) => {
     });
 });
 
-const stoppedFlow = (flowId) => new Promise((resolve) => {
+const stoppedFlow = flowId => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
 
   const qry = { '_id': findId };
@@ -226,7 +258,7 @@ const deleteFlow = (flowId, user) => new Promise((resolve) => {
     });
 });
 
-const anonymise = (userId) => new Promise((resolve) => {
+const anonymise = userId => new Promise((resolve) => {
   Flow.update(
     { 'owners.id': userId },
     { $pull: { owners: { id: userId } } },
@@ -269,4 +301,5 @@ module.exports = {
   anonymise,
   getOrphanedFlows,
   format,
+  getTemplates,
 };
