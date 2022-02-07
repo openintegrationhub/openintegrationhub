@@ -18,9 +18,7 @@ import {
 import GroupedBar from './GroupedBarChart';
 import DataQuality from './DataQuality';
 // import dataJSON from './data.json';
-import Contact from './Contact';
-import Product from './Product';
-import Document from './Document';
+import ObjectsOverview from './ObjectsOverview';
 // actions
 import {
     getDataObjects,
@@ -84,7 +82,7 @@ class DataHub extends React.Component {
     }
 
     async componentDidMount() {
-        await enrichData();
+        // await enrichData();
     }
 
     handleChange = (event, newValue) => {
@@ -169,17 +167,17 @@ class DataHub extends React.Component {
                                     </Grid>
                                 </Box>
 
-                                <GroupedBar/>
+                                <GroupedBar products={dataHubProducts} contacts={dataHubContacts} documents={dataHubDocuments}/>
 
                                 <Grid container>
                                     <Grid item lg={4} md={4} xs={12}>
-                                        <Contact contacts={dataHubContacts}/>
+                                        <ObjectsOverview type="Contacts" objs={dataHubContacts} colorIndicator="#ff6383"/>
                                     </Grid>
                                     <Grid item lg={4} md={4} xs={12}>
-                                        <Product products={dataHubProducts}/>
+                                        <ObjectsOverview type="Products" objs={dataHubProducts} colorIndicator="#36a2eb"/>
                                     </Grid>
                                     <Grid item lg={4} md={4} xs={12}>
-                                        <Document documents={dataHubDocuments}/>
+                                        <ObjectsOverview type="Documents" objs={dataHubDocuments} colorIndicator="#4bc0c0"/>
                                     </Grid>
                                 </Grid>
                             </TabPanel>

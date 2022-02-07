@@ -36,25 +36,47 @@ const useStyles = {
             width: '24px',
             height: '24px',
             borderRadius: '4px',
-            background: '#4cc0c0',
+            background: '#ff6384',
             marginRight: '8px',
         },
     },
 };
 
-class DataHubDocument extends React.Component {
+function getRandomArbitrary(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+class ObjectsOverview extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
         };
     }
 
     render() {
         const {
-            classes,
-            documents,
+            classes, objs, type, colorIndicator,
         } = this.props;
+
+        const tags = [];
+        // let averageScore = 0
+        const scores = [];
+        const average = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
+
+        if (objs.length > 0) {
+            for (const obj of objs) {
+                if (obj.enrichmentResults.tags) {
+                    for (const tag of obj.enrichmentResults.tags) {
+                        if (!tags.includes(tag)) {
+                            tags.push(tag);
+                        }
+                    }
+                }
+                if (obj.enrichmentResults.score) {
+                    scores.push(obj.enrichmentResults.score);
+                }
+            }
+        }
 
         return (
             <Container className={classes.container}>
@@ -63,27 +85,26 @@ class DataHubDocument extends React.Component {
                 }}
                 >
 
-
-                    <Typography variant="h6" component="h2" className={classes.categoryHeadline}><div className="color-indicator" />Documents</Typography>
+                    <Typography variant="h6" component="h2" className={classes.categoryHeadline}><div className="color-indicator" style={{ background: colorIndicator }}/>{type}</Typography>
                     <div className={classes.detailsContainer}>
                         <span className="row">
                             <span className="key">Total:</span>
-                            <span className="value">{documents.length}</span>
+                            <span className="value">{objs.length}</span>
                         </span>
 
                         <span className="row">
                             <span className="key">Average Score</span>
-                            <span className="value">48 / 100</span>
+                            <span className="value">{average(scores)}</span>
                         </span>
 
                         <span className="row">
                             <span className="key">Tags:</span>
-                            <span className="value tags">project, contract, organization, system</span>
+                            <span className="value tags">{tags}</span>
                         </span>
 
                         <span className="row">
                             <span className="key">Duplicates:</span>
-                            <span className="value">29</span>
+                            <span className="value">{getRandomArbitrary(1, 4)}</span>
                         </span>
                     </div>
                 </Paper>
@@ -93,4 +114,4 @@ class DataHubDocument extends React.Component {
 }
 
 export default
-withStyles(useStyles)(DataHubDocument);
+withStyles(useStyles)(ObjectsOverview);

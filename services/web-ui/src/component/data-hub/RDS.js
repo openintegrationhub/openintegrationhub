@@ -7,8 +7,8 @@ import Typography from '@material-ui/core/Typography';
 import { Grid } from '@material-ui/core';
 import DateFnsUtils from '@date-io/moment';
 import {
-  DateTimePicker,
-  MuiPickersUtilsProvider,
+    DateTimePicker,
+    MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
@@ -31,17 +31,17 @@ class RDS extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          filterDuplicates: false,
-          filterScore: false,
-          filterDateFrom: null,
-          filterDateTo: null,
-          sortBy: '',
+            filterDuplicates: false,
+            filterScore: false,
+            filterDateFrom: null,
+            filterDateTo: null,
+            sortBy: '',
         };
     }
 
     handleFiltering = (event) => {
-      this.setState({ ...this.state, [event.target.name]: event.target.checked });
-  };
+        this.setState({ ...this.state, [event.target.name]: event.target.checked });
+    };
 
   handleSorting = (event) => {
       this.setState({ sortBy: event.target.value });
@@ -55,10 +55,10 @@ class RDS extends React.Component {
       this.setState({ filterDateTo: date._d });
   };
 
-    render() {
-        const {
-            classes,
-        } = this.props;
+  render() {
+      const {
+          classes,
+      } = this.props;
 
         return (
             <Container className={classes.container}>

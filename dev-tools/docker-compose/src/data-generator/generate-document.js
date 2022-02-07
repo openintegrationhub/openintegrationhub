@@ -1,5 +1,9 @@
 const faker = require('faker')
 
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min
+}
+
 module.exports = (amount = 1) => {
   const documents = []
   for (let i = 0; i < amount; i++) {
@@ -9,7 +13,11 @@ module.exports = (amount = 1) => {
       },
       data: {
         documentId: faker.datatype.uuid(),
-        description: faker.datatype.string(),
+        ...(getRandomArbitrary(1, 10) >= 5
+          ? {
+              description: faker.datatype.string(),
+            }
+          : {}),
         filesize: `${faker.datatype.number()} KB`,
         name: faker.datatype.string(),
       },

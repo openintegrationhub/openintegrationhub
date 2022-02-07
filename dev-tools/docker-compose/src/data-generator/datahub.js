@@ -8,9 +8,9 @@ const generatePerson = require('./generate-person')
 const generateProduct = require('./generate-product')
 const generateDocument = require('./generate-document')
 
-const PERSONS_SET_LENGTH = 10
-const PRODUCTS_SET_LENGTH = 10
-const DOCUMENTS_SET_LENGTH = 10
+const PERSONS_SET_LENGTH = 32
+const PRODUCTS_SET_LENGTH = 18
+const DOCUMENTS_SET_LENGTH = 44
 
 // use dev cluster setup
 
@@ -21,15 +21,16 @@ const DOCUMENTS_SET_LENGTH = 10
 
 // use local setup as target for import
 const iamBase = null // will take local iam api base
-const metaDataBase = `http://localhost:${services.metaDataRepository.externalPort}/api/v1`
+const metaDataBase = `https://metadata.openintegrationhub.com/api/v1`
 const dataHubBase = `http://localhost:${services.dataHub.externalPort}`
-const domainId = '61828b4c72bc3600212714ac'
+const domainId = '5db82cdb0e1048001a39711a'
 
 const username = process.env.DEV_CLUSTER_USERNAME || 't1_admin@local.dev'
 const password = process.env.DEV_CLUSTER_PASSWORD || 'password'
 
 const personSchemaUri = `${metaDataBase}/domains/${domainId}/schemas/addresses/personV2.json`
 const productSchemaUri = `${metaDataBase}/domains/${domainId}/schemas/products/product.json`
+const documentSchemaUri = `${metaDataBase}/domains/${domainId}/schemas/documents/extended/Document.json`
 
 let response = null
 let result = null
@@ -124,7 +125,7 @@ async function run() {
 
   data = generateDocument(DOCUMENTS_SET_LENGTH).map((document) => ({
     domainId,
-    schemaUri: productSchemaUri,
+    schemaUri: documentSchemaUri,
     content: {
       ...document.data,
     },

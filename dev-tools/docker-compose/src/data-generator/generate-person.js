@@ -1,5 +1,9 @@
 const faker = require('faker')
 
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min
+}
+
 module.exports = (amount = 1) => {
   const persons = []
   for (let i = 0; i < amount; i++) {
@@ -10,7 +14,11 @@ module.exports = (amount = 1) => {
       data: {
         firstName: faker.name.firstName(),
         middleName: faker.name.firstName(),
-        lastName: faker.name.lastName(),
+        ...(getRandomArbitrary(1, 10) >= 5
+          ? {
+              lastName: faker.name.lastName(),
+            }
+          : {}),
         photo: faker.image.avatar(),
         jobTitle: faker.name.jobTitle(),
         salutation: faker.name.prefix(),

@@ -227,7 +227,7 @@ class DataQuality extends React.Component {
                               aria-controls="panel1a-content"
                               id="panel1a-header"
                           >
-                              {el.enrichmentResults && <div><p>{el.content.firstName} {el.content.lastName},  Score: {el.enrichmentResults.score}</p> </div>}
+                              <div><p>{el.content.firstName} {el.content.lastName},  Score: {el.enrichmentResults && el.enrichmentResults.score}</p> </div>
                           </AccordionSummary>
                           <AccordionDetails style={{ display: 'block' }}>
                               <p>ID: {el.id}</p>
@@ -250,7 +250,10 @@ class DataQuality extends React.Component {
                               id="panel1a-header"
                           >
 
-                              {(el.content.description && el.enrichmentResults) && <div> <p>{el.content.description},  Score: {el.enrichmentResults.score} </p> </div>}
+                              <div>
+                                  <p>{el.content.articleNo}</p>
+                                  <p>{el.content.baseType},  Score: {el.enrichmentResults.score} </p>
+                              </div>
 
                               {/* <p style={{ marginLeft: '20px' }}>Date: {new Date(el.createdAt).toLocaleDateString('de-DE')}</p> */}
                           </AccordionSummary>
@@ -279,7 +282,7 @@ class DataQuality extends React.Component {
                               id="panel1a-header"
                           >
 
-                              {(el.content.description && el.enrichmentResults) && <div> <p>{el.content.description},  Score: {el.enrichmentResults.score} </p> </div>}
+                              <div> <p>{el.content.name},  Score: {el.enrichmentResults.score} </p> </div>
 
                               {/* <p style={{ marginLeft: '20px' }}>Date: {new Date(el.createdAt).toLocaleDateString('de-DE')}</p> */}
                           </AccordionSummary>

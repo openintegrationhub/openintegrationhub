@@ -1,5 +1,9 @@
 const faker = require('faker')
 
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min
+}
+
 module.exports = (amount = 1) => {
   const products = []
   for (let i = 0; i < amount; i++) {
@@ -8,8 +12,13 @@ module.exports = (amount = 1) => {
         recordUid: faker.datatype.uuid(),
       },
       data: {
+        baseType: 'car',
         articleNo: faker.datatype.uuid(),
-        description: faker.vehicle.vehicle(),
+        ...(getRandomArbitrary(1, 10) >= 5
+          ? {
+              description: faker.vehicle.vehicle(),
+            }
+          : {}),
         costCalc: faker.datatype.float(),
         costAvg: faker.datatype.float(),
         isSale: faker.datatype.boolean(),
