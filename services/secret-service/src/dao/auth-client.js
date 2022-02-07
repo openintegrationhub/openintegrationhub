@@ -2,10 +2,9 @@ const Logger = require('@basaas/node-logger');
 const { Event, EventBusManager, events } = require('@openintegrationhub/event-bus');
 const AuthClient = require('../model/AuthClient');
 
-const conf = require('./../conf');
+const conf = require('../conf');
 
 const log = Logger.getLogger(`${conf.log.namespace}/authClientDao`);
-const auditLog = Logger.getAuditLogger(`${conf.log.namespace}/authClientDao`);
 
 module.exports = {
 
@@ -40,13 +39,10 @@ module.exports = {
         return await AuthClient.full.findOne(query).lean();
     },
 
-    async update({ id, data, partialUpdate = false }) {
-        const updateOperation = partialUpdate ? { $set: data } : data;
-
-
-        const result = await AuthClient.full.findOneAndUpdate({
+    async update({ id, data }) {
+        const result = await AuthClient[data.type].findOneAndUpdate({
             _id: id,
-        }, updateOperation, {
+        }, data, {
             new: true,
         }).lean();
 
@@ -109,14 +105,4 @@ module.exports = {
             }
         }
     },
-
-    // async delete({ id }) {
-    //     await AuthClient.full.deleteOne({ _id: id });
-    //     log.info('deleted.client', { id });
-    // },
-
-    // async deleteAll(query) {
-    //     await AuthClient.full.deleteMany(query);
-    //     auditLog.info('authClient.deleteAll', { data: { ...query } });
-    // },
 };

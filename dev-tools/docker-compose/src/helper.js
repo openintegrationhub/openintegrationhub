@@ -11,6 +11,8 @@ const {
   clusterName,
   env,
   dbRoot,
+  nodeImage,
+  repositoryRoot,
   devToolsRoot,
 } = require('./config')
 
@@ -33,7 +35,37 @@ module.exports = {
     })
 
     if (response.status !== 200) {
-      throw new Error('Account missing')
+      throw new Error(response.statusText)
+    }
+
+    return response.json()
+  },
+  async createPersistentToken({
+    customIamBase,
+    token,
+    accountId,
+    description,
+    customPermissions,
+  }) {
+    const base = customIamBase || iamBase
+    console.log(`${base}/api/v1/tokens`)
+    const response = await fetch(`${base}/api/v1/tokens`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        accountId,
+        expiresIn: -1,
+        description: description || 'service-token',
+        customPermissions,
+      }),
+    })
+
+    if (response.status !== 200) {
+      throw new Error(response.statusText)
     }
 
     return response.json()
@@ -50,7 +82,7 @@ module.exports = {
     })
 
     if (response.status !== 200) {
-      throw new Error('Could not get userinfo')
+      throw new Error(response.statusText)
     }
 
     return response.json()
@@ -167,4 +199,11 @@ module.exports = {
       break
     }
   },
+
+  runNpm(relPath, args) {
+    execSync(
+      `docker run --rm --name npmRunner -it -e npm_config_cache=/usr/src/app/.npm_cache -v ${repositoryRoot}:/usr/src/app ${nodeImage} sh -ci 'cd /usr/src/app/${relPath}; npm run ${args}'`,
+      { stdio: 'inherit' }
+    )
+  }
 }

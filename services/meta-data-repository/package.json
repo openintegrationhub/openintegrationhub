@@ -1,6 +1,6 @@
 {
   "name": "meta-data-repository",
-  "version": "0.2.1",
+  "version": "0.3.2",
   "description": "TBD",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -10,9 +10,9 @@
     "start:container": "nodemon src/index.js",
     "test": "jest",
     "watch": "nodemon src/index.js",
-    "coverage": "yarn test --coverage",
-    "build:docker": "docker build -t openintegrationhub/meta-data-repository:${VERSION} -f Dockerfile .",
-    "start-dev-db": "yarn run-rs -v 4.0.12"
+    "coverage": "npm test --coverage",
+    "build:docker": "docker build -t openintegrationhub/meta-data-repository:${VERSION} -f Dockerfile ../../",
+    "start-dev-db": "npm run-rs -v 4.0.12"
   },
   "dependencies": {
     "@basaas/node-logger": "1.1.5",
@@ -27,6 +27,7 @@
     "json-refs": "3.0.13",
     "json-schema-ref-parser": "7.1.2",
     "jszip": "3.2.2",
+    "mkdirp": "1.0.4",
     "moment": "2.24.0",
     "mongoose": "5.11.8",
     "morgan": "1.9.1",
@@ -40,14 +41,13 @@
     "uuid": "3.3.3"
   },
   "devDependencies": {
-    "eslint": "6.6.0",
-    "eslint-config-airbnb-base": "14.0.0",
-    "eslint-plugin-import": "2.18.2",
-    "eslint-plugin-jest": "22.17.0",
-    "get-port": "5.0.0",
+    "eslint": "7.32.0",
+    "eslint-config-airbnb-base": "14.2.1",
+    "eslint-plugin-import": "2.24.2",
+    "eslint-plugin-jest": "24.4.0",
     "jest": "26.6.0",
     "mongodb": "3.6.3",
-    "mongodb-memory-server": "6.9.2",
+    "mongodb-memory-server": "7.4.1",
     "nock": "11.6.0",
     "nodemon": "1.19.4",
     "run-rs": "0.6.2",

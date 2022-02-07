@@ -11,7 +11,7 @@ Following software needs to be installed
 1. Docker
 2. Docker Compose
 3. Minikube
-4. NodeJS >= 12
+4. NodeJS >= 16
 5. [MongoDB Shell](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/#install-the-mongodb-packages)
 6. [Simpleproxy](https://github.com/vzaliva/simpleproxy)
 

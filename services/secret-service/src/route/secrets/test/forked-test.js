@@ -2,7 +2,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(process.cwd(), '.env.test') });
 const cluster = require('cluster');
 const skmInstances = require('os').cpus().length;
-const getPort = require('get-port');
+
 const supertest = require('supertest');
 const nock = require('nock');
 const iamMock = require('../../../test/iamMock');

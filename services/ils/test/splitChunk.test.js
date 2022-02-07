@@ -19,7 +19,7 @@ let app;
 
 const {
   chunk1, chunk2, chunk3, chunk4,
-} = require('./seed/splitChunk.seed.js');
+} = require('./seed/splitChunk.seed');
 const log = require('../app/config/logger');
 
 beforeAll(async () => {

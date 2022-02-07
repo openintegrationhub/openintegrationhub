@@ -3,6 +3,7 @@ const { ComponentOrchestrator } = require('@openintegrationhub/component-orchest
 const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
 const HttpApi = require('./HttpApi');
 const FlowsDao = require('./dao/FlowsDao');
+const FlowStateDao = require('./dao/FlowStateDao')
 const ComponentsDao = require('./dao/ComponentsDao');
 const TokensDao = require('./dao/TokensDao');
 const SecretsDao = require('./dao/SecretsDao');
@@ -59,6 +60,7 @@ class ComponentOrchestratorApp extends App {
             channel: asValue(channel),
             iamClient: asValue(iamClient),
             flowsDao: asClass(FlowsDao),
+            flowStateDao: asClass(FlowStateDao),
             componentsDao: asClass(ComponentsDao),
             secretsDao: asClass(SecretsDao),
             tokensDao: asClass(TokensDao),

@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const metaData = {
   oihUser: String,
+  tenant: String,
 };
 
 // Define schema

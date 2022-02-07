@@ -32,8 +32,8 @@ describe('Mass Data Handling', () => {
     before(async function () {
         const config = {};
         const logger = createLogger({ name: 'test', level: 'fatal' });
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { useNewUrlParser: true });
+        const mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
+        await mongoose.connect(mongoUri);
         this.server = new Server({ config, logger });
         this.request = agent(this.server.serverCallback);
         this.auth = 'Bearer justSomeToken';
@@ -48,7 +48,14 @@ describe('Mass Data Handling', () => {
         it('should import many items', async function () {
             this.timeout(5000);
 
-            let records = []
+            type Record = {
+                domainId: string;
+                schemaUri: string;
+                content: any;
+                refs: any[];
+              };
+
+            let records: Record[] = []
 
             getDummyOihPersons(PERSONS_SET_LENGTH).forEach(person => records.push(
                 {
@@ -428,7 +435,7 @@ describe('Mass Data Handling', () => {
             body = (await this.request
                 .get('/data/status')
                 .set('Authorization', this.auth)
-                .expect(401)).body
+                .expect(403)).body
             
             nockIamIntrospection(admin2);
 
@@ -459,7 +466,7 @@ describe('Mass Data Handling', () => {
                     tenant: "tenant1",
                 })
                 .set('Authorization', this.auth)
-                .expect(401)
+                .expect(403)
 
         });
     });

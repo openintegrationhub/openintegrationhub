@@ -1,6 +1,5 @@
 const dotprop = require('dot-prop');
 
-
 function getValuesFromData(data, selector) {
   const keys = selector.trim().split('.');
 
@@ -34,7 +33,6 @@ function getValuesFromData(data, selector) {
   };
 }
 
-
 const defaultFunctions = [
   {
     id: false,
@@ -45,7 +43,7 @@ const defaultFunctions = [
   {
     name: 'anonymize',
     code: (data, duty) => {
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       // TODO: Genericise constraint operator handling
       if (duty.constraint && duty.constraint.operator) {
@@ -66,7 +64,7 @@ const defaultFunctions = [
     name: 'equals',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'equals') {
@@ -96,7 +94,7 @@ const defaultFunctions = [
     name: 'notEquals',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'notEquals') {
@@ -128,13 +126,13 @@ const defaultFunctions = [
     },
   },
   {
-    name: 'smallerThen',
+    name: 'smallerThan',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
-        if (permission.constraint.operator === 'smallerThen') {
+        if (permission.constraint.operator === 'smallerThan') {
           const result = getValuesFromData(returnData, permission.constraint.leftOperand);
           if (result.found) {
             if (Array.isArray(result.value)) {
@@ -161,13 +159,13 @@ const defaultFunctions = [
     },
   },
   {
-    name: 'biggerThen',
+    name: 'biggerThan',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
-        if (permission.constraint.operator === 'biggerThen') {
+        if (permission.constraint.operator === 'biggerThan') {
           const result = getValuesFromData(returnData, permission.constraint.leftOperand);
           if (result.found) {
             if (Array.isArray(result.value)) {
@@ -197,7 +195,7 @@ const defaultFunctions = [
     name: 'smallerOrEqual',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'smallerOrEqual') {
@@ -230,7 +228,7 @@ const defaultFunctions = [
     name: 'biggerOrEqual',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'biggerOrEqual') {
@@ -263,7 +261,7 @@ const defaultFunctions = [
     name: 'contains',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'contains') {
@@ -303,7 +301,7 @@ const defaultFunctions = [
     name: 'notContains',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'notContains') {
@@ -345,7 +343,7 @@ const defaultFunctions = [
     name: 'exists',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'exists') {
@@ -367,7 +365,7 @@ const defaultFunctions = [
     name: 'notExists',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'notExists') {
@@ -394,7 +392,7 @@ const defaultFunctions = [
     name: 'hasLength',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'hasLength') {
@@ -417,7 +415,7 @@ const defaultFunctions = [
     name: 'keyLength',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'keyLength') {
@@ -442,7 +440,7 @@ const defaultFunctions = [
     name: 'isType',
     code: (data, permission) => {
       let passes = false;
-      const returnData = Object.assign({}, data);
+      const returnData = { ...data };
 
       if (permission.constraint && permission.constraint.operator) {
         if (permission.constraint.operator === 'isType') {
@@ -463,6 +461,5 @@ const defaultFunctions = [
     },
   },
 ];
-
 
 module.exports = defaultFunctions;

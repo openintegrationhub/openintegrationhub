@@ -110,10 +110,6 @@ router.get('/', jsonParser, can(config.flowTemplateReadPermission), async (req, 
 
   const response = await storage.getTemplates(req.user, pageSize, pageNumber, searchString, filters, sortField, sortOrder);
 
-  if (response.data.length === 0 && !res.headersSent) {
-    return res.status(404).send({ errors: [{ message: 'No templates found', code: 404 }] });
-  }
-
   response.meta.page = pageNumber;
   response.meta.perPage = pageSize;
   response.meta.totalPages = Math.ceil(response.meta.total / pageSize);
@@ -131,7 +127,9 @@ router.post('/', jsonParser, can(config.flowTemplateWritePermission), async (req
   if (newTemplate.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     newTemplate.owners.push({ id: req.user.sub, type: 'user' });
   }
-
+  if (req.user.tenant) {
+    newTemplate.tenant = req.user.tenant;
+  }
   const storeTemplate = new FlowTemplate(newTemplate);
   const errors = validate(storeTemplate);
 
@@ -234,7 +232,7 @@ router.get('/:id', jsonParser, can(config.flowTemplateReadPermission), async (re
   const template = await storage.getTemplateById(templateId, req.user);
 
   if (!template) {
-    res.status(404).send({ errors: [{ message: 'No template found', code: 404 }] });
+    res.status(404).send({ errors: [{ message: 'Template not found', code: 404 }] });
   } else {
     const response = {
       data: template,

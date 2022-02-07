@@ -4,24 +4,18 @@ const bformat = require('bunyan-format');
 const formatOut = bformat({ outputMode: 'long' /* , levelInString: true */ });
 
 const log = bunyan.createLogger({
-  name: 'app',
-  streams: [
-    {
-      level: 'trace',
-      type: 'file',
-      path: 'error.log', // log ERROR and above to a file
+    name: 'app',
+    streams: [
+        {
+            level: 'trace',
+            // stream: process.stdout            // log INFO and above to stdout
+            stream: formatOut,
+        },
 
-    },
-    {
-      level: 'trace',
-      // stream: process.stdout            // log INFO and above to stdout
-      stream: formatOut,
-    },
-
-  ],
-  // stream: formatOut,
-  level: 'trace',
-  src: true, // disable in production
+    ],
+    // stream: formatOut,
+    level: 'trace',
+    src: true, // disable in production
 });
 
 const fs = require('fs');

@@ -1,4 +1,4 @@
-const getPort = require('get-port');
+
 const mongoose = require('mongoose');
 const iamMock = require('../../test/iamMock');
 const Server = require('../server');
@@ -15,7 +15,7 @@ describe('Transaction', () => {
     beforeAll(async () => {
         port = 5100;
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'transaction'),
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'transaction'),
             port,
         });
         iamMock.setup();

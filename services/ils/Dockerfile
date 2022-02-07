@@ -1,24 +1,45 @@
-FROM node:12-alpine
-LABEL NAME="integration-layer-service"
-LABEL MAINTAINER Shterion Yanev "syanev@wice.de"
-LABEL SUMMARY="This image is used to start Integration Layer Service for OIH"
+FROM node:16-alpine AS base
+LABEL NAME="oih-ils"
 
-RUN apk --no-cache add \
-    python \
+ENV serviceName=ils
+ARG local
+
+WORKDIR /usr/src/
+
+COPY package-lock.json ./
+COPY package.json ./
+
+COPY services/$serviceName services/$serviceName
+
+RUN apk update && apk add --no-cache bash
+
+# Image for building and installing dependencies
+# node-gyp is required as dependency by some npm package
+# but node-gyp requires in build time python, build-essential, ....
+# that's not required in runtime
+
+FROM base AS dependencies
+
+RUN apk update && apk add --no-cache \
     make \
+    gcc \
     g++ \
-    libc6-compat
+    python3
 
-WORKDIR /usr/src/app
+RUN if [ "$local" == "true" ]; \
+    then npm ci ; \
+    else npm ci --production ; \
+    fi
 
-COPY package.json /usr/src/app
+FROM base AS release
 
-RUN npm install --production
+# copy folders to keep node_modules
+COPY --from=dependencies /usr/src/node_modules /usr/src/node_modules
+COPY --from=dependencies /usr/src/services /usr/src/services
 
-COPY . /usr/src/app
+RUN rm package-lock.json
 
 RUN chown -R node:node .
-
 USER node
 
-CMD npm run start
+CMD npm start --workspace=$serviceName

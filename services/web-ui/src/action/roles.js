@@ -11,7 +11,6 @@ export const DELETE_ROLE = 'DELETE_ROLE';
 export const ROLES_ERROR = 'ROLES_ERROR';
 export const ROLES_ERROR_CLEAR = 'ROLES_ERROR_CLEAR';
 
-
 export const getRoles = () => async (dispatch) => {
     try {
         const result = await axios({
@@ -51,7 +50,7 @@ export const getPermissions = () => async (dispatch) => {
     }
 };
 
-export const updateRole = role => async (dispatch) => {
+export const updateRole = (role) => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
@@ -76,7 +75,7 @@ export const updateRole = role => async (dispatch) => {
     }
 };
 
-export const createRole = role => async (dispatch) => {
+export const createRole = (role) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -99,7 +98,7 @@ export const createRole = role => async (dispatch) => {
     }
 };
 
-export const deleteRole = roleId => async (dispatch) => {
+export const deleteRole = (roleId) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',

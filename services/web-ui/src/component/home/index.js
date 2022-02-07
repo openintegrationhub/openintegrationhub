@@ -89,7 +89,7 @@ class Home extends React.Component {
     }
 
     getFlows(classes) {
-        const activeFlows = this.props.flows.all.filter(item => item.status === 'active');
+        const activeFlows = this.props.flows.all.filter((item) => item.status === 'active');
         activeFlows.length = 5;
         if (activeFlows && activeFlows.length) {
             return (
@@ -167,7 +167,6 @@ class Home extends React.Component {
                         </Button>
                     </Grid>
 
-
                 </Grid>
                 <Grid container item xs={11} className={classes.contentFlows} spacing={5}>
                     <Grid item xs={9} className={classes.headline}>Your Active Flows</Grid>
@@ -233,14 +232,13 @@ Home.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     flows: state.flows,
     auth: state.auth,
     users: state.users,
     tenants: state.tenants,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getFlows,
     stopFlow,
     createFlow,

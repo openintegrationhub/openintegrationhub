@@ -13,7 +13,6 @@ import {
 } from '@material-ui/icons';
 import Modal from '@material-ui/core/Modal';
 
-
 // components
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
@@ -23,7 +22,6 @@ import FlowTeaser from './flow-teaser';
 import {
     getFlows, createFlow, getFlowsPage, switchAddState,
 } from '../../action/flows';
-
 
 const useStyles = {
     wrapper: {
@@ -166,11 +164,10 @@ class Flows extends React.Component {
                         </Grid>
                     </Grid>}
 
-
                 </Grid>
                 <Grid container justify="center" spacing={2}>
                     {
-                        this.props.flows.all.length && this.props.flows.all.map(item => <FlowTeaser key={`flowTeaser-${item.id}`} data={item}/>)
+                        this.props.flows.all.length && this.props.flows.all.map((item) => <FlowTeaser key={`flowTeaser-${item.id}`} data={item}/>)
                     }
                 </Grid>
 
@@ -205,10 +202,10 @@ class Flows extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     flows: state.flows,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getFlows,
     createFlow,
     getFlowsPage,

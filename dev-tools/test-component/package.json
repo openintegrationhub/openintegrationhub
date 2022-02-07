@@ -16,12 +16,12 @@
     "request-promise": "4.1.1"
   },
   "devDependencies": {
-    "eslint": "7.15.0",
+    "eslint": "7.32.0",
     "eslint-config-airbnb-base": "14.2.1",
     "eslint-config-prettier": "7.0.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-prettier": "3.1.4",
-    "nodemon": "2.0.10-alpha.1",
+    "nodemon": "2.0.12",
     "prettier": "2.2.1"
   }
 }

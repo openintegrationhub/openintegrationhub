@@ -79,7 +79,7 @@ function bumpMinor(
 checkTools(['git'])
 
 async function run() {
-  const tag = process.argv[2]
+  const diffTarget = process.argv[2]
   const shouldPerformBump = !!(process.argv[3] && process.argv[3] === 'bump')
   const bumpType = process.argv[4] || 'minor'
 
@@ -108,10 +108,11 @@ async function run() {
     lib: [],
   }
 
-  if (!tag) throw new Error('Please provide a tag')
+  if (!diffTarget)
+    throw new Error('Please provide a target for diff (tag, commit, etc.)')
 
   const result = execSync(
-    `git diff tags/${tag} --name-only | grep -E -i -w '^services|^lib' || true`
+    `git diff ${diffTarget} --name-only | grep -E -i -w '^services|^lib' || true`
   ).toString()
 
   // create list of services / lib

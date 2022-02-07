@@ -9,6 +9,7 @@ const MessagePublisher = require('./MessagePublisher');
 const { RequestHandlers, HttpApi } = require('@openintegrationhub/webhooks');
 const mongoose = require('mongoose');
 const { EventBus } = require('@openintegrationhub/event-bus');
+const { PostRequestHandler } = require('./request-handlers/post');
 
 class WebhooksApp extends App {
     async _run () {
@@ -58,7 +59,7 @@ class WebhooksApp extends App {
         httpApi.setLogger(logger);
         httpApi.setHeadHandler((req, res) => new RequestHandlers.Head(req, res).handle());
         httpApi.setGetHandler((req, res) => new RequestHandlers.Get(req, res, messagePublisher).handle());
-        httpApi.setPostHandler((req, res) => new RequestHandlers.Post(req, res, messagePublisher).handle());
+        httpApi.setPostHandler((req, res) => new PostRequestHandler(req, res, messagePublisher, config).handle());
         httpApi.listen(config.get('LISTEN_PORT'));
     }
 

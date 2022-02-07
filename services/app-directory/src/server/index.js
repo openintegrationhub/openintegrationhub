@@ -7,11 +7,12 @@ const swaggerUi = require('swagger-ui-express');
 const bodyParser = require('body-parser');
 const iamLib = require('@openintegrationhub/iam-utils');
 const conf = require('../conf');
-const EventsModule = require('./../module/event');
+const EventsModule = require('../module/event');
 
 const { originWhitelist } = conf;
 
-const swaggerDocument = require('./../../doc/openapi.json');
+const swaggerDocument = require('../../doc/openapi.json');
+
 const swaggerOptions = {
     enableCORS: false,
     explorer: true,
@@ -37,7 +38,7 @@ module.exports = class Server {
 
         this.app.use(jsonParser);
 
-        this.app.use('/', require('./../route/root'));
+        this.app.use('/', require('../route/root'));
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
         this.app.get('/healthcheck', (req, res) => {
             res.sendStatus(200);
@@ -48,17 +49,16 @@ module.exports = class Server {
         apiBase.use(iamLib.middleware);
 
         // setup routes
-        apiBase.use('/apps', require('./../route/apps')); // eslint-disable-line global-require
+        apiBase.use('/apps', require('../route/apps')); // eslint-disable-line global-require
 
         this.app.use(conf.apiBase, cors(this.corsOptions), apiBase);
         // this.app.use(conf.apiBase, apiBase);
 
         // error middleware
-        this.app.use(require('./../middleware/error').default);
+        this.app.use(require('../middleware/error').default);
     }
 
     static setupDatabase(mongoDbConnection) {
-        console.log('mongoDbConnection', mongoDbConnection);
         const connectionString = mongoDbConnection
         || global.__MONGO_URI__
         || conf.mongoDbConnection;
@@ -77,7 +77,7 @@ module.exports = class Server {
         this.corsOptions = {
             credentials: true,
             origin(origin, callback) {
-                if (originWhitelist.find(elem => origin.indexOf(elem) >= 0)) {
+                if (originWhitelist.find((elem) => origin.indexOf(elem) >= 0)) {
                     callback(null, true);
                 } else {
                     callback(new Error('Not allowed by CORS'));

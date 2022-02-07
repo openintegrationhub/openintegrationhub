@@ -48,7 +48,7 @@ import DataHub from '../../component/data-hub';
 
 const drawerWidth = 240;
 
-const styles = theme => ({
+const styles = (theme) => ({
     root: {
         display: 'flex',
     },
@@ -122,51 +122,61 @@ const MENU = {
         label: 'Start',
         icon: <HomeIcon />,
         path: '/',
+        id: 'menuStart',
     },
     PROFILE: {
         label: 'Profile',
         icon: <Person />,
         path: '/profile',
+        id: 'menuProfile',
     },
     FLOWS: {
         label: 'Flows',
         icon: <LinearScale />,
         path: '/flows',
+        id: 'menuFlows',
     },
     DATAHUB: {
         label: 'Data-Hub',
         icon: <StorageIcon />,
         path: '/datahub',
+        id: 'menuDataHub',
     },
     ROLES: {
         label: 'Roles',
         icon: <Security />,
         path: '/roles',
+        id: 'menuRoles',
     },
     APP_DIRECTORY: {
         label: 'App-Directory',
         icon: <AppsIcon />,
         path: '/app-directory',
+        id: 'menuAppDirectory',
     },
     HUB_AND_SPOKE: {
         label: 'Hub & Spoke',
         icon: <AppsIcon />,
         path: '/hub-and-spoke',
+        id: 'menuHubAndSpoke',
     },
     COMPONENTS: {
         label: 'Components',
         icon: <SettingsInputComponent />,
         path: '/components',
+        id: 'menuComponents',
     },
     METADATA: {
         label: 'Metadata',
         icon: <DeviceHub />,
         path: '/metadata',
+        id: 'menuMetaData',
     },
     SECRETS: {
         label: 'Secrets',
         icon: <EnhancedEncryption />,
         path: '/secrets',
+        id: 'menuSecrets',
     },
 };
 
@@ -175,11 +185,13 @@ const ADMIN_MENU = {
         label: 'Users',
         icon: <AccountCircle />,
         path: '/users',
+        id: 'adminMenuUsers',
     },
     TENANTS: {
         label: 'Tenants',
         icon: <Business />,
         path: '/tenants',
+        id: 'adminMenuTenants',
     },
 
 };
@@ -230,12 +242,12 @@ class Main extends React.Component {
       }
       return <div>
           {
-              menuCopy.map(menuItem => <ListItem button key={menuItem.label} onClick={() => { this.props.history.push(menuItem.path); }}>
+              menuCopy.map((menuItem) => <ListItem button key={menuItem.label} onClick={() => { this.props.history.push(menuItem.path); }}>
                   <ListItemIcon>{menuItem.icon}</ListItemIcon>
                   <ListItemText primary={menuItem.label} />
               </ListItem>)
           }
-          <ListItem button key={'Logout'} onClick={this.logout}>
+          <ListItem id="menuLogout" button key={'Logout'} onClick={this.logout}>
               <ListItemIcon><LockOpen /></ListItemIcon>
               <ListItemText primary={'Logout'} />
           </ListItem>
@@ -278,6 +290,7 @@ class Main extends React.Component {
                           <Grid container>
                               <IconButton
                                   color="inherit"
+                                  id="menuIconBtn"
                                   aria-label="Open drawer"
                                   onClick={this.handleDrawerOpen}
                                   className={classNames(classes.menuButton, classes.drawerIcon, open && classes.hide)}
@@ -371,10 +384,10 @@ Main.propTypes = {
     theme: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     auth: state.auth,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getUsers,
     logout,
 }, dispatch);

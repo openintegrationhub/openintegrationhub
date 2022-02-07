@@ -10,6 +10,7 @@ import hubAndSpoke from './hubSpoke';
 import metadata from './metadata';
 import authClients from './auth-clients';
 import secrets from './secrets';
+import dataHub from './data-hub';
 import { LOGOUT } from '../action/auth';
 
 const appReducer = combineReducers({
@@ -24,6 +25,7 @@ const appReducer = combineReducers({
     metadata,
     secrets,
     authClients,
+    dataHub,
 });
 
 export default (state, action) => {

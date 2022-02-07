@@ -1,5 +1,6 @@
 import Koa from "koa";
 import KoaRouter from "koa-router";
+import cors from "@koa/cors"
 import { Server } from "http";
 import Logger from "bunyan";
 import healthcheck from "./routes/healthcheck";
@@ -18,12 +19,17 @@ export interface IServerOptions {
 export default class ObjectServer {
     private readonly koa: Koa;
     private readonly api: KoaRouter;
+    // @ts-ignore
     private server: Server;
     private logger: Logger;
 
     public constructor({ config, logger }: IServerOptions) {
         this.api = new KoaRouter();
         this.koa = new Koa();
+        this.koa.use(cors({
+            credentials: true
+        }))
+
         this.logger = logger;
 
         koaQs(this.koa);

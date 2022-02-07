@@ -1,10 +1,10 @@
 const Logger = require('@basaas/node-logger');
-const CONF = require('./../conf');
+const CONF = require('../conf');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/keyDao`);
 const auditLog = Logger.getAuditLogger('key');
 
-const Key = require('./../models/key');
+const Key = require('../models/key');
 
 const KeyDAO = {
     async findByTenant(tenant) {

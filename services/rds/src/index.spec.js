@@ -23,7 +23,7 @@ describe('RDS', () => {
     port = 3003
     request = supertest(`http://localhost:${port}${config.apiBase}`)
     server = new Server(
-      global.__MONGO_URI__.replace('_replace_me_', 'rds'),
+      global.__MONGO_URI__.replace('changeme', 'rds'),
       port,
       EventBusMock,
       TransportMock

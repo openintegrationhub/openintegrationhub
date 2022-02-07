@@ -39,7 +39,7 @@ export const getAppById = async (id) => {
     }
 };
 
-export const updateApp = async data => axios({
+export const updateApp = async (data) => axios({
     method: 'patch',
     url: `${conf.endpoints.appDirectory}/apps/${data._id}`,
     withCredentials: true,
@@ -47,7 +47,7 @@ export const updateApp = async data => axios({
     data,
 });
 
-export const createApp = data => async (dispatch) => {
+export const createApp = (data) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -66,7 +66,7 @@ export const createApp = data => async (dispatch) => {
     }
 };
 
-export const deleteApp = appId => async (dispatch) => {
+export const deleteApp = (appId) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',

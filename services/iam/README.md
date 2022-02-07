@@ -196,7 +196,7 @@ policy proved Passwords for the Admin and Service Account.
    3.1  
    Filename: keystore.json  
    step1: navigate in the Repo folder to `services/iam`
-   step2: execute `yarn`
+   step2: execute `npm i`
    step3: execute `node -e "require('./src/util/keystore').generateFile()"`
    step4: upload `./keystore/keystore.json` as K8S secret to the correct namspace with
    `kubectl -n NAMESPACE create secret generic oidc-certs --from-file=keystore.json='./keystore/keystore.json'`

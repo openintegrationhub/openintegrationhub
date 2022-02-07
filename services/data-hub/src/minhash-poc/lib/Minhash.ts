@@ -24,6 +24,7 @@ class Minhash {
         this.numPerm = config.numPerm
         this.seed = config.seed
         this.hashValues = []
+        this.hashBands = []
         this.permA = []
         this.permB = []
 
@@ -44,7 +45,7 @@ class Minhash {
     private initPermutations(): void {
         const used = {}
         for (let i = 0; i < 2; i++) {
-            const perms = []
+            const perms: number[] = []
             for (let j = 0; j < this.numPerm; j++) {
                 let int = this.randInt()
                 while (used[int]) int = this.randInt()

@@ -4,7 +4,13 @@ const path = require('path')
 const find = require('lodash/find')
 const FormData = require('form-data')
 const { services } = require('../config')
-const { checkTools, waitForStatus, login, setupMinimal } = require('../helper')
+const {
+  checkTools,
+  waitForStatus,
+  login,
+  getUserInfo,
+  setupMinimal,
+} = require('../helper')
 const domains = require('../data/meta-data/domains')
 const tenants = require('../data/tenants')
 
@@ -31,13 +37,14 @@ async function run() {
     const owner = find(tenant.users, { username: domain.owners[0].id })
 
     // login as owner
-    const { token, id } = await login(owner)
+    const { token } = await login(owner)
+    const { _id } = await getUserInfo(token)
 
     const data = { ...domain }
 
     data.owners = [
       {
-        id,
+        id: _id,
         type: 'USER',
       },
     ]

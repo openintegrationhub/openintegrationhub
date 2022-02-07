@@ -2,30 +2,30 @@ version: 2.1
 
 aliases:
   - &node_env
-    - image: circleci/node:12-stretch
+    - image: cimg/node:16.13.0
   - &node_mongo_env
-    - image: circleci/node:12-stretch
-    - image: circleci/mongo:4.4
+    - image: cimg/node:16.13.0
+    - image: mongo:4.4
   - &node_amqp_env
-    - image: circleci/node:12-stretch
-    - image: rabbitmq:3.8.6-alpine
+    - image: cimg/node:16.13.0
+    - image: rabbitmq:3.9.9-alpine
   - &run_npm_install
     name: Installing Dependencies
-    command: yarn --ignore-engines
+    command: npm i
   - &only_master_filter
     branches:
       only: master
-  - &yarn_test_steps
+  - &npm_test_steps
     - restore_cache:
         keys:
-          - yarn-deps-{{ .Branch }}-{{ .Revision }}
-    - run: yarn test
+          - npm-deps-{{ .Branch }}-{{ .Revision }}
+    - run: npm run test
   - &build_steps
     - setup_remote_docker:
-        version: 19.03.12
+        version: 20.10.6
     - restore_cache:
         keys:
-          - yarn-deps-{{ .Branch }}-{{ .Revision }}
+          - npm-deps-{{ .Branch }}-{{ .Revision }}
     - run: |
         cd ./scripts # needed for compatible with travis implementation
         node build.js
@@ -49,7 +49,7 @@ jobs:
           path: ~/oih
       - run: *run_npm_install
       - save_cache:
-          key: yarn-deps-{{ .Branch }}-{{ .Revision }}
+          key: npm-deps-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/oih
   test:
@@ -67,91 +67,91 @@ jobs:
   webhooks-test:
     docker: *node_mongo_env
     working_directory: ~/oih/services/webhooks
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   iam-test:
     docker: *node_env
     working_directory: ~/oih/services/iam
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   web-ui-test:
     docker: *node_env
     working_directory: ~/oih/services/web-ui
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   meta-data-repository-test:
     docker: *node_env
     working_directory: ~/oih/services/meta-data-repository
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   reports-analytics-test:
     docker: *node_env
     working_directory: ~/oih/services/reports-analytics
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   app-directory-test:
     docker: *node_env
     working_directory: ~/oih/services/app-directory
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   component-orchestrator-test:
     docker: *node_mongo_env
     working_directory: ~/oih/services/component-orchestrator
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   scheduler-test:
     docker: *node_mongo_env
     working_directory: ~/oih/services/scheduler
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   secret-service-test:
     docker: *node_env
     working_directory: ~/oih/services/secret-service
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   lib-backend-commons-lib-test:
     docker: *node_env
     working_directory: ~/oih/lib/backend-commons-lib
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   lib-component-orchestrator-test:
     docker: *node_env
     working_directory: ~/oih/lib/component-orchestrator
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   lib-scheduler-test:
     docker: *node_env
     working_directory: ~/oih/lib/scheduler
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   lib-webhooks-test:
     docker: *node_env
     working_directory: ~/oih/lib/webhooks
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   lib-component-repository-test:
     docker: *node_mongo_env
     working_directory: ~/oih/lib/component-repository
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   lib-ferryman-test:
     docker: *node_amqp_env
     working_directory: ~/oih/lib/ferryman
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   flow-repository-test:
     docker: *node_env
     working_directory: ~/oih/services/flow-repository
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   template-repository-test:
     docker: *node_env
     working_directory: ~/oih/services/template-repository
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   audit-log-test:
     docker: *node_env
     working_directory: ~/oih/services/audit-log
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   data-hub-test:
     docker: *node_mongo_env
     working_directory: ~/oih/services/data-hub
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   ils-test:
     docker: *node_env
     working_directory: ~/oih/services/ils
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   dispatcher-service-test:
     docker: *node_env
     working_directory: ~/oih/services/dispatcher-service
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
   rds-test:
     docker: *node_env
     working_directory: ~/oih/services/rds
-    steps: *yarn_test_steps
+    steps: *npm_test_steps
 workflows:
   pipeline:
     jobs:

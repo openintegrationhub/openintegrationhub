@@ -1,8 +1,8 @@
 process.env.AUTH_TYPE = 'basic';
 const mongoose = require('mongoose');
 const request = require('supertest')('http://localhost:3099');
-const CONSTANTS = require('./../src/constants');
-const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('./../src/access-control/permissions');
+const CONSTANTS = require('../src/constants');
+const { PERMISSIONS, RESTRICTED_PERMISSIONS } = require('../src/access-control/permissions');
 
 let conf = null;
 
@@ -14,7 +14,7 @@ describe('routes', () => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
         process.env.IAM_AUTH_TYPE = 'basic';
         process.env.IAM_BASEURL = 'http://localhost';
-        conf = require('./../src/conf/index');
+        conf = require('../src/conf/index');
         const App = require('../src/app');
 
         app = new App({
@@ -929,7 +929,7 @@ describe('RSA Signing', () => {
         process.env.IAM_JWT_ALGORITHM_TYPE = CONSTANTS.JWT_ALGORITHMS.RSA;
         process.env.IAM_BASEURL = 'http://localhost';
 
-        conf = require('./../src/conf/index');
+        conf = require('../src/conf/index');
         conf.jwt.algorithmType = process.env.IAM_JWT_ALGORITHM_TYPE;
         conf.jwt.algorithm = 'RS256';
         const App = require('../src/app');
@@ -981,7 +981,7 @@ describe('RSA Signing', () => {
 
         test('keystore is generated if it do not exist', async () => {
 
-            const keystore = require('./../src/util/keystore');
+            const keystore = require('../src/util/keystore');
             await keystore.deleteKeystore();
 
             const response = await request.get('/.well-known/jwks.json')

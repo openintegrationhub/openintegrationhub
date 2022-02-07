@@ -4,7 +4,7 @@
 
 // require our MongoDB-Model
 const mongoose = require('mongoose');
-const config = require('../../config/index.js');
+const config = require('../../config/index');
 const log = require('../../config/logger');
 const ProvenanceEvent = require('../../models/provenanceEvent');
 const StoredFunction = require('../../models/storedFunction');
@@ -82,7 +82,6 @@ const getProvenanceEvents = async ( // eslint-disable-line
     qry['activity.endedAtTime'] = { $lte: new Date(until) };
   }
 
-
   // , sortField, sortOrder
   const sort = {};
   sort[sortField] = sortOrder;
@@ -105,8 +104,7 @@ const getProvenanceEvents = async ( // eslint-disable-line
     });
 });
 
-
-const addProvenanceEvent = newProvenanceEvent => new Promise((resolve) => {
+const addProvenanceEvent = (newProvenanceEvent) => new Promise((resolve) => {
   const storeProvenanceEvent = new ProvenanceEvent(newProvenanceEvent);
 
   return storeProvenanceEvent.save()
@@ -119,7 +117,6 @@ const addProvenanceEvent = newProvenanceEvent => new Promise((resolve) => {
       resolve(false);
     });
 });
-
 
 // Retrieves all stored functions for authorized owner or for admin irrespective of ownership.
 const getStoredFunctions = async ( // eslint-disable-line
@@ -149,7 +146,6 @@ const getStoredFunctions = async ( // eslint-disable-line
 
   if (customFieldNames) fieldNames = customFieldNames;
 
-
   // Add all filtered fields to query
   const filterFields = (filters) ? Object.keys(filters) : [];
   const length = filterFields.length;
@@ -167,7 +163,6 @@ const getStoredFunctions = async ( // eslint-disable-line
   if (until) {
     qry.updatedAt = { $lte: new Date(until) };
   }
-
 
   // , sortField, sortOrder
   const sort = {};

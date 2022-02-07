@@ -9,7 +9,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-
 const { can } = require('@openintegrationhub/iam-utils');
 const config = require('../../config/index');
 
@@ -46,7 +45,6 @@ router.delete('/:id', jsonParser, can(config.flowReadPermission), async (req, re
   storedFunctionCache.delete(id, functionName, user);
   res.json(response);
 });
-
 
 // Gets a list of all stored functions
 router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => {
@@ -134,10 +132,6 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   }
 
   const response = await storage.getStoredFunctions(req.user, pageSize, pageNumber, filters, sortField, sortOrder, from, until, names);
-
-  if (response.data.length === 0 && !res.headersSent) {
-    return res.status(404).send({ errors: [{ message: 'No stored functions found', code: 404 }] });
-  }
 
   response.meta.page = pageNumber;
   response.meta.perPage = pageSize;

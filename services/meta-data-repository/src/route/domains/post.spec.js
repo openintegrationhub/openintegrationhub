@@ -1,4 +1,4 @@
-const getPort = require('get-port');
+
 const supertest = require('supertest');
 const conf = require('../../conf');
 const iamMock = require('../../../test/iamMock');
@@ -15,7 +15,7 @@ describe('domains', () => {
 
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: global.__MONGO_URI__.replace('_replace_me_', 'domains-post'),
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'domains-post'),
             port,
         });
         iamMock.setup();

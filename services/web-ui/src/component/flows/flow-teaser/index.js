@@ -17,7 +17,6 @@ import {
     Delete, Edit, PlayArrow, Stop, Send,
 } from '@material-ui/icons';
 
-
 // Componente
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
@@ -88,7 +87,6 @@ class FlowTeaser extends React.PureComponent {
             foo: 'bar',
         });
     }
-
 
     editorChange(e) {
         if (!e.error) {
@@ -177,7 +175,6 @@ class FlowTeaser extends React.PureComponent {
                                         links: this.props.data.graph.edges,
                                     }}
 
-
                                 />
                             </Grid>
                             <Grid item xs={12}><h3>Meta</h3></Grid>
@@ -218,10 +215,10 @@ class FlowTeaser extends React.PureComponent {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     flows: state.flows,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     deleteFlow,
     updateFlow,
     startFlow,

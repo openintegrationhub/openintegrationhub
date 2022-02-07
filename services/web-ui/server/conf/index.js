@@ -15,6 +15,8 @@ module.exports = {
         dispatcher: optional('ENDPOINT_DISPATCHER', 'https://dispatcher-service.openintegrationhub.com'),
         secrets: optional('ENDPOINT_SECRETS', 'https://skm.openintegrationhub.com/api/v1'),
         webhooks: optional('ENDPOINT_WEBHOOKS', 'https://webhooks.openintegrationhub.com'),
+        dataHub: optional('ENDPOINT_DATA_HUB', 'https://data-hub.openintegrationhub.com/api/v1'),
+        rds: optional('ENDPOINT_RDS', 'https://rds.openintegrationhub.com/api/v1'),
     },
     misc: {
         reports: {

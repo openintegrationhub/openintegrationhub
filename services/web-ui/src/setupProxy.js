@@ -91,6 +91,28 @@ module.exports = function (app) {
             // or log the req
         },
     }));
+
+    app.use(proxy('/data-hub', {
+        pathRewrite: { '^/data-hub': '/' },
+        target: conf.endpoints.dataHub,
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
+
+    app.use(proxy('/rds', {
+        pathRewrite: { '^/rds': '/' },
+        target: conf.endpoints.rds,
+        changeOrigin: true,
+        onProxyReq(proxyReq) {
+            // add custom header to request
+            proxyReq.setHeader('Origin', ORIGIN);
+            // or log the req
+        },
+    }));
     // proxy server config
     app.use('/config', (req, res) => {
         res.send(conf);

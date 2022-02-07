@@ -1,9 +1,27 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const owner = new Schema({
+    id: { type: Schema.Types.ObjectId, required: [true, 'Flow owners require an id.'], maxlength: 30 },
+    type: { type: String, required: [true, 'Flow owners require a type.'], maxlength: 30 },
+    _id: false,
+  });
+
 const schema = new Schema({
     graph: Schema.Types.Mixed,
-    status: String
+    status: String,
+    flowSettings: {
+        webhooks: {
+            hmacAuthSecret: Schema.Types.ObjectId,
+            requireWebhookAuth: Boolean,
+            hmacHeaderKey: String,
+            hmacAlgorithm: String,
+            allTenantUsers: Boolean,
+        },
+    },
+    tenant: Schema.Types.ObjectId,
+    owners: { type: [owner] },
+    startedBy: Schema.Types.ObjectId,
 });
 
 class Flow {
@@ -34,6 +52,22 @@ class Flow {
 
     getEdges() {
         return this.graph.edges || [];
+    }
+
+    getFlowSettings() {
+        return this.flowSettings.webhooks || null;
+    }
+
+    getFlowUser() {
+        return this.startedBy || null;
+    }
+
+    getTenant() {
+        return this.tenant || null;
+    }
+
+    getOwners() {
+        return this.owners || null;
     }
 }
 

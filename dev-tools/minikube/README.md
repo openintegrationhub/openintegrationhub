@@ -45,7 +45,7 @@ The setup script will attempt to provision the minikube instance with these valu
 | ![Windows](https://img.shields.io/badge/Windows-blue.svg) ![Mac-Intel](https://img.shields.io/badge/Mac--Intel-green.svg) <br> The OIH Framework requires the _ingress_ addon for kubernetes. This is not supported via Docker Bridge for Mac and Windows. Therefore, on these Operating Systems, minikube must be started with the flag `--vm=true`. This is handled in the setup script. More information can be found on the [minikube Github page](https://github.com/kubernetes/minikube/issues/7332). |
 | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
-| ![Mac-ARM](https://img.shields.io/badge/Mac--ARM-yellowgreen.svg) <br> Many of the components needed to run the local environment have not reached production status for Apple Silicon-based Macs. If you would like to run the framework locally on an M1-based Mac, some software must be installed in beta or pre-release status: <ul><li>Docker for Desktop is currently available as a [Release Candidate](https://docs.docker.com/docker-for-mac/apple-m1/). Minikube has launched Apple Silicon support, although with only the Docker VM driver provided in Docker for Desktop.</li><li>A newer version of the [_nginx-ingress-controller_](https://kubernetes.github.io/ingress-nginx/deploy/#docker-for-mac) which runs on Docker can now be installed manually via `kubectl`. This is handled in the setup script.</li> |
+| ![Mac-ARM](https://img.shields.io/badge/Mac--ARM-yellowgreen.svg) <br> Some networking features available on Intel based systems are not available on newer Macs running Apple Silicon chips. Therefore, the system must be accessed using the `minikube tunnel` from a localhost address. The "example.com" service addresses are then mapped to localhost.|
 | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 # Configuration
@@ -68,7 +68,7 @@ From the $OIH_ROOT/dev-tools/minikube folder, call the setup script
 bash ./setup.sh
 ```
 
-The script will check for prerequisites, and attempt to build all services. The script automates the steps found in the minikube [Local Installation Guide](../../minikube/README.md#installation).
+The script will check for prerequisites, and attempt to build all services.
 
 Additionally, the following options may be sent in the arguments to `setup.sh`.
 

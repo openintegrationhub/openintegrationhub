@@ -21,7 +21,7 @@ describe('callback', () => {
         port = 5106;
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-auth-clients`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'route-callback'),
             port,
             adapter: {
                 preprocessor: {

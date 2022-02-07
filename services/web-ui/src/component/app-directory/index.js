@@ -22,7 +22,6 @@ import {
 } from '../../action/app-directory';
 import AppTeaser from './app-teaser';
 
-
 const useStyles = {
     wrapper: {
         padding: '20px 0',
@@ -52,7 +51,6 @@ const useStyles = {
         marginTop: '24px',
     },
 };
-
 
 class AppDirectory extends React.Component {
     state = {
@@ -119,7 +117,7 @@ class AppDirectory extends React.Component {
                 </Grid>
                 <div className={classes.container}>
                     {
-                        this.props.apps.list.map(item => <AppTeaser
+                        this.props.apps.list.map((item) => <AppTeaser
                             key={`appTeaser-${item._id}`}
                             {...item}
                             onEdit={() => {}}
@@ -192,11 +190,11 @@ class AppDirectory extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     apps: state.apps,
     auth: state.auth,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     getApps,
     createApp,
     updateApp,

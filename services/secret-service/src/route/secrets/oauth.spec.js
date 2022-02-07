@@ -21,7 +21,7 @@ describe('oauth', () => {
         request = supertest(`http://localhost:${port}${conf.apiBase}`);
         conf.crypto.isDisabled = false;
         server = new Server({
-            mongoDbConnection: `${global.__MONGO_URI__}-oauth`,
+            mongoDbConnection: global.__MONGO_URI__.replace('changeme', 'oauth'),
             port,
         });
         await server.start();

@@ -39,7 +39,7 @@ export interface Person {
     data: Data; 
 } 
 
-export default (amount: number = 1): Person[] => {
+export default (amount = 1): Person[] => {
     const persons: Person[] = []
     for (let i = 0; i < amount; i++) {
         const person: Person = {
@@ -60,6 +60,7 @@ export default (amount: number = 1): Person[] => {
                 contactData: ((): ContactData[] => {
                     const contactEmails: ContactData[] = []
                     const contactPhones: ContactData[] = []
+                    const contactData: ContactData[] = []
                     // generate phone numbers
                     for (let i = 0; i < faker.datatype.number({ min: 1, max: 3 }); i++) {
                         const type = ["phone", "mobile", "fax"]
@@ -76,7 +77,7 @@ export default (amount: number = 1): Person[] => {
                         }
                         contactPhones.push(contactPhone)
                     }
-                    return [].concat(contactEmails, contactPhones)   
+                    return contactData.concat(contactEmails, contactPhones)   
                 })(),
                 addresses: ((): Address[] => {
                     const addresses: Address[] = []

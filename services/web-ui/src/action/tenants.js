@@ -30,7 +30,7 @@ export const getTenants = () => async (dispatch) => {
     }
 };
 
-export const updateTenant = tenant => async (dispatch) => {
+export const updateTenant = (tenant) => async (dispatch) => {
     try {
         await axios({
             method: 'patch',
@@ -51,7 +51,7 @@ export const updateTenant = tenant => async (dispatch) => {
     }
 };
 
-export const createTenant = tenant => async (dispatch) => {
+export const createTenant = (tenant) => async (dispatch) => {
     try {
         await axios({
             method: 'post',
@@ -74,7 +74,7 @@ export const createTenant = tenant => async (dispatch) => {
     }
 };
 
-export const deleteTenant = tenantId => async (dispatch) => {
+export const deleteTenant = (tenantId) => async (dispatch) => {
     try {
         await axios({
             method: 'delete',

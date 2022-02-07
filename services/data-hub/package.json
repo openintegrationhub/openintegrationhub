@@ -1,6 +1,6 @@
 {
   "name": "data-hub",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "Data hub",
   "main": "dist/index.js",
   "directories": {
@@ -9,20 +9,20 @@
   "engines": {
     "node": ">= 12"
   },
+  "private": true,
   "scripts": {
     "start": "node dist/app.js",
     "start:dev": "NODE_ENV=development ts-node-dev ./src/app.ts | bunyan",
     "start:container": "ts-node-dev ./src/app.ts | bunyan",
     "test": "NODE_ENV=test mocha --exit --require ts-node/register src/**/*.spec.ts src/minhash-poc/**/*.spec.ts",
     "test-minhash": "NODE_ENV=test mocha --exit --require ts-node/register src/minhash-poc/**/data.spec.ts",
-    "eslint": "./node_modules/.bin/eslint -c ./.eslintrc.js --ext .ts ./src",
-    "build:ts": "tsc",
+    "build:ts": "tsc --version && tsc --showConfig && tsc -p ./tsconfig.json",
     "build:docker": "docker build -t openintegrationhub/data-hub:${VERSION} -f Dockerfile ../../"
   },
   "license": "UNLICENSED",
   "devDependencies": {
+    "@tsconfig/node14": "1.0.1",
     "@types/babel__core": "7.1.12",
-    "@types/bunyan": "1.8.6",
     "@types/chai": "4.2.14",
     "@types/faker": "5.5.7",
     "@types/koa-bodyparser": "4.3.0",
@@ -33,11 +33,11 @@
     "@types/mocha": "5.2.7",
     "@types/nock": "10.0.3",
     "@types/supertest": "2.0.8",
-    "@typescript-eslint/eslint-plugin": "1.9.0",
-    "@typescript-eslint/parser": "1.9.0",
+    "@typescript-eslint/eslint-plugin": "4.31.1",
+    "@typescript-eslint/parser": "4.31.1",
     "chai": "4.2.0",
-    "eslint": "6.8.0",
-    "mocha": "6.1.4",
+    "eslint": "7.32.0",
+    "mocha": "9.1.1",
     "nock": "10.0.6",
     "supertest": "4.0.2",
     "ts-node": "10.1.0",
@@ -47,10 +47,12 @@
   "dependencies": {
     "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/iam-utils": "*",
+    "@koa/cors": "3.1.0",
     "@wice-devs/cfm": "1.0.8",
     "backend-commons-lib": "1.1.3",
     "bunyan": "1.8.15",
     "faker": "5.5.3",
+    "jsonata": "1.8.4",
     "koa": "2.13.1",
     "koa-bodyparser": "4.3.0",
     "koa-bunyan-logger": "2.1.0",
@@ -58,6 +60,7 @@
     "koa-router": "10.0.0",
     "koa2-swagger-ui": "5.1.0",
     "lodash": "4.17.21",
-    "mongoose": "5.11.8"
+    "mongoose": "5.13.9",
+    "notation": "2.0.0"
   }
 }

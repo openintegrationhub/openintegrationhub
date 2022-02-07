@@ -19,60 +19,59 @@ spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       containers:
-      - name: snapshots-service
-        image: node:12-alpine
-        command: ["/bin/sh"]
-        args: ["-c", "yarn install --non-interactive && yarn start:container"]
-        workingDir: /usr/src/app/
-        env:
-        - name: LOG_LEVEL
-          value: trace
-        - name: "INTROSPECT_ENDPOINT_BASIC"
-          value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
-        - name: IAM_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: iamtoken
-        - name: NODE_ENV
-          value: development
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: shared-secret
-              key: snapshotServiceMongourl
-        - name: RABBITMQ_URI
-          value: >-
-            amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local
-        - name: PORT
-          value: "1234"
-        - name: LOG_LEVEL
-          value: trace
-        resources:
-          limits:
-            cpu: 0.1
-            memory: 512Mi
-        volumeMounts:
-        - name: code
-          mountPath: /usr/src/app
-          subPath: services/snapshots-service
-        livenessProbe:
-          httpGet:
-            port: 1234
-            path: /healthcheck
-        readinessProbe:
-          httpGet:
-            port: 1234
-            path: /healthcheck
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        imagePullPolicy: IfNotPresent
-        securityContext:
-          privileged: false
+        - name: snapshots-service
+          image: node:16-alpine
+          command: ["/bin/sh"]
+          args: ["-c", "npm run start:container -w services/snapshots-service"]
+          workingDir: /usr/src/app/
+          env:
+            - name: LOG_LEVEL
+              value: trace
+            - name: "INTROSPECT_ENDPOINT_BASIC"
+              value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1/tokens/introspect"
+            - name: IAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: iamtoken
+            - name: NODE_ENV
+              value: development
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: shared-secret
+                  key: snapshotServiceMongourl
+            - name: RABBITMQ_URI
+              value: >-
+                amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local
+            - name: PORT
+              value: "1234"
+            - name: LOG_LEVEL
+              value: trace
+          resources:
+            limits:
+              cpu: 0.1
+              memory: 512Mi
+          volumeMounts:
+            - name: code
+              mountPath: /usr/src/app
+          livenessProbe:
+            httpGet:
+              port: 1234
+              path: /healthcheck
+          readinessProbe:
+            httpGet:
+              port: 1234
+              path: /healthcheck
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
       volumes:
-      - name: code
-        persistentVolumeClaim:
-          claimName: source-volume-claim
+        - name: code
+          persistentVolumeClaim:
+            claimName: source-volume-claim
   strategy:
     type: RollingUpdate
     rollingUpdate:

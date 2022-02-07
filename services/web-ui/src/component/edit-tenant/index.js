@@ -54,7 +54,7 @@ class EditTenant extends React.Component {
 
     componentDidMount() {
         if (this.props.tenantId) {
-            const currentTenant = this.props.tenants.all.find(tenant => tenant._id === this.props.tenantId);
+            const currentTenant = this.props.tenants.all.find((tenant) => tenant._id === this.props.tenantId);
             this.props.setFormData({
                 _id: this.props.tenantId,
                 name: currentTenant.name,
@@ -78,8 +78,8 @@ class EditTenant extends React.Component {
         }
         if (this.state.pending) {
             if (this.props.tenantId) {
-                const prevTenant = prevProps.tenants.all.find(tenant => tenant._id === prevProps.tenantId);
-                const currentTenant = this.props.tenants.all.find(tenant => tenant._id === this.props.tenantId);
+                const prevTenant = prevProps.tenants.all.find((tenant) => tenant._id === prevProps.tenantId);
+                const currentTenant = this.props.tenants.all.find((tenant) => tenant._id === this.props.tenantId);
                 if (prevTenant.updatedAt !== currentTenant.updatedAt) {
                     this.setState({
                         pending: false,
@@ -110,7 +110,7 @@ class EditTenant extends React.Component {
     }
 
     generateMembers = () => {
-        this.state.tenantMembers.map(member => <ListItem key={`member-${member._id}`}>
+        this.state.tenantMembers.map((member) => <ListItem key={`member-${member._id}`}>
             <ListItemIcon>
                 <People />
             </ListItemIcon>
@@ -169,7 +169,7 @@ class EditTenant extends React.Component {
                             value={status || conf.tenant.status.ACTIVE}
                             onChange={this.props.setVal.bind(this, 'status')}
                         >
-                            {Object.keys(conf.tenant.status).map(key_ => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
+                            {Object.keys(conf.tenant.status).map((key_) => <MenuItem key={key_} value={key_}>{key_}</MenuItem>)}
                         </Select>
                     </FormControl>
                     <FormControl className={classes.formControl}>
@@ -193,10 +193,10 @@ class EditTenant extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     tenants: state.tenants,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = (dispatch) => bindActionCreators({
     ...tenantsActions,
 }, dispatch);
 

@@ -1,12 +1,15 @@
 #!/bin/zsh
 
-SCRIPTPATH="$( cd "../../$(dirname "$0")" ; pwd -P )"
+SCRIPTPATH="$(
+    cd "../../$(dirname "$0")"
+    pwd -P
+)"
 
-cat ~/.npmrc > ./.npmrc
+cat ~/.npmrc >./.npmrc
 
 docker run --user 1000 -ti --rm --name foo \
--v $SCRIPTPATH:/usr/src/app/ \
-node:12 \
-/bin/bash -c 'cd /usr/src/app/services/meta-data-repository && yarn && yarn test'
+    -v $SCRIPTPATH:/usr/src/app/ \
+    node:16 \
+    /bin/bash -c 'cd /usr/src/app/services/meta-data-repository && npm && npm test'
 
 rm ./.npmrc

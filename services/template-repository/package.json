@@ -1,6 +1,6 @@
 {
   "name": "template-repository",
-  "version": "0.2.1",
+  "version": "0.4.3",
   "description": "Holds reproducible templates which can be used to generate flows.",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
     "start": "node app/index.js",
     "start:nodemon": "NODE_ENV=development nodemon -r dotenv/config app/index.js --watch app/ | bunyan",
     "start:container": "nodemon -r dotenv/config app/index.js --watch app/ | bunyan",
-    "start:nodemon:minikube": ". ../../minikube/.env && yarn start:nodemon",
+    "start:nodemon:minikube": ". ../../minikube/.env && npm start:nodemon",
     "pretest": "eslint app test --ext .js --ext .json",
     "test": "jest --runInBand",
     "lint_fix": "eslint app test --fix",
@@ -35,17 +35,17 @@
     "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
-    "eslint": "7.8.1",
+    "eslint": "7.32.0",
     "eslint-config-airbnb-base": "14.2.0",
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-jest": "^22.1.0",
     "eslint-plugin-json": "^1.2.1",
-    "eslint-plugin-mocha": "^5.2.0",
+    "eslint-plugin-mocha": "9.0.0",
     "eslint-plugin-prettier": "3.1.4",
     "prettier": "2.1.1",
     "jest": "26.6.0",
     "mongod": "^2.0.0",
-    "mongodb-memory-server": "6.6.3",
+    "mongodb-memory-server": "7.4.1",
     "nodemon": "^2.0.4",
     "dotenv": "^8.2.0",
     "nock": "^13.0.2",

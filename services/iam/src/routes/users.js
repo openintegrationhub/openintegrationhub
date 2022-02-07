@@ -4,22 +4,22 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 
 const Logger = require('@basaas/node-logger');
-const CONF = require('./../conf');
-const CONSTANTS = require('./../constants');
-const auth = require('./../util/auth');
-const Util = require('./../util/common');
+const CONF = require('../conf');
+const CONSTANTS = require('../constants');
+const auth = require('../util/auth');
+const Util = require('../util/common');
 const AccountDAO = require('../dao/accounts');
 const RolesDAO = require('../dao/roles');
 const TokenDAO = require('../dao/tokens');
-const { RESTRICTED_PERMISSIONS, PERMISSIONS, permissionsAreCommon } = require('./../access-control/permissions');
+const { RESTRICTED_PERMISSIONS, PERMISSIONS, permissionsAreCommon } = require('../access-control/permissions');
 
 const log = Logger.getLogger(`${CONF.general.loggingNameSpace}/user`, {
     level: 'debug',
 });
 
 const rolesBelongToTenant = async (roles, tenant) => {
-    const tenantRoles = (await RolesDAO.find({ tenant })).map(role => role._id.toString());
-    const falseRoles = roles.filter(role => tenantRoles.indexOf(role) < 0);
+    const tenantRoles = (await RolesDAO.find({ tenant })).map((role) => role._id.toString());
+    const falseRoles = roles.filter((role) => tenantRoles.indexOf(role) < 0);
     return falseRoles.length === 0;
 };
 

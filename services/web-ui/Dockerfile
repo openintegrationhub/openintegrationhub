@@ -1,21 +1,43 @@
-FROM node:12-alpine
+FROM node:16-alpine AS base
 LABEL NAME="oih-web-ui"
+
+ENV serviceName=web-ui
 ARG local
 
-ADD package.json /tmp/package.json
-RUN apk --no-cache add \
-    python \
+WORKDIR /usr/src/
+
+COPY package-lock.json ./
+COPY package.json ./
+
+COPY services/$serviceName services/$serviceName
+
+RUN apk update && apk add --no-cache bash
+
+# Image for building and installing dependencies
+# node-gyp is required as dependency by some npm package
+# but node-gyp requires in build time python, build-essential, ....
+# that's not required in runtime
+
+FROM base AS dependencies
+
+RUN apk update && apk add --no-cache \
     make \
+    gcc \
     g++ \
-    libc6-compat
-RUN if [ "$local" == "true" ]; \
-    then cd /tmp && yarn install ; \
-    else cd /tmp && yarn install --production ; \
-    fi 
-WORKDIR /usr/src/app
-ADD . /usr/src/app
-RUN ln -s /tmp/node_modules /usr/src/app/ && chown -R 1000:1000 /usr/src/app
-# just for start
+    python3
+
+RUN npm ci
+RUN npm prune --production
+
+FROM base AS release
+
+# copy folders to keep node_modules
+COPY --from=dependencies /usr/src/node_modules /usr/src/node_modules
+COPY --from=dependencies /usr/src/services /usr/src/services
+
+RUN rm package-lock.json
+
+RUN chown -R node:node .
 USER node
 
-CMD npm run -s serve
+CMD npm run -s serve --workspace=$serviceName

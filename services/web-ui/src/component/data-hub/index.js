@@ -1,21 +1,58 @@
 import React from 'react';
 import flow from 'lodash/flow';
+import PropTypes from 'prop-types';
+import SwipeableViews from 'react-swipeable-views';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import axios from 'axios';
-// Ui
+import { Button, Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import Container from '@material-ui/core/Container';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import DataTable from './DataTable';
+import GroupedBar from './GroupedBarChart';
+import DataQuality from './DataQuality';
+// import dataJSON from './data.json';
+import Contact from './Contact';
+import Product from './Product';
+import Document from './Document';
 // actions
 import {
-    getTenants,
-} from '../../action/tenants';
+    getDataObjects,
+    // plain
+    enrichData,
+} from '../../action/data-hub';
+import RDS from './RDS';
+
+function TabPanel(props) {
+    const {
+        children, value, index, ...other
+    } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`full-width-tabpanel-${index}`}
+            aria-labelledby={`full-width-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box p={3}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+};
 
 const useStyles = {
 
@@ -28,120 +65,124 @@ const useStyles = {
     submitBtn: {
         height: '48px',
     },
+    enrich: {
+        width: '100%',
+        background: 'lightgray',
+    },
 };
 
 class DataHub extends React.Component {
     constructor(props) {
         super(props);
-        props.getTenants();
         this.state = {
-            tenants: '',
-            schemas: '',
-            isLoading: true,
-            selectedTenant: '',
-            selectedSchema: '',
-            fields: '',
+            openTab: 0,
         };
+        props.getDataObjects();
     }
 
     async componentDidMount() {
-        // get tenants
-        try {
-            const result = await axios({
-                method: 'get',
-                url: 'https://localhost:3099/api/v1/tenants',
-                withCredentials: true,
-            });
-            this.setState({ tenants: result.data });
-        } catch (err) {
-            console.log(err);
-        }
-        // // get schemas
-        try {
-            const { data } = await axios({
-                method: 'get',
-                url: 'http://localhost:3001/api/v1/domains/6113a8d49744d2880a00ed0a/schemas',
-                withCredentials: true,
-            });
-            this.setState({ schemas: data });
-        } catch (err) {
-            console.log(err);
-        }
-        this.setState({ isLoading: false });
-
-        // add functionality to allow tabs in text area
-        document.getElementById('textbox').addEventListener('keydown', function (e) {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                const start = this.selectionStart;
-                const end = this.selectionEnd;
-                this.value = `${this.value.substring(0, start)
-                }\t${this.value.substring(end)}`;
-                this.selectionStart = +start + 1;
-            }
-        });
-        return null;
+        await enrichData();
     }
 
-    handleChange = (event) => {
-        this.setState({ [event.target.name]: event.target.value });
+    handleChange = (event, newValue) => {
+        this.setState({ openTab: newValue });
     };
 
-    handleFields = (event) => {
-        this.setState({ fields: event.target.value });
-    };
+     handleChangeIndex = (index) => {
+         this.setState({ openTab: index });
+     };
 
-    handleSubmit = () => {
-        console.log('Submit button clicked');
-    }
+     render() {
+         const dataHubObjects = this.props.dataHub.dataObjects;
+         console.log('data is', dataHubObjects);
+         const dataHubProducts = dataHubObjects.filter((item) => item.content.articleNo);
+         const dataHubContacts = dataHubObjects.filter((item) => item.content.firstName);
+         const dataHubDocuments = dataHubObjects.filter((item) => item.content.documentId);
 
-    render() {
-        const {
-            classes,
-        } = this.props;
+         //  var marvelHeroes =  dataHubObjects.filter(function(item) {
+         //     return item.id == “Marvel”;
+         // });
+         console.log('contacts are: ', dataHubContacts);
+         console.log('products are: ', dataHubProducts);
+         const {
+             classes,
+         } = this.props;
+         //  switch (this.state.sortBy) {
+         //  case 'duplicatesDesc':
+         //      dataJSON.data.sort((a, b) => b.enrichmentResults.knownDuplicates.length - a.enrichmentResults.knownDuplicates.length);
+         //      break;
+         //  case 'duplicatesAsc':
+         //      dataJSON.data.sort((a, b) => a.enrichmentResults.knownDuplicates.length - b.enrichmentResults.knownDuplicates.length);
+         //      break;
+         //  case 'scoreDesc':
+         //      dataJSON.data.sort((a, b) => b.enrichmentResults.score - a.enrichmentResults.score);
+         //      break;
+         //  case 'scoreAsc':
+         //      dataJSON.data.sort((a, b) => a.enrichmentResults.score - b.enrichmentResults.score);
+         //      break;
+         //  default:
+         //      break;
+         //  }
 
-        return (
-            <Container className={classes.container}>
-                {!this.state.isLoading && <div style={{ display: 'flex' }}>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id="demo-simple-select-helper-label">Tenant</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-helper-label"
-                            id="demo-simple-select-helper"
-                            name="selectedTenant"
-                            value={this.state.selectedTenant}
-                            onChange={this.handleChange}
-                        >
-                            {this.state.tenants.map(tenant => (<MenuItem name="selectedTenant" key={tenant._id} value={tenant._id}>{tenant._id}</MenuItem>))}
-                        </Select>
-                        <FormHelperText>Some important helper text</FormHelperText>
-                    </FormControl>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id="demo-simple-select-helper-label">Schema</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-helper-label"
-                            id="demo-simple-select-helper"
-                            name="selectedSchema"
-                            value={this.state.selectedSchema}
-                            onChange={this.handleChange}
-                        >
-                            {this.state.schemas.data.map(schema => (<MenuItem key={schema.id} value={schema.id}>{schema.id}</MenuItem>))}
-                        </Select>
-                        <FormHelperText>Some important helper text</FormHelperText>
-                    </FormControl>
-                    <textarea id="textbox" placeholder="Fields" name="fields" value={this.state.fields} onChange={e => this.handleFields(e)} className={classes.input}></textarea>
-                    <div><button className={classes.submitBtn} onClick={this.handleSubmit}>Submit</button></div></div>}
-                {!this.state.isLoading && <DataTable/>}
-            </Container>
-        );
-    }
+         return (
+             <Container className={classes.container}>
+                 <div className={classes.root}>
+                     <AppBar position="static" color="default">
+                         <Tabs
+                             value={this.state.openTab}
+                             onChange={this.handleChange}
+                             indicatorColor="primary"
+                             textColor="primary"
+                             variant="fullWidth"
+                             aria-label="full width tabs example"
+                         >
+                             <Tab label="Data-Quality" />
+                             <Tab label="Search" />
+                             <Tab label="RDS" />
+                         </Tabs>
+                     </AppBar>
+                     <SwipeableViews
+                         axis='x'
+                         index={this.state.openTab}
+                         onChangeIndex={this.handleChangeIndex}
+                     >
+                         <TabPanel value={this.state.openTab} index={0} dir='x'>
+                             <GroupedBar/>
+                             <Grid container>
+                                 <Grid item lg={12} md={12} xs={12}>
+                                     <Button className={classes.enrich} onClick={() => enrichData()}>Enrich</Button>
+                                 </Grid>
+                                 <Grid item lg={4} md={4} xs={12}>
+                                     <Contact contacts={dataHubContacts}/>
+                                 </Grid>
+                                 <Grid item lg={4} md={4} xs={12}>
+                                     <Product products={dataHubProducts}/>
+                                 </Grid>
+                                 <Grid item lg={4} md={4} xs={12}>
+                                     <Document documents={dataHubDocuments}/>
+                                 </Grid>
+                             </Grid>
+                         </TabPanel>
+                         <TabPanel value={this.state.openTab} index={1} dir='x'>
+                             <DataQuality data={dataHubObjects}/>
+                         </TabPanel>
+                         <TabPanel value={this.state.openTab} index={2} dir='x'>
+                             <RDS/>
+                         </TabPanel>
+                     </SwipeableViews>
+                 </div>
+                 <Tab/>
+
+             </Container>
+         );
+     }
 }
 
-const mapStateToProps = state => ({
-    tenants: state.tenants,
+const mapStateToProps = (state) => ({
+    dataHub: state.dataHub,
 });
-const mapDispatchToProps = dispatch => bindActionCreators({
-    getTenants,
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+    getDataObjects,
 }, dispatch);
 
 export default flow(

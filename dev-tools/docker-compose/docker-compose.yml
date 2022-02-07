@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   iam:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_IAM_FOLDER}
     working_dir: /usr/src/app/services/iam
@@ -27,10 +28,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   secret-service:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_SECRET_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/secret-service
@@ -55,10 +57,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   component-repository:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_COMPONENT_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/component-repository
@@ -80,10 +83,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   snapshots-service:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_SNAPSHOTS_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/snapshots-service
@@ -105,13 +109,15 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   component-orchestrator:
     image: ${NODE_IMAGE}
     # container_name: ${DEV_COMPONENT_ORCHESTRATOR_FOLDER}
     working_dir: /usr/src/app/services/component-orchestrator
+    extra_hosts:
+      - host.docker.internal:host-gateway
     environment:
       NODE_ENV: development
       LOG_LEVEL: trace
@@ -156,15 +162,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    entrypoint:
-    - /bin/sh
-    - -c
-    - echo "`/sbin/ip route|grep default | cut -d ' ' -f3` host.docker.internal" |
-      tee -a /etc/hosts > /dev/null && cd /usr/src/app/services/component-orchestrator
-      && yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   app-directory:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_APP_DIRECTORY_FOLDER}
     working_dir: /usr/src/app/services/app-directory
@@ -188,10 +190,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   attachment-storage-service:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_ATTACHMENT_STORAGE_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/attachment-storage-service
@@ -206,10 +209,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   audit-log:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_AUDIT_LOG_FOLDER}
     working_dir: /usr/src/app/services/audit-log
@@ -230,10 +234,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   data-hub:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_DATA_HUB_FOLDER}
     working_dir: /usr/src/app/services/data-hub
@@ -245,6 +250,7 @@ services:
       INTROSPECT_TYPE: basic
       INTROSPECT_ENDPOINT_BASIC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/api/v1/tokens/introspect
       INTROSPECT_ENDPOINT_OIDC: http://${DEV_IAM_FOLDER}:${DEV_IAM_PORT}/op/userinfo
+      ORIGIN_WHITELIST: ${ORIGIN_WHITELIST}
       PORT: ${DEV_DATA_HUB_PORT}
     ports:
     - ${DEV_DATA_HUB_EXTERNAL_PORT}:${DEV_DATA_HUB_PORT}
@@ -252,10 +258,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   dispatcher-service:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_DISPATCHER_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/dispatcher-service
@@ -277,10 +284,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   flow-repository:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_FLOW_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/flow-repository
@@ -301,10 +309,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   ils:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_ILS_FOLDER}
     working_dir: /usr/src/app/services/ils
@@ -322,10 +331,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   meta-data-repository:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_META_DATA_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/meta-data-repository
@@ -348,10 +358,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   scheduler:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_SCHEDULER_FOLDER}
     working_dir: /usr/src/app/services/scheduler
@@ -371,10 +382,11 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
   webhooks:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_WEBHOOKS_FOLDER}
     working_dir: /usr/src/app/services/webhooks
@@ -395,11 +407,12 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
 
   template-repository:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_TEMPLATE_REPOSITORY_FOLDER}
     working_dir: /usr/src/app/services/${DEV_TEMPLATE_REPOSITORY_FOLDER}
@@ -419,11 +432,12 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
 
   rds:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_RDS_FOLDER}
     working_dir: /usr/src/app/services/${DEV_RDS_FOLDER}
@@ -444,11 +458,12 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
 
   governance-service:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_GOVERNANCE_SERVICE_FOLDER}
     working_dir: /usr/src/app/services/${DEV_GOVERNANCE_SERVICE_FOLDER}
@@ -469,11 +484,12 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
     
   reports-analytics:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_REPORTS_ANALYTICS_FOLDER}
     working_dir: /usr/src/app/services/${DEV_REPORTS_ANALYTICS_FOLDER}
@@ -493,11 +509,12 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
 
   web-ui:
+    user: ${DOCKER_USER_GROUP}
     image: ${NODE_IMAGE}
     container_name: ${DEV_WEB_UI_FOLDER}
     working_dir: /usr/src/app/services/web-ui
@@ -511,6 +528,8 @@ services:
       ENDPOINT_METADATA: http://localhost:${DEV_META_DATA_REPOSITORY_EXTERNAL_PORT}/api/v1
       ENDPOINT_APP_DIRECTORY: http://localhost:${DEV_APP_DIRECTORY_EXTERNAL_PORT}/api/v1
       ENDPOINT_WEBHOOKS: http://localhost:${DEV_WEBHOOKS_EXTERNAL_PORT}
+      ENDPOINT_DATA_HUB: http://localhost:${DEV_DATA_HUB_EXTERNAL_PORT}
+      ENDPOINT_RDS: http://localhost:${DEV_RDS_EXTERNAL_PORT}/api/v1
       PORT: ${DEV_WEB_UI_PORT}
     ports:
     - ${DEV_WEB_UI_EXTERNAL_PORT}:${DEV_WEB_UI_PORT}
@@ -518,7 +537,7 @@ services:
     - type: bind
       source: ${HOST_REPOSITORY_ROOT}
       target: /usr/src/app
-    command: yarn start:container
+    command: npm run start:container
     networks:
     - oih-dev
 networks:

@@ -1,7 +1,7 @@
 {
   "servers": [
     {
-      "url": "https://api.example.com"
+      "url": "https://iam.example.com"
     }
   ],
   "openapi": "3.0.0",
@@ -153,9 +153,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Tenant"
+                  "type":"object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Tenant"
+                      }
+                    }  
                   }
                 }
               }
@@ -183,7 +188,19 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -400,7 +417,7 @@
         ],
         "summary": "get all users",
         "description": "This can only be done by a logged in user who has the required privileges.",
-        "operationId": "getUser",
+        "operationId": "getUsers",
         "parameters": [
           {
             "name": "meta",
@@ -888,9 +905,9 @@
       "Status": {
         "type": "string",
         "enum": [
-          "active",
-          "pending",
-          "disabled"
+          "ACTIVE",
+          "PENDING",
+          "DISABLED"
         ]
       },
       "GlobalRole": {
@@ -953,8 +970,7 @@
         "properties": {
           "inquirer": {
             "type": "string",
-            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created.",
-            "required": true
+            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created."
           },
           "initiator": {
             "type": "string",
@@ -962,8 +978,7 @@
           },
           "accountId": {
             "type": "string",
-            "description": "Affected account the token is created for",
-            "required": true
+            "description": "Affected account the token is created for"
           },
           "token": {
             "type": "string"
@@ -986,15 +1001,18 @@
             "type": "string",
             "description": "indicates the lifespan of the token. Possible values are -1 for permanent token and a string expression describing a time span, e.g. 2m, 5h"
           }
-        }
+        },
+        "required":[
+          "inquirer",
+          "accountId"
+        ]
       },
       "TokenCreate": {
         "type": "object",
         "properties": {
           "inquirer": {
             "type": "string",
-            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created.",
-            "required": true
+            "description": "Id of user or a service running on behalf of the user. Who wants the token to be created."
           },
           "initiator": {
             "type": "string",
@@ -1002,8 +1020,7 @@
           },
           "accountId": {
             "type": "string",
-            "description": "Affected account the token is created for",
-            "required": true
+            "description": "Affected account the token is created for"
           },
           "token": {
             "type": "string"
@@ -1026,8 +1043,12 @@
             "type": "string",
             "description": "Sets the lifespan of the token. Possible values are -1 for permanent token and a string expression describing a time span, e.g. 2m, 5h"
           }
-        }
-      },
+        },
+        "required":[
+          "inquirer",
+          "accountId"
+        ]
+    },
       "Login": {
         "title": "Login data",
         "type": "object",
@@ -1068,7 +1089,7 @@
         "title": "Tenant Schema",
         "type": "object",
         "properties": {
-          "id": {
+          "_id": {
             "type": "string",
             "description": "id of tenant organization"
           },

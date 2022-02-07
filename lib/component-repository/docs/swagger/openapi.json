@@ -359,6 +359,10 @@
             "type": "string",
             "example": "My Component"
           },
+          "id": {
+            "type": "string",
+            "description": "Unique component ID"
+          },
           "access": {
             "type": "string",
             "enum": ["private", "public"],
@@ -381,6 +385,12 @@
           },
           "distribution": {
             "$ref": "#/components/schemas/ComponentDistribution"
+          },
+          "isGlobal": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
           },
           "owners": {
             "type": "array",

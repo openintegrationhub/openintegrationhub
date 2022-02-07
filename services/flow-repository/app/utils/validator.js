@@ -2,7 +2,7 @@ const cronstrue = require('cronstrue');
 const log = require('../config/logger'); // eslint-disable-line
 
 function findNode(nodeId, flow) {
-  const wasFound = flow.graph.nodes.findIndex(n => (n.id === nodeId));
+  const wasFound = flow.graph.nodes.findIndex((n) => (n.id === nodeId));
   if (wasFound === -1) return false;
   return true;
 }

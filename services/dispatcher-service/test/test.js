@@ -1,5 +1,6 @@
 /* eslint no-underscore-dangle: "off" */
 /* eslint no-unused-vars: "off" */
+/* eslint import/no-extraneous-dependencies: 0 */
 
 const mongoose = require('mongoose');
 
@@ -11,7 +12,7 @@ const port = process.env.PORT || 3013;
 const request = require('supertest')(`${hostUrl}:${port}`);
 const nock = require('nock');
 const lodash = require('lodash');
-const iamMock = require('./utils/iamMock.js');
+const iamMock = require('./utils/iamMock');
 const Server = require('../app/server');
 const Configuration = require('../app/models/configuration');
 const { createDispatches, getTargets, checkFlows } = require('../app/utils/handlers');
@@ -40,9 +41,9 @@ afterAll(async () => {
 describe('Documentation', () => {
   test('should display the swagger-generated HTML page', async () => {
     const res = await request.get('/api-docs/');
-    expect(true).toBe(true);
+
     expect(res.text).not.toHaveLength(0);
-    expect(res.text).toMatch(/HTML for static distribution bundle build/);
+    expect(res.text).toMatch(/HTML\sfor\sstatic\sdistribution\sbundle\sbuild/);
   });
 });
 
@@ -899,7 +900,6 @@ describe('Flow Handling', () => {
       })
       .reply(200, { data: { id: 'OutboundId' } });
 
-
     nock('http://localhost:3001/flows')
       .post('', {
         name: 'H&S Inbound CREATE Flow for Snazzy Contacts',
@@ -1014,7 +1014,6 @@ describe('Flow Handling', () => {
         cron: '* * * * *',
       })
       .reply(200, { data: { id: 'InboundIdUpdate' } });
-
 
     nock('http://localhost:3001/flows')
       .post('', {
