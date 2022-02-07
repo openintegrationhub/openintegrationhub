@@ -130,9 +130,9 @@ class FlowDetails extends React.PureComponent {
             openModal: false,
             parent: '',
             createNodeName: '',
-            leftNodeName: 'positive',
+            leftNodeName: '',
             leftNodeAdded: false,
-            rightNodeName: 'negative',
+            rightNodeName: '',
             rightNodeAdded: false,
             addNodeTriggered: false,
             addBranchEditor: false,
@@ -548,20 +548,32 @@ class FlowDetails extends React.PureComponent {
           this.setState({
               flow: newFlow, editNodeName: '', editNodeSettings: {}, editFunction: {}, editSecret: '', contentShown: 'flow-settings',
           });
-          //     this.setState({
-          //       flow: {
-          //           ...flow.graph.nodes,
-          //           cron: value,
-          //       },
-          //   });
-
-          //   console.log('correct newNodes?', newNodes);
-          //   const someProperty = { ...this.state.someProperty };
-          //   someProperty.flag = true;
-          //   this.setState({ someProperty });
       }
 
+      //   getDuplicates = (arr, key) => {
+      //       const id = arr.map((item) => item.id);
+      //       return id.filter((key) => id.indexOf(key) !== id.lastIndexOf(key));
+      //   }
+
       render() {
+          //   const items = [
+          //       {
+          //           name: 'Hans',
+          //           id: 1,
+          //       }, {
+          //           name: 'Selim',
+          //           id: 42,
+          //       }, {
+          //           name: 'Daniel',
+          //           id: 100,
+          //       }, {
+          //           name: 'Jusup',
+          //           id: 42,
+          //       },
+          //       // ...etc.
+          //   ];
+          //   const duplicates = this.getDuplicates(items, 'id');
+          //   console.log('unique', duplicates);
           const {
               classes,
           } = this.props;
