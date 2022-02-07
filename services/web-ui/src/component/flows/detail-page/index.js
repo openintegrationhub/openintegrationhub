@@ -207,14 +207,22 @@ class FlowDetails extends React.PureComponent {
 
     onElementClick = (element) => {
         console.log('onElementClick', element);
+        console.log('comps is', this.props.components);
+        const component = this.props.components.all.filter((cp) => cp.id === element.componentId)[0];
+        console.log('which one is it?', component);
+
         this.props.onEditNode && this.props.onEditNode(element.id);
         this.setState({
             selectedNode: element,
             contentShown: 'selected-node',
         });
         this.setState({
-            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: element.secret,
+            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: element.secret, component,
         });
+        if (this.state.components.all.length === 0) {
+            this.setState({ components: this.props.components });
+        }
+        console.log('new state', this.state.component);
     }
 
     displayModal = (parent) => {
@@ -620,7 +628,6 @@ class FlowDetails extends React.PureComponent {
                           id="function"
                           name="function"
                           label="Function"
-                          // value={this.state.flow.cron}
                           onChange={(e) => this.handleChange(e)}
                           margin="normal"
                           fullWidth
@@ -647,7 +654,6 @@ class FlowDetails extends React.PureComponent {
                           width = '600px'
                           placeholder = {this.dummyData}
                           onChange={(e) => this.handleNodeSettings(e)}
-                          // onChange={this.editorChange.bind(this)}
                       />
 
                       <Typography variant="subtitle2" component="body1" style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Fields (optional)</Typography>
@@ -693,7 +699,7 @@ class FlowDetails extends React.PureComponent {
                     id="flowID"
                     name="flowID"
                     label="Flow ID"
-                    value={this.props.flows.all[0].id}
+                    value={this.state.flow.id}
                     // onChange={this.handleChange}
                     margin="normal"
                     fullWidth
