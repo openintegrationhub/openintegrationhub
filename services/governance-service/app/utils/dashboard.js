@@ -36,7 +36,7 @@ async function getRefs(id, recordUid, token) {
 // Calculates object distribution by events
 async function getObjectDistribution(user) {
   try {
-    const allEvents = await getProvenanceEvents(user, 100, 1, false, false, false, false, false);
+    const allEvents = await getProvenanceEvents(user, 5000, 1, false, false, false, false, false);
 
     const serviceCounts = {};
 
