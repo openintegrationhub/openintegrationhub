@@ -135,6 +135,8 @@ const useStyles = {
 
 };
 
+let depth = 0;
+const uniqueNodes = [];
 class FlowDetails extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -244,7 +246,6 @@ class FlowDetails extends React.PureComponent {
     onElementClick = (element) => {
         console.log('onElementClick', element);
         const selectedComponent = this.props.components.all.filter((cp) => cp.id === element.componentId)[0];
-        console.log('empty?', selectedComponent);
         this.props.onEditNode && this.props.onEditNode(element.id);
         this.setState({
             selectedNode: element,
@@ -416,6 +417,10 @@ class FlowDetails extends React.PureComponent {
             classes,
         } = this.props;
 
+        if (!uniqueNodes.includes(parent.id)) {
+            uniqueNodes.push(parent.id);
+        }
+
         const component = this.state.components.all.filter((comp) => comp.id === parent.componentId)[0];
         let image = '';
         if (component && component.hasOwnProperty('logo')) {
@@ -435,6 +440,16 @@ class FlowDetails extends React.PureComponent {
             if (i === parent.children.length - 1 && parent.children.length > 1) {
                 nodeAlignment = 'right';
             }
+            console.log('node', node);
+            if (node.children.length > 0 && !uniqueNodes.includes(node.id)) {
+                // console.log('entered', node);
+                depth += 1;
+                console.log('entered', node, depth);
+            }
+            // console.log('node', node, depth);
+            // console.log('parent', parent, depth);
+            node.depth = depth;
+            this.getDepthByNodeId(node.id);
 
             childrenContent.push(this.generateGraphVisualization([], node, nodeAlignment, image));
         }
@@ -450,12 +465,12 @@ class FlowDetails extends React.PureComponent {
             </div>
             {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '50px' }}/>{childrenContent} </div>
                 : (parent.children.length && childrenContent.length > 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '50px' }}/><div style={{
-                    position: 'absolute', right: 300, top: -30, width: 170,
+                    position: 'absolute', right: 235, top: -30, width: 170,
                 }}>{childrenContent[0]}<hr style={{
-                        position: 'absolute', left: '170px', top: 48, width: '215px', zIndex: 0,
-                    }}/></div><div style={{ position: 'absolute', left: 300, top: -30 }}>
+                        position: 'absolute', left: '170px', top: 48, width: '150px', zIndex: 0,
+                    }}/></div><div style={{ position: 'absolute', left: 235, top: -30 }}>
                     <hr style={{
-                        position: 'absolute', right: '170px', top: 48, width: '215px', zIndex: 0,
+                        position: 'absolute', right: '170px', top: 48, width: '150px', zIndex: 0,
                     }}/>{childrenContent[1]}</div> </div> : null}
             {!parent.children.length ? <div className={classes.graphActionsContainer}>
 
@@ -562,6 +577,7 @@ class FlowDetails extends React.PureComponent {
           for (let i = 0; i < this.state.flow.graph.nodes.length; i++) {
               console.log(this.state.flow.graph.nodes[i].children);
               delete this.state.flow.graph.nodes[i].children;
+              delete this.state.flow.graph.nodes[i].logo;
           }
           this.props.updateFlow(this.state.flow);
       }
@@ -630,25 +646,27 @@ class FlowDetails extends React.PureComponent {
       //       return id.filter((key) => id.indexOf(key) !== id.lastIndexOf(key));
       //   }
 
+      getDepth=() => {
+          const { edges } = this.state.flow.graph;
+
+          const unique = [...new Set(edges.map((item) => item.source))];
+          return unique.length - 1;
+      }
+
+      getDepthByNodeId = (nodeId) => {
+          let depth = 0;
+          const parent = this.state.flow.graph.edges.filter((item) => item.target === nodeId)[0];
+          if (parent) {
+              depth += 1;
+              this.getDepthByNodeId(parent.source);
+          }
+
+          console.log('correcct one?', parent);
+      }
+
       render() {
-          //   const items = [
-          //       {
-          //           name: 'Hans',
-          //           id: 1,
-          //       }, {
-          //           name: 'Selim',
-          //           id: 42,
-          //       }, {
-          //           name: 'Daniel',
-          //           id: 100,
-          //       }, {
-          //           name: 'Jusup',
-          //           id: 42,
-          //       },
-          //       // ...etc.
-          //   ];
-          //   const duplicates = this.getDuplicates(items, 'id');
-          //   console.log('unique', duplicates);
+          const depth = this.getDepth();
+          console.log('depth', depth);
           const {
               classes,
           } = this.props;
@@ -956,6 +974,7 @@ class FlowDetails extends React.PureComponent {
                             value={this.state.editComponent.name}
                             onChange={(e) => this.handleComponentSelection(e)}
                             fullWidth
+                            required
                         >
                             {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}>{component.logo
                                 ? <div style={{ display: 'flex', alignItems: 'center', height: '40px' }}>
@@ -982,6 +1001,7 @@ class FlowDetails extends React.PureComponent {
                         onChange={(e) => this.handleChange(e)}
                         margin="normal"
                         fullWidth
+                        required
                     />
 
                     {/* Function: <input type="text" id="function" name="function" onChange={(e) => this.handleChange(e)}/> */}
@@ -1030,7 +1050,7 @@ class FlowDetails extends React.PureComponent {
                             <Button variant="contained" onClick={() => this.setState({ selectedNode: '', contentShown: 'flow-settings' })} disableElevation>Cancel</Button>
                         </div>
                         <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                            <Button variant="contained" color="primary" disableElevation onClick={() => this.handleEdit()}>Save Node</Button>
+                            <Button variant="contained" color="primary" disableElevation onClick={() => this.handleEdit()} disabled={!this.state.editComponent.name || !this.state.editFunction}>Save Node</Button>
                         </div>
                     </div>
                 </div>}
