@@ -9,7 +9,7 @@ const { getProvenanceEvents } = require('../api/controllers/mongo');
 async function getRefs(id, recordUid, token) {
   if (!id && !recordUid) return false;
 
-  const url = id ? `${config.dataHubUrl}/${id}` : `${config.dataHubUrl}/recordId/${recordUid}`;
+  const url = id ? `${config.dataHubUrl}/data/${id}` : `${config.dataHubUrl}/recordId/data/${recordUid}`;
 
   const response = await fetch(
     url,
