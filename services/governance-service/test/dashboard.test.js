@@ -142,7 +142,7 @@ beforeAll(async () => {
     .persist();
 
   nock(config.dataHubUrl)
-    .get('/aoveu03dv921dvo')
+    .get('/data/aoveu03dv921dvo')
     .reply(200, testRefs);
 
   await new ProvenanceEvent({
