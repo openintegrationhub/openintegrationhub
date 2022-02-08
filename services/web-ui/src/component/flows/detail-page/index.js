@@ -333,15 +333,14 @@ class FlowDetails extends React.PureComponent {
             target: this.state.rightNodeName,
         });
         this.setState({ rightNodeAdded: true });
-        this.setState({
-            //   flow: {
-            //       ...this.props.flows.all[0],
-            //       graph,
-            //   },
-            flow: { graph },
-        });
+        this.setState((prevState) => ({
+            flow: {
+                ...prevState.flow,
+                graph,
+            },
+        }));
         this.setState({ leftNodeAdded: false, rightNodeAdded: false });
-        console.log('this.state.EditComponent', this.state.editComponent);
+        // console.log('this.state.EditComponent', this.state.editComponent);
     }
 
     openBranchEditor = (node) => {
@@ -533,6 +532,7 @@ class FlowDetails extends React.PureComponent {
           const newNodes = nodes.filter((item) => item.id !== selNode.id);
 
           newNodes.push(node);
+          console.log('check state here', this.state.flow);
           const graphCopy = this.state.flow.graph;
           graphCopy.nodes = newNodes;
           graphCopy.edges = newEdges;
@@ -556,11 +556,18 @@ class FlowDetails extends React.PureComponent {
           if (this.state.editFields) {
               node.fields = this.state.editFields;
           }
+          //   console.log('newFlow here', ...this.state.flow);
 
-          newFlow.graph = graphCopy;
+          //   newFlow.graph = graphCopy;
           console.log('newFlow', newFlow);
+          this.setState((prevState) => ({
+              flow: { // object that we want to update
+                  ...prevState.flow, // keep all other key-value pairs
+                  graph: newFlow.graph, // update the value of specific key
+              },
+          }));
           this.setState({
-              flow: newFlow, editNodeName: '', editNodeSettings: {}, editFunction: {}, editSecret: '', contentShown: 'flow-settings',
+              /* flow: newFlow, */ editNodeName: '', editNodeSettings: {}, editFunction: '', editFields: {}, editSecret: '', contentShown: 'flow-settings',
           });
       }
 
@@ -922,7 +929,7 @@ class FlowDetails extends React.PureComponent {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={this.state.component.name}
+                            value={this.state.editSecret}
                             onChange={(e) => this.handleSecretSelection(e)}
                             fullWidth
                         >
