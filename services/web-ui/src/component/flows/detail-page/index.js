@@ -131,8 +131,10 @@ class FlowDetails extends React.PureComponent {
             parent: '',
             createNodeName: '',
             leftNodeName: '',
+            leftNodeComponent: { name: '' },
             leftNodeAdded: false,
             rightNodeName: '',
+            rightNodeComponent: { name: '' },
             rightNodeAdded: false,
             addNodeTriggered: false,
             addBranchEditor: false,
@@ -145,11 +147,13 @@ class FlowDetails extends React.PureComponent {
             },
             contentShown: 'flow-settings',
             editNodeName: '',
-            editComponent: '',
+            editComponent: { name: '' },
             editFunction: '',
             editSecret: '',
             editNodeSettings: '',
             editFields: '',
+
+            prevEdge: '',
         };
     }
 
@@ -208,14 +212,14 @@ class FlowDetails extends React.PureComponent {
     onElementClick = (element) => {
         console.log('onElementClick', element);
         const selectedComponent = this.props.components.all.filter((cp) => cp.id === element.componentId)[0];
-
+        console.log('empty?', selectedComponent);
         this.props.onEditNode && this.props.onEditNode(element.id);
         this.setState({
             selectedNode: element,
             contentShown: 'selected-node',
         });
         this.setState({
-            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: element.credential_id, editComponent: selectedComponent,
+            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: element.credential_id, editComponent: selectedComponent || { name: '' },
         });
         if (this.state.components.all.length === 0) {
             this.setState({ components: this.props.components });
@@ -296,14 +300,14 @@ class FlowDetails extends React.PureComponent {
 
         graph.nodes.push({
             id: this.state.leftNodeName,
-            componentId: null,
+            componentId: this.state.component.id,
             function: null,
             fields: {
             },
         });
         graph.nodes.push({
             id: this.state.rightNodeName,
-            componentId: null,
+            componentId: this.state.component.id,
             function: null,
             fields: {
             },
@@ -337,6 +341,7 @@ class FlowDetails extends React.PureComponent {
             flow: { graph },
         });
         this.setState({ leftNodeAdded: false, rightNodeAdded: false });
+        console.log('this.state.EditComponent', this.state.editComponent);
     }
 
     openBranchEditor = (node) => {
@@ -394,7 +399,7 @@ class FlowDetails extends React.PureComponent {
 
             {/* {!isRoot ? <button>+</button> : null} */}
             <div className={`${classes.flowElement} ${parent.privileged ? 'privileged' : ''} `} onClick={this.onElementClick.bind(this, parent)}>
-                <p style={{ background: '' }}>{this.getImage(parent) ? <img src={this.getImage(parent)} style={{ width: '50px', height: '50px' }} alt="test"/> : null}{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
+                <p style={{ background: '', display: 'flex ', alignItems: 'center' }}>{this.getImage(parent) ? <img src={this.getImage(parent)} style={{ width: '30px', height: '30px', marginRight: 10 }} alt="test"/> : null}{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
             </div>
             {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/>{childrenContent} </div>
                 : (parent.children.length && childrenContent.length > 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/><div style={{
@@ -466,9 +471,16 @@ class FlowDetails extends React.PureComponent {
 
       handleComponentSelection = (event) => {
           const selected = event.target.value;
+          //   console.log('selected is:', selected);
           const component = this.props.components.all.filter((comp) => comp.name === selected)[0];
-          console.log('Comp', component);
-          this.setState({ component });
+          switch (event.target.name) {
+          case 'editNodeComponent':
+              this.setState({ editComponent: component });
+              break;
+          default:
+              this.setState({ component });
+              break;
+          }
       }
 
       // test it on monday
@@ -521,11 +533,13 @@ class FlowDetails extends React.PureComponent {
           const newNodes = nodes.filter((item) => item.id !== selNode.id);
 
           newNodes.push(node);
-
           const graphCopy = this.state.flow.graph;
           graphCopy.nodes = newNodes;
           graphCopy.edges = newEdges;
-          node.id = this.state.editNodeName;
+
+          if (this.state.editNodeName) {
+              node.id = this.state.editNodeName;
+          }
 
           if (this.state.editComponent) {
               node.componentId = this.state.editComponent.id;
@@ -776,9 +790,28 @@ class FlowDetails extends React.PureComponent {
                         onChange={(e) => this.handleChange(e)}
                         margin="normal"
                         fullWidth
-                        defaultValue="Positive"
                         autoFocus
                     />
+                    {/* <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                        <InputLabel id="demo-simple-select-label">Left Component</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            name="leftNodeNameComponent"
+                            value={this.state.leftNodeComponent.name}
+                            onChange={(e) => this.handleComponentSelection(e)}
+                        >
+                            {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id} >
+                                {component.logo ? <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <img src={component.logo} alt="comp_img" style={{ heigt: 24, width: 24 }}/>
+                                    {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                </div> : <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <AddBoxIcon style={{ height: 24, width: 24 }}/>
+                                    {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                </div>}
+                            </MenuItem>)}
+                        </Select>
+                    </FormControl> */}
 
                     <TextField
                         id="rightNodeName"
@@ -788,8 +821,26 @@ class FlowDetails extends React.PureComponent {
                         onChange={(e) => this.handleChange(e)}
                         margin="normal"
                         fullWidth
-                        defaultValue="Negative"
                     />
+                    {/* <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                        <InputLabel id="demo-simple-select-label">Right Component</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={this.state.rightNodeComponent.name}
+                            onChange={(e) => this.handleComponentSelection(e)}
+                        >
+                            {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id} >
+                                {component.logo ? <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <img src={component.logo} alt="comp_img" style={{ heigt: 24, width: 24 }}/>
+                                    {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                </div> : <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <AddBoxIcon style={{ height: 24, width: 24 }}/>
+                                    {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                </div>}
+                            </MenuItem>)}
+                        </Select>
+                    </FormControl> */}
 
                     <div className={classes.actionsContainer}>
                         <div className="item">
@@ -836,8 +887,9 @@ class FlowDetails extends React.PureComponent {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
+                            name="editNodeComponent"
                             value={this.state.editComponent.name}
-                            onChange={this.handleComponentSelection}
+                            onChange={(e) => this.handleComponentSelection(e)}
                             fullWidth
                         >
                             {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}>{component.logo
