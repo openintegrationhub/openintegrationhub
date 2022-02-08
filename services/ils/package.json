@@ -24,7 +24,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.16.3",
     "generate-schema": "^2.6.0",
-    "mongoose": "5.11.8",
+    "mongoose": "5.13.13",
     "request": "2.88.2",
     "request-promise": "4.2.6",
     "swagger-ui-express": "^4.1.4"

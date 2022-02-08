@@ -141,6 +141,7 @@ async function run() {
   const flowRefRegex = new RegExp(/\$flow_ref\((.+)\)/)
   // logic-gateway: replace flow references in every flow
   for (const [flowId, flowData] of Object.entries(flowCache)) {
+    console.log('Flow id', flowId)
     for (let i = 0; i < flowData.graph.nodes.length; i++) {
       const node = flowData.graph.nodes[i]
       if (node.fields && node.fields.rule) {
