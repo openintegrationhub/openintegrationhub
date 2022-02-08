@@ -529,13 +529,16 @@ class FlowDetails extends React.PureComponent {
 
           const { nodes } = this.state.flow.graph;
           const { edges } = this.state.flow.graph;
-
-          const newEdges = edges.filter((item) => item.target !== selNode.id);
-          newEdges.push(newEdge);
-
+          const indexNode = nodes.findIndex((item) => item.id === selNode.id);
           const newNodes = nodes.filter((item) => item.id !== selNode.id);
+          newNodes.splice(indexNode, 0, node);
+          //   newNodes.push(node);
+          const indexEdge = edges.findIndex((el) => el.target === selNode.id);
+          //   console.log('index is', index);
+          const newEdges = edges.filter((item) => item.target !== selNode.id);
+          newEdges.splice(indexEdge, 0, newEdge);
+          //   newEdges.push(newEdge);
 
-          newNodes.push(node);
           console.log('check state here', this.state.flow);
           const graphCopy = this.state.flow.graph;
           graphCopy.nodes = newNodes;
@@ -562,12 +565,11 @@ class FlowDetails extends React.PureComponent {
           }
           //   console.log('newFlow here', ...this.state.flow);
 
-          //   newFlow.graph = graphCopy;
           console.log('newFlow', newFlow);
           this.setState((prevState) => ({
-              flow: { // object that we want to update
-                  ...prevState.flow, // keep all other key-value pairs
-                  graph: newFlow.graph, // update the value of specific key
+              flow: {
+                  ...prevState.flow,
+                  graph: newFlow.graph,
               },
           }));
           this.setState({
