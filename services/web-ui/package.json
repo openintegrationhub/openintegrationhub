@@ -1,6 +1,6 @@
 {
   "name": "web-ui",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "license": "Apache-2.0",
   "dependencies": {
@@ -10,7 +10,8 @@
     "dotenv": "8.0.0",
     "express": "4.17.0",
     "moment": "^2.24.0",
-    "react-json-editor-ajrm": "^2.5.9"
+    "react-json-editor-ajrm": "^2.5.9",
+    "react-d3-tree": "^3.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
