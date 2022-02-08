@@ -1,3 +1,4 @@
+/*  eslint-disable no-await-in-loop */
 import axios from 'axios';
 
 import { getConfig } from '../conf';
@@ -7,17 +8,36 @@ export const GET_DATA_OBJECTS = 'GET_DATA_OBJECTS';
 
 export const getDataObjects = () => async (dispatch) => {
     try {
-        const result = await axios({
+        const requestPerPage = 100;
+        let dataObjects = [];
+        let result = (await axios({
             method: 'get',
             url: `${conf.endpoints.dataHub}/data`,
             withCredentials: true,
-        });
+            params: { 'page[size]': requestPerPage },
+        })).data;
 
-        const { data, meta } = result.data;
+        if (result.data) {
+            dataObjects = dataObjects.concat(result.data);
+        }
+
+        // request more pages if needed
+        for (let i = result.meta.page; i < result.meta.totalPages; i++) {
+            result = (await axios({
+                method: 'get',
+                url: `${conf.endpoints.dataHub}/data`,
+                withCredentials: true,
+                params: { 'page[size]': requestPerPage, 'page[number]': i + 1 },
+            })).data;
+
+            if (result.data) {
+                dataObjects = dataObjects.concat(result.data);
+            }
+        }
+
         dispatch({
             type: GET_DATA_OBJECTS,
-            meta,
-            data,
+            data: dataObjects,
         });
     } catch (err) {
         console.log(err);
@@ -31,6 +51,7 @@ export const enrichData = async () => {
         const result = await axios({
             method: 'post',
             url: `${conf.endpoints.dataHub}/data/enrich`,
+            params: { 'page[size]': 100 },
             data: {
                 functions: [
                     {
@@ -57,29 +78,15 @@ export const enrichData = async () => {
                                 minLength: 5,
                                 weight: 2,
                             },
-                        ],
-                    },
-                    {
-                        name: 'tag',
-                        active: true,
-                        fields: [
                             {
-                                comparator: 'hasField',
-                                tag: 'Has a Name',
-                                additive: true,
-                                arguments: {
-                                    field: 'firstName',
-
-                                },
+                                key: 'description',
+                                minLength: 4,
+                                weight: 3,
                             },
                             {
-                                comparator: 'hasField',
-                                tag: 'Has a LastName',
-                                additive: true,
-                                arguments: {
-                                    field: 'lastName',
-
-                                },
+                                key: 'name',
+                                minLength: 8,
+                                weight: 2,
                             },
                         ],
                     },
@@ -89,11 +96,28 @@ export const enrichData = async () => {
                         fields: [
                             {
                                 comparator: 'fieldEquals',
-                                tag: 'Is a James',
+                                tag: 'special-salutation',
                                 additive: true,
                                 arguments: {
-                                    field: 'firstName',
-                                    targetValue: 'James',
+                                    field: 'salutation',
+                                    targetValue: 'Dr.',
+                                },
+                            },
+                            {
+                                comparator: 'hasField',
+                                tag: 'docx',
+                                additive: true,
+                                arguments: {
+                                    field: 'filesize',
+                                },
+                            },
+                            {
+                                comparator: 'fieldEquals',
+                                tag: 'stock-item',
+                                additive: true,
+                                arguments: {
+                                    field: 'isStockItem',
+                                    targetValue: true,
                                 },
                             },
                         ],

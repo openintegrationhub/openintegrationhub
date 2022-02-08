@@ -7,7 +7,7 @@ module.exports = {
         namespace: optional('LOGGING_NAMESPACE', name),
     },
     endpoints: {
-        iam: optional('ENDPOINT_IAM', 'https://localhost:3099'/* 'https://iam.openintegrationhub.com' */),
+        iam: optional('ENDPOINT_IAM', /* 'https://localhost:3099'*/ 'https://iam.openintegrationhub.com' ),
         flow: optional('ENDPOINT_FLOW', 'https://flow-repository.openintegrationhub.com'),
         component: optional('ENDPOINT_COMPONENT', 'https://component-repository.openintegrationhub.com'),
         metadata: optional('ENDPOINT_METADATA', 'https://metadata.openintegrationhub.com/api/v1'),
