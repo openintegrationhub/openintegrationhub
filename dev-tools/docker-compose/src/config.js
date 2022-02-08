@@ -4,7 +4,7 @@ const { homedir } = require('os')
 
 const orchestratorReplica = 1
 const nodeImage = 'node:16-bullseye'
-const kubernetesVersion = 'v1.22.2'
+const kubernetesVersion = 'v1.22.4'
 
 const adminUsername = 'admin@openintegrationhub.com'
 const adminPassword = 'somestring'

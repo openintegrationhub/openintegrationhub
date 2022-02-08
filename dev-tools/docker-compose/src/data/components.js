@@ -363,6 +363,7 @@ module.exports = [
     descriptor: {
       replicas: 1,
       imagePullPolicy: 'Never',
+      restAPI: true,
     },
     resources: {
       requests: {
