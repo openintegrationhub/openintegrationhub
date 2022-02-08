@@ -375,7 +375,9 @@ class FlowDetails extends React.PureComponent {
                 graph,
             },
         }));
-        this.setState({ leftNodeAdded: false, rightNodeAdded: false });
+        this.setState({
+            leftNodeAdded: false, rightNodeAdded: false, leftNodeName: '', rightNodeName: '',
+        });
         // console.log('this.state.EditComponent', this.state.editComponent);
     }
 
@@ -384,6 +386,7 @@ class FlowDetails extends React.PureComponent {
             addBranchEditor: true,
             addBranchAtNode: node,
             contentShown: 'add-branch',
+
         });
     }
 
