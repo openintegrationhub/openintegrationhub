@@ -485,6 +485,10 @@ class FlowDetails extends React.PureComponent {
       // test it on monday
       handleSecretSelection = (event) => {
           const selectedSecret = event.target.value;
+          console.log('selected secret', selectedSecret);
+          if (event.target.name === 'editSecret') {
+              this.setState({ editSecret: selectedSecret });
+          }
           this.setState({ secret: selectedSecret });
       }
 
@@ -547,9 +551,9 @@ class FlowDetails extends React.PureComponent {
           if (this.state.editFunction) {
               node.function = this.state.editFunction;
           }
-          //   if(this.state.editSecret){
-          //     node.secret = this.state.editSecret
-          //   }
+          if (this.state.editSecret) {
+              node.credential_id = this.state.editSecret;
+          }
           if (this.state.editNodeSettings) {
               node.nodeSettings = this.state.editNodeSettings;
           }
@@ -929,6 +933,7 @@ class FlowDetails extends React.PureComponent {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
+                            name="editSecret"
                             value={this.state.editSecret}
                             onChange={(e) => this.handleSecretSelection(e)}
                             fullWidth
