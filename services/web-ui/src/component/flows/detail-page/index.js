@@ -294,7 +294,7 @@ class FlowDetails extends React.PureComponent {
         });
         this.setState({
             flow: {
-                ...this.props.flows.all[0],
+                ...this.state.flow,
                 graph,
             },
             createNodeName: '',
