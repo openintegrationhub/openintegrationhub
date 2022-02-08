@@ -146,7 +146,7 @@ class FlowDetails extends React.PureComponent {
             loading: true,
             selectedNode: '',
             component: { name: '' },
-            components: '',
+            components: { all: [] },
             secret: '',
             function: '',
             nodeSettings: {},
@@ -227,7 +227,15 @@ class FlowDetails extends React.PureComponent {
                 url: `${conf.endpoints.flow}/flows/${id}`,
                 withCredentials: true,
             });
-            this.setState({ flow: data.data, loading: false, components: this.props.components });
+
+            this.setState({ flow: data.data });
+            const result = await axios({
+                method: 'get',
+                url: `${conf.endpoints.component}/components`,
+                withCredentials: true,
+            });
+            this.setState({ components: this.props.components });
+            this.setState({ loading: false });
         } catch (err) {
             console.log(err);
         }
@@ -400,11 +408,17 @@ class FlowDetails extends React.PureComponent {
       return false;
   }
 
-    generateGraphVisualization = (currentContent = [], parent, /* isRoot, */ nodeAlignment) => {
+    generateGraphVisualization = (currentContent = [], parent, /* isRoot, */ nodeAlignment, logo) => {
         const {
             classes,
         } = this.props;
 
+        const component = this.state.components.all.filter((comp) => comp.id === parent.componentId)[0];
+        let image = '';
+        if (component && component.hasOwnProperty('logo')) {
+            image = component.logo;
+            parent.logo = component.logo;
+        }
         const childrenContent = [];
         for (let i = 0; i < parent.children.length; i++) {
             const node = parent.children[i];
@@ -418,17 +432,17 @@ class FlowDetails extends React.PureComponent {
             if (i === parent.children.length - 1 && parent.children.length > 1) {
                 nodeAlignment = 'right';
             }
-            childrenContent.push(this.generateGraphVisualization([], node, nodeAlignment));
+
+            childrenContent.push(this.generateGraphVisualization([], node, nodeAlignment, image));
         }
 
-        // console.log('componentImg', image);
         currentContent.push(<div key={parent.id} className={`${styles.nodeWrapper} ${nodeAlignment}`}>
 
             {/* {!isRoot ? <button>+</button> : null} */}
             <div className={`${classes.flowElement} ${parent.privileged ? 'privileged' : ''} `} onClick={this.onElementClick.bind(this, parent)}>
                 <span style={{
                     width: '30px', height: '30px', display: 'flex ', alignItems: 'center', justifyContent: 'center', marginRight: 10,
-                }}>{this.getImage(parent) ? <img src={this.getImage(parent)} style={{ width: '24px', height: '24px' }} alt="test"/> : <span className="placeholder">●</span>}</span>
+                }}>{image ? <img src={parent.logo} style={{ width: '24px', height: '24px' }} alt="test"/> : <span className="placeholder">●</span>}</span>
                 <span className="title">{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</span>
             </div>
             {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '50px' }}/>{childrenContent} </div>
