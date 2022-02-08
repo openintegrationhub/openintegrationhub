@@ -28,6 +28,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 import AddBoxIcon from '@material-ui/icons/AddBox';
+import { interpolateRgbBasis } from 'd3';
 import {
     getFlows, deleteFlow, updateFlow, startFlow, stopFlow, executeFlow,
 } from '../../../action/flows';
@@ -83,17 +84,40 @@ const useStyles = {
         padding: 20,
     },
     flowElement: {
-        // border: '1px solid rgba(0,0,0, .12)',
-        marginBottom: 10,
-        width: '120px',
+        display: 'flex',
+        alignItems: 'center',
+        margin: '25px 0',
+        width: '170px',
         borderRadius: '4px',
         background: 'white',
-        padding: '8px 16px',
+        padding: '8px',
+        minHeight: '60px',
         cursor: 'pointer',
         boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
+        '&:hover': {
+            opacity: '.9',
+            color: '#3f51b5',
+        },
         '&.privileged': {
             background: 'black',
             color: 'white',
+        },
+        '& .title': {
+            width: '100px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+        },
+        '& .placeholder': {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '18px',
+            width: '24px',
+            height: '24px',
+            background: 'rgba(0,0,0, .08)',
+            color: 'rgba(0,0,0, .16)',
+            borderRadius: '4px',
         },
     },
     modal: {
@@ -295,7 +319,11 @@ class FlowDetails extends React.PureComponent {
   }
 
     addBranchAfterNode = () => {
-        this.setState({ addBranchEditor: false });
+        this.setState({
+            addBranchEditor: false,
+            contentShown: 'flow-settings',
+        });
+
         const { graph } = this.state.flow;
 
         graph.nodes.push({
@@ -398,16 +426,19 @@ class FlowDetails extends React.PureComponent {
 
             {/* {!isRoot ? <button>+</button> : null} */}
             <div className={`${classes.flowElement} ${parent.privileged ? 'privileged' : ''} `} onClick={this.onElementClick.bind(this, parent)}>
-                <p style={{ background: '', display: 'flex ', alignItems: 'center' }}>{this.getImage(parent) ? <img src={this.getImage(parent)} style={{ width: '30px', height: '30px', marginRight: 10 }} alt="test"/> : null}{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</p>
+                <span style={{
+                    width: '30px', height: '30px', display: 'flex ', alignItems: 'center', justifyContent: 'center', marginRight: 10,
+                }}>{this.getImage(parent) ? <img src={this.getImage(parent)} style={{ width: '24px', height: '24px' }} alt="test"/> : <span className="placeholder">●</span>}</span>
+                <span className="title">{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</span>
             </div>
-            {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/>{childrenContent} </div>
-                : (parent.children.length && childrenContent.length > 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '20px' }}/><div style={{
-                    position: 'absolute', right: 300, top: -30, width: 120,
+            {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '50px' }}/>{childrenContent} </div>
+                : (parent.children.length && childrenContent.length > 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '50px' }}/><div style={{
+                    position: 'absolute', right: 300, top: -30, width: 170,
                 }}>{childrenContent[0]}<hr style={{
-                        position: 'absolute', left: '120px', top: 32, width: '240px', zIndex: 0,
+                        position: 'absolute', left: '170px', top: 48, width: '215px', zIndex: 0,
                     }}/></div><div style={{ position: 'absolute', left: 300, top: -30 }}>
                     <hr style={{
-                        position: 'absolute', right: '120px', top: 32, width: '240px', zIndex: 0,
+                        position: 'absolute', right: '170px', top: 48, width: '215px', zIndex: 0,
                     }}/>{childrenContent[1]}</div> </div> : null}
             {!parent.children.length ? <div className={classes.graphActionsContainer}>
 
@@ -429,7 +460,7 @@ class FlowDetails extends React.PureComponent {
                         color="primary"
                         size="small"
                         style={{
-                            position: 'absolute', top: '-5px', right: '-19px', zIndex: '1', background: '#ededed',
+                            position: 'absolute', top: '10px', right: '-19px', zIndex: '1', background: '#ededed',
                         }}
                     >
                         <DeleteIcon />
@@ -657,11 +688,15 @@ class FlowDetails extends React.PureComponent {
                               onChange={(e) => this.handleComponentSelection(e)}
                           >
                               {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id} >
-                                  {component.logo ? <div style={{ display: 'flex', alignItems: 'center' }}>
-                                      <img src={component.logo} alt="comp_img" style={{ heigt: 24, width: 24 }}/>
+                                  {component.logo ? <div style={{ display: 'flex', alignItems: 'center', height: '40px' }}>
+                                      <img src={component.logo} alt="comp_img" style={{
+                                          height: 24, width: 24, marginRight: '12px', overflow: 'hidden',
+                                      }}/>
                                       {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
-                                  </div> : <div style={{ display: 'flex', alignItems: 'center' }}>
-                                      <AddBoxIcon style={{ height: 24, width: 24 }}/>
+                                  </div> : <div style={{
+                                      display: 'flex', alignItems: 'center', height: '40px',
+                                  }}>
+                                      <AddBoxIcon style={{ height: 24, width: 24, marginRight: '8px' }}/>
                                       {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
                                   </div>}
                               </MenuItem>)}
@@ -904,12 +939,16 @@ class FlowDetails extends React.PureComponent {
                             fullWidth
                         >
                             {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}>{component.logo
-                                ? <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <img src={component.logo} alt="comp_img" style={{ heigt: 24, width: 24 }}/>
+                                ? <div style={{ display: 'flex', alignItems: 'center', height: '40px' }}>
+                                    <img src={component.logo} alt="comp_img" style={{
+                                        height: 24, width: 24, marginRight: '12px', overflow: 'hidden',
+                                    }}/>
                                     {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
                                 </div>
-                                : <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <AddBoxIcon style={{ height: 24, width: 24 }}/> {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                : <div style={{
+                                    display: 'flex', alignItems: 'center', height: '40px',
+                                }}>
+                                    <AddBoxIcon style={{ height: 24, width: 24, marginRight: '8px' }}/> {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
                                 </div>}
                             </MenuItem>)}
                         </Select>
