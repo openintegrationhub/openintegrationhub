@@ -141,7 +141,7 @@ class FlowDetails extends React.PureComponent {
     constructor(props) {
         super(props);
         props.getFlows();
-        props.getComponents();
+        props.getComponents(100);
         props.getSecrets();
         this.state = {
             position: '',
@@ -592,7 +592,10 @@ class FlowDetails extends React.PureComponent {
           const newEdge = { ...edge, target: this.state.editNodeName };
 
           const { nodes } = this.state.flow.graph;
-          const { edges } = this.state.flow.graph;
+          let { edges } = this.state.flow.graph;
+          if (edges.length === 1 && !edges[0].hasOwnProperty('target')) {
+              edges = [];
+          }
           const indexNode = nodes.findIndex((item) => item.id === selNode.id);
           const newNodes = nodes.filter((item) => item.id !== selNode.id);
           newNodes.splice(indexNode, 0, node);
