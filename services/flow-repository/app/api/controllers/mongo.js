@@ -58,7 +58,7 @@ const getTemplates = async ({ user, pageSize = 10, pageNumber = 0 }) => {
     flow.graph.nodes.forEach((node) => {
       delete node.credentials_id;
     });
-    flow.owners = flow.owners.filter(owner => owner.id === user.sub || owner.id === user.tenant);
+    flow.owners = flow.owners.filter((owner) => owner.id === user.sub || owner.id === user.tenant);
   });
 
   return {
@@ -151,7 +151,7 @@ const getFlowById = (flowId, user) => new Promise((resolve) => {
     });
 });
 
-const addFlow = storeFlow => new Promise((resolve) => {
+const addFlow = (storeFlow) => new Promise((resolve) => {
   storeFlow.save()
     .then((doc) => {
       const flow = format(doc._doc);
@@ -211,7 +211,7 @@ const stoppingFlow = (user, flowId) => new Promise((resolve) => {
     });
 });
 
-const startedFlow = flowId => new Promise((resolve) => {
+const startedFlow = (flowId) => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
 
   const qry = { '_id': findId };
@@ -229,7 +229,7 @@ const startedFlow = flowId => new Promise((resolve) => {
     });
 });
 
-const stoppedFlow = flowId => new Promise((resolve) => {
+const stoppedFlow = (flowId) => new Promise((resolve) => {
   const findId = mongoose.Types.ObjectId(flowId);
 
   const qry = { '_id': findId };
@@ -258,7 +258,7 @@ const deleteFlow = (flowId, user) => new Promise((resolve) => {
     });
 });
 
-const anonymise = userId => new Promise((resolve) => {
+const anonymise = (userId) => new Promise((resolve) => {
   Flow.update(
     { 'owners.id': userId },
     { $pull: { owners: { id: userId } } },

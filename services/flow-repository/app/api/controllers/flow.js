@@ -151,7 +151,7 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
   if (!newFlow.owners) {
     newFlow.owners = [];
   }
-  if (newFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+  if (newFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     newFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 
@@ -212,7 +212,7 @@ router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, re
   if (!updateFlow.owners) {
     updateFlow.owners = [];
   }
-  if (updateFlow.owners.findIndex(o => (o.id === req.user.sub)) === -1) {
+  if (updateFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
     updateFlow.owners.push({ id: req.user.sub, type: 'user' });
   }
 
