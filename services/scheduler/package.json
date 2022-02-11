@@ -25,7 +25,7 @@
     "backend-commons-lib": "*",
     "cron-parser": "2.7.3",
     "express": "4.16.3",
-    "mongoose": "5.13.13",
+    "mongoose": "6.2.1",
     "nconf": "0.10.0",
     "uuid": "3.3.2"
   },

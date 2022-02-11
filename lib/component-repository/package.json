@@ -18,7 +18,7 @@
     "express": "4.17.1",
     "express-async-handler": "1.1.4",
     "lodash": "4.17.21",
-    "mongoose": "5.13.13",
+    "mongoose": "6.2.1",
     "node-fetch": "2.6.1",
     "swagger-ui-express": "4.0.2"
   },
