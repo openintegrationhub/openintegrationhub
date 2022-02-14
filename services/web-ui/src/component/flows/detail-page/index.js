@@ -135,7 +135,7 @@ const useStyles = {
 
 };
 
-let depth = 0;
+const depth = 0;
 const uniqueNodes = [];
 class FlowDetails extends React.PureComponent {
     constructor(props) {
@@ -147,10 +147,11 @@ class FlowDetails extends React.PureComponent {
             position: '',
             loading: true,
             selectedNode: '',
-            component: { name: '' },
+            component: { name: '', descriptor: { actions: [], triggers: [] } },
             components: { all: [] },
             secret: '',
             function: '',
+            selectableFunctions: [{ actions: {}, triggers: {} }],
             nodeSettings: {},
             fields: {},
             openModal: false,
@@ -175,7 +176,7 @@ class FlowDetails extends React.PureComponent {
             editNodeName: '',
             editComponent: { name: '' },
             editFunction: '',
-            editSecret: '',
+            editSecret: { name: '' },
             editNodeSettings: '',
             editFields: '',
 
@@ -244,15 +245,18 @@ class FlowDetails extends React.PureComponent {
     }
 
     onElementClick = (element) => {
-        console.log('onElementClick', element);
+        // console.log('onElementClick', element);
+        this.setState({ editFields: {}, editNodeSettings: {} });
         const selectedComponent = this.props.components.all.filter((cp) => cp.id === element.componentId)[0];
+        const selectedSecret = this.props.secrets.secrets.filter((sec) => sec._id === element.credentials_id)[0];
+
         this.props.onEditNode && this.props.onEditNode(element.id);
         this.setState({
             selectedNode: element,
             contentShown: 'selected-node',
         });
         this.setState({
-            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: element.credential_id, editComponent: selectedComponent || { name: '' },
+            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: selectedSecret || this.state.editSecret, editComponent: selectedComponent || { name: '' },
         });
         if (this.state.components.all.length === 0) {
             this.setState({ components: this.props.components });
@@ -272,7 +276,7 @@ class FlowDetails extends React.PureComponent {
             id: newNodeId,
             componentId: this.state.component.id,
             function: this.state.function,
-            credential_id: this.state.secret,
+            credentials_id: this.state.secret,
             nodeSettings: this.state.nodeSettings,
             fields: this.state.fields,
             privileged: this.state.component.hasOwnProperty('specialFlags') ? this.state.component.specialFlags.privilegedComponent : '',
@@ -298,7 +302,7 @@ class FlowDetails extends React.PureComponent {
                 graph,
             },
             createNodeName: '',
-            component: '',
+            component: { name: '', descriptor: { actions: [], triggers: [] } },
             // flow: {graph}
         });
     }
@@ -417,10 +421,6 @@ class FlowDetails extends React.PureComponent {
             classes,
         } = this.props;
 
-        if (!uniqueNodes.includes(parent.id)) {
-            uniqueNodes.push(parent.id);
-        }
-
         const component = this.state.components.all.filter((comp) => comp.id === parent.componentId)[0];
         let image = '';
         if (component && component.hasOwnProperty('logo')) {
@@ -440,17 +440,9 @@ class FlowDetails extends React.PureComponent {
             if (i === parent.children.length - 1 && parent.children.length > 1) {
                 nodeAlignment = 'right';
             }
-            console.log('node', node);
-            if (node.children.length > 0 && !uniqueNodes.includes(node.id)) {
-                // console.log('entered', node);
-                depth += 1;
-                console.log('entered', node, depth);
-            }
-            // console.log('node', node, depth);
-            // console.log('parent', parent, depth);
-            node.depth = depth;
-            this.getDepthByNodeId(node.id);
 
+            parent.secret = this.state.secret;
+            this.getDepthByNodeId(node.id);
             childrenContent.push(this.generateGraphVisualization([], node, nodeAlignment, image));
         }
 
@@ -535,6 +527,12 @@ class FlowDetails extends React.PureComponent {
           const selected = event.target.value;
           //   console.log('selected is:', selected);
           const component = this.props.components.all.filter((comp) => comp.name === selected)[0];
+          //   const { actions } = component.descriptor;
+          //   const { triggers } = component.descriptor;
+          //   if (actions) {
+          //       this.setState({ selectableFunctions: [{ actions }, { triggers }] });
+          //   }
+
           switch (event.target.name) {
           case 'editNodeComponent':
               this.setState({ editComponent: component });
@@ -548,11 +546,11 @@ class FlowDetails extends React.PureComponent {
       // test it on monday
       handleSecretSelection = (event) => {
           const selectedSecret = event.target.value;
-          console.log('selected secret', selectedSecret);
+          const newSecret = this.props.secrets.secrets.filter((sec) => sec.name === selectedSecret)[0];
           if (event.target.name === 'editSecret') {
-              this.setState({ editSecret: selectedSecret });
+              this.setState({ editSecret: newSecret });
           }
-          this.setState({ secret: selectedSecret });
+          this.setState({ secret: newSecret });
       }
 
       handleNodeSettings = (event) => {
@@ -622,7 +620,7 @@ class FlowDetails extends React.PureComponent {
               node.function = this.state.editFunction;
           }
           if (this.state.editSecret) {
-              node.credential_id = this.state.editSecret;
+              node.credentials_id = this.state.editSecret._id;
           }
           if (this.state.editNodeSettings) {
               node.nodeSettings = this.state.editNodeSettings;
@@ -663,13 +661,18 @@ class FlowDetails extends React.PureComponent {
               depth += 1;
               this.getDepthByNodeId(parent.source);
           }
+      }
 
-          console.log('correcct one?', parent);
+      getFunctions = () => {
+          if (this.state.component.descriptor) {
+              return { actions: this.state.component.descriptor.actions, triggers: this.state.component.descriptor.triggers };
+          }
+          //   this.setState({ selectableFunctions: [{ actions: this.state.component.descriptor.actions, triggers: {} }] });
+
+          return null;
       }
 
       render() {
-          const depth = this.getDepth();
-          console.log('depth', depth);
           const {
               classes,
           } = this.props;
@@ -687,10 +690,18 @@ class FlowDetails extends React.PureComponent {
           const selNode = this.state.selectedNode;
           const compId = selNode.componentId;
           const comp = this.state.components.all.filter((cp) => cp.id === compId)[0];
+          //   const { actions } = this.state.component.descriptor;
+          //   const { triggers } = this.state.component.descriptor;
+          const functions = this.getFunctions();
+
+          //   console.log('actions', actions, 'triggers', triggers);
+          console.log('functions', functions);
           //   console.log('comp', comp);
           //   console.log('components are', this.state.components);
           console.log('state is', this.state);
-          console.log('selNode is', selNode);
+          console.log('props is', this.props);
+          console.log('selectedNode is', selNode);
+          //   console.log('actions', actions);
           //   const { id } = this.props.match.params;
           return (<React.Fragment>
               {/* CREATE NODE MODAL */}
@@ -743,14 +754,35 @@ class FlowDetails extends React.PureComponent {
                           </Select>
                       </FormControl>
 
-                      <TextField
+                      {this.state.component.name && <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                          <InputLabel id="demo-simple-select-label">Function</InputLabel>
+
+                          {functions.actions ? <Select
+                              labelId="demo-simple-select-label"
+                              id="function"
+                              name="function"
+                              value={this.state.function}
+                              onChange={(e) => this.handleChange(e)}
+                          >
+                              {Object.keys(functions.actions).map((key, index) => <MenuItem value={key} key={'A'}>{key}</MenuItem>)}
+                              {Object.keys(functions.triggers).map((key, index) => <MenuItem value={key} key={'A'}>{key}</MenuItem>)}
+                          </Select> : <TextField
+                              id="function"
+                              name="function"
+                              label=""
+                              onChange={(e) => this.handleChange(e)}
+                              margin="normal"
+                              fullWidth
+                          />}
+                          {/* <TextField
                           id="function"
                           name="function"
                           label="Function"
                           onChange={(e) => this.handleChange(e)}
                           margin="normal"
                           fullWidth
-                      />
+                      /> */}
+                      </FormControl>}
 
                       <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
                           <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
@@ -1015,7 +1047,7 @@ class FlowDetails extends React.PureComponent {
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             name="editSecret"
-                            value={this.state.editSecret}
+                            value={this.state.editSecret.name}
                             onChange={(e) => this.handleSecretSelection(e)}
                             fullWidth
                         >
