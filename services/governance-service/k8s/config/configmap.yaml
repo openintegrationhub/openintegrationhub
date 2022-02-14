@@ -9,3 +9,6 @@ data:
   NODE_ENV: production
   ORIGINWHITELIST: "openintegrationhub.com,http://web-ui.openintegrationhub.com"
   QUEUE_URL: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+  FLOW_REPO_BASE_URL: "http://flow-repository.oih-dev-ns.svc.cluster.local:3001"
+  DATA_HUB_BASE_URL: "http://data-hub-service.oih-dev-ns.svc.cluster.local:1234"
+  GOVERNANCE_SERVICE_BASE_URL: "http://governance-service.openintegrationhub.com"

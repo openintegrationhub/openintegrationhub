@@ -4,7 +4,6 @@ const {
 const _ = require('lodash');
 const KubernetesRunningComponent = require('./KubernetesRunningComponent');
 const Secret = require('./Secret');
-
 const ENV_PREFIX = 'ELASTICIO_';
 
 const GLOBAL = 'global';
@@ -13,6 +12,13 @@ const LOCAL = 'local';
 const LOCAL_PREFIX = `${LOCAL}-`;
 
 const KUBERNETES_NAME_CONVENTION = /[^0-9a-z\-\.]/gi; // eslint-disable-line no-useless-escape
+
+function enableComponentRestAPI(component) {
+    if (component.descriptor && component.descriptor.restAPI) {
+        return true
+    }
+    return false
+}
 
 class KubernetesDriver extends BaseDriver {
     constructor({ config, logger, k8s }) {
@@ -64,7 +70,7 @@ class KubernetesDriver extends BaseDriver {
     }
 
     async _createRunningComponent({ flow, node, secret, component, options }) {
-        const descriptor = await this._generateDefinition({
+        const deployment = await this._generateDeploymentDefinition({
             flow,
             node,
             secret,
@@ -72,12 +78,28 @@ class KubernetesDriver extends BaseDriver {
             options,
         });
 
-        console.log(JSON.stringify(descriptor))
-        this._logger.trace(descriptor);
-        const result = await this._appsClient.deployments.post({
-            body: descriptor,
+        this._logger.trace(deployment);
+
+        const { body } = await this._appsClient.deployments.post({
+            body: deployment,
         });
-        return new KubernetesRunningComponent(result.body);
+
+        // create service definition only if component has "restAPI" in descriptor
+        if (enableComponentRestAPI(component)) {
+            const service = await this._generateServiceDefinition({
+                flow,
+                node,
+                component,
+            });
+
+            this._logger.trace(service);
+
+            await this._coreClient.services.post({
+                body: service,
+            });
+        }
+
+        return new KubernetesRunningComponent(body);
     }
 
     async _ensureSecret(name, secretEnvVars) {
@@ -140,7 +162,7 @@ class KubernetesDriver extends BaseDriver {
         //TODO wait until job really will be deleted
         this._logger.info(
             { name: app.name },
-            'Going to delete deployment from k8s'
+            'Going to delete Deployment from k8s'
         );
 
         try {
@@ -153,7 +175,28 @@ class KubernetesDriver extends BaseDriver {
             });
         } catch (e) {
             if (e.statusCode !== 404) {
-                this._logger.error(e, 'Failed to delete deployment');
+                this._logger.error(e, 'Failed to delete Deployment');
+            }
+        }
+
+
+        this._logger.info(
+            { name: app.name },
+            'Going to delete Service from k8s'
+        );
+
+        try {
+            const serviceId = this._generateKubernetesServiceId(app.name)
+            await this._coreClient.services(serviceId).delete({
+                body: {
+                    kind: 'DeleteOptions',
+                    apiVersion: 'v1',
+                    propagationPolicy: 'Foreground',
+                },
+            });
+        } catch (e) {
+            if (e.statusCode !== 404) {
+                this._logger.error(e, 'Failed to delete Service');
             }
         }
 
@@ -206,7 +249,21 @@ class KubernetesDriver extends BaseDriver {
         return []
     }
 
-    _generateDefinition({ flow, node, secret, component, options = {} }) {
+    _generateKubernetesAppId(flow, node, component) {
+        let appId = ''
+        if (component.isGlobal) {
+            appId = `${GLOBAL_PREFIX}${component.id}`;
+        } else {
+            appId = `${LOCAL_PREFIX}${flow.id}.${node.id}`;
+        }
+        return appId.toLowerCase().replace(KUBERNETES_NAME_CONVENTION, '');
+    }
+
+    _generateKubernetesServiceId(appId) {
+        return `${appId.replace('.', '-')}-service`
+    }
+
+    _generateDeploymentDefinition({ flow, node, secret, component, options = {} }) {
         // default options
         let { replicas = 1, imagePullPolicy = 'Always' } = options;
 
@@ -216,11 +273,11 @@ class KubernetesDriver extends BaseDriver {
             if (component.descriptor.imagePullPolicy) imagePullPolicy = component.descriptor.imagePullPolicy;
         }
 
-        let appId, matchLabels, labels, annotations;
+        const appId = this._generateKubernetesAppId(flow, node, component)
+
+        let matchLabels, labels, annotations;
 
         if (component.isGlobal) {
-            appId = `${GLOBAL_PREFIX}${component.id}`;
-
             labels = {
                 componentId: component.id,
             };
@@ -234,8 +291,6 @@ class KubernetesDriver extends BaseDriver {
                 type: GLOBAL,
             };
         } else {
-            appId = `${LOCAL_PREFIX}${flow.id}.${node.id}`;
-
             labels = {
                 flowId: flow.id,
                 stepId: node.id,
@@ -254,12 +309,8 @@ class KubernetesDriver extends BaseDriver {
             };
         }
 
-        appId = appId.toLowerCase().replace(KUBERNETES_NAME_CONVENTION, '');
-
         const image = _.get(component, 'distribution.image');
 
-        console.log(this._generateVolumes())
-        console.log(this._generateVolumeMounts())
         return {
             apiVersion: 'apps/v1',
             kind: 'Deployment',
@@ -302,6 +353,50 @@ class KubernetesDriver extends BaseDriver {
                         ],
                     },
                 },
+            },
+        };
+    }
+
+    _generateServiceDefinition({ flow, node, component }) {
+
+        const appId = this._generateKubernetesAppId(flow, node, component)
+        const serviceId = this._generateKubernetesServiceId(appId)
+
+        let selector;
+
+        if (component.isGlobal) {
+
+            selector = {
+                componentId: component.id,
+            };
+        } else {
+            selector = {
+                flowId: flow.id,
+                stepId: node.id,
+            };
+        }
+
+        return {
+            apiVersion: 'v1',
+            kind: 'Service',
+            metadata: {
+                name: serviceId,
+                namespace: this._config.get('NAMESPACE'),
+                labels: {
+                    app: serviceId
+                }
+            },
+            spec: {
+                type: 'ClusterIP',
+                selector,
+                ports: [
+                    {
+                        name: '3001',
+                        protocol: 'TCP',
+                        port: 3001,
+                        targetPort: 3001
+                    }
+                ]
             },
         };
     }
@@ -367,19 +462,20 @@ class KubernetesDriver extends BaseDriver {
             .get('DATAHUB_BASE_URL')
             .replace(/\/$/, '');
 
-        envVars.LOG_LEVEL = this._config
-            .get('COMPONENT_LOG_LEVEL')
-            .replace(/\/$/, '');
-
-        // // if running from host use cluster internal references instead
-        // if (this._config.get('RUNNING_ON_HOST') === 'true') {
-        //     envVars.SNAPSHOTS_SERVICE_BASE_URL = 'http://snapshots-service.oih-dev-ns.svc.cluster.local:1234';
-        // }
+        if (enableComponentRestAPI(component)) {
+            envVars.ENABLE_REST_API = 'true';
+        }
 
         envVars = Object.entries(envVars).reduce((env, [k, v]) => {
             env[`${ENV_PREFIX}${k}`] = v;
             return env;
         }, {});
+
+        // provide following vars without prefix
+
+        envVars.LOG_LEVEL = this._config
+            .get('COMPONENT_LOG_LEVEL')
+            .replace(/\/$/, '');
 
         return envVars;
     }

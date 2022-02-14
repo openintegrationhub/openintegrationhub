@@ -1,0 +1,123 @@
+{
+  "all": [
+      {
+          "status": "inactive",
+          "name": "raw-data-1",
+          "graph": {
+              "nodes": [
+                  {
+                      "id": "step_1",
+                      "componentId": "61e18f6714f335002746ba6f",
+                      "function": "testTrigger"
+                  },
+                  {
+                      "id": "step_2",
+                      "componentId": "61e18f6714f335002746ba6f",
+                      "function": "testAction",
+                      "nodeSettings": {
+                          "storeRawRecord": true
+                      }
+                  }
+              ],
+              "edges": [
+                  {
+                      "source": "step_1",
+                      "target": "step_2"
+                  }
+              ]
+          },
+          "owners": [
+              {
+                  "id": "61e18f61468ebc0027dd550d",
+                  "type": "user"
+              }
+          ],
+          "tenant": "61e18f61468ebc0027dd5507",
+          "createdAt": "2022-01-14T14:57:43.760Z",
+          "updatedAt": "2022-01-14T14:57:43.884Z",
+          "id": "61e18f67bb86b7002849fbe6"
+      },
+      {
+          "status": "inactive",
+          "name": "raw-data-2",
+          "graph": {
+              "nodes": [
+                  {
+                      "id": "step_1",
+                      "componentId": "61e18f6714f335002746ba6f",
+                      "function": "testTrigger"
+                  },
+                  {
+                      "id": "step_2",
+                      "componentId": "61e18f6714f335002746ba71",
+                      "function": "testAction",
+                      "nodeSettings": {
+                          "storeRawRecord": true
+                      }
+                  }
+              ],
+              "edges": [
+                  {
+                      "source": "step_1",
+                      "target": "step_2"
+                  }
+              ]
+          },
+          "owners": [
+              {
+                  "id": "61e18f61468ebc0027dd550d",
+                  "type": "user"
+              }
+          ],
+          "tenant": "61e18f61468ebc0027dd5507",
+          "createdAt": "2022-01-14T14:57:43.803Z",
+          "updatedAt": "2022-01-14T14:57:43.920Z",
+          "id": "61e18f67bb86b7002849fbe8"
+      },
+      {
+          "status": "inactive",
+          "name": "raw-data-3",
+          "graph": {
+              "nodes": [
+                  {
+                      "id": "step_1",
+                      "componentId": "61e18f6714f335002746ba71",
+                      "function": "testTrigger"
+                  },
+                  {
+                      "id": "step_2",
+                      "componentId": "61e18f6714f335002746ba71",
+                      "function": "testAction",
+                      "nodeSettings": {
+                          "storeRawRecord": true
+                      }
+                  }
+              ],
+              "edges": [
+                  {
+                      "source": "step_1",
+                      "target": "step_2"
+                  }
+              ]
+          },
+          "owners": [
+              {
+                  "id": "61e18f61468ebc0027dd550d",
+                  "type": "user"
+              }
+          ],
+          "tenant": "61e18f61468ebc0027dd5507",
+          "createdAt": "2022-01-14T14:57:43.841Z",
+          "updatedAt": "2022-01-14T14:57:43.950Z",
+          "id": "61e18f67bb86b7002849fbea"
+      }
+  ],
+  "error": null,
+  "meta": {
+      "total": 3,
+      "page": 1,
+      "perPage": 10,
+      "totalPages": 1
+  },
+  "addState": false
+}

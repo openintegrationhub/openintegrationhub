@@ -183,7 +183,7 @@ class SecretsRouter {
                     data: await SecretDAO.update({
                         id: req.params.id,
                         data,
-                    }),
+                    }, req.key),
                 });
             } catch (err) {
                 log.error(err);

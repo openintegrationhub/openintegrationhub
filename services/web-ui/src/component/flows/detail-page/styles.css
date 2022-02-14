@@ -1,0 +1,100 @@
+:local(.mainContainer) {
+  position: relative;
+  width: 100%;
+  max-width: 1170px;
+  min-height: calc(100vh - 68px - 155px);
+  margin: 0 auto;
+  padding: 0 12px; }
+  @media (min-width: 991px) {
+    :local(.mainContainer) {
+      display: flex; } }
+
+:local(.mainContent) {
+  background: var(--base-background);
+  border: 1px solid; }
+  @media (min-width: 767px) {
+    :local(.mainContent) {
+      flex-grow: 1;
+      padding: 0 40px 40px; } }
+
+:local(.editNodeView) {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 400px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid lightgrey;
+  border-radius: 10px;
+  z-index: 10;
+  max-height: calc(100vh - 50px);
+  overflow-y: scroll;
+  height: 100%; }
+
+:local(.flowAppIconMini) {
+  width: 30px;
+  height: 30px; }
+
+:local(.nodeWrapper) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 0; }
+  :local(.nodeWrapper)::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    height: 33px;
+    border-left: 2px solid;
+    top: 0; }
+  :local(.nodeWrapper) > p {
+    width: 200px;
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid lightgrey;
+    padding: 30px 10px; }
+  :local(.nodeWrapper) > p:after {
+    content: '';
+    border: 1px solid;
+    height: 15px;
+    width: 1px;
+    position: absolute;
+    left: 50%;
+    bottom: -22px; }
+  :local(.nodeWrapper) .left:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    border: 1px solid #000;
+    width: 50%;
+    height: 1px; }
+  :local(.nodeWrapper) .right:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 1px solid #000;
+    width: 50%;
+    height: 1px; }
+
+:local(.childrenWrapper) {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%; }
+
+:local(.nodeLogo) {
+  width: 50px;
+  margin-right: 20px; }
+
+:local(.addBranchButtons) {
+  margin-bottom: 10px; }
+
+:local(.mappingTypeBtn) .active {
+  border: 1px solid red; }

@@ -10,9 +10,9 @@ process.env.MONGODB_URL = global.__MONGO_URI__;
 const hostUrl = 'http://localhost';
 const port = process.env.PORT || 3007;
 const request = require('supertest')(`${hostUrl}:${port}`);
-const iamMock = require('./utils/iamMock.js');
+const iamMock = require('./utils/iamMock');
 const token = require('./utils/tokens');
-const { saveLog, gdprAnonymise } = require('../app/api/utils/handlers.js');
+const { saveLog, gdprAnonymise } = require('../app/api/utils/handlers');
 const Log = require('../app/models/log');
 const Server = require('../app/server');
 
