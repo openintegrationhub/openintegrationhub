@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/component-repository",
   "description": "Component repository",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"
