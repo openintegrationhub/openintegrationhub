@@ -21,7 +21,6 @@ class ComponentRepositoryApp extends App {
                 .singleton()
                 .inject(() => ({iam: undefined, eventClass: Event})) //use default iam middleware
         });
-
         const server = container.resolve('server');
         await server.start();
     }

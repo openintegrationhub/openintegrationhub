@@ -7,9 +7,9 @@
     "node": ">=12"
   },
   "scripts": {
-    "lint": "eslint index.js src spec",
+    "lint": "eslint  ./src/**/*.js",
     "pretest": "npm run lint",
-    "test": "mocha spec --recursive"
+    "test": "mocha spec --recursive"  
   },
   "dependencies": {
     "@openintegrationhub/iam-utils": "*",
@@ -23,6 +23,7 @@
     "swagger-ui-express": "4.0.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.0.0-alpha.6",
     "bunyan": "1.8.14",
     "chai": "4.3.4",
     "eslint": "7.32.0",
