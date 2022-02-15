@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "eslint  ./src/**/*.js",
     "pretest": "npm run lint",
-    "test": "MONGODB_URI=mongodb://admin:admin@localhost:27017/test?authSource=admin mocha spec --recursive"  
+    "test": "mocha spec --recursive"  
   },
   "dependencies": {
     "@openintegrationhub/iam-utils": "*",
