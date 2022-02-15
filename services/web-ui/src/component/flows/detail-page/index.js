@@ -132,6 +132,36 @@ const useStyles = {
         marginTop: 10,
         minWidth: 120,
     },
+    verticalLine: {
+        transform: 'rotate(90deg)',
+        width: '50px',
+    },
+    leftHorizontalLine: {
+        position: 'absolute',
+        left: '170px',
+        top: 48,
+        width: '150px',
+        zIndex: 0,
+    },
+    rightHorizontalLine: {
+        position: 'absolute',
+        right: '170px',
+        top: 48,
+        width: '150px',
+        zIndex: 0,
+    },
+    leftNodeElement: {
+        position: 'absolute',
+        right: 235,
+        top: -30,
+        width: 170,
+    },
+    rightNodeElement: {
+        position: 'absolute',
+        left: 235,
+        top: -30,
+        width: 170,
+    },
 
 };
 
@@ -260,6 +290,12 @@ class FlowDetails extends React.PureComponent {
         });
         if (this.state.components.all.length === 0) {
             this.setState({ components: this.props.components });
+        }
+        if (!element.hasOwnProperty('fields')) {
+            this.setState({ editFields: {} });
+        }
+        if (!element.hasOwnProperty('nodeSettings')) {
+            this.setState({ editNodeSettings: {} });
         }
     }
 
@@ -455,15 +491,17 @@ class FlowDetails extends React.PureComponent {
                 }}>{image ? <img src={parent.logo} style={{ width: '24px', height: '24px' }} alt="test"/> : <span className="placeholder">●</span>}</span>
                 <span className="title">{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</span>
             </div>
-            {(parent.children.length && childrenContent.length === 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '50px' }}/>{childrenContent} </div>
-                : (parent.children.length && childrenContent.length > 1) ? <div className={styles.childrenWrapper} style={{ position: 'relative' }}><hr style={{ transform: 'rotate(90deg)', width: '50px' }}/><div style={{
-                    position: 'absolute', right: 235, top: -30, width: 170,
-                }}>{childrenContent[0]}<hr style={{
-                        position: 'absolute', left: '170px', top: 48, width: '150px', zIndex: 0,
-                    }}/></div><div style={{ position: 'absolute', left: 235, top: -30 }}>
-                    <hr style={{
-                        position: 'absolute', right: '170px', top: 48, width: '150px', zIndex: 0,
-                    }}/>{childrenContent[1]}</div> </div> : null}
+            {(parent.children.length && childrenContent.length === 1) ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>{childrenContent} </div>
+                : (parent.children.length && childrenContent.length > 1) ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>
+                    <div className={classes.leftNodeElement}>
+                        {childrenContent[0]}
+                        <hr className={classes.leftHorizontalLine} />
+                    </div>
+                    <div className={classes.rightNodeElement}>
+                        <hr className={classes.rightHorizontalLine}/>
+                        {childrenContent[1]}
+                    </div>
+                </div> : null}
             {!parent.children.length ? <div className={classes.graphActionsContainer}>
 
                 <Tooltip title="Add branch">

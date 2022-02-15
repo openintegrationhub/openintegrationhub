@@ -142,6 +142,9 @@ class Flows extends React.Component {
                         <Button variant="outlined" aria-label="Add" onClick={this.addFlow}>
                         Add<Add/>
                         </Button>
+                        <Button variant="outlined" aria-label="Add" onClick={this.addFlow}>
+                        New Flow<Add/>
+                        </Button>
                     </Grid>
                     {this.props.flows.meta && <Grid item xs={4}>
                         <Grid container justify="flex-end" spacing={2}>
