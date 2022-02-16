@@ -51,7 +51,7 @@ class Server {
       mongoose.connect(
         this.mongodbUrl,
         {
-          poolSize: 50,
+          maxPoolSize: 50,
           connectTimeoutMS: 30000,
         },
         (err) => {

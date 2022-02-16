@@ -190,7 +190,7 @@ export default class DataController {
               }
               if(preparedDoc) {
                 // Update db;
-                const result = await DataObject.findOneAndUpdate({_id: doc._id}, preparedDoc, {new: true, useFindAndModify:false});
+                const result = await DataObject.findOneAndUpdate({_id: doc._id}, preparedDoc, {new: true });
           }
       }
     }

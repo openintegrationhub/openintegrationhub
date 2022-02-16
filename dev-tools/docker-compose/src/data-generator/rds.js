@@ -39,7 +39,7 @@ async function run() {
   const userData = await getUserInfo(token, iamBase)
 
   await mongoose.connect(mongoUrl, {
-    poolSize: 10,
+    maxPoolSize: 10,
     connectTimeoutMS: 5000,
   })
 

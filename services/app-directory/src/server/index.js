@@ -64,7 +64,7 @@ module.exports = class Server {
         || conf.mongoDbConnection;
 
         mongoose.connect(connectionString, {
-            poolSize: conf.mongoDbPoolSize,
+            maxPoolSize: conf.mongoDbPoolSize,
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
             keepAlive: 120,
