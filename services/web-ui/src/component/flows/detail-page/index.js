@@ -179,7 +179,7 @@ class FlowDetails extends React.PureComponent {
             selectedNode: '',
             component: { name: '', descriptor: { actions: [], triggers: [] } },
             components: { all: [] },
-            secret: '',
+            secret: { name: '' },
             function: '',
             selectableFunctions: [{ actions: {}, triggers: {} }],
             nodeSettings: {},
@@ -279,14 +279,14 @@ class FlowDetails extends React.PureComponent {
         this.setState({ editFields: {}, editNodeSettings: {} });
         const selectedComponent = this.props.components.all.filter((cp) => cp.id === element.componentId)[0];
         const selectedSecret = this.props.secrets.secrets.filter((sec) => sec._id === element.credentials_id)[0];
-
+        console.log('it is?', selectedSecret);
         this.props.onEditNode && this.props.onEditNode(element.id);
         this.setState({
             selectedNode: element,
             contentShown: 'selected-node',
         });
         this.setState({
-            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: selectedSecret || this.state.editSecret, editComponent: selectedComponent || { name: '' },
+            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: selectedSecret || { name: '' }, editComponent: selectedComponent || { name: '' },
         });
         if (this.state.components.all.length === 0) {
             this.setState({ components: this.props.components });
@@ -491,17 +491,21 @@ class FlowDetails extends React.PureComponent {
                 }}>{image ? <img src={parent.logo} style={{ width: '24px', height: '24px' }} alt="test"/> : <span className="placeholder">●</span>}</span>
                 <span className="title">{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</span>
             </div>
-            {(parent.children.length && childrenContent.length === 1) ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>{childrenContent} </div>
-                : (parent.children.length && childrenContent.length > 1) ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>
-                    <div className={classes.leftNodeElement}>
-                        {childrenContent[0]}
-                        <hr className={classes.leftHorizontalLine} />
-                    </div>
-                    <div className={classes.rightNodeElement}>
-                        <hr className={classes.rightHorizontalLine}/>
-                        {childrenContent[1]}
-                    </div>
-                </div> : null}
+            {(parent.children.length && childrenContent.length === 1)
+                ? <div style={{ position: 'relative' }}>
+                    <hr className={classes.verticalLine}/>{childrenContent}
+                </div>
+                : (parent.children.length && childrenContent.length > 1)
+                    ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>
+                        <div className={classes.leftNodeElement}>
+                            {childrenContent[0]}
+                            <hr className={classes.leftHorizontalLine} />
+                        </div>
+                        <div className={classes.rightNodeElement}>
+                            <hr className={classes.rightHorizontalLine}/>
+                            {childrenContent[1]}
+                        </div>
+                    </div> : null}
             {!parent.children.length ? <div className={classes.graphActionsContainer}>
 
                 <Tooltip title="Add branch">
@@ -583,6 +587,7 @@ class FlowDetails extends React.PureComponent {
 
       // test it on monday
       handleSecretSelection = (event) => {
+          console.log('selected secret', event.target.value);
           const selectedSecret = event.target.value;
           const newSecret = this.props.secrets.secrets.filter((sec) => sec.name === selectedSecret)[0];
           if (event.target.name === 'editSecret') {
@@ -628,10 +633,11 @@ class FlowDetails extends React.PureComponent {
           const newEdge = { ...edge, target: this.state.editNodeName };
 
           const { nodes } = this.state.flow.graph;
-          let { edges } = this.state.flow.graph;
-          if (edges.length === 1 && !edges[0].hasOwnProperty('target')) {
-              edges = [];
-          }
+          const { edges } = this.state.flow.graph;
+
+          //   if (edges.length === 1 && !edges[0].hasOwnProperty('target')) {
+          //       edges = [];
+          //   }
           const indexNode = nodes.findIndex((item) => item.id === selNode.id);
           const newNodes = nodes.filter((item) => item.id !== selNode.id);
           newNodes.splice(indexNode, 0, node);
@@ -827,7 +833,7 @@ class FlowDetails extends React.PureComponent {
                           <Select
                               labelId="demo-simple-select-label"
                               id="demo-simple-select"
-                              value={this.state.secret}
+                              value={this.state.secret.name}
                               onChange={(e) => this.handleSecretSelection(e)}
                           >
                               {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name} key={secret.name}>{secret.name}</MenuItem>)}
