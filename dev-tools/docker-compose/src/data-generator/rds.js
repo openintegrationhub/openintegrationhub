@@ -41,8 +41,6 @@ async function run() {
   await mongoose.connect(mongoUrl, {
     poolSize: 10,
     connectTimeoutMS: 5000,
-    useNewUrlParser: true,
-    // useUnifiedTopology: true,
   })
 
   for (let i = 0; i < RAW_RECORDS_SET_LENGTH; i++) {

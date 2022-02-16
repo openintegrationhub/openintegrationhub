@@ -115,10 +115,6 @@ module.exports = class Server {
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
             keepAlive: 120,
-            useCreateIndex: true,
-            useNewUrlParser: true,
-            useFindAndModify: false,
-            // useUnifiedTopology: true,
         });
     }
 

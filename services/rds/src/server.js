@@ -53,9 +53,6 @@ class Server {
         {
           poolSize: 50,
           connectTimeoutMS: 30000,
-          useCreateIndex: true,
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
         },
         (err) => {
           if (err) return reject(err)

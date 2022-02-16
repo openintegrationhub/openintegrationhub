@@ -69,9 +69,6 @@ class App {
             poolSize: 50,
             connectTimeoutMS: 30000,
             keepAlive: 120,
-            useUnifiedTopology: true,
-            useNewUrlParser: true,
-            useCreateIndex: true,
         });
 
         EventBusManager.init({ eventBus: this.eventBus, serviceName: conf.general.loggingNameSpace });

@@ -17,7 +17,7 @@ async function spawnEvent() {
 
   // Connects to MongoDB and cleans it up
   const options = {
-    keepAlive: 1, connectTimeoutMS: 30000, reconnectInterval: 1000, reconnectTries: Number.MAX_VALUE, useNewUrlParser: true,
+    keepAlive: 1, connectTimeoutMS: 30000, reconnectInterval: 1000, reconnectTries: Number.MAX_VALUE,
   };
   await mongoose.connect(config.mongoUrl, options);
   await Configuration.findOneAndDelete({ tenant: 'Test Tenant' });

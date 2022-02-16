@@ -66,7 +66,7 @@ class Server {
       this.mongoose = mongoose;
 
       const options = {
-        keepAlive: 1, connectTimeoutMS: 30000, reconnectInterval: 1000, reconnectTries: Number.MAX_VALUE, useNewUrlParser: true, useUnifiedTopology: true,
+        keepAlive: 1, connectTimeoutMS: 30000, reconnectInterval: 1000, reconnectTries: Number.MAX_VALUE,
       };
 
       // Will connect to the mongo container by default, but to localhost if testing is active

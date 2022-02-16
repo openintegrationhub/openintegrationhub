@@ -45,9 +45,6 @@ class Server {
       connectTimeoutMS: 30000,
       reconnectInterval: 1000,
       reconnectTries: Number.MAX_VALUE,
-      useNewUrlParser: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
     };
 
     // Will connect to the mongo container by default, but to localhost if testing is active
