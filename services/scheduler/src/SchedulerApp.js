@@ -22,7 +22,6 @@ class SchedulerApp extends App {
 
         const mongooseOptions = {
             keepAliveInitialDelay: 300000,
-            reconnectTries: 1000,
             connectTimeoutMS: 30000,
             socketTimeoutMS: 60000,
         };
