@@ -1,15 +1,15 @@
 const mongoose = require('mongoose')
 const iamLib = require('@openintegrationhub/iam-utils')
 
-const t1 = new mongoose.types.ObjectId()
-const t2 = new mongoose.types.ObjectId()
+const t1 = new mongoose.Types.ObjectId()
+const t2 = new mongoose.Types.ObjectId()
 
 module.exports = {
   adminToken1: {
     token: 'adminToken1',
     value: {
       sub: 'a1',
-      _id: new mongoose.types.ObjectId(),
+      _id: new mongoose.Types.ObjectId(),
       username: 'Admin1@basaas.com',
       role: 'ADMIN',
       firstname: 'Userxx',
@@ -25,7 +25,7 @@ module.exports = {
     token: 'userToken1',
     value: {
       sub: 'u2',
-      _id: new mongoose.types.ObjectId(),
+      _id: new mongoose.Types.ObjectId(),
       username: 'User2@basaas.de',
       role: 'USER',
       firstname: 'Userxx',
@@ -39,7 +39,7 @@ module.exports = {
     token: 'tenantAdminToken1',
     value: {
       sub: 'ta1',
-      _id: new mongoose.types.ObjectId(),
+      _id: new mongoose.Types.ObjectId(),
       username: 'ta1@basaas.de',
       role: 'TENANT_ADMIN',
       firstname: 'Userxx1',
@@ -54,7 +54,7 @@ module.exports = {
     token: 'adminToken2',
     value: {
       sub: 'a3',
-      _id: new mongoose.types.ObjectId(),
+      _id: new mongoose.Types.ObjectId(),
       username: 'Admin3@basaas.com',
       firstname: 'Userxx',
       lastname: 'Useryy',
@@ -68,7 +68,7 @@ module.exports = {
     token: 'userToken2',
     value: {
       sub: 'u4',
-      _id: new mongoose.types.ObjectId(),
+      _id: new mongoose.Types.ObjectId(),
       username: 'User4@basaas.de',
       firstname: 'Userxx',
       lastname: 'Useryy',
@@ -83,7 +83,7 @@ module.exports = {
     token: 'userToken3',
     value: {
       sub: 'u44',
-      _id: new mongoose.types.ObjectId(),
+      _id: new mongoose.Types.ObjectId(),
       username: 'User44@basaas.de',
       firstname: 'Userxx',
       lastname: 'Useryy',

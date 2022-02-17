@@ -102,7 +102,7 @@ module.exports = {
             permissions: [
                 permissions.common.secretReadRaw,
             ],
-            tenant: new mongoose.types.ObjectId(),
+            tenant: new mongoose.Types.ObjectId(),
         },
     },
 
