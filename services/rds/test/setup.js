@@ -22,7 +22,7 @@ module.exports = async () => {
     },
     // unless otherwise noted below these values will be in common with all instances spawned:
     replSet: {
-      count: 3, // number of additional `mongod` processes to start (will not start any extra if instanceOpts.length > replSet.count); (default: 1)
+      count: 1, // number of additional `mongod` processes to start (will not start any extra if instanceOpts.length > replSet.count); (default: 1)
       dbName, // default database for db URI strings. (default: uuid.v4())
       storageEngine: 'wiredTiger',
     },
