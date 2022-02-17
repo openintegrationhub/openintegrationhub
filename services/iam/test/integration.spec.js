@@ -607,7 +607,7 @@ describe('routes', () => {
                 .send({
                     accountId: userId,
                     expiresIn: '1h',
-                    inquirer: new mongoose.types.ObjectId(),
+                    inquirer: new mongoose.Types.ObjectId(),
                 })
                 .set('Authorization', serviceAccountToken)
                 .set('Accept', /application\/json/)
@@ -801,7 +801,7 @@ describe('routes', () => {
                 .send({
                     accountId: userId,
                     expiresIn: '1h',
-                    inquirer: new mongoose.types.ObjectId(),
+                    inquirer: new mongoose.Types.ObjectId(),
                 })
                 .set('Authorization', serviceAccountToken)
                 .set('Accept', /application\/json/)
@@ -875,7 +875,7 @@ describe('routes', () => {
                 .send({
                     accountId: userId,
                     expiresIn: '1h',
-                    inquirer: new mongoose.types.ObjectId(),
+                    inquirer: new mongoose.Types.ObjectId(),
                 })
                 .set('Authorization', serviceAccountToken)
                 .set('Accept', /application\/json/)
