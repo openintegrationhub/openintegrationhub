@@ -1,6 +1,6 @@
 {
   "name": "app-directory",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "private": true,
   "description": "",
   "main": "index.js",
