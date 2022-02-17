@@ -30,7 +30,7 @@ module.exports = class Server {
             maxPoolSize: 50,
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
-            keepAlive: 120,
+            keepAliveInitialDelay: 300000,
         });
     }
 

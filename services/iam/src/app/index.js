@@ -68,7 +68,7 @@ class App {
         await mongoose.connect(this.mongoConnection, {
             maxPoolSize: 50,
             connectTimeoutMS: 30000,
-            keepAlive: 120,
+            keepAliveInitialDelay: 300000,
         });
 
         EventBusManager.init({ eventBus: this.eventBus, serviceName: conf.general.loggingNameSpace });

@@ -46,29 +46,12 @@ class Server {
     this.setupSwagger()
   }
 
-  setupDb() {
-    return new Promise((resolve, reject) => {
-      mongoose.connect(
-        this.mongodbUrl,
-        {
-          maxPoolSize: 50,
-          connectTimeoutMS: 30000,
-        },
-        (err) => {
-          if (err) return reject(err)
-          // wait for index creation
-          require('./model/raw-record').on('index', (error) => {
-            if (error) {
-              logger.error('RawRecord index error', error)
-            } else {
-              resolve()
-            }
-          })
-        }
-      )
-
-      logger.info('Mongo Connection established')
+  async setupDb() {
+    await mongoose.connect(this.mongodbUrl, {
+      maxPoolSize: 50,
+      connectTimeoutMS: 30000,
     })
+    logger.info('Mongo Connection established')
   }
 
   setupCors() {
