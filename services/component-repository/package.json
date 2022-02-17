@@ -2,7 +2,7 @@
   "name": "component-repository",
   "description": "Component repository",
   "private": true,
-  "version": "1.4.2",
+  "version": "1.5.0",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"

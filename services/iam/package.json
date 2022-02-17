@@ -9,6 +9,7 @@
     "watch-scss": "npm run build --watch",
     "watch-test": "jest --watch --runInBand",
     "start": "node src/index.js",
+    "start:nodemon": "NODE_ENV=development nodemon -r dotenv/config src/index.js",
     "build": "sass ./src/views/style/basic.scss:./src/views/style/basic.css",
     "lint": "eslint src/ test/",
     "task": "node",
