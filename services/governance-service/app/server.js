@@ -134,8 +134,6 @@ class Server {
     // Will connect to the mongo container by default, but to localhost if testing is active
     mongoose.connect(config.mongoUrl, options);
 
-    // Get Mongoose to use the global promise library
-    mongoose.Promise = global.Promise;  // eslint-disable-line
     // Get the default connection
     this.db = mongoose.connection;
     // Bind connection to error event (to get notification of connection errors)
