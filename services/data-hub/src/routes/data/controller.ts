@@ -408,7 +408,7 @@ export default class DataController {
             {
                 $or: [
                     { 'refs.recordUid': body.recordUid },
-                    {_id: mongoose.Types.ObjectId(body.oihUid)}
+                    {_id: new mongoose.Types.ObjectId(body.oihUid)}
                 ]
             } :
             {'refs.recordUid': body.recordUid}
