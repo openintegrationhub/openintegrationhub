@@ -5,7 +5,7 @@ aliases:
     - image: cimg/node:16.13.0
   - &node_mongo_env
     - image: cimg/node:16.13.0
-    - image: mongo:4.4
+    - image: mongo:5.0
   - &node_amqp_env
     - image: cimg/node:16.13.0
     - image: rabbitmq:3.9.9-alpine

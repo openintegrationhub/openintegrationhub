@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/component-repository",
   "description": "Component repository",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"
@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "eslint  ./src/**/*.js",
     "pretest": "npm run lint",
-    "test": "mocha spec --recursive"  
+    "test": "mocha spec --recursive"
   },
   "dependencies": {
     "@openintegrationhub/iam-utils": "*",
@@ -18,7 +18,7 @@
     "express": "4.17.1",
     "express-async-handler": "1.1.4",
     "lodash": "4.17.21",
-    "mongoose": "5.13.13",
+    "mongoose": "6.2.1",
     "node-fetch": "2.6.1",
     "swagger-ui-express": "4.0.2"
   },

@@ -10,13 +10,12 @@ const swaggerDocument = require('../../doc/openapi');
 
 const { isLocalRequest } = require('../util/common');
 
-const iamLib = require('./../module/iam');
-const EventsModule = require('./../module/event');
+const iamLib = require('../module/iam');
+const EventsModule = require('../module/event');
 const DAO = require('../dao');
 const conf = require('../conf');
 
 const log = logger.getLogger(`${conf.log.namespace}/server`);
-
 
 const jsonParser = bodyParser.json();
 
@@ -57,10 +56,9 @@ module.exports = class Server {
         this.app.use(jsonParser);
 
         // base routes
-        this.app.use('/', require('./../route/root'));
-        this.app.use('/healthcheck', require('./../route/healtcheck'));
+        this.app.use('/', require('../route/root'));
+        this.app.use('/healthcheck', require('../route/healtcheck'));
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: false }));
-
 
         const apiBase = express.Router();
         apiBase.use('/domains', cors(this.corsOptions));
@@ -73,12 +71,12 @@ module.exports = class Server {
         });
 
         // setup routes
-        apiBase.use('/domains', require('./../route/domains'));
+        apiBase.use('/domains', require('../route/domains'));
 
         this.app.use(conf.apiBase, apiBase);
 
         // error middleware
-        this.app.use(require('./../middleware/error').default);
+        this.app.use(require('../middleware/error').default);
     }
 
     setupCors() {
@@ -111,14 +109,10 @@ module.exports = class Server {
             || conf.mongoDbConnection;
 
         await mongoose.connect(connectionString, {
-            poolSize: 50,
+            maxPoolSize: 50,
             socketTimeoutMS: 60000,
             connectTimeoutMS: 30000,
-            keepAlive: 120,
-            useCreateIndex: true,
-            useNewUrlParser: true,
-            useFindAndModify: false,
-            // useUnifiedTopology: true,
+            keepAliveInitialDelay: 300000,
         });
     }
 

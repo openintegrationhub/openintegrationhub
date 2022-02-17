@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 describe('Flow model', () => {
     before(async () => {
         let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { useNewUrlParser: true });
+        await mongoose.connect(mongoUri, { });
     });
 
     after(async () => {

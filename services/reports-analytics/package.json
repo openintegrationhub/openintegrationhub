@@ -1,6 +1,6 @@
 {
   "name": "reports-analytics",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "TBD",
   "main": "index.js",
   "author": "Basaas GmbH",
@@ -27,7 +27,7 @@
     "dotenv": "8.2.0",
     "express": "4.17.1",
     "influx": "5.6.3",
-    "mongoose": "5.13.13",
+    "mongoose": "6.2.1",
     "request": "2.88.2"
   },
   "devDependencies": {

@@ -174,7 +174,7 @@ describe('Role Routes', () => {
             .send({
                 accountId: userId,
                 expiresIn: '1h',
-                inquirer: mongoose.Types.ObjectId(),
+                inquirer: new mongoose.Types.ObjectId(),
             })
             .set('Authorization', userToken)
             .set('Accept', /application\/json/)
@@ -283,7 +283,7 @@ describe('Role Routes', () => {
             .send({
                 accountId: userId,
                 expiresIn: '1h',
-                inquirer: mongoose.Types.ObjectId(),
+                inquirer: new mongoose.Types.ObjectId(),
             })
             .set('Authorization', tokenAdmin)
             .set('Accept', /application\/json/)
@@ -305,7 +305,7 @@ describe('Role Routes', () => {
             .send({
                 accountId: userId,
                 expiresIn: '1h',
-                inquirer: mongoose.Types.ObjectId(),
+                inquirer: new mongoose.Types.ObjectId(),
                 customPermissions: [PERMISSIONS['tenant.roles.read']],
             })
             .set('Authorization', tokenAdmin)
@@ -344,7 +344,7 @@ describe('Role Routes', () => {
             .send({
                 accountId: userId,
                 expiresIn: '1h',
-                inquirer: mongoose.Types.ObjectId(),
+                inquirer: new mongoose.Types.ObjectId(),
                 customPermissions: [PERMISSIONS['tenant.roles.read']],
             })
             .set('Authorization', serviceAccountToken)

@@ -21,13 +21,10 @@ class SchedulerApp extends App {
         const queueCreator = new QueueCreator(channel);
 
         const mongooseOptions = {
-            keepAlive: true,
             keepAliveInitialDelay: 300000,
             reconnectTries: 1000,
             connectTimeoutMS: 30000,
             socketTimeoutMS: 60000,
-            useCreateIndex: true,
-            useNewUrlParser: true
         };
         await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
 
