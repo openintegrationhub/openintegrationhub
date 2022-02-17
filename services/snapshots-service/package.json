@@ -1,6 +1,6 @@
 {
   "name": "snapshots-service",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Service for managing flow snapshots",
   "main": "dist/index.js",
   "directories": {
