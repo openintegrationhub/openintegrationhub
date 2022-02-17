@@ -2,7 +2,7 @@
   "name": "scheduler",
   "description": "Scheduler",
   "private": true,
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"
