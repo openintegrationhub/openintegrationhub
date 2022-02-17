@@ -99,7 +99,7 @@ module.exports = {
             name: 'User4',
             role: 'NOT_USER',
             iat: 1337,
-            tenant: mongoose.Types.ObjectId(),
+            tenant: new mongoose.types.ObjectId(),
         },
     },
 
