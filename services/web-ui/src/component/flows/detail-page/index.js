@@ -84,6 +84,9 @@ const useStyles = {
         margin: 20,
         padding: 20,
     },
+    nodeWrapper: {
+        position: 'relative',
+    },
     flowElement: {
         display: 'flex',
         alignItems: 'center',
@@ -483,7 +486,7 @@ class FlowDetails extends React.PureComponent {
             childrenContent.push(this.generateGraphVisualization([], node, nodeAlignment, image));
         }
 
-        currentContent.push(<div key={parent.id} className={`${styles.nodeWrapper} ${nodeAlignment}`}>
+        currentContent.push(<div key={parent.id} className={`${classes.nodeWrapper} ${nodeAlignment}`}>
 
             {/* {!isRoot ? <button>+</button> : null} */}
             <div className={`${classes.flowElement} ${parent.privileged ? 'privileged' : ''} `} onClick={this.onElementClick.bind(this, parent)}>
@@ -624,6 +627,7 @@ class FlowDetails extends React.PureComponent {
           const selNode = this.state.selectedNode;
           const nodeId = lodash.cloneDeep(selNode.id);
           const oldFlow = lodash.cloneDeep(this.state.flow);
+          // if changing parents node name
           if (nodeId !== this.state.editNodeName && selNode.children.length > 0) {
               const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
               edge.source = this.state.editNodeName;
