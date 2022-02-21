@@ -6,6 +6,7 @@
 import React from 'react';
 import axios from 'axios';
 import flow from 'lodash/flow';
+import lodash from 'lodash';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 // Ui
@@ -29,7 +30,6 @@ import AddIcon from '@material-ui/icons/Add';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import { interpolateRgbBasis } from 'd3';
-import lodash from 'lodash';
 import {
     getFlows, deleteFlow, updateFlow, startFlow, stopFlow, executeFlow,
 } from '../../../action/flows';
@@ -39,7 +39,7 @@ import { getSecrets } from '../../../action/secrets';
 import styles from './styles.css';
 import Loader from '../../loader';
 import { getConfig } from '../../../conf';
-// const lodash = require('lodash');
+
 const conf = getConfig();
 
 const useStyles = {
@@ -180,7 +180,7 @@ class FlowDetails extends React.PureComponent {
             selectedNode: '',
             component: { name: '', descriptor: { actions: [], triggers: [] } },
             components: { all: [] },
-            secret: { name: '' },
+            secret: '',
             function: '',
             selectableFunctions: [{ actions: {}, triggers: {} }],
             nodeSettings: {},
@@ -211,7 +211,7 @@ class FlowDetails extends React.PureComponent {
             editNodeSettings: '',
             editFields: '',
 
-            errorMsg: '',
+            prevEdge: '',
         };
     }
 
@@ -277,17 +277,17 @@ class FlowDetails extends React.PureComponent {
 
     onElementClick = (element) => {
         // console.log('onElementClick', element);
-        this.setState({ editFields: {}, editNodeSettings: {}, errorMsg: '' });
+        this.setState({ editFields: {}, editNodeSettings: {} });
         const selectedComponent = this.props.components.all.filter((cp) => cp.id === element.componentId)[0];
         const selectedSecret = this.props.secrets.secrets.filter((sec) => sec._id === element.credentials_id)[0];
-        console.log('it is?', selectedSecret);
+
         this.props.onEditNode && this.props.onEditNode(element.id);
         this.setState({
             selectedNode: element,
             contentShown: 'selected-node',
         });
         this.setState({
-            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: selectedSecret || { name: '' }, editComponent: selectedComponent || { name: '' },
+            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: selectedSecret || this.state.editSecret, editComponent: selectedComponent || { name: '' },
         });
         if (this.state.components.all.length === 0) {
             this.setState({ components: this.props.components });
@@ -492,21 +492,17 @@ class FlowDetails extends React.PureComponent {
                 }}>{image ? <img src={parent.logo} style={{ width: '24px', height: '24px' }} alt="test"/> : <span className="placeholder">●</span>}</span>
                 <span className="title">{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</span>
             </div>
-            {(parent.children.length && childrenContent.length === 1)
-                ? <div style={{ position: 'relative' }}>
-                    <hr className={classes.verticalLine}/>{childrenContent}
-                </div>
-                : (parent.children.length && childrenContent.length > 1)
-                    ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>
-                        <div className={classes.leftNodeElement}>
-                            {childrenContent[0]}
-                            <hr className={classes.leftHorizontalLine} />
-                        </div>
-                        <div className={classes.rightNodeElement}>
-                            <hr className={classes.rightHorizontalLine}/>
-                            {childrenContent[1]}
-                        </div>
-                    </div> : null}
+            {(parent.children.length && childrenContent.length === 1) ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>{childrenContent} </div>
+                : (parent.children.length && childrenContent.length > 1) ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>
+                    <div className={classes.leftNodeElement}>
+                        {childrenContent[0]}
+                        <hr className={classes.leftHorizontalLine} />
+                    </div>
+                    <div className={classes.rightNodeElement}>
+                        <hr className={classes.rightHorizontalLine}/>
+                        {childrenContent[1]}
+                    </div>
+                </div> : null}
             {!parent.children.length ? <div className={classes.graphActionsContainer}>
 
                 <Tooltip title="Add branch">
@@ -527,7 +523,7 @@ class FlowDetails extends React.PureComponent {
                         color="primary"
                         size="small"
                         style={{
-                            position: 'absolute', top: '10px', right: '-20px', zIndex: '1', background: '#ededed',
+                            position: 'absolute', top: '10px', right: '-19px', zIndex: '1', background: '#ededed',
                         }}
                     >
                         <DeleteIcon />
@@ -588,7 +584,6 @@ class FlowDetails extends React.PureComponent {
 
       // test it on monday
       handleSecretSelection = (event) => {
-          console.log('selected secret', event.target.value);
           const selectedSecret = event.target.value;
           const newSecret = this.props.secrets.secrets.filter((sec) => sec.name === selectedSecret)[0];
           if (event.target.name === 'editSecret') {
@@ -627,30 +622,24 @@ class FlowDetails extends React.PureComponent {
       handleEdit = () => {
           const newFlow = this.state.flow;
           const selNode = this.state.selectedNode;
-          const { nodes } = this.state.flow.graph;
-          const { edges } = this.state.flow.graph;
-          // if root
-          //   if (selNode.id === this.state.flow.graph.edges[0].source) {
-          //       console.log('you are editting the root');
-          //       const { graph } = this.state.flow;
-          //       const node = this.state.flow.graph.nodes.filter((nod) => nod.id === selNode.id);
-          //       graph.edges[0].source = this.state.editNodeName;
+          const nodeId = lodash.cloneDeep(selNode.id);
+          const oldFlow = lodash.cloneDeep(this.state.flow);
+          if (nodeId !== this.state.editNodeName && selNode.children.length > 0) {
+              const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
+              edge.source = this.state.editNodeName;
+              const oldEdge = oldFlow.graph.edges.filter((edge) => edge.source === selNode.id);
+          }
 
-          //       console.log('Graph', graph);
-          //       return;
-          //   }
           const node = this.state.flow.graph.nodes.filter((nod) => nod.id === selNode.id)[0];
           const edge = this.state.flow.graph.edges.filter((edge) => edge.target === selNode.id)[0];
-          const oldEdge = lodash.cloneDeep(edge);
 
-          //   console.log('edge is here', edge);
-          //   console.log('old edge is', oldEdge);
-          //   console.log('node is', node);
           const newEdge = { ...edge, target: this.state.editNodeName };
 
-          //   if (edges.length === 1 && !edges[0].hasOwnProperty('target')) {
-          //       edges = [];
-          //   }
+          const { nodes } = this.state.flow.graph;
+          let { edges } = this.state.flow.graph;
+          if (edges.length === 1 && !edges[0].hasOwnProperty('target')) {
+              edges = [];
+          }
           const indexNode = nodes.findIndex((item) => item.id === selNode.id);
           const newNodes = nodes.filter((item) => item.id !== selNode.id);
           newNodes.splice(indexNode, 0, node);
@@ -658,26 +647,17 @@ class FlowDetails extends React.PureComponent {
           const indexEdge = edges.findIndex((el) => el.target === selNode.id);
           //   console.log('index is', index);
           const newEdges = edges.filter((item) => item.target !== selNode.id);
-          if (!edge) {
-              this.setState({ errorMsg: 'Error occured' });
-              return;
-          }
-          if (this.state.editNodeName) {
-              node.id = this.state.editNodeName;
-              const selectEdge = newEdges.filter((edge) => edge.source === oldEdge.target)[0];
-              selectEdge.source = this.state.editNodeName;
-              console.log('selectedEdge', selectEdge);
-              console.log('reached1 old edge', oldEdge);
-              console.log('reached1 newEdge', newEdge);
-          }
           newEdges.splice(indexEdge, 0, newEdge);
-
           //   newEdges.push(newEdge);
-          console.log('new Edges are:', newEdges);
+
           console.log('check state here', this.state.flow);
           const graphCopy = this.state.flow.graph;
           graphCopy.nodes = newNodes;
           graphCopy.edges = newEdges;
+
+          if (this.state.editNodeName) {
+              node.id = this.state.editNodeName;
+          }
 
           if (this.state.editComponent) {
               node.componentId = this.state.editComponent.id;
@@ -704,7 +684,7 @@ class FlowDetails extends React.PureComponent {
               },
           }));
           this.setState({
-              /* flow: newFlow, */ editNodeName: '', editNodeSettings: {}, editFunction: '', editFields: {}, editSecret: '', contentShown: 'flow-settings', errorMsg: '',
+              /* flow: newFlow, */ editNodeName: '', editNodeSettings: {}, editFunction: '', editFields: {}, editSecret: '', contentShown: 'flow-settings',
           });
       }
 
@@ -728,13 +708,6 @@ class FlowDetails extends React.PureComponent {
               this.getDepthByNodeId(parent.source);
           }
       }
-
-        getRoot = () => {
-            const root = '';
-            // for (let i = 0; i < this.state.flow.graph.edges.length; i++) {
-
-            // }
-        }
 
       getFunctions = () => {
           if (this.state.component.descriptor) {
@@ -862,7 +835,7 @@ class FlowDetails extends React.PureComponent {
                           <Select
                               labelId="demo-simple-select-label"
                               id="demo-simple-select"
-                              value={this.state.secret.name}
+                              value={this.state.secret}
                               onChange={(e) => this.handleSecretSelection(e)}
                           >
                               {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name} key={secret.name}>{secret.name}</MenuItem>)}
@@ -1160,9 +1133,7 @@ class FlowDetails extends React.PureComponent {
                         <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
                             <Button variant="contained" color="primary" disableElevation onClick={() => this.handleEdit()} disabled={!this.state.editComponent.name || !this.state.editFunction}>Save Node</Button>
                         </div>
-
                     </div>
-                    {this.state.errorMsg && <h1 style={{ textAlign: 'center', color: 'red' }}>{this.state.errorMsg}</h1>}
                 </div>}
                   </aside>
               </div>
