@@ -520,18 +520,18 @@ class FlowDetails extends React.PureComponent {
                     </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Delete Node">
+                {this.state.flow.graph.nodes.length > 1 && <Tooltip title="Delete Node">
                     <IconButton
                         onClick={this.deleteNode.bind(this, parent)}
                         color="primary"
                         size="small"
                         style={{
-                            position: 'absolute', top: '10px', right: '-19px', zIndex: '1', background: '#ededed',
+                            position: 'absolute', top: '5px', right: '-19px', zIndex: '1', background: '#ededed',
                         }}
                     >
                         <DeleteIcon />
                     </IconButton>
-                </Tooltip>
+                </Tooltip>}
 
             </div> : null}
 
@@ -627,6 +627,14 @@ class FlowDetails extends React.PureComponent {
           const selNode = this.state.selectedNode;
           const nodeId = lodash.cloneDeep(selNode.id);
           const oldFlow = lodash.cloneDeep(this.state.flow);
+          // if its the root
+          if (this.state.flow.graph.edges[0].source === selNode.id) {
+              //   const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
+              //   edge.source = this.state.editNodeName;
+              this.setState({ selectedNode: '', contentShown: 'flow-settings' });
+              //   console.log('Test', edge);
+              return;
+          }
           // if changing parents node name
           if (nodeId !== this.state.editNodeName && selNode.children.length > 0) {
               const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
