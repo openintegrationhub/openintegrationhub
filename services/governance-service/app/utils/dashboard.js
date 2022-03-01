@@ -96,7 +96,7 @@ async function getObjectDistributionAsGraph(user) {
       if (!serviceEntry || !flowEntry) continue;
 
       const serviceName = serviceEntry.actedOnBehalfOf || 'unknownService';
-      const flowId = flowEntry.actedOnBehalfOf || 'unknownFlow';
+      const flowId = flowEntry.id || 'unknownFlow';
 
       let nodeIndex = nodes.findIndex((el) => el.data.id === serviceName);
 
