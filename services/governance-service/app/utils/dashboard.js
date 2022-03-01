@@ -45,7 +45,7 @@ async function getObjectDistribution(user) {
       const serviceEntry = currentEvent.actedOnBehalfOf.find((el) => el.agentType === 'Application');
       if (!serviceEntry) continue;
 
-      const serviceName = serviceEntry.actedOnBehalfOf || 'unkownService';
+      const serviceName = serviceEntry.actedOnBehalfOf || 'unknownService';
 
       if (!(serviceName in serviceCounts)) {
         serviceCounts[serviceName] = {
@@ -95,7 +95,7 @@ async function getObjectDistributionAsGraph(user) {
       const flowEntry = currentEvent.actedOnBehalfOf.find((el) => el.agentType === 'Flow');
       if (!serviceEntry || !flowEntry) continue;
 
-      const serviceName = serviceEntry.actedOnBehalfOf || 'unkownService';
+      const serviceName = serviceEntry.actedOnBehalfOf || 'unknownService';
       const flowId = flowEntry.actedOnBehalfOf || 'unknownFlow';
 
       let nodeIndex = nodes.findIndex((el) => el.data.id === serviceName);
