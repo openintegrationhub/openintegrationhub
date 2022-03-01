@@ -57,7 +57,7 @@ async function getObjectDistribution(user) {
       }
 
       switch (currentEvent.activity.activityType) {
-      case 'ObjectRetrieved':
+      case 'ObjectReceived':
         serviceCounts[serviceName].retrieved += 1;
         break;
       case 'ObjectUpdated':
@@ -132,16 +132,16 @@ async function getObjectDistributionAsGraph(user) {
         edgeIndex = edges.length - 1;
       }
 
-      if (!edges[edgeIndex].data.source && currentEvent.activity.activityType === 'ObjectRetrieved') {
+      if (!edges[edgeIndex].data.source && currentEvent.activity.activityType === 'ObjectReceived') {
         edges[edgeIndex].data.source = serviceName;
       }
 
-      if (!edges[edgeIndex].data.target && currentEvent.activity.activityType !== 'ObjectRetrieved') {
+      if (!edges[edgeIndex].data.target && currentEvent.activity.activityType !== 'ObjectReceived') {
         edges[edgeIndex].data.target = serviceName;
       }
 
       switch (currentEvent.activity.activityType) {
-      case 'ObjectRetrieved':
+      case 'ObjectReceived':
         nodes[nodeIndex].data.retrieved += 1;
         edges[edgeIndex].data.retrieved += 1;
         break;
