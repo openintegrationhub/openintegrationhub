@@ -190,6 +190,9 @@ workflows:
       - flow-repository-test:
           requires:
             - deps
+      - governance-service-test:
+          requires:
+            - deps
       - template-repository-test:
           requires:
             - deps
@@ -238,6 +241,7 @@ workflows:
             - scheduler-test
             - secret-service-test
             - flow-repository-test
+            - governance-service-test
             - template-repository-test
             - audit-log-test
             - rds-test
