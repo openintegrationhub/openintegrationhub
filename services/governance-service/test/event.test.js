@@ -139,9 +139,9 @@ describe('ProvenanceEvent Operations', () => {
     newEvent.activity.id = '30j0hew9kwbnkksfb09';
     newEvent.activity.invalidated = [];
 
-    newEvent.activity.qualifiedAssociation = {};
-    newEvent.activity.qualifiedEnd = {};
-    newEvent.activity.qualifiedStart = {};
+    // newEvent.activity.qualifiedAssociation = {};
+    // newEvent.activity.qualifiedEnd = {};
+    // newEvent.activity.qualifiedStart = {};
     newEvent.activity.qualifiedUsage = [];
 
     newEvent.entity.alternateOf = [];
