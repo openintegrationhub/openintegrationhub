@@ -246,6 +246,8 @@ async function checkFlows(token) {
     totalPages = flowReproResult.meta.totalPages;
   }
 
+  if (!flowReproResult || !('data' in flowReproResult)) return [];
+
   let affectedFlows = getFlowsWithProblematicSettings(flowReproResult.data);
 
   let page = 2;
