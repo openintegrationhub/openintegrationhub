@@ -8,7 +8,7 @@ const globalConfigPath = path.join(__dirname, 'globalConfig.json');
 
 const downloadDir = process.env.BINARY_DOWNLOAD_DIR;
 
-const dbName = 'changeme';
+const dbName = 'governance';
 
 module.exports = async () => {
   const replSet = await MongoMemoryReplSet.create(
