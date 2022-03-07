@@ -17,7 +17,7 @@ async function spawnEvent() {
 
   // Connects to MongoDB and cleans it up
   const options = {
-    keepAlive: 1, connectTimeoutMS: 30000, reconnectInterval: 1000, reconnectTries: Number.MAX_VALUE, useNewUrlParser: true,
+    connectTimeoutMS: 30000,
   };
   await mongoose.connect(config.mongoUrl, options);
   await Configuration.findOneAndDelete({ tenant: 'Test Tenant' });
@@ -169,7 +169,6 @@ async function spawnEvent() {
   const spawnEvent = new Event(ev);
   await eventBus.publish(spawnEvent);
   console.log('Event Spawned');
-
 
   // After this point, the dispatcher service ought to receive the event, and spawn two more in response.
   await eventBus.disconnect();

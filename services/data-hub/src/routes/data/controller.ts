@@ -190,7 +190,7 @@ export default class DataController {
               }
               if(preparedDoc) {
                 // Update db;
-                const result = await DataObject.findOneAndUpdate({_id: doc._id}, preparedDoc, {new: true, useFindAndModify:false});
+                const result = await DataObject.findOneAndUpdate({_id: doc._id}, preparedDoc, {new: true });
           }
       }
     }
@@ -404,11 +404,13 @@ export default class DataController {
         const { body } = ctx.request;
         const { user } = ctx.state;
 
+        console.log(mongoose.Types.ObjectId)
         const query = body.oihUid ?
             {
                 $or: [
                     { 'refs.recordUid': body.recordUid },
-                    {_id: mongoose.Types.ObjectId(body.oihUid)}
+                    // @ts-ignore
+                    {_id: new mongoose.Types.ObjectId(body.oihUid)}
                 ]
             } :
             {'refs.recordUid': body.recordUid}

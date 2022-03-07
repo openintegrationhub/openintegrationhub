@@ -23,7 +23,7 @@ const buildQuery = (user, permission, id) => {
   let findId;
   const qry = {};
   if (id) {
-    findId = mongoose.Types.ObjectId(id);
+    findId = new mongoose.Types.ObjectId(id);
     qry._id = findId;
   }
 
@@ -180,7 +180,7 @@ const stoppingFlow = (user, flowId) => new Promise((resolve) => {
 });
 
 const startedFlow = (flowId) => new Promise((resolve) => {
-  const findId = mongoose.Types.ObjectId(flowId);
+  const findId = new mongoose.Types.ObjectId(flowId);
 
   const qry = { '_id': findId };
 
@@ -198,7 +198,7 @@ const startedFlow = (flowId) => new Promise((resolve) => {
 });
 
 const stoppedFlow = (flowId) => new Promise((resolve) => {
-  const findId = mongoose.Types.ObjectId(flowId);
+  const findId = new mongoose.Types.ObjectId(flowId);
 
   const qry = { '_id': findId };
 

@@ -152,7 +152,7 @@ beforeAll(async () => {
     },
     activity: {
       id: '30j0hew9kwbnkksfb09',
-      activityType: 'ObjectRetrieved',
+      activityType: 'ObjectReceived',
       used: 'getPersons',
     },
     agent: {
@@ -177,9 +177,8 @@ beforeAll(async () => {
         actedOnBehalfOf: 'Google',
       },
       {
-        id: 'j460ge49qh3rusfuos',
         agentType: 'Flow',
-        actedOnBehalfOf: 'Flow1',
+        id: 'Flow1',
       },
       {
         id: 't35fdhtz57586',
@@ -220,9 +219,8 @@ beforeAll(async () => {
         actedOnBehalfOf: 'Office365',
       },
       {
-        id: 'j460ge49qh3rusfuox',
         agentType: 'Flow',
-        actedOnBehalfOf: 'Flow2',
+        id: 'Flow2',
       },
       {
         id: 't35fdhtz57586',
@@ -263,9 +261,8 @@ beforeAll(async () => {
         actedOnBehalfOf: 'Snazzy',
       },
       {
-        id: 'j460ge49qh3rusfuoz',
         agentType: 'Flow',
-        actedOnBehalfOf: 'Flow1',
+        id: 'Flow1',
       },
       {
         id: 't35fdhtz57586',

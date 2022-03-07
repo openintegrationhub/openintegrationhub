@@ -14,7 +14,7 @@ module.exports = async () => {
   const replSet = await MongoMemoryReplSet.create(
     {
       binary: {
-        version: '4.4.8',
+        version: '5.0.3',
         ...(downloadDir ? {
           downloadDir,
         }

@@ -1,6 +1,6 @@
 {
   "name": "component-orchestrator",
-  "version": "1.5.0",
+  "version": "1.6.1",
   "description": "Resource coordinator",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "JSONStream": "1.3.5",
     "lodash": "4.17.21",
     "lru-cache": "6.0.0",
-    "mongoose": "5.13.13",
+    "mongoose": "6.2.1",
     "node-fetch": "2.6.1",
     "rabbitmq-stats": "1.2.3",
     "request": "2.88.2",

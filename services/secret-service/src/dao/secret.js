@@ -238,7 +238,7 @@ module.exports = {
         authClientId,
     ) {
         if (typeof authClientId === 'string') {
-            authClientId = mongoose.Types.ObjectId(authClientId);
+            authClientId = new mongoose.Types.ObjectId(authClientId);
         }
 
         return await Secret.full.find({

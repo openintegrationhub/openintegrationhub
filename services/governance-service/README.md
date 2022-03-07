@@ -33,7 +33,7 @@ Example provenance object:
     "entityType": "oihUid"
   },
   "activity": {
-    "activityType": "ObjectRetrieved",
+    "activityType": "ObjectReceived",
     "used": "getPersons",
     "startedAtTime": "2020-10-19T09:47:11+00:00",
     "endedAtTime": "2020-10-19T09:47:15+00:00"
@@ -87,7 +87,7 @@ A minimal example:
  {
 ```
 
-The meaning of the keys are: 
+The meaning of the keys are:
 
 - `action`: A string referring to which action this permission allows. When checking a policy, the user can determine in which action this policy should be checked against. If no permission matching the selected action can be found, a negative response is returned.
 

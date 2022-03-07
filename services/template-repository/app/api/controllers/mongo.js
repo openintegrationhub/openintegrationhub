@@ -23,7 +23,7 @@ const buildQuery = (user, permission, id) => {
   let findId;
   const qry = {};
   if (id) {
-    findId = mongoose.Types.ObjectId(id);
+    findId = new mongoose.Types.ObjectId(id);
     qry._id = findId;
   }
 
