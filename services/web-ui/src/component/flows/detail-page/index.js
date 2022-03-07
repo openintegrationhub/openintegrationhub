@@ -627,14 +627,15 @@ class FlowDetails extends React.PureComponent {
           const selNode = this.state.selectedNode;
           const nodeId = lodash.cloneDeep(selNode.id);
           const oldFlow = lodash.cloneDeep(this.state.flow);
+          const oldNode = oldFlow.graph.nodes.find((node) => node.id === selNode.id);
           // if its the root
-          if (this.state.flow.graph.edges[0].source === selNode.id) {
-              //   const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
-              //   edge.source = this.state.editNodeName;
-              this.setState({ selectedNode: '', contentShown: 'flow-settings' });
-              //   console.log('Test', edge);
-              return;
-          }
+          //   if (this.state.flow.graph.edges[0].source === selNode.id) {
+          //       //   const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
+          //       //   edge.source = this.state.editNodeName;
+          //       this.setState({ selectedNode: '', contentShown: 'flow-settings' });
+          //       //   console.log('Test', edge);
+          //       return;
+          //   }
           // if changing parents node name
           if (nodeId !== this.state.editNodeName && selNode.children.length > 0) {
               const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
@@ -645,7 +646,7 @@ class FlowDetails extends React.PureComponent {
           const node = this.state.flow.graph.nodes.filter((nod) => nod.id === selNode.id)[0];
           const edge = this.state.flow.graph.edges.filter((edge) => edge.target === selNode.id)[0];
 
-          const newEdge = { ...edge, target: this.state.editNodeName };
+          // const newEdge = { ...edge, target: this.state.editNodeName };
 
           const { nodes } = this.state.flow.graph;
           let { edges } = this.state.flow.graph;
@@ -658,8 +659,19 @@ class FlowDetails extends React.PureComponent {
           //   newNodes.push(node);
           const indexEdge = edges.findIndex((el) => el.target === selNode.id);
           //   console.log('index is', index);
-          const newEdges = edges.filter((item) => item.target !== selNode.id);
-          newEdges.splice(indexEdge, 0, newEdge);
+          // const newEdges = edges.filter((item) => item.target !== selNode.id);
+
+          const newEdges = edges.map((edge) => {
+              if (edge.source === selNode.id && selNode.id !== this.state.editNodeName) {
+                  edge.source = this.state.editNodeName;
+              }
+              if (edge.target === selNode.id && selNode.id !== this.state.editNodeName) {
+                  edge.target = this.state.editNodeName;
+              }
+              return edge;
+          });
+
+          // newEdges.splice(indexEdge, 0, newEdge);
           //   newEdges.push(newEdge);
 
           console.log('check state here', this.state.flow);
@@ -735,6 +747,8 @@ class FlowDetails extends React.PureComponent {
               classes,
           } = this.props;
 
+          console.log('STATE', this.state);
+
           if (this.state.loading) {
               return <Loader />;
           }
@@ -742,6 +756,7 @@ class FlowDetails extends React.PureComponent {
           const graph = this.generateGraph();
 
           if (!graph) {
+              console.log('no graph', this.state);
               return <Loader />;
           }
           const content = this.generateGraphVisualization([], graph, true);
