@@ -615,7 +615,7 @@ class FlowDetails extends React.PureComponent {
           console.log('Saved', this.state);
 
           for (let i = 0; i < this.state.flow.graph.nodes.length; i++) {
-              console.log(this.state.flow.graph.nodes[i].children);
+              //   console.log(this.state.flow.graph.nodes[i].children);
               delete this.state.flow.graph.nodes[i].children;
               delete this.state.flow.graph.nodes[i].logo;
           }
@@ -627,7 +627,7 @@ class FlowDetails extends React.PureComponent {
           const selNode = this.state.selectedNode;
           const nodeId = lodash.cloneDeep(selNode.id);
           const oldFlow = lodash.cloneDeep(this.state.flow);
-          const oldNode = oldFlow.graph.nodes.find((node) => node.id === selNode.id);
+          //   const oldNode = oldFlow.graph.nodes.find((node) => node.id === selNode.id);
           // if its the root
           //   if (this.state.flow.graph.edges[0].source === selNode.id) {
           //       //   const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
@@ -644,7 +644,7 @@ class FlowDetails extends React.PureComponent {
           }
 
           const node = this.state.flow.graph.nodes.filter((nod) => nod.id === selNode.id)[0];
-          const edge = this.state.flow.graph.edges.filter((edge) => edge.target === selNode.id)[0];
+          //   const edge = this.state.flow.graph.edges.filter((edge) => edge.target === selNode.id)[0];
 
           // const newEdge = { ...edge, target: this.state.editNodeName };
 
@@ -674,7 +674,6 @@ class FlowDetails extends React.PureComponent {
           // newEdges.splice(indexEdge, 0, newEdge);
           //   newEdges.push(newEdge);
 
-          console.log('check state here', this.state.flow);
           const graphCopy = this.state.flow.graph;
           graphCopy.nodes = newNodes;
           graphCopy.edges = newEdges;
@@ -700,7 +699,6 @@ class FlowDetails extends React.PureComponent {
           }
           //   console.log('newFlow here', ...this.state.flow);
 
-          console.log('newFlow', newFlow);
           this.setState((prevState) => ({
               flow: {
                   ...prevState.flow,
@@ -747,7 +745,7 @@ class FlowDetails extends React.PureComponent {
               classes,
           } = this.props;
 
-          console.log('STATE', this.state);
+          //   console.log('STATE', this.state);
 
           if (this.state.loading) {
               return <Loader />;
@@ -756,13 +754,13 @@ class FlowDetails extends React.PureComponent {
           const graph = this.generateGraph();
 
           if (!graph) {
-              console.log('no graph', this.state);
+              //   console.log('no graph', this.state);
               return <Loader />;
           }
           const content = this.generateGraphVisualization([], graph, true);
           const selNode = this.state.selectedNode;
           const compId = selNode.componentId;
-          const comp = this.state.components.all.filter((cp) => cp.id === compId)[0];
+          //   const comp = this.state.components.all.filter((cp) => cp.id === compId)[0];
           //   const { actions } = this.state.component.descriptor;
           //   const { triggers } = this.state.component.descriptor;
           const functions = this.getFunctions();
@@ -862,7 +860,7 @@ class FlowDetails extends React.PureComponent {
                           <Select
                               labelId="demo-simple-select-label"
                               id="demo-simple-select"
-                              value={this.state.secret}
+                              value={this.state.secret.name}
                               onChange={(e) => this.handleSecretSelection(e)}
                           >
                               {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name} key={secret.name}>{secret.name}</MenuItem>)}
