@@ -74,7 +74,7 @@ async function getObjectDistribution(user, number, from, until) {
       }
     }
 
-    return serviceCounts;
+    return { distribution: serviceCounts, total: allEvents.meta.total };
   } catch (e) {
     log.error(e);
     return false;
@@ -162,7 +162,7 @@ async function getObjectDistributionAsGraph(user, number, from, until) {
       }
     }
 
-    return { nodes, edges };
+    return { graph: { nodes, edges }, total: allEvents.meta.total };
   } catch (e) {
     log.error(e);
     return false;

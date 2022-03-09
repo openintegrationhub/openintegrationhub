@@ -26,24 +26,34 @@ const { getProvenanceEvents } = require('./mongo');
 
 // Gets overview of data distribution
 router.get('/distribution', jsonParser, can('tenant.all'), async (req, res) => {
-  const distribution = await getObjectDistribution(req.user, req.query.number, req.query.from, req.query.until);
+  const { distribution, total } = await getObjectDistribution(req.user, req.query.number, req.query.from, req.query.until);
 
   if (!distribution) return res.status(404).send({ error: [{ message: 'Could not gather distribution' }] });
 
-  res.status(200).send(distribution);
+  res.status(200).send({
+    data: distribution,
+    meta: {
+      from: req.query.from, until: req.query.until, number: Number(req.query.number), total,
+    },
+  });
 });
 
 // Gets data distribution in form of a graph
 router.get('/distribution/graph', jsonParser, can('tenant.all'), async (req, res) => {
-  const graph = await getObjectDistributionAsGraph(req.user, req.query.number, req.query.from, req.query.until);
+  const { graph, total } = await getObjectDistributionAsGraph(req.user, req.query.number, req.query.from, req.query.until);
   if (!graph) return res.status(404).send({ error: [{ message: 'Could not gather distribution graph' }] });
 
-  res.status(200).send(graph);
+  res.status(200).send({
+    data: graph,
+    meta: {
+      from: req.query.from, until: req.query.until, number: Number(req.query.number), total,
+    },
+  });
 });
 
 // Delivers a html page which is rendering the graph of the data distribution and dynamically is showing additional data
 router.get('/distribution/graph/html', jsonParser, can('tenant.all'), async (req, res) => {
-  const graph = await getObjectDistributionAsGraph(req.user);
+  const { graph } = await getObjectDistributionAsGraph(req.user);
   if (!graph) return res.status(404).send({ error: [{ message: 'Could not gather distribution graph' }] });
 
   const html = drawGraph(graph);
@@ -66,7 +76,7 @@ router.get('/objectStatus/:id', jsonParser, can('tenant.all'), async (req, res) 
 
   const events = await getProvenanceEvents(req.user, 100, 1, { 'entity.id': id }, false, false, false, false);
 
-  res.status(200).send({ events: events.data, refs: referenceData ? referenceData.refs : false, oihUid: id });
+  res.status(200).send({ data: { events: events.data, refs: referenceData ? referenceData.refs : false, oihUid: id } });
 });
 
 // Gets a list of current warnings and advisories
@@ -77,7 +87,7 @@ router.get('/warnings', jsonParser, can('tenant.all'), async (req, res) => {
 
   // TODO: Check for failed delete warnings
 
-  res.status(200).send({ flowWarnings });
+  res.status(200).send({ data: { flowWarnings } });
 });
 
 // Gets a combined list of all available data
@@ -85,7 +95,7 @@ router.get('/dashboard', jsonParser, can('tenant.all'), async (req, res) => {
   const distribution = await getObjectDistribution(req.user.sub);
   const flowWarnings = await checkFlows(req.headers.authorization);
 
-  res.status(200).send({ distribution, flowWarnings });
+  res.status(200).send({ data: { distribution, flowWarnings } });
 });
 
 // Mark a particular warning as resolved or ignored
