@@ -34,9 +34,9 @@ async function getRefs(id, recordUid, token) {
 }
 
 // Calculates object distribution by events
-async function getObjectDistribution(user) {
+async function getObjectDistribution(user, number, from, until) {
   try {
-    const allEvents = await getProvenanceEvents(user, 5000, 1, false, false, false, false, false);
+    const allEvents = await getProvenanceEvents(user, number || 5000, 1, false, 'createdAt', -1, from || false, until || false);
 
     const serviceCounts = {};
 
@@ -74,7 +74,7 @@ async function getObjectDistribution(user) {
       }
     }
 
-    return serviceCounts;
+    return { distribution: serviceCounts, total: allEvents.meta.total };
   } catch (e) {
     log.error(e);
     return false;
@@ -82,9 +82,9 @@ async function getObjectDistribution(user) {
 }
 
 // Calculates object distribution and formats as a graph
-async function getObjectDistributionAsGraph(user) {
+async function getObjectDistributionAsGraph(user, number, from, until) {
   try {
-    const allEvents = await getProvenanceEvents(user, 5000, 1, false, false, false, false, false);
+    const allEvents = await getProvenanceEvents(user, number || 5000, 1, false, 'createdAt', -1, from || false, until || false);
 
     const nodes = [];
     const edges = [];
@@ -162,7 +162,7 @@ async function getObjectDistributionAsGraph(user) {
       }
     }
 
-    return { nodes, edges };
+    return { graph: { nodes, edges }, total: allEvents.meta.total };
   } catch (e) {
     log.error(e);
     return false;
@@ -281,8 +281,6 @@ function drawRingChart(maxIn, maxOut, nodeData) {
 }
 
 function drawGraph(graph) {
-  console.log(JSON.stringify(graph));
-
   // Group edges for display
   const edges = [];
   const flowsIndex = {};
@@ -315,9 +313,6 @@ function drawGraph(graph) {
       edges[i].data.width = 12;
     }
   }
-
-  log.info('Edges:');
-  log.info(edges);
 
   const elements = graph.nodes.concat(edges); // graph.edges
 
