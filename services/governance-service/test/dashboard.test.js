@@ -315,6 +315,24 @@ describe('Dashboard Operations', () => {
     });
   });
 
+  test('should get the data distribution based on reduced event number', async () => {
+    const res = await request
+      .get('/dashboard/distribution?number=1')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual({
+      Snazzy: {
+        created: 0,
+        updated: 1,
+        retrieved: 0,
+        deleted: 0,
+      },
+    });
+  });
+
   test('should get the data distribution as graph', async () => {
     const res = await request
       .get('/dashboard/distribution/graph')

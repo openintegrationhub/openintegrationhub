@@ -26,7 +26,7 @@ const { getProvenanceEvents } = require('./mongo');
 
 // Gets overview of data distribution
 router.get('/distribution', jsonParser, can('tenant.all'), async (req, res) => {
-  const distribution = await getObjectDistribution(req.user);
+  const distribution = await getObjectDistribution(req.user, req.query.number, req.query.from, req.query.until);
 
   if (!distribution) return res.status(404).send({ error: [{ message: 'Could not gather distribution' }] });
 
@@ -35,7 +35,7 @@ router.get('/distribution', jsonParser, can('tenant.all'), async (req, res) => {
 
 // Gets data distribution in form of a graph
 router.get('/distribution/graph', jsonParser, can('tenant.all'), async (req, res) => {
-  const graph = await getObjectDistributionAsGraph(req.user);
+  const graph = await getObjectDistributionAsGraph(req.user, req.query.number, req.query.from, req.query.until);
   if (!graph) return res.status(404).send({ error: [{ message: 'Could not gather distribution graph' }] });
 
   res.status(200).send(graph);
