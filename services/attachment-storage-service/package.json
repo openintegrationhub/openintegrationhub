@@ -1,6 +1,6 @@
 {
   "name": "attachment-storage-service",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Service for storing binary data",
   "main": "dist/index.js",
   "directories": {

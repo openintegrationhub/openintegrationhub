@@ -1,6 +1,6 @@
 {
   "name": "webhooks",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "OIH Incoming Webhooks Service",
   "main": "index.js",
   "scripts": {
