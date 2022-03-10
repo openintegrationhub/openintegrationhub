@@ -1,6 +1,6 @@
 {
   "name": "dispatcher-service",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Transfers data between flows",
   "main": "index.js",
   "scripts": {

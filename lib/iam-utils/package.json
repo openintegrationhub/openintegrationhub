@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/iam-utils",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "Utils and express middleware for OIH IAM service",
   "main": "src/index.js",
   "scripts": {
