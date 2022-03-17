@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "description": "This is the API for the Open Integration Hub Microservice \"Flow Repository\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "title": "Flow Repository",
     "termsOfService": "https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
     "contact": {
@@ -869,6 +869,7 @@
                   "id": "step_1",
                   "componentId": "string",
                   "name": "snazzy adapter for oih",
+                  "credentials_id": "507f1f77bcf86cd799439011",
                   "function": "getPersonsPolling",
                   "description": "New description in progress"
                 },
