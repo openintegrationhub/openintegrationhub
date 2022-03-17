@@ -9,10 +9,12 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "tags": [{
-    "name": "components",
-    "description": "Component management"
-  }],
+  "tags": [
+    {
+      "name": "components",
+      "description": "Component management"
+    }
+  ],
   "paths": {
     "/components/": {
       "get": {
@@ -20,21 +22,24 @@
         "summary": "Retrieve all components",
         "description": "Retrieve all components from the repository.",
         "operationId": "getComponents",
-        "parameters": [{
-          "name": "page[size]",
-          "description": "The amount of components per page returned. Defaults to 50.",
-          "in": "query",
-          "schema": {
-            "type": "integer"
+        "parameters": [
+          {
+            "name": "page[size]",
+            "description": "The amount of components per page returned. Defaults to 50.",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page[number]",
+            "description": "The number of the page to be returned. Defaults to 1.",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
           }
-        }, {
-          "name": "page[number]",
-          "description": "The number of the page to be returned. Defaults to 1.",
-          "in": "query",
-          "schema": {
-            "type": "integer"
-          }
-        }],
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -104,15 +109,17 @@
         "summary": "Find component by ID",
         "description": "Returns a component with given ID",
         "operationId": "getComponentById",
-        "parameters": [{
-          "name": "id",
-          "in": "path",
-          "description": "ID of component to return",
-          "required": true,
-          "schema": {
-            "type": "string"
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of component to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-        }],
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -145,15 +152,17 @@
         "summary": "Update a component",
         "description": "Update a component",
         "operationId": "updateComponent",
-        "parameters": [{
-          "name": "id",
-          "in": "path",
-          "description": "ID of component to update",
-          "required": true,
-          "schema": {
-            "type": "string"
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of component to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-        }],
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -192,15 +201,17 @@
         "summary": "Delete a component",
         "description": "Delete a component",
         "operationId": "deleteComponent",
-        "parameters": [{
-          "name": "id",
-          "in": "path",
-          "description": "ID of component to update",
-          "required": true,
-          "schema": {
-            "type": "string"
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of component to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-        }],
+        ],
         "responses": {
           "204": {
             "description": "The component was deleted successfully"
@@ -220,15 +231,17 @@
         "summary": "Start a global component by ID",
         "description": "Returns a success message",
         "operationId": "startGlobalComponentById",
-        "parameters": [{
-          "name": "id",
-          "in": "path",
-          "description": "ID of global component to start",
-          "required": true,
-          "schema": {
-            "type": "string"
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of global component to start",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-        }],
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -260,15 +273,17 @@
         "summary": "Stop a global component by ID",
         "description": "Returns a success message",
         "operationId": "stopGlobalComponentById",
-        "parameters": [{
-          "name": "id",
-          "in": "path",
-          "description": "ID of global component to stop",
-          "required": true,
-          "schema": {
-            "type": "string"
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of global component to stop",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-        }],
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -300,15 +315,16 @@
         "summary": "Automatically enrich component metadata",
         "description": "Fetches component data from its repository, if available",
         "operationId": "enrichComponent",
-        "parameters": [{
-          "name": "id",
-          "in": "path",
-          "description": "ID of global component to stop",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of global component to stop",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "repository",
             "in": "query",
@@ -328,6 +344,258 @@
           },
           "404": {
             "description": "Component with given ID not found"
+          }
+        }
+      }
+    },
+    "/virtual-components/": {
+      "get": {
+        "tags": ["virtualComponents"],
+        "summary": "Retrieve all virtualComponents",
+        "description": "Retrieve all virtualComponents from the repository.",
+        "operationId": "getVirtualComponents",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/VirtualComponent"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["virtualComponents"],
+        "summary": "Create a virtual component",
+        "description": "Create a virtual component",
+        "operationId": "createVirtualComponent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VirtualComponent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/VirtualComponent"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      }
+    },
+    "/virtual-components/defaults": {
+      "get": {
+        "tags": ["virtualComponents"],
+        "summary": "Retrieve all default component versions",
+        "description": "Retrieve all default component versions from the repository.",
+        "operationId": "getDefaultComponentVersion",
+        "parameters": [
+          {
+            "name": "verbose",
+            "description": "If you want to retrieve all data from the components. Default is true",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "filterActiveFunctions",
+            "description": "If you want to filter the active triggers and actions all. Default is false",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/ComponentVersion"
+                          },
+                          {
+                            "$ref": "#/components/schemas/VirtualComponent"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/virtual-components/config": {
+      "get": {
+        "tags": ["virtualComponents"],
+        "summary": "Retrieve the configuration of the default component versions",
+        "description": "Retrieve the configuration of the default component versions.",
+        "operationId": "getConfigDefaultComponentVersions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ComponentConfig"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/virtual-components/{id}": {
+      "get": {
+        "tags": ["virtualComponents"],
+        "summary": "Get specific virtual component",
+        "description": "Get specific virtual component from the repository.",
+        "operationId": "getVirtualComponentById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of virtual component to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/VirtualComponent"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "$ref": "#/components/responses/UnauthorizedError"
+        },
+        "404": {
+          "description": "VirtualComponent is not found"
+        }
+      },
+      "patch": {
+        "tags": ["virtualComponents"],
+        "summary": "Partial update of a virtual component",
+        "description": "Partial update of a virtual component",
+        "operationId": "patchVirtualComponent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VirtualComponent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/VirtualComponent"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "VirtualComponent is not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["virtualComponents"],
+        "summary": "Delete a virtual component",
+        "description": "Delete a virtual component",
+        "operationId": "deleteVirtualComponent",
+        "responses": {
+          "204": {
+            "description": "Resource removed"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "VirtualComponent is not found"
           }
         }
       }
@@ -401,22 +669,28 @@
         }
       },
       "ComponentDistribution": {
-        "allOf": [{
-          "type": "object",
-          "required": ["type"],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": ["docker", "slug"]
+        "allOf": [
+          {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["docker", "slug"]
+              }
             }
+          },
+          {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ComponentDockerDistribution"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentSlugDistribution"
+              }
+            ]
           }
-        }, {
-          "oneOf": [{
-            "$ref": "#/components/schemas/ComponentDockerDistribution"
-          }, {
-            "$ref": "#/components/schemas/ComponentSlugDistribution"
-          }]
-        }],
+        ],
         "example": {
           "type": "docker",
           "image": "openintegrationhub/email",
@@ -511,10 +785,284 @@
             "example": 200
           }
         }
+      },
+      "Version": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "External id of the componentVersion",
+            "example": "123"
+          },
+          "componentVersion": {
+            "type": "string",
+            "description": "Component version",
+            "example": "49"
+          },
+          "apiVersion": {
+            "type": "string",
+            "description": "Official component version",
+            "example": "2.0.1"
+          }
+        }
+      },
+      "VirtualComponent": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the virtual component",
+            "example": "Slack"
+          },
+          "defaultVersionId": {
+            "type": "string",
+            "description": "External Id of the component version. To know the default/active component version",
+            "example": "123"
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Version"
+            }
+          },
+          "tenant": {
+            "type": "string",
+            "description": "Tenant id of the logged user",
+            "example": "1234"
+          },
+          "access": {
+            "type": "string",
+            "enum": ["private", "public"],
+            "default": "private",
+            "example": "public"
+          },
+          "owners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Owner"
+            }
+          },
+          "active": {
+            "type": "boolean",
+            "default": "true",
+            "example": "false"
+          }
+        }
+      },
+      "ComponentConfig": {
+        "type": "object",
+        "required": ["componentVersionId"],
+        "properties": {
+          "componentVersionId": {
+            "type": "string",
+            "description": "External id of the component version",
+            "example": "123"
+          },
+          "authClientId": {
+            "type": "string",
+            "description": "External id of the auth client from the secret-service",
+            "example": "123"
+          },
+          "tenant": {
+            "type": "string",
+            "description": "Tenant id of the logged user",
+            "example": "123"
+          }
+        }
+      },
+      "Function": {
+        "type": "object",
+        "required": ["name", "function"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "123"
+          },
+          "title": {
+            "type": "string",
+            "example": "123"
+          },
+          "description": {
+            "type": "string",
+            "example": "123"
+          },
+          "function": {
+            "type": "string",
+            "description": "Not used yet but it can be used to store the function to execute when this action/trigger is invoked",
+            "example": "processAction"
+          },
+          "fields": {
+            "type": "object",
+            "description": "Can be used to store different fields that this fuunction needs."
+          },
+          "schemas": {
+            "type": "object",
+            "properties": {
+              "in": {
+                "type": "object",
+                "description": "The input schema from the function."
+              },
+              "out": {
+                "type": "object",
+                "description": "The output schema from the function."
+              }
+            }
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Used to filter active functions."
+          }
+        }
+      },
+      "LightFunction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "123"
+          },
+          "title": {
+            "type": "string",
+            "example": "123"
+          },
+          "description": {
+            "type": "string",
+            "example": "123"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Used to filter active functions."
+          }
+        }
+      },
+      "LightComponentVersion": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Slack component"
+          },
+          "authorization": {
+            "type": "object",
+            "properties": {
+              "authType": {
+                "type": "string",
+                "enum": [
+                  "NO_AUTH",
+                  "API_KEY",
+                  "OA1_TWO_LEGGED",
+                  "OA1_THREE_LEGGED",
+                  "OA2_AUTHORIZATION_CODE",
+                  "SIMPLE",
+                  "MIXED",
+                  "SESSION_AUTH"
+                ],
+                "example": "NO_AUTH"
+              },
+              "authSetupLink": {
+                "type": "string",
+                "example": "http://domain.com/api/doc"
+              }
+            }
+          },
+          "logo": {
+            "type": "string",
+            "description": "External id of the virtual component",
+            "example": "123"
+          },
+          "description": {
+            "type": "string"
+          },
+          "componentId": {
+            "type": "string",
+            "description": "External id of the component",
+            "example": "123"
+          },
+          "virtualComponentId": {
+            "type": "string",
+            "description": "External id of the virtual component",
+            "example": "123"
+          },
+          "actions": {
+            "type": "array",
+            "$ref": "#/components/schemas/LightFunction"
+          },
+          "triggers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LightFunction"
+            }
+          }
+        }
+      },
+      "ComponentVersion": {
+        "type": "object",
+        "required": [
+          "name",
+          "componentId",
+          "virtualComponentId",
+          "authorization.authType"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Slack component"
+          },
+          "description": {
+            "type": "string"
+          },
+          "componentId": {
+            "type": "string",
+            "description": "External id of the component",
+            "example": "123"
+          },
+          "authorization": {
+            "type": "object",
+            "properties": {
+              "authType": {
+                "type": "string",
+                "enum": [
+                  "NO_AUTH",
+                  "API_KEY",
+                  "OA1_TWO_LEGGED",
+                  "OA1_THREE_LEGGED",
+                  "OA2_AUTHORIZATION_CODE",
+                  "SIMPLE",
+                  "MIXED",
+                  "SESSION_AUTH"
+                ],
+                "example": "NO_AUTH"
+              },
+              "authSetupLink": {
+                "type": "string",
+                "example": "http://domain.com/api/doc"
+              }
+            }
+          },
+          "actions": {
+            "type": "array",
+            "$ref": "#/components/schemas/Function"
+          },
+          "triggers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Function"
+            }
+          },
+          "virtualComponentId": {
+            "type": "string",
+            "description": "External id of the virtual component",
+            "example": "123"
+          },
+          "logo": {
+            "type": "string",
+            "description": "External id of the virtual component",
+            "example": "123"
+          }
+        }
       }
     }
-  },
-  "security": [{
-    "bearerAuth": []
-  }]
+  }
 }
