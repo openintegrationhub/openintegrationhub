@@ -598,6 +598,50 @@
             "description": "VirtualComponent is not found"
           }
         }
+      },
+      "post": {
+        "tags": ["virtualComponents"],
+        "summary": "Add a new component version to the specific virtual component",
+        "description": "Add a new component version to the specific virtual component",
+        "operationId": "postVersionToVirtualComponent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComponentVersion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ComponentVersion"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "VirtualComponent or Component not found"
+          }
+        }
       }
     }
   },
