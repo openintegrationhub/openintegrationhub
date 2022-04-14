@@ -66,12 +66,9 @@ class App {
         this.mongoose = mongoose;
 
         await mongoose.connect(this.mongoConnection, {
-            poolSize: 50,
+            maxPoolSize: 50,
             connectTimeoutMS: 30000,
-            keepAlive: 120,
-            useUnifiedTopology: true,
-            useNewUrlParser: true,
-            useCreateIndex: true,
+            keepAliveInitialDelay: 300000,
         });
 
         EventBusManager.init({ eventBus: this.eventBus, serviceName: conf.general.loggingNameSpace });

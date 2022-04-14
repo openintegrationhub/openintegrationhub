@@ -43,7 +43,7 @@ const updateConfig = (data) => new Promise(async (resolve) => {
   const response = await Configuration.findOneAndUpdate(
     { _id: id },
     config,
-    { new: true, useFindAndModify: false },
+    { new: true },
   ).lean();
 
   resolve(format(response));
@@ -58,7 +58,7 @@ const createConfig = (data) => new Promise(async (resolve) => {
 const deleteConfig = (tenant, id) => new Promise(async (resolve) => {
   const configuration = await Configuration.findOneAndDelete(
     { tenant, _id: id },
-    { useFindAndModify: false },
+    { },
   )
     .lean();
   resolve(format(configuration));

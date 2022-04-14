@@ -18,7 +18,7 @@ const swaggerDocument = require('./api/swagger/swagger.json');
 const log = require('./config/logger');
 
 // const receiver = require('./api/utils/receive.module.js');
-const eventBus = require('./api/utils/eventBus.js');
+const eventBus = require('./api/utils/eventBus');
 
 class Server {
     constructor() {
@@ -72,14 +72,12 @@ class Server {
             this.mongoose = mongoose;
 
             const options = {
-                keepAlive: 1, connectTimeoutMS: 30000, reconnectInterval: 1000, reconnectTries: Number.MAX_VALUE, useNewUrlParser: true,
+                keepAliveInitialDelay: 300000, connectTimeoutMS: 30000,
             }; //
 
             // Will connect to the mongo container by default, but to localhost if testing is active
-            mongoose.connect(config.mongoUrl, options);
+            await mongoose.connect(config.mongoUrl, options);
 
-            // Get Mongoose to use the global promise library
-    mongoose.Promise = global.Promise;  // eslint-disable-line
             // Get the default connection
             this.db = mongoose.connection;
             // Bind connection to error event (to get notification of connection errors)

@@ -72,7 +72,7 @@ const getLogs = async ( // eslint-disable-line
 
 // Should only be available to internal methods or OIH-Admin
 const getAnyLogById = (logId) => new Promise((resolve) => {
-    const findId = mongoose.Types.ObjectId(logId);
+    const findId = new mongoose.Types.ObjectId(logId);
     Log.find({ '_id': findId }).lean()
         .then((doc) => {
             resolve(doc);

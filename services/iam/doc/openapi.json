@@ -205,7 +205,7 @@
         }
       }
     },
-    "/api/v1/tenants/:id": {
+    "/api/v1/tenants/{id}": {
       "get": {
         "tags": [
           "tenant"

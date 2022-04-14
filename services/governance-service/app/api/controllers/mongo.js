@@ -34,7 +34,7 @@ const buildQuery = (user, permission, id) => {
   let findId;
   const qry = {};
   if (id) {
-    findId = mongoose.Types.ObjectId(id);
+    findId = new mongoose.Types.ObjectId(id);
     qry._id = findId;
   }
 
@@ -87,7 +87,7 @@ const getProvenanceEvents = async ( // eslint-disable-line
   sort[sortField] = sortOrder;
 
   // count results
-  const count = await ProvenanceEvent.find(qry).estimatedDocumentCount();
+  const count = await ProvenanceEvent.countDocuments(qry);
 
   // add offset and limit to query and execute
   ProvenanceEvent.find(qry).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
@@ -177,8 +177,7 @@ const getStoredFunctions = async ( // eslint-disable-line
   // console.log('Fieldnames:', fieldNames);
 
   // count results
-  const count = await StoredFunction.find(qry).estimatedDocumentCount();
-  // const count = await StoredFunction.count(qry);
+  const count = await StoredFunction.countDocuments(qry);
 
   // add offset and limit to query and execute
 

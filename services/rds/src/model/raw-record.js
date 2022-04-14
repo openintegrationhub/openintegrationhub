@@ -30,7 +30,10 @@ const rawRecord = new Schema(
     owners: { type: [owner] },
     createdAt: { type: Date, default: Date.now },
   },
-  { versionKey: false }
+  {
+    versionKey: false,
+    autoCreate: process.env.NODE_ENV === 'test',
+  }
 )
 
 module.exports = mongoose.model(`rawRecord`, rawRecord)

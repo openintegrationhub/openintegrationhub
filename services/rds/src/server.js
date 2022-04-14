@@ -48,18 +48,13 @@ class Server {
 
   setupDb() {
     return new Promise((resolve, reject) => {
-      mongoose.connect(
-        this.mongodbUrl,
-        {
-          poolSize: 50,
+      mongoose
+        .connect(this.mongodbUrl, {
+          maxPoolSize: 50,
           connectTimeoutMS: 30000,
-          useCreateIndex: true,
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        },
-        (err) => {
-          if (err) return reject(err)
-          // wait for index creation
+        })
+        .then(() => {
+          logger.info('Mongo Connection established')
           require('./model/raw-record').on('index', (error) => {
             if (error) {
               logger.error('RawRecord index error', error)
@@ -67,10 +62,8 @@ class Server {
               resolve()
             }
           })
-        }
-      )
-
-      logger.info('Mongo Connection established')
+        })
+        .catch(reject)
     })
   }
 

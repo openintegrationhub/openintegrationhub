@@ -43,9 +43,6 @@ class ComponentOrchestratorApp extends App {
 
         const mongooseOptions = {
             socketTimeoutMS: 60000,
-            useCreateIndex: true,
-            useNewUrlParser: true,
-            useUnifiedTopology: true
         };
         await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
         const iamClient = iamUtils.createClient({

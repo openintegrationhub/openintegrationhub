@@ -252,6 +252,46 @@ module.exports = [
   {
     distribution: {
       type: 'docker',
+      image: 'openintegrationhub/logic-gateway-component:latest',
+    },
+    isGlobal: true,
+    specialFlags: {
+      privilegedComponent: true,
+    },
+    access: 'public',
+    name: 'logicGateway-global-lg-image',
+    description: 'This is an example logic gateway component',
+    descriptor: {
+      replicas: 1,
+      actions: {
+        exec: {
+          title: 'exec',
+          description: 'Execute a predefined logic for a step',
+        },
+      },
+    },
+    resources: {
+      requests: {
+        memory: '64Mi',
+        cpu: '125m',
+      },
+      limits: {
+        memory: '128Mi',
+        cpu: '250m',
+      },
+    },
+    logo:
+      'https://game-icons.net/icons/ffffff/000000/1x1/delapouite/logic-gate-or.png',
+    owners: [
+      {
+        id: 't1_admin@local.dev',
+        type: 'user',
+      },
+    ],
+  },
+  {
+    distribution: {
+      type: 'docker',
       image: 'oih/test-component:latest',
     },
     isGlobal: true,
@@ -260,7 +300,7 @@ module.exports = [
     description:
       "This is a special component. It's source lives in dev-tools/test-component. In comparison to a regular component you can NOT use the docker image without mounting in this repository.",
     descriptor: {
-      replicas: 3,
+      replicas: 1,
       imagePullPolicy: 'Never',
     },
     resources: {
@@ -323,6 +363,7 @@ module.exports = [
     descriptor: {
       replicas: 1,
       imagePullPolicy: 'Never',
+      restAPI: true,
     },
     resources: {
       requests: {

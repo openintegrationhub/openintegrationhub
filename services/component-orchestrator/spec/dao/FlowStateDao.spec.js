@@ -14,7 +14,7 @@ function getRandomInt(max) {
 describe('FlowStateDao', () => {
     before(async () => {
         let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { useNewUrlParser: true, useFindAndModify: false });
+        await mongoose.connect(mongoUri, { });
         await flowStateDao.delete(flowExecId)
         await flowStateDao.delete(flowExecId2)
     });

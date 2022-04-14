@@ -43,8 +43,6 @@ export default class DataHubApp extends App {
         const logger = <Logger>container.resolve('logger');
         const mongooseOptions = {
             socketTimeoutMS: 60000,
-            useCreateIndex: true,
-            useNewUrlParser: true
         };
         await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
 

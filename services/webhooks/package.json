@@ -1,6 +1,6 @@
 {
   "name": "webhooks",
-  "version": "1.4.1",
+  "version": "1.5.2",
   "description": "OIH Incoming Webhooks Service",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "bunyan": "^1.8.14",
     "bunyan-format": "^0.2.1",
     "express": "4.17.1",
-    "mongoose": "5.11.8",
+    "mongoose": "6.2.1",
     "node-fetch": "2.6.5"
   },
   "devDependencies": {
