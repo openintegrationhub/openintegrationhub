@@ -8,10 +8,10 @@ const node = new Schema({
     type: mongoose.Types.ObjectId,
     required: [true, 'Flow nodes require a componentId.'],
   },
-  function: { type: String, required: [true, 'Flow nodes require a function.'], maxlength: 60 },
-  name: { type: String, maxlength: 60 },
-  credentials_id: { type: mongoose.Types.ObjectId, maxlength: 30 },
-  description: { type: String, maxlength: 100 },
+  function: { type: String, required: [true, 'Flow nodes require a function.'] },
+  name: { type: String },
+  credentials_id: { type: mongoose.Types.ObjectId },
+  description: { type: String },
   fields: {},
   nodeSettings: {},
   _id: false,
@@ -23,14 +23,14 @@ const edge = new Schema({
     condition: { type: String, maxlength: 30 },
     mapper: {},
   },
-  source: { type: String, required: [true, 'Flow edges require a source.'], maxlength: 30 },
-  target: { type: String, required: [true, 'Flow edges require a target.'], maxlength: 30 },
+  source: { type: String, required: [true, 'Flow edges require a source.'] },
+  target: { type: String, required: [true, 'Flow edges require a target.'] },
   _id: false,
 });
 
 const owner = new Schema({
-  id: { type: String, required: [true, 'Flow owners require an id.'], maxlength: 30 },
-  type: { type: String, required: [true, 'Flow owners require a type.'], maxlength: 30 },
+  id: { type: String, required: [true, 'Flow owners require an id.'] },
+  type: { type: String, required: [true, 'Flow owners require a type.'] },
   _id: false,
 });
 
@@ -58,14 +58,14 @@ const graph = new Schema({
 
 // Define schema
 const flow = new Schema({
-  name: { type: String, maxlength: 60 },
-  description: { type: String, maxlength: 100 },
+  name: { type: String },
+  description: { type: String },
   graph: { type: graph, required: [true, 'Flows require a graph.'] },
-  type: { type: String, maxlength: 30 },
+  type: { type: String },
   tenant: String,
   owners: { type: [owner] },
   status: { type: String, default: 'inactive' },
-  cron: { type: String, maxlength: 20 },
+  cron: { type: String },
   fromTemplate: { type: mongoose.Types.ObjectId, ref: 'FlowTemplate' },
   flowSettings: {
     /* webhooks: {

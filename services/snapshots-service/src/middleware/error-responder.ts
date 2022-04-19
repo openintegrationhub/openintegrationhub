@@ -4,7 +4,7 @@ import ApiError from '../errors/api/ApiError';
 export default async function errorResponder(ctx: Context, next: Function): Promise<void> {
     try {
         await next();
-    } catch (err) {
+    } catch (err: any) {
         if (!(err instanceof ApiError) && !err.status) {
             ctx.log.error(err);
             err = new ApiError(err.status, err.message);

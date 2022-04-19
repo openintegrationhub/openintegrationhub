@@ -12,12 +12,13 @@ export const UPDATE_COMPONENT_ERROR = 'UPDATE_COMPONENT_ERROR';
 export const CREATE_COMPONENT = 'CREATE_COMPONENT';
 export const DELETE_COMPONENT = 'DELETE_COMPONENT';
 
-export const getComponents = () => async (dispatch) => {
+export const getComponents = (pageSize) => async (dispatch) => {
     try {
         const result = await axios({
             method: 'get',
             url: `${conf.endpoints.component}/components`,
             withCredentials: true,
+            ...(pageSize ? { params: { 'page[size]': pageSize } } : {}),
         });
 
         dispatch({

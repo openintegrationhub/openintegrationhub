@@ -34,6 +34,7 @@ import Home from '../../component/home';
 import Users from '../../component/users';
 import Tenants from '../../component/tenants';
 import Flows from '../../component/flows';
+import FlowDetails from '../../component/flows/detail-page';
 import Components from '../../component/components';
 import HubAndSpoke from '../../component/hub-and-spoke';
 import HubAndSpokeDetails from '../../component/hub-and-spoke/details';
@@ -341,6 +342,7 @@ class Main extends React.Component {
                           <Route exact path="/tenants" component={Tenants} />
                           <Route exact path="/roles" component={Roles} />
                           <Route exact path="/flows" component={Flows} />
+                          <Route exact path="/flows/:id" component={FlowDetails} />
                           <Route exact path="/components" component={Components} />
                           <Route exact path="/hub-and-spoke" component={HubAndSpoke} />
                           <Route exact path="/hub-and-spoke/:id" component={HubAndSpokeDetails} />

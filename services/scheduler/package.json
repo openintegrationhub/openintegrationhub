@@ -2,7 +2,7 @@
   "name": "scheduler",
   "description": "Scheduler",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.2",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"
@@ -25,7 +25,7 @@
     "backend-commons-lib": "*",
     "cron-parser": "2.7.3",
     "express": "4.16.3",
-    "mongoose": "5.11.8",
+    "mongoose": "6.2.1",
     "nconf": "0.10.0",
     "uuid": "3.3.2"
   },

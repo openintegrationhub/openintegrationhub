@@ -40,6 +40,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  if (mongoose.connection && mongoose.connection.db) await mongoose.connection.db.dropDatabase();
   mongoose.connection.close();
   app.close();
 });
@@ -138,9 +139,9 @@ describe('ProvenanceEvent Operations', () => {
     newEvent.activity.id = '30j0hew9kwbnkksfb09';
     newEvent.activity.invalidated = [];
 
-    newEvent.activity.qualifiedAssociation = {};
-    newEvent.activity.qualifiedEnd = {};
-    newEvent.activity.qualifiedStart = {};
+    // newEvent.activity.qualifiedAssociation = {};
+    // newEvent.activity.qualifiedEnd = {};
+    // newEvent.activity.qualifiedStart = {};
     newEvent.activity.qualifiedUsage = [];
 
     newEvent.entity.alternateOf = [];

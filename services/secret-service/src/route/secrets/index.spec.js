@@ -460,7 +460,7 @@ describe('secrets', () => {
     });
 
     test('Get the secret by wrong id returns 404', async () => {
-        await request.get(`/secrets/${mongoose.Types.ObjectId()}`)
+        await request.get(`/secrets/${new mongoose.Types.ObjectId()}`)
             .set(...global.userAuth1)
             .expect(404);
     });

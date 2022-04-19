@@ -190,7 +190,7 @@ export default class DataController {
               }
               if(preparedDoc) {
                 // Update db;
-                const result = await DataObject.findOneAndUpdate({_id: doc._id}, preparedDoc, {new: true, useFindAndModify:false});
+                const result = await DataObject.findOneAndUpdate({_id: doc._id}, preparedDoc, {new: true });
           }
       }
     }
@@ -216,31 +216,76 @@ export default class DataController {
     }
 
     public async getOneByRecordId(ctx: RouterContext): Promise<void> {
-        const { id } = ctx.params;
+       const { id } = ctx.params;
+       const { user } = ctx.state;
+
+       const dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
+
+       if (!dataObject) {
+           throw new NotFound();
+       }
+
+       // if (!dataObject.owners.find((o: any) => o.id === user.sub) && !user.permissions.includes('all')) {
+       //     throw new Unauthorized();
+       // }
+
+       // @ts-ignore: TS2339
+       dataObject.id = dataObject._id;
+       // @ts-ignore: TS2339
+       delete dataObject._id;
+       // @ts-ignore: TS2339
+       delete dataObject.createdAt;
+       // @ts-ignore: TS2339
+       delete dataObject.updatedAt;
+       // @ts-ignore: TS2339
+       delete dataObject.__v;
+
+       ctx.status = 200;
+       ctx.body = {
+           data: dataObject
+       };
+    }
+
+    public async getOneByIdAndDeleteRecordId(ctx: RouterContext): Promise<void> {
+        const { id, applicationUid, recordId } = ctx.params;
         const { user } = ctx.state;
 
-        const dataObject = await DataObject.findOne({'refs.recordUid': id}).lean();
+        const dataObject = await DataObject.findById(id);
 
         if (!dataObject) {
             throw new NotFound();
+        } else {
+            let found = false;
+            // @ts-ignore: TS2532
+            for (let i=0; i<dataObject.refs.length; i+=1) {
+              if (
+                // @ts-ignore: TS2532
+                dataObject.refs[i].recordUid === recordId
+                // @ts-ignore: TS2532
+                && dataObject.refs[i].applicationUid === applicationUid
+              ) {
+                found = true;
+                // @ts-ignore: TS2532
+                dataObject.refs.splice(i, 1);
+                break;
+              }
+            }
+            if (found) {
+              ctx.status = 200;
+
+              // @ts-ignore: TS2532
+              if (dataObject.refs.length > 0) {
+                await dataObject.save();
+              } else {
+                // Delete orphan entry if no more recordIds are left
+                dataObject.remove();
+              }
+            } else {
+              ctx.status = 404;
+            }
+
         }
 
-        // if (!dataObject.owners.find((o: any) => o.id === user.sub) && !user.permissions.includes('all')) {
-        //     throw new Unauthorized();
-        // }
-
-        // @ts-ignore: TS2339
-        dataObject.id = dataObject._id;
-        // @ts-ignore: TS2339
-        delete dataObject._id;
-        // @ts-ignore: TS2339
-        delete dataObject.createdAt;
-        // @ts-ignore: TS2339
-        delete dataObject.updatedAt;
-        // @ts-ignore: TS2339
-        delete dataObject.__v;
-
-        ctx.status = 200;
         ctx.body = {
             data: dataObject
         };
@@ -257,7 +302,7 @@ export default class DataController {
         }
 
         // @ts-ignore: TS2532
-        if (!dataObject.owners.find(o => o.id === user.sub)) { 
+        if (!dataObject.owners.find(o => o.id === user.sub)) {
             throw new Forbidden();
         }
 
@@ -359,11 +404,13 @@ export default class DataController {
         const { body } = ctx.request;
         const { user } = ctx.state;
 
+        console.log(mongoose.Types.ObjectId)
         const query = body.oihUid ?
             {
                 $or: [
                     { 'refs.recordUid': body.recordUid },
-                    {_id: mongoose.Types.ObjectId(body.oihUid)}
+                    // @ts-ignore
+                    {_id: new mongoose.Types.ObjectId(body.oihUid)}
                 ]
             } :
             {'refs.recordUid': body.recordUid}

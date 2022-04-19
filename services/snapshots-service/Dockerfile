@@ -42,4 +42,6 @@ RUN rm package-lock.json
 RUN chown -R node:node .
 USER node
 
+RUN npm config set update-notifier false
+
 CMD npm start --workspace=$serviceName

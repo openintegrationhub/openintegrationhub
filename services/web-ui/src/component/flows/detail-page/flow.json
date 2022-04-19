@@ -1,0 +1,51 @@
+{
+  "title": "Flow Title here",
+  "description": "Flow Description here",
+  "graph": {
+    "nodes": [
+      {
+        "id": "step1",
+        "componentId": "filter",
+        "function": "createTodo"
+      },
+      {
+        "id": "step2",
+        "componentId": "filter",
+        "function": "mailTo"
+      },
+      {
+        "id": "step3",
+        "componentId": "filter",
+        "function": "mailTo"
+      },
+      {
+        "id": "step4",
+        "componentId": "filter",
+        "function": "mailTo"
+      },
+      {
+        "id": "step5",
+        "componentId": "filter",
+        "function": "createTodo"
+      }
+    ],
+    "edges":[
+      {
+        "source": "step1",
+        "target": "step2"
+      },
+      {
+        "source": "step2",
+        "target": "step3"
+      },
+      {
+        "source": "step2",
+        "target": "step4"
+      },
+      {
+        "source": "step3",
+        "target": "step5"
+      }
+    ]
+  }
+}
