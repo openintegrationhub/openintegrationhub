@@ -25,9 +25,11 @@ spec:
         env:
         - name: COMPONENT_REPOSITORY_BASE_URL
           value: "http://component-repository.oih-dev-ns.svc.cluster.local:1234"
+        - name: IAM_BASE_URL
+          value: "http://iam.oih-dev-ns.svc.cluster.local:3099/api/v1"
         - name: SNAPSHOTS_SERVICE_BASE_URL
           value: "http://snapshots-service.oih-dev-ns.svc.cluster.local:1234"
-        - name: SECRET_SERVICE_URL
+        - name: SECRET_SERVICE_BASE_URL
           value: "http://secret-service.oih-dev-ns.svc.cluster.local:3000/api/v1"
         - name: ATTACHMENT_STORAGE_SERVICE_BASE_URL
           value: "http://attachment-storage-service.oih-dev-ns.svc.cluster.local:3002"

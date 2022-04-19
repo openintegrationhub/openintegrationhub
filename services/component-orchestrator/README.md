@@ -84,6 +84,7 @@ kubectl apply -f ./k8s
 | ----------------------------------- | ------------------------------------------------------------------------------------------- |
 | ORCHESTRATOR_TOKEN_SECRET           | Will be used to sign orchestrator tokens.                                                   |
 | COMPONENT_REPOSITORY_BASE_URL       | Base URL of the Component Repository.                                                       |
+| IAM_BASE_URL                        | Base URL to access the IAM service.                        |
 | LISTEN_PORT                         | Port for HTTP interface.                                                                    |
 | LOG_LEVEL                           | Log level for logger.                                                                       |
 | MONGODB_URI                         | MongoDB connection string.                                                                  |
