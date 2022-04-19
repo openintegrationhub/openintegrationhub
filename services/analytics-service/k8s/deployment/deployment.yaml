@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: governance-service
+  namespace: oih-dev-ns
+  labels:
+    app: governance-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: governance-service
+  template:
+    metadata:
+      labels:
+        app: governance-service
+    spec:
+      containers:
+      - name: governance-service
+        image: openintegrationhub/governance-service:latest
+        ports:
+        - containerPort: 3009
+        envFrom:
+        - configMapRef:
+            name: governance-service
+        env:
+        - name: FLOW_REPO_BASE_URL
+          value: 'http://flow-repository.oih-dev-ns.svc.cluster.local:3001'
+        - name: MONGODB_URL
+          valueFrom:
+            secretKeyRef:
+              name: governance-service
+              key: "mongourl"
+        - name: IAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: governance-service
+              key: "iamtoken"
+        resources:
+          limits:
+            cpu: "0.1"
+            memory: 500Mi
+        livenessProbe:
+          httpGet:
+            port: 3009
+            path: /healthcheck
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            port: 3009
+            path: /healthcheck
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        imagePullPolicy: Always

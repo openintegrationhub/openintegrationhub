@@ -1,0 +1,152 @@
+{
+   "openapi":"3.0.0",
+   "info":{
+      "description":"This is the API for the Open Integration Hub Microservice \"Analytics Service\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
+      "version":"0.0.1",
+      "title":"Analytics Service",
+      "termsOfService":"https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
+      "contact":{
+         "email":"hschmidt@wice.de"
+      },
+      "license":{
+         "name":"Apache 2.0",
+         "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
+      }
+   },
+   "tags":[
+      {
+         "name":"events",
+         "description":"Provenance",
+         "externalDocs":{
+            "description":"Find out more",
+            "url":"https://openintegrationhub.org"
+         }
+      },
+      {
+         "name":"dashboard",
+         "description":"Presenting analytics data in a centralized manner",
+         "externalDocs":{
+            "description":"Find out more",
+            "url":"https://openintegrationhub.org"
+         }
+      }
+   ],
+   "paths":{
+      "/healthcheck":{
+         "get":{
+            "x-swagger-router-controller":"healthcheck",
+            "security":[
+
+            ],
+            "tags":[
+               "healthcheck"
+            ],
+            "summary":"Performs a healthcheck",
+            "description":"This will return 200 and a JSON object with relevant status information when the service is running and healthy.",
+            "responses":{
+               "200":{
+                  "description":"An object detailing the status of the service and the involved components.",
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "properties":{
+                              "status":{
+                                 "type":"string",
+                                 "example":"pass"
+                              },
+                              "details":{
+                                 "type":"object",
+                                 "properties":{
+                                    "MongoDB":{
+                                       "type":"object",
+                                       "properties":{
+                                          "status":{
+                                             "type":"string",
+                                             "example":"pass"
+                                          }
+                                       }
+                                    },
+                                    "queue":{
+                                       "type":"object",
+                                       "properties":{
+                                          "status":{
+                                             "type":"string",
+                                             "example":"pass"
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               },
+               "500":{
+                  "description":"At least one component is unhealthy",
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "properties":{
+                              "status":{
+                                 "type":"string",
+                                 "example":"fail"
+                              },
+                              "details":{
+                                 "type":"object",
+                                 "properties":{
+                                    "MongoDB":{
+                                       "type":"object",
+                                       "properties":{
+                                          "status":{
+                                             "type":"string",
+                                             "example":"fail"
+                                          }
+                                       }
+                                    },
+                                    "queue":{
+                                       "type":"object",
+                                       "properties":{
+                                          "status":{
+                                             "type":"string",
+                                             "example":"pass"
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   },
+   "externalDocs":{
+      "description":"Find out more about the Analytics Service",
+      "url":"https://github.com/openintegrationhub"
+   },
+   "servers":[
+      {
+         "url":"http://analytics-service.openintegrationhub.com/"
+      },
+      {
+         "url":"http://localhost:3009/"
+      }
+   ],
+   "components":{
+      "securitySchemes":{
+         "Bearer":{
+            "type":"http",
+            "scheme":"bearer",
+            "description":"Enter the bearer token received by IAM"
+         }
+      },
+      "schemas":{
+      }
+   }
+}
