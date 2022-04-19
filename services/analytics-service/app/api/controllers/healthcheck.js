@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const { reportHealth } = require('../../utils/eventBus');
+const { reportServiceStatus } = require('../../utils/serviceStatus');
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
@@ -10,7 +11,8 @@ router.get('/', jsonParser, async (req, res) => {
   // Initialises the response object on fail statuses
   const response = {
     status: 'fail',
-    version: '0.0.6',
+    version: '0.0.1',
+    connectedServices: {},
     details: {
       mongoDB: {
         status: 'fail',
@@ -29,6 +31,8 @@ router.get('/', jsonParser, async (req, res) => {
   if (reportHealth()) {
     response.details.queue.status = 'pass';
   }
+
+  response.connectedServices = await reportServiceStatus(false);
 
   // If all components are healthy, set overall health to pass
   if ((response.details.mongoDB.status === 'pass') && (response.details.queue.status === 'pass')) {
