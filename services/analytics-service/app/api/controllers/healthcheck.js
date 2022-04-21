@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const { reportHealth } = require('../../utils/eventBus');
-const { reportServiceStatus } = require('../../utils/serviceStatus');
+const { reportServiceStatus } = require('../../utils/helpers');
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
