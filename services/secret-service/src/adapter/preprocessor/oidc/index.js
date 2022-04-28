@@ -6,7 +6,6 @@ module.exports = async ({
     // authClient,
     tokenResponse,
 }) => {
-    secret.value.id_token = tokenResponse.id_token;
-    secret.value.externalId = jwt.decode(tokenResponse.id_token).email;
+    secret.value.externalId = tokenResponse.id_token;
     return secret;
 };
