@@ -15,6 +15,10 @@ const { connectQueue, disconnectQueue } = require('./utils/eventBus');
 const healthcheck = require('./api/controllers/healthcheck');
 const swaggerDocument = require('./api/swagger/swagger.json');
 
+const flows = require('./api/controllers/flows');
+const flowTemplates = require('./api/controllers/flowTemplates');
+const components = require('./api/controllers/components');
+
 const log = require('./config/logger');
 
 class Server {
@@ -78,6 +82,12 @@ class Server {
 
   setupRoutes() {
     // configure routes
+
+    this.app.use('/flows', flows);
+    this.app.use('/flowTemplates', flowTemplates);
+    this.app.use('/components', components);
+
+    this.app.use('/healthcheck', healthcheck);
 
     // Reroute to docs
     this.app.use('/docs', (req, res) => {
