@@ -1,14 +1,10 @@
-const mongoose = require('mongoose');
-
-const Schema = mongoose.Schema;
-
 // Flows that are based on the template
 const flows = {
   flowId: String,
 };
 
 // Define schema
-const flowTemplatesData = new Schema({
+const flowTemplatesData = {
   flowTemplateId: String,
   flowTemplateName: String,
   createdAt: String,
@@ -17,6 +13,6 @@ const flowTemplatesData = new Schema({
   owners: [{
     type: String,
   }], // tenantId
-}, { collection: 'flowTemplates', timestamps: true });
+};
 
 module.exports.flowTemplateData = flowTemplatesData;

@@ -1,36 +1,35 @@
-const mongoose = require('mongoose');
-
-const Schema = mongoose.Schema;
-
 // Statistics about objects passing through the flow
-const flowUsage = {
+const componentUsage = {
   objectId: String,
-  started: String,
-  ended: String,
+  type: {
+    type: String,
+    enum: ['received', 'send'],
+    // default: 'send',
+  },
   oihDataSchema: String,
 };
 
-const flowErrors = {
+const componentErrors = {
   errorCode: String,
   errorText: String,
   timestamp: String,
 };
 
 // Define schema
-const flowData = new Schema({
+const componentsData = {
   flowId: String,
   flowName: String,
   status: {
     type: String,
     enum: ['active', 'inactive', 'starting', 'stopping'],
-    default: 'inactive',
+    // default: 'inactive',
   },
   statusChangedAt: String,
-  usage: [flowUsage],
+  usage: [componentUsage],
   owners: [{
     type: String,
   }], // tenantId
-  errorData: [flowErrors],
-}, { collection: 'flowData', timestamps: true });
+  errorData: [componentErrors],
+};
 
-module.exports.flowData = flowData;
+module.exports.componentsData = componentsData;

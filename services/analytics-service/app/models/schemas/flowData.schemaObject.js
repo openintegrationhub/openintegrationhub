@@ -1,33 +1,32 @@
 // Statistics about objects passing through the flow
-const componentUsage = {
+const flowUsage = {
   objectId: String,
-  type: {
-    type: String,
-    enum: ['received', 'send'],
-    default: 'user',
-  },
+  started: String,
+  ended: String,
   oihDataSchema: String,
 };
 
-const componentErrors = {
+const flowErrors = {
   errorCode: String,
   errorText: String,
   timestamp: String,
 };
 
 // Define schema
-const componentsData = {
+const flowData = {
   flowId: String,
   flowName: String,
   status: {
     type: String,
     enum: ['active', 'inactive', 'starting', 'stopping'],
-    default: 'inactive',
+    // default: 'inactive',
   },
   statusChangedAt: String,
-  usage: [componentUsage],
-  owners: [String], // tenantId
-  errors: [componentErrors],
+  usage: [flowUsage],
+  owners: [{
+    type: String,
+  }], // tenantId
+  errorData: [flowErrors],
 };
 
-module.exports.componentsData = componentsData;
+module.exports.flowData = flowData;
