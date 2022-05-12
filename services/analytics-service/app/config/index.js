@@ -16,16 +16,16 @@ const general = {
   dataHubUrl: process.env.DATA_HUB_BASE_URL || false,
   componentRepoUrl: process.env.COMPONENT_REPO_BASE_URL || false,
   iamUrl: process.env.IAM_BASE_URL || false,
-  timeWindows:  {
-    '15min': 15 ,
-    'hour': 60,
-    'day': 60  * 24,
-    '30days': 60  * 24 * 30
+  timeWindows: {
+    '15min': 15,
+    hour: 60,
+    day: 60 * 24,
+    '30days': 60 * 24 * 30,
   },
   storageWindows: {
     '15min': 15 * 4 * 24,
-    'hour': 60 * 24,
-    'day': 60 * 24 * 30,
+    hour: 60 * 24,
+    day: 60 * 24 * 30,
     '30days': 60 * 24 * 30 * 12,
   },
   analyticsServiceBaseUrl: process.env.ANALYTICS_SERVICE_BASE_URL || 'http://localhost:3009',

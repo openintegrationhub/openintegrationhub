@@ -18,18 +18,18 @@ const flowErrors = {
 
 // Define schema
 const flowData = new Schema({
-    flowId: String,
-    flowName: String,
-    status: {
-        type: String,
-        enum : ['active','inactive', 'starting', 'stopping'],
-        default: 'inactive'
-    },
-    statusChangedAt: String,
-    errors: [String],
-    usage: [flowUsage],
-    owners: [String], // tenantId
-    errors: [flowErrors],
+  flowId: String,
+  flowName: String,
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'starting', 'stopping'],
+    default: 'inactive',
+  },
+  statusChangedAt: String,
+  errors: [String],
+  usage: [flowUsage],
+  owners: [String], // tenantId
+  errors: [flowErrors],
 }, { collection: 'flowData', timestamps: true });
 
 module.exports.flowData = flowData;

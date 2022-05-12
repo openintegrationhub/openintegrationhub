@@ -10,8 +10,6 @@ const ComponentsData = require('../../models/componentsData');
 const FlowData = require('../../models/flowData');
 const FlowTemplateData = require('../../models/flowData');
 
-
-
 // Retrieves all flow data entries
 const getAllFlowData = async ( // eslint-disable-line
   user,
@@ -94,7 +92,6 @@ const getAllFlowData = async ( // eslint-disable-line
     });
 });
 
-
 // Creates a new flow data entry
 const createFlowData = async (user, flowId, flowName) => {
   try {
@@ -137,7 +134,7 @@ const updateFlowData = async (user, flowId, data) => {
       oihUser: user.username,
     };
 
-    return await FlowData.findOneAndUpdate({flowId}, storeFlow, { upsert: false, new: true }).lean();
+    return await FlowData.findOneAndUpdate({ flowId }, storeFlow, { upsert: false, new: true }).lean();
   } catch (e) {
     log.error(e);
     return false;
