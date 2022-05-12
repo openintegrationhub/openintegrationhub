@@ -3,12 +3,12 @@
 /* eslint quote-props: "off" */
 
 // require our MongoDB-Model
-const mongoose = require('mongoose');
-const config = require('../../config/index');
+// const mongoose = require('mongoose');
+// const config = require('../../config/index');
 const log = require('../../config/logger');
-const ComponentsData = require('../../models/componentsData');
+// const ComponentsData = require('../../models/componentsData');
 const FlowData = require('../../models/flowData');
-const FlowTemplateData = require('../../models/flowData');
+// const FlowTemplateData = require('../../models/flowData');
 
 // Retrieves all flow data entries
 const getAllFlowData = async ( // eslint-disable-line
@@ -81,11 +81,8 @@ const getAllFlowData = async ( // eslint-disable-line
     .lean()
     .then((doc) => {
       // console.log('doc', doc);
-      const storedFunctionsList = doc;
-      for (let i = 0; i < storedFunctionsList.length; i += 1) {
-        storedFunctionsList[i] = format(storedFunctionsList[i]);
-      }
-      resolve({ data: storedFunctionsList, meta: { total: count } });
+      const flowsList = doc;
+      resolve({ data: flowsList, meta: { total: count } });
     })
     .catch((err) => {
       log.error(err);
@@ -134,7 +131,7 @@ const updateFlowData = async (user, flowId, data) => {
       oihUser: user.username,
     };
 
-    return await FlowData.findOneAndUpdate({ flowId }, storeFlow, { upsert: false, new: true }).lean();
+    return await FlowData.findOneAndUpdate({ flowId }, newFlowData, { upsert: false, new: true }).lean();
   } catch (e) {
     log.error(e);
     return false;
@@ -191,5 +188,5 @@ module.exports = {
   getFlowData,
   getAllFlowData,
   deleteFlowData,
-  getFlowDataStatistic,
+  // getFlowDataStatistic,
 };
