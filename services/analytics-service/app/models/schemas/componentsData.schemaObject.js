@@ -17,8 +17,8 @@ const componentErrors = {
 
 // Define schema
 const componentsData = {
-  flowId: String,
-  flowName: String,
+  componentId: String,
+  componentName: String,
   status: {
     type: String,
     enum: ['active', 'inactive', 'starting', 'stopping'],

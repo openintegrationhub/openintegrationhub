@@ -21,10 +21,13 @@ const components = require('./api/controllers/components');
 
 const log = require('./config/logger');
 
+const modelCreator = require('./models/modelCreator');
+
 class Server {
   constructor() {
     this.app = express();
     this.app.disable('x-powered-by');
+    modelCreator.createModels();
   }
 
   async setupCors() {
