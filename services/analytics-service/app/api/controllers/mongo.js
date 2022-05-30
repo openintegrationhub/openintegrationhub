@@ -6,12 +6,18 @@
 // const mongoose = require('mongoose');
 // const config = require('../../config/index');
 const log = require('../../config/logger');
+
 // const ComponentsData = require('../../models/componentsData');
-const FlowData = require('../../models/flowData');
+// const FlowData = require('../../models/flowData');
 // const FlowTemplateData = require('../../models/flowData');
+
+const modelCreator = require('../../models/modelCreator');
+
+// const config = require('../../config/index');
 
 // Retrieves all flow data entries
 const getAllFlowData = async ( // eslint-disable-line
+  timeFrame,
   user,
   pageSize,
   pageNumber,
@@ -20,7 +26,6 @@ const getAllFlowData = async ( // eslint-disable-line
   sortOrder,
   from,
   until,
-  names,
   customFieldNames,
 ) => new Promise(async (resolve) => {
   if (!user.isAdmin) {
@@ -29,13 +34,9 @@ const getAllFlowData = async ( // eslint-disable-line
   }
 
   const qry = {};
+  qry.owners = user.tenant;
 
-  let fieldNames = 'id name updatedAt';
-  if (names && Array.isArray(names) && names.length > 0) {
-    qry.name = { $in: names };
-    fieldNames = null;
-  }
-
+  let fieldNames;
   if (customFieldNames) fieldNames = customFieldNames;
 
   // Add all filtered fields to query
@@ -65,22 +66,14 @@ const getAllFlowData = async ( // eslint-disable-line
     sort.updatedAt = 1;
   }
 
-  // console.log('Query:', qry);
-  // console.log('Fieldnames:', fieldNames);
-
-  // count results
-  const count = await FlowData.countDocuments(qry);
-
-  // add offset and limit to query and execute
+  const collectionKey = `flows_${timeFrame}`;
+  const count = await modelCreator[collectionKey].countDocuments(qry);
 
   const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
 
-  // console.log('pageOffset', pageOffset);
-
-  FlowData.find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
+  modelCreator[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
     .lean()
     .then((doc) => {
-      // console.log('doc', doc);
       const flowsList = doc;
       resolve({ data: flowsList, meta: { total: count } });
     })
@@ -90,7 +83,7 @@ const getAllFlowData = async ( // eslint-disable-line
 });
 
 // Creates a new flow data entry
-const createFlowData = async (user, flowId, flowName) => {
+const createFlowData = async (timeFrame, user, flowId, flowName) => {
   try {
     if (!user.isAdmin) {
       return false;
@@ -99,12 +92,13 @@ const createFlowData = async (user, flowId, flowName) => {
     const newFlowData = {
       flowId,
       flowName,
-      metaData: {
-        oihUser: user.username,
-      },
+      owners: [
+        user.tenant,
+      ],
     };
 
-    const storeFlowData = new FlowData(newFlowData);
+    const collectionKey = `flows_${timeFrame}`;
+    const storeFlowData = new modelCreator[collectionKey](newFlowData);
 
     const response = await storeFlowData.save();
     return response._doc;
@@ -115,7 +109,7 @@ const createFlowData = async (user, flowId, flowName) => {
 };
 
 // Updates a existing flow data entry
-const updateFlowData = async (user, flowId, data) => {
+const updateFlowData = async (timeFrame, user, flowId, data) => {
   try {
     if (!user.isAdmin) {
       return false;
@@ -127,11 +121,12 @@ const updateFlowData = async (user, flowId, data) => {
 
     const newFlowData = data;
 
-    newFlowData.metaData = {
-      oihUser: user.username,
-    };
+    const collectionKey = `flows_${timeFrame}`;
+    newFlowData.owners = [
+      user.tenant,
+    ];
 
-    return await FlowData.findOneAndUpdate({ flowId }, newFlowData, { upsert: false, new: true }).lean();
+    return await modelCreator[collectionKey].findOneAndUpdate({ flowId }, newFlowData, { upsert: false, new: true }).lean();
   } catch (e) {
     log.error(e);
     return false;
@@ -139,7 +134,7 @@ const updateFlowData = async (user, flowId, data) => {
 };
 
 // Get's a single flow data entry
-const getFlowData = async (user, flowId) => {
+const getFlowData = async (timeFrame, user, flowId) => {
   if (!user.isAdmin) {
     return false;
   }
@@ -153,7 +148,8 @@ const getFlowData = async (user, flowId) => {
   };
 
   try {
-    return await FlowData.findOne(
+    const collectionKey = `flows_${timeFrame}`;
+    return await modelCreator[collectionKey].findOne(
       query,
     ).lean().exec();
   } catch (err) {
@@ -163,7 +159,7 @@ const getFlowData = async (user, flowId) => {
 };
 
 // Deletes a flow data entry
-const deleteFlowData = async (user, id) => {
+const deleteFlowData = async (timeFrame, user, id) => {
   if (!user.isAdmin) {
     return false;
   }
@@ -173,7 +169,336 @@ const deleteFlowData = async (user, id) => {
   };
 
   try {
-    return await FlowData.deleteOne(
+    const collectionKey = `flows_${timeFrame}`;
+    return await modelCreator[collectionKey].deleteOne(
+      query,
+    ).lean().exec();
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
+// Retrieves all flow data entries
+const getAllFlowTemplateData = async ( // eslint-disable-line
+  timeFrame,
+  user,
+  pageSize,
+  pageNumber,
+  filters,
+  sortField,
+  sortOrder,
+  from,
+  until,
+  customFieldNames,
+) => new Promise(async (resolve) => {
+  if (!user.isAdmin) {
+    // @todo: ferryman permissions
+    resolve(false);
+  }
+
+  const qry = {};
+  qry.owners = user.tenant;
+
+  let fieldNames;
+  if (customFieldNames) fieldNames = customFieldNames;
+
+  // Add all filtered fields to query
+  const filterFields = (filters) ? Object.keys(filters) : [];
+  const length = filterFields.length;
+  if (length > 0) {
+    let i;
+    for (i = 0; i < length; i += 1) {
+      qry[filterFields[i]] = filters[filterFields[i]];
+    }
+  }
+
+  if (from) {
+    qry.updatedAt = { $gte: new Date(from) };
+  }
+
+  if (until) {
+    qry.updatedAt = { $lte: new Date(until) };
+  }
+
+  // , sortField, sortOrder
+  const sort = {};
+
+  if (sortField && sortOrder) {
+    sort[sortField] = sortOrder;
+  } else {
+    sort.updatedAt = 1;
+  }
+
+  const collectionKey = `flowTemplates_${timeFrame}`;
+  const count = await modelCreator[collectionKey].countDocuments(qry);
+
+  const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
+
+  modelCreator[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
+    .lean()
+    .then((doc) => {
+      const flowTemplatesList = doc;
+      resolve({ data: flowTemplatesList, meta: { total: count } });
+    })
+    .catch((err) => {
+      log.error(err);
+    });
+});
+
+// Creates a new flow data entry
+const createFlowTemplateData = async (timeFrame, user, flowTemplateId, flowTemplateName) => {
+  try {
+    if (!user.isAdmin) {
+      return false;
+    }
+
+    const newFlowTemplateData = {
+      flowTemplateId,
+      flowTemplateName,
+      owners: [
+        user.tenant,
+      ],
+    };
+
+    const collectionKey = `flowTemplates_${timeFrame}`;
+    const storeFlowTemplateData = new modelCreator[collectionKey](newFlowTemplateData);
+
+    const response = await storeFlowTemplateData.save();
+    return response._doc;
+  } catch (e) {
+    log.error(e);
+    return false;
+  }
+};
+
+// Updates a existing flow data entry
+const updateFlowTemplateData = async (timeFrame, user, flowTemplateId, data) => {
+  try {
+    if (!user.isAdmin) {
+      return false;
+    }
+
+    if (!flowTemplateId) {
+      return false;
+    }
+
+    const newFlowTemplateData = data;
+
+    newFlowTemplateData.owners = [
+      user.tenant,
+    ];
+
+    const collectionKey = `flowTemplates_${timeFrame}`;
+    return await modelCreator[collectionKey].findOneAndUpdate({ flowTemplateId }, newFlowTemplateData, { upsert: false, new: true }).lean();
+  } catch (e) {
+    log.error(e);
+    return false;
+  }
+};
+
+// Get's a single flow data entry
+const getFlowTemplateData = async (timeFrame, user, flowTemplateId) => {
+  if (!user.isAdmin) {
+    return false;
+  }
+
+  if (!flowTemplateId) {
+    return false;
+  }
+
+  const query = {
+    flowTemplateId,
+  };
+
+  try {
+    const collectionKey = `flowTemplates_${timeFrame}`;
+    return await modelCreator[collectionKey].findOne(
+      query,
+    ).lean().exec();
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
+// Deletes a flow data entry
+const deleteFlowTemplateData = async (timeFrame, user, id) => {
+  if (!user.isAdmin) {
+    return false;
+  }
+
+  const query = {
+    _id: id,
+  };
+
+  try {
+    const collectionKey = `flowTemplates_${timeFrame}`;
+    return await modelCreator[collectionKey].deleteOne(
+      query,
+    ).lean().exec();
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
+// Retrieves all flow data entries
+const getAllComponentsData = async ( // eslint-disable-line
+  timeFrame,
+  user,
+  pageSize,
+  pageNumber,
+  filters,
+  sortField,
+  sortOrder,
+  from,
+  until,
+  customFieldNames,
+) => new Promise(async (resolve) => {
+  if (!user.isAdmin) {
+    // @todo: ferryman permissions
+    resolve(false);
+  }
+
+  const qry = {};
+  qry.owners = user.tenant;
+
+  let fieldNames;
+  if (customFieldNames) fieldNames = customFieldNames;
+
+  // Add all filtered fields to query
+  const filterFields = (filters) ? Object.keys(filters) : [];
+  const length = filterFields.length;
+  if (length > 0) {
+    let i;
+    for (i = 0; i < length; i += 1) {
+      qry[filterFields[i]] = filters[filterFields[i]];
+    }
+  }
+
+  if (from) {
+    qry.updatedAt = { $gte: new Date(from) };
+  }
+
+  if (until) {
+    qry.updatedAt = { $lte: new Date(until) };
+  }
+
+  // , sortField, sortOrder
+  const sort = {};
+
+  if (sortField && sortOrder) {
+    sort[sortField] = sortOrder;
+  } else {
+    sort.updatedAt = 1;
+  }
+
+  const collectionKey = `components_${timeFrame}`;
+  const count = await modelCreator[collectionKey].countDocuments(qry);
+
+  const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
+
+  modelCreator[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
+    .lean()
+    .then((doc) => {
+      const componentsList = doc;
+      resolve({ data: componentsList, meta: { total: count } });
+    })
+    .catch((err) => {
+      log.error(err);
+    });
+});
+
+// Creates a new flow data entry
+const createComponentsData = async (timeFrame, user, componentId, componentName) => {
+  try {
+    if (!user.isAdmin) {
+      return false;
+    }
+
+    const newComponentsData = {
+      componentId,
+      componentName,
+      owners: [
+        user.tenant,
+      ],
+    };
+
+    const collectionKey = `components_${timeFrame}`;
+    const storeComponentsData = new modelCreator[collectionKey](newComponentsData);
+
+    const response = await storeComponentsData.save();
+    return response._doc;
+  } catch (e) {
+    log.error(e);
+    return false;
+  }
+};
+
+// Updates a existing component data entry
+const updateComponentsData = async (timeFrame, user, componentId, data) => {
+  try {
+    if (!user.isAdmin) {
+      return false;
+    }
+
+    if (!componentId) {
+      return false;
+    }
+
+    const newComponentsData = data;
+
+    const collectionKey = `components_${timeFrame}`;
+    newComponentsData.owners = [
+      user.tenant,
+    ];
+
+    return await modelCreator[collectionKey].findOneAndUpdate({ componentId }, newComponentsData, { upsert: false, new: true }).lean();
+  } catch (e) {
+    log.error(e);
+    return false;
+  }
+};
+
+// Get's a single flow data entry
+const getComponentsData = async (timeFrame, user, componentId) => {
+  if (!user.isAdmin) {
+    return false;
+  }
+
+  if (!componentId) {
+    return false;
+  }
+
+  const query = {
+    componentId,
+  };
+
+  try {
+    const collectionKey = `components_${timeFrame}`;
+    return await modelCreator[collectionKey].findOne(
+      query,
+    ).lean().exec();
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
+// Deletes a flow data entry
+const deleteComponentsData = async (timeFrame, user, id) => {
+  if (!user.isAdmin) {
+    return false;
+  }
+
+  const query = {
+    _id: id,
+  };
+
+  try {
+    const collectionKey = `components_${timeFrame}`;
+    return await modelCreator[collectionKey].deleteOne(
       query,
     ).lean().exec();
   } catch (err) {
@@ -189,4 +514,16 @@ module.exports = {
   getAllFlowData,
   deleteFlowData,
   // getFlowDataStatistic,
+  createFlowTemplateData,
+  updateFlowTemplateData,
+  getFlowTemplateData,
+  getAllFlowTemplateData,
+  deleteFlowTemplateData,
+  // getFlowTemplateDataStatistic,
+  createComponentsData,
+  updateComponentsData,
+  getComponentsData,
+  getAllComponentsData,
+  deleteComponentsData,
+  // getComponentsDataStatistic,
 };
