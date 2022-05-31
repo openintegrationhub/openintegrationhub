@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 process.env.MONGODB_URL = global.__MONGO_URI__;
 
+const config = require('../app/config/index');
 // const hostUrl = 'http://localhost';
 // const port = process.env.PORT || 3009;
 // const request = require('supertest')(`${hostUrl}:${port}`);
@@ -20,7 +21,6 @@ const mainServer = new Server();
 const modelCreator = require('../app/models/modelCreator'); // eslint-disable-line
 
 const log = require('../app/config/logger');
-const config = require('../app/config/index');
 
 let functionId;
 let app;
@@ -36,7 +36,7 @@ beforeAll(async () => {
   modelCreator.createModels();
 });
 
-describe.only('modelCreator Operations', () => {
+describe('modelCreator Operations', () => {
   test('should create all configured models', async () => {
     for (const key in config.timeWindows) { // eslint-disable-line guard-for-in
       log.debug('key', key);

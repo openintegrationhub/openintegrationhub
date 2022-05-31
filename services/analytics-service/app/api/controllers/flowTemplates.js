@@ -1,17 +1,20 @@
+/* eslint guard-for-in: "off" */
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const mongoose = require('mongoose');
-
-const storage = require(`./${config.storage}`); // eslint-disable-line
+// const mongoose = require('mongoose');
 
 const config = require('../../config/index');
+const log = require('../../config/logger');
+
+const storage = require(`./${config.storage}`); // eslint-disable-line
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
 
+// Gets all flowTemplateData for given time frame
 router.get('/', jsonParser, async (req, res) => {
-  let response;
   let error = false;
 
   let pageSize = 10;
@@ -23,7 +26,7 @@ router.get('/', jsonParser, async (req, res) => {
   let sortField = 'statusChangedAt';
   let sortOrder = '1';
 
-  const defaultTimeFrame = Object.entries(config.timeWindows).sort((a, b) => b[1] - a[1]);
+  const defaultTimeFrame = Object.entries(config.timeWindows).sort((a, b) => b[1] - a[1])[0][0];
   const timeFrame = (req.query.timeframe) ? req.query.timeframe : defaultTimeFrame;
 
   try {
@@ -101,7 +104,56 @@ router.get('/', jsonParser, async (req, res) => {
 
     return res.status(200).send(response);
   } catch (e) {
-    return res.status(500).send(response);
+    return res.status(500).send(e);
+  }
+});
+
+// Gets flowTemplate data to an single entry and given timeFrame
+router.get('/:id', jsonParser, async (req, res) => {
+  const flowTemplateId = req.params.id;
+  const timeFrame = req.query.timeframe;
+
+  try {
+    const response = await storage.getFlowTemplateData(timeFrame, req.user, flowTemplateId);
+    return res.status(200).send(response);
+  } catch (e) {
+    log.error(e);
+    return res.status(500).send(e);
+  }
+});
+
+// Saves new flowTemplate data in all time frames
+router.post('/', jsonParser, async (req, res) => {
+  const flowTemplateData = req.body;
+
+  try {
+    for (const key in config.timeWindows) {
+      const timeFrame = key;
+      // @todo: handle aggregate of data
+      const response = await storage.createFlowTemplateData(timeFrame, req.user, flowTemplateData);
+      return res.status(200).send(response);
+    }
+  } catch (e) {
+    log.error(e);
+    return res.status(500).send(e);
+  }
+});
+
+// Adds flowTemplate data to an existing entry
+router.put('/:id', jsonParser, async (req, res) => {
+  const flowTemplateId = req.params.id;
+  const flowTemplateData = req.body;
+
+  try {
+    for (const key in config.timeWindows) {
+      const timeFrame = key;
+      // @todo: handle aggregate of data
+      const response = await storage.updateFlowTemplateData(timeFrame, req.user, flowTemplateId, flowTemplateData);
+      return res.status(200).send(response);
+    }
+  } catch (e) {
+    log.error(e);
+    return res.status(500).send(e);
   }
 });
 

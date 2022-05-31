@@ -1,17 +1,20 @@
+/* eslint guard-for-in: "off" */
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const mongoose = require('mongoose');
-
-const storage = require(`./${config.storage}`); // eslint-disable-line
+// const mongoose = require('mongoose');
 
 const config = require('../../config/index');
+const log = require('../../config/logger');
+
+const storage = require(`./${config.storage}`); // eslint-disable-line
 
 const jsonParser = bodyParser.json();
 const router = express.Router();
 
+// Gets all flowData for given time frame
 router.get('/', jsonParser, async (req, res) => {
-  let response;
   let error = false;
 
   let pageSize = 10;
@@ -25,7 +28,7 @@ router.get('/', jsonParser, async (req, res) => {
   let sortField = 'statusChangedAt';
   let sortOrder = '1';
 
-  const defaultTimeFrame = Object.entries(config.timeWindows).sort((a, b) => b[1] - a[1]);
+  const defaultTimeFrame = Object.entries(config.timeWindows).sort((a, b) => b[1] - a[1])[0][0];
   const timeFrame = (req.query.timeframe) ? req.query.timeframe : defaultTimeFrame;
 
   try {
@@ -112,7 +115,57 @@ router.get('/', jsonParser, async (req, res) => {
 
     return res.status(200).send(response);
   } catch (e) {
-    return res.status(500).send(response);
+    log.error(e);
+    return res.status(500).send(e);
+  }
+});
+
+// Gets flow data to an single entry and given timeFrame
+router.get('/:id', jsonParser, async (req, res) => {
+  const flowId = req.params.id;
+  const timeFrame = req.query.timeframe;
+
+  try {
+    const response = await storage.getFlowData(timeFrame, req.user, flowId);
+    return res.status(200).send(response);
+  } catch (e) {
+    log.error(e);
+    return res.status(500).send(e);
+  }
+});
+
+// Saves new flow data in all time frames
+router.post('/', jsonParser, async (req, res) => {
+  const flowData = req.body;
+
+  try {
+    for (const key in config.timeWindows) {
+      const timeFrame = key;
+      // @todo: handle aggregate of data
+      const response = await storage.createFlowData(timeFrame, req.user, flowData);
+      return res.status(200).send(response);
+    }
+  } catch (e) {
+    log.error(e);
+    return res.status(500).send(e);
+  }
+});
+
+// Adds flow data to an existing entry
+router.put('/:id', jsonParser, async (req, res) => {
+  const flowId = req.params.id;
+  const flowData = req.body;
+
+  try {
+    for (const key in config.timeWindows) {
+      const timeFrame = key;
+      // @todo: handle aggregate of data
+      const response = await storage.updateFlowData(timeFrame, req.user, flowId, flowData);
+      return res.status(200).send(response);
+    }
+  } catch (e) {
+    log.error(e);
+    return res.status(500).send(e);
   }
 });
 

@@ -83,26 +83,30 @@ const getAllFlowData = async ( // eslint-disable-line
 });
 
 // Creates a new flow data entry
-const createFlowData = async (timeFrame, user, flowId, flowName) => {
+const createFlowData = async (timeFrame, user, flowData) => {
   try {
     if (!user.isAdmin) {
+      console.log('Error: User is not admin');
       return false;
     }
 
-    const newFlowData = {
-      flowId,
-      flowName,
-      owners: [
-        user.tenant,
-      ],
-    };
+    const newFlowData = flowData;
+
+    console.log('newFlowData:', newFlowData);
 
     const collectionKey = `flows_${timeFrame}`;
+
+    console.log('collectionKey:', collectionKey);
+    console.log(typeof modelCreator[collectionKey]);
+    console.log('modelCreator[collectionKey]', modelCreator[collectionKey]);
     const storeFlowData = new modelCreator[collectionKey](newFlowData);
+
+    console.log('storeFlowData:', storeFlowData);
 
     const response = await storeFlowData.save();
     return response._doc;
   } catch (e) {
+    console.log(e);
     log.error(e);
     return false;
   }
