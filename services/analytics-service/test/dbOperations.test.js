@@ -62,12 +62,28 @@ beforeAll(async () => {
   modelCreator.createModels();
 });
 
-describe.only('DB Operations', () => {
+describe('DB Operations', () => {
   test('should create a new flow data entry', async () => {
     const timeFrame = Object.entries(config.timeWindows).sort((a, b) => b[1] - a[1])[0][0];
     const result = await storage.createFlowData(timeFrame, { tenant: 'someTenantId', isAdmin: true }, exampleFlowData);
-    console.log('resultX:', result);
-    expect(result).toEqual('test');
+
+    expect(result).toHaveProperty('_id');
+    expect(result).toHaveProperty('createdAt');
+    expect(result).toHaveProperty('updatedAt');
+    expect(result).toHaveProperty('errorData');
+    expect(result).toHaveProperty('owners');
+    expect(result).toHaveProperty('usage');
+
+    expect(result.errorData[0]).toHaveProperty('timestamp');
+    expect(result.errorData[0].errorCode).toEqual('1');
+    expect(result.errorData[0].errorText).toEqual('Login invalid');
+
+    expect(result.owners[0]).toEqual('someOwner');
+
+    expect(result.usage[0]).toHaveProperty('ended');
+    expect(result.usage[0]).toHaveProperty('started');
+    expect(result.usage[0].objectId).toEqual('1234');
+    expect(result.usage[0].oihDataSchema).toEqual('');
   });
 });
 
