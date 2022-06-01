@@ -65,7 +65,7 @@ describe('modelCreator Operations', () => {
 
       collectionKey = `flowTemplates_${key}`;
       expect(collectionKey in modelCreator).toEqual(true);
-      
+
       // expect('usage' in modelCreator[collectionKey].paths).toEqual(true);
       // expect(modelCreator[collectionKey].paths.createdAt.options.expires).toEqual(expires);
       expect(typeof modelCreator[collectionKey]).toEqual('function');
