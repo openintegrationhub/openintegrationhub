@@ -33,35 +33,38 @@ models.createModels = () => {
 
     log.info('key', key);
     log.info('Schema', newSchema);
+
     let collectionKey = `components_${key}`;
+    if (!(collectionKey in models)) {
+      mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
+      models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
 
-    if (collectionKey in models) continue; // eslint-disable-line
-
-    mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
-    models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
-
-    // Flow schema
-    newSchema = JSON.parse(JSON.stringify(flowData));
-    newSchema.createdAt = { type: Date, expires, default: Date.now };
+      // Flow schema
+      newSchema = JSON.parse(JSON.stringify(flowData));
+      newSchema.createdAt = { type: Date, expires, default: Date.now };
+    }
 
     log.info('key', key);
     log.info('Schema', newSchema);
+
     collectionKey = `flows_${key}`;
+    if (!(collectionKey in models)) {
+      mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
+      console.log(models);
+      models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
 
-    mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
-    console.log(models);
-    models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
-
-    // Flow template schema
-    newSchema = JSON.parse(JSON.stringify(flowTemplateData));
-    newSchema.createdAt = { type: Date, expires, default: Date.now };
+      // Flow template schema
+      newSchema = JSON.parse(JSON.stringify(flowTemplateData));
+      newSchema.createdAt = { type: Date, expires, default: Date.now };
+    }
 
     log.info('key', key);
     log.info('Schema', newSchema);
     collectionKey = `flowTemplates_${key}`;
-
-    mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
-    models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
+    if (!(collectionKey in models)) {
+      mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
+      models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
+    }
   }
 };
 
