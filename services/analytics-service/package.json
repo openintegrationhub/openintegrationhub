@@ -26,6 +26,7 @@
     "express": "^4.17.1",
     "mongoose": "6.2.1",
     "node-fetch": "^2.6.6",
+    "node-schedule": "^2.1.0",
     "qs": "^6.10.3",
     "request": "^2.87.0",
     "request-promise": "^4.2.5",
@@ -34,7 +35,6 @@
   "devDependencies": {
     "dotenv": "^8.2.0",
     "eslint": "7.32.0",
-    "nock": "^13.0.2",
     "eslint-config-airbnb-base": "14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^23.18.0",
@@ -46,6 +46,7 @@
     "mongod": "^2.0.0",
     "mongodb": "^3.5.9",
     "mongodb-memory-server": "7.4.0",
+    "nock": "^13.0.2",
     "nodemon": "2.0.4",
     "path": "^0.12.7",
     "supertest": "^4.0.2"

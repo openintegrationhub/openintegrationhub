@@ -4,6 +4,10 @@ const log = require('./config/logger');
 
 const Server = require('./server');
 
+const Cronjob = require('./utils/cronjobs');
+
+Cronjob.createCronJobs();
+
 const mainServer = new Server();
 
 (async () => {
