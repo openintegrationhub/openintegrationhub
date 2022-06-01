@@ -16,7 +16,7 @@ const mainServer = new Server();
       await mainServer.setup(mongoose);
     }
     mainServer.setupCors();
-    mainServer.setupMiddleware();
+    // mainServer.setupMiddleware();
     mainServer.setupRoutes();
     mainServer.setupSwagger();
     mainServer.setupQueue();
