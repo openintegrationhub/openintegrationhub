@@ -28,6 +28,7 @@ const general = {
     day: 60 * 24 * 30,
     '30days': 60 * 24 * 30 * 12,
   },
+  smallestWindow: '15min',
   analyticsServiceBaseUrl: process.env.ANALYTICS_SERVICE_BASE_URL || 'http://localhost:3009',
 };
 

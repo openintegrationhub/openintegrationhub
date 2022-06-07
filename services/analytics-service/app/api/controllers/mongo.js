@@ -13,7 +13,7 @@ const log = require('../../config/logger');
 
 const modelCreator = require('../../models/modelCreator');
 
-// const config = require('../../config/index');
+const config = require('../../config/index');
 
 // Retrieves all flow data entries
 const getAllFlowData = async ( // eslint-disable-line
@@ -105,6 +105,19 @@ const createFlowData = async (timeFrame, user, flowData) => {
 
     const response = await storeFlowData.save();
     return response._doc;
+  } catch (e) {
+    console.log(e);
+    log.error(e);
+    return false;
+  }
+};
+
+// Creates a new flow data entry
+const createFlowStats = async (stats) => {
+  try {
+    const collectionKey = `flowStats_${config.smallestWindow}`;
+
+    await modelCreator[collectionKey].updateOne({}, stats, { upsert: true });
   } catch (e) {
     console.log(e);
     log.error(e);
@@ -530,4 +543,5 @@ module.exports = {
   getAllComponentsData,
   deleteComponentsData,
   // getComponentsDataStatistic,
+  createFlowStats,
 };

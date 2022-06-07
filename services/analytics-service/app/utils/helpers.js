@@ -29,33 +29,50 @@ async function reportServiceStatus(checkLive) {
   return services;
 }
 
-async function getFlows(auth, size, number, status) {
+async function getFlows(auth, status) {
   try {
-    const query = {
-      page: {
-        size,
-        number,
-      },
-      filter: {
-        status,
-      },
-    };
+    let number = 0;
+    let flows = [];
+    let hasMore = true;
 
-    const string = qs.stringify(query, { addQueryPrefix: true });
-
-    const url = `${config.flowRepoUrl}/flows${string}`;
-
-    const response = await fetch(
-      url,
-      {
-        method: 'GET',
-        headers: {
-          authorization: auth,
+    while (hasMore === true) {
+      const query = {
+        page: {
+          size: 100,
+          number,
         },
-      },
-    );
+      };
 
-    const flows = response.json();
+      if (status === 'active' || status === 'inactive') {
+        query.filter = { status };
+      }
+
+      const string = qs.stringify(query, { addQueryPrefix: true });
+
+      const url = `${config.flowRepoUrl}/flows${string}`;
+
+      const response = await fetch(
+        url,
+        {
+          method: 'GET',
+          headers: {
+            authorization: auth,
+          },
+        },
+      );
+
+      const body = response.json();
+
+      if (body.data && body.data.length) {
+        flows = flows.concat(body.data);
+      }
+
+      if (body.meta && body.meta.total > flows.length) {
+        number += 1;
+      } else {
+        hasMore = false;
+      }
+    }
 
     return flows;
   } catch (e) {
