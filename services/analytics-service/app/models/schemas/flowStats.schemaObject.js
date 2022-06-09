@@ -1,8 +1,8 @@
 // Statistics of overall global flow usage
 
 const flowStats = {
-  active: Number,
-  inactive: Number,
+  active: { type: 'Number', default: 0 },
+  inactive: { type: 'Number', default: 0 },
 };
 
 module.exports.flowStats = flowStats;

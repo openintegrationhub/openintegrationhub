@@ -85,6 +85,34 @@ describe('DB Operations', () => {
     expect(result.usage[0].objectId).toEqual('1234');
     expect(result.usage[0].oihDataSchema).toEqual('');
   });
+
+  test('should create new flow stats', async () => {
+    const result = await storage.updateFlowStats({ active: 10, inactive: 20 });
+
+    expect(result).toEqual(true);
+
+    const flowStats15 = await modelCreator.models.flowStats_15min.findOne().lean();
+    expect(flowStats15.active).toEqual(10);
+    expect(flowStats15.inactive).toEqual(20);
+
+    const flowStatsDay = await modelCreator.models.flowStats_day.findOne().lean();
+    expect(flowStatsDay.active).toEqual(10);
+    expect(flowStatsDay.inactive).toEqual(20);
+  });
+
+  test('should update existing flow stats', async () => {
+    const result = await storage.updateFlowStats({ active: 20, inactive: 40 });
+
+    expect(result).toEqual(true);
+
+    const flowStats15 = await modelCreator.models.flowStats_15min.findOne().lean();
+    expect(flowStats15.active).toEqual(15);
+    expect(flowStats15.inactive).toEqual(30);
+
+    const flowStatsDay = await modelCreator.models.flowStats_day.findOne().lean();
+    expect(flowStatsDay.active).toEqual(15);
+    expect(flowStatsDay.inactive).toEqual(30);
+  });
 });
 
 afterAll(async () => {

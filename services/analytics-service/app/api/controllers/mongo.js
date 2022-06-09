@@ -13,7 +13,7 @@ const log = require('../../config/logger');
 
 const modelCreator = require('../../models/modelCreator');
 
-const config = require('../../config/index');
+// const config = require('../../config/index');
 
 // Retrieves all flow data entries
 const getAllFlowData = async ( // eslint-disable-line
@@ -103,12 +103,31 @@ const createFlowData = async (timeFrame, user, flowData) => {
   }
 };
 
-// Creates a new flow data entry
-const createFlowStats = async (stats) => {
+// Updates flow stats across the timeline
+const updateFlowStats = async (stats) => {
   try {
-    const collectionKey = `flowStats_${config.smallestWindow}`;
+    const models = modelCreator.getModelsByType('flowStats');
+    const now = new Date();
+    const promises = [];
 
-    await modelCreator.models[collectionKey].updateOne({}, stats, { upsert: true });
+    for (let i = 0; i < models.length; i += 1) {
+      const currentModel = models[i];
+
+      const currentObject = await currentModel.findOne({ createdAt: { $lte: now }, intervalEnd: { $gte: now } }).lean();
+
+      if (!currentObject) {
+        promises.push(new currentModel(stats).save());
+      } else {
+        // TODO: Use some sort of weighted average for better accuracy
+        const averageActive = Math.round((stats.active + currentObject.active) / 2);
+        const averageInactive = Math.round((stats.inactive + currentObject.inactive) / 2);
+
+        promises.push(currentModel.updateOne({ _id: currentObject._id }, { active: averageActive, inactive: averageInactive }));
+      }
+    }
+
+    await Promise.all(promises);
+    return true;
   } catch (e) {
     console.log(e);
     log.error(e);
@@ -534,5 +553,5 @@ module.exports = {
   getAllComponentsData,
   deleteComponentsData,
   // getComponentsDataStatistic,
-  createFlowStats,
+  updateFlowStats,
 };

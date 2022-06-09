@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
 const { componentsData } = require('./schemas/componentsData.schemaObject');
 const { flowData } = require('./schemas/flowData.schemaObject');
 const { flowTemplateData } = require('./schemas/flowTemplateData.schemaObject');
+const { flowStats } = require('./schemas/flowStats.schemaObject');
 
 const log = require('../config/logger');
 const config = require('../config/index');
@@ -61,9 +62,6 @@ const createModels = () => {
       newSchema = JSON.parse(JSON.stringify(flowData));
       newSchema.createdAt = { type: Date, expires, default: Date.now };
       newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
-
-      log.debug('Hello');
-      log.debug(newSchema.intervalEnd.default());
     }
 
     collectionKey = `flows_${key}`;
@@ -78,6 +76,17 @@ const createModels = () => {
     }
 
     collectionKey = `flowTemplates_${key}`;
+    if (!(collectionKey in models)) {
+      mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
+      models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
+    }
+
+    // Flow stats schema
+    newSchema = JSON.parse(JSON.stringify(flowStats));
+    newSchema.createdAt = { type: Date, expires, default: Date.now };
+    newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
+
+    collectionKey = `flowStats_${key}`;
     if (!(collectionKey in models)) {
       mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
