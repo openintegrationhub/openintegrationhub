@@ -644,6 +644,42 @@ describe('Flow Operations', () => {
     flowId2 = j.data.id;
   });
 
+  test('should paginate flows properly', async () => {
+    const res = await request
+      .get('/flows')
+      .query({
+        'page[size]': 1,
+        'page[number]': 1,
+        'filter[status]': 0,
+      })
+      .set('Authorization', 'Bearer adminToken');
+
+    expect(res.status).toEqual(200);
+    expect(res.text).not.toBeNull();
+    const j = JSON.parse(res.text);
+
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveLength(1);
+    expect(j.data[0].name).toEqual('WiceToSnazzy');
+
+    const res2 = await request
+      .get('/flows')
+      .query({
+        'page[size]': 1,
+        'page[number]': 2,
+        'filter[status]': 0,
+      })
+      .set('Authorization', 'Bearer adminToken');
+
+    expect(res2.status).toEqual(200);
+    expect(res2.text).not.toBeNull();
+    const j2 = JSON.parse(res2.text);
+
+    expect(j2).not.toBeNull();
+    expect(j2.data).toHaveLength(1);
+    expect(j2.data[0].name).toEqual('SnazzyToWice');
+  });
+
   test('should get all flows, filtered by status', async () => {
     const res = await request
       .get('/flows')
