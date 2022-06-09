@@ -91,17 +91,8 @@ const createFlowData = async (timeFrame, user, flowData) => {
     }
 
     const newFlowData = flowData;
-
-    console.log('newFlowData:', newFlowData);
-
     const collectionKey = `flows_${timeFrame}`;
-
-    console.log('collectionKey:', collectionKey);
-    console.log(typeof modelCreator[collectionKey]);
-    console.log('modelCreator[collectionKey]', modelCreator[collectionKey]);
-    const storeFlowData = new modelCreator[collectionKey](newFlowData);
-
-    console.log('storeFlowData:', storeFlowData);
+    const storeFlowData = new modelCreator.models[collectionKey](newFlowData);
 
     const response = await storeFlowData.save();
     return response._doc;
@@ -117,7 +108,7 @@ const createFlowStats = async (stats) => {
   try {
     const collectionKey = `flowStats_${config.smallestWindow}`;
 
-    await modelCreator[collectionKey].updateOne({}, stats, { upsert: true });
+    await modelCreator.models[collectionKey].updateOne({}, stats, { upsert: true });
   } catch (e) {
     console.log(e);
     log.error(e);
@@ -143,7 +134,7 @@ const updateFlowData = async (timeFrame, user, flowId, data) => {
       user.tenant,
     ];
 
-    return await modelCreator[collectionKey].findOneAndUpdate({ flowId }, newFlowData, { upsert: false, new: true }).lean();
+    return await modelCreator.models[collectionKey].findOneAndUpdate({ flowId }, newFlowData, { upsert: false, new: true }).lean();
   } catch (e) {
     log.error(e);
     return false;
@@ -166,7 +157,7 @@ const getFlowData = async (timeFrame, user, flowId) => {
 
   try {
     const collectionKey = `flows_${timeFrame}`;
-    return await modelCreator[collectionKey].findOne(
+    return await modelCreator.models[collectionKey].findOne(
       query,
     ).lean().exec();
   } catch (err) {
@@ -187,7 +178,7 @@ const deleteFlowData = async (timeFrame, user, id) => {
 
   try {
     const collectionKey = `flows_${timeFrame}`;
-    return await modelCreator[collectionKey].deleteOne(
+    return await modelCreator.models[collectionKey].deleteOne(
       query,
     ).lean().exec();
   } catch (err) {
@@ -248,11 +239,11 @@ const getAllFlowTemplateData = async ( // eslint-disable-line
   }
 
   const collectionKey = `flowTemplates_${timeFrame}`;
-  const count = await modelCreator[collectionKey].countDocuments(qry);
+  const count = await modelCreator.models[collectionKey].countDocuments(qry);
 
   const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
 
-  modelCreator[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
+  modelCreator.models[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
     .lean()
     .then((doc) => {
       const flowTemplatesList = doc;
@@ -279,7 +270,7 @@ const createFlowTemplateData = async (timeFrame, user, flowTemplateId, flowTempl
     };
 
     const collectionKey = `flowTemplates_${timeFrame}`;
-    const storeFlowTemplateData = new modelCreator[collectionKey](newFlowTemplateData);
+    const storeFlowTemplateData = new modelCreator.models[collectionKey](newFlowTemplateData);
 
     const response = await storeFlowTemplateData.save();
     return response._doc;
@@ -307,7 +298,7 @@ const updateFlowTemplateData = async (timeFrame, user, flowTemplateId, data) => 
     ];
 
     const collectionKey = `flowTemplates_${timeFrame}`;
-    return await modelCreator[collectionKey].findOneAndUpdate({ flowTemplateId }, newFlowTemplateData, { upsert: false, new: true }).lean();
+    return await modelCreator.models[collectionKey].findOneAndUpdate({ flowTemplateId }, newFlowTemplateData, { upsert: false, new: true }).lean();
   } catch (e) {
     log.error(e);
     return false;
@@ -330,7 +321,7 @@ const getFlowTemplateData = async (timeFrame, user, flowTemplateId) => {
 
   try {
     const collectionKey = `flowTemplates_${timeFrame}`;
-    return await modelCreator[collectionKey].findOne(
+    return await modelCreator.models[collectionKey].findOne(
       query,
     ).lean().exec();
   } catch (err) {
@@ -351,7 +342,7 @@ const deleteFlowTemplateData = async (timeFrame, user, id) => {
 
   try {
     const collectionKey = `flowTemplates_${timeFrame}`;
-    return await modelCreator[collectionKey].deleteOne(
+    return await modelCreator.models[collectionKey].deleteOne(
       query,
     ).lean().exec();
   } catch (err) {
@@ -412,11 +403,11 @@ const getAllComponentsData = async ( // eslint-disable-line
   }
 
   const collectionKey = `components_${timeFrame}`;
-  const count = await modelCreator[collectionKey].countDocuments(qry);
+  const count = await modelCreator.models[collectionKey].countDocuments(qry);
 
   const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
 
-  modelCreator[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
+  modelCreator.models[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
     .lean()
     .then((doc) => {
       const componentsList = doc;
@@ -443,7 +434,7 @@ const createComponentsData = async (timeFrame, user, componentId, componentName)
     };
 
     const collectionKey = `components_${timeFrame}`;
-    const storeComponentsData = new modelCreator[collectionKey](newComponentsData);
+    const storeComponentsData = new modelCreator.models[collectionKey](newComponentsData);
 
     const response = await storeComponentsData.save();
     return response._doc;
@@ -471,7 +462,7 @@ const updateComponentsData = async (timeFrame, user, componentId, data) => {
       user.tenant,
     ];
 
-    return await modelCreator[collectionKey].findOneAndUpdate({ componentId }, newComponentsData, { upsert: false, new: true }).lean();
+    return await modelCreator.models[collectionKey].findOneAndUpdate({ componentId }, newComponentsData, { upsert: false, new: true }).lean();
   } catch (e) {
     log.error(e);
     return false;
@@ -494,7 +485,7 @@ const getComponentsData = async (timeFrame, user, componentId) => {
 
   try {
     const collectionKey = `components_${timeFrame}`;
-    return await modelCreator[collectionKey].findOne(
+    return await modelCreator.models[collectionKey].findOne(
       query,
     ).lean().exec();
   } catch (err) {
@@ -515,7 +506,7 @@ const deleteComponentsData = async (timeFrame, user, id) => {
 
   try {
     const collectionKey = `components_${timeFrame}`;
-    return await modelCreator[collectionKey].deleteOne(
+    return await modelCreator.models[collectionKey].deleteOne(
       query,
     ).lean().exec();
   } catch (err) {

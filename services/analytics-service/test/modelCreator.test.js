@@ -36,10 +36,9 @@ beforeAll(async () => {
   modelCreator.createModels();
 });
 
-describe('modelCreator Operations', () => {
+describe.only('modelCreator Operations', () => {
   test.only('should create all configured models', async () => {
     for (const key in config.timeWindows) { // eslint-disable-line guard-for-in
-      log.debug('key', key);
       let expires;
       if (key in config.storageWindows) {
         expires = `${config.storageWindows[key]}s`;
@@ -51,25 +50,33 @@ describe('modelCreator Operations', () => {
       // log.debug('paths:', modelCreator[key].paths);
 
       let collectionKey = `components_${key}`;
-      expect(collectionKey in modelCreator).toEqual(true);
+      expect(collectionKey in modelCreator.models).toEqual(true);
 
       // expect(modelCreator[collectionKey].paths['status.enum'].schemaOptions.collection).toEqual(collectionKey);
       // expect(modelCreator[collectionKey].paths.createdAt.options.expires).toEqual(expires);
-      expect(typeof modelCreator[collectionKey]).toEqual('function');
+      expect(typeof modelCreator.models[collectionKey]).toEqual('function');
 
       collectionKey = `flows_${key}`;
-      expect(collectionKey in modelCreator).toEqual(true);
+      expect(collectionKey in modelCreator.models).toEqual(true);
       // expect(modelCreator[collectionKey].paths['status.enum'].schemaOptions.collection).toEqual(collectionKey);
       // expect(modelCreator[collectionKey].paths.createdAt.options.expires).toEqual(expires);
-      expect(typeof modelCreator[collectionKey]).toEqual('function');
+      expect(typeof modelCreator.models[collectionKey]).toEqual('function');
 
       collectionKey = `flowTemplates_${key}`;
-      expect(collectionKey in modelCreator).toEqual(true);
+      expect(collectionKey in modelCreator.models).toEqual(true);
 
       // expect('usage' in modelCreator[collectionKey].paths).toEqual(true);
       // expect(modelCreator[collectionKey].paths.createdAt.options.expires).toEqual(expires);
-      expect(typeof modelCreator[collectionKey]).toEqual('function');
+      expect(typeof modelCreator.models[collectionKey]).toEqual('function');
     }
+  });
+
+  test.only('should correctly instance default timestamps', async () => {
+    const testObject15Mins = await new modelCreator.models.flows_15min({}).save();
+    expect(testObject15Mins.intervalEnd.getTime()).toEqual(testObject15Mins.createdAt.getTime() + (15 * 60000));
+
+    const testObjectDay = await new modelCreator.models.flows_day({}).save();
+    expect(testObjectDay.intervalEnd.getTime()).toEqual(testObjectDay.createdAt.getTime() + (60 * 24 * 60000));
   });
 });
 

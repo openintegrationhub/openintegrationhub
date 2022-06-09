@@ -1,3 +1,5 @@
+/* eslint no-unused-expressions: "off" */
+
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
@@ -11,10 +13,9 @@ const config = require('../config/index');
 
 const models = {};
 
-models.createModels = () => {
+const createModels = () => {
   // Create collections for each configured time window
   for (const key in config.timeWindows) { // eslint-disable-line guard-for-in
-    log.info('Creating schema for', key);
     let expires;
     if (key in config.storageWindows) {
       expires = `${config.storageWindows[key]}s`;
@@ -30,9 +31,7 @@ models.createModels = () => {
     // Components schema
     newSchema = JSON.parse(JSON.stringify(componentsData));
     newSchema.createdAt = { type: Date, expires, default: Date.now };
-
-    log.info('key', key);
-    log.info('Schema', newSchema);
+    newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
 
     let collectionKey = `components_${key}`;
     if (!(collectionKey in models)) {
@@ -42,24 +41,23 @@ models.createModels = () => {
       // Flow schema
       newSchema = JSON.parse(JSON.stringify(flowData));
       newSchema.createdAt = { type: Date, expires, default: Date.now };
-    }
+      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
 
-    log.info('key', key);
-    log.info('Schema', newSchema);
+      log.debug('Hello');
+      log.debug(newSchema.intervalEnd.default());
+    }
 
     collectionKey = `flows_${key}`;
     if (!(collectionKey in models)) {
       mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
-      console.log(models);
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
 
       // Flow template schema
       newSchema = JSON.parse(JSON.stringify(flowTemplateData));
       newSchema.createdAt = { type: Date, expires, default: Date.now };
+      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
     }
 
-    log.info('key', key);
-    log.info('Schema', newSchema);
     collectionKey = `flowTemplates_${key}`;
     if (!(collectionKey in models)) {
       mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
@@ -68,4 +66,4 @@ models.createModels = () => {
   }
 };
 
-module.exports = models;
+module.exports = { models, createModels };
