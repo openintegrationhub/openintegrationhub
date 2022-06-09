@@ -13,6 +13,25 @@ const config = require('../config/index');
 
 const models = {};
 
+const getModelsByType = (type) => {
+  const keys = Object.keys(models);
+
+  if (!keys || !keys.length) {
+    log.error('Tried to get models when no models were created!');
+    return [];
+  }
+
+  const typedModels = [];
+
+  for (let i = 0; i < keys.length; i += 1) {
+    if (keys[i].startsWith(`${type}_`)) {
+      typedModels.push(models[keys[i]]);
+    }
+  }
+
+  return typedModels;
+};
+
 const createModels = () => {
   // Create collections for each configured time window
   for (const key in config.timeWindows) { // eslint-disable-line guard-for-in
@@ -66,4 +85,4 @@ const createModels = () => {
   }
 };
 
-module.exports = { models, createModels };
+module.exports = { models, createModels, getModelsByType };

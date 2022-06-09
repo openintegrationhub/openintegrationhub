@@ -37,7 +37,7 @@ beforeAll(async () => {
 });
 
 describe.only('modelCreator Operations', () => {
-  test.only('should create all configured models', async () => {
+  test('should create all configured models', async () => {
     for (const key in config.timeWindows) { // eslint-disable-line guard-for-in
       let expires;
       if (key in config.storageWindows) {
@@ -71,12 +71,18 @@ describe.only('modelCreator Operations', () => {
     }
   });
 
-  test.only('should correctly instance default timestamps', async () => {
+  test('should correctly instance default timestamps', async () => {
     const testObject15Mins = await new modelCreator.models.flows_15min({}).save();
     expect(testObject15Mins.intervalEnd.getTime()).toEqual(testObject15Mins.createdAt.getTime() + (15 * 60000));
 
     const testObjectDay = await new modelCreator.models.flows_day({}).save();
     expect(testObjectDay.intervalEnd.getTime()).toEqual(testObjectDay.createdAt.getTime() + (60 * 24 * 60000));
+  });
+
+  test('should get models by type', async () => {
+    const flowModels = modelCreator.getModelsByType('flows');
+
+    expect(flowModels.length).toEqual(4);
   });
 });
 
