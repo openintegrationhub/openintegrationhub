@@ -18,6 +18,7 @@ const swaggerDocument = require('./api/swagger/swagger.json');
 const flows = require('./api/controllers/flows');
 const flowTemplates = require('./api/controllers/flowTemplates');
 const components = require('./api/controllers/components');
+const flowStats = require('./api/controllers/flowStats');
 
 const log = require('./config/logger');
 
@@ -92,6 +93,7 @@ class Server {
     this.app.use('/flows', flows);
     this.app.use('/flowTemplates', flowTemplates);
     this.app.use('/components', components);
+    this.app.use('/flowStats', flowStats);
 
     this.app.use('/healthcheck', healthcheck);
 

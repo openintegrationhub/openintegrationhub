@@ -135,6 +135,28 @@ const updateFlowStats = async (stats) => {
   }
 };
 
+// Updates flow stats across the timeline
+const getFlowStats = async (interval, from, until) => {
+  try {
+    const query = {};
+
+    if (from) query.createdAt = { $gte: from };
+    if (until) query.intervalEnd = { $lte: until };
+
+    const flowStats = await modelCreator.models[`flowStats_${interval}`].find(query).sort({ createdAt: 1 });
+    const count = await modelCreator.models[`flowStats_${interval}`].countDocuments();
+
+    return {
+      data: flowStats,
+      meta: { count },
+    };
+  } catch (e) {
+    console.log(e);
+    log.error(e);
+    return { data: [], meta: { count: 0 } };
+  }
+};
+
 // Updates a existing flow data entry
 const updateFlowData = async (timeFrame, user, flowId, data) => {
   try {
@@ -554,4 +576,5 @@ module.exports = {
   deleteComponentsData,
   // getComponentsDataStatistic,
   updateFlowStats,
+  getFlowStats,
 };
