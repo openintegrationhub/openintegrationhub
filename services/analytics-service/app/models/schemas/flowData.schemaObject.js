@@ -1,28 +1,28 @@
 // Statistics about objects passing through the flow
 const flowUsage = {
-  objectId: String,
-  started: String,
-  ended: String,
-  oihDataSchema: String,
+  objectId: { type: String },
+  started: { type: String },
+  ended: { type: String },
+  oihDataSchema: { type: String },
 };
 
 const flowErrors = {
-  componentId: String,
-  errorCode: String,
-  errorText: String,
-  timestamp: String,
+  componentId: { type: String },
+  errorCode: { type: String },
+  errorText: { type: String },
+  timestamp: { type: String },
 };
 
 // Define schema
 const flowData = {
-  flowId: String,
-  flowName: String,
+  flowId: { type: String },
+  flowName: { type: String },
   status: {
     type: String,
     enum: ['active', 'inactive', 'starting', 'stopping'],
     // default: 'inactive',
   },
-  statusChangedAt: String,
+  statusChangedAt: { type: String },
   usage: [flowUsage],
   owners: [{
     type: String,

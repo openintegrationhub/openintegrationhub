@@ -1,6 +1,6 @@
 // Statistics about objects passing through the flow
 const componentUsage = {
-  objectId: String,
+  objectId: { type: String },
   type: {
     type: String,
     enum: ['received', 'send'],
@@ -10,15 +10,15 @@ const componentUsage = {
 };
 
 const componentErrors = {
-  errorCode: String,
-  errorText: String,
-  timestamp: String,
+  errorCode: { type: String },
+  errorText: { type: String },
+  timestamp: { type: String },
 };
 
 // Define schema
 const componentsData = {
-  componentId: String,
-  componentName: String,
+  componentId: { type: String },
+  componentName: { type: String },
   status: {
     type: String,
     enum: ['active', 'inactive', 'starting', 'stopping'],

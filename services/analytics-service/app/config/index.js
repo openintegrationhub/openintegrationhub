@@ -1,7 +1,7 @@
 // General configuration file for variable urls, settings, etc.
 
 const general = {
-  mongoUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/flowRepoDev',
+  mongoUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/analyticsServiceDev',
   amqpUrl: process.env.QUEUE_URL || 'amqp://guest:guest@localhost:5672',
 
   originWhitelist: process.env.ORIGINWHITELIST ? process.env.ORIGINWHITELIST.split(',') : [],

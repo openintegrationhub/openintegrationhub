@@ -563,7 +563,6 @@ const addFlowErrorMessage = async (message) => {
   try {
     const timeFrame = config.smallestWindow;
     const collectionKey = `flows_${timeFrame}`;
-    console.log('collectionKey', collectionKey);
 
     const errorMessage = {
       componentId: message.componentId,
@@ -581,9 +580,6 @@ const addFlowErrorMessage = async (message) => {
       $inc: { errorCount: 1 },
     };
 
-    console.log('ErrorEntry', errorEntry);
-
-    console.log('modelCreator.models[collectionKey]', modelCreator.models[collectionKey]);
     return await modelCreator.models[collectionKey].updateOne({ flowId: message.flowId }, errorEntry, { upsert: true });
   } catch (err) {
     log.error(err);

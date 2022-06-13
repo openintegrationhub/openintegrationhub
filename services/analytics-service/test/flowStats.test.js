@@ -36,7 +36,7 @@ beforeAll(async () => {
   modelCreator.createModels();
 });
 
-describe.only('/flowStats', () => {
+describe('/flowStats', () => {
   test('should get all flowStats in a specified time window', async () => {
     const until = Date.now();
     const from = Date.now() - 3 * 15 * 600000;
