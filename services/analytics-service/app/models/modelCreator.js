@@ -45,52 +45,50 @@ const createModels = () => {
     }
 
     log.info('Warning: Ensuring DB index for expiry. If one already existed it will not be changed.');
-    let newSchema;
-    let mongooseSchema;
-
-    // Components schema
-    newSchema = JSON.parse(JSON.stringify(componentsData));
-    newSchema.createdAt = { type: Date, expires, default: Date.now };
-    newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
 
     let collectionKey = `components_${key}`;
     if (!(collectionKey in models)) {
-      mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
+      // Components schema
+      const newSchema = JSON.parse(JSON.stringify(componentsData));
+      newSchema.createdAt = { type: Date, expires, default: Date.now };
+      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
+
+      const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
     }
 
-    // Flow schema
-    newSchema = JSON.parse(JSON.stringify(flowData));
-    newSchema.createdAt = { type: Date, expires, default: Date.now };
-    newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
-
     collectionKey = `flows_${key}`;
     if (!(collectionKey in models)) {
+      // Flow schema
+      const newSchema = JSON.parse(JSON.stringify(flowData));
+      newSchema.createdAt = { type: Date, expires, default: Date.now };
+      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
+
       console.log('Creating model:', collectionKey);
-      mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
+      const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
       console.log('mongooseSchema:', mongooseSchema);
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
     }
 
-    // Flow template schema
-    newSchema = JSON.parse(JSON.stringify(flowTemplateData));
-    newSchema.createdAt = { type: Date, expires, default: Date.now };
-    newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
-
     collectionKey = `flowTemplates_${key}`;
     if (!(collectionKey in models)) {
-      mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
+      // Flow template schema
+      const newSchema = JSON.parse(JSON.stringify(flowTemplateData));
+      newSchema.createdAt = { type: Date, expires, default: Date.now };
+      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
+
+      const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
     }
 
-    // Flow stats schema
-    newSchema = JSON.parse(JSON.stringify(flowStats));
-    newSchema.createdAt = { type: Date, expires, default: Date.now };
-    newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
-
     collectionKey = `flowStats_${key}`;
     if (!(collectionKey in models)) {
-      mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
+      // Flow stats schema
+      const newSchema = JSON.parse(JSON.stringify(flowStats));
+      newSchema.createdAt = { type: Date, expires, default: Date.now };
+      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
+
+      const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
     }
   }
