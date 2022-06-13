@@ -1,5 +1,5 @@
 const { getFlows } = require('./helpers');
-const { createFlowStats } = require('../api/controllers/mongo');
+const { updateFlowStats } = require('../api/controllers/mongo');
 
 async function updateFlowStats(auth) {
   const activeFlows = await getFlows(auth, 'active');
@@ -10,7 +10,7 @@ async function updateFlowStats(auth) {
 
   const total = active + inactive;
 
-  await createFlowStats(active, inactive, total);
+  await updateFlowStats(active, inactive, total);
 }
 
 module.exports = {
