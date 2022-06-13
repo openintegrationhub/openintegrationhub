@@ -36,11 +36,10 @@ beforeAll(async () => {
   app = await mainServer.listen();
 
   modelCreator.createModels();
-  console.log('modelCreator.models', Object.keys(modelCreator.models));
 });
 
-describe.only('flow errors', () => {
-  test.only('should add a flow error message to db', async () => {
+describe('flow errors', () => {
+  test('should add a flow error message to db', async () => {
     const message = {
       flowId: 'Flow1',
       componentId: 'Component1',
@@ -49,21 +48,57 @@ describe.only('flow errors', () => {
       errorText: 'Api endpoint not found',
       timestamp: Date.now(),
     };
-    console.log('X=X=X=');
+
     const result = await storage.addFlowErrorMessage(message);
-    console.log(result);
 
-    const data = await storage.getAllFlowData('15min', { isAdmin: true }, 10, 1);
+    expect(result.acknowledged).toEqual(true);
+    expect(result.modifiedCount).toEqual(0);
+    expect(result.upsertedCount).toEqual(1);
+    expect(result.matchedCount).toEqual(0);
 
-    console.log('data:', data);
+    const data = await storage.getFlowData('15min', { isAdmin: true }, message.flowId);
 
-    // expect(res.status).toEqual(200);
-    // expect(res.body.data.length).toEqual(2);
-    // expect(res.body.data[0].active).toEqual(12);
-    // expect(res.body.data[0].inactive).toEqual(7);
-    // expect(res.body.data[1].active).toEqual(15);
-    // expect(res.body.data[1].inactive).toEqual(9);
-    // expect(res.body.meta.count).toEqual(4);
+    expect(data.flowId).toEqual(message.flowId);
+    expect(data.errorCount).toEqual(1);
+    expect(data.errorData.length).toEqual(1);
+
+    expect(data.errorData[0].componentId).toEqual('Component1');
+    expect(data.errorData[0].errorCode).toEqual('404');
+    expect(data.errorData[0].errorText).toEqual('Api endpoint not found');
+
+    expect('timestamp' in data.errorData[0]).toEqual(true);
+
+    expect(data.owners[0]).toEqual(message.tenantId);
+  });
+
+  test('should add another flow error message to db', async () => {
+    const message = {
+      flowId: 'Flow1',
+      componentId: 'Component2',
+      tenantId: 'Tenant1',
+      errorCode: '403',
+      errorText: 'Auth failed',
+      timestamp: Date.now(),
+    };
+
+    const result = await storage.addFlowErrorMessage(message);
+
+    expect(result.acknowledged).toEqual(true);
+    expect(result.modifiedCount).toEqual(1);
+    expect(result.upsertedCount).toEqual(0);
+    expect(result.matchedCount).toEqual(1);
+
+    const data = await storage.getFlowData('15min', { isAdmin: true }, message.flowId);
+
+    expect(data.flowId).toEqual(message.flowId);
+    expect(data.errorCount).toEqual(2);
+    expect(data.errorData.length).toEqual(2);
+
+    expect(data.errorData[1].componentId).toEqual('Component2');
+    expect(data.errorData[1].errorCode).toEqual('403');
+    expect(data.errorData[1].errorText).toEqual('Auth failed');
+
+    expect('timestamp' in data.errorData[1]).toEqual(true);
   });
 });
 
