@@ -8,19 +8,12 @@ const { getAndUpdateFlowStats } = require('./gatherStats');
 let jobTest; // eslint-disable-line no-unused-vars
 let jobAggregateData; // eslint-disable-line no-unused-vars
 
-// Sort time frames smallest first
-const timeFrames = Object.entries(config.timeWindows).sort((a, b) => a[1] - b[1]);
-
 function createCronJobs() {
   log.info('Setting up cronjobs');
 
-  const max = timeFrames.length - 1;
-  for (let i = 0; i < max; i += 1) {
-    console.log('TimeFrame', i, timeFrames[i]);
-    console.log('We need to copy this data to a higher time frame');
-  }
 
-  const smallestTimeFrame = Object.entries(config.timeWindows).sort((a, b) => b[1] - a[1])[0][0];
+  const smallestTimeFrame = Object.entries(config.timeWindows).sort((a, b) => a[1] - b[1])[0][0];
+  log.debug('smallestTimeFrame', smallestTimeFrame);
   const ruleAggregateData = new schedule.RecurrenceRule();
   ruleAggregateData.minute = smallestTimeFrame;
 
