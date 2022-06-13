@@ -44,8 +44,9 @@ describe('flow errors', () => {
       flowId: 'Flow1',
       componentId: 'Component1',
       tenantId: 'Tenant1',
-      errorCode: '404',
+      errorName: '404',
       errorText: 'Api endpoint not found',
+      errorStack: 'Stack data 1',
       timestamp: Date.now(),
     };
 
@@ -63,8 +64,9 @@ describe('flow errors', () => {
     expect(data.errorData.length).toEqual(1);
 
     expect(data.errorData[0].componentId).toEqual('Component1');
-    expect(data.errorData[0].errorCode).toEqual('404');
+    expect(data.errorData[0].errorName).toEqual('404');
     expect(data.errorData[0].errorText).toEqual('Api endpoint not found');
+    expect(data.errorData[0].errorStack).toEqual('Stack data 1');
 
     expect('timestamp' in data.errorData[0]).toEqual(true);
 
@@ -76,8 +78,9 @@ describe('flow errors', () => {
       flowId: 'Flow1',
       componentId: 'Component2',
       tenantId: 'Tenant1',
-      errorCode: '403',
+      errorName: '403',
       errorText: 'Auth failed',
+      errorStack: 'Stack data 2',
       timestamp: Date.now(),
     };
 
@@ -95,8 +98,9 @@ describe('flow errors', () => {
     expect(data.errorData.length).toEqual(2);
 
     expect(data.errorData[1].componentId).toEqual('Component2');
-    expect(data.errorData[1].errorCode).toEqual('403');
+    expect(data.errorData[1].errorName).toEqual('403');
     expect(data.errorData[1].errorText).toEqual('Auth failed');
+    expect(data.errorData[1].errorStack).toEqual('Stack data 2');
 
     expect('timestamp' in data.errorData[1]).toEqual(true);
   });

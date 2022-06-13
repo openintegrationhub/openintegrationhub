@@ -8,8 +8,9 @@ const flowUsage = {
 
 const flowErrors = {
   componentId: { type: String },
-  errorCode: { type: String },
+  errorName: { type: String },
   errorText: { type: String },
+  errorStack: { type: String },
   timestamp: { type: String },
 };
 

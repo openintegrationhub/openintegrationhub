@@ -566,8 +566,9 @@ const addFlowErrorMessage = async (message) => {
 
     const errorMessage = {
       componentId: message.componentId,
-      errorCode: message.errorCode,
+      errorName: message.errorName,
       errorText: message.errorText,
+      errorStack: message.errorStack,
       timestamp: message.timestamp,
     };
 

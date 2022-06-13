@@ -44,7 +44,7 @@ const exampleFlowData = {
   owners: ['someOwner'], // tenantId
   errorData: [
     {
-      errorCode: '1',
+      errorName: '1',
       errorText: 'Login invalid',
       timestamp: Date.now(),
     },
@@ -75,7 +75,7 @@ describe('DB Operations', () => {
     expect(result).toHaveProperty('usage');
 
     expect(result.errorData[0]).toHaveProperty('timestamp');
-    expect(result.errorData[0].errorCode).toEqual('1');
+    expect(result.errorData[0].errorName).toEqual('1');
     expect(result.errorData[0].errorText).toEqual('Login invalid');
 
     expect(result.owners[0]).toEqual('someOwner');
