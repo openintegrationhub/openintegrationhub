@@ -36,7 +36,7 @@ beforeAll(async () => {
   modelCreator.createModels();
 });
 
-describe.only('modelCreator Operations', () => {
+describe('modelCreator Operations', () => {
   test('should create all configured models', async () => {
     for (const key in config.timeWindows) { // eslint-disable-line guard-for-in
       let expires;

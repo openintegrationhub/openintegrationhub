@@ -64,9 +64,7 @@ const createModels = () => {
       newSchema.createdAt = { type: Date, expires, default: Date.now };
       newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
 
-      console.log('Creating model:', collectionKey);
       const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
-      console.log('mongooseSchema:', mongooseSchema);
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
     }
 

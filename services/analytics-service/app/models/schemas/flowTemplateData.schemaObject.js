@@ -1,14 +1,14 @@
 // Flows that are based on the template
 const flows = {
-  flowId: String,
+  flowId: { type: String },
 };
 
 // Define schema
 const flowTemplatesData = {
-  flowTemplateId: String,
-  flowTemplateName: String,
-  createdAt: String,
-  steps: String,
+  flowTemplateId: { type: String },
+  flowTemplateName: { type: String },
+  createdAt: { type: String },
+  steps: { type: String },
   usage: [flows],
   owners: [{
     type: String,
