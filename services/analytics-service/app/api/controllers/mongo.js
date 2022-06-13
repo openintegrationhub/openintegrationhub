@@ -4,7 +4,7 @@
 
 // require our MongoDB-Model
 // const mongoose = require('mongoose');
-// const config = require('../../config/index');
+const config = require('../../config/index');
 const log = require('../../config/logger');
 
 // const ComponentsData = require('../../models/componentsData');
@@ -67,11 +67,13 @@ const getAllFlowData = async ( // eslint-disable-line
   }
 
   const collectionKey = `flows_${timeFrame}`;
-  const count = await modelCreator[collectionKey].countDocuments(qry);
+
+  console.log('collectionKey', collectionKey);
+  const count = await modelCreator.models[collectionKey].countDocuments(qry);
 
   const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
 
-  modelCreator[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
+  modelCreator.models[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
     .lean()
     .then((doc) => {
       const flowsList = doc;
@@ -556,6 +558,39 @@ const deleteComponentsData = async (timeFrame, user, id) => {
   return false;
 };
 
+// Adds a errorMessage to a flowData entry, create a new flow data entry if required
+const addFlowErrorMessage = async (message) => {
+  try {
+    const timeFrame = config.smallestWindow;
+    const collectionKey = `flows_${timeFrame}`;
+    console.log('collectionKey', collectionKey);
+
+    const errorMessage = {
+      componentId: message.componentId,
+      errorCode: message.errorCode,
+      errorText: message.errorText,
+      timestamp: message.timestamp,
+    };
+
+    const errorEntry = {
+      flowId: message.flowId,
+      $push: {
+        errorData: errorMessage,
+        owners: message.tenantId,
+      },
+      $inc: { errorCount: 1 },
+    };
+
+    console.log('ErrorEntry', errorEntry);
+
+    console.log('modelCreator.models[collectionKey]', modelCreator.models[collectionKey]);
+    return await modelCreator.models[collectionKey].updateOne({ flowId: message.flowId }, errorEntry, { upsert: true });
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
 module.exports = {
   createFlowData,
   updateFlowData,
@@ -577,4 +612,5 @@ module.exports = {
   // getComponentsDataStatistic,
   updateFlowStats,
   getFlowStats,
+  addFlowErrorMessage,
 };

@@ -3,11 +3,9 @@ const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/even
 const config = require('../config/index');
 const log = require('../config/logger');
 
-const { addProvenanceEvent } = require('../api/controllers/mongo');
+const { addFlowErrorMessage } = require(`../api/controllers/${config.storage}`);  // eslint-disable-line
 
 const logger = bunyan.createLogger({ name: 'events' });
-
-const storage = require(`../api/controllers/${config.storage}`); // eslint-disable-line
 
 let eventBus;
 
@@ -24,10 +22,10 @@ async function connectQueue() {
     transport, logger, serviceName: 'analytics-service',
   });
 
-  await eventBus.subscribe('provenance', async (event) => {
-    log.info(`Received event: ${JSON.stringify(event.headers)}`);
+  await eventBus.subscribe('flow.error', async (event) => {
+    log.info(`Received error mesage: ${JSON.stringify(event.headers)}`);
 
-    const response = await addProvenanceEvent(event.payload);
+    const response = await addFlowErrorMessage(event.payload);
 
     if (response !== false && 'id' in response) {
       log.info('Message saved and acked');

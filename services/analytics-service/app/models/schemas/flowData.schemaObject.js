@@ -7,6 +7,7 @@ const flowUsage = {
 };
 
 const flowErrors = {
+  componentId: String,
   errorCode: String,
   errorText: String,
   timestamp: String,
@@ -27,6 +28,10 @@ const flowData = {
     type: String,
   }], // tenantId
   errorData: [flowErrors],
+  errorCount: {
+    type: Number,
+    default: 0,
+  },
 };
 
 module.exports.flowData = flowData;
