@@ -11,7 +11,6 @@ let jobAggregateData; // eslint-disable-line no-unused-vars
 function createCronJobs() {
   log.info('Setting up cronjobs');
 
-
   const smallestTimeFrame = Object.entries(config.timeWindows).sort((a, b) => a[1] - b[1])[0][0];
   log.debug('smallestTimeFrame', smallestTimeFrame);
   const ruleAggregateData = new schedule.RecurrenceRule();
