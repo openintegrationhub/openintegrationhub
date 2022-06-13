@@ -107,6 +107,11 @@ module.exports = {
                 type: String,
                 required: true,
             },
+            refreshWithScope: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
             endpoints: {
                 auth: {
                     type: String,

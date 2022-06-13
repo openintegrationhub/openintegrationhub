@@ -123,13 +123,14 @@ async function exchangeRequest(url, {
 }
 
 async function refreshRequest(url, {
-    clientId, clientSecret, refreshToken,
+    clientId, clientSecret, refreshToken, scope,
 }) {
     return await requestHelper(url, {
         client_id: clientId,
         client_secret: clientSecret,
         refresh_token: refreshToken,
         grant_type: 'refresh_token',
+        ...(scope ? { scope } : {}),
     });
 }
 
@@ -240,12 +241,14 @@ module.exports = {
     async refresh(authClient, secret) {
         switch (authClient.type) {
         case OA2_AUTHORIZATION_CODE: {
-            const { clientId, clientSecret } = authClient;
-            const { refreshToken } = secret.value;
+            const { clientId, clientSecret, refreshWithScope } = authClient;
+            const { refreshToken, scope } = secret.value;
+            const combinedScope = (authClient.predefinedScope ? `${authClient.predefinedScope} ` : '') + scope;
             return await refreshRequest(authClient.endpoints.token, {
                 clientId,
                 clientSecret,
                 refreshToken,
+                ...(refreshWithScope ? { scope: combinedScope } : {}),
             });
         }
         case SESSION_AUTH: {
