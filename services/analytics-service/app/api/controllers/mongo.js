@@ -4,7 +4,7 @@
 
 // require our MongoDB-Model
 // const mongoose = require('mongoose');
-const config = require('../../config/index');
+
 const log = require('../../config/logger');
 
 // const ComponentsData = require('../../models/componentsData');
@@ -68,7 +68,6 @@ const getAllFlowData = async ( // eslint-disable-line
 
   const collectionKey = `flows_${timeFrame}`;
 
-  console.log('collectionKey', collectionKey);
   const count = await modelCreator.models[collectionKey].countDocuments(qry);
 
   const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
@@ -559,10 +558,10 @@ const deleteComponentsData = async (timeFrame, user, id) => {
 };
 
 // Adds a errorMessage to a flowData entry, create a new flow data entry if required
-const addFlowErrorMessage = async (message) => {
+const addFlowErrorMessage = async (timeFrame, message) => {
   try {
-    const timeFrame = config.smallestWindow;
     const collectionKey = `flows_${timeFrame}`;
+    console.log('collectionKey', collectionKey);
 
     const errorMessage = {
       componentId: message.componentId,

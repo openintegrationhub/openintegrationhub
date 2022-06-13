@@ -1,3 +1,5 @@
+/* eslint guard-for-in: "off" */
+
 const bunyan = require('bunyan');
 const { EventBus, RabbitMqTransport, Event } = require('@openintegrationhub/event-bus');
 const config = require('../config/index');
@@ -25,13 +27,22 @@ async function connectQueue() {
   await eventBus.subscribe('flow.error', async (event) => {
     log.info(`Received error mesage: ${JSON.stringify(event.headers)}`);
 
-    const response = await addFlowErrorMessage(event.payload);
+    let noError = true;
+    const errorResponses = [];
+    for (const timeFrame in config.timeWindows) {
+      const response = await addFlowErrorMessage(timeFrame, event.payload);
+      if (response !== false && 'id' in response) {
+        noError = false;
+        errorResponses.push(response);
+      }
+    }
 
-    if (response !== false && 'id' in response) {
+    // if (response !== false && 'id' in response) {
+    if (noError) {
       log.info('Message saved and acked');
       await event.ack();
     } else {
-      log.error('AddProvenanceEvent Response-Error:', response);
+      log.error('Add Error Message Response-Error:', errorResponses);
       await event.nack();
     }
   });

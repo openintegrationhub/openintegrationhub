@@ -2,6 +2,7 @@
 /* eslint max-len: "off" */
 /* eslint no-underscore-dangle: "off" */
 /* eslint no-unused-vars: "off" */
+/* eslint guard-for-in: "off" */
 
 const mongoose = require('mongoose');
 
@@ -50,27 +51,29 @@ describe('flow errors', () => {
       timestamp: Date.now(),
     };
 
-    const result = await storage.addFlowErrorMessage(message);
+    for (const timeFrame in config.timeWindows) {
+      const result = await storage.addFlowErrorMessage(timeFrame, message);
 
-    expect(result.acknowledged).toEqual(true);
-    expect(result.modifiedCount).toEqual(0);
-    expect(result.upsertedCount).toEqual(1);
-    expect(result.matchedCount).toEqual(0);
+      expect(result.acknowledged).toEqual(true);
+      expect(result.modifiedCount).toEqual(0);
+      expect(result.upsertedCount).toEqual(1);
+      expect(result.matchedCount).toEqual(0);
 
-    const data = await storage.getFlowData('15min', { isAdmin: true }, message.flowId);
+      const data = await storage.getFlowData(timeFrame, { isAdmin: true }, message.flowId);
 
-    expect(data.flowId).toEqual(message.flowId);
-    expect(data.errorCount).toEqual(1);
-    expect(data.errorData.length).toEqual(1);
+      expect(data.flowId).toEqual(message.flowId);
+      expect(data.errorCount).toEqual(1);
+      expect(data.errorData.length).toEqual(1);
 
-    expect(data.errorData[0].componentId).toEqual('Component1');
-    expect(data.errorData[0].errorName).toEqual('404');
-    expect(data.errorData[0].errorText).toEqual('Api endpoint not found');
-    expect(data.errorData[0].errorStack).toEqual('Stack data 1');
+      expect(data.errorData[0].componentId).toEqual('Component1');
+      expect(data.errorData[0].errorName).toEqual('404');
+      expect(data.errorData[0].errorText).toEqual('Api endpoint not found');
+      expect(data.errorData[0].errorStack).toEqual('Stack data 1');
 
-    expect('timestamp' in data.errorData[0]).toEqual(true);
+      expect('timestamp' in data.errorData[0]).toEqual(true);
 
-    expect(data.owners[0]).toEqual(message.tenantId);
+      expect(data.owners[0]).toEqual(message.tenantId);
+    }
   });
 
   test('should add another flow error message to db', async () => {
@@ -84,25 +87,27 @@ describe('flow errors', () => {
       timestamp: Date.now(),
     };
 
-    const result = await storage.addFlowErrorMessage(message);
+    for (const timeFrame in config.timeWindows) {
+      const result = await storage.addFlowErrorMessage(timeFrame, message);
 
-    expect(result.acknowledged).toEqual(true);
-    expect(result.modifiedCount).toEqual(1);
-    expect(result.upsertedCount).toEqual(0);
-    expect(result.matchedCount).toEqual(1);
+      expect(result.acknowledged).toEqual(true);
+      expect(result.modifiedCount).toEqual(1);
+      expect(result.upsertedCount).toEqual(0);
+      expect(result.matchedCount).toEqual(1);
 
-    const data = await storage.getFlowData('15min', { isAdmin: true }, message.flowId);
+      const data = await storage.getFlowData(timeFrame, { isAdmin: true }, message.flowId);
 
-    expect(data.flowId).toEqual(message.flowId);
-    expect(data.errorCount).toEqual(2);
-    expect(data.errorData.length).toEqual(2);
+      expect(data.flowId).toEqual(message.flowId);
+      expect(data.errorCount).toEqual(2);
+      expect(data.errorData.length).toEqual(2);
 
-    expect(data.errorData[1].componentId).toEqual('Component2');
-    expect(data.errorData[1].errorName).toEqual('403');
-    expect(data.errorData[1].errorText).toEqual('Auth failed');
-    expect(data.errorData[1].errorStack).toEqual('Stack data 2');
+      expect(data.errorData[1].componentId).toEqual('Component2');
+      expect(data.errorData[1].errorName).toEqual('403');
+      expect(data.errorData[1].errorText).toEqual('Auth failed');
+      expect(data.errorData[1].errorStack).toEqual('Stack data 2');
 
-    expect('timestamp' in data.errorData[1]).toEqual(true);
+      expect('timestamp' in data.errorData[1]).toEqual(true);
+    }
   });
 });
 
