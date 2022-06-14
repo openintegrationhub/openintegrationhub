@@ -587,6 +587,82 @@ const addFlowErrorMessage = async (timeFrame, message) => {
   return false;
 };
 
+// Adds usage to a flow template entry, create a new flow template entry if required, across the timeline
+const upsertFlowTemplateUsage = async (flowTemplateId, flowIds) => {
+  try {
+    const models = modelCreator.getModelsByType('flowTemplates');
+    const now = new Date();
+    const promises = [];
+
+    const flows = [];
+    for (let i = 0; i < flowIds.length; i += 1) {
+      flows.push({ flowId: flowIds[i] });
+    }
+
+    const dataEntry = {
+      flowTemplateId,
+      $push: {
+        usage: {
+          $each: flows,
+        },
+      },
+    };
+
+    for (let i = 0; i < models.length; i += 1) {
+      const currentModel = models[i];
+      promises.push(currentModel.updateOne(
+        { flowTemplateId, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
+        dataEntry,
+        { upsert: true, setDefaultsOnInsert: true },
+      ));
+    }
+
+    await Promise.all(promises);
+    return true;
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
+// Adds usage to a component entry, create a new component entry if required, across the timeline
+const upsertComponentUsage = async (componentId, flowIds) => {
+  try {
+    const models = modelCreator.getModelsByType('components');
+    const now = new Date();
+    const promises = [];
+
+    const flows = [];
+    for (let i = 0; i < flowIds.length; i += 1) {
+      flows.push({ objectId: flowIds[i] }); // flowId ?
+    }
+
+    const dataEntry = {
+      componentId,
+      $push: {
+        usage: {
+          $each: flows,
+        },
+      },
+    };
+
+    for (let i = 0; i < models.length; i += 1) {
+      const currentModel = models[i];
+      promises.push(currentModel.updateOne(
+        { componentId, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
+        dataEntry,
+        { upsert: true, setDefaultsOnInsert: true },
+      ));
+    }
+
+    await Promise.all(promises);
+    return true;
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
 module.exports = {
   createFlowData,
   updateFlowData,
@@ -609,4 +685,7 @@ module.exports = {
   updateFlowStats,
   getFlowStats,
   addFlowErrorMessage,
+
+  upsertFlowTemplateUsage,
+  upsertComponentUsage,
 };
