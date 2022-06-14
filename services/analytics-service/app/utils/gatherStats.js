@@ -2,8 +2,8 @@
 
 const {
   getFlows,
-  getComponents,
-  getTemplates,
+  getAllComponents,
+  getAllTemplates,
 } = require('./helpers');
 
 const {
@@ -64,7 +64,7 @@ async function getAndUpdateFlowStats(auth) {
 }
 
 async function getAndUpdateComponents(auth) {
-  const components = await getComponents(auth);
+  const components = await getAllComponents(auth);
 
   const length = components.length;
   for (let i = 0; i < length; i += 1) {
@@ -73,7 +73,7 @@ async function getAndUpdateComponents(auth) {
 }
 
 async function getAndUpdateFlowTemplates(auth) {
-  const flowTemplates = await getTemplates(auth);
+  const flowTemplates = await getAllTemplates(auth);
 
   const length = flowTemplates.length;
   for (let i = 0; i < length; i += 1) {

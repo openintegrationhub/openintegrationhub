@@ -116,6 +116,25 @@ async function getTemplates(auth, size, number, status) {
   }
 }
 
+async function getAllTemplates(auth) {
+  const size = 100;
+  let number = 0;
+  let hasMore = true;
+  const status = '1';
+  let templates = [];
+  while (hasMore === true) {
+    const body = await getTemplates(auth, size, number, status);
+    if (body.meta && body.meta.total > templates.length) {
+      templates = templates.concat(body.data);
+      number += 1;
+    } else {
+      hasMore = false;
+    }
+  }
+
+  return templates;
+}
+
 async function getUsers(auth) {
   try {
     const query = {
@@ -177,6 +196,30 @@ async function getComponents(auth, size, number) {
   }
 }
 
+async function getAllComponents(auth) {
+  const size = 100;
+  let number = 0;
+  let hasMore = true;
+  let components = [];
+  while (hasMore === true) {
+    const body = await getComponents(auth, size, number);
+    if (body.total > components.length) {
+      components = components.concat(body.data);
+      number += 1;
+    } else {
+      hasMore = false;
+    }
+  }
+
+  return components;
+}
+
 module.exports = {
-  reportServiceStatus, getFlows, getTemplates, getUsers, getComponents,
+  reportServiceStatus,
+  getFlows,
+  getTemplates,
+  getUsers,
+  getComponents,
+  getAllTemplates,
+  getAllComponents,
 };
