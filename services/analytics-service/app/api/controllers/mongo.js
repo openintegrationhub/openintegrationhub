@@ -718,7 +718,7 @@ const upsertFlowTemplate = async (templateData) => {
     for (let i = 0; i < models.length; i += 1) {
       const currentModel = models[i];
       promises.push(currentModel.updateOne(
-        { componentId: templateData.id, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
+        { flowTemplateId: templateData.id, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
         dataEntry,
         { upsert: true, setDefaultsOnInsert: true },
       ));

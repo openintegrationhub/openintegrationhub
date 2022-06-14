@@ -2,6 +2,7 @@
 /* eslint max-len: "off" */
 /* eslint no-underscore-dangle: "off" */
 /* eslint no-unused-vars: "off" */
+/* eslint guard-for-in: "off" */
 
 const mongoose = require('mongoose');
 
@@ -112,6 +113,56 @@ describe('DB Operations', () => {
     const flowStatsDay = await modelCreator.models.flowStats_day.findOne().lean();
     expect(flowStatsDay.active).toEqual(15);
     expect(flowStatsDay.inactive).toEqual(30);
+  });
+
+  test.only('should upsert a flow template entry across all timeframes', async () => {
+    const templateData = {
+      id: 'id1',
+      name: 'Name 1',
+      owners: ['tenant1', 'tenant2'],
+      graph: {
+        edges: [
+          {
+            id: 'edge1',
+            source: 'comp1',
+            target: 'comp2',
+          },
+        ],
+      },
+    };
+
+    const result = await storage.upsertFlowTemplate(templateData);
+    expect(result).toEqual(true);
+
+    for (const timeFrame in config.timeWindows) {
+      const entry = await modelCreator.models[`flowTemplates_${timeFrame}`].findOne().lean();
+      expect(entry.flowTemplateId).toEqual('id1');
+      expect(entry.flowTemplateName).toEqual('Name 1');
+      expect(entry.owners[0]).toEqual('tenant1');
+      expect(entry.owners[1]).toEqual('tenant2');
+      expect(entry.steps).toEqual('2');
+    }
+  });
+
+  test.only('should upsert a components entry across all timeframes', async () => {
+    const componentData = {
+      artifactId: 'id1',
+      name: 'Name 1',
+      owners: ['tenant1', 'tenant2'],
+      active: 'active',
+    };
+
+    const result = await storage.upsertComponent(componentData);
+    expect(result).toEqual(true);
+
+    for (const timeFrame in config.timeWindows) {
+      const entry = await modelCreator.models[`components_${timeFrame}`].findOne().lean();
+      expect(entry.componentId).toEqual('id1');
+      expect(entry.componentName).toEqual('Name 1');
+      expect(entry.owners[0]).toEqual('tenant1');
+      expect(entry.owners[1]).toEqual('tenant2');
+      expect(entry.status).toEqual('active');
+    }
   });
 });
 
