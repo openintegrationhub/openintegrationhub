@@ -164,6 +164,42 @@ describe('DB Operations', () => {
       expect(entry.status).toEqual('active');
     }
   });
+
+  test.only('should upsert flow usage across all timeframes', async () => {
+    const result1 = await storage.upsertFlowTemplateUsage('template 1', ['flow 1']);
+    expect(result1).toEqual(true);
+
+    const result2 = await storage.upsertFlowTemplateUsage('template 1', ['flow 2', 'flow 3']);
+    expect(result2).toEqual(true);
+
+    for (const timeFrame in config.timeWindows) {
+      const entry = await modelCreator.models[`flowTemplates_${timeFrame}`].findOne().lean();
+
+      expect(entry.flowTemplateId).toEqual('template 1');
+      expect(entry.usage[0].flowId).toEqual('flow 1');
+      expect(entry.usage[1].flowId).toEqual('flow 2');
+      expect(entry.usage[2].flowId).toEqual('flow 3');
+    }
+  });
+
+  test.only('should upsert component usage across all timeframes', async () => {
+    const result1 = await storage.upsertComponentUsage('component 1', ['flow 1']);
+    expect(result1).toEqual(true);
+
+    const result2 = await storage.upsertComponentUsage('component 1', ['flow 2', 'flow 3']);
+    expect(result2).toEqual(true);
+
+    for (const timeFrame in config.timeWindows) {
+      const entry = await modelCreator.models[`components_${timeFrame}`].findOne().lean();
+
+      expect(entry.componentId).toEqual('component 1');
+      expect(entry.usage[0].objectId).toEqual('flow 1');
+      expect(entry.usage[1].objectId).toEqual('flow 2');
+      expect(entry.usage[2].objectId).toEqual('flow 3');
+    }
+  });
+
+  // upsertComponentUsage(componentId, componentUsage[componentId]);
 });
 
 afterAll(async () => {
