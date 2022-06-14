@@ -663,6 +663,75 @@ const upsertComponentUsage = async (componentId, flowIds) => {
   return false;
 };
 
+// Creates or updates components entry, across the timeline
+const upsertComponent = async (componentData) => {
+  try {
+    const models = modelCreator.getModelsByType('components');
+    const now = new Date();
+    const promises = [];
+
+    const dataEntry = {
+      componentId: componentData.artifactId,
+      componentName: componentData.name,
+      owners: componentData.owners,
+      status: (componentData.active) ? 'active' : 'inactive',
+      // statusChangedAt: Date.now(),
+    };
+
+    for (let i = 0; i < models.length; i += 1) {
+      const currentModel = models[i];
+      promises.push(currentModel.updateOne(
+        { componentId: componentData.artifactId, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
+        dataEntry,
+        { upsert: true, setDefaultsOnInsert: true },
+      ));
+    }
+
+    await Promise.all(promises);
+    return true;
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
+// Creates or updates flowTemplates entry, across the timeline
+const upsertFlowTemplate = async (templateData) => {
+  try {
+    const models = modelCreator.getModelsByType('flowTemplates');
+    const now = new Date();
+    const promises = [];
+
+    let steps = '0';
+    if (templateData.graph && templateData.graph.edges) {
+      steps = `${templateData.graph.edges.length + 1}`;
+    }
+
+    const dataEntry = {
+      flowTemplateId: templateData.id,
+      flowTemplateName: templateData.name,
+      owners: templateData.owners,
+      createdAt: Date.now(),
+      steps,
+    };
+
+    for (let i = 0; i < models.length; i += 1) {
+      const currentModel = models[i];
+      promises.push(currentModel.updateOne(
+        { componentId: templateData.id, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
+        dataEntry,
+        { upsert: true, setDefaultsOnInsert: true },
+      ));
+    }
+
+    await Promise.all(promises);
+    return true;
+  } catch (err) {
+    log.error(err);
+  }
+  return false;
+};
+
 module.exports = {
   createFlowData,
   updateFlowData,
@@ -688,4 +757,7 @@ module.exports = {
 
   upsertFlowTemplateUsage,
   upsertComponentUsage,
+
+  upsertComponent,
+  upsertFlowTemplate,
 };

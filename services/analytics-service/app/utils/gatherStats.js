@@ -10,8 +10,8 @@ const {
   updateFlowStats,
   upsertFlowTemplateUsage,
   upsertComponentUsage,
-  upsertComponents,
-  upsertFlowTemplates,
+  upsertComponent,
+  upsertFlowTemplate,
 } = require('../api/controllers/mongo');
 
 async function getAndUpdateFlowStats(auth) {
@@ -66,13 +66,19 @@ async function getAndUpdateFlowStats(auth) {
 async function getAndUpdateComponents(auth) {
   const components = await getComponents(auth);
 
-  await upsertComponents(components);
+  const length = components.length;
+  for (let i = 0; i < length; i += 1) {
+    await upsertComponent(components[i]);
+  }
 }
 
 async function getAndUpdateFlowTemplates(auth) {
   const flowTemplates = await getTemplates(auth);
 
-  await upsertFlowTemplates(flowTemplates);
+  const length = flowTemplates.length;
+  for (let i = 0; i < length; i += 1) {
+    await upsertFlowTemplate(flowTemplates[i]);
+  }
 }
 
 module.exports = {
