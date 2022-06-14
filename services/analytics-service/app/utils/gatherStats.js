@@ -1,7 +1,18 @@
 /* eslint guard-for-in: "off" */
 
-const { getFlows } = require('./helpers');
-const { updateFlowStats, upsertFlowTemplateUsage, upsertComponentUsage } = require('../api/controllers/mongo');
+const {
+  getFlows,
+  getComponents,
+  getTemplates,
+} = require('./helpers');
+
+const {
+  updateFlowStats,
+  upsertFlowTemplateUsage,
+  upsertComponentUsage,
+  upsertComponents,
+  upsertFlowTemplates,
+} = require('../api/controllers/mongo');
 
 async function getAndUpdateFlowStats(auth) {
   const activeFlows = await getFlows(auth, 'active');
@@ -52,6 +63,20 @@ async function getAndUpdateFlowStats(auth) {
   await updateFlowStats(active, inactive, total);
 }
 
+async function getAndUpdateComponents(auth) {
+  const components = await getComponents(auth);
+
+  await upsertComponents(components);
+}
+
+async function getAndUpdateFlowTemplates(auth) {
+  const flowTemplates = await getTemplates(auth);
+
+  await upsertFlowTemplates(flowTemplates);
+}
+
 module.exports = {
   getAndUpdateFlowStats,
+  getAndUpdateComponents,
+  getAndUpdateFlowTemplates,
 };

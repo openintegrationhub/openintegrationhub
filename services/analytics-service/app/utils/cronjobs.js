@@ -3,7 +3,11 @@ const schedule = require('node-schedule');
 const log = require('../config/logger');
 const config = require('../config/index');
 
-const { getAndUpdateFlowStats } = require('./gatherStats');
+const {
+  getAndUpdateFlowStats,
+  getAndUpdateComponents,
+  getAndUpdateFlowTemplates,
+} = require('./gatherStats');
 
 let jobTest; // eslint-disable-line no-unused-vars
 let jobAggregateData; // eslint-disable-line no-unused-vars
@@ -18,6 +22,10 @@ function createCronJobs() {
 
   jobAggregateData = schedule.scheduleJob(ruleAggregateData, async () => {
     log.info('Getting flow stats via cron', Date.now());
+
+    // @todo: we need to pass auth
+    await getAndUpdateComponents();
+    await getAndUpdateFlowTemplates();
     await getAndUpdateFlowStats();
   });
 
