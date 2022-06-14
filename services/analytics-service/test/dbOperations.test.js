@@ -115,7 +115,7 @@ describe('DB Operations', () => {
     expect(flowStatsDay.inactive).toEqual(30);
   });
 
-  test.only('should upsert a flow template entry across all timeframes', async () => {
+  test('should upsert a flow template entry across all timeframes', async () => {
     const templateData = {
       id: 'id1',
       name: 'Name 1',
@@ -144,7 +144,7 @@ describe('DB Operations', () => {
     }
   });
 
-  test.only('should upsert a components entry across all timeframes', async () => {
+  test('should upsert a components entry across all timeframes', async () => {
     const componentData = {
       artifactId: 'id1',
       name: 'Name 1',
