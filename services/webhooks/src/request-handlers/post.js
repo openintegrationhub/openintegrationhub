@@ -17,9 +17,12 @@ class PostRequestHandler extends RequestHandlers.Post {
 
     async authorize() {
         // Has the first node of the flow been configured to enforce authentication?
-        const flow = this.getFlow();
+        let flow = this.getFlow();
         const flowSettings = flow.getFlowSettings();
         const flowUser = flow.getFlowUser();
+
+        // Normalize Owner Types for sending to iam-utils GH #1422 TODO: Normalize constants, then remove this line
+        flow.owners?.forEach(x => ("type" in x) ? x.type = x.type.toUpperCase(): null);
         // Default to false if field doesn't exist
         const { requireWebhookAuth = false, hmacHeaderKey = DEFAULT_HMAC_HEADER_KEY, hmacAuthSecret, hmacAlgorithm = DEFAULT_HMAC_ALGORITHM, allTenantUsers=false } = flowSettings;
         if (!requireWebhookAuth) {
