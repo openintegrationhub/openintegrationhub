@@ -8,6 +8,7 @@ const { componentsData } = require('./schemas/componentsData.schemaObject');
 const { flowData } = require('./schemas/flowData.schemaObject');
 const { flowTemplateData } = require('./schemas/flowTemplateData.schemaObject');
 const { flowStats } = require('./schemas/flowStats.schemaObject');
+const { userStats } = require('./schemas/flowStats.schemaObject');
 
 const log = require('../config/logger');
 const config = require('../config/index');
@@ -83,6 +84,17 @@ const createModels = () => {
     if (!(collectionKey in models)) {
       // Flow stats schema
       const newSchema = JSON.parse(JSON.stringify(flowStats));
+      newSchema.createdAt = { type: Date, expires, default: Date.now };
+      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
+
+      const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
+      models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
+    }
+
+    collectionKey = `userStats_${key}`;
+    if (!(collectionKey in models)) {
+      // Flow stats schema
+      const newSchema = JSON.parse(JSON.stringify(userStats));
       newSchema.createdAt = { type: Date, expires, default: Date.now };
       newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
 

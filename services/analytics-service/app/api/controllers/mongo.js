@@ -732,6 +732,39 @@ const upsertFlowTemplate = async (templateData) => {
   return false;
 };
 
+// Updates user stats across the timeline
+const updateUserStats = async (stats) => {
+  try {
+    const models = modelCreator.getModelsByType('userStats');
+    const now = new Date();
+    const promises = [];
+
+    for (let i = 0; i < models.length; i += 1) {
+      const currentModel = models[i];
+
+      const currentObject = await currentModel.findOne({ createdAt: { $lte: now }, intervalEnd: { $gte: now } }).lean();
+
+      if (!currentObject) {
+        promises.push(new currentModel(stats).save());
+      } else {
+        // TODO: Use some sort of weighted average for better accuracy
+        const averageActive = Math.round((stats.recentlyActive + currentObject.recentlyActive) / 2);
+        const averageInactive = Math.round((stats.inactive + currentObject.inactive) / 2);
+        const averageTotal = Math.round((stats.total + currentObject.total) / 2);
+
+        promises.push(currentModel.updateOne({ _id: currentObject._id }, { active: averageActive, inactive: averageInactive, total: averageTotal }));
+      }
+    }
+
+    await Promise.all(promises);
+    return true;
+  } catch (e) {
+    console.log(e);
+    log.error(e);
+    return false;
+  }
+};
+
 module.exports = {
   createFlowData,
   updateFlowData,
@@ -760,4 +793,6 @@ module.exports = {
 
   upsertComponent,
   upsertFlowTemplate,
+
+  updateUserStats,
 };

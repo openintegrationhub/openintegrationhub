@@ -22,6 +22,7 @@
     "bunyan-format": "^0.2.1",
     "cors": "^2.8.5",
     "cronstrue": "^1.94.0",
+    "dayjs": "^1.11.3",
     "dot-prop": "^6.0.1",
     "express": "^4.17.1",
     "mongoose": "6.2.1",

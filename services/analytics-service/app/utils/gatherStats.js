@@ -1,9 +1,12 @@
 /* eslint guard-for-in: "off" */
+/* eslint no-continue: "off" */
+const dayjs = require('dayjs');
 
 const {
   getFlows,
   getAllComponents,
   getAllTemplates,
+  getUsers,
 } = require('./helpers');
 
 const {
@@ -12,7 +15,10 @@ const {
   upsertComponentUsage,
   upsertComponent,
   upsertFlowTemplate,
+  updateUserStats
 } = require('../api/controllers/mongo');
+
+const config = require('../config');
 
 async function getAndUpdateFlowStats(auth) {
   const activeFlows = await getFlows(auth, 'active');
@@ -81,8 +87,34 @@ async function getAndUpdateFlowTemplates(auth) {
   }
 }
 
+async function getAndUpdateUserStats(auth) {
+  const users = await getUsers(auth);
+  const activeDay = dayjs().subtract(config.userRecentlyActivePeriod);
+  const inactiveDay = dayjs().subtract(config.userInactivePeriod);
+
+  const userStats = {
+    total: users.length,
+    recentlyActive: 0,
+    inactive: 0,
+  };
+
+  for (let i = 0; i < users.length; i += 1) {
+    if (!dayjs.isValid(users[i].safeguard.lastLogin)) continue;
+
+    const loginDate = dayjs(users[i].safeguard.lastLogin);
+    if (loginDate.isAfter(activeDay)) {
+      userStats.recentlyActive += 1;
+    } else if (loginDate.isBefore(inactiveDay)) {
+      userStats.inactive += 1;
+    }
+  }
+
+  await updateUserStats(userStats);
+}
+
 module.exports = {
   getAndUpdateFlowStats,
   getAndUpdateComponents,
   getAndUpdateFlowTemplates,
+  getAndUpdateUserStats,
 };
