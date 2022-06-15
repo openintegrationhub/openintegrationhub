@@ -214,6 +214,14 @@ async function getAllComponents(auth) {
   return components;
 }
 
+// timestamp in miliseconds
+// bucketSize in minutes
+function decideBucket(timestamp, bucketSize) {
+  const windowSize = bucketSize * 60 * 1000;
+  const x = timestamp / windowSize;
+  return Math.ceil(x) * windowSize - windowSize;
+}
+
 module.exports = {
   reportServiceStatus,
   getFlows,
@@ -222,4 +230,5 @@ module.exports = {
   getComponents,
   getAllTemplates,
   getAllComponents,
+  decideBucket,
 };
