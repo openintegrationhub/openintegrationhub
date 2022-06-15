@@ -1,11 +1,11 @@
 // Statistics about objects passing through the flow
 const componentUsage = {
   objectId: { type: String },
-  type: {
-    type: String,
-    enum: ['received', 'send'],
-    // default: 'send',
-  },
+  // objectType: {
+  //   type: String,
+  //   enum: ['received', 'send'],
+  //   // default: 'send',
+  // },
   oihDataSchema: String,
 };
 

@@ -2,6 +2,7 @@
 /* eslint max-len: "off" */
 /* eslint no-underscore-dangle: "off" */
 /* eslint no-unused-vars: "off" */
+/* eslint guard-for-in: "off" */
 
 const mongoose = require('mongoose');
 
@@ -113,6 +114,92 @@ describe('DB Operations', () => {
     expect(flowStatsDay.active).toEqual(15);
     expect(flowStatsDay.inactive).toEqual(30);
   });
+
+  test('should upsert a flow template entry across all timeframes', async () => {
+    const templateData = {
+      id: 'id1',
+      name: 'Name 1',
+      owners: ['tenant1', 'tenant2'],
+      graph: {
+        edges: [
+          {
+            id: 'edge1',
+            source: 'comp1',
+            target: 'comp2',
+          },
+        ],
+      },
+    };
+
+    const result = await storage.upsertFlowTemplate(templateData);
+    expect(result).toEqual(true);
+
+    for (const timeFrame in config.timeWindows) {
+      const entry = await modelCreator.models[`flowTemplates_${timeFrame}`].findOne().lean();
+      expect(entry.flowTemplateId).toEqual('id1');
+      expect(entry.flowTemplateName).toEqual('Name 1');
+      expect(entry.owners[0]).toEqual('tenant1');
+      expect(entry.owners[1]).toEqual('tenant2');
+      expect(entry.steps).toEqual('2');
+    }
+  });
+
+  test('should upsert a components entry across all timeframes', async () => {
+    const componentData = {
+      artifactId: 'id1',
+      name: 'Name 1',
+      owners: ['tenant1', 'tenant2'],
+      active: 'active',
+    };
+
+    const result = await storage.upsertComponent(componentData);
+    expect(result).toEqual(true);
+
+    for (const timeFrame in config.timeWindows) {
+      const entry = await modelCreator.models[`components_${timeFrame}`].findOne().lean();
+      expect(entry.componentId).toEqual('id1');
+      expect(entry.componentName).toEqual('Name 1');
+      expect(entry.owners[0]).toEqual('tenant1');
+      expect(entry.owners[1]).toEqual('tenant2');
+      expect(entry.status).toEqual('active');
+    }
+  });
+
+  test.only('should upsert flow usage across all timeframes', async () => {
+    const result1 = await storage.upsertFlowTemplateUsage('template 1', ['flow 1']);
+    expect(result1).toEqual(true);
+
+    const result2 = await storage.upsertFlowTemplateUsage('template 1', ['flow 2', 'flow 3']);
+    expect(result2).toEqual(true);
+
+    for (const timeFrame in config.timeWindows) {
+      const entry = await modelCreator.models[`flowTemplates_${timeFrame}`].findOne().lean();
+
+      expect(entry.flowTemplateId).toEqual('template 1');
+      expect(entry.usage[0].flowId).toEqual('flow 1');
+      expect(entry.usage[1].flowId).toEqual('flow 2');
+      expect(entry.usage[2].flowId).toEqual('flow 3');
+    }
+  });
+
+  test.only('should upsert component usage across all timeframes', async () => {
+    const result1 = await storage.upsertComponentUsage('component 1', ['flow 1']);
+    expect(result1).toEqual(true);
+
+    const result2 = await storage.upsertComponentUsage('component 1', ['flow 2', 'flow 3']);
+    expect(result2).toEqual(true);
+
+    for (const timeFrame in config.timeWindows) {
+      const entry = await modelCreator.models[`components_${timeFrame}`].findOne().lean();
+
+      expect(entry.componentId).toEqual('component 1');
+      expect(entry.usage[0].objectId).toEqual('flow 1');
+      expect(entry.usage[1].objectId).toEqual('flow 2');
+      expect(entry.usage[2].objectId).toEqual('flow 3');
+    }
+  });
+
+  // upsertComponentUsage(componentId, componentUsage[componentId]);
 });
 
 afterAll(async () => {

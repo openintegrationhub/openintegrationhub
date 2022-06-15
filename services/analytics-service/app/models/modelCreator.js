@@ -27,7 +27,8 @@ const getModelsByType = (type) => {
 
   for (let i = 0; i < keys.length; i += 1) {
     if (keys[i].startsWith(`${type}_`)) {
-      typedModels.push(models[keys[i]]);
+      const timeWindow = config.timeWindows[keys[i].split('_')[1]];
+      typedModels.push({ model: models[keys[i]], timeWindow });
     }
   }
 
