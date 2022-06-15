@@ -13,6 +13,8 @@ const log = require('../../config/logger');
 
 const modelCreator = require('../../models/modelCreator');
 
+const { decideBucket } = require('../../utils/helpers');
+
 // const config = require('../../config/index');
 
 // Retrieves all flow data entries
@@ -699,7 +701,6 @@ const upsertComponent = async (componentData) => {
 const upsertFlowTemplate = async (templateData) => {
   try {
     const models = modelCreator.getModelsByType('flowTemplates');
-    const now = new Date();
     const promises = [];
 
     let steps = '0';
@@ -716,9 +717,11 @@ const upsertFlowTemplate = async (templateData) => {
     };
 
     for (let i = 0; i < models.length; i += 1) {
-      const currentModel = models[i];
+      const currentModel = models[i].model;
+      const createdAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
+      const max = createdAt + models[i].timeWindow * 60 * 1000;
       promises.push(currentModel.updateOne(
-        { flowTemplateId: templateData.id, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
+        { flowTemplateId: templateData.id, createdAt: { $gte: createdAt, $lte: max } },
         dataEntry,
         { upsert: true, setDefaultsOnInsert: true },
       ));
