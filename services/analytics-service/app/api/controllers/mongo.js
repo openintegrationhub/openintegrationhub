@@ -15,7 +15,7 @@ const modelCreator = require('../../models/modelCreator');
 
 const { decideBucket } = require('../../utils/helpers');
 
-// const config = require('../../config/index');
+const config = require('../../config/index');
 
 // Retrieves all flow data entries
 const getAllFlowData = async ( // eslint-disable-line
@@ -562,6 +562,10 @@ const deleteComponentsData = async (timeFrame, user, id) => {
 // Adds a errorMessage to a flowData entry, create a new flow data entry if required
 const addFlowErrorMessage = async (timeFrame, message) => {
   try {
+    const timeWindow = config.timeWindows[timeFrame];
+    const createdAt = decideBucket(message.timestamp, timeWindow);
+    const max = createdAt + timeWindow * 60 * 1000;
+
     const collectionKey = `flows_${timeFrame}`;
     console.log('collectionKey', collectionKey);
 
@@ -580,9 +584,10 @@ const addFlowErrorMessage = async (timeFrame, message) => {
         owners: message.tenantId,
       },
       $inc: { errorCount: 1 },
+      createdAt: message.timestamp,
     };
 
-    return await modelCreator.models[collectionKey].updateOne({ flowId: message.flowId }, errorEntry, { upsert: true });
+    return await modelCreator.models[collectionKey].updateOne({ flowId: message.flowId, createdAt: { $gte: createdAt, $lte: max } }, errorEntry, { upsert: true });
   } catch (err) {
     log.error(err);
   }
@@ -593,7 +598,6 @@ const addFlowErrorMessage = async (timeFrame, message) => {
 const upsertFlowTemplateUsage = async (flowTemplateId, flowIds) => {
   try {
     const models = modelCreator.getModelsByType('flowTemplates');
-    const now = new Date();
     const promises = [];
 
     const flows = [];
@@ -608,12 +612,15 @@ const upsertFlowTemplateUsage = async (flowTemplateId, flowIds) => {
           $each: flows,
         },
       },
+      createdAt: Date.now(),
     };
 
     for (let i = 0; i < models.length; i += 1) {
-      const currentModel = models[i];
+      const currentModel = models[i].model;
+      const createdAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
+      const max = createdAt + models[i].timeWindow * 60 * 1000;
       promises.push(currentModel.updateOne(
-        { flowTemplateId, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
+        { flowTemplateId, createdAt: { $gte: createdAt, $lte: max } },
         dataEntry,
         { upsert: true, setDefaultsOnInsert: true },
       ));
@@ -631,7 +638,6 @@ const upsertFlowTemplateUsage = async (flowTemplateId, flowIds) => {
 const upsertComponentUsage = async (componentId, flowIds) => {
   try {
     const models = modelCreator.getModelsByType('components');
-    const now = new Date();
     const promises = [];
 
     const flows = [];
@@ -646,12 +652,15 @@ const upsertComponentUsage = async (componentId, flowIds) => {
           $each: flows,
         },
       },
+      createdAt: Date.now(),
     };
 
     for (let i = 0; i < models.length; i += 1) {
-      const currentModel = models[i];
+      const currentModel = models[i].model;
+      const createdAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
+      const max = createdAt + models[i].timeWindow * 60 * 1000;
       promises.push(currentModel.updateOne(
-        { componentId, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
+        { componentId, createdAt: { $gte: createdAt, $lte: max } },
         dataEntry,
         { upsert: true, setDefaultsOnInsert: true },
       ));
@@ -669,7 +678,6 @@ const upsertComponentUsage = async (componentId, flowIds) => {
 const upsertComponent = async (componentData) => {
   try {
     const models = modelCreator.getModelsByType('components');
-    const now = new Date();
     const promises = [];
 
     const dataEntry = {
@@ -678,12 +686,15 @@ const upsertComponent = async (componentData) => {
       owners: componentData.owners,
       status: (componentData.active) ? 'active' : 'inactive',
       // statusChangedAt: Date.now(),
+      createdAt: Date.now(),
     };
 
     for (let i = 0; i < models.length; i += 1) {
-      const currentModel = models[i];
+      const currentModel = models[i].model;
+      const createdAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
+      const max = createdAt + models[i].timeWindow * 60 * 1000;
       promises.push(currentModel.updateOne(
-        { componentId: componentData.artifactId, createdAt: { $lte: now }, intervalEnd: { $gte: now } },
+        { componentId: componentData.artifactId, createdAt: { $gte: createdAt, $lte: max } },
         dataEntry,
         { upsert: true, setDefaultsOnInsert: true },
       ));
