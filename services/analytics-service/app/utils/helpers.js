@@ -137,13 +137,7 @@ async function getAllTemplates(auth) {
 
 async function getUsers(auth) {
   try {
-    const query = {
-      meta: true,
-    };
-
-    const string = qs.stringify(query, { addQueryPrefix: true });
-
-    const url = `${config.iamUrl}/api/v1/users${string}`;
+    const url = `${config.iamUrl}/api/v1/users`;
 
     const response = await fetch(
       url,

@@ -5,6 +5,7 @@
 
 const mongoose = require('mongoose');
 const nock = require('nock');
+const dayjs = require('dayjs');
 
 process.env.MONGODB_URL = global.__MONGO_URI__;
 
@@ -29,7 +30,7 @@ let app;
 
 beforeAll(async () => {
   iamMock.setup();
-  mainServer.setupMiddleware();
+  // mainServer.setupMiddleware();
   await mainServer.setupRoutes();
   await mainServer.setupSwagger();
   await mainServer.setup(mongoose);
@@ -40,11 +41,22 @@ beforeAll(async () => {
 
 describe('/userStats', () => {
   test('should update userStats when polled', async () => {
-    nock('http://localhost:3099/api/v1/users')
-      .get('')
-      .reply(200, [{ safeguard: { lastLogin: Date.now() } }]);
+    nock('http://localhost:3099')
+      .get('/api/v1/users')
+      .reply(200, [{ safeguard: { lastLogin: dayjs().valueOf() } }, { safeguard: { lastLogin: dayjs().subtract(8, 'day').valueOf() } }, { safeguard: { lastLogin: dayjs().subtract(70, 'day').valueOf() } }]);
 
     await getAndUpdateUserStats('Bearer Test');
+
+    const userStats = await modelCreator.models.userStats_15min.find().lean();
+
+    expect(userStats.length).toEqual(1);
+    const bucket = userStats[0];
+
+    log.debug(bucket);
+
+    expect(bucket.total).toEqual(3);
+    expect(bucket.recentlyActive).toEqual(1);
+    expect(bucket.inactive).toEqual(1);
   });
 
   // test('should get all flowStats in a specified time window', async () => {

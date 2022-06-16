@@ -15,7 +15,7 @@ const general = {
   governanceServiceUrl: process.env.GOVERNANCE_SERVICE_BASE_URL || false,
   dataHubUrl: process.env.DATA_HUB_BASE_URL || false,
   componentRepoUrl: process.env.COMPONENT_REPO_BASE_URL || false,
-  iamUrl: process.env.IAM_BASE_URL || false,
+  iamUrl: process.env.IAM_BASE_URL || 'http://localhost:3099',
   timeWindows: {
     '15min': 15,
     hour: 60,

@@ -1,6 +1,7 @@
 /* eslint guard-for-in: "off" */
 /* eslint no-continue: "off" */
 const dayjs = require('dayjs');
+const log = require('../config/logger');
 
 const {
   getFlows,
@@ -88,28 +89,32 @@ async function getAndUpdateFlowTemplates(auth) {
 }
 
 async function getAndUpdateUserStats(auth) {
-  const users = await getUsers(auth);
-  const activeDay = dayjs().subtract(config.userRecentlyActivePeriod);
-  const inactiveDay = dayjs().subtract(config.userInactivePeriod);
+  try {
+    const users = await getUsers(auth);
+    const activeDay = dayjs().subtract(config.userRecentlyActivePeriod, 'day');
+    const inactiveDay = dayjs().subtract(config.userInactivePeriod, 'day');
 
-  const userStats = {
-    total: users.length,
-    recentlyActive: 0,
-    inactive: 0,
-  };
+    const userStats = {
+      total: users.length,
+      recentlyActive: 0,
+      inactive: 0,
+    };
 
-  for (let i = 0; i < users.length; i += 1) {
-    if (!dayjs.isValid(users[i].safeguard.lastLogin)) continue;
+    for (let i = 0; i < users.length; i += 1) {
+      if (!dayjs(users[i].safeguard.lastLogin).isValid()) continue;
 
-    const loginDate = dayjs(users[i].safeguard.lastLogin);
-    if (loginDate.isAfter(activeDay)) {
-      userStats.recentlyActive += 1;
-    } else if (loginDate.isBefore(inactiveDay)) {
-      userStats.inactive += 1;
+      const loginDate = dayjs(users[i].safeguard.lastLogin);
+      if (loginDate.isAfter(activeDay)) {
+        userStats.recentlyActive += 1;
+      } else if (loginDate.isBefore(inactiveDay)) {
+        userStats.inactive += 1;
+      }
     }
-  }
 
-  await updateUserStats(userStats);
+    await updateUserStats(userStats);
+  } catch (e) {
+    log.error(e);
+  }
 }
 
 module.exports = {
