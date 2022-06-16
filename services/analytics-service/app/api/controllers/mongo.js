@@ -114,12 +114,19 @@ const updateFlowStats = async (stats) => {
     const promises = [];
 
     for (let i = 0; i < models.length; i += 1) {
-      const currentModel = models[i];
+      const currentModel = models[i].model;
+      const bucketStartAt = decideBucket(now, models[i].timeWindow);
+      const before = bucketStartAt - models[i].timeWindow;
 
-      const currentObject = await currentModel.findOne({ createdAt: { $lte: now }, intervalEnd: { $gte: now } }).lean();
+      const currentObject = await currentModel.findOne({ bucketStartAt: { $lte: now, $gte: before } }).lean();
 
       if (!currentObject) {
-        promises.push(new currentModel(stats).save());
+        const newStats = {
+          active: stats.active,
+          inactive: stats.inactive,
+          bucketStartAt,
+        };
+        promises.push(new currentModel(newStats).save());
       } else {
         // TODO: Use some sort of weighted average for better accuracy
         const averageActive = Math.round((stats.active + currentObject.active) / 2);
@@ -143,8 +150,9 @@ const getFlowStats = async (interval, from, until) => {
   try {
     const query = {};
 
-    if (from) query.createdAt = { $gte: from };
-    if (until) query.intervalEnd = { $lte: until };
+    if (from && until) query.bucketStartAt = { $gte: from, $lte: until };
+    else if (from) query.bucketStartAt = { $gte: from };
+    else if (until) query.bucketStartAt = { $lte: until };
 
     const flowStats = await modelCreator.models[`flowStats_${interval}`].find(query).sort({ createdAt: 1 });
     const count = await modelCreator.models[`flowStats_${interval}`].countDocuments();
@@ -758,7 +766,7 @@ const updateUserStats = async (stats) => {
     const promises = [];
 
     for (let i = 0; i < models.length; i += 1) {
-      const currentModel = models[i];
+      const currentModel = models[i].model;
 
       const currentObject = await currentModel.findOne({ bucketStartAt: { $lte: now }, intervalEnd: { $gte: now } }).lean();
 
@@ -769,8 +777,8 @@ const updateUserStats = async (stats) => {
           inactive: stats.inactive,
           total: stats.total,
           bucketStartAt,
-        }
-        promises.push(new currentModel(stats).save());
+        };
+        promises.push(new currentModel(newStats).save());
       } else {
         // TODO: Use some sort of weighted average for better accuracy
         const averageActive = Math.round((stats.recentlyActive + currentObject.recentlyActive) / 2);

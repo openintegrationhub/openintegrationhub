@@ -15,7 +15,7 @@ const {
   upsertComponentUsage,
   upsertComponent,
   upsertFlowTemplate,
-  updateUserStats
+  updateUserStats,
 } = require('../api/controllers/mongo');
 
 const config = require('../config');

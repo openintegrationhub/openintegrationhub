@@ -44,27 +44,25 @@ describe('/flowStats', () => {
     const early = {
       active: 10,
       inactive: 5,
-      createdAt: from - 60000,
+      bucketStartAt: from - 60000,
     };
 
     const current1 = {
       active: 12,
       inactive: 7,
-      createdAt: from + 1,
-      intervalEnd: from + 2,
+      bucketStartAt: from + 1,
     };
 
     const current2 = {
       active: 15,
       inactive: 9,
-      createdAt: until - 2,
-      intervalEnd: until - 1,
+      bucketStartAt: until - 2,
     };
 
     const late = {
       active: 20,
       inactive: 10,
-      intervalEnd: until + 60000,
+      bucketStartAt: until + 60000,
     };
 
     await new modelCreator.models.flowStats_15min(early).save();

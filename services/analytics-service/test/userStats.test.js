@@ -22,7 +22,7 @@ const mainServer = new Server();
 const modelCreator = require('../app/models/modelCreator'); // eslint-disable-line
 
 const log = require('../app/config/logger');
-const {getAndUpdateUserStats} = require('../app/utils/gatherStats')
+const { getAndUpdateUserStats } = require('../app/utils/gatherStats');
 
 let functionId;
 let app;
@@ -42,11 +42,10 @@ describe('/userStats', () => {
   test('should update userStats when polled', async () => {
     nock('http://localhost:3099/api/v1/users')
       .get('')
-      .reply(200, [{ safeguard: }]);
+      .reply(200, [{ safeguard: { lastLogin: Date.now() } }]);
 
-    await getAndUpdateUserStats('Bearer Test')
-  })
-
+    await getAndUpdateUserStats('Bearer Test');
+  });
 
   // test('should get all flowStats in a specified time window', async () => {
   //   const until = Date.now();

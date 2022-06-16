@@ -8,7 +8,7 @@ const { componentsData } = require('./schemas/componentsData.schemaObject');
 const { flowData } = require('./schemas/flowData.schemaObject');
 const { flowTemplateData } = require('./schemas/flowTemplateData.schemaObject');
 const { flowStats } = require('./schemas/flowStats.schemaObject');
-const { userStats } = require('./schemas/flowStats.schemaObject');
+const { userStats } = require('./schemas/userStats.schemaObject');
 
 const log = require('../config/logger');
 const config = require('../config/index');

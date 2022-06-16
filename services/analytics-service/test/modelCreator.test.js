@@ -71,13 +71,13 @@ describe('modelCreator Operations', () => {
     }
   });
 
-  test('should correctly instance default timestamps', async () => {
-    const testObject15Mins = await new modelCreator.models.flows_15min({}).save();
-    expect(testObject15Mins.intervalEnd.getTime()).toEqual(testObject15Mins.createdAt.getTime() + (15 * 60000));
-
-    const testObjectDay = await new modelCreator.models.flows_day({}).save();
-    expect(testObjectDay.intervalEnd.getTime()).toEqual(testObjectDay.createdAt.getTime() + (60 * 24 * 60000));
-  });
+  // test('should correctly instance default timestamps', async () => {
+  //   const testObject15Mins = await new modelCreator.models.flows_15min({}).save();
+  //   expect(testObject15Mins.intervalEnd.getTime()).toEqual(testObject15Mins.createdAt.getTime() + (15 * 60000));
+  //
+  //   const testObjectDay = await new modelCreator.models.flows_day({}).save();
+  //   expect(testObjectDay.intervalEnd.getTime()).toEqual(testObjectDay.createdAt.getTime() + (60 * 24 * 60000));
+  // });
 
   test('should get models by type', async () => {
     const flowModels = modelCreator.getModelsByType('flows');
