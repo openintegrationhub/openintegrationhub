@@ -482,6 +482,31 @@ const getAllComponentsData = async ( // eslint-disable-line
             },
           },
         },
+        {
+          $project: {
+            'errorData': {
+              $reduce: {
+                input: '$errorData',
+                initialValue: [],
+                in: { $concatArrays: ['$$value', '$$this'] },
+              },
+            },
+            'usage': {
+              $reduce: {
+                input: '$usage',
+                initialValue: [],
+                in: { $concatArrays: ['$$value', '$$this'] },
+              },
+            },
+            'owners': {
+              $reduce: {
+                input: '$owners',
+                initialValue: [],
+                in: { $concatArrays: ['$$value', '$$this'] },
+              },
+            },
+          },
+        },
       ]));
     }
     const collectionKey = `components_${timeFrame}`;
