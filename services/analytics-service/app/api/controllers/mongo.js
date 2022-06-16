@@ -460,9 +460,7 @@ const getAllComponentsData = async ( // eslint-disable-line
   try {
     if (config.timeWindows[timeFrame] > 1440 && 'day' in config.timeWindows) {
       // Group day buckets
-      // @todo: config.timeWindows[timeFrame] "number of days"
       const collectionKey = 'components_day';
-
       resolve(await modelCreator.models[collectionKey].aggregate([
         { '$match': qry },
         {
@@ -470,6 +468,9 @@ const getAllComponentsData = async ( // eslint-disable-line
             _id: {
               year: { $year: '$bucketStartAt' },
               month: { $month: '$bucketStartAt' },
+              timeFrame: {
+                '$dateTrunc': { date: '$bucketStartAt', unit: 'minute', binSize: config.timeWindows[timeFrame] },
+              },
             },
             errorData: {
               $push: '$errorData',
