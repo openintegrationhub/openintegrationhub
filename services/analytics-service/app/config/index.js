@@ -16,6 +16,7 @@ const general = {
   dataHubUrl: process.env.DATA_HUB_BASE_URL || false,
   componentRepoUrl: process.env.COMPONENT_REPO_BASE_URL || false,
   iamUrl: process.env.IAM_BASE_URL || 'http://localhost:3099',
+  iamToken: process.env.IAM_TOKEN || false,
   timeWindows: {
     '15min': 15,
     hour: 60,
@@ -28,7 +29,6 @@ const general = {
     day: 60 * 24 * 30,
     '30days': 60 * 24 * 30 * 12,
   },
-  smallestWindow: '15min',
   analyticsServiceBaseUrl: process.env.ANALYTICS_SERVICE_BASE_URL || 'http://localhost:3009',
   userRecentlyActivePeriod: process.env.USER_RECENT_ACTIVE_PERIOD || '7',
   userInactivePeriod: process.env.USER_INACTIVE_PERIOD || '60',

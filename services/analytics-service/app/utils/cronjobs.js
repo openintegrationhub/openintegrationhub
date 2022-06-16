@@ -7,6 +7,7 @@ const {
   getAndUpdateFlowStats,
   getAndUpdateComponents,
   getAndUpdateFlowTemplates,
+  getAndUpdateUserStats
 } = require('./gatherStats');
 
 let jobTest; // eslint-disable-line no-unused-vars
@@ -24,9 +25,12 @@ function createCronJobs() {
     log.info('Getting flow stats via cron', Date.now());
 
     // @todo: we need to pass auth
-    await getAndUpdateComponents();
-    await getAndUpdateFlowTemplates();
-    await getAndUpdateFlowStats();
+    const auth = `Bearer ${config.iamToken}`;
+
+    await getAndUpdateComponents(auth);
+    await getAndUpdateFlowTemplates(auth);
+    await getAndUpdateFlowStats(auth);
+    await getAndUpdateUserStats(auth);
   });
 
   const ruleTest = new schedule.RecurrenceRule();
