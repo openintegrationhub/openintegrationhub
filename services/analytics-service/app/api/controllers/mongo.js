@@ -475,7 +475,7 @@ const getAllComponentsData = async ( // eslint-disable-line
               $push: '$errorData',
             },
             usage: {
-              $push: '$usage',
+              $push: '$usage.objectId',
             },
             owners: {
               $push: '$owners',
