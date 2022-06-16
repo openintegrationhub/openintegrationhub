@@ -1,5 +1,11 @@
 const fetch = require('node-fetch');
 const qs = require('qs');
+
+const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+
+dayjs.extend(utc);
+
 const config = require('../config');
 const log = require('../config/logger');
 
@@ -215,7 +221,9 @@ function decideBucket(timestamp, bucketSize) {
   const x = timestamp / windowSize;
   let cleanTimestamp = Math.ceil(x) * windowSize - windowSize;
   // Fix for start of js timestamp (GMT: Thursday, January 1, 1970 12:00:00 AM)
-  cleanTimestamp -= 12 * 60 * 60 * 1000;
+  if (bucketSize >= 1440) {
+    cleanTimestamp = dayjs(cleanTimestamp).utc().startOf('day').valueOf();
+  }
   return cleanTimestamp;
 }
 
