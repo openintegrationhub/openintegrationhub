@@ -100,7 +100,7 @@ router.get('/', jsonParser, async (req, res) => {
       customFieldNames = req.query.fieldNames;
     }
 
-    const response = await storage.getAllFlowData(
+    const response = await storage.getAllComponentsData(
       timeFrame,
       req.user,
       pageSize,
@@ -125,7 +125,7 @@ router.get('/:id', jsonParser, async (req, res) => {
   const timeFrame = req.query.timeframe;
 
   try {
-    const response = await storage.getFlowData(timeFrame, req.user, componentsId);
+    const response = await storage.getComponentsData(timeFrame, req.user, componentsId);
     return res.status(200).send(response);
   } catch (e) {
     log.error(e);

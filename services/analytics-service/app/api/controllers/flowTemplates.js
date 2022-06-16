@@ -89,7 +89,7 @@ router.get('/', jsonParser, async (req, res) => {
       customFieldNames = req.query.fieldNames;
     }
 
-    const response = await storage.getAllFlowData(
+    const response = await storage.getAllFlowTemplateData(
       timeFrame,
       req.user,
       pageSize,
