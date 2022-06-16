@@ -63,7 +63,7 @@ beforeAll(async () => {
   modelCreator.createModels();
 });
 
-describe('DB Operations', () => {
+describe.only('DB Operations', () => {
   test('should create a new flow data entry', async () => {
     const timeFrame = Object.entries(config.timeWindows).sort((a, b) => b[1] - a[1])[0][0];
     const result = await storage.createFlowData(timeFrame, { tenant: 'someTenantId', isAdmin: true }, exampleFlowData);
@@ -165,7 +165,7 @@ describe('DB Operations', () => {
     }
   });
 
-  test.only('should upsert flow usage across all timeframes', async () => {
+  test('should upsert flow usage across all timeframes', async () => {
     const result1 = await storage.upsertFlowTemplateUsage('template 1', ['flow 1']);
     expect(result1).toEqual(true);
 
@@ -182,7 +182,7 @@ describe('DB Operations', () => {
     }
   });
 
-  test.only('should upsert component usage across all timeframes', async () => {
+  test('should upsert component usage across all timeframes', async () => {
     const result1 = await storage.upsertComponentUsage('component 1', ['flow 1']);
     expect(result1).toEqual(true);
 
@@ -199,7 +199,31 @@ describe('DB Operations', () => {
     }
   });
 
-  // upsertComponentUsage(componentId, componentUsage[componentId]);
+  test.only('should get components data grouped', async () => {
+    const result1 = await storage.upsertComponentUsage('component 1', ['flow 1']);
+    expect(result1).toEqual(true);
+
+    const result2 = await storage.upsertComponentUsage('component 2', ['flow 2', 'flow 3']);
+    expect(result2).toEqual(true);
+
+    const result = await storage.getAllComponentsData(
+      '30days',
+      { isAdmin: true },
+    );
+
+    console.log('Result:', JSON.stringify(result));
+
+    expect(result[0].usageCount).toEqual(2);
+    expect(result[0].errorCount).toEqual(2);
+
+    expect(result[0].usage.length).toEqual(2);
+    expect(result[0].usage[0][0].objectId).toEqual('flow 1');
+    expect(result[0].usage[1][0].objectId).toEqual('flow 2');
+    expect(result[0].usage[1][1].objectId).toEqual('flow 3');
+
+    expect(result[0].errorData.length).toEqual(2);
+    expect(result[0].owners.length).toEqual(2);
+  });
 });
 
 afterAll(async () => {

@@ -40,7 +40,7 @@ beforeAll(async () => {
 });
 
 describe('flow errors', () => {
-  test.only('should add a flow error message to db', async () => {
+  test('should add a flow error message to db', async () => {
     const message = {
       flowId: 'Flow1',
       componentId: 'Component1',
@@ -60,7 +60,6 @@ describe('flow errors', () => {
       expect(result.matchedCount).toEqual(0);
 
       const data = await storage.getFlowData(timeFrame, { isAdmin: true }, message.flowId);
-      console.log('data:', data);
 
       expect(data.flowId).toEqual(message.flowId);
       expect(data.errorCount).toEqual(1);

@@ -25,7 +25,7 @@ router.get('/', jsonParser, async (req, res) => {
   const statusValues = ['active', 'inactive', 'starting', 'stopping'];
 
   const sortableFields = { createdAt: 1, updatedAt: 1, statusChangedAt: 1 };
-  let sortField = 'statusChangedAt';
+  let sortField = 'bucketStartAt';
   let sortOrder = '1';
 
   const defaultTimeFrame = Object.entries(config.timeWindows).sort((a, b) => b[1] - a[1])[0][0];
@@ -33,7 +33,7 @@ router.get('/', jsonParser, async (req, res) => {
 
   try {
     if (!(timeFrame in config.timeWindows)) {
-      return res.status(400).send({ errors: [{ message: `Invalid parameter timeFrame. Must be one of: ${config.timeWindows.join(',')}`, code: 400 }] });
+      return res.status(400).send({ errors: [{ message: `Invalid parameter timeFrame. Must be one of: ${Object.keys(config.timeWindows).join(',')}`, code: 400 }] });
     }
 
     // page[size]

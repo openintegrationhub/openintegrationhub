@@ -89,7 +89,7 @@ const getAllFlowData = async ( // eslint-disable-line
 const createFlowData = async (timeFrame, user, flowData) => {
   try {
     if (!user.isAdmin) {
-      console.log('Error: User is not admin');
+      log.error('Error: User is not admin');
       return false;
     }
 
@@ -100,7 +100,7 @@ const createFlowData = async (timeFrame, user, flowData) => {
     const response = await storeFlowData.save();
     return response._doc;
   } catch (e) {
-    console.log(e);
+    log.error(e);
     log.error(e);
     return false;
   }
@@ -139,7 +139,7 @@ const updateFlowStats = async (stats) => {
     await Promise.all(promises);
     return true;
   } catch (e) {
-    console.log(e);
+    log.error(e);
     log.error(e);
     return false;
   }
@@ -162,7 +162,7 @@ const getFlowStats = async (interval, from, until) => {
       meta: { count },
     };
   } catch (e) {
-    console.log(e);
+    log.error(e);
     log.error(e);
     return { data: [], meta: { count: 0 } };
   }
@@ -422,7 +422,7 @@ const getAllComponentsData = async ( // eslint-disable-line
   }
 
   const qry = {};
-  qry.owners = user.tenant;
+  if (user && user.tenant) qry.owners = user.tenant;
 
   let fieldNames;
   if (customFieldNames) fieldNames = customFieldNames;
@@ -438,11 +438,14 @@ const getAllComponentsData = async ( // eslint-disable-line
   }
 
   if (from) {
-    qry.updatedAt = { $gte: new Date(from) };
+    const start = decideBucket(from, config.timeWindows[timeFrame]);
+    qry.bucketStartAt = { $gte: start };
   }
 
   if (until) {
-    qry.updatedAt = { $lte: new Date(until) };
+    if (!qry.bucketStartAt) qry.bucketStartAt = {};
+    const end = decideBucket(from, config.timeWindows[timeFrame]);
+    qry.bucketStartAt = { $lte: end };
   }
 
   // , sortField, sortOrder
@@ -454,20 +457,53 @@ const getAllComponentsData = async ( // eslint-disable-line
     sort.updatedAt = 1;
   }
 
-  const collectionKey = `components_${timeFrame}`;
-  const count = await modelCreator.models[collectionKey].countDocuments(qry);
+  try {
+    if (config.timeWindows[timeFrame] > 1440 && 'day' in config.timeWindows) {
+      // Group day buckets
+      // @todo: config.timeWindows[timeFrame] "number of days"
+      const collectionKey = 'components_day';
 
-  const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
+      resolve(await modelCreator.models[collectionKey].aggregate([
+        { '$match': qry },
+        {
+          '$group': {
+            _id: {
+              year: { $year: '$bucketStartAt' },
+              month: { $month: '$bucketStartAt' },
+            },
+            usageCount: { $count: {} },
+            errorCount: { $count: {} },
+            errorData: {
+              $push: '$errorData',
+            },
+            usage: {
+              $push: '$usage',
+            },
+            owners: {
+              $push: '$owners',
+            },
+          },
+        },
+      ]));
+    }
+    const collectionKey = `components_${timeFrame}`;
+    const count = await modelCreator.models[collectionKey].countDocuments(qry);
 
-  modelCreator.models[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
-    .lean()
-    .then((doc) => {
-      const componentsList = doc;
-      resolve({ data: componentsList, meta: { total: count } });
-    })
-    .catch((err) => {
-      log.error(err);
-    });
+    const pageOffset = (pageNumber) ? ((pageNumber - 1) * pageSize) : 0;
+
+    modelCreator.models[collectionKey].find(qry, fieldNames).sort(sort).skip(pageOffset).limit(pageSize)
+      .lean()
+      .then((doc) => {
+        const componentsList = doc;
+        resolve({ data: componentsList, meta: { total: count } });
+      })
+      .catch((err) => {
+        log.error(err);
+      });
+  } catch (e) {
+    log.error(e);
+    resolve(false);
+  }
 });
 
 // Creates a new flow data entry
@@ -575,7 +611,6 @@ const addFlowErrorMessage = async (timeFrame, message) => {
     const max = bucketStartAt + timeWindow * 60 * 1000;
 
     const collectionKey = `flows_${timeFrame}`;
-    console.log('collectionKey', collectionKey);
 
     const errorMessage = {
       componentId: message.componentId,
@@ -793,7 +828,7 @@ const updateUserStats = async (stats) => {
     await Promise.all(promises);
     return true;
   } catch (e) {
-    console.log(e);
+    log.error(e);
     log.error(e);
     return false;
   }

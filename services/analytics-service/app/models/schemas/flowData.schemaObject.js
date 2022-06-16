@@ -33,7 +33,7 @@ const flowData = {
     type: 'Number',
     default: 0,
   },
-  bucketStartAt: { type: 'Number', default: 0 },
+  bucketStartAt: { type: 'Date', default: 0 },
 };
 
 module.exports.flowData = flowData;

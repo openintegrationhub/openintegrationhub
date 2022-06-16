@@ -31,7 +31,7 @@ router.get('/', jsonParser, async (req, res) => {
 
   try {
     if (!(timeFrame in config.timeWindows)) {
-      return res.status(400).send({ errors: [{ message: `Invalid parameter timeFrame. Must be one of: ${config.timeWindows.join(',')}`, code: 400 }] });
+      return res.status(400).send({ errors: [{ message: `Invalid parameter timeFrame. Must be one of: ${Object.keys(config.timeWindows).join(',')}`, code: 400 }] });
     }
 
     // page[size]
