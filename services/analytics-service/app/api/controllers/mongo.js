@@ -52,11 +52,14 @@ const getAllFlowData = async ( // eslint-disable-line
   }
 
   if (from) {
-    qry.updatedAt = { $gte: new Date(from) };
+    const start = decideBucket(from, config.timeWindows[timeFrame]);
+    qry.bucketStartAt = { $gte: start };
   }
 
   if (until) {
-    qry.updatedAt = { $lte: new Date(until) };
+    if (!qry.bucketStartAt) qry.bucketStartAt = {};
+    const end = decideBucket(from, config.timeWindows[timeFrame]);
+    qry.bucketStartAt = { $lte: end };
   }
 
   // , sortField, sortOrder
@@ -66,6 +69,59 @@ const getAllFlowData = async ( // eslint-disable-line
     sort[sortField] = sortOrder;
   } else {
     sort.updatedAt = 1;
+  }
+
+  if (config.timeWindows[timeFrame] > 1440 && 'day' in config.timeWindows) {
+    // Group day buckets
+    const collectionKey = 'flows_day';
+    resolve(await modelCreator.models[collectionKey].aggregate([
+      { '$match': qry },
+      {
+        '$group': {
+          _id: {
+            year: { $year: '$bucketStartAt' },
+            month: { $month: '$bucketStartAt' },
+            timeFrame: {
+              '$dateTrunc': { date: '$bucketStartAt', unit: 'minute', binSize: config.timeWindows[timeFrame] },
+            },
+          },
+          errorData: {
+            $push: '$errorData',
+          },
+          usage: {
+            $push: '$usage.objectId',
+          },
+          owners: {
+            $push: '$owners',
+          },
+        },
+      },
+      {
+        $project: {
+          'errorData': {
+            $reduce: {
+              input: '$errorData',
+              initialValue: [],
+              in: { $concatArrays: ['$$value', '$$this'] },
+            },
+          },
+          'usage': {
+            $reduce: {
+              input: '$usage',
+              initialValue: [],
+              in: { $concatArrays: ['$$value', '$$this'] },
+            },
+          },
+          'owners': {
+            $reduce: {
+              input: '$owners',
+              initialValue: [],
+              in: { $concatArrays: ['$$value', '$$this'] },
+            },
+          },
+        },
+      },
+    ]));
   }
 
   const collectionKey = `flows_${timeFrame}`;
@@ -274,11 +330,14 @@ const getAllFlowTemplateData = async ( // eslint-disable-line
   }
 
   if (from) {
-    qry.updatedAt = { $gte: new Date(from) };
+    const start = decideBucket(from, config.timeWindows[timeFrame]);
+    qry.bucketStartAt = { $gte: start };
   }
 
   if (until) {
-    qry.updatedAt = { $lte: new Date(until) };
+    if (!qry.bucketStartAt) qry.bucketStartAt = {};
+    const end = decideBucket(from, config.timeWindows[timeFrame]);
+    qry.bucketStartAt = { $lte: end };
   }
 
   // , sortField, sortOrder
@@ -288,6 +347,49 @@ const getAllFlowTemplateData = async ( // eslint-disable-line
     sort[sortField] = sortOrder;
   } else {
     sort.updatedAt = 1;
+  }
+
+  if (config.timeWindows[timeFrame] > 1440 && 'day' in config.timeWindows) {
+    // Group day buckets
+    const collectionKey = 'flowTemplates_day';
+    resolve(await modelCreator.models[collectionKey].aggregate([
+      { '$match': qry },
+      {
+        '$group': {
+          _id: {
+            year: { $year: '$bucketStartAt' },
+            month: { $month: '$bucketStartAt' },
+            timeFrame: {
+              '$dateTrunc': { date: '$bucketStartAt', unit: 'minute', binSize: config.timeWindows[timeFrame] },
+            },
+          },
+          usage: {
+            $push: '$usage.objectId',
+          },
+          owners: {
+            $push: '$owners',
+          },
+        },
+      },
+      {
+        $project: {
+          'usage': {
+            $reduce: {
+              input: '$usage',
+              initialValue: [],
+              in: { $concatArrays: ['$$value', '$$this'] },
+            },
+          },
+          'owners': {
+            $reduce: {
+              input: '$owners',
+              initialValue: [],
+              in: { $concatArrays: ['$$value', '$$this'] },
+            },
+          },
+        },
+      },
+    ]));
   }
 
   const collectionKey = `flowTemplates_${timeFrame}`;
