@@ -40,7 +40,7 @@ beforeAll(async () => {
 });
 
 describe('flow errors', () => {
-  test('should add a flow error message to db', async () => {
+  test.only('should add a flow error message to db', async () => {
     const message = {
       flowId: 'Flow1',
       componentId: 'Component1',
@@ -48,7 +48,7 @@ describe('flow errors', () => {
       errorName: '404',
       errorText: 'Api endpoint not found',
       errorStack: 'Stack data 1',
-      timestamp: Date.now(),
+      timestamp: 1609506061000,
     };
 
     for (const timeFrame in config.timeWindows) {
@@ -60,6 +60,7 @@ describe('flow errors', () => {
       expect(result.matchedCount).toEqual(0);
 
       const data = await storage.getFlowData(timeFrame, { isAdmin: true }, message.flowId);
+      console.log('data:', data);
 
       expect(data.flowId).toEqual(message.flowId);
       expect(data.errorCount).toEqual(1);
@@ -84,7 +85,7 @@ describe('flow errors', () => {
       errorName: '403',
       errorText: 'Auth failed',
       errorStack: 'Stack data 2',
-      timestamp: Date.now(),
+      timestamp: 1609506122000,
     };
 
     for (const timeFrame in config.timeWindows) {

@@ -30,6 +30,7 @@ const componentsData = {
     type: String,
   }], // tenantId
   errorData: [componentErrors],
+  bucketStartAt: { type: Number, default: 0 },
 };
 
 module.exports.componentsData = componentsData;

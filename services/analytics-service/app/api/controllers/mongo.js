@@ -563,8 +563,8 @@ const deleteComponentsData = async (timeFrame, user, id) => {
 const addFlowErrorMessage = async (timeFrame, message) => {
   try {
     const timeWindow = config.timeWindows[timeFrame];
-    const createdAt = decideBucket(message.timestamp, timeWindow);
-    const max = createdAt + timeWindow * 60 * 1000;
+    const bucketStartAt = decideBucket(message.timestamp, timeWindow);
+    const max = bucketStartAt + timeWindow * 60 * 1000;
 
     const collectionKey = `flows_${timeFrame}`;
     console.log('collectionKey', collectionKey);
@@ -585,9 +585,10 @@ const addFlowErrorMessage = async (timeFrame, message) => {
       },
       $inc: { errorCount: 1 },
       createdAt: message.timestamp,
+      bucketStartAt,
     };
 
-    return await modelCreator.models[collectionKey].updateOne({ flowId: message.flowId, createdAt: { $gte: createdAt, $lte: max } }, errorEntry, { upsert: true });
+    return await modelCreator.models[collectionKey].updateOne({ flowId: message.flowId, bucketStartAt: { $gte: bucketStartAt, $lte: max } }, errorEntry, { upsert: true });
   } catch (err) {
     log.error(err);
   }
@@ -617,10 +618,11 @@ const upsertFlowTemplateUsage = async (flowTemplateId, flowIds) => {
 
     for (let i = 0; i < models.length; i += 1) {
       const currentModel = models[i].model;
-      const createdAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
-      const max = createdAt + models[i].timeWindow * 60 * 1000;
+      const bucketStartAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
+      dataEntry.bucketStartAt = bucketStartAt;
+      const max = bucketStartAt + models[i].timeWindow * 60 * 1000;
       promises.push(currentModel.updateOne(
-        { flowTemplateId, createdAt: { $gte: createdAt, $lte: max } },
+        { flowTemplateId, bucketStartAt: { $gte: bucketStartAt, $lte: max } },
         dataEntry,
         { upsert: true, setDefaultsOnInsert: true },
       ));
@@ -657,10 +659,11 @@ const upsertComponentUsage = async (componentId, flowIds) => {
 
     for (let i = 0; i < models.length; i += 1) {
       const currentModel = models[i].model;
-      const createdAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
-      const max = createdAt + models[i].timeWindow * 60 * 1000;
+      const bucketStartAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
+      dataEntry.bucketStartAt = bucketStartAt;
+      const max = bucketStartAt + models[i].timeWindow * 60 * 1000;
       promises.push(currentModel.updateOne(
-        { componentId, createdAt: { $gte: createdAt, $lte: max } },
+        { componentId, bucketStartAt: { $gte: bucketStartAt, $lte: max } },
         dataEntry,
         { upsert: true, setDefaultsOnInsert: true },
       ));
@@ -691,10 +694,11 @@ const upsertComponent = async (componentData) => {
 
     for (let i = 0; i < models.length; i += 1) {
       const currentModel = models[i].model;
-      const createdAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
-      const max = createdAt + models[i].timeWindow * 60 * 1000;
+      const bucketStartAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
+      dataEntry.bucketStartAt = bucketStartAt;
+      const max = bucketStartAt + models[i].timeWindow * 60 * 1000;
       promises.push(currentModel.updateOne(
-        { componentId: componentData.artifactId, createdAt: { $gte: createdAt, $lte: max } },
+        { componentId: componentData.artifactId, bucketStartAt: { $gte: bucketStartAt, $lte: max } },
         dataEntry,
         { upsert: true, setDefaultsOnInsert: true },
       ));
@@ -723,16 +727,16 @@ const upsertFlowTemplate = async (templateData) => {
       flowTemplateId: templateData.id,
       flowTemplateName: templateData.name,
       owners: templateData.owners,
-      createdAt: Date.now(),
       steps,
     };
 
     for (let i = 0; i < models.length; i += 1) {
       const currentModel = models[i].model;
-      const createdAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
-      const max = createdAt + models[i].timeWindow * 60 * 1000;
+      const bucketStartAt = decideBucket(Date.now(), models[i].timeWindow);
+      dataEntry.bucketStartAt = bucketStartAt;
+      const max = bucketStartAt + models[i].timeWindow * 60 * 1000;
       promises.push(currentModel.updateOne(
-        { flowTemplateId: templateData.id, createdAt: { $gte: createdAt, $lte: max } },
+        { flowTemplateId: templateData.id, bucketStartAt: { $gte: bucketStartAt, $lte: max } },
         dataEntry,
         { upsert: true, setDefaultsOnInsert: true },
       ));

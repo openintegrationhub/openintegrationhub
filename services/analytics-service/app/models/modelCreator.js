@@ -53,7 +53,6 @@ const createModels = () => {
       // Components schema
       const newSchema = JSON.parse(JSON.stringify(componentsData));
       newSchema.createdAt = { type: Date, expires, default: Date.now };
-      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
 
       const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
@@ -64,7 +63,6 @@ const createModels = () => {
       // Flow schema
       const newSchema = JSON.parse(JSON.stringify(flowData));
       newSchema.createdAt = { type: Date, expires, default: Date.now };
-      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
 
       const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
@@ -75,7 +73,6 @@ const createModels = () => {
       // Flow template schema
       const newSchema = JSON.parse(JSON.stringify(flowTemplateData));
       newSchema.createdAt = { type: Date, expires, default: Date.now };
-      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
 
       const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);
@@ -86,7 +83,6 @@ const createModels = () => {
       // Flow stats schema
       const newSchema = JSON.parse(JSON.stringify(flowStats));
       newSchema.createdAt = { type: Date, expires, default: Date.now };
-      newSchema.intervalEnd = { type: Date, default: () => Date.now() + (config.timeWindows[key] * 60000) };
 
       const mongooseSchema = new Schema(newSchema, { collection: collectionKey, timestamps: true });
       models[collectionKey] = mongoose.model(collectionKey, mongooseSchema);

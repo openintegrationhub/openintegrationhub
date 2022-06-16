@@ -219,7 +219,10 @@ async function getAllComponents(auth) {
 function decideBucket(timestamp, bucketSize) {
   const windowSize = bucketSize * 60 * 1000;
   const x = timestamp / windowSize;
-  return Math.ceil(x) * windowSize - windowSize;
+  let cleanTimestamp = Math.ceil(x) * windowSize - windowSize;
+  // Fix for start of js timestamp (GMT: Thursday, January 1, 1970 12:00:00 AM)
+  cleanTimestamp -= 12 * 60 * 60 * 1000;
+  return cleanTimestamp;
 }
 
 module.exports = {
