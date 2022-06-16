@@ -10,7 +10,7 @@ const general = {
   storage: 'mongo',
 
   loggingServiceUrl: process.env.LOGGING_SERVICE_BASE_URL || false,
-  flowRepoUrl: process.env.FLOW_REPO_BASE_URL || false,
+  flowRepoUrl: process.env.FLOW_REPO_BASE_URL || 'http://localhost:3001',
   templateRepoUrl: process.env.TEMPLATE_REPO_BASE_URL || false,
   governanceServiceUrl: process.env.GOVERNANCE_SERVICE_BASE_URL || false,
   dataHubUrl: process.env.DATA_HUB_BASE_URL || false,

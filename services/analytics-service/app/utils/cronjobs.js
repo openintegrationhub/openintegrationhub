@@ -7,7 +7,7 @@ const {
   getAndUpdateFlowStats,
   getAndUpdateComponents,
   getAndUpdateFlowTemplates,
-  getAndUpdateUserStats
+  getAndUpdateUserStats,
 } = require('./gatherStats');
 
 let jobTest; // eslint-disable-line no-unused-vars

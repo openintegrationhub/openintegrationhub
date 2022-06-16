@@ -67,7 +67,7 @@ async function getAndUpdateFlowStats(auth) {
 
   const total = active + inactive;
 
-  await updateFlowStats(active, inactive, total);
+  await updateFlowStats({ active, inactive, total });
 }
 
 async function getAndUpdateComponents(auth) {
@@ -101,9 +101,10 @@ async function getAndUpdateUserStats(auth) {
     };
 
     for (let i = 0; i < users.length; i += 1) {
-      if (!dayjs(users[i].safeguard.lastLogin).isValid()) continue;
-
       const loginDate = dayjs(users[i].safeguard.lastLogin);
+
+      if (!loginDate.isValid()) continue;
+
       if (loginDate.isAfter(activeDay)) {
         userStats.recentlyActive += 1;
       } else if (loginDate.isBefore(inactiveDay)) {

@@ -67,7 +67,7 @@ async function getFlows(auth, status) {
         },
       );
 
-      const body = response.json();
+      const body = await response.json();
 
       if (body.data && body.data.length) {
         flows = flows.concat(body.data);
