@@ -30,10 +30,10 @@ const flowData = {
   }], // tenantId
   errorData: [flowErrors],
   errorCount: {
-    type: Number,
+    type: 'Number',
     default: 0,
   },
-  bucketStartAt: { type: Number, default: 0 },
+  bucketStartAt: { type: 'Number', default: 0 },
 };
 
 module.exports.flowData = flowData;

@@ -13,7 +13,7 @@ const flowTemplatesData = {
   owners: [{
     type: String,
   }], // tenantId
-  bucketStartAt: { type: Number, default: 0 },
+  bucketStartAt: { type: 'Number', default: 0 },
 };
 
 module.exports.flowTemplateData = flowTemplatesData;

@@ -760,9 +760,16 @@ const updateUserStats = async (stats) => {
     for (let i = 0; i < models.length; i += 1) {
       const currentModel = models[i];
 
-      const currentObject = await currentModel.findOne({ createdAt: { $lte: now }, intervalEnd: { $gte: now } }).lean();
+      const currentObject = await currentModel.findOne({ bucketStartAt: { $lte: now }, intervalEnd: { $gte: now } }).lean();
 
       if (!currentObject) {
+        const bucketStartAt = decideBucket(Date.now(), currentModel.timeWindow);
+        const newStats = {
+          recentlyActive: stats.recentlyActive,
+          inactive: stats.inactive,
+          total: stats.total,
+          bucketStartAt,
+        }
         promises.push(new currentModel(stats).save());
       } else {
         // TODO: Use some sort of weighted average for better accuracy
