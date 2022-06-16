@@ -213,9 +213,6 @@ describe.only('DB Operations', () => {
 
     console.log('Result:', JSON.stringify(result));
 
-    expect(result[0].usageCount).toEqual(2);
-    expect(result[0].errorCount).toEqual(2);
-
     expect(result[0].usage.length).toEqual(2);
     expect(result[0].usage[0][0].objectId).toEqual('flow 1');
     expect(result[0].usage[1][0].objectId).toEqual('flow 2');

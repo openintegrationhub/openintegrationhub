@@ -471,8 +471,6 @@ const getAllComponentsData = async ( // eslint-disable-line
               year: { $year: '$bucketStartAt' },
               month: { $month: '$bucketStartAt' },
             },
-            usageCount: { $count: {} },
-            errorCount: { $count: {} },
             errorData: {
               $push: '$errorData',
             },
