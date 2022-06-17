@@ -286,7 +286,9 @@ module.exports = {
             $set: data,
             ...!conf.crypto.isDisabled ? {
                 $addToSet: {
-                    encryptedFields,
+                    encryptedFields: {
+                        $each: encryptedFields
+                    }
                 },
             } : {},
         }, {
