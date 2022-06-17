@@ -158,7 +158,7 @@ jobs:
     steps: *npm_test_steps
   analytics-service-test:
     docker: *node_mongo_env
-    working_directory: ~/oih/services/analytics
+    working_directory: ~/oih/services/analytics-service
     steps: *npm_test_steps
 workflows:
   pipeline:
