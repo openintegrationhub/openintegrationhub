@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: analytics-service
+  namespace: oih-dev-ns
+data:
+  INTROSPECT_ENDPOINT_BASIC: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
+  INTROSPECT_TYPE: basic
+  NODE_ENV: production
+  ORIGINWHITELIST: "openintegrationhub.com,http://web-ui.openintegrationhub.com"
+  QUEUE_URL: "amqp://guest:guest@rabbitmq-service.oih-dev-ns.svc.cluster.local:5672"
+  FLOW_REPO_BASE_URL: "http://flow-repository.oih-dev-ns.svc.cluster.local:3001"
+  TEMPLATE_REPO_BASE_URL: "http://template-repository.oih-dev-ns.svc.cluster.local:3001"
+  DATA_HUB_BASE_URL: "http://data-hub-service.oih-dev-ns.svc.cluster.local:1234"
+  GOVERNANCE_SERVICE_BASE_URL: "http://governance-service.openintegrationhub.com"
+  LOGGING_SERVICE_BASE_URL: "http://logging-service.oih-dev-ns.svc.cluster.local:1234"
+  COMPONENT_REPO_BASE_URL: "http://component-repository.oih-dev-ns.svc.cluster.local:1234"
+  IAM_BASE_URL: "http://iam.oih-dev-ns.svc.cluster.local:3099"
