@@ -52,8 +52,6 @@ describe('/userStats', () => {
     expect(userStats.length).toEqual(1);
     const bucket = userStats[0];
 
-    log.debug(bucket);
-
     expect(bucket.total).toEqual(3);
     expect(bucket.recentlyActive).toEqual(1);
     expect(bucket.inactive).toEqual(1);

@@ -211,8 +211,6 @@ describe.only('DB Operations', () => {
       { isAdmin: true },
     );
 
-    console.log('Result:', JSON.stringify(result));
-
     expect(result[0].usage.length).toEqual(3);
     expect(result[0].usage[0]).toEqual('flow 1');
     expect(result[0].usage[1]).toEqual('flow 2');

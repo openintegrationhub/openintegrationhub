@@ -1,4 +1,5 @@
 const schedule = require('node-schedule');
+const dayjs = require('dayjs');
 
 const log = require('../config/logger');
 const config = require('../config/index');
@@ -16,15 +17,9 @@ let jobAggregateData; // eslint-disable-line no-unused-vars
 function createCronJobs() {
   log.info('Setting up cronjobs');
 
-  const smallestTimeFrame = Object.entries(config.timeWindows).sort((a, b) => a[1] - b[1])[0][0];
-  log.debug('smallestTimeFrame', smallestTimeFrame);
-  const ruleAggregateData = new schedule.RecurrenceRule();
-  ruleAggregateData.minute = smallestTimeFrame;
+  jobAggregateData = schedule.scheduleJob(config.pollingCron, async () => {
+    log.info('Executing cronjob at: ', dayjs().format());
 
-  jobAggregateData = schedule.scheduleJob(ruleAggregateData, async () => {
-    log.info('Getting flow stats via cron', Date.now());
-
-    // @todo: we need to pass auth
     const auth = `Bearer ${config.iamToken}`;
 
     await getAndUpdateComponents(auth);
@@ -38,7 +33,7 @@ function createCronJobs() {
 
   jobTest = schedule.scheduleJob(ruleTest, () => {
     log.info('Running test cronjob');
-    log.info(Date.now());
+    log.info(dayjs().format());
   });
 }
 

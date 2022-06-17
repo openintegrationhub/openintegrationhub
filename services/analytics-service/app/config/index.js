@@ -32,6 +32,7 @@ const general = {
   analyticsServiceBaseUrl: process.env.ANALYTICS_SERVICE_BASE_URL || 'http://localhost:3009',
   userRecentlyActivePeriod: process.env.USER_RECENT_ACTIVE_PERIOD || '7',
   userInactivePeriod: process.env.USER_INACTIVE_PERIOD || '60',
+  pollingCron: process.env.POLLING_CRON || '*/15 * * * * ',
 };
 
 module.exports = general;
