@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: governance-service
+  name: analytics-service
   namespace: oih-dev-ns
 data:
   INTROSPECT_ENDPOINT_BASIC: "http://iam.openintegrationhub.com/api/v1/tokens/introspect"
@@ -15,4 +15,4 @@ data:
   GOVERNANCE_SERVICE_BASE_URL: "http://governance-service.openintegrationhub.com"
   LOGGING_SERVICE_BASE_URL: "http://logging-service.oih-dev-ns.svc.cluster.local:1234"
   COMPONENT_REPO_BASE_URL: "http://component-repository.oih-dev-ns.svc.cluster.local:1234"
-  IAM_REPO_BASE_URL: "http://iam.openintegrationhub.com/"
+  IAM_BASE_URL: "http://iam.oih-dev-ns.svc.cluster.local:3099"

@@ -1,40 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: governance-service
+  name: analytics-service
   namespace: oih-dev-ns
   labels:
-    app: governance-service
+    app: analytics-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: governance-service
+      app: analytics-service
   template:
     metadata:
       labels:
-        app: governance-service
+        app: analytics-service
     spec:
       containers:
-      - name: governance-service
-        image: openintegrationhub/governance-service:latest
+      - name: analytics-service
+        image: openintegrationhub/analytics-service:latest
         ports:
         - containerPort: 3009
         envFrom:
         - configMapRef:
-            name: governance-service
+            name: analytics-service
         env:
-        - name: FLOW_REPO_BASE_URL
-          value: 'http://flow-repository.oih-dev-ns.svc.cluster.local:3001'
         - name: MONGODB_URL
           valueFrom:
             secretKeyRef:
-              name: governance-service
+              name: analytics-service
               key: "mongourl"
         - name: IAM_TOKEN
           valueFrom:
             secretKeyRef:
-              name: governance-service
+              name: analytics-service
               key: "iamtoken"
         resources:
           limits:
