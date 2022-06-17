@@ -1,6 +1,6 @@
 {
   "name": "flow-repository",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Stores and manages integration flows.",
   "main": "index.js",
   "scripts": {

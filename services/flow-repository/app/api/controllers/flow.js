@@ -40,7 +40,7 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   let searchString = '';
 
   const sortableFields = { createdAt: 1, updatedAt: 1, name: 1 };
-  let sortField = 'id';
+  let sortField = 'createdAt';
   let sortOrder = '1';
 
   // page[size]
@@ -91,7 +91,7 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
   }
 
   // sort createdAt, updatedAt and name,  Prefix -
-  if (req.query.sort !== undefined) {
+  if (req.query.sort && req.query.sort.length) {
     const array = req.query.sort.split('-');
     if (array.length === 1) {
       sortField = array[0];
