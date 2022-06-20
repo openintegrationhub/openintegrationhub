@@ -22,6 +22,7 @@ const {
 const config = require('../config');
 
 async function getAndUpdateFlowStats(auth) {
+  log.info('Fetching Flows');
   const activeFlows = await getFlows(auth, 'active');
   const active = activeFlows.length;
 
@@ -66,6 +67,8 @@ async function getAndUpdateFlowStats(auth) {
   const inactive = inactiveFlows.length;
 
   const total = active + inactive;
+
+  log.info(`Found ${total} number of flows`);
 
   await updateFlowStats({ active, inactive, total });
 }
