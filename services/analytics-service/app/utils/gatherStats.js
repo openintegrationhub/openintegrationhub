@@ -22,72 +22,84 @@ const {
 const config = require('../config');
 
 async function getAndUpdateFlowStats(auth) {
-  log.info('Fetching Flows');
-  const activeFlows = await getFlows(auth, 'active');
-  const active = activeFlows.length;
+  try {
+    log.info('Fetching Flows');
+    const activeFlows = await getFlows(auth, 'active');
+    const active = activeFlows.length;
 
-  const componentUsage = {};
-  const templateUsage = {};
+    const componentUsage = {};
+    const templateUsage = {};
 
-  for (let i = 0; i < active; i += 1) {
-    const flowId = activeFlows[i].id;
+    for (let i = 0; i < active; i += 1) {
+      const flowId = activeFlows[i].id;
 
-    if (activeFlows[i].graph && activeFlows[i].graph.nodes) {
-      const numNodes = activeFlows[i].graph.nodes.length;
-      for (let j = 0; j < numNodes; j += 1) {
-        const componentId = activeFlows[i].graph.nodes[j].componentId;
-        if (componentId in componentUsage) {
-          componentUsage[componentId].push(flowId);
-        } else {
-          componentUsage[componentId] = [flowId];
+      if (activeFlows[i].graph && activeFlows[i].graph.nodes) {
+        const numNodes = activeFlows[i].graph.nodes.length;
+        for (let j = 0; j < numNodes; j += 1) {
+          const componentId = activeFlows[i].graph.nodes[j].componentId;
+          if (componentId in componentUsage) {
+            componentUsage[componentId].push(flowId);
+          } else {
+            componentUsage[componentId] = [flowId];
+          }
         }
       }
-    }
 
-    if (activeFlows[i].fromTemplate) {
-      if (activeFlows[i].fromTemplate in templateUsage) {
-        templateUsage[activeFlows[i].fromTemplate].push(flowId);
-      } else {
-        templateUsage[activeFlows[i].fromTemplate] = [flowId];
+      if (activeFlows[i].fromTemplate) {
+        if (activeFlows[i].fromTemplate in templateUsage) {
+          templateUsage[activeFlows[i].fromTemplate].push(flowId);
+        } else {
+          templateUsage[activeFlows[i].fromTemplate] = [flowId];
+        }
       }
-    }
 
     // activeFlows[i].owners
+    }
+
+    for (const templateId in templateUsage) {
+      upsertFlowTemplateUsage(templateId, templateUsage[templateId]);
+    }
+
+    for (const componentId in componentUsage) {
+      upsertComponentUsage(componentId, componentUsage[componentId]);
+    }
+
+    const inactiveFlows = await getFlows(auth, 'inactive');
+    const inactive = inactiveFlows.length;
+
+    const total = active + inactive;
+
+    log.info(`Found ${total} number of flows`);
+
+    await updateFlowStats({ active, inactive, total });
+  } catch (e) {
+    log.error(e);
   }
-
-  for (const templateId in templateUsage) {
-    upsertFlowTemplateUsage(templateId, templateUsage[templateId]);
-  }
-
-  for (const componentId in componentUsage) {
-    upsertComponentUsage(componentId, componentUsage[componentId]);
-  }
-
-  const inactiveFlows = await getFlows(auth, 'inactive');
-  const inactive = inactiveFlows.length;
-
-  const total = active + inactive;
-
-  log.info(`Found ${total} number of flows`);
-
-  await updateFlowStats({ active, inactive, total });
 }
 
 async function getAndUpdateComponents(auth) {
-  const components = await getAllComponents(auth);
+  try {
+    const components = await getAllComponents(auth);
 
-  const length = components.length;
-  for (let i = 0; i < length; i += 1) {
-    await upsertComponent(components[i]);
+    const length = components.length;
+    for (let i = 0; i < length; i += 1) {
+      await upsertComponent(components[i]);
+    }
+  } catch (e) {
+    log.error(e);
   }
 }
 
 async function getAndUpdateFlowTemplates(auth) {
-  const flowTemplates = await getAllTemplates(auth);
+  try {
+    const flowTemplates = await getAllTemplates(auth);
 
-  const length = flowTemplates.length;
-  for (let i = 0; i < length; i += 1) {
-    await upsertFlowTemplate(flowTemplates[i]);
+    const length = flowTemplates.length;
+    for (let i = 0; i < length; i += 1) {
+      await upsertFlowTemplate(flowTemplates[i]);
+    }
+  } catch (e) {
+    log.error(e);
   }
 }
 
