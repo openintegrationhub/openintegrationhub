@@ -14,5 +14,5 @@ data:
   DATA_HUB_BASE_URL: "http://data-hub-service.oih-dev-ns.svc.cluster.local:1234"
   GOVERNANCE_SERVICE_BASE_URL: "http://governance-service.openintegrationhub.com"
   LOGGING_SERVICE_BASE_URL: "http://logging-service.oih-dev-ns.svc.cluster.local:1234"
-  COMPONENT_REPO_BASE_URL: "http://component-repository.oih-dev-ns.svc.cluster.local:1234"
+  COMPONENT_REPO_BASE_URL: "http://component-repository-service.oih-dev-ns.svc.cluster.local:1234"
   IAM_BASE_URL: "http://iam.oih-dev-ns.svc.cluster.local:3099"

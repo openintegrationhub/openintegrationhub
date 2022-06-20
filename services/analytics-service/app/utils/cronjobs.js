@@ -22,10 +22,10 @@ function createCronJobs() {
 
     const auth = `Bearer ${config.iamToken}`;
 
-    await getAndUpdateComponents(auth);
-    await getAndUpdateFlowTemplates(auth);
     await getAndUpdateFlowStats(auth);
     await getAndUpdateUserStats(auth);
+    await getAndUpdateComponents(auth);
+    await getAndUpdateFlowTemplates(auth);
   });
 
   const ruleTest = new schedule.RecurrenceRule();
