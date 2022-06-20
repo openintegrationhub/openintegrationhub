@@ -41,6 +41,9 @@ async function getFlows(auth, status) {
     let flows = [];
     let hasMore = true;
 
+    log.debug('Getting Flows');
+    log.debug(auth);
+
     while (hasMore === true) {
       const query = {
         page: {
@@ -67,7 +70,11 @@ async function getFlows(auth, status) {
         },
       );
 
+      log.debug(response.status);
+
       const body = await response.json();
+
+      log.debug(body);
 
       if (body.data && body.data.length) {
         flows = flows.concat(body.data);
