@@ -60,10 +60,10 @@
           {
             "name": "filter[status]",
             "in": "query",
-            "description": "Filter results by flow status. Active = 1. Inactive = 0",
+            "description": "Filter results by flow status. Accepts either string ('active' and 'inactive') or integer (1 or 0)",
             "required": false,
             "schema": {
-              "type": "integer"
+              "type": "string"
             }
           },
           {
