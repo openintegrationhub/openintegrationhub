@@ -37,12 +37,9 @@ async function reportServiceStatus(checkLive) {
 
 async function getFlows(auth, status) {
   try {
-    let number = 0;
+    let number = 1;
     let flows = [];
     let hasMore = true;
-
-    log.debug('Getting Flows');
-    log.debug(auth);
 
     while (hasMore === true) {
       const query = {
@@ -70,11 +67,13 @@ async function getFlows(auth, status) {
         },
       );
 
-      log.debug(response.status);
-
       const body = await response.json();
 
-      log.debug(body);
+      if (!response || !response.ok) {
+        log.error('Could not fetch flows!');
+        log.error('Status', response.status);
+        log.error(body);
+      }
 
       if (body.data && body.data.length) {
         flows = flows.concat(body.data);
@@ -86,7 +85,6 @@ async function getFlows(auth, status) {
         hasMore = false;
       }
     }
-
     return flows;
   } catch (e) {
     log.error(e);
