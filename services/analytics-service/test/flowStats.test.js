@@ -46,13 +46,13 @@ describe('/flowStats', () => {
       .query({
         'filter[status]': 'active',
         'page[size]': 100,
-        'page[number]': 0,
+        'page[number]': 1,
       })
       .reply(200, { data: [{ active: true }, { active: true }], meta: { count: 3 } });
 
     nock('http://localhost:3001')
       .get('/flows')
-      .query({ 'filter[status]': 'inactive', 'page[size]': 100, 'page[number]': 0 })
+      .query({ 'filter[status]': 'inactive', 'page[size]': 100, 'page[number]': 1 })
       .reply(200, { data: [{ active: false }], meta: { count: 0 } });
 
     await getAndUpdateFlowStats('Bearer Test');
