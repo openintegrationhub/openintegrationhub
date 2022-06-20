@@ -2,7 +2,7 @@
    "openapi":"3.0.0",
    "info":{
       "description":"This is the API for the Open Integration Hub Microservice \"Analytics Service\"\n[https://openintegrationhub.org](https://openintegrationhub.org)\n",
-      "version":"0.0.1",
+      "version":"0.0.2",
       "title":"Analytics Service",
       "termsOfService":"https://github.com/openintegrationhub/openintegrationhub/blob/master/LICENSE/",
       "contact":{
@@ -15,8 +15,8 @@
    },
    "tags":[
       {
-         "name":"events",
-         "description":"Provenance",
+         "name":"globalStats",
+         "description":"Statistics about global usage data",
          "externalDocs":{
             "description":"Find out more",
             "url":"https://openintegrationhub.org"
@@ -121,6 +121,56 @@
                         }
                      }
                   }
+               }
+            }
+         }
+      },
+      "/flowStats":{
+         "get":{
+            "x-swagger-router-controller":"globalStats",
+            "security":[
+
+            ],
+            "tags":[
+               "healthcheck"
+            ],
+            "summary":"Retrieve global flow statistics",
+            "description":"This will return a JSON object showing flow statistics across the designated time period.",
+            "parameters": [
+              {
+                "name": "interval",
+                "in": "query",
+                "description": "Time interval of the timeline",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "from",
+                "in": "query",
+                "description": "Timestamp of beginning of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "until",
+                "in": "query",
+                "description": "Timestamp of beginning of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses":{
+               "200":{
+                  "description":"An object containing a list of flow stat objects"
+               },
+               "500":{
+                  "description":"At least one component is unhealthy"
                }
             }
          }
