@@ -175,7 +175,7 @@ async function getComponents(auth, size, number) {
 
     const string = qs.stringify(query, { addQueryPrefix: true });
 
-    const url = `${config.iamUrl}/components${string}`;
+    const url = `${config.componentRepoUrl}/components${string}`;
 
     const response = await fetch(
       url,
