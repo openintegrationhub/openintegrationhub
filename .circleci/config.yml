@@ -156,6 +156,10 @@ jobs:
     docker: *node_env
     working_directory: ~/oih/services/rds
     steps: *npm_test_steps
+  analytics-service-test:
+    docker: *node_mongo_env
+    working_directory: ~/oih/services/analytics-service
+    steps: *npm_test_steps
 workflows:
   pipeline:
     jobs:
@@ -191,6 +195,9 @@ workflows:
           requires:
             - deps
       - governance-service-test:
+          requires:
+            - deps
+      - analytics-service-test:
           requires:
             - deps
       - template-repository-test:
@@ -250,6 +257,7 @@ workflows:
             - data-hub-test
             - ils-test
             - dispatcher-service-test
+            - analytics-service-test
       - build:
           requires:
             - test
