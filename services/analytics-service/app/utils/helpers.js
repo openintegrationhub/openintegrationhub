@@ -42,6 +42,8 @@ async function getFlows(auth, status) {
     let hasMore = true;
 
     while (hasMore === true) {
+      hasMore = false;
+
       const query = {
         page: {
           size: 100,
@@ -73,6 +75,7 @@ async function getFlows(auth, status) {
         log.error('Could not fetch flows!');
         log.error('Status', response.status);
         log.error(body);
+        hasMore = false;
       }
 
       if (body.data && body.data.length) {
@@ -81,6 +84,7 @@ async function getFlows(auth, status) {
 
       if (body.meta && body.meta.total > flows.length) {
         number += 1;
+        hasMore = true;
       } else {
         hasMore = false;
       }
@@ -162,6 +166,12 @@ async function getUsers(auth) {
 
     const users = response.json();
 
+    if (!response || !response.ok) {
+      log.error('Could not fetch users!');
+      log.error('Status', response.status);
+      log.error(users);
+    }
+
     return users;
   } catch (e) {
     log.error(e);
@@ -194,6 +204,12 @@ async function getComponents(auth, size, number) {
 
     const components = response.json();
 
+    if (!response || !response.ok) {
+      log.error('Could not fetch components!');
+      log.error('Status', response.status);
+      log.error(components);
+    }
+
     return components;
   } catch (e) {
     log.error(e);
@@ -203,14 +219,16 @@ async function getComponents(auth, size, number) {
 
 async function getAllComponents(auth) {
   const size = 100;
-  let number = 0;
+  let number = 1;
   let hasMore = true;
   let components = [];
   while (hasMore === true) {
+    hasMore = false;
     const body = await getComponents(auth, size, number);
     if (body.total > components.length) {
       components = components.concat(body.data);
       number += 1;
+      hasMore = true;
     } else {
       hasMore = false;
     }
