@@ -82,7 +82,7 @@ async function getFlows(auth, status) {
         flows = flows.concat(body.data);
       }
 
-      if (body.meta && body.meta.total > flows.length) {
+      if (body.meta && body.meta.total > flows.length && body.data && body.data.length > 0) {
         number += 1;
         hasMore = true;
       } else {
