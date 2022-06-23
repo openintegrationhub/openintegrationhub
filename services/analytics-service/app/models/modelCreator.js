@@ -40,7 +40,7 @@ const createModels = () => {
   for (const key in config.timeWindows) { // eslint-disable-line guard-for-in
     let expires;
     if (key in config.storageWindows) {
-      expires = `${config.storageWindows[key]}s`;
+      expires = `${config.storageWindows[key]}m`;
     } else {
       log.error('You need to set the storage window or it will default to 24h');
       expires = '24h';
