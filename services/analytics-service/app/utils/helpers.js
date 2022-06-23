@@ -37,11 +37,13 @@ async function reportServiceStatus(checkLive) {
 
 async function getFlows(auth, status) {
   try {
-    let number = 0;
+    let number = 1;
     let flows = [];
     let hasMore = true;
 
     while (hasMore === true) {
+      hasMore = false;
+
       const query = {
         page: {
           size: 100,
@@ -69,17 +71,24 @@ async function getFlows(auth, status) {
 
       const body = await response.json();
 
+      if (!response || !response.ok) {
+        log.error('Could not fetch flows!');
+        log.error('Status', response.status);
+        log.error(body);
+        hasMore = false;
+      }
+
       if (body.data && body.data.length) {
         flows = flows.concat(body.data);
       }
 
       if (body.meta && body.meta.total > flows.length) {
         number += 1;
+        hasMore = true;
       } else {
         hasMore = false;
       }
     }
-
     return flows;
   } catch (e) {
     log.error(e);
@@ -157,6 +166,12 @@ async function getUsers(auth) {
 
     const users = response.json();
 
+    if (!response || !response.ok) {
+      log.error('Could not fetch users!');
+      log.error('Status', response.status);
+      log.error(users);
+    }
+
     return users;
   } catch (e) {
     log.error(e);
@@ -175,7 +190,7 @@ async function getComponents(auth, size, number) {
 
     const string = qs.stringify(query, { addQueryPrefix: true });
 
-    const url = `${config.iamUrl}/components${string}`;
+    const url = `${config.componentRepoUrl}/components${string}`;
 
     const response = await fetch(
       url,
@@ -189,6 +204,12 @@ async function getComponents(auth, size, number) {
 
     const components = response.json();
 
+    if (!response || !response.ok) {
+      log.error('Could not fetch components!');
+      log.error('Status', response.status);
+      log.error(components);
+    }
+
     return components;
   } catch (e) {
     log.error(e);
@@ -198,14 +219,16 @@ async function getComponents(auth, size, number) {
 
 async function getAllComponents(auth) {
   const size = 100;
-  let number = 0;
+  let number = 1;
   let hasMore = true;
   let components = [];
   while (hasMore === true) {
+    hasMore = false;
     const body = await getComponents(auth, size, number);
     if (body.total > components.length) {
       components = components.concat(body.data);
       number += 1;
+      hasMore = true;
     } else {
       hasMore = false;
     }

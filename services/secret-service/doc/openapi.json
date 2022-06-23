@@ -653,6 +653,10 @@
             "type" : "string",
             "example": "http://localhost:9001/api/v1/callback"
           },
+          "refreshWithScope": {
+            "type": "boolean",
+            "description": "If true, the predefinedScope and secret scope will be sent with the refresh_token request."
+          },
           "endpoints" : {
             "$ref" : "#/components/schemas/MutableOA2AuthorizationCodeClient_endpoints"
           },

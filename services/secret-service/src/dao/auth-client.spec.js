@@ -49,6 +49,34 @@ describe('AuthClientDAO', () => {
         expect(authClient.type).toEqual(OA2_AUTHORIZATION_CODE);
     });
 
+    test('create auth client refreshWithScope', async () => {
+        const data = {
+            type: OA2_AUTHORIZATION_CODE,
+            name: 'oAuth2',
+            clientId: 'string',
+            clientSecret: 'string',
+            redirectUri: '/dev/null',
+            endpoints: {
+                auth: 'http://',
+                token: 'http://',
+                userinfo: 'http://',
+            },
+            mappings: {
+                externalId: {
+                    source: 'id_token',
+                    key: 'sub',
+                },
+            },
+            refreshWithScope: true,
+            predefinedScope: 'string',
+        };
+
+        authClient = await AuthClientDAO.create(data);
+
+        expect(authClient.type).toEqual(OA2_AUTHORIZATION_CODE);
+        expect(authClient.refreshWithScope).toEqual(true);
+    });
+
     test('update auth client', async () => {
         const update = {
             name: 'foobar',

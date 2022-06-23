@@ -54,9 +54,9 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
 
   // filter[status] 1 0
   if (req.query.filter && req.query.filter.status !== undefined) {
-    if (req.query.filter.status === '1') {
+    if (req.query.filter.status === '1' || req.query.filter.status === 'active') {
       filters.status = 'active';
-    } else if (req.query.filter.status === '0') {
+    } else if (req.query.filter.status === '0' || req.query.filter.status === 'inactive') {
       filters.status = 'inactive';
     } else if (!res.headersSent) {
       res.status(400).send({ errors: [{ message: 'Invalid filter[status] parameter', code: 400 }] });
