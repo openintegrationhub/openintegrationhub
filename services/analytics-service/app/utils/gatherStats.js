@@ -116,14 +116,16 @@ async function getAndUpdateUserStats(auth) {
     };
 
     for (let i = 0; i < users.length; i += 1) {
-      const loginDate = dayjs(users[i].safeguard.lastLogin);
+      if (users[i].safeguard && users[i].safeguard.lastLogin) {
+        const loginDate = dayjs(users[i].safeguard.lastLogin);
 
-      if (!loginDate.isValid()) continue;
+        if (!loginDate.isValid()) continue;
 
-      if (loginDate.isAfter(activeDay)) {
-        userStats.recentlyActive += 1;
-      } else if (loginDate.isBefore(inactiveDay)) {
-        userStats.inactive += 1;
+        if (loginDate.isAfter(activeDay)) {
+          userStats.recentlyActive += 1;
+        } else if (loginDate.isBefore(inactiveDay)) {
+          userStats.inactive += 1;
+        }
       }
     }
 
