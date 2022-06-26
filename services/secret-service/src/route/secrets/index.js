@@ -287,7 +287,7 @@ class SecretsRouter {
             }
         });
 
-        this.router.get('/:id/validateHmac', userIsOwnerOfSecret, getKeyParameter, getKey, async (req, res, next) => {
+        this.router.post('/:id/validateHmac', userIsOwnerOfSecret, getKeyParameter, getKey, async (req, res, next) => {
             try {
                 const secret = req.obj;
                 const data = req.body.data ? req.body.data : req.body;
