@@ -127,7 +127,9 @@ class PostRequestHandler extends RequestHandlers.Post {
             headers: {
                 'x-auth-type': 'basic',
                 authorization: `Bearer ${token}`,
+                'content-type': 'application/json'
             },
+            method: 'post',
             body: {
               hmacHeader,
               hmacAlgo,
