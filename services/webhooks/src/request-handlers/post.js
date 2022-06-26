@@ -133,7 +133,7 @@ class PostRequestHandler extends RequestHandlers.Post {
             body: {
               hmacHeader,
               hmacAlgo,
-              rawBody,
+              rawBody: rawBody.toString('base64')
             }
         },
       );
