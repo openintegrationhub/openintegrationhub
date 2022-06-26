@@ -1,5 +1,5 @@
 const { RequestHandlers } = require('@openintegrationhub/webhooks');
-const { DEFAULT_HMAC_HEADER_KEY = 'x-hmac', DEFAULT_HMAC_ALGORITHM = 'sha265', WEBHOOK_EXECUTE_PERMISSION = 'webhooks.execute' } = process.env;
+const { DEFAULT_HMAC_HEADER_KEY = 'x-hmac', DEFAULT_HMAC_ALGORITHM = 'sha256', WEBHOOK_EXECUTE_PERMISSION = 'webhooks.execute' } = process.env;
 const fetch = require('node-fetch');
 const iamUtils = require('@openintegrationhub/iam-utils');
 
@@ -130,11 +130,11 @@ class PostRequestHandler extends RequestHandlers.Post {
                 'content-type': 'application/json'
             },
             method: 'post',
-            body: {
+            body: JSON.stringify({
               hmacValue: hmacHeader,
               hmacAlgo,
               rawBody: rawBody.toString('base64')
-            }
+            })
         },
       );
 
