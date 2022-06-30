@@ -201,7 +201,7 @@ const updateFlowStats = async (stats) => {
   }
 };
 
-// Updates flow stats across the timeline
+// Fetches flow stats across the timeline
 const getFlowStats = async (interval, from, until) => {
   try {
     const query = {};
@@ -212,6 +212,29 @@ const getFlowStats = async (interval, from, until) => {
 
     const flowStats = await modelCreator.models[`flowStats_${interval}`].find(query).sort({ createdAt: 1 });
     const count = await modelCreator.models[`flowStats_${interval}`].countDocuments();
+
+    return {
+      data: flowStats,
+      meta: { count },
+    };
+  } catch (e) {
+    log.error(e);
+    log.error(e);
+    return { data: [], meta: { count: 0 } };
+  }
+};
+
+// Fetches user stats across the timeline
+const getUserStats = async (interval, from, until) => {
+  try {
+    const query = {};
+
+    if (from && until) query.bucketStartAt = { $gte: from, $lte: until };
+    else if (from) query.bucketStartAt = { $gte: from };
+    else if (until) query.bucketStartAt = { $lte: until };
+
+    const flowStats = await modelCreator.models[`userStats_${interval}`].find(query).sort({ createdAt: 1 });
+    const count = await modelCreator.models[`userStats_${interval}`].countDocuments();
 
     return {
       data: flowStats,
@@ -990,4 +1013,5 @@ module.exports = {
   upsertFlowTemplate,
 
   updateUserStats,
+  getUserStats,
 };

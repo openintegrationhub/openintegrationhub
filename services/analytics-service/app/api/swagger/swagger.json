@@ -15,14 +15,6 @@
    },
    "tags":[
       {
-         "name":"globalStats",
-         "description":"Statistics about global usage data",
-         "externalDocs":{
-            "description":"Find out more",
-            "url":"https://openintegrationhub.org"
-         }
-      },
-      {
          "name":"dashboard",
          "description":"Presenting analytics data in a centralized manner",
          "externalDocs":{
@@ -127,12 +119,12 @@
       },
       "/flowStats":{
          "get":{
-            "x-swagger-router-controller":"globalStats",
+            "x-swagger-router-controller":"dashboard",
             "security":[
 
             ],
             "tags":[
-               "healthcheck"
+               "dashboard"
             ],
             "summary":"Retrieve global flow statistics",
             "description":"This will return a JSON object showing flow statistics across the designated time period.",
@@ -158,7 +150,7 @@
               {
                 "name": "until",
                 "in": "query",
-                "description": "Timestamp of beginning of timeline",
+                "description": "Timestamp of end of timeline",
                 "required": false,
                 "schema": {
                   "type": "string"
@@ -170,7 +162,107 @@
                   "description":"An object containing a list of flow stat objects"
                },
                "500":{
-                  "description":"At least one component is unhealthy"
+                  "description":"Something went wrong"
+               }
+            }
+         }
+      },
+      "/userStats":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security":[
+
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve global user statistics",
+            "description":"This will return a JSON object showing user statistics across the designated time period.",
+            "parameters": [
+              {
+                "name": "interval",
+                "in": "query",
+                "description": "Time interval of the timeline",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "from",
+                "in": "query",
+                "description": "Timestamp of beginning of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "until",
+                "in": "query",
+                "description": "Timestamp of end of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses":{
+               "200":{
+                  "description":"An object containing a list of user stat objects"
+               },
+               "500":{
+                  "description":"Something went wrong"
+               }
+            }
+         }
+      },
+      "/components":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security":[
+
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve component statistics",
+            "description":"This will return a JSON object showing flow statistics across the designated time period.",
+            "parameters": [
+              {
+                "name": "interval",
+                "in": "query",
+                "description": "Time interval of the timeline",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "from",
+                "in": "query",
+                "description": "Timestamp of beginning of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "until",
+                "in": "query",
+                "description": "Timestamp of end of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses":{
+               "200":{
+                  "description":"An object containing a list of component stat objects"
+               },
+               "500":{
+                  "description":"Something went wrong"
                }
             }
          }
