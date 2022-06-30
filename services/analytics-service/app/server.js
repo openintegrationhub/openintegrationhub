@@ -6,7 +6,7 @@
 const express = require('express');
 
 const swaggerUi = require('swagger-ui-express');
-// const iamMiddleware = require('@openintegrationhub/iam-utils');
+const iamMiddleware = require('@openintegrationhub/iam-utils');
 const cors = require('cors');
 const config = require('./config/index');
 
@@ -19,6 +19,7 @@ const flows = require('./api/controllers/flows');
 const flowTemplates = require('./api/controllers/flowTemplates');
 const components = require('./api/controllers/components');
 const flowStats = require('./api/controllers/flowStats');
+const userStats = require('./api/controllers/userStats');
 
 const log = require('./config/logger');
 
@@ -92,8 +93,10 @@ class Server {
 
     this.app.use('/flows', flows);
     this.app.use('/flowTemplates', flowTemplates);
+    this.app.use('/components', iamMiddleware.middleware);
     this.app.use('/components', components);
     this.app.use('/flowStats', flowStats);
+    this.app.use('/userStats', userStats);
 
     this.app.use('/healthcheck', healthcheck);
 
