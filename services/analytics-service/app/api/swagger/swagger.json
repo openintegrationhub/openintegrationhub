@@ -220,8 +220,10 @@
       "/components":{
          "get":{
             "x-swagger-router-controller":"dashboard",
-            "security":[
-
+            "security": [
+              {
+                "Bearer": []
+              }
             ],
             "tags":[
                "dashboard"
