@@ -45,7 +45,7 @@ describe('/userStats', () => {
       .get('/api/v1/users')
       .reply(200, [{ safeguard: { lastLogin: dayjs().valueOf() } }, { safeguard: { lastLogin: dayjs().subtract(8, 'day').valueOf() } }, { safeguard: { lastLogin: dayjs().subtract(70, 'day').valueOf() } }]);
 
-    await getAndUpdateUserStats('Bearer Test');
+    await getAndUpdateUserStats('Bearer adminToken');
 
     const userStats = await modelCreator.models.userStats_15min.find().lean();
 

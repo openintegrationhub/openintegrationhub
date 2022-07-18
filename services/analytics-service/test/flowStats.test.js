@@ -29,7 +29,7 @@ let functionId;
 let app;
 
 beforeAll(async () => {
-  // iamMock.setup();
+  iamMock.setup();
   // mainServer.setupMiddleware();
   await mainServer.setupRoutes();
   await mainServer.setupSwagger();
@@ -55,7 +55,7 @@ describe('/flowStats', () => {
       .query({ 'filter[status]': 'inactive', 'page[size]': 100, 'page[number]': 1 })
       .reply(200, { data: [{ active: false }], meta: { count: 0 } });
 
-    await getAndUpdateFlowStats('Bearer Test');
+    await getAndUpdateFlowStats('Bearer adminToken');
 
     const flowStats = await modelCreator.models.flowStats_15min.find().lean();
 

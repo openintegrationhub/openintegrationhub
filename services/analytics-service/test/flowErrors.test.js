@@ -29,7 +29,7 @@ let functionId;
 let app;
 
 beforeAll(async () => {
-  // iamMock.setup();
+  iamMock.setup();
   // mainServer.setupMiddleware();
   await mainServer.setupRoutes();
   await mainServer.setupSwagger();
