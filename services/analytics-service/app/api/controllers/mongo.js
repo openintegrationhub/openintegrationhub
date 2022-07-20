@@ -834,29 +834,28 @@ const upsertComponentUsage = async (componentId, flowIds) => {
     const models = modelCreator.getModelsByType('components');
     const promises = [];
 
-    const flows = [];
-    for (let i = 0; i < flowIds.length; i += 1) {
-      flows.push({ objectId: flowIds[i] }); // flowId ?
-    }
-
-    const dataEntry = {
-      componentId,
-      $push: {
-        usage: {
-          $each: flows,
-        },
-      },
-      createdAt: Date.now(),
-    };
-
     for (let i = 0; i < models.length; i += 1) {
       const currentModel = models[i].model;
-      const bucketStartAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
-      dataEntry.bucketStartAt = bucketStartAt;
+      const bucketStartAt = decideBucket(Date.now(), models[i].timeWindow);
       const max = bucketStartAt + models[i].timeWindow * 60 * 1000;
+      const existing = await currentModel.findOne({ componentId, bucketStartAt: { $gte: bucketStartAt, $lte: max } }).lean();
+
+      let flows = [];
+
+      if (existing && existing.usage && existing.usage.length) {
+        flows = existing.usage;
+      }
+
+      for (let j = 0; j < flowIds.length; j += 1) {
+        const exists = flows.find((el) => el.objectId === flowIds[j]);
+        if (!exists) {
+          flows.push({ objectId: flowIds[j] });
+        }
+      }
+
       promises.push(currentModel.updateOne(
         { componentId, bucketStartAt: { $gte: bucketStartAt, $lte: max } },
-        dataEntry,
+        { $set: { usage: flows, bucketStartAt, componentId } },
         { upsert: true, setDefaultsOnInsert: true },
       ));
     }
