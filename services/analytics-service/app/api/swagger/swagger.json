@@ -261,6 +261,76 @@
                 "schema": {
                   "type": "string"
                 }
+              },
+              {
+                "name": "timeframe",
+                "in": "query",
+                "description": "The time window that should be queried",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                },
+              }
+            ],
+            "responses":{
+               "200":{
+                  "description":"An object containing a list of component stat objects"
+               },
+               "500":{
+                  "description":"Something went wrong"
+               }
+            }
+         }
+      },
+      "/components/{id}":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve statistics of one component",
+            "description":"This will return a JSON object showing individual component statistics across the designated time period.",
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "description": "id of the component",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "from",
+                "in": "query",
+                "description": "Timestamp of beginning of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "until",
+                "in": "query",
+                "description": "Timestamp of end of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "timeframe",
+                "in": "query",
+                "description": "The time window that should be queried",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                },
               }
             ],
             "responses":{
@@ -284,13 +354,65 @@
             "tags":[
                "dashboard"
             ],
-            "summary":"Retrieve component statistics",
+            "summary":"Retrieve flow statistics",
             "description":"This will return a JSON object showing individual flow statistics across the designated time period.",
             "parameters": [
               {
-                "name": "interval",
+                "name": "from",
                 "in": "query",
-                "description": "Time interval of the timeline",
+                "description": "Timestamp of beginning of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "until",
+                "in": "query",
+                "description": "Timestamp of end of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "timeframe",
+                "in": "query",
+                "description": "The time window that should be queried",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                },
+              }
+            ],
+            "responses":{
+               "200":{
+                  "description":"An object containing a list of component stat objects"
+               },
+               "500":{
+                  "description":"Something went wrong"
+               }
+            }
+         }
+      },
+      "/flows/{id}":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve statistics of one flow",
+            "description":"This will return a JSON object showing statistics for a single flow across the designated time period.",
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "description": "ID of the flow",
                 "required": true,
                 "schema": {
                   "type": "string"
@@ -312,7 +434,16 @@
                 "required": false,
                 "schema": {
                   "type": "string"
-                }
+                },
+              },
+              {
+                "name": "timeframe",
+                "in": "query",
+                "description": "The time window that should be queried",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                },
               }
             ],
             "responses":{
@@ -336,13 +467,65 @@
             "tags":[
                "dashboard"
             ],
-            "summary":"Retrieve component statistics",
+            "summary":"Retrieve flow template statistics",
             "description":"This will return a JSON object individual flow template statistics across the designated time period.",
             "parameters": [
               {
-                "name": "interval",
+                "name": "from",
                 "in": "query",
-                "description": "Time interval of the timeline",
+                "description": "Timestamp of beginning of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "until",
+                "in": "query",
+                "description": "Timestamp of end of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+                {
+                "name": "timeframe",
+                "in": "query",
+                "description": "The time window that should be queried",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                },
+              }
+            ],
+            "responses":{
+               "200":{
+                  "description":"An object containing a list of component stat objects"
+               },
+               "500":{
+                  "description":"Something went wrong"
+               }
+            }
+         }
+      },
+      "/flowTemplates/{id}":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve statistics of one flow template",
+            "description":"This will return a JSON object individual flow template statistics across the designated time period.",
+            "parameters": [
+               {
+                "name": "id",
+                "in": "path",
+                "description": "ID of the flow template",
                 "required": true,
                 "schema": {
                   "type": "string"
@@ -365,6 +548,15 @@
                 "schema": {
                   "type": "string"
                 }
+              },
+                {
+                "name": "timeframe",
+                "in": "query",
+                "description": "The time window that should be queried",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                },
               }
             ],
             "responses":{
