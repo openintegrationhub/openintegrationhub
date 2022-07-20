@@ -120,8 +120,10 @@
       "/flowStats":{
          "get":{
             "x-swagger-router-controller":"dashboard",
-            "security":[
-
+            "security": [
+              {
+                "Bearer": []
+              }
             ],
             "tags":[
                "dashboard"
@@ -170,8 +172,10 @@
       "/userStats":{
          "get":{
             "x-swagger-router-controller":"dashboard",
-            "security":[
-
+            "security": [
+              {
+                "Bearer": []
+              }
             ],
             "tags":[
                "dashboard"
@@ -229,7 +233,111 @@
                "dashboard"
             ],
             "summary":"Retrieve component statistics",
-            "description":"This will return a JSON object showing flow statistics across the designated time period.",
+            "description":"This will return a JSON object showing individual component statistics across the designated time period.",
+            "parameters": [
+              {
+                "name": "interval",
+                "in": "query",
+                "description": "Time interval of the timeline",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "from",
+                "in": "query",
+                "description": "Timestamp of beginning of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "until",
+                "in": "query",
+                "description": "Timestamp of end of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses":{
+               "200":{
+                  "description":"An object containing a list of component stat objects"
+               },
+               "500":{
+                  "description":"Something went wrong"
+               }
+            }
+         }
+      },
+      "/flows":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve component statistics",
+            "description":"This will return a JSON object showing individual flow statistics across the designated time period.",
+            "parameters": [
+              {
+                "name": "interval",
+                "in": "query",
+                "description": "Time interval of the timeline",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "from",
+                "in": "query",
+                "description": "Timestamp of beginning of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "until",
+                "in": "query",
+                "description": "Timestamp of end of timeline",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses":{
+               "200":{
+                  "description":"An object containing a list of component stat objects"
+               },
+               "500":{
+                  "description":"Something went wrong"
+               }
+            }
+         }
+      },
+      "/flowTemplates":{
+         "get":{
+            "x-swagger-router-controller":"dashboard",
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "tags":[
+               "dashboard"
+            ],
+            "summary":"Retrieve component statistics",
+            "description":"This will return a JSON object individual flow template statistics across the designated time period.",
             "parameters": [
               {
                 "name": "interval",
