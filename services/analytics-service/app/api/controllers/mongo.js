@@ -201,7 +201,7 @@ const updateFlowStats = async (stats) => {
   }
 };
 
-// Updates flow stats across the timeline
+// Fetches flow stats across the timeline
 const getFlowStats = async (interval, from, until) => {
   try {
     const query = {};
@@ -212,6 +212,29 @@ const getFlowStats = async (interval, from, until) => {
 
     const flowStats = await modelCreator.models[`flowStats_${interval}`].find(query).sort({ createdAt: 1 });
     const count = await modelCreator.models[`flowStats_${interval}`].countDocuments();
+
+    return {
+      data: flowStats,
+      meta: { count },
+    };
+  } catch (e) {
+    log.error(e);
+    log.error(e);
+    return { data: [], meta: { count: 0 } };
+  }
+};
+
+// Fetches user stats across the timeline
+const getUserStats = async (interval, from, until) => {
+  try {
+    const query = {};
+
+    if (from && until) query.bucketStartAt = { $gte: from, $lte: until };
+    else if (from) query.bucketStartAt = { $gte: from };
+    else if (until) query.bucketStartAt = { $lte: until };
+
+    const flowStats = await modelCreator.models[`userStats_${interval}`].find(query).sort({ createdAt: 1 });
+    const count = await modelCreator.models[`userStats_${interval}`].countDocuments();
 
     return {
       data: flowStats,
@@ -811,29 +834,28 @@ const upsertComponentUsage = async (componentId, flowIds) => {
     const models = modelCreator.getModelsByType('components');
     const promises = [];
 
-    const flows = [];
-    for (let i = 0; i < flowIds.length; i += 1) {
-      flows.push({ objectId: flowIds[i] }); // flowId ?
-    }
-
-    const dataEntry = {
-      componentId,
-      $push: {
-        usage: {
-          $each: flows,
-        },
-      },
-      createdAt: Date.now(),
-    };
-
     for (let i = 0; i < models.length; i += 1) {
       const currentModel = models[i].model;
-      const bucketStartAt = decideBucket(dataEntry.createdAt, models[i].timeWindow);
-      dataEntry.bucketStartAt = bucketStartAt;
+      const bucketStartAt = decideBucket(Date.now(), models[i].timeWindow);
       const max = bucketStartAt + models[i].timeWindow * 60 * 1000;
+      const existing = await currentModel.findOne({ componentId, bucketStartAt: { $gte: bucketStartAt, $lte: max } }).lean();
+
+      let flows = [];
+
+      if (existing && existing.usage && existing.usage.length) {
+        flows = existing.usage;
+      }
+
+      for (let j = 0; j < flowIds.length; j += 1) {
+        const exists = flows.find((el) => el.objectId === flowIds[j]);
+        if (!exists) {
+          flows.push({ objectId: flowIds[j] });
+        }
+      }
+
       promises.push(currentModel.updateOne(
         { componentId, bucketStartAt: { $gte: bucketStartAt, $lte: max } },
-        dataEntry,
+        { $set: { usage: flows, bucketStartAt, componentId } },
         { upsert: true, setDefaultsOnInsert: true },
       ));
     }
@@ -990,4 +1012,5 @@ module.exports = {
   upsertFlowTemplate,
 
   updateUserStats,
+  getUserStats,
 };

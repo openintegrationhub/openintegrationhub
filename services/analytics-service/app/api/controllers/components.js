@@ -29,10 +29,10 @@ router.get('/', jsonParser, async (req, res) => {
   let sortOrder = '1';
 
   const defaultTimeFrame = Object.entries(config.timeWindows).sort((a, b) => b[1] - a[1])[0][0];
-  const timeFrame = (req.query.timeframe) ? req.query.timeframe : defaultTimeFrame;
+  const interval = (req.query.timeframe) ? req.query.timeframe : defaultTimeFrame;
 
   try {
-    if (!(timeFrame in config.timeWindows)) {
+    if (!(interval in config.timeWindows)) {
       return res.status(400).send({ errors: [{ message: `Invalid parameter timeFrame. Must be one of: ${Object.keys(config.timeWindows).join(',')}`, code: 400 }] });
     }
 
@@ -101,7 +101,7 @@ router.get('/', jsonParser, async (req, res) => {
     }
 
     const response = await storage.getAllComponentsData(
-      timeFrame,
+      interval,
       req.user,
       pageSize,
       pageNumber,

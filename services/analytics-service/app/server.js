@@ -6,7 +6,7 @@
 const express = require('express');
 
 const swaggerUi = require('swagger-ui-express');
-// const iamMiddleware = require('@openintegrationhub/iam-utils');
+const { middleware, can } = require('@openintegrationhub/iam-utils');
 const cors = require('cors');
 const config = require('./config/index');
 
@@ -19,6 +19,7 @@ const flows = require('./api/controllers/flows');
 const flowTemplates = require('./api/controllers/flowTemplates');
 const components = require('./api/controllers/components');
 const flowStats = require('./api/controllers/flowStats');
+const userStats = require('./api/controllers/userStats');
 
 const log = require('./config/logger');
 
@@ -90,10 +91,21 @@ class Server {
   setupRoutes() {
     // configure routes
 
+    this.app.use('/flows', middleware);
+    this.app.use('/flows', can('all'));
     this.app.use('/flows', flows);
+    this.app.use('/flowTemplates', middleware);
+    this.app.use('/flowTemplates', can('all'));
     this.app.use('/flowTemplates', flowTemplates);
+    this.app.use('/components', middleware);
+    this.app.use('/components', can('all'));
     this.app.use('/components', components);
+    this.app.use('/flowStats', middleware);
+    this.app.use('/flowStats', can('all'));
     this.app.use('/flowStats', flowStats);
+    this.app.use('/userStats', middleware);
+    this.app.use('/userStats', can('all'));
+    this.app.use('/userStats', userStats);
 
     this.app.use('/healthcheck', healthcheck);
 
