@@ -204,6 +204,31 @@
             "description" : "Invalid input"
           }
         }
+      },
+      "delete": {
+        "tags" : [ "Auth clients" ],
+        "summary" : "Delete a client",
+        "description" : "Delete a client",
+        "operationId" : "deleteClient",
+        "parameters" : [ {
+          "name" : "clientId",
+          "in" : "path",
+          "description" : "ID of the client to delete",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The auth client was deleted successfully"
+          },
+          "404" : {
+            "$ref": "#/components/responses/404NotFound"
+          }
+        }
       }
     },
     "/auth-clients/{clientId}/start-flow" : {
