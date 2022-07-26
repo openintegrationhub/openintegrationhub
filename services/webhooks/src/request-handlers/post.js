@@ -30,8 +30,8 @@ class PostRequestHandler extends RequestHandlers.Post {
             return;
         }
 
-        const hmacHeaderValue = this._req.header(hmacHeaderKey);
-        if  (hmacHeaderValue) {
+        if (flowSettings.hmacAuthSecret) {
+          const hmacHeaderValue = this._req.header(hmacHeaderKey);
           const success = await this.authenticateHmac(hmacAuthSecret,hmacHeaderValue,hmacAlgorithm,flowUser,this._req.rawBody);
           if (success) {
             return;
