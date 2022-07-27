@@ -16,7 +16,7 @@ module.exports = {
 
     authenticateHmac(hmacSecret, hmacValue, hmacAlgo, rawBody) {
         const expectedHmac = crypto.createHmac(hmacAlgo, hmacSecret)
-            .update(Buffer.from(rawBody, 'base64').toString())
+            .update(Buffer.from(rawBody))
             .digest('base64');
         if (expectedHmac.length !== hmacValue.length) {
             return false;

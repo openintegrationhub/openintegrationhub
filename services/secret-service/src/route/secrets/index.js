@@ -294,7 +294,7 @@ class SecretsRouter {
                 const { hmacValue, hmacAlgo, rawBody } = data;
                 if (secret) {
                     const isValid = await SecretDAO.authenticateHmac({
-                        secret, key: req.key, hmacValue, hmacAlgo, rawBody,
+                        secret, key: req.key, hmacValue, hmacAlgo, rawBody: rawBody.data,
                     });
                     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
                     res.send({
