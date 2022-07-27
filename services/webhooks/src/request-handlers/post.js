@@ -133,7 +133,7 @@ class PostRequestHandler extends RequestHandlers.Post {
             body: JSON.stringify({
               hmacValue: hmacHeader,
               hmacAlgo,
-              rawBody: rawBody
+              rawBody,
             })
         },
       );
