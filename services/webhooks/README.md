@@ -24,7 +24,7 @@ It listens for incoming HTTP connections, serializes incoming data and puts it t
 
 ## Security and Authorization
 
-In order to ensure flows are triggered only by permitted clients, the Webhooks service supports requiring authorization on incoming hooks. This can be enabled by activating a flag on the `flowSettings` of a flow. 
+In order to ensure flows are triggered only by permitted clients, the Webhooks service supports requiring authorization on incoming hooks. This can be enabled by activating a flag on the `flowSettings` of a flow.
 
 ```
 flowSettings: {
@@ -35,15 +35,15 @@ flowSettings: {
 ```
 When this is active, one of three methods to authorize the call must be provided:
 
-- **HMAC**: Systems which support [HMAC](https://en.wikipedia.org/wiki/HMAC) will pass an HMAC header which encrypts the message with a shared private key. In the OIH system, the secret service will generate its own HMAC value and compare with that sent in the request. If they match, the flow will continue. 
+- **HMAC**: Systems which support [HMAC](https://en.wikipedia.org/wiki/HMAC) will pass an HMAC header which encrypts the message with a shared private key. In the OIH system, the secret service will generate its own HMAC value and compare with that sent in the request. If they match, the flow will continue.
 - **Token-based**: An OIH account token must be generated and saved in the remote system. It is recommended that a persistent token is generated for a new User, which has only the WEBHOOK_EXECUTE_PERMISSION (default: 'webhooks.execute'). For information on creating a service account and generating persistent tokens, see: https://openintegrationhub.github.io/docs/3%20-%20GettingStarted/GCPInstallationGuide.html#create-a-service-account
-- **Basic Authorization**:  When a webhook is called with a Basic authorization (username/password) header, the webhooks service will attempt to verify the user and check their permission to execute webhooks. 
+- **Basic Authorization**:  When a webhook is called with a Basic authorization (username/password) header, the webhooks service will attempt to verify the user and check their permission to execute webhooks.
 
 The following configuration may be declared in the `flowSettings.webhooks` parameter of a Flow:
 - HMAC
   - `hmacHeaderKey`: Declares the name of the key which contains the HMAC value (default: `x-hmac`)
   - `hmacAuthSecret`: The ID of an API_KEY type Secret which is stored in the OIH Secret Service. Other types are not currently supported
-  - `hmacAlgorithm`: (default: `sha265`)
+  - `hmacAlgorithm`: (default: `sha256`)
 - Token and Basic Authorization
   - `allTenantUsers`: Whether any user who in the same tenant as the Flow object can execute a webhook. Defaults to `false`, which restricts execution to the Flow owner, Tenant Admins, and System Admins
 
@@ -85,5 +85,5 @@ Kubernetes descriptors can be found in the [k8s](./k8s) directory.
 | Name                       | Description                                               |
 | -------------------------- | --------------------------------------------------------- |
 | DEFAULT_HMAC_HEADER_KEY    | System standard for HMAC Headers, default: 'x-hmac'       |
-| DEFAULT_HMAC_ALGORITHM     | Encryption Algorithm for HMAC hashes default: 'sha265'    |
+| DEFAULT_HMAC_ALGORITHM     | Encryption Algorithm for HMAC hashes default: 'sha256'    |
 | WEBHOOK_EXECUTE_PERMISSION | Permission to execute webhooks, if user auth is on        |

@@ -287,14 +287,14 @@ class SecretsRouter {
             }
         });
 
-        this.router.get('/:id/validateHmac', userIsOwnerOfSecret, getKeyParameter, getKey, async (req, res, next) => {
+        this.router.post('/:id/validateHmac', userIsOwnerOfSecret, getKeyParameter, getKey, async (req, res, next) => {
             try {
                 const secret = req.obj;
-                const data = req.body.data ? req.body.data : req.body;
+                const data = req.body;
                 const { hmacValue, hmacAlgo, rawBody } = data;
                 if (secret) {
                     const isValid = await SecretDAO.authenticateHmac({
-                        secret, key: req.key, hmacValue, hmacAlgo, rawBody,
+                        secret, key: req.key, hmacValue, hmacAlgo, rawBody: rawBody.data,
                     });
                     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
                     res.send({

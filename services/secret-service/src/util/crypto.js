@@ -16,12 +16,12 @@ module.exports = {
 
     authenticateHmac(hmacSecret, hmacValue, hmacAlgo, rawBody) {
         const expectedHmac = crypto.createHmac(hmacAlgo, hmacSecret)
-            .update(JSON.stringify(rawBody))
+            .update(Buffer.from(rawBody))
             .digest('base64');
         if (expectedHmac.length !== hmacValue.length) {
             return false;
         }
-        if (crypto.timingSafeEqual(hmacValue, expectedHmac)) {
+        if (crypto.timingSafeEqual(Buffer.from(hmacValue), Buffer.from(expectedHmac))) {
             return true;
         }
         return false;
