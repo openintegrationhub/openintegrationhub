@@ -88,7 +88,7 @@ class Flows extends React.Component {
             type: 'ordinary',
             cron: '*/2 * * * *',
         };
-        this.intiatialFlow = {
+        this.initialFlow = {
             name: 'Add name here',
             description: 'Add description here',
             graph: {
@@ -113,8 +113,8 @@ class Flows extends React.Component {
         this.props.switchAddState();
     };
 
-    intitateFlow = async () => {
-        this.props.createFlow(this.intiatialFlow);
+    initiateFlow = async () => {
+        this.props.createFlow(this.initialFlow);
         await this.props.getFlows();
         const { flows } = this.props;
         const { id } = this.props.flows.all[flows.all.length - 1];
@@ -125,7 +125,7 @@ class Flows extends React.Component {
 
     saveFlow = () => {
         if (this.state.wasChanged) {
-            this.props.createFlow(this.intiatialFlow);
+            this.props.createFlow(this.state.editorData);
             this.setState({
                 wasChanged: false,
             });
@@ -171,7 +171,7 @@ class Flows extends React.Component {
                         <Button variant="outlined" aria-label="Add" onClick={this.addFlow}>
                         Add<Add/>
                         </Button>
-                        <Button variant="outlined" aria-label="Add" onClick={this.intitateFlow}>
+                        <Button variant="outlined" aria-label="Add" onClick={this.initiateFlow}>
                         New Flow<Add/>
                         </Button>
                     </Grid>
