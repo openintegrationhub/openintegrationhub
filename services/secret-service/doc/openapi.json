@@ -10,7 +10,7 @@
     "version" : "0.1.0"
   },
   "servers" : [ {
-    "url" : "/api/v1"
+    "url" : "https://skm.example.com"
   } ],
   "tags" : [
     {
@@ -33,7 +33,7 @@
     }
   ],
   "paths" : {
-    "/auth-clients/" : {
+    "/api/v1/auth-clients/" : {
       "get" : {
         "tags" : [ "Auth clients" ],
         "summary" : "Retrieve all clients",
@@ -119,7 +119,7 @@
         }
       }
     },
-    "/auth-clients/{clientId}" : {
+    "/api/v1/auth-clients/{clientId}" : {
       "get" : {
         "tags" : [ "Auth clients" ],
         "summary" : "Find client by ID",
@@ -145,7 +145,7 @@
                 "schema" : {
                   "properties" : {
                     "data" : {
-                      "$ref" : "#/components/schemas/MutableAuthClient"
+                      "$ref" : "#/components/schemas/AuthClient"
                     }
                   }
                 }
@@ -190,7 +190,7 @@
                 "schema" : {
                   "properties" : {
                     "data" : {
-                      "$ref" : "#/components/schemas/MutableAuthClient"
+                      "$ref" : "#/components/schemas/AuthClient"
                     }
                   }
                 }
@@ -204,9 +204,34 @@
             "description" : "Invalid input"
           }
         }
+      },
+      "delete": {
+        "tags" : [ "Auth clients" ],
+        "summary" : "Delete a client",
+        "description" : "Delete a client",
+        "operationId" : "deleteClient",
+        "parameters" : [ {
+          "name" : "clientId",
+          "in" : "path",
+          "description" : "ID of the client to delete",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The auth client was deleted successfully"
+          },
+          "404" : {
+            "$ref": "#/components/responses/404NotFound"
+          }
+        }
       }
     },
-    "/auth-clients/{clientId}/start-flow" : {
+    "/api/v1/auth-clients/{clientId}/start-flow" : {
       "post" : {
         "tags" : [ "Auth clients" ],
         "summary" : "Start an authorization flow",
@@ -262,7 +287,7 @@
         }
       }
     },
-    "/callback" : {
+    "/api/v1/callback" : {
       "get" : {
         "tags" : [ "Callback" ],
         "summary" : "Invoked by Provider (redirect uri) or other services",
@@ -290,7 +315,7 @@
         }
       }
     },
-    "/secrets/" : {
+    "/api/v1/secrets/" : {
       "get" : {
         "tags" : [ "Secrets" ],
         "summary" : "Retrieve all secrets",
@@ -376,7 +401,7 @@
         }
       }
     },
-    "/secrets/{secretId}" : {
+    "/api/v1/secrets/{secretId}" : {
       "get" : {
         "tags" : [ "Secrets" ],
         "summary" : "Find secret by ID",
@@ -533,28 +558,6 @@
         }
       },
       "MutableAuthClient" : {
-        "required" : [ "name", "owners", "type" ],
-        "properties" : {
-          "name" : {
-            "type" : "string"
-          },
-          "owners" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/Owner"
-            }
-          },
-          "type" : {
-            "type" : "string",
-            "enum" : [ "OA1_TWO_LEGGED", "OA1_THREE_LEGGED", "OA2_AUTHORIZATION_CODE", "SESSION_AUTH" ]
-          },
-          "preprocessor": {
-            "type": "string"
-          },
-          "tenant": {
-            "type": "string"
-          }
-        },
         "oneOf" : [ {
           "$ref": "#/components/schemas/MutableOA1TwoLeggedClient"
         }, {
@@ -575,8 +578,27 @@
         }
       },
       "MutableOA1TwoLeggedClient" : {
-        "required" : [ "consumerKey", "consumerSecret", "nonce", "signature", "signatureMethod" ],
+        "required" : ["name", "owners", "type", "consumerKey", "consumerSecret", "nonce", "signature", "signatureMethod" ],
         "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "owners" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Owner"
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "OA1_TWO_LEGGED", "OA1_THREE_LEGGED", "OA2_AUTHORIZATION_CODE", "SESSION_AUTH" ]
+          },
+          "preprocessor": {
+            "type": "string"
+          },
+          "tenant": {
+            "type": "string"
+          },
           "consumerKey" : {
             "type" : "string"
           },
@@ -598,8 +620,27 @@
         }
       },
       "MutableOA1ThreeLeggedClient": {
-        "required": ["key", "secret", "redirectUri", "access"],
+        "required": ["name", "owners", "type", "key", "secret", "redirectUri", "access"],
         "properties": {
+          "name" : {
+            "type" : "string"
+          },
+          "owners" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Owner"
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "OA1_TWO_LEGGED", "OA1_THREE_LEGGED", "OA2_AUTHORIZATION_CODE", "SESSION_AUTH" ]
+          },
+          "preprocessor": {
+            "type": "string"
+          },
+          "tenant": {
+            "type": "string"
+          },
           "appName": {
             "type": "string"
           },
@@ -639,8 +680,27 @@
         }
       },
       "MutableOA2AuthorizationCodeClient" : {
-        "required" : [ "clientId", "clientSecret", "redirectUri", "endpoints"],
+        "required" : [ "name", "owners", "type", "clientId", "clientSecret", "redirectUri", "endpoints"],
         "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "owners" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Owner"
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "OA1_TWO_LEGGED", "OA1_THREE_LEGGED", "OA2_AUTHORIZATION_CODE", "SESSION_AUTH" ]
+          },
+          "preprocessor": {
+            "type": "string"
+          },
+          "tenant": {
+            "type": "string"
+          },
           "clientId" : {
             "type" : "string",
             "example": "292085223830.apps.googleusercontent.com"
@@ -687,8 +747,27 @@
         }
       },
       "MutableSessionAuthClient": {
-        "required": ["fields", "endpoints"],
+        "required": ["name", "owners", "type", "fields", "endpoints"],
         "properties": {
+          "name" : {
+            "type" : "string"
+          },
+          "owners" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Owner"
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "OA1_TWO_LEGGED", "OA1_THREE_LEGGED", "OA2_AUTHORIZATION_CODE", "SESSION_AUTH" ]
+          },
+          "preprocessor": {
+            "type": "string"
+          },
+          "tenant": {
+            "type": "string"
+          },
           "fields": {
             "type": "array",
             "items": {
