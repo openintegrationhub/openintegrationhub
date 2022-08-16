@@ -300,7 +300,7 @@
         }
       }
     },
-    "/api/v1/tenants/:id/users": {
+    "/api/v1/tenants/{id}/users": {
       "get": {
         "tags": [
           "tenant"
@@ -373,7 +373,7 @@
         ]
       }
     },
-    "/api/v1/tenants/:id/user/:userId": {
+    "/api/v1/tenants/{id}/user/{userId}": {
       "delete": {
         "tags": [
           "tenant"
@@ -477,7 +477,7 @@
         }
       }
     },
-    "/api/v1/users/:id": {
+    "/api/v1/users/{id}": {
       "get": {
         "tags": [
           "user"
@@ -664,7 +664,7 @@
         }
       }
     },
-    "/api/v1/roles/:id": {
+    "/api/v1/roles/{id}": {
       "get": {
         "tags": [
           "role"
