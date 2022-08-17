@@ -526,6 +526,142 @@
         }
       }
     },
+
+    "/flows/multiple/start": {
+      "post": {
+        "x-swagger-router-controller": "flow",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "flows"
+        ],
+        "summary": "Start multiple flows",
+        "description": "Initiates the flow's integration process by publishing the appropriate events to the event bus. Requires the 'flows.control' permission.",
+        "operationId": "startMultipleFlows",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArrayOfIds"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns an array of with id and new status of the flows or the error messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "5c99ec7e5ed40d3e7512cffa"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "starting"
+                          }
+                        }
+                      },
+                      "meta": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format."
+          },
+          "403": {
+            "description": "User is not authorised to start flows."
+          },
+          "404": {
+            "description": "No Flow with this id was found."
+          },
+          "409": {
+            "description": "Flow is currently not inactive. Only inactive flows can be started."
+          },
+          "500": {
+            "description": "One or more errors occurred. See content."
+          }
+        }
+      }
+    },
+    "/flows/multiple/stop": {
+      "post": {
+        "x-swagger-router-controller": "flow",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "flows"
+        ],
+        "summary": "Stop multiple flows",
+        "description": "Stops multiple flow's integration process by publishing an appropriate events to the event bus. Requires the 'flows.control' permission.",
+        "operationId": "stopMultipleFlows",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArrayOfIds"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns an array with the id and new status of the stopped flows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "5c99ec7e5ed40d3e7512cffa"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "stopping"
+                          }
+                        }
+                      },
+                      "meta": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format."
+          },
+          "403": {
+            "description": "User is not authorised to stop flows."
+          },
+          "404": {
+            "description": "No Flow with this id was found."
+          },
+          "409": {
+            "description": "Flow is currently not active. Only active flows can be stopped."
+          },
+          "500": {
+            "description": "One or more errors occurred. See content."
+          }
+        }
+      }
+    },
+
     "/flows/{id}/steps/{step_id}/logs": {
       "get": {
         "security": [
@@ -753,6 +889,20 @@
   ],
   "components": {
     "requestBodies": {
+      "ArrayOfIds": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "example": "62fcb5ee8ed54c19069b0ca5",
+                "description": "Id of a flow"
+              }
+            }
+          }
+        }
+      },
       "addTenantToFlow": {
         "content": {
           "application/json": {
@@ -1049,6 +1199,14 @@
             "type": "string",
             "description": "Type to discriminate between user or tenant"
           }
+        }
+      },
+      "ArrayOfIds": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "example": "62fcb5ee8ed54c19069b0ca5",
+          "description": "Id of a flow"
         }
       }
     }
