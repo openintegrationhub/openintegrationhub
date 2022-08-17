@@ -2,6 +2,7 @@
 /* eslint max-len: "off" */
 /* eslint func-names: "off" */
 /* eslint consistent-return: "off" */
+/* eslint no-continue: "off" */
 
 // const path = require('path');
 // const _ = require('lodash');
@@ -125,43 +126,147 @@ router.get('/', jsonParser, can(config.flowReadPermission), async (req, res) => 
 
 // Adds a new flow to the repository
 router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) => {
-  const newFlow = req.body;
-
-  // Automatically adds the current user as an owner, if not already included.
-  if (!newFlow.owners) {
-    newFlow.owners = [];
-  }
-  if (newFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
-    newFlow.owners.push({ id: req.user.sub, type: 'user' });
-  }
-
-  const storeFlow = new Flow(newFlow);
-  const errors = validate(storeFlow);
-
-  if (errors && errors.length > 0) {
-    return res.status(400).send({ errors });
-  }
-
   try {
-    const response = await storage.addFlow(storeFlow);
+    let isBulk = false;
+    let allFlows = req.body;
 
-    const ev = {
-      headers: {
-        name: 'flowrepo.flow.created',
-      },
-      payload: {
-        tenant: (req.user.tenant) ? req.user.tenant : '',
-        user: req.user.sub,
-        flowId: response.id,
-      },
-    };
+    if (Array.isArray(allFlows)) {
+      if (!req.user.permissions.includes(config.flowBulkPermission)
+      && !req.user.permissions.includes('tenant.all')
+      && !req.user.permissions.includes('all')) {
+        return res.status(403).send({ errors: [{ code: 403, message: 'User is missing permission for bulk operations' }] });
+      }
+      isBulk = true;
+    } else {
+      allFlows = [allFlows];
+    }
 
-    await publishQueue(ev);
+    const results = [];
 
-    return res.status(201).send({ data: response, meta: {} });
+    for (let i = 0; i < allFlows.length; i += 1) {
+      const newFlow = allFlows[i];
+      // Automatically adds the current user as an owner, if not already included.
+      if (!newFlow.owners) {
+        newFlow.owners = [];
+      }
+      if (newFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
+        newFlow.owners.push({ id: req.user.sub, type: 'user' });
+      }
+
+      const storeFlow = new Flow(newFlow);
+      const errors = validate(storeFlow);
+
+      if (errors && errors.length > 0) {
+        results.push({ errors });
+        continue;
+      }
+
+      try {
+        const response = await storage.addFlow(storeFlow);
+        results.push(response);
+
+        const ev = {
+          headers: {
+            name: 'flowrepo.flow.created',
+          },
+          payload: {
+            tenant: (req.user.tenant) ? req.user.tenant : '',
+            user: req.user.sub,
+            flowId: response.id,
+          },
+        };
+        await publishQueue(ev);
+      } catch (e) {
+        log.error(e);
+        results.push({ error: e });
+      }
+    }
+
+    if (isBulk) {
+      return res.status(201).send({ data: results, meta: {} });
+    }
+
+    if (results[0].errors) {
+      return res.status(400).send({ errors: results[0].errors });
+    }
+
+    return res.status(201).send({ data: results[0], meta: {} });
   } catch (err) {
     log.error(err);
     return res.status(500).send({ errors: [{ message: err }] });
+  }
+});
+
+// Updates a number of flows with body data
+router.patch('/bulk', jsonParser, can(config.flowBulkPermission), async (req, res) => {
+  try {
+    let allFlows = req.body;
+
+    if (!Array.isArray(allFlows)) {
+      allFlows = [allFlows];
+    }
+
+    const results = [];
+
+    for (let i = 0; i < allFlows.length; i += 1) {
+      const updateData = allFlows[i];
+
+      // Get the current flow
+      const oldFlow = await storage.getFlowById(updateData.id, req.user);
+
+      if (!oldFlow) {
+        results.push({ errors: [{ message: `Flow ${updateData.id} not found`, code: 404 }] });
+      }
+
+      if (oldFlow.status !== 'inactive') {
+        results.push({ errors: [{ message: `Flow ${oldFlow.id} is not inactive. Current status: ${oldFlow.status}`, code: 409 }] });
+      }
+
+      const updateFlow = Object.assign(oldFlow, updateData);
+      updateFlow._id = updateFlow.id;
+      delete updateFlow.id;
+
+      // Re-adds the current user to the owners array if they're missing
+      if (!updateFlow.owners) {
+        updateFlow.owners = [];
+      }
+      if (updateFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
+        updateFlow.owners.push({ id: req.user.sub, type: 'user' });
+      }
+
+      const storeFlow = new Flow(updateFlow);
+
+      const errors = validate(storeFlow);
+
+      if (errors && errors.length > 0) {
+        results.push({ errors });
+        continue;
+      }
+
+      try {
+        const response = await storage.updateFlow(storeFlow, req.user);
+        results.push(response);
+        const ev = {
+          headers: {
+            name: 'flowrepo.flow.modified',
+          },
+          payload: {
+            tenant: (req.user.tenant) ? req.user.tenant : '',
+            user: req.user.sub,
+            flowId: response.id,
+          },
+        };
+
+        await publishQueue(ev);
+      } catch (e) {
+        log.error(e);
+        results.push(e);
+      }
+    }
+
+    res.status(200).send({ data: results, meta: {} });
+  } catch (err) {
+    res.status(500).send({ errors: [{ message: err }] });
   }
 });
 

@@ -8,6 +8,7 @@ const general = {
   flowReadPermission: process.env.FLOW_READ_PERMISSION || 'flows.read',
   flowWritePermission: process.env.FLOW_WRITE_PERMISSION || 'flows.write',
   flowControlPermission: process.env.FLOW_CONTROL_PERMISSION || 'flows.control',
+  flowBulkPermission: process.env.FLOW_BULK_PERMISSION || 'flows.bulk',
 
   originWhitelist: process.env.ORIGINWHITELIST ? process.env.ORIGINWHITELIST.split(',') : [],
 
