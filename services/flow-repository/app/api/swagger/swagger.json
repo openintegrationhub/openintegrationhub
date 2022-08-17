@@ -138,7 +138,7 @@
           "flows"
         ],
         "summary": "Add a new flow to the repository",
-        "description": "This requires the 'flows.write' permissions. The new Flow will automatically be associated with the current user in the owners array, allowing editing and viewing by this user irrespective of tenancies.",
+        "description": "This requires the 'flows.write' permissions. The new Flow will automatically be associated with the current user in the owners array, allowing editing and viewing by this user irrespective of tenancies. Supports bulk creation by passing an array of flow objects in the body.",
         "operationId": "addFlow",
         "responses": {
           "201": {
@@ -319,6 +319,65 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/MutableFlow"
+              }
+            }
+          },
+          "description": "Flow object containing the desired new values.",
+          "required": true
+        }
+      }
+    },
+    "/flows/bulk": {
+      "patch": {
+        "x-swagger-router-controller": "flow",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "tags": [
+          "flows"
+        ],
+        "summary": "Bulk update a number of existing flows",
+        "description": "Each object in the body must contain an id property to match it to the flow to be updated. Requires the 'flows.write' permission.",
+        "operationId": "updateFlowBulk",
+        "responses": {
+          "200": {
+            "description": "The updated Flow.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items":{
+                        "$ref": "#/components/schemas/Flow"
+                      }
+                    },
+                    "meta": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Flow not found"
+          },
+          "409": {
+            "description": "Flow is currently not inactive. Only stopped, inactive flows may be updated."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MutableFlow"
+                }
               }
             }
           },
