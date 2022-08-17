@@ -197,6 +197,79 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
   }
 });
 
+// Updates a number of flows with body data
+router.patch('/bulk', jsonParser, can(config.flowBulkPermission), async (req, res) => {
+  try {
+    let allFlows = req.body;
+
+    if (!Array.isArray(allFlows)) {
+      allFlows = [allFlows];
+    }
+
+    const results = [];
+
+    for (let i = 0; i < allFlows.length; i += 1) {
+      const updateData = allFlows[i];
+
+      // Get the current flow
+      const oldFlow = await storage.getFlowById(updateData.id, req.user);
+
+      if (!oldFlow) {
+        results.push({ errors: [{ message: `Flow ${updateData.id} not found`, code: 404 }] });
+      }
+
+      if (oldFlow.status !== 'inactive') {
+        results.push({ errors: [{ message: `Flow ${oldFlow.id} is not inactive. Current status: ${oldFlow.status}`, code: 409 }] });
+      }
+
+      const updateFlow = Object.assign(oldFlow, updateData);
+      updateFlow._id = updateFlow.id;
+      delete updateFlow.id;
+
+      // Re-adds the current user to the owners array if they're missing
+      if (!updateFlow.owners) {
+        updateFlow.owners = [];
+      }
+      if (updateFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
+        updateFlow.owners.push({ id: req.user.sub, type: 'user' });
+      }
+
+      const storeFlow = new Flow(updateFlow);
+
+      const errors = validate(storeFlow);
+
+      if (errors && errors.length > 0) {
+        results.push({ errors });
+        continue;
+      }
+
+      try {
+        const response = await storage.updateFlow(storeFlow, req.user);
+        results.push(response);
+        const ev = {
+          headers: {
+            name: 'flowrepo.flow.modified',
+          },
+          payload: {
+            tenant: (req.user.tenant) ? req.user.tenant : '',
+            user: req.user.sub,
+            flowId: response.id,
+          },
+        };
+
+        await publishQueue(ev);
+      } catch (e) {
+        log.error(e);
+        results.push(e);
+      }
+    }
+
+    res.status(200).send({ data: results, meta: {} });
+  } catch (err) {
+    res.status(500).send({ errors: [{ message: err }] });
+  }
+});
+
 // Updates a flow with body data
 router.patch('/:id', jsonParser, can(config.flowWritePermission), async (req, res) => {
   const updateData = req.body;
