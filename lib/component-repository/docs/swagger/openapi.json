@@ -294,6 +294,52 @@
         }
       }
     },
+    "/components/global/restart/all": {
+      "post": {
+        "tags": ["components"],
+        "summary": "Restarts all currently running global components",
+        "description": "First stops all global components, then restarts them in the same order. Speed of the operation can be adjusted depending on cluster requirements.",
+        "operationId": "restartAllGlobalComponents",
+        "parameters": [{
+          "name": "emitThrottle",
+          "in": "query",
+          "description": "Amount of time in seconds between emmission of   each stopping and starting event, defaults to 10",
+          "required": false,
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "restartDelay",
+          "in": "query",
+          "description": "Length of pause (in seconds) between stopping the last component and beginning the restarting process, defaults to 2",
+          "required": false,
+          "schema": {
+            "type": "number"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/GlobalComponentRestart"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      }
+    },
     "/components/enrich/{id}": {
       "patch": {
         "tags": ["components"],
@@ -505,6 +551,19 @@
           "message": {
             "type": "string",
             "example": "Component stopped"
+          },
+          "code": {
+            "type": "string",
+            "example": 200
+          }
+        }
+      },
+      "GlobalComponentRestart": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "2 Components will be restarted"
           },
           "code": {
             "type": "string",
