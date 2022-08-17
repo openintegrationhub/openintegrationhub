@@ -30,6 +30,10 @@ const guestId = token.guestToken.value.sub;
 
 let flowId1;
 let flowId2;
+
+let flowId3;
+let flowId4;
+
 let app;
 
 beforeAll(async () => {
@@ -964,6 +968,182 @@ describe('Cleanup', () => {
     expect(res.status).toEqual(404);
     expect(res.body).not.toBeNull();
     expect(res.body.errors[0].message).toEqual('No flow found');
+  });
+
+  test('should add a third flow', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        type: 'long-running',
+        name: 'SnazzyToWice',
+        description: 'Different content 3',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'upsertPerson',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
+              },
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'transformTestFromOih',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeTwo',
+              target: 'NodeOne',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(201);
+    expect(res.text).not.toBeNull();
+    const j = res.body;
+    expect(j).not.toBeNull();
+
+    expect(j.data).toHaveProperty('id');
+    flowId3 = j.data.id;
+  });
+
+  test('should add a fourth flow', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        type: 'long-running',
+        name: 'SnazzyToWice',
+        description: 'Different content 4',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'upsertPerson',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
+              },
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'transformTestFromOih',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeTwo',
+              target: 'NodeOne',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(201);
+    expect(res.text).not.toBeNull();
+    const j = res.body;
+    expect(j).not.toBeNull();
+
+    expect(j.data).toHaveProperty('id');
+    flowId4 = j.data.id;
+  });
+
+  test('should start several flows', async () => {
+    const res = await request
+      .post('/flows/multiple/start')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send([flowId3, flowId4]);
+
+    expect(res.status).toEqual(200);
+    expect(res.body).not.toBeNull();
+    expect(Array.isArray(res.body)).toEqual(true);
+
+    const j = res.body;
+    expect(j).not.toBeNull();
+    expect(j[0].data).toHaveProperty('id');
+    expect(j[0].data).toHaveProperty('status');
+    expect(j[0].data.id).toEqual(flowId3);
+    expect(j[0].data.status).toEqual('starting');
+
+    expect(j[1].data).toHaveProperty('id');
+    expect(j[1].data).toHaveProperty('status');
+    expect(j[1].data.id).toEqual(flowId4);
+    expect(j[1].data.status).toEqual('starting');
+  });
+
+  test('should stop several flows', async () => {
+    const res = await request
+      .post('/flows/multiple/stop')
+      .set('Authorization', 'Bearer adminToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send([flowId3, flowId4]);
+
+    expect(res.status).toEqual(200);
+    expect(res.body).not.toBeNull();
+    expect(Array.isArray(res.body)).toEqual(true);
+    const j = res.body;
+
+    expect(j).not.toBeNull();
+    expect(j[0].data).toHaveProperty('id');
+    expect(j[0].data).toHaveProperty('status');
+    expect(j[0].data.id).toEqual(flowId3);
+    expect(j[0].data.status).toEqual('stopping');
+
+    expect(j[1].data).toHaveProperty('id');
+    expect(j[1].data).toHaveProperty('status');
+    expect(j[1].data.id).toEqual(flowId4);
+    expect(j[1].data.status).toEqual('stopping');
+  });
+
+  test('handle a third flow.stopped event', async () => {
+    await flowStopped(flowId3);
+
+    const flow = await Flow.findOne({ _id: flowId3 }).lean();
+    expect(flow.status).toEqual('inactive');
+  });
+
+  test('handle a fourth flow.stopped event', async () => {
+    await flowStopped(flowId4);
+
+    const flow = await Flow.findOne({ _id: flowId4 }).lean();
+    expect(flow.status).toEqual('inactive');
+  });
+
+  test('should delete the third flow', async () => {
+    const res = await request
+      .delete(`/flows/${flowId3}`)
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    expect(res.body).not.toBeNull();
+    expect(res.body.msg).toEqual('Flow was successfully deleted');
+  });
+
+  test('should delete the fourth flow', async () => {
+    const res = await request
+      .delete(`/flows/${flowId4}`)
+      .set('Authorization', 'Bearer guestToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    expect(res.status).toEqual(200);
+    expect(res.body).not.toBeNull();
+    expect(res.body.msg).toEqual('Flow was successfully deleted');
   });
 });
 
