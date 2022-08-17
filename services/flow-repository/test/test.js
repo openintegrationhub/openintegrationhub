@@ -1198,3 +1198,177 @@ describe('Maintenance functions', () => {
     expect(count).toEqual(1);
   });
 });
+
+describe('Bulk operations', () => {
+  let flowIdOne;
+  let flowIdTwo;
+
+  test('should create several flows', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer bulkToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send([{
+        name: 'Regular Flow 1',
+        description: 'Should be created',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'upsertPerson',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
+              },
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'transformTestFromOih',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeTwo',
+              target: 'NodeOne',
+            },
+          ],
+        },
+      },
+      {
+        name: 'Broken Flow',
+        description: 'Should cause a validation error',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'upsertPerson',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
+              },
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'transformTestFromOih',
+            },
+          ],
+          edges: [],
+        },
+      },
+      {
+        name: 'Regular Flow 2',
+        description: 'Should also be created',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'upsertPerson',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
+              },
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'transformTestFromOih',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeTwo',
+              target: 'NodeOne',
+            },
+          ],
+        },
+      }]);
+
+    expect(res.status).toEqual(201);
+    expect(res.body.data.length).toEqual(3);
+    expect(res.body.data[0].name).toEqual('Regular Flow 1');
+    expect(res.body.data[1].errors.length).toEqual(1);
+    expect(res.body.data[2].name).toEqual('Regular Flow 2');
+
+    flowIdOne = res.body.data[0].id;
+    flowIdTwo = res.body.data[2].id;
+  });
+
+  test('should create several flows', async () => {
+    const res = await request
+      .patch('/flows/bulk')
+      .set('Authorization', 'Bearer bulkToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send([{
+        name: 'Regular Flow 1',
+        id: flowIdOne,
+        description: 'Should be have been updated',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'upsertOrganization',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
+              },
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'transformTestFromOih',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeTwo',
+              target: 'NodeOne',
+            },
+          ],
+        },
+      },
+      {
+        name: 'Regular Flow 2',
+        description: 'Should also have been updated',
+        id: flowIdTwo,
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'upsertPerson',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
+              },
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'getPersons',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeTwo',
+              target: 'NodeOne',
+            },
+          ],
+        },
+      }]);
+
+    expect(res.status).toEqual(200);
+    expect(res.body.data.length).toEqual(2);
+    expect(res.body.data[0].description).toEqual('Should be have been updated');
+    expect(res.body.data[0].graph.nodes[0].function).toEqual('upsertOrganization');
+    expect(res.body.data[1].description).toEqual('Should also have been updated');
+    expect(res.body.data[1].graph.nodes[1].function).toEqual('getPersons');
+  });
+});

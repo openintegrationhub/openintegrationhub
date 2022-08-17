@@ -57,4 +57,15 @@ module.exports = {
     },
   },
 
+  bulkToken: {
+    token: 'permitToken',
+    value: {
+      sub: 'PermitGuy',
+      username: 'admin@example.com',
+      permissions: ['flows.bulk', 'flows.write'],
+      tenant: 'testTenant1',
+      iat: 1337,
+    },
+  },
+
 };
