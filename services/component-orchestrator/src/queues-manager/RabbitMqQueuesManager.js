@@ -12,6 +12,9 @@ const BACKCHANNEL_ERROR_QUEUE = `${BACKCHANNEL_EXCHANGE}:error`
 
 const BACKCHANNEL_INPUT_KEY = `${BACKCHANNEL_EXCHANGE}.input`
 const BACKCHANNEL_ERROR_KEY = `${BACKCHANNEL_EXCHANGE}.error`
+const BACKCHANNEL_STATE_KEY = `${BACKCHANNEL_EXCHANGE}.step_state`
+// The Step State key is used to handle incoming "end" messages from a component, to handle deletions of execution scoped snapshots.
+
 
 const BACKCHANNEL_DEAD_LETTER_KEY = `${BACKCHANNEL_EXCHANGE}.deadletter`
 
@@ -36,6 +39,7 @@ class RabbitMqQueuesManager extends QueuesManager {
         await this._queueCreator.assertMessagesQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_DEAD_LETTER_KEY);
         await this._queueCreator.assertMessagesQueue(BACKCHANNEL_ERROR_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_DEAD_LETTER_KEY);
         await this._queueCreator.bindQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_INPUT_KEY);
+        await this._queueCreator.bindQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_STATE_KEY);
         await this._queueCreator.bindQueue(BACKCHANNEL_ERROR_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_ERROR_KEY);
     }
 
