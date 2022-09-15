@@ -49,7 +49,7 @@
     "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/iam-utils": "*",
     "@wice-devs/cfm": "1.0.8",
-    "backend-commons-lib": "1.1.3",
+    "backend-commons-lib": "*",
     "bunyan": "1.8.15",
     "jsonata": "1.8.4",
     "koa": "2.13.1",
