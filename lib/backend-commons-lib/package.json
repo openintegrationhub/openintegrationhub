@@ -1,6 +1,6 @@
 {
   "name": "backend-commons-lib",
-  "version": "3.0.0",
+  "version": "2.1.0",
   "description": "Common part for all services",
   "main": "index.js",
   "scripts": {
