@@ -16,7 +16,7 @@ export default class DataController {
     }
     public async getOne(ctx: RouterContext): Promise<void> {
         const { flowId, stepId } = ctx.params;
-        const doc = await Snapshot.findOne({flowId, stepId});
+        const doc = await Snapshot.findOne({flowId, stepId}).sort({updated_at: -1});
         ctx.body = {
             data: doc ? doc.snapshot : {}
         };

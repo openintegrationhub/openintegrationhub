@@ -1,6 +1,6 @@
 {
   "name": "component-orchestrator",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "Resource coordinator",
   "main": "index.js",
   "scripts": {
