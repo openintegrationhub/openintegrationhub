@@ -72,22 +72,25 @@ export const updateFlow = (flow) => async (dispatch) => {
     }
 };
 
-export const createFlow = (data) => async (dispatch) => {
+export const createFlow = (payload) => async (dispatch) => {
     try {
-        await axios({
+        const { data } = await axios({
             method: 'post',
             url: `${conf.endpoints.flow}/flows`,
             withCredentials: true,
             json: true,
-            data,
+            data: payload,
         });
 
         dispatch({
             type: CREATE_FLOW,
         });
         dispatch(getFlows());
+
+        return data.data;
     } catch (err) {
         console.log(err);
+        return null;
     }
 };
 
