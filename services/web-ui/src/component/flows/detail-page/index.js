@@ -29,6 +29,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 import AddBoxIcon from '@material-ui/icons/AddBox';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { interpolateRgbBasis } from 'd3';
 import {
     getFlows, deleteFlow, updateFlow, startFlow, stopFlow, executeFlow,
@@ -171,6 +172,7 @@ const useStyles = {
 
 const depth = 0;
 const uniqueNodes = [];
+
 class FlowDetails extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -290,7 +292,12 @@ class FlowDetails extends React.PureComponent {
             contentShown: 'selected-node',
         });
         this.setState({
-            editNodeName: element.id, editFunction: element.function, editFields: element.fields, editNodeSettings: element.nodeSettings, editSecret: selectedSecret || this.state.editSecret, editComponent: selectedComponent || { name: '' },
+            editNodeName: element.id,
+            editFunction: element.function,
+            editFields: element.fields,
+            editNodeSettings: element.nodeSettings,
+            editSecret: selectedSecret || this.state.editSecret,
+            editComponent: selectedComponent || { name: '' },
         });
         if (this.state.components.all.length === 0) {
             this.setState({ components: this.props.components });
@@ -347,29 +354,29 @@ class FlowDetails extends React.PureComponent {
         });
     }
 
-  deleteNode = (node) => {
-      const { id } = this.props.match.params;
-      const { flow } = this.state;
-      const edgeToAlter = flow.graph.edges.filter((item) => item.target === node.id);
-      // const edgeToDelete = flow.graph.edges.filter(item => item.source === node.id)
-      const nodeToDelete = flow.graph.nodes.filter((item) => item.id === node.id);
-      const indexNode = flow.graph.nodes.indexOf(nodeToDelete[0]);
-      const indexEdge = flow.graph.edges.indexOf(edgeToAlter[0]);
-      if (indexNode > -1 && indexEdge > -1) {
-          flow.graph.nodes.splice(indexNode, 1);
-          flow.graph.edges.splice(indexEdge, 1);
-          // this.setState({flow: {...this.state.flow,
-          //     flow}})
-          this.setState({
-              flow: {
-                  ...this.state.flow,
-                  flow,
-              },
-              contentShown: 'flow-settings',
-          // flow: {graph}
-          });
-      }
-  }
+    deleteNode = (node) => {
+        const { id } = this.props.match.params;
+        const { flow } = this.state;
+        const edgeToAlter = flow.graph.edges.filter((item) => item.target === node.id);
+        // const edgeToDelete = flow.graph.edges.filter(item => item.source === node.id)
+        const nodeToDelete = flow.graph.nodes.filter((item) => item.id === node.id);
+        const indexNode = flow.graph.nodes.indexOf(nodeToDelete[0]);
+        const indexEdge = flow.graph.edges.indexOf(edgeToAlter[0]);
+        if (indexNode > -1 && indexEdge > -1) {
+            flow.graph.nodes.splice(indexNode, 1);
+            flow.graph.edges.splice(indexEdge, 1);
+            // this.setState({flow: {...this.state.flow,
+            //     flow}})
+            this.setState({
+                flow: {
+                    ...this.state.flow,
+                    flow,
+                },
+                contentShown: 'flow-settings',
+                // flow: {graph}
+            });
+        }
+    }
 
     addBranchAfterNode = () => {
         this.setState({
@@ -383,15 +390,13 @@ class FlowDetails extends React.PureComponent {
             id: this.state.leftNodeName,
             componentId: this.state.component.id,
             function: null,
-            fields: {
-            },
+            fields: {},
         });
         graph.nodes.push({
             id: this.state.rightNodeName,
             componentId: this.state.component.id,
             function: null,
-            fields: {
-            },
+            fields: {},
         });
         const parentHasOnlyOneChild = graph.edges.filter((edge) => edge.source === this.state.addBranchAtNode.id).length === 1;
 
@@ -435,26 +440,26 @@ class FlowDetails extends React.PureComponent {
         });
     }
 
-  generateSubGraphLeveled = (arr, level) => {
-      for (const arrNode of arr[level]) {
-          const children = this.props.flows.all[0].graph.nodes.filter((node) => this.props.flows.all[0].graph.edges.find((edge) => edge.source === arrNode.id && edge.target === node.id));
-          if (children.length) {
-              arr[level + 1] = arr[level + 1] || [];
-              arr[level + 1] = arr[level + 1].concat(children);
-              this.generateSubGraph(arr, level + 1);
-          }
-      }
+    generateSubGraphLeveled = (arr, level) => {
+        for (const arrNode of arr[level]) {
+            const children = this.props.flows.all[0].graph.nodes.filter((node) => this.props.flows.all[0].graph.edges.find((edge) => edge.source === arrNode.id && edge.target === node.id));
+            if (children.length) {
+                arr[level + 1] = arr[level + 1] || [];
+                arr[level + 1] = arr[level + 1].concat(children);
+                this.generateSubGraph(arr, level + 1);
+            }
+        }
 
-      return arr;
-  }
+        return arr;
+    }
 
-  getImage = (node) => {
-      const component = this.state.components.all.filter((comp) => comp.id === node.componentId)[0];
-      if (component && component.hasOwnProperty('logo')) {
-          return component.logo;
-      }
-      return false;
-  }
+    getImage = (node) => {
+        const component = this.state.components.all.filter((comp) => comp.id === node.componentId)[0];
+        if (component && component.hasOwnProperty('logo')) {
+            return component.logo;
+        }
+        return false;
+    }
 
     generateGraphVisualization = (currentContent = [], parent, /* isRoot, */ nodeAlignment, logo) => {
         const {
@@ -489,17 +494,28 @@ class FlowDetails extends React.PureComponent {
         currentContent.push(<div key={parent.id} className={`${classes.nodeWrapper} ${nodeAlignment}`}>
 
             {/* {!isRoot ? <button>+</button> : null} */}
-            <div className={`${classes.flowElement} ${parent.privileged ? 'privileged' : ''} `} onClick={this.onElementClick.bind(this, parent)}>
+            <div className={`${classes.flowElement} ${parent.privileged ? 'privileged' : ''} `}
+                onClick={this.onElementClick.bind(this, parent)}>
                 <span style={{
-                    width: '30px', height: '30px', display: 'flex ', alignItems: 'center', justifyContent: 'center', marginRight: 10,
-                }}>{image ? <img src={parent.logo} style={{ width: '24px', height: '24px' }} alt="test"/> : <span className="placeholder">●</span>}</span>
-                <span className="title">{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</span>
+                    width: '30px',
+                    height: '30px',
+                    display: 'flex ',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: 10,
+                }}>{image ? <img src={parent.logo} style={{ width: '24px', height: '24px' }} alt="test"/>
+                        : <span className="placeholder">●</span>}</span>
+                <span
+                    className="title">{(parent.nodeSettings && parent.nodeSettings.basaasFlows ? parent.nodeSettings.basaasFlows.stepName : parent.id)}</span>
             </div>
-            {(parent.children.length && childrenContent.length === 1) ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>{childrenContent} </div>
-                : (parent.children.length && childrenContent.length > 1) ? <div style={{ position: 'relative' }}><hr className={classes.verticalLine}/>
+            {(parent.children.length && childrenContent.length === 1) ? <div style={{ position: 'relative' }}>
+                <hr className={classes.verticalLine}/>
+                {childrenContent} </div>
+                : (parent.children.length && childrenContent.length > 1) ? <div style={{ position: 'relative' }}>
+                    <hr className={classes.verticalLine}/>
                     <div className={classes.leftNodeElement}>
                         {childrenContent[0]}
-                        <hr className={classes.leftHorizontalLine} />
+                        <hr className={classes.leftHorizontalLine}/>
                     </div>
                     <div className={classes.rightNodeElement}>
                         <hr className={classes.rightHorizontalLine}/>
@@ -510,13 +526,13 @@ class FlowDetails extends React.PureComponent {
 
                 <Tooltip title="Add branch">
                     <IconButton color="primary" onClick={() => this.openBranchEditor(parent)}>
-                        <CallSplitIcon />
+                        <CallSplitIcon/>
                     </IconButton>
                 </Tooltip>
 
                 <Tooltip title="Add Node">
                     <IconButton color="primary" onClick={this.displayModal.bind(this, parent)}>
-                        <AddIcon />
+                        <AddIcon/>
                     </IconButton>
                 </Tooltip>
 
@@ -529,7 +545,7 @@ class FlowDetails extends React.PureComponent {
                             position: 'absolute', top: '5px', right: '-19px', zIndex: '1', background: '#ededed',
                         }}
                     >
-                        <DeleteIcon />
+                        <DeleteIcon/>
                     </IconButton>
                 </Tooltip>}
 
@@ -540,312 +556,357 @@ class FlowDetails extends React.PureComponent {
         return currentContent;
     }
 
-      generateSubGraph = (parent) => {
-          const children = this.state.flow.graph.nodes.filter((node) => this.state.flow.graph.edges.find((edge) => edge.source === parent.id && edge.target === node.id));
-          parent.children = children || [];
-          for (const childNode of parent.children) {
-              this.generateSubGraph(childNode);
-          }
+    generateSubGraph = (parent) => {
+        const children = this.state.flow.graph.nodes.filter((node) => this.state.flow.graph.edges.find((edge) => edge.source === parent.id && edge.target === node.id));
+        parent.children = children || [];
+        for (const childNode of parent.children) {
+            this.generateSubGraph(childNode);
+        }
 
-          return parent;
-      }
+        return parent;
+    }
 
-      generateGraph = () => {
-          if (this.state.flow.graph.nodes.length > 0) {
-              const flowCopy = this.state.flow;
-              const root = flowCopy.graph.nodes.find((node) => !flowCopy.graph.edges.find((edge) => edge.target === node.id));
+    generateGraph = () => {
+        if (this.state.flow.graph.nodes.length > 0) {
+            const flowCopy = this.state.flow;
+            const root = flowCopy.graph.nodes.find((node) => !flowCopy.graph.edges.find((edge) => edge.target === node.id));
 
-              if (root) {
-                  const arr = [root];
-                  this.generateSubGraph(root);
-                  return root;
-              }
-              return null;
-          }
-          return null;
-      }
+            if (root) {
+                const arr = [root];
+                this.generateSubGraph(root);
+                return root;
+            }
+            return null;
+        }
+        return null;
+    }
 
-      handleComponentSelection = (event) => {
-          const selected = event.target.value;
-          //   console.log('selected is:', selected);
-          const component = this.props.components.all.filter((comp) => comp.name === selected)[0];
-          //   const { actions } = component.descriptor;
-          //   const { triggers } = component.descriptor;
-          //   if (actions) {
-          //       this.setState({ selectableFunctions: [{ actions }, { triggers }] });
-          //   }
+    handleComponentSelection = (event) => {
+        const selected = event.target.value;
+        //   console.log('selected is:', selected);
+        const component = this.props.components.all.filter((comp) => comp.name === selected)[0];
+        //   const { actions } = component.descriptor;
+        //   const { triggers } = component.descriptor;
+        //   if (actions) {
+        //       this.setState({ selectableFunctions: [{ actions }, { triggers }] });
+        //   }
 
-          switch (event.target.name) {
-          case 'editNodeComponent':
-              this.setState({ editComponent: component });
-              break;
-          default:
-              this.setState({ component });
-              break;
-          }
-      }
+        switch (event.target.name) {
+        case 'editNodeComponent':
+            if (component !== this.state.editComponent) {
+                this.setState({
+                    editFunction: '',
+                });
+            }
+            this.setState({ editComponent: component });
+            break;
+        default:
+            this.setState({ component });
+            break;
+        }
+    }
 
-      // test it on monday
-      handleSecretSelection = (event) => {
-          const selectedSecret = event.target.value;
-          const newSecret = this.props.secrets.secrets.filter((sec) => sec.name === selectedSecret)[0];
-          if (event.target.name === 'editSecret') {
-              this.setState({ editSecret: newSecret });
-          }
-          this.setState({ secret: newSecret });
-      }
+    handleFunctionSelection = (event, newVal) => {
+        this.setState({
+            editFunction: newVal,
+        });
+    }
 
-      handleNodeSettings = (event) => {
-          this.setState({ nodeSettings: event.jsObject });
-      }
+    handleFunctionNameChange = (event, newVal) => {
+        this.setState({
+            editFunction: newVal,
+        });
+    }
 
-      handleFieldsInput = (event) => {
-          this.setState({ fields: event.jsObject });
-      }
+    // test it on monday
+    handleSecretSelection = (event) => {
+        const selectedSecret = event.target.value;
+        const newSecret = this.props.secrets.secrets.filter((sec) => sec.name === selectedSecret)[0];
+        if (event.target.name === 'editSecret') {
+            this.setState({ editSecret: newSecret });
+        }
+        this.setState({ secret: newSecret });
+    }
 
-      handleEditNodeSettings = (event) => {
-          this.setState({ editNodeSettings: event.jsObject });
-      }
+    handleNodeSettings = (event) => {
+        this.setState({ nodeSettings: event.jsObject });
+    }
 
-      handleEditFieldsInput = (event) => {
-          this.setState({ editFields: event.jsObject });
-      }
+    handleFieldsInput = (event) => {
+        this.setState({ fields: event.jsObject });
+    }
 
-      saveFlow = async () => {
-          console.log('Saved', this.state);
+    handleEditNodeSettings = (event) => {
+        this.setState({ editNodeSettings: event.jsObject });
+    }
 
-          for (let i = 0; i < this.state.flow.graph.nodes.length; i++) {
-              //   console.log(this.state.flow.graph.nodes[i].children);
-              delete this.state.flow.graph.nodes[i].children;
-              delete this.state.flow.graph.nodes[i].logo;
-          }
-          this.props.updateFlow(this.state.flow);
-      }
+    handleEditFieldsInput = (event) => {
+        this.setState({ editFields: event.jsObject });
+    }
 
-      handleEdit = () => {
-          const newFlow = this.state.flow;
-          const selNode = this.state.selectedNode;
-          const nodeId = lodash.cloneDeep(selNode.id);
-          const oldFlow = lodash.cloneDeep(this.state.flow);
-          //   const oldNode = oldFlow.graph.nodes.find((node) => node.id === selNode.id);
-          // if its the root
-          //   if (this.state.flow.graph.edges[0].source === selNode.id) {
-          //       //   const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
-          //       //   edge.source = this.state.editNodeName;
-          //       this.setState({ selectedNode: '', contentShown: 'flow-settings' });
-          //       //   console.log('Test', edge);
-          //       return;
-          //   }
-          // if changing parents node name
-          if (nodeId !== this.state.editNodeName && selNode.children.length > 0) {
-              const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
-              edge.source = this.state.editNodeName;
-              const oldEdge = oldFlow.graph.edges.filter((edge) => edge.source === selNode.id);
-          }
+    saveFlow = async () => {
+        console.log('Saved', this.state);
 
-          const node = this.state.flow.graph.nodes.filter((nod) => nod.id === selNode.id)[0];
-          //   const edge = this.state.flow.graph.edges.filter((edge) => edge.target === selNode.id)[0];
+        for (let i = 0; i < this.state.flow.graph.nodes.length; i++) {
+            //   console.log(this.state.flow.graph.nodes[i].children);
+            delete this.state.flow.graph.nodes[i].children;
+            delete this.state.flow.graph.nodes[i].logo;
+        }
+        this.props.updateFlow(this.state.flow);
+    }
 
-          // const newEdge = { ...edge, target: this.state.editNodeName };
+    handleEdit = () => {
+        const newFlow = this.state.flow;
+        const selNode = this.state.selectedNode;
+        const nodeId = lodash.cloneDeep(selNode.id);
+        const oldFlow = lodash.cloneDeep(this.state.flow);
+        //   const oldNode = oldFlow.graph.nodes.find((node) => node.id === selNode.id);
+        // if its the root
+        //   if (this.state.flow.graph.edges[0].source === selNode.id) {
+        //       //   const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
+        //       //   edge.source = this.state.editNodeName;
+        //       this.setState({ selectedNode: '', contentShown: 'flow-settings' });
+        //       //   console.log('Test', edge);
+        //       return;
+        //   }
+        // if changing parents node name
+        if (nodeId !== this.state.editNodeName && selNode.children.length > 0) {
+            const edge = this.state.flow.graph.edges.filter((edge) => edge.source === selNode.id)[0];
+            edge.source = this.state.editNodeName;
+            const oldEdge = oldFlow.graph.edges.filter((edge) => edge.source === selNode.id);
+        }
 
-          const { nodes } = this.state.flow.graph;
-          let { edges } = this.state.flow.graph;
-          if (edges.length === 1 && !edges[0].hasOwnProperty('target')) {
-              edges = [];
-          }
-          const indexNode = nodes.findIndex((item) => item.id === selNode.id);
-          const newNodes = nodes.filter((item) => item.id !== selNode.id);
-          newNodes.splice(indexNode, 0, node);
-          //   newNodes.push(node);
-          const indexEdge = edges.findIndex((el) => el.target === selNode.id);
-          //   console.log('index is', index);
-          // const newEdges = edges.filter((item) => item.target !== selNode.id);
+        const node = this.state.flow.graph.nodes.filter((nod) => nod.id === selNode.id)[0];
+        //   const edge = this.state.flow.graph.edges.filter((edge) => edge.target === selNode.id)[0];
 
-          const newEdges = edges.map((edge) => {
-              if (edge.source === selNode.id && selNode.id !== this.state.editNodeName) {
-                  edge.source = this.state.editNodeName;
-              }
-              if (edge.target === selNode.id && selNode.id !== this.state.editNodeName) {
-                  edge.target = this.state.editNodeName;
-              }
-              return edge;
-          });
+        // const newEdge = { ...edge, target: this.state.editNodeName };
 
-          // newEdges.splice(indexEdge, 0, newEdge);
-          //   newEdges.push(newEdge);
+        const { nodes } = this.state.flow.graph;
+        let { edges } = this.state.flow.graph;
+        if (edges.length === 1 && !edges[0].hasOwnProperty('target')) {
+            edges = [];
+        }
+        const indexNode = nodes.findIndex((item) => item.id === selNode.id);
+        const newNodes = nodes.filter((item) => item.id !== selNode.id);
+        newNodes.splice(indexNode, 0, node);
+        //   newNodes.push(node);
+        const indexEdge = edges.findIndex((el) => el.target === selNode.id);
+        //   console.log('index is', index);
+        // const newEdges = edges.filter((item) => item.target !== selNode.id);
 
-          const graphCopy = this.state.flow.graph;
-          graphCopy.nodes = newNodes;
-          graphCopy.edges = newEdges;
+        const newEdges = edges.map((edge) => {
+            if (edge.source === selNode.id && selNode.id !== this.state.editNodeName) {
+                edge.source = this.state.editNodeName;
+            }
+            if (edge.target === selNode.id && selNode.id !== this.state.editNodeName) {
+                edge.target = this.state.editNodeName;
+            }
+            return edge;
+        });
 
-          if (this.state.editNodeName) {
-              node.id = this.state.editNodeName;
-          }
+        // newEdges.splice(indexEdge, 0, newEdge);
+        //   newEdges.push(newEdge);
 
-          if (this.state.editComponent) {
-              node.componentId = this.state.editComponent.id;
-          }
-          if (this.state.editFunction) {
-              node.function = this.state.editFunction;
-          }
-          if (this.state.editSecret) {
-              node.credentials_id = this.state.editSecret._id;
-          }
-          if (this.state.editNodeSettings) {
-              node.nodeSettings = this.state.editNodeSettings;
-          }
-          if (this.state.editFields) {
-              node.fields = this.state.editFields;
-          }
-          //   console.log('newFlow here', ...this.state.flow);
+        const graphCopy = this.state.flow.graph;
+        graphCopy.nodes = newNodes;
+        graphCopy.edges = newEdges;
 
-          this.setState((prevState) => ({
-              flow: {
-                  ...prevState.flow,
-                  graph: newFlow.graph,
-              },
-          }));
-          this.setState({
-              /* flow: newFlow, */ editNodeName: '', editNodeSettings: {}, editFunction: '', editFields: {}, editSecret: '', contentShown: 'flow-settings',
-          });
-      }
+        if (this.state.editNodeName) {
+            node.id = this.state.editNodeName;
+        }
 
-      //   getDuplicates = (arr, key) => {
-      //       const id = arr.map((item) => item.id);
-      //       return id.filter((key) => id.indexOf(key) !== id.lastIndexOf(key));
-      //   }
+        if (this.state.editComponent) {
+            node.componentId = this.state.editComponent.id;
+        }
+        if (this.state.editFunction) {
+            node.function = this.state.editFunction;
+        }
+        if (this.state.editSecret) {
+            node.credentials_id = this.state.editSecret._id;
+        }
+        if (this.state.editNodeSettings) {
+            node.nodeSettings = this.state.editNodeSettings;
+        }
+        if (this.state.editFields) {
+            node.fields = this.state.editFields;
+        }
+        //   console.log('newFlow here', ...this.state.flow);
 
-      getDepth=() => {
-          const { edges } = this.state.flow.graph;
+        this.setState((prevState) => ({
+            flow: {
+                ...prevState.flow,
+                graph: newFlow.graph,
+            },
+        }));
+        this.setState({
+            /* flow: newFlow, */
+            editNodeName: '',
+            editNodeSettings: {},
+            editFunction: '',
+            editFields: {},
+            editSecret: '',
+            contentShown: 'flow-settings',
+        });
+    }
 
-          const unique = [...new Set(edges.map((item) => item.source))];
-          return unique.length - 1;
-      }
+    //   getDuplicates = (arr, key) => {
+    //       const id = arr.map((item) => item.id);
+    //       return id.filter((key) => id.indexOf(key) !== id.lastIndexOf(key));
+    //   }
 
-      getDepthByNodeId = (nodeId) => {
-          let depth = 0;
-          const parent = this.state.flow.graph.edges.filter((item) => item.target === nodeId)[0];
-          if (parent) {
-              depth += 1;
-              this.getDepthByNodeId(parent.source);
-          }
-      }
+    getDepth = () => {
+        const { edges } = this.state.flow.graph;
 
-      getFunctions = () => {
-          if (this.state.component.descriptor) {
-              return { actions: this.state.component.descriptor.actions, triggers: this.state.component.descriptor.triggers };
-          }
-          //   this.setState({ selectableFunctions: [{ actions: this.state.component.descriptor.actions, triggers: {} }] });
+        const unique = [...new Set(edges.map((item) => item.source))];
+        return unique.length - 1;
+    }
 
-          return null;
-      }
+    getDepthByNodeId = (nodeId) => {
+        let depth = 0;
+        const parent = this.state.flow.graph.edges.filter((item) => item.target === nodeId)[0];
+        if (parent) {
+            depth += 1;
+            this.getDepthByNodeId(parent.source);
+        }
+    }
 
-      render() {
-          const {
-              classes,
-          } = this.props;
+    getFunctions = () => {
+        if (this.state.component.descriptor) {
+            return {
+                actions: this.state.component.descriptor.actions,
+                triggers: this.state.component.descriptor.triggers,
+            };
+        }
+        //   this.setState({ selectableFunctions: [{ actions: this.state.component.descriptor.actions, triggers: {} }] });
 
-          //   console.log('STATE', this.state);
+        return null;
+    }
 
-          if (this.state.loading) {
-              return <Loader />;
-          }
+    render() {
+        const {
+            classes,
+        } = this.props;
 
-          const graph = this.generateGraph();
+        //   console.log('STATE', this.state);
 
-          if (!graph) {
-              //   console.log('no graph', this.state);
-              return <Loader />;
-          }
-          const content = this.generateGraphVisualization([], graph, true);
-          const selNode = this.state.selectedNode;
-          const compId = selNode.componentId;
-          //   const comp = this.state.components.all.filter((cp) => cp.id === compId)[0];
-          //   const { actions } = this.state.component.descriptor;
-          //   const { triggers } = this.state.component.descriptor;
-          const functions = this.getFunctions();
+        if (this.state.loading) {
+            return <Loader/>;
+        }
 
-          //   console.log('actions', actions, 'triggers', triggers);
-          console.log('functions', functions);
-          //   console.log('comp', comp);
-          //   console.log('components are', this.state.components);
-          console.log('state is', this.state);
-          console.log('props is', this.props);
-          console.log('selectedNode is', selNode);
-          //   console.log('actions', actions);
-          //   const { id } = this.props.match.params;
-          return (<React.Fragment>
-              {/* CREATE NODE MODAL */}
-              <Modal
-                  aria-labelledby="simple-modal-title"
-                  aria-describedby="simple-modal-description"
-                  open={this.state.openModal}
-                  onClose={() => this.setState({ openModal: false, component: { name: '' } })}
-                  style={{
-                      position: 'absolute', left: '25%', top: '10%', width: '680px', height: '80vh',
-                  }}
-              >
+        const graph = this.generateGraph();
 
-                  <div className={classes.modal}>
+        if (!graph) {
+            //   console.log('no graph', this.state);
+            return <Loader/>;
+        }
+        const content = this.generateGraphVisualization([], graph, true);
+        const selNode = this.state.selectedNode;
+        const compId = selNode.componentId;
+        //   const comp = this.state.components.all.filter((cp) => cp.id === compId)[0];
+        //   const { actions } = this.state.component.descriptor;
+        //   const { triggers } = this.state.component.descriptor;
+        const functions = this.getFunctions();
 
-                      <Typography variant="h5" component="h2">CREATE NODE</Typography>
+        //   console.log('actions', actions, 'triggers', triggers);
+        console.log('functions', functions);
+        //   console.log('comp', comp);
+        //   console.log('components are', this.state.components);
+        console.log('state is', this.state);
+        console.log('props is', this.props);
+        console.log('selectedNode is', selNode);
 
-                      <TextField
-                          id="createNodeName"
-                          name="createNodeName"
-                          label="Node name"
-                          // value={this.state.flow.cron}
-                          onChange={(e) => this.handleChange(e)}
-                          margin="normal"
-                          fullWidth
-                          autoFocus
-                      />
+        const componentFunctions = this.state.editComponent ? this.state.editComponent.descriptor : {};
+        let functionsList = [];
+        if (componentFunctions) {
+            if (componentFunctions.actions) {
+                functionsList = functionsList.concat(Object.keys(componentFunctions.actions));
+            }
+            if (componentFunctions.triggers) {
+                functionsList = functionsList.concat(Object.keys(componentFunctions.triggers));
+            }
+        }
 
-                      <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
-                          <InputLabel id="demo-simple-select-label">Component</InputLabel>
-                          <Select
-                              labelId="demo-simple-select-label"
-                              id="demo-simple-select"
-                              value={this.state.component.name}
-                              onChange={(e) => this.handleComponentSelection(e)}
-                          >
-                              {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id} >
-                                  {component.logo ? <div style={{ display: 'flex', alignItems: 'center', height: '40px' }}>
-                                      <img src={component.logo} alt="comp_img" style={{
-                                          height: 24, width: 24, marginRight: '12px', overflow: 'hidden',
-                                      }}/>
-                                      {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
-                                  </div> : <div style={{
-                                      display: 'flex', alignItems: 'center', height: '40px',
-                                  }}>
-                                      <AddBoxIcon style={{ height: 24, width: 24, marginRight: '8px' }}/>
-                                      {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
-                                  </div>}
-                              </MenuItem>)}
-                          </Select>
-                      </FormControl>
+        console.log('##functionsList', functionsList);
 
-                      {this.state.component.name && <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
-                          <InputLabel id="demo-simple-select-label">Function</InputLabel>
+        //   console.log('actions', actions);
+        //   const { id } = this.props.match.params;
+        return (<React.Fragment>
+            {/* CREATE NODE MODAL */}
+            <Modal
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description"
+                open={this.state.openModal}
+                onClose={() => this.setState({ openModal: false, component: { name: '' } })}
+                style={{
+                    position: 'absolute', left: '25%', top: '10%', width: '680px', height: '80vh',
+                }}
+            >
 
-                          {functions.actions ? <Select
-                              labelId="demo-simple-select-label"
-                              id="function"
-                              name="function"
-                              value={this.state.function}
-                              onChange={(e) => this.handleChange(e)}
-                          >
-                              {Object.keys(functions.actions).map((key, index) => <MenuItem value={key} key={'A'}>{key}</MenuItem>)}
-                              {Object.keys(functions.triggers).map((key, index) => <MenuItem value={key} key={'A'}>{key}</MenuItem>)}
-                          </Select> : <TextField
-                              id="function"
-                              name="function"
-                              label=""
-                              onChange={(e) => this.handleChange(e)}
-                              margin="normal"
-                              fullWidth
-                          />}
-                          {/* <TextField
+                <div className={classes.modal}>
+
+                    <Typography variant="h5" component="h2">CREATE NODE</Typography>
+
+                    <TextField
+                        id="createNodeName"
+                        name="createNodeName"
+                        label="Node name"
+                        // value={this.state.flow.cron}
+                        onChange={(e) => this.handleChange(e)}
+                        margin="normal"
+                        fullWidth
+                        autoFocus
+                    />
+
+                    <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                        <InputLabel id="demo-simple-select-label">Component</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={this.state.component.name}
+                            onChange={(e) => this.handleComponentSelection(e)}
+                        >
+                            {this.props.components.all.map((component) => <MenuItem value={component.name}
+                                key={component.id}>
+                                {component.logo
+                                    ? <div style={{ display: 'flex', alignItems: 'center', height: '40px' }}>
+                                        <img src={component.logo} alt="comp_img" style={{
+                                            height: 24, width: 24, marginRight: '12px', overflow: 'hidden',
+                                        }}/>
+                                        {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null}
+                                    </div> : <div style={{
+                                        display: 'flex', alignItems: 'center', height: '40px',
+                                    }}>
+                                        <AddBoxIcon style={{ height: 24, width: 24, marginRight: '8px' }}/>
+                                        {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null}
+                                    </div>}
+                            </MenuItem>)}
+                        </Select>
+                    </FormControl>
+
+                    {this.state.component.name
+                            && <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                                <InputLabel id="demo-simple-select-label">Function</InputLabel>
+
+                                {functions.actions ? <Select
+                                    labelId="demo-simple-select-label"
+                                    id="function"
+                                    name="function"
+                                    value={this.state.function}
+                                    onChange={(e) => this.handleChange(e)}
+                                >
+                                    {Object.keys(functions.actions).map((key, index) => <MenuItem value={key}
+                                        key={'A'}>{key}</MenuItem>)}
+                                    {Object.keys(functions.triggers).map((key, index) => <MenuItem value={key}
+                                        key={'A'}>{key}</MenuItem>)}
+                                </Select> : <TextField
+                                    id="function"
+                                    name="function"
+                                    label=""
+                                    onChange={(e) => this.handleChange(e)}
+                                    margin="normal"
+                                    fullWidth
+                                />}
+                                {/* <TextField
                           id="function"
                           name="function"
                           label="Function"
@@ -853,135 +914,144 @@ class FlowDetails extends React.PureComponent {
                           margin="normal"
                           fullWidth
                       /> */}
-                      </FormControl>}
+                            </FormControl>}
 
-                      <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
-                          <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
-                          <Select
-                              labelId="demo-simple-select-label"
-                              id="demo-simple-select"
-                              value={this.state.secret.name}
-                              onChange={(e) => this.handleSecretSelection(e)}
-                          >
-                              {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name} key={secret.name}>{secret.name}</MenuItem>)}
-                          </Select>
-                      </FormControl>
+                    <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                        <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={this.state.secret.name}
+                            onChange={(e) => this.handleSecretSelection(e)}
+                        >
+                            {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name}
+                                key={secret.name}>{secret.name}</MenuItem>)}
+                        </Select>
+                    </FormControl>
 
-                      <Typography variant="subtitle2" component="body1" style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Node Settings (optional)</Typography>
-                      <JSONInput
-                          id = 'jsonEdit'
-                          locale = {locale}
-                          theme = 'dark_vscode_tribute'
-                          height = '350px'
-                          width = '600px'
-                          placeholder = {this.dummyData}
-                          onChange={(e) => this.handleNodeSettings(e)}
-                      />
-
-                      <Typography variant="subtitle2" component="body1" style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Fields (optional)</Typography>
-                      <JSONInput
-                          id = 'jsonEdit'
-                          locale = {locale}
-                          theme = 'dark_vscode_tribute'
-                          height = '350px'
-                          width = '600px'
-                          placeholder = {this.dummyData}
-                          onChange={(e) => this.handleFieldsInput(e)}
-                      />
-
-                      <div className={classes.actionsContainer}>
-                          <div className="item">
-                              <Button variant="contained" aria-label="Add" onClick={() => this.setState({ openModal: false, component: { name: '' } })} disableElevation>
-                                        Close
-                              </Button>
-                          </div>
-                          <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                              <Button variant="contained" color="primary" aria-label="Add" onClick={() => this.addAfterNode()} disabled={!this.state.createNodeName || !this.state.component} disableElevation>
-                                        Create
-                              </Button>
-
-                          </div>
-                      </div>
-
-                  </div>
-              </Modal>
-
-              <div className={classes.flowDetailsContainer}>
-
-                  <div className={classes.flowContent}>
-                      {content}
-                  </div>
-
-                  <aside className={classes.detailsColumn}>
-
-                      {this.state.contentShown === 'flow-settings'
-            && <div className="flow-settings">
-                <Typography variant="h5" component="h2">Flow Settings</Typography>
-                <TextField
-                    id="flowID"
-                    name="flowID"
-                    label="Flow ID"
-                    value={this.state.flow.id}
-                    // onChange={this.handleChange}
-                    margin="normal"
-                    fullWidth
-                    disabled
-                />
-
-                <TextField
-                    id="flowName"
-                    name="flowName"
-                    label="Flow name"
-                    value={this.state.flow.name}
-                    onChange={this.handleChange}
-                    margin="normal"
-                    fullWidth
-                />
-
-                <TextField
-                    id="flowDescription"
-                    name="flowDescription"
-                    label="Flow description"
-                    value={this.state.flow.description}
-                    onChange={this.handleChange}
-                    margin="normal"
-                    fullWidth
-                    multiline
-                />
-
-                <TextField
-                    id="flowCron"
-                    name="flowCron"
-                    label="Flow Cron"
-                    value={this.state.flow.cron}
-                    onChange={this.handleChange}
-                    margin="normal"
-                    fullWidth
-                />
-
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => this.saveFlow()}
-                    disableElevation
-                    style={{ marginTop: '40px' }}
-                >Save Flow</Button>
-            </div>}
-
-                      {this.state.contentShown === 'add-branch' && this.state.addBranchEditor
-                && <div className="node-create-branch">
-                    <Typography variant="h5" component="h2">Create Branch:</Typography>
-                    <TextField
-                        id="leftNodeName"
-                        name="leftNodeName"
-                        label="Left node: Name"
-                        value={this.state.leftNodeName}
-                        onChange={(e) => this.handleChange(e)}
-                        margin="normal"
-                        fullWidth
-                        autoFocus
+                    <Typography variant="subtitle2" component="body1"
+                        style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Node Settings
+                            (optional)</Typography>
+                    <JSONInput
+                        id='jsonEdit'
+                        locale={locale}
+                        theme='dark_vscode_tribute'
+                        height='350px'
+                        width='600px'
+                        placeholder={this.dummyData}
+                        onChange={(e) => this.handleNodeSettings(e)}
                     />
-                    {/* <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+
+                    <Typography variant="subtitle2" component="body1"
+                        style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Fields
+                            (optional)</Typography>
+                    <JSONInput
+                        id='jsonEdit'
+                        locale={locale}
+                        theme='dark_vscode_tribute'
+                        height='350px'
+                        width='600px'
+                        placeholder={this.dummyData}
+                        onChange={(e) => this.handleFieldsInput(e)}
+                    />
+
+                    <div className={classes.actionsContainer}>
+                        <div className="item">
+                            <Button variant="contained" aria-label="Add"
+                                onClick={() => this.setState({ openModal: false, component: { name: '' } })}
+                                disableElevation>
+                                    Close
+                            </Button>
+                        </div>
+                        <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                            <Button variant="contained" color="primary" aria-label="Add"
+                                onClick={() => this.addAfterNode()}
+                                disabled={!this.state.createNodeName || !this.state.component} disableElevation>
+                                    Create
+                            </Button>
+
+                        </div>
+                    </div>
+
+                </div>
+            </Modal>
+
+            <div className={classes.flowDetailsContainer}>
+
+                <div className={classes.flowContent}>
+                    {content}
+                </div>
+
+                <aside className={classes.detailsColumn}>
+
+                    {this.state.contentShown === 'flow-settings'
+                            && <div className="flow-settings">
+                                <Typography variant="h5" component="h2">Flow Settings</Typography>
+                                <TextField
+                                    id="flowID"
+                                    name="flowID"
+                                    label="Flow ID"
+                                    value={this.state.flow.id}
+                                    // onChange={this.handleChange}
+                                    margin="normal"
+                                    fullWidth
+                                    disabled
+                                />
+
+                                <TextField
+                                    id="flowName"
+                                    name="flowName"
+                                    label="Flow name"
+                                    value={this.state.flow.name}
+                                    onChange={this.handleChange}
+                                    margin="normal"
+                                    fullWidth
+                                />
+
+                                <TextField
+                                    id="flowDescription"
+                                    name="flowDescription"
+                                    label="Flow description"
+                                    value={this.state.flow.description}
+                                    onChange={this.handleChange}
+                                    margin="normal"
+                                    fullWidth
+                                    multiline
+                                />
+
+                                <TextField
+                                    id="flowCron"
+                                    name="flowCron"
+                                    label="Flow Cron"
+                                    value={this.state.flow.cron}
+                                    onChange={this.handleChange}
+                                    margin="normal"
+                                    fullWidth
+                                />
+
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => this.saveFlow()}
+                                    disableElevation
+                                    style={{ marginTop: '40px' }}
+                                >Save Flow</Button>
+                            </div>}
+
+                    {this.state.contentShown === 'add-branch' && this.state.addBranchEditor
+                            && <div className="node-create-branch">
+                                <Typography variant="h5" component="h2">Create Branch:</Typography>
+                                <TextField
+                                    id="leftNodeName"
+                                    name="leftNodeName"
+                                    label="Left node: Name"
+                                    value={this.state.leftNodeName}
+                                    onChange={(e) => this.handleChange(e)}
+                                    margin="normal"
+                                    fullWidth
+                                    autoFocus
+                                />
+                                {/* <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
                         <InputLabel id="demo-simple-select-label">Left Component</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
@@ -1002,16 +1072,16 @@ class FlowDetails extends React.PureComponent {
                         </Select>
                     </FormControl> */}
 
-                    <TextField
-                        id="rightNodeName"
-                        name="rightNodeName"
-                        label="Right node: Name"
-                        value={this.state.rightNodeName}
-                        onChange={(e) => this.handleChange(e)}
-                        margin="normal"
-                        fullWidth
-                    />
-                    {/* <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                                <TextField
+                                    id="rightNodeName"
+                                    name="rightNodeName"
+                                    label="Right node: Name"
+                                    value={this.state.rightNodeName}
+                                    onChange={(e) => this.handleChange(e)}
+                                    margin="normal"
+                                    fullWidth
+                                />
+                                {/* <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
                         <InputLabel id="demo-simple-select-label">Right Component</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
@@ -1031,141 +1101,176 @@ class FlowDetails extends React.PureComponent {
                         </Select>
                     </FormControl> */}
 
-                    <div className={classes.actionsContainer}>
-                        <div className="item">
-                            {/* <button style={{ marginTop: 20 }} onClick={() => this.setState({ addBranchEditor: false, contentShown: 'flow-settings' })}>Cancel</button> */}
-                            <Button
-                                variant="contained"
-                                onClick={() => this.setState({ addBranchEditor: false, contentShown: 'flow-settings' })}
-                                disableElevation
-                            >Cancel</Button>
-                        </div>
-                        <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                            {/* <button style={{ marginTop: 20 }} onClick={() => this.addBranchAfterNode()}>CREATE</button> */}
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() => this.addBranchAfterNode()}
-                                disableElevation
-                            >Create Node</Button>
+                                <div className={classes.actionsContainer}>
+                                    <div className="item">
+                                        {/* <button style={{ marginTop: 20 }} onClick={() => this.setState({ addBranchEditor: false, contentShown: 'flow-settings' })}>Cancel</button> */}
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => this.setState({
+                                                addBranchEditor: false,
+                                                contentShown: 'flow-settings',
+                                            })}
+                                            disableElevation
+                                        >Cancel</Button>
+                                    </div>
+                                    <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                                        {/* <button style={{ marginTop: 20 }} onClick={() => this.addBranchAfterNode()}>CREATE</button> */}
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => this.addBranchAfterNode()}
+                                            disableElevation
+                                        >Create Node</Button>
 
-                        </div>
-                    </div>
-                </div>}
-
-                      {this.state.contentShown === 'selected-node' && this.state.selectedNode
-                && <div className="node-selected">
-
-                    <Typography variant="h5" component="h2">Edit Node:</Typography>
-                    <Typography variant="body" component="span">Selected Node is: {this.state.selectedNode.id}</Typography>
-
-                    <TextField
-                        id="editNodeName"
-                        name="editNodeName"
-                        label="Node name"
-                        value={this.state.editNodeName}
-                        onChange={(e) => this.handleChange(e)}
-                        margin="normal"
-                        fullWidth
-                    />
-
-                    {/* <input type="text" id="selectedNode" name="selectedNode" value={selNode.id} onChange={(e) => this.handleChange(e)}/> */}
-
-                    <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
-                        <InputLabel id="demo-simple-select-label">Component</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            name="editNodeComponent"
-                            value={this.state.editComponent.name}
-                            onChange={(e) => this.handleComponentSelection(e)}
-                            fullWidth
-                            required
-                        >
-                            {this.props.components.all.map((component) => <MenuItem value={component.name} key={component.id}>{component.logo
-                                ? <div style={{ display: 'flex', alignItems: 'center', height: '40px' }}>
-                                    <img src={component.logo} alt="comp_img" style={{
-                                        height: 24, width: 24, marginRight: '12px', overflow: 'hidden',
-                                    }}/>
-                                    {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
+                                    </div>
                                 </div>
-                                : <div style={{
-                                    display: 'flex', alignItems: 'center', height: '40px',
-                                }}>
-                                    <AddBoxIcon style={{ height: 24, width: 24, marginRight: '8px' }}/> {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null }
-                                </div>}
-                            </MenuItem>)}
-                        </Select>
-                    </FormControl>
+                            </div>}
 
-                    <TextField
-                        id="editFunction"
-                        name="editFunction"
-                        value={this.state.editFunction}
-                        label="Function"
-                        // value={selNode.id}
-                        onChange={(e) => this.handleChange(e)}
-                        margin="normal"
-                        fullWidth
-                        required
-                    />
+                    {this.state.contentShown === 'selected-node' && this.state.selectedNode
+                            && <div className="node-selected">
 
-                    {/* Function: <input type="text" id="function" name="function" onChange={(e) => this.handleChange(e)}/> */}
+                                <Typography variant="h5" component="h2">Edit Node:</Typography>
+                                <Typography variant="body" component="span">Selected Node
+                                    is: {this.state.selectedNode.id}</Typography>
 
-                    <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
-                        <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            name="editSecret"
-                            value={this.state.editSecret.name}
-                            onChange={(e) => this.handleSecretSelection(e)}
-                            fullWidth
-                        >
-                            {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name} key={secret.name}>{secret.name}</MenuItem>)}
-                        </Select>
-                    </FormControl>
+                                <TextField
+                                    id="editNodeName"
+                                    name="editNodeName"
+                                    label="Node name"
+                                    value={this.state.editNodeName}
+                                    onChange={(e) => this.handleChange(e)}
+                                    margin="normal"
+                                    fullWidth
+                                />
 
-                    <Typography variant="subtitle2" component="body1" style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Node Settings (optional)</Typography>
-                    <JSONInput
-                        id = 'jsonEdit'
-                        locale = {locale}
-                        theme = 'dark_vscode_tribute'
-                        height = '350px'
-                        width = '100%'
-                        // placeholder = {this.dummyData}
-                        placeholder={this.state.editNodeSettings}
-                        onChange={(e) => this.handleEditNodeSettings(e)}
-                        style={{ borderRadius: '4px' }}
-                    />
+                                {/* <input type="text" id="selectedNode" name="selectedNode" value={selNode.id} onChange={(e) => this.handleChange(e)}/> */}
 
-                    <Typography variant="subtitle2" component="body1" style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Fields (optional)</Typography>
-                    <JSONInput
-                        id = 'jsonEdit'
-                        locale = {locale}
-                        theme = 'dark_vscode_tribute'
-                        height = '350px'
-                        width = '100%'
-                        placeholder = {this.state.editFields}
-                        onChange={(e) => this.handleEditFieldsInput(e)}
-                        style={{ borderRadius: '4px' }}
-                    />
+                                <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                                    <InputLabel id="demo-simple-select-label">Component</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        name="editNodeComponent"
+                                        value={this.state.editComponent.name}
+                                        onChange={(e) => this.handleComponentSelection(e)}
+                                        fullWidth
+                                        required
+                                    >
+                                        {this.props.components.all.map((component) => <MenuItem value={component.name}
+                                            key={component.id}>{component.logo
+                                                ? <div style={{ display: 'flex', alignItems: 'center', height: '40px' }}>
+                                                    <img src={component.logo} alt="comp_img" style={{
+                                                        height: 24, width: 24, marginRight: '12px', overflow: 'hidden',
+                                                    }}/>
+                                                    {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null}
+                                                </div>
+                                                : <div style={{
+                                                    display: 'flex', alignItems: 'center', height: '40px',
+                                                }}>
+                                                    <AddBoxIcon style={{
+                                                        height: 24,
+                                                        width: 24,
+                                                        marginRight: '8px',
+                                                    }}/> {component.name} {component.hasOwnProperty('specialFlags') ? '(Privileged)' : null}
+                                                </div>}
+                                        </MenuItem>)}
+                                    </Select>
+                                </FormControl>
 
-                    <div className={classes.actionsContainer}>
-                        <div className="item">
-                            <Button variant="contained" onClick={() => this.setState({ selectedNode: '', contentShown: 'flow-settings' })} disableElevation>Cancel</Button>
-                        </div>
-                        <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                            <Button variant="contained" color="primary" disableElevation onClick={() => this.handleEdit()} disabled={!this.state.editComponent.name || !this.state.editFunction}>Save Node</Button>
-                        </div>
-                    </div>
-                </div>}
-                  </aside>
-              </div>
-          </React.Fragment>
+                                 {this.state.editComponent ? <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
 
-          );
-      }
+                                     <Autocomplete
+                                         id="function-select"
+                                         freeSolo
+                                         options={functionsList.map((option) => option)}
+                                         renderInput={(params) => (
+                                             <TextField {...params} label="Function name" margin="normal" variant="outlined" />
+                                         )}
+                                         value={this.state.editFunction}
+                                         onChange={this.handleFunctionSelection}
+                                         onInputChange={this.handleFunctionNameChange}
+                                     />
+                                 </FormControl> : null}
+
+                            {/* <TextField
+                                    id="editFunction"
+                                    name="editFunction"
+                                    value={this.state.editFunction}
+                                    label="Function"
+                                    // value={selNode.id}
+                                    onChange={(e) => this.handleChange(e)}
+                                    margin="normal"
+                                    fullWidth
+                                    required
+                                /> */}
+
+                                {/* Function: <input type="text" id="function" name="function" onChange={(e) => this.handleChange(e)}/> */}
+
+                                <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                                    <InputLabel id="demo-simple-select-label">Secrets</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        name="editSecret"
+                                        value={this.state.editSecret.name}
+                                        onChange={(e) => this.handleSecretSelection(e)}
+                                        fullWidth
+                                    >
+                                        {this.props.secrets.secrets.map((secret) => <MenuItem value={secret.name}
+                                            key={secret.name}>{secret.name}</MenuItem>)}
+                                    </Select>
+                                </FormControl>
+
+                                <Typography variant="subtitle2" component="body1"
+                                    style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Node
+                                    Settings (optional)</Typography>
+                                <JSONInput
+                                    id='jsonEdit'
+                                    locale={locale}
+                                    theme='dark_vscode_tribute'
+                                    height='350px'
+                                    width='100%'
+                                    // placeholder = {this.dummyData}
+                                    placeholder={this.state.editNodeSettings}
+                                    onChange={(e) => this.handleEditNodeSettings(e)}
+                                    style={{ borderRadius: '4px' }}
+                                />
+
+                                <Typography variant="subtitle2" component="body1"
+                                    style={{ display: 'block', marginTop: '40px', marginBottom: '8px' }}>Fields
+                                    (optional)</Typography>
+                                <JSONInput
+                                    id='jsonEdit'
+                                    locale={locale}
+                                    theme='dark_vscode_tribute'
+                                    height='350px'
+                                    width='100%'
+                                    placeholder={this.state.editFields}
+                                    onChange={(e) => this.handleEditFieldsInput(e)}
+                                    style={{ borderRadius: '4px' }}
+                                />
+
+                                <div className={classes.actionsContainer}>
+                                    <div className="item">
+                                        <Button variant="contained" onClick={() => this.setState({
+                                            selectedNode: '',
+                                            contentShown: 'flow-settings',
+                                        })} disableElevation>Cancel</Button>
+                                    </div>
+                                    <div className="item" style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                                        <Button variant="contained" color="primary" disableElevation
+                                            onClick={() => this.handleEdit()}
+                                            disabled={!this.state.editComponent.name || !this.state.editFunction}>Save
+                                            Node</Button>
+                                    </div>
+                                </div>
+                            </div>}
+                </aside>
+            </div>
+        </React.Fragment>
+
+        );
+    }
 }
 
 const mapStateToProps = (state) => ({

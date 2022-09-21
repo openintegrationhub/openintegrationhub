@@ -114,12 +114,12 @@ class Flows extends React.Component {
     };
 
     initiateFlow = async () => {
-        this.props.createFlow(this.initialFlow);
+        const newFlow = await this.props.createFlow(this.initialFlow);
         await this.props.getFlows();
-        const { flows } = this.props;
-        const { id } = this.props.flows.all[flows.all.length - 1];
+        // const { flows } = this.props;
+        // const { id } = this.props.flows.all[flows.all.length - 1];
         this.props.history.push({
-            pathname: `/flows/${id}`,
+            pathname: `/flows/${newFlow.id}`,
         });
     }
 

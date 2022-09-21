@@ -1,6 +1,6 @@
 {
   "name": "web-ui",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "private": true,
   "license": "Apache-2.0",
   "dependencies": {
@@ -19,6 +19,7 @@
     "build": "CI=true react-scripts build",
     "test": "react-scripts test -w 3",
     "serve": "node server/",
+    "lint": "eslint --fix src/",
     "eject": "react-scripts eject",
     "build:docker": "docker build -t openintegrationhub/web-ui:${VERSION} -f Dockerfile ../../"
   },
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@material-ui/core": "4.11.3",
+    "@material-ui/lab": "4.11.3-deprecations.1",
     "@material-ui/icons": "4.11.2",
     "@material-ui/styles": "4.11.3",
     "axios": "0.24.0",
