@@ -1177,22 +1177,22 @@ class FlowDetails extends React.PureComponent {
                                     </Select>
                                 </FormControl>
 
-                                 {this.state.editComponent ? <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
+                                {this.state.editComponent ? <FormControl className={classes.formControl} style={{ marginTop: '32px', width: '100%' }}>
 
-                                     <Autocomplete
-                                         id="function-select"
-                                         freeSolo
-                                         options={functionsList.map((option) => option)}
-                                         renderInput={(params) => (
-                                             <TextField {...params} label="Function name" margin="normal" variant="outlined" />
-                                         )}
-                                         value={this.state.editFunction}
-                                         onChange={this.handleFunctionSelection}
-                                         onInputChange={this.handleFunctionNameChange}
-                                     />
-                                 </FormControl> : null}
+                                    <Autocomplete
+                                        id="function-select"
+                                        freeSolo
+                                        options={functionsList.map((option) => option)}
+                                        renderInput={(params) => (
+                                            <TextField {...params} label="Function name" margin="normal" variant="outlined" />
+                                        )}
+                                        value={this.state.editFunction}
+                                        onChange={this.handleFunctionSelection}
+                                        onInputChange={this.handleFunctionNameChange}
+                                    />
+                                </FormControl> : null}
 
-                            {/* <TextField
+                                {/* <TextField
                                     id="editFunction"
                                     name="editFunction"
                                     value={this.state.editFunction}
