@@ -1,5 +1,0 @@
-{
-    "PORT": "3002",
-    "LOG_LEVEL": "info",
-    "TERMINATION_DELAY": 15000
-}

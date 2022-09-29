@@ -1,9 +1,0 @@
-{
-    "LOG_LEVEL": "fatal",
-    "REDIS_CONFIG": {
-        "url": "redis://localhost:6379",
-        "keyPrefix": "maester_test:",
-        "sentinels": null
-    },
-    "TERMINATION_DELAY": 0
-}
