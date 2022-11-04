@@ -35,6 +35,7 @@ process.on('SIGINT', exitHandler.bind(null));
                 preprocessor: {
                     microsoft: require('./src/adapter/preprocessor/microsoft'),
                     oidc: require('./src/adapter/preprocessor/oidc'),
+                    azure: require('./src/adapter/preprocessor/azure'),
                 },
             },
             eventBus,

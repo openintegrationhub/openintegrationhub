@@ -99,6 +99,7 @@ async function requestHelper(url, form) {
         .then(checkStatus)
         .then((response) => response.json())
         .catch((error) => { throw new Error(error); }); */
+    log.debug(`requestHelper: url: ${url} body params: ${JSON.stringify(params)}`);
     const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -239,6 +240,7 @@ module.exports = {
         }
     },
     async refresh(authClient, secret) {
+        log.debug(`Refreshing auth ${secret && secret._id ? secret._id : ''} client id: ${authClient && authClient._id ? authClient._id : ''}`);
         switch (authClient.type) {
         case OA2_AUTHORIZATION_CODE: {
             const { clientId, clientSecret, refreshWithScope } = authClient;
@@ -271,7 +273,7 @@ module.exports = {
         flow, authClient, secret, tokenResponse, localMiddleware,
     }) {
         if (authClient.preprocessor) {
-            const adapter = dotProp.get(localMiddleware, authClient.preprocessor);
+            const adapter = dotProp.get(localMiddleware.preprocessor, authClient.preprocessor);
             if (!adapter) {
                 throw (new Error(`Missing preprocessor ${authClient.preprocessor}`));
             }
