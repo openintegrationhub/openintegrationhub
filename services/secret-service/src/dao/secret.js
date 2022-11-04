@@ -125,7 +125,7 @@ const refresh = (secret, key, iter = 0) => new Promise(async (resolve, reject) =
                         // FIXME expired or revoked token should throw
                         _secret.value.accessToken = resp.access_token;
                         if (resp.refresh_token) {
-                            _secret.value.refresh_token = resp.refresh_token;
+                            _secret.value.refreshToken = resp.refresh_token;
                         }
                         _secret.value.expires = moment().add(resp.expires_in, 'seconds').toISOString();
                         break;

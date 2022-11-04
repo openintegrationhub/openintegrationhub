@@ -99,7 +99,7 @@ async function requestHelper(url, form) {
         .then(checkStatus)
         .then((response) => response.json())
         .catch((error) => { throw new Error(error); }); */
-    log.debug(`requestHelper: url: ${url} body params: ${JSON.stringify(params)}`);
+    log.debug(`requestHelper: url: ${url} body params: ${params.toString()}`);
     const response = await fetch(url, {
         method: 'POST',
         headers: {
