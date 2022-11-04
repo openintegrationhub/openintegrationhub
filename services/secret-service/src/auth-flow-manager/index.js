@@ -273,7 +273,7 @@ module.exports = {
         flow, authClient, secret, tokenResponse, localMiddleware,
     }) {
         if (authClient.preprocessor) {
-            const adapter = dotProp.get(localMiddleware.preprocessor, authClient.preprocessor);
+            const adapter = dotProp.get(localMiddleware, authClient.preprocessor);
             if (!adapter) {
                 throw (new Error(`Missing preprocessor ${authClient.preprocessor}`));
             }
