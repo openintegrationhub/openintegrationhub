@@ -87,10 +87,13 @@ const getRandom = (min, max) => Math.floor(Math.random() * (max - min) + min);
 const refresh = (secret, key, iter = 0) => new Promise(async (resolve, reject) => {
     try {
         if (!secret.lockedAt) {
+            auditLog.debug('Secret is not locked');
             if (!shouldRefreshToken(secret)) {
+                auditLog.debug('No need to refresh token. Returning existing token');
                 return resolve(secret);
             }
 
+            auditLog.debug('Getting secret from db');
             let _secret = await Secret[secret.type].findOneAndUpdate(
                 { _id: secret._id, lockedAt: { $eq: null } },
                 { lockedAt: moment() },
@@ -101,6 +104,7 @@ const refresh = (secret, key, iter = 0) => new Promise(async (resolve, reject) =
 
             if (_secret) {
                 if (shouldRefreshToken(_secret)) {
+                    auditLog.debug('shouldRefreshToken = true');
                     // decrypt _secret
                     _secret = cryptoSecret(_secret, key, DECRYPT, _secret.encryptedFields);
                     const resp = await refreshToken(_secret);
@@ -112,6 +116,7 @@ const refresh = (secret, key, iter = 0) => new Promise(async (resolve, reject) =
                             { currentError: resp, lockedAt: null },
                             { new: true },
                         );
+                        auditLog.debug('Saved error to db');
                         return reject(resp);
                     }
 
@@ -120,7 +125,7 @@ const refresh = (secret, key, iter = 0) => new Promise(async (resolve, reject) =
                         // FIXME expired or revoked token should throw
                         _secret.value.accessToken = resp.access_token;
                         if (resp.refresh_token) {
-                            _secret.value.refresh_token = resp.refresh_token;
+                            _secret.value.refreshToken = resp.refresh_token;
                         }
                         _secret.value.expires = moment().add(resp.expires_in, 'seconds').toISOString();
                         break;
@@ -146,9 +151,11 @@ const refresh = (secret, key, iter = 0) => new Promise(async (resolve, reject) =
 
                 await _secret.save();
                 if (!decrypted) {
+                    auditLog.debug('Saving encrypted secret');
                     return resolve(_secret);
                 }
 
+                auditLog.debug('Saving encrypted secret');
                 return resolve(decrypted);
             }
         } else if (shouldAssumeRefreshTimeout(secret)) {
@@ -287,8 +294,8 @@ module.exports = {
             ...!conf.crypto.isDisabled ? {
                 $addToSet: {
                     encryptedFields: {
-                        $each: encryptedFields
-                    }
+                        $each: encryptedFields,
+                    },
                 },
             } : {},
         }, {
@@ -392,14 +399,16 @@ module.exports = {
         return modifiedSecret;
     },
 
-    async authenticateHmac({ secret, key, hmacValue, hmacAlgo, rawBody }) {
+    async authenticateHmac({
+        secret, key, hmacValue, hmacAlgo, rawBody,
+    }) {
         // Don't refresh tokens, as that would break HMAC for a refreshable token
         let _secret = secret;
         // exclude extra sensitive values
         _secret = _secret.encryptedFields && _secret.encryptedFields.length > 0
             ? cryptoSecret(_secret, key, DECRYPT, _secret.encryptedFields
                 .filter((e) => !(['refreshToken', 'inputFields'].includes(e)))) : _secret;
-        return crypto.authenticateHmac(_secret.value?.key, hmacValue, hmacAlgo, rawBody);
+        return crypto.authenticateHmac(_secret.value.key, hmacValue, hmacAlgo, rawBody);
     },
 
     cryptoSecret,
