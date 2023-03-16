@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/component-repository",
   "description": "Component repository",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "author": "Open Integration Hub",
   "engines": {
     "node": ">=12"
@@ -17,7 +17,7 @@
     "express": "4.17.1",
     "express-async-handler": "1.1.4",
     "lodash": "4.17.21",
-    "mongoose": "6.2.1",
+    "mongoose": "6.10.3",
     "node-fetch": "2.6.1",
     "swagger-ui-express": "4.0.2"
   },

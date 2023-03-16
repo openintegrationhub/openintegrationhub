@@ -1,6 +1,6 @@
 {
   "name": "dispatcher-service",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Transfers data between flows",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "dotenv": "^6.2.0",
     "express": "^4.16.3",
     "lodash": "4.17.21",
-    "mongoose": "6.2.1",
+    "mongoose": "6.10.3",
     "request": "2.88.2",
     "request-promise": "4.2.6",
     "swagger-ui-express": "^3.0.8"

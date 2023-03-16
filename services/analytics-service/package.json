@@ -1,6 +1,6 @@
 {
   "name": "analytics-service",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Stores provenance events and other analytics related data.",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "dayjs": "^1.11.3",
     "dayjs-plugin-utc": "^0.1.2",
     "express": "^4.17.1",
-    "mongoose": "6.2.1",
+    "mongoose": "6.10.3",
     "node-fetch": "^2.6.6",
     "node-schedule": "^2.1.0",
     "qs": "^6.10.3",

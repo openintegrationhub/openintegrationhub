@@ -1,6 +1,6 @@
 {
   "name": "flow-repository",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Stores and manages integration flows.",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "cors": "^2.8.5",
     "cronstrue": "^1.94.0",
     "express": "^4.17.1",
-    "mongoose": "6.2.1",
+    "mongoose": "6.10.3",
     "request": "^2.87.0",
     "request-promise": "^4.2.5",
     "swagger-ui-express": "^4.1.4"
