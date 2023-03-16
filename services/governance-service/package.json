@@ -1,6 +1,6 @@
 {
   "name": "governance-service",
-  "version": "1.5.5",
+  "version": "1.6.0",
   "description": "Stores provenance events and other governance related data.",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "dot-prop": "^6.0.1",
     "express": "^4.17.1",
     "node-fetch": "^2.6.6",
-    "mongoose": "6.2.1",
+    "mongoose": "6.10.3",
     "request": "^2.87.0",
     "request-promise": "^4.2.5",
     "swagger-ui-express": "^4.1.4"

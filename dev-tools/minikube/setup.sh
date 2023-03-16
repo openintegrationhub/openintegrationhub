@@ -380,7 +380,7 @@ function sourceInstall {
     for service in "${from_source[@]}"
     do
         colorEcho 34 "Installing deps for $service"
-        npm install --prefix $rootdir -w "services/$service" 
+        npm install --prefix $rootdir -w "$service" 
     done
 }
 
@@ -981,12 +981,19 @@ createDevPrivateComponent
 
 waitForServiceStatus http://flow-repository.example.com/flows 401
 
+echo "Flow Ready"
 createDevSimpleFlow
+echo "Created Simple Flow"
 createDevWebhookFlow
+echo "Created Webhook Flow"
 createDevGlobalConsecutiveFlow
+echo "created global consecutive flow"
 createDevConsecutiveFlow
+echo "created consecutive local flow"
 createDevConcurrentFlow
+echo "created concurrent flow"
 createDevGlobalFlow
+echo "created global flow"
 
 ###
 ### 12. Point to web ui if ready

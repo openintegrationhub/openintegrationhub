@@ -259,8 +259,8 @@ describe('Template Validation', () => {
       });
     expect(res.status).toEqual(400);
     expect(res.body.errors).toHaveLength(3);
-    expect(res.body.errors[0].message).toEqual('Cast to ObjectId failed for value "IncorrectSecret" (type string) at path "credentials_id"');
-    expect(res.body.errors[1].message).toEqual('Cast to ObjectId failed for value "abc" (type string) at path "componentId"');
+    expect(res.body.errors[0].message).toEqual(expect.stringContaining('Cast to ObjectId failed for value "IncorrectSecret" (type string) at path "credentials_id"'));
+    expect(res.body.errors[1].message).toEqual(expect.stringContaining('Cast to ObjectId failed for value "abc" (type string) at path "componentId"'));
     expect(res.body.errors[2].message).toEqual('Flow Templates with more than one node require edges.');
   });
 
