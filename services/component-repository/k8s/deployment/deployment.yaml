@@ -17,8 +17,6 @@ spec:
         app: component-repository
     spec:
       restartPolicy: Always
-      securityContext:
-        fsGroup: 65534
       terminationGracePeriodSeconds: 30
       containers:
       - name: component-repository
