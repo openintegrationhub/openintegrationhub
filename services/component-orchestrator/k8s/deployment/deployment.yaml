@@ -17,6 +17,8 @@ spec:
         app: component-orchestrator
     spec:
       restartPolicy: Always
+      securityContext:
+        fsGroup: 65534
       terminationGracePeriodSeconds: 30
       serviceAccountName: component-orchestrator-account
       containers:
