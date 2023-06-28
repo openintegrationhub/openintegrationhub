@@ -77,6 +77,7 @@ const flowTemplate = new Schema({
   status: { type: String, default: 'draft' },
   cron: { type: String },
   flowSettings: {},
+  sourceTemplate: { type: mongoose.Types.ObjectId },
 }, { collection: 'flowTemplates', timestamps: true });
 
 module.exports.flowTemplate = flowTemplate;
