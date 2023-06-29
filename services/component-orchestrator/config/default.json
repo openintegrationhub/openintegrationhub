@@ -17,5 +17,6 @@
     "KUBERNETES_VOLUME_HOSTPATH": "",
     "KUBERNETES_VOLUME_HOSTPATH_MOUNTPATH": "",
     "DATAHUB_BASE_URL": "http://data-hub-service.oih-dev-ns.svc.cluster.local:1234",
-    "COMPONENT_LOG_LEVEL":"info"
+    "COMPONENT_LOG_LEVEL": "info",
+    "COMPONENT_PREFETCH_COUNT": 1
 }
