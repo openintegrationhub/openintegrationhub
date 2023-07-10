@@ -22,6 +22,7 @@ class ComponentOrchestratorApp extends App {
         const config = container.resolve('config');
         const amqp = container.resolve('amqp');
         const k8s = container.resolve('k8s');
+        const logger = container.resolve('logger');
         await amqp.start();
 
         await k8s.start(config.get('KUBE_CONFIG'));
@@ -29,14 +30,14 @@ class ComponentOrchestratorApp extends App {
         const channel = await amqp.getConnection().createChannel();
 
         channel.on('error', function(err) {
-          console.error('Channel Error!');
-          console.error(err)
-        })
+          logger.fatal(err, 'RabbitMQ channel error');
+          process.exit(1);
+        });
 
-        channel.on('close', function(msg) {
-          console.log('Channel closing!');
-          console.log(msg);
-        })
+        channel.on('close', function() {
+            logger.fatal('RabbitMQ channel closed');
+            process.exit(1);
+        });
 
         const queueCreator = new QueueCreator(channel);
         const queuePubSub = new QueuePubSub(channel)
