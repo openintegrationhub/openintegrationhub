@@ -20,10 +20,22 @@ export default class SnapshotsConsumer {
     }
 
     public async consume(): Promise<void> {
+        const logger = this.logger;
         const queueName = SnapshotsConsumer.SNAPSHOTS_QUEUE;
-        const ch = await this.connection.createChannel();
-        const queueCreator = new QueueCreator(ch);
-        await ch.prefetch(parseInt(this.config.get('PREFETCH_COUNT')));
+        const channel = await this.connection.createChannel();
+
+        channel.on('error', function(err) {
+            logger.fatal(err, 'RabbitMQ channel error');
+            process.exit(1);
+        });
+
+        channel.on('close', function() {
+            logger.fatal('RabbitMQ channel closed');
+            process.exit(1);
+        });
+
+        const queueCreator = new QueueCreator(channel);
+        await channel.prefetch(parseInt(this.config.get('PREFETCH_COUNT')));
         await queueCreator.assertExchange(QueueCreator.COLLECTOR_EXCHANGE);
         await queueCreator.assertQueue(queueName, {});
         await queueCreator.bindQueue(
@@ -32,15 +44,15 @@ export default class SnapshotsConsumer {
             '#.snapshot'
         );
 
-        await ch.consume(queueName, msg => {
+        await channel.consume(queueName, msg => {
             // @ts-ignore
             this.onMessage(msg)
                 // @ts-ignore
-                .then(() => ch.ack(msg))
+                .then(() => channel.ack(msg))
                 .catch(err => {
                     this.logger.warn({err, msg}, 'Failed to process the message');
                     // @ts-ignore
-                    ch.nack(msg, false, true);
+                    channel.nack(msg, false, true);
                 });
         });
     }
