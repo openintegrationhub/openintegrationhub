@@ -777,6 +777,9 @@
           "tokenPath": {
             "type": "string"
           },
+          "expirationPath": {
+            "type": "string"
+          },
           "endpoints": {
             "type": "object",
             "required": ["auth"],
@@ -946,7 +949,7 @@
           },
           "authType": {
             "type": "string",
-            "enum": ["HEADER_AUTH", "BODY_AUTH", "PARAMS_AUTH"]
+            "enum": ["HEADER_AUTH", "BODY_AUTH", "PARAMS_AUTH", "FORM_AUTH"]
           },
           "url": {
             "type": "string"

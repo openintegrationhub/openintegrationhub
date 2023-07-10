@@ -19,6 +19,7 @@ module.exports = {
         HEADER_AUTH: 'HEADER_AUTH',
         BODY_AUTH: 'BODY_AUTH',
         PARAMS_AUTH: 'PARAMS_AUTH',
+        FORM_AUTH: 'FORM_AUTH',
     },
     ENTITY_TYPE: {
         USER: 'USER',
