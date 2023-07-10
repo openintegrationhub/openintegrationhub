@@ -101,6 +101,7 @@ module.exports = {
                 },
             },
             accessToken: String,
+            expires: String,
             inputFields: Schema.Types.Mixed, // TODO: Define discriminated Values based on user fields from the Auth Client
         },
     })),
