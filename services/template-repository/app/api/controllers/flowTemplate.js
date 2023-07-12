@@ -116,7 +116,7 @@ router.get('/', jsonParser, can(config.flowTemplateReadPermission), async (req, 
   res.json(response);
 });
 
-// Adds a new flow template to the repository
+// Adds a new template to the repository
 router.post('/', jsonParser, can(config.flowTemplateWritePermission), async (req, res) => {
   const newTemplate = req.body;
 
