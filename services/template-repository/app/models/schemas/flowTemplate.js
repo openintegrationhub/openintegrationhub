@@ -73,6 +73,7 @@ const flowTemplate = new Schema({
   description: { type: String },
   graph: { type: graph, required: [true, 'Flow Templates require a graph.'] },
   type: { type: String },
+  tenant: { type: String },
   owners: { type: [owner] },
   status: { type: String, default: 'draft' },
   cron: { type: String },
