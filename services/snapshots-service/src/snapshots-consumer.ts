@@ -65,8 +65,7 @@ export default class SnapshotsConsumer {
         await Snapshot.findOneAndUpdate({
             flowId,
             stepId,
-            flowExecId,
-            tenant
+            flowExecId
         }, {
             snapshot
         }, {
