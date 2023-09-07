@@ -1,7 +1,7 @@
 {
   "name": "@openintegrationhub/ferryman",
   "description": "Wrapper utility for Open Integration Hub connectors",
-  "version": "2.3.0-beta.4",
+  "version": "2.3.0",
   "main": "run.js",
   "scripts": {
     "lint": "eslint lib mocha_spec lib runGlobal.js runService.js",
