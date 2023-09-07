@@ -134,6 +134,7 @@ module.exports = {
                 required: true,
             },
             tokenPath: String,
+            expirationPath: String,
             endpoints: {
                 auth: {
                     type: requestConfig,

@@ -1,5 +1,8 @@
 process.env.AUTH_TYPE = 'basic';
 const request = require('supertest')('http://localhost:3099');
+const mongoose = require('mongoose');
+
+const { ObjectId } = mongoose.Types;
 
 const CONSTANTS = require('../src/constants');
 
@@ -58,6 +61,14 @@ describe('User Routes', () => {
         expect(response.body[0].firstname).toBe(conf.accounts.admin.firstname);
     });
 
+    test('get all users with non exist username filter successful', async () => {
+        const response = await request.get('/api/v1/users?username=111')
+            .set('Accept', /application\/json/)
+            .set('Authorization', tokenAdmin)
+            .expect(200);
+        expect(response.body.length).toBe(0);
+    });
+
     test('get all users is successful with meta format', async () => {
         const response = await request.get('/api/v1/users')
             .set('Accept', /application\/json/)
@@ -107,6 +118,55 @@ describe('User Routes', () => {
         expect(response.statusCode).toBe(400);
         expect(response.body.message).toBe(CONSTANTS.ERROR_CODES.INPUT_INVALID);
 
+    });
+
+    test('get all users with username filter successful', async () => {
+        const response = await request.get(`/api/v1/users?username=${conf.accounts.admin.username}&username=${testUser.username}`)
+            .set('Accept', /application\/json/)
+            .set('Authorization', tokenAdmin)
+            .expect(200);
+        expect(response.body.length).toBe(2);
+    });
+
+    test('get one users with username filter successful', async () => {
+        const response = await request.get(`/api/v1/users?username=${testUser.username}`)
+            .set('Accept', /application\/json/)
+            .set('Authorization', tokenAdmin)
+            .expect(200);
+        expect(response.body.length).toBe(1);
+        expect(response.body[0].username).toBe(testUser.username);
+    });
+
+    test('get all users with non exist username filter successful', async () => {
+        const response = await request.get('/api/v1/users?username=111')
+            .set('Accept', /application\/json/)
+            .set('Authorization', tokenAdmin)
+            .expect(200);
+        expect(response.body.length).toBe(0);
+    });
+
+    test('get one users with userId filter successful', async () => {
+        const response = await request.get(`/api/v1/users?userId=${testUser.id}`)
+            .set('Accept', /application\/json/)
+            .set('Authorization', tokenAdmin)
+            .expect(200);
+        expect(response.body.length).toBe(1);
+        expect(response.body[0].username).toBe(testUser.username);
+    });
+
+    test('get all users with non exist userId filter successful', async () => {
+        const response = await request.get(`/api/v1/users?userId=${new ObjectId()}`)
+            .set('Accept', /application\/json/)
+            .set('Authorization', tokenAdmin)
+            .expect(200);
+        expect(response.body.length).toBe(0);
+    });
+
+    test('get all users with invalid userId filter error', async () => {
+        await request.get('/api/v1/users?userId=111')
+            .set('Accept', /application\/json/)
+            .set('Authorization', tokenAdmin)
+            .expect(500);
     });
 
     test('current user is returned if logged in', async () => {

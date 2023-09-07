@@ -6,7 +6,7 @@ const { OAuth } = require('oauth');
 const logger = require('@basaas/node-logger');
 const conf = require('../conf');
 const { OA2_AUTHORIZATION_CODE, OA1_THREE_LEGGED, SESSION_AUTH } = require('../constant').AUTH_TYPE;
-const { HEADER_AUTH, BODY_AUTH, PARAMS_AUTH } = require('../constant').AUTH_REQUEST_TYPE;
+const { HEADER_AUTH, BODY_AUTH, PARAMS_AUTH, FORM_AUTH } = require('../constant').AUTH_REQUEST_TYPE;
 const defaultAdapter = require('../adapter/preprocessor/default');
 
 const log = logger.getLogger(`${conf.log.namespace}/auth-flow-manager`);
@@ -148,7 +148,7 @@ const parseHandlebars = (inputValue, inputFields) => {
 };
 
 async function sessionRequest(url, {
-    inputFields, authType, tokenPath, requestFields,
+    inputFields, authType, tokenPath, expirationPath, requestFields,
 }) {
     let body = {};
     const headers = new Headers();
@@ -157,6 +157,12 @@ async function sessionRequest(url, {
         const params = new URLSearchParams();
         requestFields.forEach((entry) => params.append(entry.key, encodeURI(parseHandlebars(entry.value, inputFields))));
         body = params;
+        break;
+    }
+    case FORM_AUTH: {
+        requestFields.forEach((entry) => body[entry.key] = parseHandlebars(entry.value, inputFields));
+        headers.append('Content-Type', 'application/x-www-form-urlencoded');
+        body = new URLSearchParams(body);
         break;
     }
     case BODY_AUTH:
@@ -178,7 +184,10 @@ async function sessionRequest(url, {
             headers,
         });
         const obj = await checkStatus(response).json();
-        return parsePath(obj, tokenPath);
+        return {
+            access_token: parsePath(obj, tokenPath),
+            expires_in: expirationPath ? parsePath(obj, expirationPath) : '',
+        };
     } catch (error) {
         log.error(error);
         throw new Error(error);
@@ -255,6 +264,7 @@ module.exports = {
         }
         case SESSION_AUTH: {
             const { tokenPath } = authClient;
+            const { expirationPath } = authClient;
             const { authType, url, requestFields } = authClient.endpoints.auth;
             const { inputFields } = secret.value;
 
@@ -262,6 +272,7 @@ module.exports = {
                 inputFields,
                 authType,
                 tokenPath,
+                expirationPath,
                 requestFields,
             });
         }

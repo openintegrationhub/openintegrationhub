@@ -130,7 +130,8 @@ const refresh = (secret, key, iter = 0) => new Promise(async (resolve, reject) =
                         _secret.value.expires = moment().add(resp.expires_in, 'seconds').toISOString();
                         break;
                     case SESSION_AUTH:
-                        _secret.value.accessToken = resp;
+                        _secret.value.accessToken = resp.access_token;
+                        _secret.value.expires = resp.expires_in ? moment().add(resp.expires_in, 'seconds').toISOString() : null;
                         break;
                     default:
                         break;

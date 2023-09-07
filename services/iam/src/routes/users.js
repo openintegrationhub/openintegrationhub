@@ -1,7 +1,8 @@
 const express = require('express');
+const mongoose = require('mongoose');
 
 const router = express.Router();
-const bodyParser = require('body-parser');
+const { ObjectId } = mongoose.Types;
 
 const Logger = require('@basaas/node-logger');
 const CONF = require('../conf');
@@ -89,7 +90,29 @@ router.post('/', auth.hasTenantPermissions([PERMISSIONS['tenant.account.create']
  */
 router.get('/', auth.isAdmin, async (req, res, next) => {
     try {
-        const doc = await AccountDAO.find({});
+        const filter = {};
+        if (req.query.userId) {
+            const userIds = req.query.userId;
+            try {
+                const filterUsers = Array.isArray(userIds) ? userIds.map((userId) => ObjectId(userId)) : [ObjectId(userIds)];
+
+                filter._id = {
+                    $in: filterUsers,
+                };
+            } catch (error) {
+                return next({ status: 500, message: 'The filter is invalid.' });
+            }
+            
+        }
+        if (req.query.username) {
+            const usernames = req.query.username;
+            const filterUsernames = Array.isArray(usernames) ? usernames : [usernames];
+
+            filter.username = {
+                $in: filterUsernames,
+            };
+        }
+        const doc = await AccountDAO.find(filter);
 
         if (req.query.meta) {
             return res.send({ data: doc, meta: { total: doc.length } });

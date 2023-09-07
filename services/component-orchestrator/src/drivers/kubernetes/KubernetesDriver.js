@@ -466,6 +466,8 @@ class KubernetesDriver extends BaseDriver {
             envVars.ENABLE_REST_API = 'true';
         }
 
+        envVars.RABBITMQ_PREFETCH_SAILOR = this._config.get('COMPONENT_PREFETCH_COUNT');
+
         envVars = Object.entries(envVars).reduce((env, [k, v]) => {
             env[`${ENV_PREFIX}${k}`] = v;
             return env;
