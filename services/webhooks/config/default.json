@@ -3,5 +3,6 @@
   "PAYLOAD_SIZE_LIMIT": "10mb",
   "IAM_TOKEN": "abc123e",
   "IAM_BASE_URL": "http://iam.openintegrationhub.com",
-  "SECRET_SERVICE_URL":"http://skm.openintegrationhub.com"
+  "SECRET_SERVICE_URL":"http://skm.openintegrationhub.com",
+  "ALLOW_RUN_SCHEDULED_FLOWS": "false"
 }

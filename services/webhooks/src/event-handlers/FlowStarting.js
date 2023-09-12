@@ -1,11 +1,12 @@
 const Flow = require('../models/Flow');
 
-module.exports = ({logger}) => async (event) => {
+module.exports = ({logger, config }) => async (event) => {
     try {
         const { payload } = event;
         const { id } = payload;
+        const ALLOW_RUN_SCHEDULED_FLOWS = config.get('ALLOW_RUN_SCHEDULED_FLOWS') === 'true';
 
-        if (payload.cron) {
+        if (!ALLOW_RUN_SCHEDULED_FLOWS && payload.cron) {
             await Flow.deleteOne({_id: id});
         } else {
             let flow = await Flow.findById(id);
