@@ -18,14 +18,15 @@ describe('FlowStarting event handler', () => {
     });
 
     let flowStarting;
+    const logger = {
+        info: () => { },
+        trace: () => { },
+        error: err => console.error(err)
+    };
 
     beforeEach(async () => {
         await Flow.deleteMany();
-        const logger = {
-            info: () => { },
-            trace: () => { },
-            error: err => console.error(err)
-        };
+
         flowStarting = FlowStarting({ logger });
     });
 
@@ -55,8 +56,8 @@ describe('FlowStarting event handler', () => {
             });
         });
 
-        describe('if flow has been found', () => {
-            it('should remove it', async () => {
+        describe('if allow scheduled flow', () => {
+            it('should create it', async () => {
                 const flow = await Flow.create({});
 
                 const event = new Event({
@@ -76,6 +77,34 @@ describe('FlowStarting event handler', () => {
                 expect(event.nack).not.to.have.been.called;
 
                 expect(await Flow.findById(flow.id)).to.be.null;
+            });
+        });
+
+        describe('if flow has been found', () => {
+            it('should remove it', async () => {
+                flowStarting = FlowStarting({ logger, config: {
+                    'ALLOW_RUN_SCHEDULED_FLOWS': 'true'
+                } });
+                const flow = await Flow.create({});
+
+                const event = new Event({
+                    headers: {},
+                    payload: {
+                        id: flow.id,
+                        cron: '* * * * *'
+                    }
+                });
+
+                sinon.stub(event, 'ack').resolves();
+                sinon.stub(event, 'nack').resolves();
+
+                await flowStarting(event);
+
+                expect(event.ack).to.have.been.calledOnce;
+                expect(event.nack).not.to.have.been.called;
+
+                expect(await Flow.findById(flow.id)).not.to.be.null;
+                flowStarting = FlowStarting({logger});
             });
         });
     });
