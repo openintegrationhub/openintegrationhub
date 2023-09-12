@@ -18,15 +18,20 @@ describe('FlowStarting event handler', () => {
     });
 
     let flowStarting;
+    const logger = {
+        info: () => { },
+        trace: () => { },
+        error: err => console.error(err)
+    };
+    const config = {
+        // eslint-disable-next-line no-unused-vars
+        get: (_) => 'false',
+    }
 
     beforeEach(async () => {
         await Flow.deleteMany();
-        const logger = {
-            info: () => { },
-            trace: () => { },
-            error: err => console.error(err)
-        };
-        flowStarting = FlowStarting({ logger });
+
+        flowStarting = FlowStarting({ logger, config });
     });
 
     afterEach(async () => {
@@ -52,6 +57,34 @@ describe('FlowStarting event handler', () => {
 
                 expect(event.ack).to.have.been.calledOnce;
                 expect(event.nack).not.to.have.been.called;
+            });
+        });
+
+        describe('if is allowed scheduled flow', () => {
+            it('should create it', async () => {
+                flowStarting = FlowStarting({ logger, config: {
+                   // eslint-disable-next-line no-unused-vars
+                   get: (_) => 'true'
+                } });
+                const flow = await Flow.create({});
+
+                const event = new Event({
+                    headers: {},
+                    payload: {
+                        id: flow.id,
+                        cron: '* * * * *'
+                    }
+                });
+
+                sinon.stub(event, 'ack').resolves();
+                sinon.stub(event, 'nack').resolves();
+
+                await flowStarting(event);
+
+                expect(event.ack).to.have.been.calledOnce;
+                expect(event.nack).not.to.have.been.called;
+
+                expect(await Flow.findById(flow.id)).not.to.be.null;
             });
         });
 
