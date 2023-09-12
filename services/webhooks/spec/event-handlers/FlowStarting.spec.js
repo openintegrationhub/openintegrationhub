@@ -23,11 +23,15 @@ describe('FlowStarting event handler', () => {
         trace: () => { },
         error: err => console.error(err)
     };
+    const config = {
+        // eslint-disable-next-line no-unused-vars
+        get: (_) => 'false',
+    }
 
     beforeEach(async () => {
         await Flow.deleteMany();
 
-        flowStarting = FlowStarting({ logger });
+        flowStarting = FlowStarting({ logger, config });
     });
 
     afterEach(async () => {
@@ -59,7 +63,8 @@ describe('FlowStarting event handler', () => {
         describe('if is allowed scheduled flow', () => {
             it('should create it', async () => {
                 flowStarting = FlowStarting({ logger, config: {
-                    'ALLOW_RUN_SCHEDULED_FLOWS': 'true'
+                   // eslint-disable-next-line no-unused-vars
+                   get: (_) => 'true'
                 } });
                 const flow = await Flow.create({});
 
