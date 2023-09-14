@@ -24,10 +24,10 @@ class OIH_SchedulePublisher extends SchedulePublisher {
           },
           metadata: {
             source: {
-              id: 'scheduler',
+              name: 'scheduler',
               type: 'scheduler',
+              externalExecId: generateRequestId(),
             },
-            externalExecId: generateRequestId(),
           },
         },
       },
