@@ -42,6 +42,22 @@ class ComponentOrchestratorApp extends App {
         const queueCreator = new QueueCreator(channel);
         const queuePubSub = new QueuePubSub(channel)
 
+        let publishChannel;
+        try {
+            publishChannel = await amqp.getConnection().createConfirmChannel();
+            publishChannel.on('error', (e)=> {
+                logger.fatal('Publish channel error', e);
+                process.exit(1);
+            }).once('close', () => {
+                logger.fatal('Publish channel closed');
+                process.exit(1);
+            });
+            logger.debug('Opened publish channel');
+        } catch (e) {
+            logger.fatal('Failed to create publish channel', e);
+            process.exit(1);
+        }
+
         const mongooseOptions = {
             socketTimeoutMS: 60000,
         };
@@ -56,6 +72,7 @@ class ComponentOrchestratorApp extends App {
             queuesManager: asClass(RabbitMqQueuesManager),
             queuePubSub: asValue(queuePubSub),
             channel: asValue(channel),
+            publishChannel: asValue(publishChannel),
             iamClient: asValue(iamClient),
             flowsDao: asClass(FlowsDao),
             flowStateDao: asClass(FlowStateDao),
