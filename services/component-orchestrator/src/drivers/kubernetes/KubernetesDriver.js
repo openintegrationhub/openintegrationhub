@@ -36,7 +36,7 @@ class KubernetesDriver extends BaseDriver {
                 'Going to apply global deployment to k8s'
             );
             try {
-                const env = this._prepareEnvVars(envVars, component);
+                const env = this._prepareEnvVarsForComponent(envVars, { flow, node, component });
                 const secret = await this._ensureSecret(
                     `${GLOBAL_PREFIX}${component.id}`,
                     env
@@ -51,7 +51,7 @@ class KubernetesDriver extends BaseDriver {
                 'Going to apply local deployment to k8s'
             );
             try {
-                const env = this._prepareEnvVars(envVars, component);
+                const env = this._prepareEnvVarsForComponent(envVars, { flow, node, component });
                 const secret = await this._ensureSecret(
                     `${LOCAL_PREFIX}${flow.id}${node.id}`,
                     env
@@ -481,6 +481,25 @@ class KubernetesDriver extends BaseDriver {
 
         return envVars;
     }
+
+    _prepareEnvVarsForComponent(envVars, {flow, node, component}) {
+        const envVarsKey = 'descriptor.environment.variables';
+        const envVarsFromConfig = _.get(component, envVarsKey, {})
+            || _.get(node, envVarsKey, {})
+            || _.get(flow, envVarsKey, {});
+        if (envVarsFromConfig && !envVarsFromConfig.constructor === Object) {
+            this._logger.info(
+                { envVars },
+                'Environment variables should be an object. Ignoring'
+            );
+        } else {
+            envVars = Object.assign(envVars, envVarsFromConfig);
+        }
+
+        return this._prepareEnvVars(envVars, component);
+    }
+
+
 }
 
 module.exports = KubernetesDriver;
