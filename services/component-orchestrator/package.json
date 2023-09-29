@@ -15,13 +15,14 @@
     "start:container": "nodemon --watch src/ --watch ../../lib/backend-commons-lib/src --watch ../../lib/component-orchestrator/src | bunyan",
     "build": "echo \"No Build defined\"",
     "build:docker": "docker build -t openintegrationhub/component-orchestrator:${VERSION} -f Dockerfile ../../"
-  },
+   },
   "author": "elastic.io",
   "license": "APL-2.0",
   "dependencies": {
     "@openintegrationhub/component-orchestrator": "*",
     "@openintegrationhub/event-bus": "*",
     "@openintegrationhub/iam-utils": "*",
+    "amqplib": "^0.10.3",
     "backend-commons-lib": "*",
     "basic-auth": "2.0.1",
     "express": "4.17.1",
@@ -31,6 +32,7 @@
     "lru-cache": "6.0.0",
     "mongoose": "6.10.3",
     "node-fetch": "2.6.1",
+    "promise-toolbox": "^0.21.0",
     "rabbitmq-stats": "1.2.3",
     "request": "2.88.2",
     "uuid": "8.3.0"

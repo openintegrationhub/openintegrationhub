@@ -13,8 +13,10 @@
   "license": "APL-2.0",
   "dependencies": {
     "@openintegrationhub/event-bus": "*",
+    "amqplib": "^0.10.3",
     "jsonwebtoken": "8.5.1",
     "lodash": "4.17.21",
+    "promise-toolbox": "^0.21.0",
     "uuid": "8.3.0"
   },
   "devDependencies": {
