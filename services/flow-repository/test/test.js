@@ -531,8 +531,61 @@ describe('Flow Operations', () => {
     const j = res.body;
     expect(j).not.toBeNull();
     expect(j.data).toHaveProperty('id');
+    expect(j.data).toHaveProperty('owners');
+    expect(j.data.owners).toHaveLength(1);
 
     flowId1 = j.data.id;
+  });
+
+  test('should add a flow with tenant in the owners', async () => {
+    const res = await request
+      .post('/flows')
+      .set('Authorization', 'Bearer permitToken')
+      .set('accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .send({
+        type: 'ordinary',
+        name: 'WiceToSnazzy',
+        description: 'A description',
+        graph: {
+          nodes: [
+            {
+              id: 'NodeOne',
+              componentId: '5ca5c44c187c040010a9bb8b',
+              function: 'getPersonsPolling',
+              credentials_id: '5ca5c44c187c040010a9bb8c',
+              fields: {
+                username: 'TestName',
+                password: 'TestPass',
+              },
+            },
+            {
+              id: 'NodeTwo',
+              componentId: '5ca5c44c187c040010a9bb8c',
+              function: 'transformTestToOih',
+            },
+          ],
+          edges: [
+            {
+              source: 'NodeOne',
+              target: 'NodeTwo',
+            },
+          ],
+        },
+      });
+    expect(res.status).toEqual(201);
+    expect(res.text).not.toHaveLength(0);
+    const j = res.body;
+    expect(j).not.toBeNull();
+    expect(j.data).toHaveProperty('id');
+    expect(j.data).toHaveProperty('owners');
+    expect(j.data.owners).toHaveLength(2);
+    const tenantOwner = j.data.owners[1];
+    expect(tenantOwner.type).toBe('tenant');
+    expect(tenantOwner.id).toBe(token.permitToken.value.tenant);
+
+    const flowIdToDelete = j.data.id;
+    await Flow.deleteOne({ _id: flowIdToDelete.toString() });
   });
 
   test('should get the new flow', async () => {
