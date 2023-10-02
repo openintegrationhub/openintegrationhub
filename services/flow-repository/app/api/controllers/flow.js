@@ -152,6 +152,9 @@ router.post('/', jsonParser, can(config.flowWritePermission), async (req, res) =
       if (newFlow.owners.findIndex((o) => (o.id === req.user.sub)) === -1) {
         newFlow.owners.push({ id: req.user.sub, type: 'user' });
       }
+      if (req.user.tenant && newFlow.owners.findIndex((o) => (o.id === req.user.tenant && o.type === 'tenant')) === -1) {
+        newFlow.owners.push({ id: req.user.tenant, type: 'tenant' });
+      }
 
       const storeFlow = new Flow(newFlow);
       const errors = validate(storeFlow);
