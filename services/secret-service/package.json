@@ -21,6 +21,7 @@
     "@openintegrationhub/iam-utils": "*",
     "assert": "2.0.0",
     "base64url": "3.0.1",
+    "body-parser": "^1.20.2",
     "cors": "2.8.5",
     "dot-prop": "5.2.0",
     "dotenv": "8.2.0",
@@ -37,7 +38,6 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "nodemon": "2.0.4",
     "eslint": "7.32.0",
     "eslint-config-airbnb-base": "14.2.1",
     "eslint-plugin-import": "2.22.1",
@@ -46,6 +46,7 @@
     "mongodb": "3.6.3",
     "mongodb-memory-server": "7.4.0",
     "nock": "13.0.5",
+    "nodemon": "2.0.4",
     "supertest": "6.0.1"
   },
   "jest": {
