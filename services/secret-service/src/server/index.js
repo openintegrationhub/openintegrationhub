@@ -14,7 +14,7 @@ const conf = require('../conf');
 const AuthClientRouter = require('../route/auth-clients');
 const SecretsRouter = require('../route/secrets');
 
-const jsonParser = bodyParser.json();
+const jsonParser = bodyParser.json({ limit: conf.bodyParserLimit });
 
 module.exports = class Server {
     constructor({

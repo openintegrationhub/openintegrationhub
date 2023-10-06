@@ -52,4 +52,5 @@ module.exports = {
         defaultPage: parseInt(optional('PAGINATION_DEFAULT_PAGE', 1), 10), // default page is 1
         pageSize: parseInt(optional('PAGINATION_PAGE_SIZE', 30), 10), // show 10 items per page
     },
+    bodyParserLimit: optional('BODY_PARSER_LIMIT', '1MB'),
 };
