@@ -78,7 +78,7 @@
           {
             "name": "filter[user]",
             "in": "query",
-            "description": "Filter by user. Works for admin or users with same tenant.",
+            "description": "Filter by user. Works for users within the same tenant.",
             "required": false,
             "schema": {
               "type": "string"
