@@ -7,6 +7,10 @@ const schema = new Schema({
         unique: true,
         index: true
     },
+    flowId: {
+        type: String,
+        index: true
+    },
     started: {
         type: Number,
         required: true,
@@ -27,6 +31,8 @@ const schema = new Schema({
         required: true,
         default: []
     },
+}, {
+    timestamps: true
 });
 
 const FlowStateModel = mongoose.model('flow-state', schema);
@@ -97,4 +103,7 @@ module.exports = class FlowStateDao {
         }
     }
 
+    async findById(flowExecId) {
+        return FlowStateModel.findById(flowExecId);
+    }
 };
