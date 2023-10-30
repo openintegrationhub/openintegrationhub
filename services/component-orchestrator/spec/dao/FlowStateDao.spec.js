@@ -2,6 +2,7 @@ const FlowStateDao = require('../../src/dao/FlowStateDao');
 const mongoose = require('mongoose')
 const { expect } = require('chai');
 
+const flowId = '123';
 const flowExecId = 'foobar'
 const flowExecId2 = 'foobar2'
 
@@ -70,6 +71,7 @@ describe('FlowStateDao', () => {
             let succeeded = []
             const promises = []
 
+
             while (steps.length > 0) {
                 const newlyStarted = []
                 const newlySucceeded = []
@@ -85,7 +87,7 @@ describe('FlowStateDao', () => {
                     newlySucceeded.push(started.pop())
                 }
 
-                promises.push(flowStateDao.upsertCount(flowExecId2, newlyStarted.length, newlySucceeded.length))
+                promises.push(flowStateDao.upsertCount(flowId, flowExecId2, newlyStarted.length, newlySucceeded.length))
 
                 started = started.concat(newlyStarted)
                 succeeded = succeeded.concat(newlySucceeded)
@@ -94,7 +96,7 @@ describe('FlowStateDao', () => {
             await Promise.all(promises)
 
             // finsish rest of started
-            const results = await flowStateDao.upsertCount(flowExecId2, 0, started.length)
+            const results = await flowStateDao.upsertCount(flowId, flowExecId2, 0, started.length)
             console.log(results)
 
             expect(results.started).to.equal(results.succeeded);

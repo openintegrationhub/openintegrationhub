@@ -21,7 +21,7 @@ class HttpApi {
 
         this._app.get('/executions/:execId', async (req, res, next) => {
             try {
-                const execution = await flowStateDao.findById(req.params.execId);
+                const execution = await flowStateDao.findByFlowExecId(req.params.execId);
 
                 if (!execution) {
                     return res.status(404).json({
