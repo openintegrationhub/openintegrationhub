@@ -86,12 +86,13 @@ const getFlows = async ( // eslint-disable-line
   const sort = {};
   sort[sortField] = sortOrder;
 
-  // count results
-  const count = await Flow.find(qry).estimatedDocumentCount();
-
   if (qry.$and.length === 0) {
     delete qry.$and;
   }
+
+  // count results
+  const count = await Flow.countDocuments(qry);
+
   // add offset and limit to query and execute
   Flow.find(qry).sort(sort).skip((pageNumber - 1) * pageSize).limit(pageSize)
     .lean()
