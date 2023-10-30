@@ -45,9 +45,10 @@ module.exports = class FlowStateDao {
         })
     }
 
-    async upsertCount(flowExecId, incrementStarted, incrementSucceeded) {
+    async upsertCount(flowId, flowExecId, incrementStarted, incrementSucceeded) {
         try {
             const state = await FlowStateModel.findOneAndUpdate({
+                    flowId,
                     flowExecId,
                 },
                 {
@@ -66,7 +67,7 @@ module.exports = class FlowStateDao {
         } catch(err) {
             // retry on duplicate error
             if (err.code === 11000) {
-                return this.upsertCount(flowExecId, incrementStarted, incrementSucceeded)
+                return this.upsertCount(flowId, flowExecId, incrementStarted, incrementSucceeded);
             }
             throw err
         }
@@ -97,13 +98,13 @@ module.exports = class FlowStateDao {
         } catch(err) {
             // retry on duplicate error
             if (err.code === 11000) {
-                return this.upsert(flowExecId, started, succeeded)
+                return this.upsert(flowExecId, started, succeeded);
             }
             throw err
         }
     }
 
-    async findById(flowExecId) {
-        return FlowStateModel.findById(flowExecId);
+    async findByFlowExecId(flowExecId) {
+        return FlowStateModel.findOne({ flowExecId });
     }
 };

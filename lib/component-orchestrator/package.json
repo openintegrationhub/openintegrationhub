@@ -1,6 +1,6 @@
 {
   "name": "@openintegrationhub/component-orchestrator",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "Orchestrates cluster resources",
   "main": "src/index.js",
   "scripts": {
