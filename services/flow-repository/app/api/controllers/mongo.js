@@ -87,7 +87,7 @@ const getFlows = async ( // eslint-disable-line
   sort[sortField] = sortOrder;
 
   // count results
-  const count = await Flow.find(qry).estimatedDocumentCount();
+  const count = await Flow.countDocuments(qry);
 
   if (qry.$and.length === 0) {
     delete qry.$and;
