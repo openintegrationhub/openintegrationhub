@@ -16,11 +16,16 @@ class HttpApi {
             const { filter } = req.query;
             try {
                 const query = {};
+
+                if (!filter || !filter.flowId) {
+                    return res.status(400).json({ error: 'filter[flowId] is required.' });
+                }
+
                 if (filter && filter.flowId) {
                     query.flowId = filter.flowId;
                 }
 
-                const executions = await flowStateDao.find(query);
+                const executions = await flowStateDao.find(query).limit(100);
                 res.json({ data: executions });
             } catch (e) {
                 return next(e);
@@ -33,7 +38,7 @@ class HttpApi {
 
                 if (!execution) {
                     return res.status(404).json({
-                        error: 'Not found'
+                        error: 'Execution not found'
                     });
                 }
 
