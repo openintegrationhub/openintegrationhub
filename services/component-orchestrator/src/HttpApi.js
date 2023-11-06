@@ -3,6 +3,7 @@ const express = require('express');
 class HttpApi {
     /**
      * @constructor
+     * @param opts
      * @param opts.config
      * @param opts.logger
      */
@@ -12,8 +13,15 @@ class HttpApi {
         this._app = express();
 
         this._app.get('/executions', async (req, res, next) => {
+            const { filter } = req.query;
             try {
-                res.json([]);
+                const query = {};
+                if (filter && filter.flowId) {
+                    query.flowId = filter.flowId;
+                }
+
+                const executions = await flowStateDao.find(query);
+                res.json({ data: executions });
             } catch (e) {
                 return next(e);
             }
@@ -29,7 +37,7 @@ class HttpApi {
                     });
                 }
 
-                res.json(execution);
+                res.json({ data: execution });
             } catch (e) {
                 return next(e);
             }
