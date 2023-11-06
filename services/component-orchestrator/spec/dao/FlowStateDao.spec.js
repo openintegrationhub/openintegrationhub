@@ -6,8 +6,6 @@ const flowId = '123';
 const flowExecId = 'foobar'
 const flowExecId2 = 'foobar2'
 
-const flowStateDao = new FlowStateDao();
-
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
   }
@@ -16,8 +14,8 @@ describe('FlowStateDao', () => {
     before(async () => {
         let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
         await mongoose.connect(mongoUri, { });
-        await flowStateDao.delete(flowExecId)
-        await flowStateDao.delete(flowExecId2)
+        await FlowStateDao.delete(flowExecId)
+        await FlowStateDao.delete(flowExecId2)
     });
 
     after(async () => {
@@ -47,7 +45,7 @@ describe('FlowStateDao', () => {
                     newlySucceeded.push(started.pop())
                 }
 
-                promises.push(flowStateDao.upsert(flowExecId, newlyStarted, newlySucceeded))
+                promises.push(FlowStateDao.upsert(flowExecId, newlyStarted, newlySucceeded))
 
                 started = started.concat(newlyStarted)
                 succeeded = succeeded.concat(newlySucceeded)
@@ -55,8 +53,8 @@ describe('FlowStateDao', () => {
 
             await Promise.all(promises)
 
-            // finsish rest of started
-            const { succeededNodes, startedNodes } = await flowStateDao.upsert(flowExecId, [], started)
+            // finish rest of started
+            const { succeededNodes, startedNodes } = await FlowStateDao.upsert(flowExecId, [], started)
 
             expect(succeededNodes.length).to.equal(startedNodes.length);
             expect(succeededNodes.reduce((a,b)=>a+b)).to.equal(startedNodes.reduce((a,b)=>a+b));
@@ -87,7 +85,7 @@ describe('FlowStateDao', () => {
                     newlySucceeded.push(started.pop())
                 }
 
-                promises.push(flowStateDao.upsertCount(flowId, flowExecId2, newlyStarted.length, newlySucceeded.length))
+                promises.push(FlowStateDao.upsertCount(flowId, flowExecId2, newlyStarted.length, newlySucceeded.length))
 
                 started = started.concat(newlyStarted)
                 succeeded = succeeded.concat(newlySucceeded)
@@ -95,11 +93,49 @@ describe('FlowStateDao', () => {
 
             await Promise.all(promises)
 
-            // finsish rest of started
-            const results = await flowStateDao.upsertCount(flowId, flowExecId2, 0, started.length)
-            console.log(results)
+            // finish rest of started
+            const results = await FlowStateDao.upsertCount(flowId, flowExecId2, 0, started.length)
 
             expect(results.started).to.equal(results.succeeded);
+        });
+    });
+
+    describe('#findByFlowExecId', () => {
+        before(async () => {
+            await FlowStateDao.upsertCount('my-flow', 'my-exec', 1, 1);
+        });
+
+        after(async () => {
+            await FlowStateDao.delete('my-exec');
+        });
+
+        it('should not find exec that does not exist', async () => {
+            const flowExec = await FlowStateDao.findByFlowExecId('temp123');
+            expect(flowExec).to.be.null;
+        });
+
+        it('should find existing exec', async () => {
+            const flowExec = await FlowStateDao.findByFlowExecId('my-exec');
+            expect(flowExec).not.to.be.null;
+        })
+    });
+
+    describe('#find', () => {
+        before(async () => {
+            await FlowStateDao.upsertCount('flow1', 'my-exec1', 1, 1);
+            await FlowStateDao.upsertCount('flow1', 'my-exec2', 1, 1);
+        });
+
+        after(async () => {
+            await FlowStateDao.delete('my-exec1');
+            await FlowStateDao.delete('my-exec2');
+        });
+
+        it('should find execs by flowId', async () => {
+            const execs = await FlowStateDao.find({ flowId: 'flow1' });
+            expect(execs.length).to.equal(2);
+            expect(execs[0].flowExecId).to.equal('my-exec1');
+            expect(execs[1].flowExecId).to.equal('my-exec2');
         });
     });
 });

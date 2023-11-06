@@ -3,6 +3,7 @@ const express = require('express');
 class HttpApi {
     /**
      * @constructor
+     * @param opts
      * @param opts.config
      * @param opts.logger
      */
@@ -12,8 +13,20 @@ class HttpApi {
         this._app = express();
 
         this._app.get('/executions', async (req, res, next) => {
+            const { filter } = req.query;
             try {
-                res.json([]);
+                const query = {};
+
+                if (!filter || !filter.flowId) {
+                    return res.status(400).json({ error: 'filter[flowId] is required.' });
+                }
+
+                if (filter && filter.flowId) {
+                    query.flowId = filter.flowId;
+                }
+
+                const executions = await flowStateDao.find(query).limit(100);
+                res.json({ data: executions });
             } catch (e) {
                 return next(e);
             }
@@ -25,11 +38,11 @@ class HttpApi {
 
                 if (!execution) {
                     return res.status(404).json({
-                        error: 'Not found'
+                        error: 'Execution not found'
                     });
                 }
 
-                res.json(execution);
+                res.json({ data: execution });
             } catch (e) {
                 return next(e);
             }

@@ -75,7 +75,7 @@ class ComponentOrchestratorApp extends App {
             publishChannel: asValue(publishChannel),
             iamClient: asValue(iamClient),
             flowsDao: asClass(FlowsDao),
-            flowStateDao: asClass(FlowStateDao),
+            flowStateDao: asValue(FlowStateDao),
             componentsDao: asClass(ComponentsDao),
             secretsDao: asClass(SecretsDao),
             tokensDao: asClass(TokensDao),

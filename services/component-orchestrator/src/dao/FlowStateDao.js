@@ -35,19 +35,16 @@ const schema = new Schema({
     timestamps: true
 });
 
-const FlowStateModel = mongoose.model('flow-state', schema);
-
-module.exports = class FlowStateDao {
-
-    async delete(flowExecId) {
-        return FlowStateModel.deleteOne({
+class FlowStateDao {
+    static async delete(flowExecId) {
+        return this.deleteOne({
             flowExecId,
         })
     }
 
-    async upsertCount(flowId, flowExecId, incrementStarted, incrementSucceeded) {
+    static async upsertCount(flowId, flowExecId, incrementStarted, incrementSucceeded) {
         try {
-            const state = await FlowStateModel.findOneAndUpdate({
+            const state = await this.findOneAndUpdate({
                     flowId,
                     flowExecId,
                 },
@@ -73,9 +70,9 @@ module.exports = class FlowStateDao {
         }
     }
 
-    async upsert(flowExecId, started, succeeded) {
+    static async upsert(flowExecId, started, succeeded) {
         try {
-            const state = await FlowStateModel.findOneAndUpdate({
+            const state = await this.findOneAndUpdate({
                     flowExecId,
                 },
                 {
@@ -104,7 +101,13 @@ module.exports = class FlowStateDao {
         }
     }
 
-    async findByFlowExecId(flowExecId) {
-        return FlowStateModel.findOne({ flowExecId });
+    static async findByFlowExecId(flowExecId) {
+        return this.findOne({ flowExecId });
     }
-};
+}
+
+schema.loadClass(FlowStateDao);
+
+const FlowStateModel = mongoose.model('flow-state', schema);
+
+module.exports = FlowStateModel;
