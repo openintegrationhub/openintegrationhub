@@ -4,7 +4,7 @@ module.exports = ({ eventBus, flowStarting, flowStopping, flowExecute, component
         'flow.stopping': flowStopping,
         'flow.execute': flowExecute,
         'component.starting': componentStarting,
-        'component.stopping': componentStopping
+        'component.stopping': componentStopping,
     };
 
     for (let [topic, handler] of Object.entries(handlers)) {
@@ -14,6 +14,6 @@ module.exports = ({ eventBus, flowStarting, flowStopping, flowExecute, component
     return {
         connect() {
             return eventBus.connect();
-        }
+        },
     };
 };

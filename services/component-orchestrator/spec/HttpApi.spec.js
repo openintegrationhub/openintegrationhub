@@ -23,7 +23,7 @@ describe('HttpApi', () => {
         const config = {
             get(key) {
                 return this[key];
-            }
+            },
         };
 
         const httpApi = new HttpApi({

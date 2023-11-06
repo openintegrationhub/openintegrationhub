@@ -38,7 +38,7 @@ class HttpApi {
 
                 if (!execution) {
                     return res.status(404).json({
-                        error: 'Execution not found'
+                        error: 'Execution not found',
                     });
                 }
 
@@ -65,10 +65,11 @@ class HttpApi {
         this._app.listen(listenPort);
     }
 
-    _errorHandler(err, req, res, next) { //eslint-disable-line no-unused-vars
+    _errorHandler(err, req, res, next) {
+        //eslint-disable-line no-unused-vars
         this._logger.error(err, 'Node info request failed');
         return res.status(err.status || 500).json({
-            error: err.message || 'Unknown error'
+            error: err.message || 'Unknown error',
         });
     }
 

@@ -20,31 +20,31 @@ describe('KubernetesDriver', () => {
             DEFAULT_MEM_REQUEST: '256',
             get(key) {
                 return this[key];
-            }
+            },
         };
         const logger = {
-            trace: () => { },
-            debug: () => { },
-            info: () => { },
-            warn: () => { },
-            error: () => { }
+            trace: () => {},
+            debug: () => {},
+            info: () => {},
+            warn: () => {},
+            error: () => {},
         };
 
         coreClient = {
             services: {
-                post: () => { }
-            }
+                post: () => {},
+            },
         };
 
         appsClient = {
             deployments: {
-                post: () => { }
-            }
+                post: () => {},
+            },
         };
 
         const k8s = {
             getCoreClient: () => coreClient,
-            getAppsClient: () => appsClient
+            getAppsClient: () => appsClient,
         };
 
         sinon.stub(appsClient.deployments, 'post').resolves();
@@ -67,27 +67,35 @@ describe('KubernetesDriver', () => {
             const flow = { id: 'flow1' };
             const node = { id: 'node1' };
 
-            const localComponent = { isGlobal: false }
-            const globalComponent = { isGlobal: true, id: 'fooo' }
+            const localComponent = { isGlobal: false };
+            const globalComponent = { isGlobal: true, id: 'fooo' };
 
             const envVars = { env: 'lololo' };
             await driver.createApp({ flow, node, component: localComponent, envVars });
 
             expect(driver._prepareEnvVars).to.have.been.calledWith(envVars);
-            expect(driver._ensureSecret).to.have.been.calledWith(
-                `local-${flow.id}${node.id}`,
-                { container: 'env-vars' }
-            );
-            expect(driver._createRunningComponent).to.have.been.calledWith({ flow, node, secret, component: localComponent, options: undefined });
+            expect(driver._ensureSecret).to.have.been.calledWith(`local-${flow.id}${node.id}`, {
+                container: 'env-vars',
+            });
+            expect(driver._createRunningComponent).to.have.been.calledWith({
+                flow,
+                node,
+                secret,
+                component: localComponent,
+                options: undefined,
+            });
 
             await driver.createApp({ flow, node, component: globalComponent, envVars });
 
             expect(driver._prepareEnvVars).to.have.been.calledWith(envVars);
-            expect(driver._ensureSecret).to.have.been.calledWith(
-                `global-${globalComponent.id}`,
-                { container: 'env-vars' }
-            );
-            expect(driver._createRunningComponent).to.have.been.calledWith({ secret, component: globalComponent, options: undefined });
+            expect(driver._ensureSecret).to.have.been.calledWith(`global-${globalComponent.id}`, {
+                container: 'env-vars',
+            });
+            expect(driver._createRunningComponent).to.have.been.calledWith({
+                secret,
+                component: globalComponent,
+                options: undefined,
+            });
         });
     });
 
@@ -99,33 +107,49 @@ describe('KubernetesDriver', () => {
                 body: {
                     kind: 'Deployment',
                     metadata: {
-                        name: 'new-deployment'
-                    }
-                }
+                        name: 'new-deployment',
+                    },
+                },
             });
             coreClient.services.post.resolves({
                 body: {
                     kind: 'Service',
                     metadata: {
-                        name: 'new-service'
-                    }
-                }
+                        name: 'new-service',
+                    },
+                },
             });
 
             const flow = { id: 'flow1' };
             const node = { id: 'node1' };
             const secret = { id: 'secret' };
 
-            const localComponent = { isGlobal: false }
-            const globalComponent = { isGlobal: true, id: 'fooo', descriptor: {
-                restAPI: true
-            } }
+            const localComponent = { isGlobal: false };
+            const globalComponent = {
+                isGlobal: true,
+                id: 'fooo',
+                descriptor: {
+                    restAPI: true,
+                },
+            };
 
-            let result = await driver._createRunningComponent({ flow, node, secret, component: localComponent, options: {} });
+            let result = await driver._createRunningComponent({
+                flow,
+                node,
+                secret,
+                component: localComponent,
+                options: {},
+            });
             expect(result instanceof KubernetesRunningComponent).to.be.true;
             expect(result.name).to.equal('new-deployment');
 
-            result = await driver._createRunningComponent({ flow, node, secret, component: globalComponent, options: {} });
+            result = await driver._createRunningComponent({
+                flow,
+                node,
+                secret,
+                component: globalComponent,
+                options: {},
+            });
             expect(result instanceof KubernetesRunningComponent).to.be.true;
             expect(result.name).to.equal('new-deployment');
         });
@@ -134,25 +158,25 @@ describe('KubernetesDriver', () => {
     describe('#_generateAppDefinition', () => {
         it('should generate app descriptor', async () => {
             const flow = {
-                id: 'flow1'
+                id: 'flow1',
             };
             const node = {
                 id: 'step1',
                 componentId: '123',
-                'function': 'testAction'
+                function: 'testAction',
             };
             const secret = {
                 metadata: {
-                    name: 'my-secret'
-                }
+                    name: 'my-secret',
+                },
             };
             const localComponent = {
                 id: 'comp1',
                 isGlobal: false,
                 distribution: {
                     type: 'docker',
-                    image: 'openintegrationhub/email'
-                }
+                    image: 'openintegrationhub/email',
+                },
             };
 
             const globalComponent = {
@@ -160,177 +184,186 @@ describe('KubernetesDriver', () => {
                 isGlobal: true,
                 distribution: {
                     type: 'docker',
-                    image: 'openintegrationhub/email'
+                    image: 'openintegrationhub/email',
                 },
                 descriptor: {
-                    restAPI: true
-                }
+                    restAPI: true,
+                },
             };
 
             let result = await driver._generateDeploymentDefinition({
-                flow, node, secret, component: localComponent, options: {
-                    replicas: 3
-                }
+                flow,
+                node,
+                secret,
+                component: localComponent,
+                options: {
+                    replicas: 3,
+                },
             });
 
             expect(result).to.deep.equal({
-                'apiVersion': 'apps/v1',
-                'kind': 'Deployment',
-                'metadata': {
-                    'annotations': {
-                        'flowId': 'flow1',
-                        'nodeId': 'step1',
-                        'stepId': 'step1',
-                        'type': 'local'
+                apiVersion: 'apps/v1',
+                kind: 'Deployment',
+                metadata: {
+                    annotations: {
+                        flowId: 'flow1',
+                        nodeId: 'step1',
+                        stepId: 'step1',
+                        type: 'local',
                     },
-                    'name': 'local-flow1.step1',
-                    'namespace': 'flows-ns'
+                    name: 'local-flow1.step1',
+                    namespace: 'flows-ns',
                 },
-                'spec': {
-                    'replicas': 3,
-                    'selector': {
-                        'matchLabels': {
-                            'flowId': 'flow1',
-                            'stepId': 'step1'
-                        }
+                spec: {
+                    replicas: 3,
+                    selector: {
+                        matchLabels: {
+                            flowId: 'flow1',
+                            stepId: 'step1',
+                        },
                     },
-                    'template': {
-                        'metadata': {
-                            'labels': {
-                                'flowId': 'flow1',
-                                'stepId': 'step1'
+                    template: {
+                        metadata: {
+                            labels: {
+                                flowId: 'flow1',
+                                stepId: 'step1',
                             },
-                            'annotations': {
-                                'flowId': 'flow1',
-                                'nodeId': 'step1',
-                                'stepId': 'step1',
-                                'type': 'local'
+                            annotations: {
+                                flowId: 'flow1',
+                                nodeId: 'step1',
+                                stepId: 'step1',
+                                type: 'local',
                             },
                         },
-                        'spec': {
-                            'containers': [
+                        spec: {
+                            containers: [
                                 {
-                                    'envFrom': [
+                                    envFrom: [
                                         {
-                                            'secretRef': {
-                                                'name': 'my-secret'
-                                            }
-                                        }
-                                    ],
-                                    'image': 'openintegrationhub/email',
-                                    'imagePullPolicy': 'Always',
-                                    'name': 'apprunner',
-                                    'resources': {
-                                        'limits': {
-                                            'cpu': '0.1',
-                                            'memory': '512'
+                                            secretRef: {
+                                                name: 'my-secret',
+                                            },
                                         },
-                                        'requests': {
-                                            'cpu': '0.1',
-                                            'memory': '256'
-                                        }
+                                    ],
+                                    image: 'openintegrationhub/email',
+                                    imagePullPolicy: 'Always',
+                                    name: 'apprunner',
+                                    resources: {
+                                        limits: {
+                                            cpu: '0.1',
+                                            memory: '512',
+                                        },
+                                        requests: {
+                                            cpu: '0.1',
+                                            memory: '256',
+                                        },
                                     },
-                                    'volumeMounts': []
-                                }
+                                    volumeMounts: [],
+                                },
                             ],
-                            'volumes': []
-                        }
-                    }
-                }
+                            volumes: [],
+                        },
+                    },
+                },
             });
 
             result = await driver._generateDeploymentDefinition({
-                flow, node, secret, component: globalComponent
+                flow,
+                node,
+                secret,
+                component: globalComponent,
             });
 
             expect(result).to.deep.equal({
-                'apiVersion': 'apps/v1',
-                'kind': 'Deployment',
-                'metadata': {
-                    'annotations': {
-                        'componentId': globalComponent.id,
-                        'type': 'global'
+                apiVersion: 'apps/v1',
+                kind: 'Deployment',
+                metadata: {
+                    annotations: {
+                        componentId: globalComponent.id,
+                        type: 'global',
                     },
-                    'name': `global-${globalComponent.id}`,
-                    'namespace': 'flows-ns'
+                    name: `global-${globalComponent.id}`,
+                    namespace: 'flows-ns',
                 },
-                'spec': {
-                    'replicas': 1,
-                    'selector': {
-                        'matchLabels': {
-                            'componentId': globalComponent.id,
-                        }
+                spec: {
+                    replicas: 1,
+                    selector: {
+                        matchLabels: {
+                            componentId: globalComponent.id,
+                        },
                     },
-                    'template': {
-                        'metadata': {
-                            'labels': {
-                                'componentId': globalComponent.id,
+                    template: {
+                        metadata: {
+                            labels: {
+                                componentId: globalComponent.id,
                             },
-                            'annotations': {
-                                'componentId': globalComponent.id,
-                                'type': 'global'
+                            annotations: {
+                                componentId: globalComponent.id,
+                                type: 'global',
                             },
                         },
-                        'spec': {
-                            'containers': [
+                        spec: {
+                            containers: [
                                 {
-                                    'envFrom': [
+                                    envFrom: [
                                         {
-                                            'secretRef': {
-                                                'name': 'my-secret'
-                                            }
-                                        }
-                                    ],
-                                    'image': 'openintegrationhub/email',
-                                    'imagePullPolicy': 'Always',
-                                    'name': 'apprunner',
-                                    'resources': {
-                                        'limits': {
-                                            'cpu': '0.1',
-                                            'memory': '512'
+                                            secretRef: {
+                                                name: 'my-secret',
+                                            },
                                         },
-                                        'requests': {
-                                            'cpu': '0.1',
-                                            'memory': '256'
-                                        }
+                                    ],
+                                    image: 'openintegrationhub/email',
+                                    imagePullPolicy: 'Always',
+                                    name: 'apprunner',
+                                    resources: {
+                                        limits: {
+                                            cpu: '0.1',
+                                            memory: '512',
+                                        },
+                                        requests: {
+                                            cpu: '0.1',
+                                            memory: '256',
+                                        },
                                     },
-                                    'volumeMounts': []
-                                }
+                                    volumeMounts: [],
+                                },
                             ],
-                            'volumes': []
-                        }
-                    }
-                }
+                            volumes: [],
+                        },
+                    },
+                },
             });
 
             result = await driver._generateServiceDefinition({
-                flow, node, component: globalComponent
+                flow,
+                node,
+                component: globalComponent,
             });
 
             expect(result).to.deep.equal({
-                'apiVersion': 'v1',
-                'kind': 'Service',
-                'metadata': {
-                    'labels': {
-                        'app': 'global-comp2-service',
+                apiVersion: 'v1',
+                kind: 'Service',
+                metadata: {
+                    labels: {
+                        app: 'global-comp2-service',
                     },
-                    'name': 'global-comp2-service',
-                    'namespace': 'flows-ns'
-                    },
-                    'spec': {
-                    'ports': [
+                    name: 'global-comp2-service',
+                    namespace: 'flows-ns',
+                },
+                spec: {
+                    ports: [
                         {
-                        'name': '3001',
-                        'port': 3001,
-                        'protocol': 'TCP',
-                        'targetPort': 3001
-                        }
+                            name: '3001',
+                            port: 3001,
+                            protocol: 'TCP',
+                            targetPort: 3001,
+                        },
                     ],
-                    'selector': {
-                        'componentId': 'comp2',
+                    selector: {
+                        componentId: 'comp2',
                     },
-                    'type': 'ClusterIP',
-                }
+                    type: 'ClusterIP',
+                },
             });
         });
     });

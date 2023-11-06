@@ -3,17 +3,17 @@ const { Schema } = mongoose;
 
 const schema = new Schema({
     flowId: {
-        type: String
+        type: String,
     },
     userId: {
-        type: String
+        type: String,
     },
     tokenId: {
-        type: String
+        type: String,
     },
     token: {
-        type: String
-    }
+        type: String,
+    },
 });
 schema.index({ flowId: 1, userId: 1 }, { unique: true });
 
@@ -39,16 +39,14 @@ module.exports = class TokensDao {
             expiresIn: -1,
             description: `Created by Component Orchestrator for flow ${flowId}`,
             forceNew: true,
-            customPermissions: [
-              'secrets.secret.readRaw'
-            ]
+            customPermissions: ['secrets.secret.readRaw'],
         });
 
         await IamToken.create({
             flowId,
             userId,
             token,
-            tokenId
+            tokenId,
         });
 
         return token;
@@ -57,7 +55,7 @@ module.exports = class TokensDao {
     async deleteTokenForFlowAndUser({ flowId, userId }) {
         const tokens = await IamToken.find({
             flowId,
-            userId
+            userId,
         });
 
         for (const token of tokens) {

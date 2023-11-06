@@ -1,7 +1,7 @@
 const _ = require('lodash');
 
-const toBase64 = str => Buffer.from(str).toString('base64');
-const fromBase64 = str => Buffer.from(str, 'base64').toString();
+const toBase64 = (str) => Buffer.from(str).toString('base64');
+const fromBase64 = (str) => Buffer.from(str, 'base64').toString();
 
 /**
  * Represents a K8s Secret
@@ -10,7 +10,7 @@ class Secret {
     constructor({ metadata = {}, data = {} } = {}) {
         Object.assign(this, {
             metadata,
-            data
+            data,
         });
     }
 
@@ -40,10 +40,10 @@ class Secret {
             kind: 'Secret',
             metadata: this.metadata,
             data: Object.entries(this.data).reduce((hash, entry) => {
-                const [ key, value ] = entry;
+                const [key, value] = entry;
                 if (value !== undefined) hash[key] = toBase64(value);
                 return hash;
-            }, {})
+            }, {}),
         };
     }
 
@@ -56,10 +56,10 @@ class Secret {
         return new this({
             metadata: descriptor.metadata,
             data: Object.entries(descriptor.data || {}).reduce((hash, entry) => {
-                const [ key, value ] = entry;
+                const [key, value] = entry;
                 if (value !== undefined) hash[key] = fromBase64(value);
                 return hash;
-            }, {})
+            }, {}),
         });
     }
 }

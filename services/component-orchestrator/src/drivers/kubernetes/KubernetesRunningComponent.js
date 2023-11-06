@@ -8,7 +8,7 @@ class KubernetesRunningComponent extends RunningComponent {
     }
 
     get uid() {
-        return this.getMetadataValue('uid')
+        return this.getMetadataValue('uid');
     }
 
     get kind() {
@@ -28,7 +28,7 @@ class KubernetesRunningComponent extends RunningComponent {
     }
 
     getType() {
-        return this.getAnnotationsValue('type')
+        return this.getAnnotationsValue('type');
     }
 
     getFlowId() {
@@ -64,7 +64,7 @@ class KubernetesRunningComponent extends RunningComponent {
     }
 
     getEnvVar(name) {
-        const pair = this._getContainerEnv().find(pair => pair.name === name);
+        const pair = this._getContainerEnv().find((pair) => pair.name === name);
         if (!pair) {
             return null;
         }

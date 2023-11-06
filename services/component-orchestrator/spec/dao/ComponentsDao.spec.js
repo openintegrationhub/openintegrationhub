@@ -12,16 +12,16 @@ describe('ComponentsDao', () => {
                 return this[key];
             },
             COMPONENT_REPOSITORY_BASE_URL: 'http://comp-repo.com',
-            IAM_TOKEN: 'kokoko'
+            IAM_TOKEN: 'kokoko',
         };
         const logger = {
             info: () => {},
             debug: () => {},
             error: () => {},
-            trace: () => {}
+            trace: () => {},
         };
 
-        cd = new ComponentsDao({config, logger});
+        cd = new ComponentsDao({ config, logger });
         compRepo = nock(config.COMPONENT_REPOSITORY_BASE_URL, {
             reqheaders: {
                 authorization: `Bearer ${config.IAM_TOKEN}`,
@@ -31,35 +31,29 @@ describe('ComponentsDao', () => {
 
     describe('#findById', () => {
         it('should return component data', async () => {
-            const scope = compRepo
-                .get('/components/123')
-                .reply(200, {
-                    data: {
-                        id: '123',
-                        some: 'data'
-                    }
-                });
+            const scope = compRepo.get('/components/123').reply(200, {
+                data: {
+                    id: '123',
+                    some: 'data',
+                },
+            });
 
             expect(await cd.findById('123')).to.deep.equal({
                 id: '123',
-                some: 'data'
+                some: 'data',
             });
             expect(scope.isDone()).to.be.true;
         });
 
         it('should return null if not found', async () => {
-            const scope = compRepo
-                .get('/components/123')
-                .reply(404);
+            const scope = compRepo.get('/components/123').reply(404);
 
             expect(await cd.findById('123')).to.be.null;
             expect(scope.isDone()).to.be.true;
         });
 
         it('should throw an error if unexpected status code is returned', async () => {
-            const scope = compRepo
-                .get('/components/123')
-                .reply(500);
+            const scope = compRepo.get('/components/123').reply(500);
 
             try {
                 await cd.findById('123');

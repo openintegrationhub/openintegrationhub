@@ -21,8 +21,8 @@ module.exports = class OIHSecretsDao {
             json: true,
             timeout: 5000,
             headers: {
-                authorization: `Bearer ${auth.token}`
-            }
+                authorization: `Bearer ${auth.token}`,
+            },
         };
 
         logger.trace({ opts }, 'Fetching the secret');

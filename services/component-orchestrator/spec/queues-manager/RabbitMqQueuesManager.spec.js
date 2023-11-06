@@ -17,18 +17,18 @@ describe('RabbitMqQueuesManager', () => {
 
     function createConfig(conf = {}) {
         return {
-            get: key => conf[key]
+            get: (key) => conf[key],
         };
     }
 
     beforeEach(() => {
         config = createConfig({
             RABBITMQ_URI_FLOWS: 'amqp://localhost',
-            RABBITMQ_MANAGEMENT_URI: 'http://localhost'
+            RABBITMQ_MANAGEMENT_URI: 'http://localhost',
         });
 
         queueCreator = {
-            makeQueuesForTheFlow: () => { }
+            makeQueuesForTheFlow: () => {},
         };
         sinon.stub(queueCreator, 'makeQueuesForTheFlow').resolves();
 
@@ -39,25 +39,25 @@ describe('RabbitMqQueuesManager', () => {
         sinon.stub(RabbitMqManagementService.prototype, 'getBindings').resolves([]);
 
         amqpChannel = {
-            deleteQueue: () => { },
-            deleteExchange: () => { }
+            deleteQueue: () => {},
+            deleteExchange: () => {},
         };
         sinon.stub(amqpChannel, 'deleteQueue').resolves();
         sinon.stub(amqpChannel, 'deleteExchange').resolves();
 
         flowsDao = {
-            findAll: () => { },
-            ensureFinalizer: () => { },
-            removeFinalizer: () => { }
+            findAll: () => {},
+            ensureFinalizer: () => {},
+            removeFinalizer: () => {},
         };
         sinon.stub(flowsDao, 'findAll').resolves();
         sinon.stub(flowsDao, 'ensureFinalizer').resolves();
         sinon.stub(flowsDao, 'removeFinalizer').resolves();
 
         driver = {
-            getAppList: () => { },
-            createApp: () => { },
-            destroyApp: () => { }
+            getAppList: () => {},
+            createApp: () => {},
+            destroyApp: () => {},
         };
         sinon.stub(driver, 'getAppList').resolves();
         sinon.stub(driver, 'createApp').resolves();
@@ -67,7 +67,7 @@ describe('RabbitMqQueuesManager', () => {
             config,
             logger,
             queueCreator,
-            driver
+            driver,
         });
     });
 
@@ -90,32 +90,31 @@ describe('RabbitMqQueuesManager', () => {
 
     describe('#getSettingsForNodeExecution', () => {
         it('should return settings required for flow node execution', async () => {
-
-            const component1 = { id: 'foo', isGlobal: false }
+            const component1 = { id: 'foo', isGlobal: false };
             const node1 = { id: 'step_1' };
             const flow = { id: 'flow1', nodes: [node1] };
 
-            const componentsMap = new Map()
+            const componentsMap = new Map();
 
-            componentsMap.set('step_1', component1)
+            componentsMap.set('step_1', component1);
 
             queueCreator.makeQueuesForTheFlow.resolves({
                 step_1: {
-                    SOME: 'stuff'
-                }
+                    SOME: 'stuff',
+                },
             });
 
             sinon.stub(im, '_ensureRabbitMqCredentialsForFlowNode').resolves({
                 username: 'kurt',
-                password: 'cobain'
+                password: 'cobain',
             });
 
-            const flowSettings = await im.prepareQueues(flow, componentsMap)
+            const flowSettings = await im.prepareQueues(flow, componentsMap);
 
             const settings = await im.getSettingsForNodeExecution(flow, node1, flowSettings);
             expect(settings).to.deep.equal({
                 AMQP_URI: 'amqp://kurt:cobain@localhost',
-                SOME: 'stuff'
+                SOME: 'stuff',
             });
         });
     });
@@ -132,7 +131,7 @@ describe('RabbitMqQueuesManager', () => {
             const node1 = { id: 'step_1' };
             const flow = {
                 id: 'flow1',
-                nodes: [node1]
+                nodes: [node1],
             };
             const result = await im._ensureRabbitMqCredentialsForFlowNode(flow, node1);
             expect(RabbitMqManagementService.prototype.createFlowUser).to.have.been.calledOnce;
@@ -149,7 +148,7 @@ describe('RabbitMqQueuesManager', () => {
             const node1 = { id: 'step_1' };
             const flow = {
                 id: 'flow1',
-                nodes: [node1]
+                nodes: [node1],
             };
             await im._saveRabbitMqCredential(flow, node1, { username: 'bob' });
             const result = await im._ensureRabbitMqCredentialsForFlowNode(flow, node1);
@@ -164,7 +163,7 @@ describe('RabbitMqQueuesManager', () => {
             const node2 = { id: 'step_2' };
             const flow = {
                 id: 'test',
-                nodes: [node1, node2]
+                nodes: [node1, node2],
             };
 
             im._saveRabbitMqCredential(flow, node1, { username: 'cred1' });
@@ -173,8 +172,12 @@ describe('RabbitMqQueuesManager', () => {
             await im._deleteRabbitMqCredentialsForFlow(flow);
 
             expect(RabbitMqManagementService.prototype.deleteUser).to.have.been.calledTwice;
-            expect(RabbitMqManagementService.prototype.deleteUser.firstCall.args[0]).to.deep.equal({ username: 'cred1' });
-            expect(RabbitMqManagementService.prototype.deleteUser.secondCall.args[0]).to.deep.equal({ username: 'cred2' });
+            expect(RabbitMqManagementService.prototype.deleteUser.firstCall.args[0]).to.deep.equal({
+                username: 'cred1',
+            });
+            expect(RabbitMqManagementService.prototype.deleteUser.secondCall.args[0]).to.deep.equal({
+                username: 'cred2',
+            });
 
             //@todo: check that it has been removed from the store
         });
@@ -195,8 +198,8 @@ describe('RabbitMqQueuesManager', () => {
                 flow1: {
                     queues: ['flow1:step1'],
                     exchanges: ['flow1'],
-                    bindings
-                }
+                    bindings,
+                },
             });
         });
     });
@@ -205,21 +208,21 @@ describe('RabbitMqQueuesManager', () => {
         it('should return queues index', () => {
             const queues = [
                 {
-                    name: 'flow1:step1'
+                    name: 'flow1:step1',
                 },
                 {
-                    name: 'flow1:step2'
-                }
+                    name: 'flow1:step2',
+                },
             ];
             const exchanges = [
                 {
-                    name: 'flow1'
-                }
+                    name: 'flow1',
+                },
             ];
             const bindings = [
                 {
-                    destination: 'flow1:step2'
-                }
+                    destination: 'flow1:step2',
+                },
             ];
             const result = im._buildMQIndex(queues, exchanges, bindings);
 
@@ -227,8 +230,8 @@ describe('RabbitMqQueuesManager', () => {
                 flow1: {
                     queues: ['flow1:step1', 'flow1:step2'],
                     exchanges: ['flow1'],
-                    bindings
-                }
+                    bindings,
+                },
             });
         });
     });

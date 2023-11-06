@@ -17,8 +17,8 @@ class RabbitMqManagementService {
         this._managementSettings = {
             url: parsedUrl.toString(),
             username,
-            password
-        }
+            password,
+        };
 
         this._client = new RabbitmqManagement(
             this._managementSettings.url,
@@ -68,14 +68,14 @@ class RabbitMqManagementService {
             method: 'PUT',
             headers: {
                 'Content-type': 'application/json;charset=UTF-8',
-                'Authorization': 'Basic ' + auth
+                Authorization: 'Basic ' + auth,
             },
             body: JSON.stringify({
-                exchange:'event-bus',
-                write:'^(raw-record.created|provenance)',
-                read:''
-            })
-          })
+                exchange: 'event-bus',
+                write: '^(raw-record.created|provenance)',
+                read: '',
+            }),
+        });
     }
 
     /**
@@ -90,7 +90,7 @@ class RabbitMqManagementService {
             //@todo it would be great to pass a password_hash instead of a password
             // http://www.rabbitmq.com/passwords.html#computing-password-hash
             password,
-            tags: 'flow-user'
+            tags: 'flow-user',
         };
 
         await this._client.putUser(username, userBody);
@@ -105,7 +105,7 @@ class RabbitMqManagementService {
             // The empty string, '' is a synonym for '^$' and restricts permissions in the exact same way.
             configure: '',
             write: writeRegex,
-            read: readRegex
+            read: readRegex,
         };
 
         await this._client.setUserPermissions(username, this._vhost, permissionsBody);
@@ -123,7 +123,7 @@ class RabbitMqManagementService {
             //@todo it would be great to pass a password_hash instead of a password
             // http://www.rabbitmq.com/passwords.html#computing-password-hash
             password,
-            tags: 'component-user'
+            tags: 'component-user',
         };
 
         await this._client.putUser(username, userBody);
@@ -138,14 +138,13 @@ class RabbitMqManagementService {
             // The empty string, '' is a synonym for '^$' and restricts permissions in the exact same way.
             configure: '',
             write: writeRegex,
-            read: readRegex
+            read: readRegex,
         };
 
         await this._client.setUserPermissions(username, this._vhost, permissionsBody);
-        const response = await this.setUserTopicPermissions(username)
-        console.log(response)
+        const response = await this.setUserTopicPermissions(username);
+        console.log(response);
     }
-
 
     /**
      * Delete RabbitMQ user.

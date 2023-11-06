@@ -9,8 +9,8 @@ const sinon = require('sinon');
 
 describe('FlowStopping event handler', () => {
     before(async () => {
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { });
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test';
+        await mongoose.connect(mongoUri, {});
     });
 
     after(async () => {
@@ -22,9 +22,9 @@ describe('FlowStopping event handler', () => {
     beforeEach(async () => {
         await Flow.deleteMany();
         const logger = {
-            info: () => { },
-            trace: () => { },
-            error: err => console.error(err)
+            info: () => {},
+            trace: () => {},
+            error: (err) => console.error(err),
         };
         flowStopping = FlowStopping({ logger });
     });
@@ -40,8 +40,8 @@ describe('FlowStopping event handler', () => {
             const event = new Event({
                 headers: {},
                 payload: {
-                    id: flow.id
-                }
+                    id: flow.id,
+                },
             });
 
             sinon.stub(event, 'ack').resolves();
@@ -59,13 +59,13 @@ describe('FlowStopping event handler', () => {
     describe('if a flow exists', () => {
         it('should do nothing', async () => {
             const flow = await Flow.create({
-                status: 'started'
+                status: 'started',
             });
             const event = new Event({
                 headers: {},
                 payload: {
-                    id: flow.id
-                }
+                    id: flow.id,
+                },
             });
 
             sinon.stub(event, 'ack').resolves();
