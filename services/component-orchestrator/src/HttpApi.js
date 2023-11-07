@@ -65,8 +65,8 @@ class HttpApi {
         this._app.listen(listenPort);
     }
 
+    //eslint-disable-next-line no-unused-vars
     _errorHandler(err, req, res, next) {
-        //eslint-disable-line no-unused-vars
         this._logger.error(err, 'Node info request failed');
         return res.status(err.status || 500).json({
             error: err.message || 'Unknown error',

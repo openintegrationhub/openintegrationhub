@@ -1,19 +1,15 @@
 class CredentialsStorage {
-    get(flowId, nodeId) {
-        //eslint-disable-line
-    }
+    // eslint-disable-next-line no-unused-vars
+    get(flowId, nodeId) {}
 
-    set(flowId, nodeId, credential) {
-        //eslint-disable-line
-    }
+    // eslint-disable-next-line no-unused-vars
+    set(flowId, nodeId, credential) {}
 
-    remove(flowId, nodeId) {
-        //eslint-disable-line
-    }
+    // eslint-disable-next-line no-unused-vars
+    remove(flowId, nodeId) {}
 
-    getAllForFlow(flowId) {
-        //eslint-disable-line
-    }
+    // eslint-disable-next-line no-unused-vars
+    getAllForFlow(flowId) {}
 }
 
 module.exports = CredentialsStorage;
