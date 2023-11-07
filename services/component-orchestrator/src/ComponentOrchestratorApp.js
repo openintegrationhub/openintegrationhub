@@ -3,7 +3,7 @@ const { ComponentOrchestrator } = require('@openintegrationhub/component-orchest
 const KubernetesDriver = require('./drivers/kubernetes/KubernetesDriver');
 const HttpApi = require('./HttpApi');
 const FlowsDao = require('./dao/FlowsDao');
-const FlowStateDao = require('./dao/FlowStateDao')
+const FlowStateDao = require('./dao/FlowStateDao');
 const ComponentsDao = require('./dao/ComponentsDao');
 const TokensDao = require('./dao/TokensDao');
 const SecretsDao = require('./dao/SecretsDao');
@@ -29,29 +29,31 @@ class ComponentOrchestratorApp extends App {
 
         const channel = await amqp.getConnection().createChannel();
 
-        channel.on('error', function(err) {
-          logger.fatal(err, 'RabbitMQ channel error');
-          process.exit(1);
+        channel.on('error', function (err) {
+            logger.fatal(err, 'RabbitMQ channel error');
+            process.exit(1);
         });
 
-        channel.on('close', function() {
+        channel.on('close', function () {
             logger.fatal('RabbitMQ channel closed');
             process.exit(1);
         });
 
         const queueCreator = new QueueCreator(channel);
-        const queuePubSub = new QueuePubSub(channel)
+        const queuePubSub = new QueuePubSub(channel);
 
         let publishChannel;
         try {
             publishChannel = await amqp.getConnection().createConfirmChannel();
-            publishChannel.on('error', (e)=> {
-                logger.fatal('Publish channel error', e);
-                process.exit(1);
-            }).once('close', () => {
-                logger.fatal('Publish channel closed');
-                process.exit(1);
-            });
+            publishChannel
+                .on('error', (e) => {
+                    logger.fatal('Publish channel error', e);
+                    process.exit(1);
+                })
+                .once('close', () => {
+                    logger.fatal('Publish channel closed');
+                    process.exit(1);
+                });
             logger.debug('Opened publish channel');
         } catch (e) {
             logger.fatal('Failed to create publish channel', e);
@@ -64,7 +66,7 @@ class ComponentOrchestratorApp extends App {
         await mongoose.connect(config.get('MONGODB_URI'), mongooseOptions);
         const iamClient = iamUtils.createClient({
             iamToken: config.get('IAM_TOKEN'),
-            baseUrl: config.get('IAM_BASE_URL')
+            baseUrl: config.get('IAM_BASE_URL'),
         });
 
         container.register({
@@ -89,16 +91,16 @@ class ComponentOrchestratorApp extends App {
                     rabbitmqUri: config.get('RABBITMQ_URI'),
                     transport: undefined, // using default transport
                     onCloseCallback: undefined,
-                })
+                }),
             }).singleton(),
-            componentOrchestrator: asClass(ComponentOrchestrator)
+            componentOrchestrator: asClass(ComponentOrchestrator),
         });
 
         container.loadModules(['./src/event-handlers/**/*.js'], {
             formatName: 'camelCase',
             resolverOptions: {
-                register: asFunction
-            }
+                register: asFunction,
+            },
         });
 
         const httpApi = container.resolve('httpApi');

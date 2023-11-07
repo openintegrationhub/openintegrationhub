@@ -1,6 +1,4 @@
-const {
-    BaseDriver,
-} = require('@openintegrationhub/component-orchestrator');
+const { BaseDriver } = require('@openintegrationhub/component-orchestrator');
 const _ = require('lodash');
 const KubernetesRunningComponent = require('./KubernetesRunningComponent');
 const Secret = require('./Secret');
@@ -15,9 +13,9 @@ const KUBERNETES_NAME_CONVENTION = /[^0-9a-z\-\.]/gi; // eslint-disable-line no-
 
 function enableComponentRestAPI(component) {
     if (component.descriptor && component.descriptor.restAPI) {
-        return true
+        return true;
     }
-    return false
+    return false;
 }
 
 class KubernetesDriver extends BaseDriver {
@@ -31,31 +29,19 @@ class KubernetesDriver extends BaseDriver {
 
     async createApp({ flow, node, envVars, component, options }) {
         if (component.isGlobal) {
-            this._logger.info(
-                { component: component.id },
-                'Going to apply global deployment to k8s'
-            );
+            this._logger.info({ component: component.id }, 'Going to apply global deployment to k8s');
             try {
                 const env = this._prepareEnvVarsForComponent(envVars, { flow, node, component });
-                const secret = await this._ensureSecret(
-                    `${GLOBAL_PREFIX}${component.id}`,
-                    env
-                );
+                const secret = await this._ensureSecret(`${GLOBAL_PREFIX}${component.id}`, env);
                 await this._createRunningComponent({ secret, component, options });
             } catch (e) {
                 this._logger.error(e, 'Failed to apply global deployment');
             }
         } else {
-            this._logger.info(
-                { flow: flow.id },
-                'Going to apply local deployment to k8s'
-            );
+            this._logger.info({ flow: flow.id }, 'Going to apply local deployment to k8s');
             try {
                 const env = this._prepareEnvVarsForComponent(envVars, { flow, node, component });
-                const secret = await this._ensureSecret(
-                    `${LOCAL_PREFIX}${flow.id}${node.id}`,
-                    env
-                );
+                const secret = await this._ensureSecret(`${LOCAL_PREFIX}${flow.id}${node.id}`, env);
                 await this._createRunningComponent({
                     flow,
                     node,
@@ -160,10 +146,7 @@ class KubernetesDriver extends BaseDriver {
 
     async destroyApp(app) {
         //TODO wait until job really will be deleted
-        this._logger.info(
-            { name: app.name },
-            'Going to delete Deployment from k8s'
-        );
+        this._logger.info({ name: app.name }, 'Going to delete Deployment from k8s');
 
         try {
             await this._appsClient.deployments(app.name).delete({
@@ -179,14 +162,10 @@ class KubernetesDriver extends BaseDriver {
             }
         }
 
-
-        this._logger.info(
-            { name: app.name },
-            'Going to delete Service from k8s'
-        );
+        this._logger.info({ name: app.name }, 'Going to delete Service from k8s');
 
         try {
-            const serviceId = this._generateKubernetesServiceId(app.name)
+            const serviceId = this._generateKubernetesServiceId(app.name);
             await this._coreClient.services(serviceId).delete({
                 body: {
                     kind: 'DeleteOptions',
@@ -226,31 +205,40 @@ class KubernetesDriver extends BaseDriver {
     }
 
     _generateVolumes() {
-        if (this._config.get('KUBERNETES_VOLUME_HOSTPATH_ENABLED') === 'true' && this._config.get('KUBERNETES_VOLUME_HOSTPATH_PATH')) {
-            return [{
-                name: 'pv-hostpath',
-                hostPath: {
-                    path: this._config.get('KUBERNETES_VOLUME_HOSTPATH_PATH'),
-                    type: 'Directory'
-                }
-            }]
+        if (
+            this._config.get('KUBERNETES_VOLUME_HOSTPATH_ENABLED') === 'true' &&
+            this._config.get('KUBERNETES_VOLUME_HOSTPATH_PATH')
+        ) {
+            return [
+                {
+                    name: 'pv-hostpath',
+                    hostPath: {
+                        path: this._config.get('KUBERNETES_VOLUME_HOSTPATH_PATH'),
+                        type: 'Directory',
+                    },
+                },
+            ];
         }
-        return []
+        return [];
     }
 
     _generateVolumeMounts() {
-        if (this._config.get('KUBERNETES_VOLUME_HOSTPATH_ENABLED') === 'true' && this._config.get('KUBERNETES_VOLUME_HOSTPATH_MOUNTPATH')) {
-            return [{
-                name: 'pv-hostpath',
-                mountPath: this._config.get('KUBERNETES_VOLUME_HOSTPATH_MOUNTPATH')
-            }]
-
+        if (
+            this._config.get('KUBERNETES_VOLUME_HOSTPATH_ENABLED') === 'true' &&
+            this._config.get('KUBERNETES_VOLUME_HOSTPATH_MOUNTPATH')
+        ) {
+            return [
+                {
+                    name: 'pv-hostpath',
+                    mountPath: this._config.get('KUBERNETES_VOLUME_HOSTPATH_MOUNTPATH'),
+                },
+            ];
         }
-        return []
+        return [];
     }
 
     _generateKubernetesAppId(flow, node, component) {
-        let appId = ''
+        let appId = '';
         if (component.isGlobal) {
             appId = `${GLOBAL_PREFIX}${component.id}`;
         } else {
@@ -260,7 +248,7 @@ class KubernetesDriver extends BaseDriver {
     }
 
     _generateKubernetesServiceId(appId) {
-        return `${appId.replace('.', '-')}-service`
+        return `${appId.replace('.', '-')}-service`;
     }
 
     _generateDeploymentDefinition({ flow, node, secret, component, options = {} }) {
@@ -273,7 +261,7 @@ class KubernetesDriver extends BaseDriver {
             if (component.descriptor.imagePullPolicy) imagePullPolicy = component.descriptor.imagePullPolicy;
         }
 
-        const appId = this._generateKubernetesAppId(flow, node, component)
+        const appId = this._generateKubernetesAppId(flow, node, component);
 
         let matchLabels, labels, annotations;
 
@@ -348,7 +336,7 @@ class KubernetesDriver extends BaseDriver {
                                     node,
                                     component,
                                 }),
-                                volumeMounts: this._generateVolumeMounts()
+                                volumeMounts: this._generateVolumeMounts(),
                             },
                         ],
                     },
@@ -358,14 +346,12 @@ class KubernetesDriver extends BaseDriver {
     }
 
     _generateServiceDefinition({ flow, node, component }) {
-
-        const appId = this._generateKubernetesAppId(flow, node, component)
-        const serviceId = this._generateKubernetesServiceId(appId)
+        const appId = this._generateKubernetesAppId(flow, node, component);
+        const serviceId = this._generateKubernetesServiceId(appId);
 
         let selector;
 
         if (component.isGlobal) {
-
             selector = {
                 componentId: component.id,
             };
@@ -383,8 +369,8 @@ class KubernetesDriver extends BaseDriver {
                 name: serviceId,
                 namespace: this._config.get('NAMESPACE'),
                 labels: {
-                    app: serviceId
-                }
+                    app: serviceId,
+                },
             },
             spec: {
                 type: 'ClusterIP',
@@ -394,9 +380,9 @@ class KubernetesDriver extends BaseDriver {
                         name: '3001',
                         protocol: 'TCP',
                         port: 3001,
-                        targetPort: 3001
-                    }
-                ]
+                        targetPort: 3001,
+                    },
+                ],
             },
         };
     }
@@ -408,25 +394,13 @@ class KubernetesDriver extends BaseDriver {
         const rm = 'resources.requests.memory';
 
         const cpuLimit =
-            _.get(component, lc) ||
-            _.get(node, lc) ||
-            _.get(flow, lc) ||
-            this._config.get('DEFAULT_CPU_LIMIT');
+            _.get(component, lc) || _.get(node, lc) || _.get(flow, lc) || this._config.get('DEFAULT_CPU_LIMIT');
         const memLimit =
-            _.get(component, lm) ||
-            _.get(node, lm) ||
-            _.get(flow, lm) ||
-            this._config.get('DEFAULT_MEM_LIMIT');
+            _.get(component, lm) || _.get(node, lm) || _.get(flow, lm) || this._config.get('DEFAULT_MEM_LIMIT');
         const cpuRequest =
-            _.get(component, rc) ||
-            _.get(node, rc) ||
-            _.get(flow, rc) ||
-            this._config.get('DEFAULT_CPU_REQUEST');
+            _.get(component, rc) || _.get(node, rc) || _.get(flow, rc) || this._config.get('DEFAULT_CPU_REQUEST');
         const memRequest =
-            _.get(component, rm) ||
-            _.get(node, rm) ||
-            _.get(flow, rm) ||
-            this._config.get('DEFAULT_MEM_REQUEST');
+            _.get(component, rm) || _.get(node, rm) || _.get(flow, rm) || this._config.get('DEFAULT_MEM_REQUEST');
 
         return {
             limits: {
@@ -447,20 +421,14 @@ class KubernetesDriver extends BaseDriver {
         envVars.COMP_ID = component.id;
         envVars.USER_ID = 'remove me';
 
-        envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config
-            .get('SNAPSHOTS_SERVICE_BASE_URL')
-            .replace(/\/$/, '');
-        envVars.SECRET_SERVICE_BASE_URL = this._config
-            .get('SECRET_SERVICE_BASE_URL')
-            .replace(/\/$/, '');
+        envVars.SNAPSHOTS_SERVICE_BASE_URL = this._config.get('SNAPSHOTS_SERVICE_BASE_URL').replace(/\/$/, '');
+        envVars.SECRET_SERVICE_BASE_URL = this._config.get('SECRET_SERVICE_BASE_URL').replace(/\/$/, '');
         envVars.ATTACHMENT_STORAGE_SERVICE_BASE_URL = this._config
             .get('ATTACHMENT_STORAGE_SERVICE_BASE_URL')
             .replace(/\/$/, '');
         envVars.API_URI = this._config.get('SELF_API_URI').replace(/\/$/, '');
 
-        envVars.DATAHUB_BASE_URL = this._config
-            .get('DATAHUB_BASE_URL')
-            .replace(/\/$/, '');
+        envVars.DATAHUB_BASE_URL = this._config.get('DATAHUB_BASE_URL').replace(/\/$/, '');
 
         if (enableComponentRestAPI(component)) {
             envVars.ENABLE_REST_API = 'true';
@@ -475,31 +443,23 @@ class KubernetesDriver extends BaseDriver {
 
         // provide following vars without prefix
 
-        envVars.LOG_LEVEL = this._config
-            .get('COMPONENT_LOG_LEVEL')
-            .replace(/\/$/, '');
+        envVars.LOG_LEVEL = this._config.get('COMPONENT_LOG_LEVEL').replace(/\/$/, '');
 
         return envVars;
     }
 
-    _prepareEnvVarsForComponent(envVars, {flow, node, component}) {
+    _prepareEnvVarsForComponent(envVars, { flow, node, component }) {
         const envVarsKey = 'descriptor.environment.variables';
-        const envVarsFromConfig = _.get(component, envVarsKey, {})
-            || _.get(node, envVarsKey, {})
-            || _.get(flow, envVarsKey, {});
+        const envVarsFromConfig =
+            _.get(component, envVarsKey, {}) || _.get(node, envVarsKey, {}) || _.get(flow, envVarsKey, {});
         if (envVarsFromConfig && !envVarsFromConfig.constructor === Object) {
-            this._logger.info(
-                { envVars },
-                'Environment variables should be an object. Ignoring'
-            );
+            this._logger.info({ envVars }, 'Environment variables should be an object. Ignoring');
         } else {
             envVars = Object.assign(envVars, envVarsFromConfig);
         }
 
         return this._prepareEnvVars(envVars, component);
     }
-
-
 }
 
 module.exports = KubernetesDriver;

@@ -3,17 +3,17 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
     tenant: {
-        type: String
+        type: String,
     },
     graph: {
-        type: Schema.Types.Mixed
+        type: Schema.Types.Mixed,
     },
     status: {
-        type: String
+        type: String,
     },
     startedBy: {
-        type: String
-    }
+        type: String,
+    },
 });
 
 class Flow {
@@ -26,11 +26,11 @@ class Flow {
     }
 
     get isPreparing() {
-        return this.status.includes('preparing-by')
+        return this.status.includes('preparing-by');
     }
 
     preparingBy(orchestratorId) {
-        return this.status === `preparing-by-${orchestratorId}`
+        return this.status === `preparing-by-${orchestratorId}`;
     }
 
     getFirstNode() {
@@ -47,11 +47,11 @@ class Flow {
             return null;
         }
 
-        return nodes.find(node => !edges.find(edge => edge.target === node.id));
+        return nodes.find((node) => !edges.find((edge) => edge.target === node.id));
     }
 
     getNodeById(id) {
-        return this.getNodes().find(node => node.id === id);
+        return this.getNodes().find((node) => node.id === id);
     }
 
     getNodes() {
@@ -59,13 +59,11 @@ class Flow {
     }
 
     getNextSteps(steppId) {
-        return this.graph.edges
-            .filter(edge => edge.source === steppId)
-            .map(edge => edge.target)
+        return this.graph.edges.filter((edge) => edge.source === steppId).map((edge) => edge.target);
     }
 
     getPropertiesByNodeId(nodeId) {
-        return this.graph.nodes.find(node => node.id === nodeId)
+        return this.graph.nodes.find((node) => node.id === nodeId);
     }
 
     getEdges() {

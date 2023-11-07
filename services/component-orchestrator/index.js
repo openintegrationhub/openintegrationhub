@@ -9,4 +9,3 @@ const ComponentOrchestratorApp = require('./src/ComponentOrchestratorApp.js');
         process.exit(1);
     }
 })();
-

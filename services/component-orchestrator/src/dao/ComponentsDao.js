@@ -1,5 +1,5 @@
 const { ComponentsDao } = require('@openintegrationhub/component-orchestrator');
-const LRU = require('lru-cache')
+const LRU = require('lru-cache');
 const request = require('request');
 const { URL } = require('url');
 const path = require('path');
@@ -15,14 +15,13 @@ class OIHComponentsDao extends ComponentsDao {
 
         this._cache = new LRU({
             max: this._config.get('CACHE_COMPONENT_SIZE') || 50,
-            maxAge: this._config.get('CACHE_COMPONENT_MAX_AGE') || 1000 * 60 * 5
-        })
+            maxAge: this._config.get('CACHE_COMPONENT_MAX_AGE') || 1000 * 60 * 5,
+        });
     }
 
     async findById(compId) {
-
         if (this._config.get('CACHE_COMPONENT_IGNORE') !== 'true') {
-            const cachedComponent = this._cache.get(compId)
+            const cachedComponent = this._cache.get(compId);
 
             if (cachedComponent) {
                 this._logger.trace({ compId }, 'Returning cached component');
@@ -36,16 +35,16 @@ class OIHComponentsDao extends ComponentsDao {
             url,
             json: true,
             headers: {
-                authorization: `Bearer ${this._config.get('IAM_TOKEN')}`
-            }
+                authorization: `Bearer ${this._config.get('IAM_TOKEN')}`,
+            },
         };
 
         this._logger.trace({ compId }, 'Fetching component info');
         const { body, statusCode } = await getAsync(opts);
 
         if (statusCode === 200) {
-            let component = _.get(body, 'data')
-            this._cache.set(compId, component)
+            let component = _.get(body, 'data');
+            this._cache.set(compId, component);
             return component;
         }
 

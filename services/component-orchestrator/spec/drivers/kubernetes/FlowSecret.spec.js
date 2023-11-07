@@ -7,11 +7,11 @@ describe('FlowSecret', () => {
     beforeEach(() => {
         secret = new Secret({
             metadata: {
-                name: 'my-secret'
+                name: 'my-secret',
             },
             data: {
-                username: 'password'
-            }
+                username: 'password',
+            },
         });
     });
 
@@ -43,14 +43,14 @@ describe('FlowSecret', () => {
     describe('#toDescriptor', () => {
         it('should return K8s descriptor', () => {
             expect(secret.toDescriptor()).to.deep.equal({
-                'apiVersion': 'v1',
-                'data': {
-                    'username': 'cGFzc3dvcmQ='
+                apiVersion: 'v1',
+                data: {
+                    username: 'cGFzc3dvcmQ=',
                 },
-                'kind': 'Secret',
-                'metadata': {
-                    'name': 'my-secret'
-                }
+                kind: 'Secret',
+                metadata: {
+                    name: 'my-secret',
+                },
             });
         });
     });
@@ -58,14 +58,14 @@ describe('FlowSecret', () => {
     describe('#fromDescriptor', () => {
         it('should return K8s descriptor', () => {
             const secret = Secret.fromDescriptor({
-                'apiVersion': 'v1',
-                'data': {
-                    'username': 'c2VjcmV0LXBhc3N3b3Jk'
+                apiVersion: 'v1',
+                data: {
+                    username: 'c2VjcmV0LXBhc3N3b3Jk',
                 },
-                'kind': 'Secret',
-                'metadata': {
-                    'name': 'my-new-secret'
-                }
+                kind: 'Secret',
+                metadata: {
+                    name: 'my-new-secret',
+                },
             });
             expect(secret.data.username).to.equal('secret-password');
             expect(secret.name).to.equal('my-new-secret');

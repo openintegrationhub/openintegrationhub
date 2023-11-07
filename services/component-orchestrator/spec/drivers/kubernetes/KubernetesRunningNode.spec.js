@@ -18,7 +18,7 @@ describe('KubernetesRunningNode', () => {
                     uid: 'my-awesome-uid',
                     annotations: {
                         flowId: 'flow1',
-                        nodeId: 'step_1'
+                        nodeId: 'step_1',
                     },
                     ownerReferences: [
                         {
@@ -26,34 +26,36 @@ describe('KubernetesRunningNode', () => {
                             kind: 'Flow',
                             controller: true,
                             name: 'Flow 1',
-                            uid: 'custom-uuid'
-                        }
-                    ]
+                            uid: 'custom-uuid',
+                        },
+                    ],
                 },
                 spec: {
                     template: {
                         metadata: {
-                            labels: {}
+                            labels: {},
                         },
                         spec: {
                             restartPolicy: 'Never',
-                            containers: [{
-                                image: 'my-custom-docker-image',
-                                name: 'apprunner',
-                                imagePullPolicy: 'Always',
-                                envFrom: [{
-                                    secretRef: {
-                                        name: 'secret-name'
-                                    }
-                                }],
-                                env: [
-                                    { name: 'MY_ENV', value: 'my-secret-value' }
-                                ],
-                                resources: {}
-                            }]
-                        }
-                    }
-                }
+                            containers: [
+                                {
+                                    image: 'my-custom-docker-image',
+                                    name: 'apprunner',
+                                    imagePullPolicy: 'Always',
+                                    envFrom: [
+                                        {
+                                            secretRef: {
+                                                name: 'secret-name',
+                                            },
+                                        },
+                                    ],
+                                    env: [{ name: 'MY_ENV', value: 'my-secret-value' }],
+                                    resources: {},
+                                },
+                            ],
+                        },
+                    },
+                },
             });
         });
 

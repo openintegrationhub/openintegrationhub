@@ -6,8 +6,8 @@ describe('MongoDbCredentialsStorage', () => {
     let cs;
 
     before(async () => {
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { });
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test';
+        await mongoose.connect(mongoUri, {});
     });
 
     after(async () => {
@@ -49,12 +49,12 @@ describe('MongoDbCredentialsStorage', () => {
             expect(await cs.getAllForFlow('flow1')).to.deep.equal([
                 {
                     nodeId: 'node1',
-                    credential: { username: 'user1', password: 'pass1' }
+                    credential: { username: 'user1', password: 'pass1' },
                 },
                 {
                     nodeId: 'node2',
-                    credential: { username: 'user2', password: 'pass2' }
-                }
+                    credential: { username: 'user2', password: 'pass2' },
+                },
             ]);
 
             await cs.clear();

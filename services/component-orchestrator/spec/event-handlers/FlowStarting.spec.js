@@ -9,8 +9,8 @@ const sinon = require('sinon');
 
 describe('FlowStarting event handler', () => {
     before(async () => {
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { });
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test';
+        await mongoose.connect(mongoUri, {});
     });
 
     after(async () => {
@@ -22,9 +22,9 @@ describe('FlowStarting event handler', () => {
     beforeEach(async () => {
         await Flow.deleteMany();
         const logger = {
-            info: () => { },
-            trace: () => { },
-            error: err => console.error(err)
+            info: () => {},
+            trace: () => {},
+            error: (err) => console.error(err),
         };
         flowStarting = FlowStarting({ logger });
     });
@@ -37,7 +37,7 @@ describe('FlowStarting event handler', () => {
     describe('if flow', () => {
         [
             { name: 'doesnt exist', flow: new Flow() },
-            { name: 'exists', flow: Flow.create({}) }
+            { name: 'exists', flow: Flow.create({}) },
         ].forEach(({ name, flow }) => {
             it(name, async () => {
                 flow = await flow;
@@ -46,12 +46,10 @@ describe('FlowStarting event handler', () => {
                     payload: {
                         id: flow.id,
                         graph: {
-                            nodes: [
-                                { id: 'step_1' }
-                            ]
+                            nodes: [{ id: 'step_1' }],
                         },
-                        status: 'starting'
-                    }
+                        status: 'starting',
+                    },
                 });
 
                 sinon.stub(event, 'ack').resolves();
@@ -64,7 +62,7 @@ describe('FlowStarting event handler', () => {
 
                 const foundFlow = await Flow.findById(flow.id);
                 expect(foundFlow.graph).to.deep.equal({
-                    nodes: [{ id: 'step_1' }]
+                    nodes: [{ id: 'step_1' }],
                 });
                 expect(foundFlow.status).to.equal('starting');
             });

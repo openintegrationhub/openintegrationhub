@@ -11,20 +11,20 @@ describe('RabbitMqManagementService', () => {
         const logger = {
             child() {
                 return {
-                    info: () => { },
-                    debug: () => { },
-                    trace: () => { },
-                    warn: () => { },
-                    error: () => { }
+                    info: () => {},
+                    debug: () => {},
+                    trace: () => {},
+                    warn: () => {},
+                    error: () => {},
                 };
-            }
+            },
         };
 
         const config = {
             RABBITMQ_MANAGEMENT_URI: 'http://localhost/',
             get(key) {
                 return this[key];
-            }
+            },
         };
         service = new RabbitMqManagementService({ logger, config });
     });
@@ -68,19 +68,19 @@ describe('RabbitMqManagementService', () => {
                 username: 'user1',
                 password: 'pass1',
                 flow: {
-                    id: 'flow1'
+                    id: 'flow1',
                 },
-                backchannel: 'fooo'
+                backchannel: 'fooo',
             };
             await service.createFlowUser(params);
             expect(service._client.putUser).to.have.been.calledOnceWith(params.username, {
                 password: params.password,
-                tags: 'flow-user'
+                tags: 'flow-user',
             });
             expect(service._client.setUserPermissions).to.have.been.calledOnceWith(params.username, '/', {
                 configure: '',
                 read: `^flow-${params.flow.id}:`,
-                write: `^(${params.backchannel}|flow-${params.flow.id}|component-events-collector|event-bus)$`
+                write: `^(${params.backchannel}|flow-${params.flow.id}|component-events-collector|event-bus)$`,
             });
         });
     });

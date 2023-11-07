@@ -1,22 +1,20 @@
-const {v4} = require('uuid');
+const { v4 } = require('uuid');
 const { URL } = require('url');
 
 const { QueuesManager } = require('@openintegrationhub/component-orchestrator');
 const InMemoryCredentialsStorage = require('./credentials-storage/InMemoryCredentialsStorage');
 const RabbitMqManagementService = require('./RabbitMqManagementService');
 
-const BACKCHANNEL_EXCHANGE = 'orchestrator_backchannel'
-const BACKCHANNEL_MESSAGES_QUEUE = `${BACKCHANNEL_EXCHANGE}:messages`
-const BACKCHANNEL_ERROR_QUEUE = `${BACKCHANNEL_EXCHANGE}:error`
+const BACKCHANNEL_EXCHANGE = 'orchestrator_backchannel';
+const BACKCHANNEL_MESSAGES_QUEUE = `${BACKCHANNEL_EXCHANGE}:messages`;
+const BACKCHANNEL_ERROR_QUEUE = `${BACKCHANNEL_EXCHANGE}:error`;
 
-
-const BACKCHANNEL_INPUT_KEY = `${BACKCHANNEL_EXCHANGE}.input`
-const BACKCHANNEL_ERROR_KEY = `${BACKCHANNEL_EXCHANGE}.error`
-const BACKCHANNEL_STATE_KEY = `${BACKCHANNEL_EXCHANGE}.step_state`
+const BACKCHANNEL_INPUT_KEY = `${BACKCHANNEL_EXCHANGE}.input`;
+const BACKCHANNEL_ERROR_KEY = `${BACKCHANNEL_EXCHANGE}.error`;
+const BACKCHANNEL_STATE_KEY = `${BACKCHANNEL_EXCHANGE}.step_state`;
 // The Step State key is used to handle incoming "end" messages from a component, to handle deletions of execution scoped snapshots.
 
-
-const BACKCHANNEL_DEAD_LETTER_KEY = `${BACKCHANNEL_EXCHANGE}.deadletter`
+const BACKCHANNEL_DEAD_LETTER_KEY = `${BACKCHANNEL_EXCHANGE}.deadletter`;
 
 class RabbitMqQueuesManager extends QueuesManager {
     constructor({ queueCreator, queuePubSub, logger, config, credentialsStorage }) {
@@ -30,14 +28,22 @@ class RabbitMqQueuesManager extends QueuesManager {
     }
 
     onRecover(newChannel) {
-        this._queueCreator.onRecover(newChannel)
-        this._queuePubSub.onRecover(newChannel)
+        this._queueCreator.onRecover(newChannel);
+        this._queuePubSub.onRecover(newChannel);
     }
 
     async setupBackchannel() {
-        await this._queueCreator.prepareExchange(BACKCHANNEL_EXCHANGE)
-        await this._queueCreator.assertMessagesQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_DEAD_LETTER_KEY);
-        await this._queueCreator.assertMessagesQueue(BACKCHANNEL_ERROR_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_DEAD_LETTER_KEY);
+        await this._queueCreator.prepareExchange(BACKCHANNEL_EXCHANGE);
+        await this._queueCreator.assertMessagesQueue(
+            BACKCHANNEL_MESSAGES_QUEUE,
+            BACKCHANNEL_EXCHANGE,
+            BACKCHANNEL_DEAD_LETTER_KEY
+        );
+        await this._queueCreator.assertMessagesQueue(
+            BACKCHANNEL_ERROR_QUEUE,
+            BACKCHANNEL_EXCHANGE,
+            BACKCHANNEL_DEAD_LETTER_KEY
+        );
         await this._queueCreator.bindQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_INPUT_KEY);
         await this._queueCreator.bindQueue(BACKCHANNEL_MESSAGES_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_STATE_KEY);
         await this._queueCreator.bindQueue(BACKCHANNEL_ERROR_QUEUE, BACKCHANNEL_EXCHANGE, BACKCHANNEL_ERROR_KEY);
@@ -45,18 +51,18 @@ class RabbitMqQueuesManager extends QueuesManager {
 
     async subscribeBackchannel(callback) {
         const processCallback = async (message) => {
-            await callback(message)
-            await this._queuePubSub.ack(message)
-        }
-        return this._queuePubSub.subscribe(BACKCHANNEL_MESSAGES_QUEUE, processCallback.bind(this))
+            await callback(message);
+            await this._queuePubSub.ack(message);
+        };
+        return this._queuePubSub.subscribe(BACKCHANNEL_MESSAGES_QUEUE, processCallback.bind(this));
     }
 
     async subscribeErrorQueue(callback) {
         const processCallback = async (message) => {
-            await callback(message)
-            await this._queuePubSub.ack(message)
-        }
-        return this._queuePubSub.subscribe(BACKCHANNEL_ERROR_QUEUE, processCallback.bind(this))
+            await callback(message);
+            await this._queuePubSub.ack(message);
+        };
+        return this._queuePubSub.subscribe(BACKCHANNEL_ERROR_QUEUE, processCallback.bind(this));
     }
 
     async deleteForFlow(flow) {
@@ -80,20 +86,19 @@ class RabbitMqQueuesManager extends QueuesManager {
 
         const stepSettings = flowSettings[node.id] || {};
         Object.assign(stepSettings, {
-            AMQP_URI
+            AMQP_URI,
         });
 
         return stepSettings;
     }
 
     async ensureCredentials(globalComponent, flow, node) {
-        await this._ensureRabbitMqCredentials(globalComponent, flow, node, true)
+        await this._ensureRabbitMqCredentials(globalComponent, flow, node, true);
     }
 
     async getExistingCredentialIdentifiers() {
-        return  this._credentialsStorage.getIdentifiers()
+        return this._credentialsStorage.getIdentifiers();
     }
-
 
     async prepareQueuesForGlobalComponent(component) {
         return await this._queueCreator.createQueuesForGlobalComponent(component);
@@ -105,7 +110,7 @@ class RabbitMqQueuesManager extends QueuesManager {
         const AMQP_URI = this._prepareAmqpUri(rabbitCredentials);
 
         Object.assign(settings, {
-            AMQP_URI
+            AMQP_URI,
         });
 
         return settings;
@@ -120,11 +125,11 @@ class RabbitMqQueuesManager extends QueuesManager {
     }
 
     async _ensureRabbitMqCredentials(globalComponent, flow, node, forcePut = false) {
-        const type = globalComponent ? 'global' : 'local'
+        const type = globalComponent ? 'global' : 'local';
 
-        let creds = null
-        let username = null
-        let password = null
+        let creds = null;
+        let username = null;
+        let password = null;
 
         if (type === 'local') {
             creds = await this._getRabbitMqCredential(flow, node);
@@ -133,29 +138,33 @@ class RabbitMqQueuesManager extends QueuesManager {
         }
 
         if (!creds || forcePut) {
-            password = creds ? creds.password : v4()
+            password = creds ? creds.password : v4();
 
             if (type === 'local') {
-                username = creds ? creds.username : `flow-${flow.id}-${node.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '')
+                username = creds
+                    ? creds.username
+                    : `flow-${flow.id}-${node.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
                 await this._rabbitmqManagement.createFlowUser({
                     username,
                     password,
                     flow,
-                    backchannel: BACKCHANNEL_EXCHANGE
+                    backchannel: BACKCHANNEL_EXCHANGE,
                 });
             } else {
-                username = creds ? creds.username : `component-${globalComponent.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                username = creds
+                    ? creds.username
+                    : `component-${globalComponent.id}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
                 await this._rabbitmqManagement.createGlobalComponentUser({
                     username,
                     password,
                     component: globalComponent,
-                    backchannel: BACKCHANNEL_EXCHANGE
+                    backchannel: BACKCHANNEL_EXCHANGE,
                 });
             }
             this._logger.trace({ username }, 'Upserted RabbitMQ user');
         }
 
-        if (creds) return creds
+        if (creds) return creds;
 
         const newCreds = { username, password };
 
@@ -214,31 +223,27 @@ class RabbitMqQueuesManager extends QueuesManager {
 
     async _deleteQueuesForFlow(flow) {
         const selector = `flow-${flow.id}`;
-        await this._deleteQueues(selector)
+        await this._deleteQueues(selector);
     }
 
     async _deleteQueuesForGlobalComponent(component) {
         const selector = `component-${component.id}`;
-        await this._deleteQueues(selector)
+        await this._deleteQueues(selector);
     }
-
 
     async _deleteQueues(selector) {
         //@todo: Needs optimisation, don't get all queues on every call
         const queuesStructure = await this._getQueuesStructure();
         // delete all queues
         if (queuesStructure[selector]) {
-
             for (let queue of queuesStructure[selector].queues) {
                 await this._queueCreator.deleteQueue(queue);
             }
             for (let exchange of queuesStructure[selector].exchanges) {
-
                 await this._queueCreator.deleteExchange(exchange);
             }
         }
     }
-
 
     async _getQueuesStructure() {
         const queues = await this._rabbitmqManagement.getQueues();

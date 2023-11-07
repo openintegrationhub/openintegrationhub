@@ -5,8 +5,8 @@ const mongoose = require('mongoose');
 
 describe('Flow model', () => {
     before(async () => {
-        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test'
-        await mongoose.connect(mongoUri, { });
+        let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test';
+        await mongoose.connect(mongoUri, {});
     });
 
     after(async () => {
@@ -16,14 +16,14 @@ describe('Flow model', () => {
     describe('isStarting', () => {
         it('should return true', () => {
             const flow = new Flow({
-                status: 'starting'
+                status: 'starting',
             });
             expect(flow.isStarting).to.be.true;
         });
 
         it('should return false', () => {
             const flow = new Flow({
-                status: 'started'
+                status: 'started',
             });
             expect(flow.isStarting).to.be.false;
         });
@@ -32,14 +32,14 @@ describe('Flow model', () => {
     describe('isStopping', () => {
         it('should return true', () => {
             const flow = new Flow({
-                status: 'stopping'
+                status: 'stopping',
             });
             expect(flow.isStopping).to.be.true;
         });
 
         it('should return false', () => {
             const flow = new Flow({
-                status: 'started'
+                status: 'started',
             });
             expect(flow.isStopping).to.be.false;
         });
@@ -49,10 +49,8 @@ describe('Flow model', () => {
         it('should find a node', () => {
             const flow = new Flow({
                 graph: {
-                    nodes: [
-                        { id: 'step_1' }
-                    ]
-                }
+                    nodes: [{ id: 'step_1' }],
+                },
             });
 
             expect(flow.getNodeById('step_1')).to.deep.equal({ id: 'step_1' });
@@ -61,10 +59,8 @@ describe('Flow model', () => {
         it('should return undefined', () => {
             const flow = new Flow({
                 graph: {
-                    nodes: [
-                        { id: 'step_1' }
-                    ]
-                }
+                    nodes: [{ id: 'step_1' }],
+                },
             });
 
             expect(flow.getNodeById('step_2')).to.be.undefined;
@@ -75,16 +71,12 @@ describe('Flow model', () => {
         it('should return first node', () => {
             const flow = new Flow({
                 graph: {
-                    nodes: [
-                        { id: 'step_1' },
-                        { id: 'step_2' },
-                        { id: 'step_3' }
-                    ],
+                    nodes: [{ id: 'step_1' }, { id: 'step_2' }, { id: 'step_3' }],
                     edges: [
                         { source: 'step_1', target: 'step_2' },
-                        { source: 'step_2', target: 'step_3' }
-                    ]
-                }
+                        { source: 'step_2', target: 'step_3' },
+                    ],
+                },
             });
 
             expect(flow.getFirstNode()).to.deep.equal({ id: 'step_1' });
@@ -93,10 +85,8 @@ describe('Flow model', () => {
         it('should return first node if there is only one node', () => {
             const flow = new Flow({
                 graph: {
-                    nodes: [
-                        { id: 'step_1' }
-                    ]
-                }
+                    nodes: [{ id: 'step_1' }],
+                },
             });
 
             expect(flow.getFirstNode()).to.deep.equal({ id: 'step_1' });
@@ -105,8 +95,8 @@ describe('Flow model', () => {
         it('should return null if there are no nodes', () => {
             const flow = new Flow({
                 graph: {
-                    nodes: []
-                }
+                    nodes: [],
+                },
             });
 
             expect(flow.getFirstNode()).to.be.null;
@@ -115,12 +105,9 @@ describe('Flow model', () => {
         it('should return null if there are no edges', () => {
             const flow = new Flow({
                 graph: {
-                    nodes: [
-                        { id: 'step_1' },
-                        { id: 'step_2' }
-                    ],
-                    edges: []
-                }
+                    nodes: [{ id: 'step_1' }, { id: 'step_2' }],
+                    edges: [],
+                },
             });
 
             expect(flow.getFirstNode()).to.be.null;
@@ -129,15 +116,12 @@ describe('Flow model', () => {
         it('should return undefined if edges are wrong', () => {
             const flow = new Flow({
                 graph: {
-                    nodes: [
-                        { id: 'step_1' },
-                        { id: 'step_2' }
-                    ],
+                    nodes: [{ id: 'step_1' }, { id: 'step_2' }],
                     edges: [
                         { source: 'step_1', target: 'step_2' },
-                        { source: 'step_2', target: 'step_1' }
-                    ]
-                }
+                        { source: 'step_2', target: 'step_1' },
+                    ],
+                },
             });
 
             expect(flow.getFirstNode()).to.be.undefined;

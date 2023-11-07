@@ -7,7 +7,7 @@ const { expect } = require('chai');
 describe('EventHandlers', () => {
     const eventBus = {
         subscribe() {},
-        connect() {}
+        connect() {},
     };
     const flowStarting = () => {};
     const flowStopping = () => {};
@@ -20,7 +20,7 @@ describe('EventHandlers', () => {
         eh = eventHandlers({
             eventBus,
             flowStarting,
-            flowStopping
+            flowStopping,
         });
     });
 
