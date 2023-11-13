@@ -36,6 +36,7 @@ process.on('SIGINT', exitHandler.bind(null));
                     microsoft: require('./src/adapter/preprocessor/microsoft'),
                     oidc: require('./src/adapter/preprocessor/oidc'),
                     azure: require('./src/adapter/preprocessor/azure'),
+                    zoom: require('./src/adapter/preprocessor/zoom'),
                 },
             },
             eventBus,
