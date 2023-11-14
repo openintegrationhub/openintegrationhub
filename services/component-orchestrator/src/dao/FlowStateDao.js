@@ -12,6 +12,10 @@ const schema = new Schema(
             type: String,
             index: true,
         },
+        tenant: {
+            type: String,
+            index: true,
+        },
         started: {
             type: Number,
             required: true,
@@ -21,6 +25,14 @@ const schema = new Schema(
             type: Number,
             required: true,
             default: 0,
+        },
+        errors: {
+            type: Number,
+            default: 0,
+        },
+        stepCounters: {
+            type: Schema.Types.Mixed,
+            default: {},
         },
         startedNodes: {
             type: [],
