@@ -14,11 +14,13 @@ describe('FlowStateDao', () => {
     before(async () => {
         let mongoUri = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/test';
         await mongoose.connect(mongoUri, {});
-        await FlowStateDao.delete(flowExecId);
-        await FlowStateDao.delete(flowExecId2);
+        // await FlowStateDao.delete(flowExecId);
+        // await FlowStateDao.delete(flowExecId2);
+        await FlowStateDao.deleteMany({});
     });
 
     after(async () => {
+        await FlowStateDao.deleteMany({});
         await mongoose.disconnect();
     });
 
