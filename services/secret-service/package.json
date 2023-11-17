@@ -1,6 +1,6 @@
 {
   "name": "secret-service",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "Service to manage Keys/Tokens of external services",
   "main": "index.js",
   "author": "Basaas GmbH",
