@@ -1,81 +1,81 @@
 {
-  "name": "secret-service",
-  "version": "2.10.1",
-  "description": "Service to manage Keys/Tokens of external services",
-  "main": "index.js",
-  "author": "Basaas GmbH",
-  "license": "Apache-2.0",
-  "scripts": {
-    "start": "node index.js",
-    "start:nodemon": "nodemon index.js --watch ./",
-    "start:nodemon:minikube": ". ../../minikube/.env && npm start:nodemon",
-    "start:container": "nodemon index.js --watch ./",
-    "test": "jest",
-    "coverage": "npm test --coverage",
-    "build": "echo \"No Build defined\"",
-    "build:docker": "docker build -t openintegrationhub/secret-service:${VERSION} -f Dockerfile ../../"
-  },
-  "dependencies": {
-    "@basaas/node-logger": "*",
-    "@openintegrationhub/event-bus": "*",
-    "@openintegrationhub/iam-utils": "*",
-    "assert": "2.0.0",
-    "base64url": "3.0.1",
-    "body-parser": "^1.20.2",
-    "cors": "2.8.5",
-    "dot-prop": "5.2.0",
-    "dotenv": "8.2.0",
-    "express": "4.17.1",
-    "jsonwebtoken": "8.5.1",
-    "lru-cache": "6.0.0",
-    "moment": "2.29.1",
-    "mongoose": "6.10.3",
-    "morgan": "1.10.0",
-    "node-fetch": "2.6.1",
-    "oauth": "0.9.15",
-    "qs": "6.10.1",
-    "swagger-ui-express": "4.1.5",
-    "uuid": "8.3.2"
-  },
-  "devDependencies": {
-    "eslint": "7.32.0",
-    "eslint-config-airbnb-base": "14.2.1",
-    "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-jest": "24.1.3",
-    "jest": "26.6.0",
-    "mongodb": "3.6.3",
-    "mongodb-memory-server": "7.4.0",
-    "nock": "13.0.5",
-    "nodemon": "2.0.4",
-    "supertest": "6.0.1"
-  },
-  "jest": {
-    "globalSetup": "./src/test/setup.js",
-    "globalTeardown": "./src/test/teardown.js",
-    "testEnvironment": "./src/test/mongo-environment.js",
-    "setupFilesAfterEnv": [
-      "./src/test/jest.setup.js"
-    ],
-    "silent": false,
-    "verbose": true
-  },
-  "nodemonConfig": {
-    "restartable": "rs",
-    "ignore": [
-      ".git",
-      "node_modules/**/node_modules"
-    ],
-    "verbose": true,
-    "execMap": {
-      "js": "node --harmony"
+    "name": "secret-service",
+    "version": "2.10.2",
+    "description": "Service to manage Keys/Tokens of external services",
+    "main": "index.js",
+    "author": "Basaas GmbH",
+    "license": "Apache-2.0",
+    "scripts": {
+        "start": "node index.js",
+        "start:nodemon": "nodemon index.js --watch ./",
+        "start:nodemon:minikube": ". ../../minikube/.env && npm start:nodemon",
+        "start:container": "nodemon index.js --watch ./",
+        "test": "jest",
+        "coverage": "npm test --coverage",
+        "build": "echo \"No Build defined\"",
+        "build:docker": "docker build -t openintegrationhub/secret-service:${VERSION} -f Dockerfile ../../"
     },
-    "events": {
-      "restart": ""
+    "dependencies": {
+        "@basaas/node-logger": "*",
+        "@openintegrationhub/event-bus": "*",
+        "@openintegrationhub/iam-utils": "*",
+        "assert": "2.0.0",
+        "base64url": "3.0.1",
+        "body-parser": "^1.20.2",
+        "cors": "2.8.5",
+        "dot-prop": "5.2.0",
+        "dotenv": "8.2.0",
+        "express": "4.17.1",
+        "jsonwebtoken": "8.5.1",
+        "lru-cache": "6.0.0",
+        "moment": "2.29.1",
+        "mongoose": "6.10.3",
+        "morgan": "1.10.0",
+        "node-fetch": "2.6.1",
+        "oauth": "0.9.15",
+        "qs": "6.10.1",
+        "swagger-ui-express": "4.1.5",
+        "uuid": "8.3.2"
     },
-    "watch": [
-      "src/",
-      "doc/"
-    ],
-    "ext": "js json yaml"
-  }
+    "devDependencies": {
+        "eslint": "7.32.0",
+        "eslint-config-airbnb-base": "14.2.1",
+        "eslint-plugin-import": "2.22.1",
+        "eslint-plugin-jest": "24.1.3",
+        "jest": "26.6.0",
+        "mongodb": "3.6.3",
+        "mongodb-memory-server": "7.4.0",
+        "nock": "13.0.5",
+        "nodemon": "2.0.4",
+        "supertest": "6.0.1"
+    },
+    "jest": {
+        "globalSetup": "./src/test/setup.js",
+        "globalTeardown": "./src/test/teardown.js",
+        "testEnvironment": "./src/test/mongo-environment.js",
+        "setupFilesAfterEnv": [
+            "./src/test/jest.setup.js"
+        ],
+        "silent": false,
+        "verbose": true
+    },
+    "nodemonConfig": {
+        "restartable": "rs",
+        "ignore": [
+            ".git",
+            "node_modules/**/node_modules"
+        ],
+        "verbose": true,
+        "execMap": {
+            "js": "node --harmony"
+        },
+        "events": {
+            "restart": ""
+        },
+        "watch": [
+            "src/",
+            "doc/"
+        ],
+        "ext": "js json yaml"
+    }
 }
