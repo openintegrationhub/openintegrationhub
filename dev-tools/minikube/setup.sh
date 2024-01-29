@@ -6,7 +6,7 @@ set -e
 
 DEV_CONTAINER_IMAGE="openintegrationhub/dev-connector:latest"
 
-HOST_OIH_DIRECTORY="/Users/james/OIH/openintegrationhub"
+HOST_OIH_DIRECTORY="$(dirname $(dirname $(dirname $(readlink -f $0))))"
 
 TENANT_1_NAME="Tenant 1"
 TENANT_1_ADMIN="ta1@example.com"
@@ -903,10 +903,12 @@ fi
 
 kubectl apply -f ./1-Platform
 if [ "$os" == "Darwin" ] && [ "$machine" == "ARM" ]; then
-    kubectl apply -f ./1.1-CodeVolume/sourceCodeVolumeARM.yaml
+    config_file="./1.1-CodeVolume/sourceCodeVolumeARM.yaml"
 else
-    kubectl apply -f ./1.1-CodeVolume/sourceCodeVolume.yaml
+    config_file="./1.1-CodeVolume/sourceCodeVolume.yaml"
 fi
+sed -i "s|\(.*path:\).*|\1 \"$HOST_OIH_DIRECTORY\"|" $config_file
+kubectl apply -f $config_file
 kubectl apply -f ./1.2-CodeClaim
 
 waitForPodStatus mongodb.*1/1
