@@ -9,7 +9,7 @@ class OIH_SchedulePublisher extends SchedulePublisher {
   }
   async scheduleFlow(flow) {
     const interval = cronParser.parseExpression(flow.cron);
-    const nextSheduledTimestamp = interval.next();
+    const nextScheduledTimestamp = interval.next();
     const event = new Event({
       headers: {
         name: 'flow.execute',
@@ -19,8 +19,8 @@ class OIH_SchedulePublisher extends SchedulePublisher {
         flow,
         msg: {
           data: {
-            sheduledTimestamp: new Date().toISOString(),
-            nextSheduledTimestamp,
+            scheduledTimestamp: new Date().toISOString(),
+            nextScheduledTimestamp,
           },
           metadata: {
             source: {
